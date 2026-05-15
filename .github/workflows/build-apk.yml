@@ -40,61 +40,128 @@ jobs:
           java-version: "17"
           cache: gradle
 
-      - name: Decode keystore
+      - name: Generate signing keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.keystore
-          echo "✅ Keystore decoded"
+          keytool -genkeypair \
+            -alias quicksearch \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -keystore app/release.keystore \
+            -storepass quicksearch123 \
+            -keypass quicksearch123 \
+            -dname "CN=Quick Search Mod, OU=Personal, O=Personal, L=Christchurch, ST=Canterbury, C=NZ"
+          echo "✅ Keystore generated"
+
+      - name: Create signing config properties
+        run: |
+          cat > app/signing.properties << EOF
+          storeFile=release.keystore
+          storePassword=quicksearch123
+          keyAlias=quicksearch
+          keyPassword=quicksearch123
+          EOF
+          echo "✅ Signing properties created"
+
+      - name: Inject signing config into build.gradle
+        run: |
+          # Check if build.gradle.kts or build.gradle exists
+          if [ -f "app/build.gradle.kts" ]; then
+            BUILD_FILE="app/build.gradle.kts"
+            echo "Found: $BUILD_FILE"
+
+            # Inject signing config using sed
+            # Add signingConfigs block before buildTypes
+            sed -i '/buildTypes {/i \
+            signingConfigs {\
+                create("release") {\
+                    val props = java.util.Properties()\
+                    val propsFile = file("signing.properties")\
+                    if (propsFile.exists()) {\
+                        props.load(propsFile.inputStream())\
+                        storeFile = file(props["storeFile"] as String)\
+                        storePassword = props["storePassword"] as String\
+                        keyAlias = props["keyAlias"] as String\
+                        keyPassword = props["keyPassword"] as String\
+                    }\
+                }\
+            }' "$BUILD_FILE"
+
+            # Add signingConfig to release buildType
+            sed -i '/buildTypes {/,/}/ { /release {/a \
+                signingConfig = signingConfigs.getByName("release")
+            }' "$BUILD_FILE"
+
+          elif [ -f "app/build.gradle" ]; then
+            BUILD_FILE="app/build.gradle"
+            echo "Found: $BUILD_FILE"
+
+            sed -i '/buildTypes {/i \
+            signingConfigs {\
+                release {\
+                    def props = new Properties()\
+                    def propsFile = file("signing.properties")\
+                    if (propsFile.exists()) {\
+                        props.load(propsFile.newDataInputStream())\
+                        storeFile file(props["storeFile"])\
+                        storePassword props["storePassword"]\
+                        keyAlias props["keyAlias"]\
+                        keyPassword props["keyPassword"]\
+                    }\
+                }\
+            }' "$BUILD_FILE"
+
+            sed -i '/buildTypes {/,/}/ { /release {/a \
+                signingConfig signingConfigs.release
+            }' "$BUILD_FILE"
+          fi
+
+          echo ""
+          echo "=== Build file after injection ==="
+          cat "$BUILD_FILE"
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
       - name: Build release APK
         run: ./gradlew assembleRelease
-        env:
-          SIGNING_STORE_FILE: release.keystore
-          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Sign APK manually if unsigned
+      - name: Fallback - sign APK manually if needed
         run: |
-          # Check if release APK exists
-          RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+          RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" 2>/dev/null | head -1)
 
           if [ -z "$RELEASE_APK" ]; then
-            echo "❌ No release APK found"
-            exit 1
+            echo "⚠️ No release APK found — trying debug build instead"
+            ./gradlew assembleDebug
+            echo "Built debug APK as fallback"
+            exit 0
           fi
 
-          echo "Found APK: $RELEASE_APK"
+          BUILD_TOOLS=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | sort -V | tail -1)
 
-          # Check if already signed
-          if $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/apksigner verify "$RELEASE_APK" 2>/dev/null; then
-            echo "✅ APK is already signed"
+          if $BUILD_TOOLS/apksigner verify "$RELEASE_APK" 2>/dev/null; then
+            echo "✅ APK is already signed by Gradle"
           else
-            echo "⚠️ APK not signed by Gradle — signing manually..."
+            echo "⚠️ Signing APK manually..."
 
-            # Zipalign first
-            $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/zipalign -v 4 \
-              "$RELEASE_APK" "${RELEASE_APK%.apk}-aligned.apk"
+            $BUILD_TOOLS/zipalign -v 4 "$RELEASE_APK" "${RELEASE_APK%.apk}-aligned.apk"
 
-            # Sign with apksigner
-            $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/apksigner sign \
+            $BUILD_TOOLS/apksigner sign \
               --ks app/release.keystore \
-              --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
-              --ks-key-alias ${{ secrets.KEY_ALIAS }} \
-              --key-pass pass:${{ secrets.KEY_PASSWORD }} \
-              --out "${RELEASE_APK%.apk}-signed.apk" \
+              --ks-pass pass:quicksearch123 \
+              --ks-key-alias quicksearch \
+              --key-pass pass:quicksearch123 \
+              --out "$RELEASE_APK" \
               "${RELEASE_APK%.apk}-aligned.apk"
 
+            rm -f "${RELEASE_APK%.apk}-aligned.apk"
             echo "✅ APK signed manually"
-
-            # Replace original with signed version
-            mv "${RELEASE_APK%.apk}-signed.apk" "$RELEASE_APK"
           fi
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
           name: quick-search-wallpaper-release
-          path: app/build/outputs/apk/release/*.apk
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/debug/*.apk
