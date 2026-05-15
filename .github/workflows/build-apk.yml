@@ -19,23 +19,18 @@ jobs:
       - name: Verify wallpaper code is present
         run: |
           echo "=== Checking AndroidManifest.xml for READ_MEDIA_IMAGES ==="
-          grep -n "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml || echo "❌ READ_MEDIA_IMAGES NOT FOUND in manifest"
+          grep -n "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml || echo "❌ READ_MEDIA_IMAGES NOT FOUND"
 
           echo ""
           echo "=== Checking WallpaperUtils.kt exists ==="
           if [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt" ]; then
             echo "✅ WallpaperUtils.kt exists"
-            head -30 app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
           else
             echo "❌ WallpaperUtils.kt NOT FOUND"
           fi
 
           echo ""
-          echo "=== Checking PermissionHelper.kt for wallpaper permission ==="
-          grep -n -i "wallpaper\|READ_MEDIA" app/src/main/java/com/tk/quicksearch/shared/permissions/PermissionHelper.kt || echo "❌ No wallpaper references in PermissionHelper"
-
-          echo ""
-          echo "=== Last commit on this branch ==="
+          echo "=== Last 3 commits ==="
           git log -3 --oneline
 
       - name: Set up JDK 17
@@ -45,14 +40,61 @@ jobs:
           java-version: "17"
           cache: gradle
 
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.keystore
+          echo "✅ Keystore decoded"
+
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug
+      - name: Build release APK
+        run: ./gradlew assembleRelease
+        env:
+          SIGNING_STORE_FILE: release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Upload APK artifact
+      - name: Sign APK manually if unsigned
+        run: |
+          # Check if release APK exists
+          RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+
+          if [ -z "$RELEASE_APK" ]; then
+            echo "❌ No release APK found"
+            exit 1
+          fi
+
+          echo "Found APK: $RELEASE_APK"
+
+          # Check if already signed
+          if $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/apksigner verify "$RELEASE_APK" 2>/dev/null; then
+            echo "✅ APK is already signed"
+          else
+            echo "⚠️ APK not signed by Gradle — signing manually..."
+
+            # Zipalign first
+            $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/zipalign -v 4 \
+              "$RELEASE_APK" "${RELEASE_APK%.apk}-aligned.apk"
+
+            # Sign with apksigner
+            $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -1)/apksigner sign \
+              --ks app/release.keystore \
+              --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+              --ks-key-alias ${{ secrets.KEY_ALIAS }} \
+              --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+              --out "${RELEASE_APK%.apk}-signed.apk" \
+              "${RELEASE_APK%.apk}-aligned.apk"
+
+            echo "✅ APK signed manually"
+
+            # Replace original with signed version
+            mv "${RELEASE_APK%.apk}-signed.apk" "$RELEASE_APK"
+          fi
+
+      - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: quick-search-wallpaper-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: quick-search-wallpaper-release
+          path: app/build/outputs/apk/release/*.apk
