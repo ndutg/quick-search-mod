@@ -22,23 +22,57 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Show what the compliance commit changed
+      - name: Create restore branch
+        run: git checkout -B restore-wallpaper-feature
+
+      - name: Attempt revert and resolve conflicts
         run: |
-          echo "=== Files changed by d356bc06 ==="
-          git diff --name-only d356bc06^..d356bc06
+          echo "=== Attempting revert of d356bc06 ==="
+          if git revert --no-edit d356bc06; then
+            echo "✅ Revert completed cleanly — no conflicts"
+          else
+            echo "⚠️ Conflict detected — resolving..."
 
-          echo ""
-          echo "=== Full diff of d356bc06 ==="
-          git diff --stat d356bc06^..d356bc06
+            # Show which files are conflicted
+            echo ""
+            echo "=== Conflicted files ==="
+            git diff --name-only --diff-filter=U
 
-          echo ""
-          echo "=== Commit message ==="
-          git log -1 --format="%H %s%n%n%b" d356bc06
+            # Show the raw conflict content for debugging
+            echo ""
+            echo "=== strings.xml conflict content ==="
+            cat app/src/main/res/values/strings.xml
 
-      - name: Create restore branch and revert
-        run: |
-          git checkout -B restore-wallpaper-feature
-          git revert --no-edit d356bc06
+            echo ""
+            echo "=== Resolving strings.xml by keeping both sides ==="
+
+            # Remove conflict markers — keeps content from BOTH sides
+            # This adds back the wallpaper strings while preserving current strings
+            sed -i '/^<<<<<<< HEAD$/d' app/src/main/res/values/strings.xml
+            sed -i '/^=======$/d' app/src/main/res/values/strings.xml
+            sed -i '/^>>>>>>> parent of /d' app/src/main/res/values/strings.xml
+
+            # Verify no conflict markers remain
+            if grep -q '<<<<<<<\|>>>>>>>' app/src/main/res/values/strings.xml; then
+              echo "❌ Conflict markers still present — manual resolution needed"
+              cat app/src/main/res/values/strings.xml
+              exit 1
+            fi
+
+            echo "✅ Conflict markers resolved"
+
+            # Show the resolved file
+            echo ""
+            echo "=== Resolved strings.xml ==="
+            cat app/src/main/res/values/strings.xml
+
+            # Stage and continue
+            git add app/src/main/res/values/strings.xml
+            git revert --continue --no-edit
+
+            echo ""
+            echo "✅ Revert completed with conflict resolution"
+          fi
 
       - name: Show revert result
         run: |
@@ -46,10 +80,16 @@ jobs:
           git log -1 --oneline
 
           echo ""
-          echo "=== Files restored ==="
+          echo "=== Files changed ==="
           git diff --name-only HEAD^..HEAD
+
+          echo ""
+          echo "=== Diff stat ==="
+          git diff --stat HEAD^..HEAD
 
       - name: Push branch
         run: |
           git push origin restore-wallpaper-feature --force
-          echo "Branch 'restore-wallpaper-feature' pushed successfully"
+          echo ""
+          echo "✅ Branch 'restore-wallpaper-feature' pushed successfully"
+          echo "Next step: add the build-apk.yml workflow on this branch"
