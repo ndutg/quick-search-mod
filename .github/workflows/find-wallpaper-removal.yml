@@ -1,0 +1,48 @@
+name: Find Wallpaper Removal Commit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  find-removal:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with full history and tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Show tags
+        run: |
+          git fetch --all --tags
+          echo "=== Available tags ==="
+          git tag -l | sort -V
+
+      - name: Search for READ_MEDIA_IMAGES removal
+        run: |
+          echo "=== Commits that added or removed READ_MEDIA_IMAGES ==="
+          git log --oneline -S'READ_MEDIA_IMAGES' -- app || echo "No results found"
+
+      - name: Search for wallpaper and background related changes
+        run: |
+          echo "=== Commits mentioning wallpaper/background/blur ==="
+          git log --oneline -G'wallpaper|Wallpaper|blur|Background|background' -- app || echo "No results found"
+
+      - name: Try compare between 3.4 and 3.5 tags
+        run: |
+          echo "=== Trying 3.4..3.5 ==="
+          git log --oneline 3.4..3.5 2>/dev/null || echo "Tags 3.4 / 3.5 not found"
+
+          echo ""
+          echo "=== Trying v3.4..v3.5 ==="
+          git log --oneline v3.4..v3.5 2>/dev/null || echo "Tags v3.4 / v3.5 not found"
+
+      - name: List changed files between tags
+        run: |
+          echo "=== Changed files 3.4..3.5 ==="
+          git diff --name-only 3.4..3.5 2>/dev/null || echo "Tags 3.4 / 3.5 not found"
+
+          echo ""
+          echo "=== Changed files v3.4..v3.5 ==="
+          git diff --name-only v3.4..v3.5 2>/dev/null || echo "Tags v3.4 / v3.5 not found"
