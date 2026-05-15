@@ -730,6 +730,8 @@
     <string name="widgets_picker_widget_size">%1$d x %2$d dp</string>
     <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
     <string name="widgets_picker_preview_unavailable">Preview unavailable</string>
+    <string name="wallpaper_permission_fallback_message">Couldn\u2019t fetch wallpaper with files permission. Should I try another method to fetch your wallpaper?</string>
+    <string name="wallpaper_permission_fallback_title">Wallpaper Error</string>
     <!-- ============================================================================
          Widget
          ============================================================================ -->
