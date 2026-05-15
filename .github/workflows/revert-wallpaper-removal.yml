@@ -1,0 +1,55 @@
+name: Revert Wallpaper Removal
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  revert-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Show what the compliance commit changed
+        run: |
+          echo "=== Files changed by d356bc06 ==="
+          git diff --name-only d356bc06^..d356bc06
+
+          echo ""
+          echo "=== Full diff of d356bc06 ==="
+          git diff --stat d356bc06^..d356bc06
+
+          echo ""
+          echo "=== Commit message ==="
+          git log -1 --format="%H %s%n%n%b" d356bc06
+
+      - name: Create restore branch and revert
+        run: |
+          git checkout -B restore-wallpaper-feature
+          git revert --no-edit d356bc06
+
+      - name: Show revert result
+        run: |
+          echo "=== Revert commit ==="
+          git log -1 --oneline
+
+          echo ""
+          echo "=== Files restored ==="
+          git diff --name-only HEAD^..HEAD
+
+      - name: Push branch
+        run: |
+          git push origin restore-wallpaper-feature --force
+          echo "Branch 'restore-wallpaper-feature' pushed successfully"
