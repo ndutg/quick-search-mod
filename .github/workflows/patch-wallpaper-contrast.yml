@@ -23,97 +23,54 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Inspect the current API
+      - name: Inspect and fix SettingsRouteFlows.kt
         run: |
-          echo "=== Current resolveWallpaperAccessState in WallpaperUtils.kt ==="
-          grep -A 20 "fun resolveWallpaperAccessState" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+          FILE="app/src/main/java/com/tk/quicksearch/settings/shared/settingsRoute/SettingsRouteFlows.kt"
+
+          echo "=== Lines around 115-140 ==="
+          sed -n '115,140p' "$FILE"
 
           echo ""
-          echo "=== Current WallpaperAccessState data class ==="
-          grep -A 10 "data class WallpaperAccessState" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+          echo "=== ALL remaining references to old API names ==="
+          grep -n "requiresImagePermissionAfterSecurityError\|showFallbackDialogOnSecurityError\|shouldShowFallbackDialog\|needsPermission" "$FILE"
 
           echo ""
-          echo "=== Broken references in SettingsRouteFlows.kt ==="
-          grep -n "showFallbackDialogOnSecurityError\|requiresImagePermissionAfterSecurityError\|shouldShowFallbackDialog" app/src/main/java/com/tk/quicksearch/settings/shared/settingsRoute/SettingsRouteFlows.kt
+          echo "=== Fixing: replace ALL occurrences globally ==="
+
+          # Nuclear option: replace every single occurrence in the file
+          # The previous patch renamed some but missed function parameter definitions
+          sed -i 's/requiresImagePermissionAfterSecurityError/securityError/g' "$FILE"
+          sed -i 's/showFallbackDialogOnSecurityError/securityError/g' "$FILE"
+          sed -i 's/shouldShowFallbackDialog/securityError/g' "$FILE"
+
+          # Now also fix the var declaration that was already renamed to needsPermission
+          # but should be securityError to match the data class field
+          sed -i 's/var needsPermission by remember/var securityError by remember/' "$FILE"
+          
+          # Fix any "needsPermission =" assignments that should be "securityError ="
+          # but ONLY the ones that were renamed from requiresImagePermissionAfterSecurityError
+          # We need to be careful not to rename accessState.needsPermission
+          
+          # Actually, let's check what the WallpaperAccessState data class has
+          echo ""
+          echo "=== WallpaperAccessState fields ==="
+          grep -A 8 "data class WallpaperAccessState" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
 
           echo ""
-          echo "=== Context around line 55-85 in SettingsRouteFlows.kt ==="
-          sed -n '50,90p' app/src/main/java/com/tk/quicksearch/settings/shared/settingsRoute/SettingsRouteFlows.kt
+          echo "=== After global fix ==="
+          grep -n "requiresImagePermissionAfterSecurityError\|showFallbackDialogOnSecurityError\|shouldShowFallbackDialog" "$FILE" || echo "✅ No old references remain"
 
-      - name: Fix SettingsRouteFlows.kt
-        run: |
-          python3 << 'PYEOF'
-          file_path = "app/src/main/java/com/tk/quicksearch/settings/shared/settingsRoute/SettingsRouteFlows.kt"
+          echo ""
+          echo "=== All securityError and needsPermission references ==="
+          grep -n "securityError\|needsPermission" "$FILE"
 
-          with open(file_path, "r") as f:
-              lines = f.readlines()
+          echo ""
+          echo "=== Context lines 115-140 after fix ==="
+          sed -n '115,140p' "$FILE"
 
-          new_lines = []
-          skip_until_closing = False
-          changes = 0
-
-          i = 0
-          while i < len(lines):
-              line = lines[i]
-
-              # Fix 1: Remove showFallbackDialogOnSecurityError parameter
-              if "showFallbackDialogOnSecurityError" in line:
-                  # Skip this line entirely - the parameter no longer exists
-                  print(f"✅ Removed line {i+1}: {line.strip()}")
-                  changes += 1
-                  i += 1
-                  continue
-
-              # Fix 2: Replace requiresImagePermissionAfterSecurityError references
-              if "requiresImagePermissionAfterSecurityError" in line:
-                  # This field no longer exists - replace with needsPermission or remove the condition
-                  old = line
-                  line = line.replace("requiresImagePermissionAfterSecurityError", "needsPermission")
-                  if old != line:
-                      print(f"✅ Replaced requiresImagePermissionAfterSecurityError -> needsPermission at line {i+1}")
-                      changes += 1
-
-              # Fix 3: Replace shouldShowFallbackDialog references
-              if "shouldShowFallbackDialog" in line:
-                  # This field no longer exists - replace with false or remove the condition
-                  old = line
-                  # If it's a simple boolean check, replace with false
-                  line = line.replace(".shouldShowFallbackDialog", ".needsPermission")
-                  if "shouldShowFallbackDialog" in line:
-                      line = line.replace("shouldShowFallbackDialog", "needsPermission")
-                  if old != line:
-                      print(f"✅ Replaced shouldShowFallbackDialog -> needsPermission at line {i+1}")
-                      changes += 1
-
-              new_lines.append(line)
-              i += 1
-
-          with open(file_path, "w") as f:
-              f.writelines(new_lines)
-
-          print(f"\n✅ Made {changes} fixes to SettingsRouteFlows.kt")
-
-          # Verify no broken references remain
-          with open(file_path, "r") as f:
-              content = f.read()
-
-          remaining = []
-          for kw in ["showFallbackDialogOnSecurityError", "requiresImagePermissionAfterSecurityError", "shouldShowFallbackDialog"]:
-              if kw in content:
-                  remaining.append(kw)
-
-          if remaining:
-              print(f"⚠️ Still found: {remaining}")
-          else:
-              print("✅ All broken references removed")
-
-          # Show the fixed area
-          with open(file_path, "r") as f:
-              fixed_lines = f.readlines()
-          print("\n=== Fixed area (lines 50-85) ===")
-          for j in range(min(49, len(fixed_lines)), min(85, len(fixed_lines))):
-              print(f"  {j+1}: {fixed_lines[j].rstrip()}")
-          PYEOF
+          echo ""
+          echo "=== Context lines 45-80 after fix ==="
+          sed -n '45,80p' "$FILE"
 
       - name: Commit and push
         run: |
@@ -123,7 +80,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "fix: update SettingsRouteFlows to match upstream WallpaperAccessState API changes"
+            git commit -m "fix: align all SettingsRouteFlows references with upstream WallpaperAccessState API"
             git push origin restore-wallpaper-feature
             echo "✅ Changes pushed — build will auto-trigger"
           fi
