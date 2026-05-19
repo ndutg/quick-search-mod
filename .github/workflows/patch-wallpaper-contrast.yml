@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout restore-wallpaper-feature
+      - name: Checkout restore-wallpaper-feature with full history
         uses: actions/checkout@v4
         with:
           ref: restore-wallpaper-feature
@@ -23,54 +23,22 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Inspect and fix SettingsRouteFlows.kt
+      - name: Replace SettingsRouteFlows.kt with upstream version
         run: |
           FILE="app/src/main/java/com/tk/quicksearch/settings/shared/settingsRoute/SettingsRouteFlows.kt"
 
-          echo "=== Lines around 115-140 ==="
-          sed -n '115,140p' "$FILE"
+          echo "=== Restoring upstream version of SettingsRouteFlows.kt ==="
+          git checkout origin/main -- "$FILE"
+
+          echo "✅ Replaced with upstream version"
 
           echo ""
-          echo "=== ALL remaining references to old API names ==="
-          grep -n "requiresImagePermissionAfterSecurityError\|showFallbackDialogOnSecurityError\|shouldShowFallbackDialog\|needsPermission" "$FILE"
+          echo "=== Verify no broken references ==="
+          grep -n "requiresImagePermissionAfterSecurityError\|showFallbackDialogOnSecurityError\|shouldShowFallbackDialog" "$FILE" || echo "✅ No old API references"
 
           echo ""
-          echo "=== Fixing: replace ALL occurrences globally ==="
-
-          # Nuclear option: replace every single occurrence in the file
-          # The previous patch renamed some but missed function parameter definitions
-          sed -i 's/requiresImagePermissionAfterSecurityError/securityError/g' "$FILE"
-          sed -i 's/showFallbackDialogOnSecurityError/securityError/g' "$FILE"
-          sed -i 's/shouldShowFallbackDialog/securityError/g' "$FILE"
-
-          # Now also fix the var declaration that was already renamed to needsPermission
-          # but should be securityError to match the data class field
-          sed -i 's/var needsPermission by remember/var securityError by remember/' "$FILE"
-          
-          # Fix any "needsPermission =" assignments that should be "securityError ="
-          # but ONLY the ones that were renamed from requiresImagePermissionAfterSecurityError
-          # We need to be careful not to rename accessState.needsPermission
-          
-          # Actually, let's check what the WallpaperAccessState data class has
-          echo ""
-          echo "=== WallpaperAccessState fields ==="
-          grep -A 8 "data class WallpaperAccessState" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
-
-          echo ""
-          echo "=== After global fix ==="
-          grep -n "requiresImagePermissionAfterSecurityError\|showFallbackDialogOnSecurityError\|shouldShowFallbackDialog" "$FILE" || echo "✅ No old references remain"
-
-          echo ""
-          echo "=== All securityError and needsPermission references ==="
-          grep -n "securityError\|needsPermission" "$FILE"
-
-          echo ""
-          echo "=== Context lines 115-140 after fix ==="
-          sed -n '115,140p' "$FILE"
-
-          echo ""
-          echo "=== Context lines 45-80 after fix ==="
-          sed -n '45,80p' "$FILE"
+          echo "=== Verify file compiles context ==="
+          grep -n "resolveWallpaperAccessState\|WallpaperAccessState\|securityError\|needsPermission" "$FILE" | head -20
 
       - name: Commit and push
         run: |
@@ -80,7 +48,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "fix: align all SettingsRouteFlows references with upstream WallpaperAccessState API"
+            git commit -m "fix: replace SettingsRouteFlows.kt with upstream version to fix API mismatch"
             git push origin restore-wallpaper-feature
             echo "✅ Changes pushed — build will auto-trigger"
           fi
