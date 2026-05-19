@@ -141,14 +141,17 @@ internal fun SearchScreenBackground(
                         wallpaperModifier
                             .blur(radius = effectiveBlurRadius.dp)
                             
-          // Scrim overlay for text readability over wallpaper
-          Box(
-              modifier = Modifier
-                  .fillMaxSize()
-                  .background(Color.Black.copy(alpha = 0.35f))
-          ).graphicsLayer(alpha = wallpaperLayerAlpha),
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.TopCenter,
+                )
+
+                // Dark scrim for text readability over any wallpaper
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f))
+                            .graphicsLayer(alpha = wallpaperLayerAlpha),
                 )
 
                 // Tint overlay (dark mode: darken, light mode: lighten)
