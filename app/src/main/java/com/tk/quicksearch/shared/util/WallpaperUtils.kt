@@ -178,6 +178,7 @@ object WallpaperUtils {
         cachedBitmap = null
         cachedSystemWallpaperId = null
         cachedWallpaperAppearance = null
+        WallpaperContrastUtils.invalidateWallpaperLightnessCache()
         cachedWallpaperIsLight = null
     }
 
@@ -187,6 +188,7 @@ object WallpaperUtils {
         cachedOverlayCustomBitmap = null
         cachedOverlayCustomAppearanceUri = null
         cachedOverlayCustomAppearance = null
+        WallpaperContrastUtils.clearAll()
         cachedOverlayCustomIsLightUri = null
         cachedOverlayCustomIsLight = null
     }
@@ -296,6 +298,7 @@ object WallpaperUtils {
         if (cachedOverlayCustomUri != normalized) {
             cachedOverlayCustomAppearanceUri = null
             cachedOverlayCustomAppearance = null
+        WallpaperContrastUtils.clearAll()
         }
         cachedOverlayCustomUri = normalized
         cachedOverlayCustomBitmap = bitmap
@@ -418,6 +421,7 @@ object WallpaperUtils {
                         if (cachedOverlayCustomUri != normalizedUri) {
                             cachedOverlayCustomAppearanceUri = null
                             cachedOverlayCustomAppearance = null
+        WallpaperContrastUtils.clearAll()
                         }
                         cachedOverlayCustomUri = normalizedUri
                         cachedOverlayCustomBitmap = decoded
