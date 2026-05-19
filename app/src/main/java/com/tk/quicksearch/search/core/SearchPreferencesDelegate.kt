@@ -491,8 +491,33 @@ internal class SearchPreferencesDelegate(
             if (stateAccess.deviceThemeEnabled == enabled) return@launch
             userPreferences.setDeviceThemeEnabled(enabled)
             stateAccess.deviceThemeEnabled = enabled
-            updateConfigState { it.copy(deviceThemeEnabled = enabled) }
-            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+            val shouldSwitchFromCustomToWallpaper =
+                enabled && stateAccess.backgroundSource == BackgroundSource.CUSTOM_IMAGE
+            if (shouldSwitchFromCustomToWallpaper) {
+                userPreferences.setBackgroundSource(BackgroundSource.SYSTEM_WALLPAPER)
+                stateAccess.backgroundSource = BackgroundSource.SYSTEM_WALLPAPER
+            }
+            updateConfigState {
+                it.copy(
+                    deviceThemeEnabled = enabled,
+                    backgroundSource =
+                        if (shouldSwitchFromCustomToWallpaper) {
+                            BackgroundSource.SYSTEM_WALLPAPER
+                        } else {
+                            it.backgroundSource
+                        },
+                    showWallpaperBackground =
+                        if (shouldSwitchFromCustomToWallpaper) {
+                            true
+                        } else {
+                            it.showWallpaperBackground
+                        },
+                )
+            }
+            stateAccess.saveStartupSurfaceSnapshotAsync(
+                forcePreviewRefresh = shouldSwitchFromCustomToWallpaper,
+                allowDuringQuery = true,
+            )
         }
     }
 
