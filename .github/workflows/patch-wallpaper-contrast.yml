@@ -25,110 +25,111 @@ jobs:
 
       - name: Fix SearchScreenBackground.kt
         run: |
-          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
-
           python3 << 'PYEOF'
           file_path = "app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
 
           with open(file_path, "r") as f:
-              content = f.read()
+              lines = f.readlines()
 
-          # Step 1: Remove the broken scrim that was inserted inside Image()
-          # The broken insertion put the scrim between .blur() and .graphicsLayer()
-          # We need to restore the original Image() call
+          new_lines = []
+          skip_scrim_block = False
+          scrim_lines_removed = 0
+          scrim_inserted = False
 
-          # Remove the broken scrim block
-          broken_scrim = """
-                    // Scrim overlay for text readability over wallpaper
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.35f))
-                    )"""
+          i = 0
+          while i < len(lines):
+              line = lines[i]
+              stripped = line.strip()
 
-          if broken_scrim in content:
-              content = content.replace(broken_scrim, "")
-              print("✅ Removed broken scrim insertion from inside Image()")
-          else:
-              # Try alternate whitespace patterns
-              import re
-              content = re.sub(
-                  r'\s*// Scrim overlay for text readability over wallpaper\s*'
-                  r'Box\(\s*modifier\s*=\s*Modifier\s*'
-                  r'\.fillMaxSize\(\)\s*'
-                  r'\.background\(Color\.Black\.copy\(alpha\s*=\s*0\.35f\)\)\s*\)',
-                  '',
-                  content
-              )
-              print("✅ Removed broken scrim insertion (regex)")
+              # Remove any previously broken scrim block
+              if "// Scrim overlay for text readability" in line or "// Dark scrim for text readability" in line:
+                  skip_scrim_block = True
+                  scrim_lines_removed += 1
+                  i += 1
+                  continue
 
-          # Step 2: Add a proper scrim Box AFTER the existing tint overlay Box
-          # The existing code has:
-          #   // Tint overlay (dark mode: darken, light mode: lighten)
-          #   Box(modifier = Modifier.fillMaxSize().background(AppColors.WallpaperOverlayTint...))
-          #
-          # We add our scrim BEFORE the tint overlay, AFTER the Image()
+              if skip_scrim_block:
+                  # Skip lines that are part of the scrim Box() block
+                  if stripped in ["Box(", "modifier = Modifier", ".fillMaxSize()", ")", ""] or \
+                     ".background(Color.Black.copy" in stripped or \
+                     ".graphicsLayer(alpha = wallpaperLayerAlpha)," in stripped or \
+                     "modifier =" == stripped:
+                      scrim_lines_removed += 1
+                      i += 1
+                      # End the skip when we hit the closing )
+                      if stripped == ")":
+                          skip_scrim_block = False
+                      continue
+                  else:
+                      skip_scrim_block = False
 
-          scrim_block = """
-                    // Dark scrim for text readability over any wallpaper
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.3f))
-                                .graphicsLayer(alpha = wallpaperLayerAlpha),
-                    )
-          """
+              # Insert scrim BEFORE the tint overlay comment
+              if "Tint overlay" in line and "dark mode" in line and not scrim_inserted:
+                  # Detect the indentation from the tint overlay line
+                  indent = line[:len(line) - len(line.lstrip())]
 
-          if "// Dark scrim for text readability" not in content:
-              # Insert before the existing tint overlay
-              content = content.replace(
-                  "                    // Tint overlay (dark mode: darken, light mode: lighten)",
-                  scrim_block.rstrip() + "\n\n                    // Tint overlay (dark mode: darken, light mode: lighten)"
-              )
-              print("✅ Added scrim Box before tint overlay")
-          else:
-              print("ℹ️ Scrim already present")
+                  new_lines.append(f"{indent}// Dark scrim for text readability over any wallpaper\n")
+                  new_lines.append(f"{indent}Box(\n")
+                  new_lines.append(f"{indent}    modifier =\n")
+                  new_lines.append(f"{indent}        Modifier\n")
+                  new_lines.append(f"{indent}            .fillMaxSize()\n")
+                  new_lines.append(f"{indent}            .background(Color.Black.copy(alpha = 0.3f))\n")
+                  new_lines.append(f"{indent}            .graphicsLayer(alpha = wallpaperLayerAlpha),\n")
+                  new_lines.append(f"{indent})\n")
+                  new_lines.append(f"\n")
+                  scrim_inserted = True
+                  print(f"✅ Inserted scrim at line {len(new_lines)} with indent='{indent}'")
 
-          # Step 3: Remove unused Color import if we added it to wrong file earlier
-          # (SearchScreenWallpaper.kt)
+              new_lines.append(line)
+              i += 1
+
+          # Ensure Color import exists
+          has_color_import = any("import androidx.compose.ui.graphics.Color" in l for l in new_lines)
+          if not has_color_import:
+              for i, line in enumerate(new_lines):
+                  if "import androidx.compose.ui.graphics.ImageBitmap" in line:
+                      new_lines.insert(i + 1, "import androidx.compose.ui.graphics.Color\n")
+                      print("✅ Added Color import")
+                      break
+
           with open(file_path, "w") as f:
-              f.write(content)
+              f.writelines(new_lines)
 
-          # Verify the Image() call is intact
-          if "bitmap = bitmap," in content and ".graphicsLayer(alpha = wallpaperLayerAlpha)," in content:
-              print("✅ Image() composable is intact")
+          if scrim_lines_removed > 0:
+              print(f"✅ Removed {scrim_lines_removed} broken scrim lines")
+          if scrim_inserted:
+              print("✅ Scrim properly inserted before tint overlay")
           else:
-              print("⚠️ Image() composable may be broken — check manually")
+              print("⚠️ Could not find tint overlay comment to insert scrim")
 
-          # Show context around the scrim
-          lines = content.split("\n")
-          for i, line in enumerate(lines):
-              if "Dark scrim for text readability" in line:
-                  start = max(0, i - 3)
-                  end = min(len(lines), i + 15)
+          # Verify
+          with open(file_path, "r") as f:
+              final = f.read()
+
+          if "Dark scrim for text readability" in final:
+              print("✅ VERIFIED: Scrim text found in final file")
+          else:
+              print("❌ FAILED: Scrim text NOT found")
+
+          if "bitmap = bitmap," in final and "contentScale = ContentScale.Crop" in final:
+              print("✅ VERIFIED: Image() composable intact")
+          else:
+              print("⚠️ Image() composable may be broken")
+
+          # Show context
+          final_lines = final.split("\n")
+          for i, line in enumerate(final_lines):
+              if "Dark scrim" in line:
+                  start = max(0, i - 5)
+                  end = min(len(final_lines), i + 15)
                   print("\n=== Context around scrim ===")
                   for j in range(start, end):
-                      print(f"  {j+1}: {lines[j]}")
+                      marker = ">>>" if j == i else "   "
+                      print(f"{marker} {j+1}: {final_lines[j]}")
                   break
 
-          print("\n✅ SearchScreenBackground.kt fixed and saved")
+          print("\n✅ Done")
           PYEOF
-
-      - name: Verify final file compiles correctly
-        run: |
-          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
-
-          echo "=== Checking Image() is complete ==="
-          grep -A8 "Image(" "$FILE" | head -12
-
-          echo ""
-          echo "=== Checking scrim is in right place ==="
-          grep -B2 -A8 "Dark scrim" "$FILE"
-
-          echo ""
-          echo "=== Checking tint overlay is intact ==="
-          grep -B2 -A6 "Tint overlay" "$FILE"
 
       - name: Commit and push
         run: |
@@ -138,7 +139,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "fix: correct scrim placement - add before tint overlay, not inside Image()"
+            git commit -m "fix: proper scrim overlay between wallpaper Image and tint overlay"
             git push origin restore-wallpaper-feature
             echo "✅ Changes pushed — build will auto-trigger"
           fi
