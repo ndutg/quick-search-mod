@@ -1,0 +1,82 @@
+name: Find UI Files for Wallpaper Text
+
+on:
+  workflow_dispatch:
+
+jobs:
+  find:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+
+      - name: Find files that use WallpaperUtils
+        run: |
+          echo "=== Files that import or reference WallpaperUtils ==="
+          grep -rn "WallpaperUtils\|WallpaperContrastUtils" \
+            app/src/main/java/com/tk/quicksearch/ \
+            --include="*.kt" -l
+          echo ""
+
+      - name: Find files that reference background bitmap or wallpaper bitmap
+        run: |
+          echo "=== Files referencing wallpaper/background bitmap rendering ==="
+          grep -rn "wallpaperBitmap\|backgroundBitmap\|imageBitmap\|ImageBitmap\|backgroundSource\|BackgroundSource\|imageBackground" \
+            app/src/main/java/com/tk/quicksearch/ \
+            --include="*.kt" -l
+          echo ""
+
+      - name: Find files with text color over background
+        run: |
+          echo "=== Files with text color / content color logic ==="
+          grep -rn "contentColor\|textColor\|onBackground\|onSurface\|Color\.White\|Color\.Black" \
+            app/src/main/java/com/tk/quicksearch/ \
+            --include="*.kt" -l | head -30
+          echo ""
+
+      - name: Find the main search screen composable
+        run: |
+          echo "=== Likely search screen files ==="
+          find app/src/main/java/com/tk/quicksearch/ -name "*.kt" | \
+            xargs grep -l -i "SearchScreen\|SearchLayout\|SearchBar\|MainScreen\|HomeScreen" | head -20
+          echo ""
+
+      - name: Find files combining wallpaper + text rendering
+        run: |
+          echo "=== Files that reference BOTH wallpaper AND color ==="
+          for f in $(grep -rl "WallpaperUtils\|backgroundSource\|BackgroundSource" \
+            app/src/main/java/com/tk/quicksearch/ --include="*.kt"); do
+            if grep -q "Color\.\|contentColor\|textColor\|onBackground" "$f"; then
+              echo "$f"
+            fi
+          done
+          echo ""
+
+      - name: Upload key UI files as artifacts
+        run: |
+          mkdir -p /tmp/ui-dump
+
+          # Copy files that reference both wallpaper AND colors
+          for f in $(grep -rl "WallpaperUtils\|backgroundSource\|BackgroundSource" \
+            app/src/main/java/com/tk/quicksearch/ --include="*.kt"); do
+            if grep -q "Color\.\|contentColor\|textColor\|onBackground" "$f"; then
+              cp "$f" /tmp/ui-dump/
+            fi
+          done
+
+          # Also grab AppColors and Theme files
+          find app/src/main/java/com/tk/quicksearch/ \
+            \( -name "*AppColor*" -o -name "*Theme*" -o -name "*DesignToken*" \) \
+            -exec cp {} /tmp/ui-dump/ \;
+
+          echo "=== Files collected for upload ==="
+          ls -la /tmp/ui-dump/
+
+      - name: Upload UI files
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-files-for-contrast
+          path: /tmp/ui-dump/
