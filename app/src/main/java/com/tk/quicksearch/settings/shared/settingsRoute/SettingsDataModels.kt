@@ -3,6 +3,7 @@ package com.tk.quicksearch.settings.shared
 import com.tk.quicksearch.search.core.CustomTool
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.CallingApp
@@ -94,6 +95,7 @@ data class SettingsScreenState(
     val customTools: List<CustomTool> = emptyList(),
     val disabledCustomToolIds: Set<String> = emptySet(),
     val appSuggestionsEnabled: Boolean,
+    val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
     val webSuggestionsEnabled: Boolean,
     val webSuggestionsCount: Int,
     val topResultIndicatorEnabled: Boolean,
@@ -109,6 +111,7 @@ data class SettingsScreenState(
     val hasApiKey: Boolean = false,
     val geminiApiKeyLast4: String? = null,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
+    val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
     val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
     val isSavingGeminiApiKey: Boolean = false,
     val personalContext: String = "",
@@ -129,6 +132,7 @@ data class SettingsScreenState(
                 excludedAppShortcuts = excludedAppShortcuts,
                 disabledSections = disabledSections,
                 appSuggestionsEnabled = appSuggestionsEnabled,
+                enabledAppSuggestionTabs = enabledAppSuggestionTabs,
                 webSuggestionsEnabled = webSuggestionsEnabled,
                 webSuggestionsCount = webSuggestionsCount,
                 topResultIndicatorEnabled = topResultIndicatorEnabled,
@@ -154,6 +158,7 @@ data class SettingsScreenState(
                 hasApiKey = hasApiKey,
                 geminiApiKeyLast4 = geminiApiKeyLast4,
                 llmApiKeyLast4ByProvider = llmApiKeyLast4ByProvider,
+                customLlmBaseUrlByProvider = customLlmBaseUrlByProvider,
                 aiSearchLlmProviderId = aiSearchLlmProviderId,
                 isSavingGeminiApiKey = isSavingGeminiApiKey,
                 personalContext = personalContext,
@@ -306,8 +311,8 @@ data class SettingsScreenCallbacks(
     val onToggleCurrencyConverter: (Boolean) -> Unit,
     val onToggleWordClock: (Boolean) -> Unit,
     val onToggleDictionary: (Boolean) -> Unit,
-    val onAddCustomTool: (name: String, prompt: String, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean) -> Unit,
-    val onUpdateCustomTool: (id: String, name: String, prompt: String, modelId: String, groundingEnabled: Boolean, thinkingEnabled: Boolean) -> Unit,
+    val onAddCustomTool: (name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean) -> Unit,
+    val onUpdateCustomTool: (id: String, name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, thinkingEnabled: Boolean) -> Unit,
     val onDeleteCustomTool: (String) -> Unit,
     val onToggleCustomTool: (String, Boolean) -> Unit,
     val onToggleAppSuggestions: (Boolean) -> Unit,
@@ -325,7 +330,7 @@ data class SettingsScreenCallbacks(
     val onSetPersonalContext: (String?) -> Unit,
     val onSetGeminiModel: (String?) -> Unit,
     val onSetLlmModel: (AiSearchLlmProviderId, String?) -> Unit,
-    val onSetAiToolModel: (AiBackedToolConfigId, String) -> Unit,
+    val onSetAiToolSettings: (AiBackedToolConfigId, AiSearchLlmProviderId, String, Boolean, Boolean) -> Unit,
     val onSetGeminiGroundingEnabled: (Boolean) -> Unit,
     val onSetGeminiThinkingEnabled: (Boolean) -> Unit,
     val onRefreshAvailableGeminiModels: () -> Unit,
@@ -459,6 +464,7 @@ data class SearchResultsSettingsState(
     val excludedAppShortcuts: List<StaticShortcut>,
     val disabledSections: Set<SearchSection>,
     val appSuggestionsEnabled: Boolean,
+    val enabledAppSuggestionTabs: Set<AppSuggestionTabType>,
     val webSuggestionsEnabled: Boolean,
     val webSuggestionsCount: Int,
     val topResultIndicatorEnabled: Boolean,
@@ -482,6 +488,7 @@ data class SearchEngineSettingsState(
     val hasApiKey: Boolean,
     val geminiApiKeyLast4: String?,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String>,
+    val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String>,
     val aiSearchLlmProviderId: AiSearchLlmProviderId,
     val isSavingGeminiApiKey: Boolean,
     val personalContext: String,

@@ -388,11 +388,15 @@ internal class SearchDerivedStateDelegate(
         exclusion: Set<String>,
     ): List<AppInfo> {
         if (apps.isEmpty() || pinnedPackages.isEmpty()) return emptyList()
+        val pinnedOrder = userPreferences.getPinnedPackageOrder().withIndex().associate { it.value to it.index }
 
         return apps
             .asSequence()
             .filter { pinnedPackages.contains(it.launchCountKey()) && !exclusion.contains(it.launchCountKey()) }
-            .sortedBy { it.appName.lowercase(Locale.getDefault()) }
+            .sortedWith(
+                compareBy<AppInfo> { pinnedOrder[it.launchCountKey()] ?: Int.MAX_VALUE }
+                    .thenBy { it.appName.lowercase(Locale.getDefault()) },
+            )
             .toList()
     }
 

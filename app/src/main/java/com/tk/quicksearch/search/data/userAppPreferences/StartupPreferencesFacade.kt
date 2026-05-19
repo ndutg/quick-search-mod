@@ -54,6 +54,7 @@ class StartupPreferencesFacade(
             val searchHistoryEnabled: Boolean,
             val appSuggestionsEnabled: Boolean,
             val selectedAppSuggestionTab: AppSuggestionTabType,
+            val enabledAppSuggestionTabs: Set<AppSuggestionTabType>,
             val showAppLabels: Boolean,
             val appIconShape: AppIconShape,
             val launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT,
@@ -396,6 +397,13 @@ class StartupPreferencesFacade(
                                     runCatching { AppSuggestionTabType.valueOf(value) }.getOrNull()
                                 }
                                 ?: AppSuggestionTabType.RECENTS,
+                enabledAppSuggestionTabs =
+                        AppSuggestionTabType.parseEnabledTabs(
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_ENABLED_APP_SUGGESTION_TABS,
+                                ] as? Set<*>,
+                        ),
                 showAppLabels =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -775,6 +783,13 @@ class StartupPreferencesFacade(
                                             runCatching { AppSuggestionTabType.valueOf(value) }.getOrNull()
                                         }
                                         ?: AppSuggestionTabType.RECENTS,
+                        enabledAppSuggestionTabs =
+                                AppSuggestionTabType.parseEnabledTabs(
+                                        allPrefs[
+                                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                        .KEY_ENABLED_APP_SUGGESTION_TABS,
+                                        ] as? Set<*>,
+                                ),
                         showAppLabels =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences

@@ -1,0 +1,114 @@
+name: Sync Feature Branch with Upstream
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch latest main
+        run: |
+          git fetch origin main
+          echo "=== Latest main commit ==="
+          git log -1 --oneline origin/main
+
+          echo ""
+          echo "=== Latest restore-wallpaper-feature commit ==="
+          git log -1 --oneline
+
+          echo ""
+          echo "=== Commits on main not in feature branch ==="
+          git log --oneline restore-wallpaper-feature..origin/main | head -20
+
+      - name: Create test merge branch
+        run: |
+          git checkout -B test-merge-upstream
+          echo "✅ Created test-merge-upstream from restore-wallpaper-feature"
+
+      - name: Attempt merge
+        id: merge
+        run: |
+          echo "=== Attempting merge of origin/main into test branch ==="
+          if git merge origin/main --no-edit; then
+            echo "merge_result=clean" >> $GITHUB_OUTPUT
+            echo "✅ Merge completed cleanly — no conflicts"
+
+            echo ""
+            echo "=== Files changed by merge ==="
+            git diff --stat HEAD~1..HEAD
+
+            echo ""
+            echo "=== Our custom files still intact? ==="
+            echo -n "WallpaperContrastUtils.kt: "
+            [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "✅" || echo "❌"
+
+            echo -n "Dark scrim in SearchScreenBackground.kt: "
+            grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "✅" || echo "❌"
+
+            echo -n "White label fix in AppGridView.kt: "
+            grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "✅" || echo "❌"
+
+            echo -n "READ_MEDIA_IMAGES in manifest: "
+            grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "✅" || echo "❌"
+
+            echo -n "LocalWallpaperIsLight in Theme.kt: "
+            grep -q "LocalWallpaperIsLight" app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "✅" || echo "❌"
+          else
+            echo "merge_result=conflict" >> $GITHUB_OUTPUT
+            echo "⚠️ Merge has conflicts"
+
+            echo ""
+            echo "=== Conflicted files ==="
+            git diff --name-only --diff-filter=U
+
+            echo ""
+            echo "=== Conflict details ==="
+            git diff --name-only --diff-filter=U | while read f; do
+              echo "--- $f ---"
+              grep -n "<<<<<<" "$f" || true
+            done
+
+            git merge --abort
+            echo ""
+            echo "Merge aborted — restore-wallpaper-feature is safe"
+          fi
+
+      - name: Apply clean merge to feature branch
+        if: steps.merge.outputs.merge_result == 'clean'
+        run: |
+          git checkout restore-wallpaper-feature
+          git merge origin/main --no-edit
+          git push origin restore-wallpaper-feature
+          echo ""
+          echo "✅ restore-wallpaper-feature is now up to date with main"
+          echo "This will auto-trigger the APK build workflow"
+
+      - name: Report conflict (do not apply)
+        if: steps.merge.outputs.merge_result == 'conflict'
+        run: |
+          echo "========================================="
+          echo "⚠️ MERGE HAS CONFLICTS"
+          echo ""
+          echo "Your restore-wallpaper-feature branch is SAFE — nothing was changed."
+          echo "The conflicted files are listed above."
+          echo ""
+          echo "To resolve: open a GitHub Codespace, manually fix the conflicts,"
+          echo "then commit and push."
+          echo "========================================="

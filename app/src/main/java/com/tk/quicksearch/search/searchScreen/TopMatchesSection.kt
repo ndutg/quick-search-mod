@@ -580,8 +580,10 @@ private fun TopMatchAppRow(
                     .topPredictedRowContainer(isTopPredicted = isPredicted)
                     .combinedClickable(
                         onClick = {
-                            hapticConfirm(view)()
-                            params.onAppClick(app)
+                            if (!showOptions) {
+                                hapticConfirm(view)()
+                                params.onAppClick(app)
+                            }
                         },
                         onLongClick = { showOptions = true },
                     )
@@ -626,6 +628,9 @@ private fun TopMatchAppRow(
             hasNickname = !params.getAppNickname(app.packageName).isNullOrBlank(),
             hasTrigger = params.getAppTrigger(app.packageName)?.word?.isNotBlank() == true,
             shortcuts = shortcuts,
+            appInfo = app,
+            iconPackPackage = params.iconPackPackage,
+            appIconShape = params.appIconShape,
             onShortcutClick = { shortcut -> launchStaticShortcut(context, shortcut) },
             onAppInfoClick = { params.onAppInfoClick(app) },
             onHideApp = { params.onHideApp(app) },

@@ -443,6 +443,7 @@ abstract class BasePreferences(
         const val KEY_HIDDEN_SUGGESTIONS = "hidden_packages_suggestions"
         const val KEY_HIDDEN_RESULTS = "hidden_packages_results"
         const val KEY_PINNED = "pinned_packages"
+        const val KEY_PINNED_APP_ORDER = "pinned_app_order"
         const val KEY_RECENT_APP_LAUNCHES = "recent_app_launches"
 
         // Contact preferences keys

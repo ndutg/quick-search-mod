@@ -82,6 +82,11 @@ class UserAppPreferences(
 
     fun getPinnedPackages(): Set<String> = appPreferences.getPinnedPackages()
 
+    fun getPinnedPackageOrder(): List<String> = appPreferences.getPinnedPackageOrder()
+
+    fun setPinnedPackageOrder(packageNames: List<String>): List<String> =
+            appPreferences.setPinnedPackageOrder(packageNames)
+
     fun hidePackageInSuggestions(packageName: String): Set<String> =
             appPreferences.hidePackageInSuggestions(packageName)
 
@@ -849,6 +854,11 @@ class UserAppPreferences(
             }
         }.toMap()
 
+    fun getCustomLlmBaseUrlByProvider(): Map<AiSearchLlmProviderId, String> =
+        customLlmProviderPreferences.getProviders().associate { provider ->
+            AiSearchLlmProviderId.custom(provider.id) to provider.baseUrl
+        }
+
     fun getConfiguredLlmProviderIds(): List<AiSearchLlmProviderId> =
         AiSearchLlmProviderId.entries +
             customLlmProviderPreferences.getProviders().map { AiSearchLlmProviderId.custom(it.id) }
@@ -1128,6 +1138,12 @@ class UserAppPreferences(
     fun setSelectedAppSuggestionTab(tab: AppSuggestionTabType) =
             uiPreferences.setSelectedAppSuggestionTab(tab)
 
+    fun getEnabledAppSuggestionTabs(): Set<AppSuggestionTabType> =
+            uiPreferences.getEnabledAppSuggestionTabs()
+
+    fun setEnabledAppSuggestionTabs(tabs: Set<AppSuggestionTabType>) =
+            uiPreferences.setEnabledAppSuggestionTabs(tabs)
+
     fun shouldShowAppLabels(): Boolean = uiPreferences.shouldShowAppLabels()
 
     fun setShowAppLabels(show: Boolean) = uiPreferences.setShowAppLabels(show)
@@ -1176,12 +1192,46 @@ class UserAppPreferences(
 
     fun getCurrencyConverterModel(): String = uiPreferences.getCurrencyConverterModel()
     fun setCurrencyConverterModel(modelId: String) = uiPreferences.setCurrencyConverterModel(modelId)
+    fun getCurrencyConverterProviderId(): AiSearchLlmProviderId =
+        uiPreferences.getCurrencyConverterProviderId()
+    fun setCurrencyConverterProviderId(providerId: AiSearchLlmProviderId) =
+        uiPreferences.setCurrencyConverterProviderId(providerId)
+    fun isCurrencyConverterGroundingEnabled(): Boolean =
+        uiPreferences.isCurrencyConverterGroundingEnabled()
+    fun setCurrencyConverterGroundingEnabled(enabled: Boolean) =
+        uiPreferences.setCurrencyConverterGroundingEnabled(enabled)
+    fun isCurrencyConverterThinkingEnabled(): Boolean =
+        uiPreferences.isCurrencyConverterThinkingEnabled()
+    fun setCurrencyConverterThinkingEnabled(enabled: Boolean) =
+        uiPreferences.setCurrencyConverterThinkingEnabled(enabled)
 
     fun getWordClockModel(): String = uiPreferences.getWordClockModel()
     fun setWordClockModel(modelId: String) = uiPreferences.setWordClockModel(modelId)
+    fun getWordClockProviderId(): AiSearchLlmProviderId = uiPreferences.getWordClockProviderId()
+    fun setWordClockProviderId(providerId: AiSearchLlmProviderId) =
+        uiPreferences.setWordClockProviderId(providerId)
+    fun isWordClockGroundingEnabled(): Boolean =
+        uiPreferences.isWordClockGroundingEnabled()
+    fun setWordClockGroundingEnabled(enabled: Boolean) =
+        uiPreferences.setWordClockGroundingEnabled(enabled)
+    fun isWordClockThinkingEnabled(): Boolean =
+        uiPreferences.isWordClockThinkingEnabled()
+    fun setWordClockThinkingEnabled(enabled: Boolean) =
+        uiPreferences.setWordClockThinkingEnabled(enabled)
 
     fun getDictionaryModel(): String = uiPreferences.getDictionaryModel()
     fun setDictionaryModel(modelId: String) = uiPreferences.setDictionaryModel(modelId)
+    fun getDictionaryProviderId(): AiSearchLlmProviderId = uiPreferences.getDictionaryProviderId()
+    fun setDictionaryProviderId(providerId: AiSearchLlmProviderId) =
+        uiPreferences.setDictionaryProviderId(providerId)
+    fun isDictionaryGroundingEnabled(): Boolean =
+        uiPreferences.isDictionaryGroundingEnabled()
+    fun setDictionaryGroundingEnabled(enabled: Boolean) =
+        uiPreferences.setDictionaryGroundingEnabled(enabled)
+    fun isDictionaryThinkingEnabled(): Boolean =
+        uiPreferences.isDictionaryThinkingEnabled()
+    fun setDictionaryThinkingEnabled(enabled: Boolean) =
+        uiPreferences.setDictionaryThinkingEnabled(enabled)
 
     // ============================================================================
     // Recent Queries Preferences

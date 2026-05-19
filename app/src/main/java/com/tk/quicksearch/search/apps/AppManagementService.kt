@@ -60,6 +60,13 @@ class AppManagementService(
 
     fun unpinApp(appInfo: AppInfo) = unpinItem(appInfo)
 
+    fun reorderPinnedApps(apps: List<AppInfo>) {
+        scope.launch {
+            userPreferences.setPinnedPackageOrder(apps.map { it.launchCountKey() })
+            onStateChanged()
+        }
+    }
+
     fun unhideAppFromSuggestions(appInfo: AppInfo) = removeExcludedItem(appInfo)
 
     fun setAppNickname(

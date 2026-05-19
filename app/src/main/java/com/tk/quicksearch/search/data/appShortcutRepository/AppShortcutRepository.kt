@@ -16,6 +16,7 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.resolveSearchTargetS
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.data.AppShortcutRepository.filterShortcuts
 import com.tk.quicksearch.search.data.AppShortcutRepository.loadShortcutsFromSystem
+import com.tk.quicksearch.search.data.AppShortcutRepository.loadShortcutsViaLauncherApps
 import com.tk.quicksearch.search.data.AppShortcutRepository.mergeAndSortShortcuts
 import com.tk.quicksearch.search.data.AppShortcutRepository.parseCustomShortcutFromPickerResult
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +54,19 @@ class AppShortcutRepository(
 
     suspend fun loadStaticShortcuts(): List<StaticShortcut> =
         withContext(Dispatchers.IO) {
-            val systemShortcuts = loadShortcutsFromSystem(context, packageManager)
+            val systemShortcuts =
+                if (USE_LAUNCHER_APPS_API_FOR_SHORTCUTS) {
+                    val viaLauncherApps = loadShortcutsViaLauncherApps(context, packageManager)
+                    // If the launcher role hasn't been granted yet (returns empty),
+                    // fall back to the legacy XML parser so we don't silently lose shortcuts.
+                    if (viaLauncherApps.isNotEmpty()) {
+                        viaLauncherApps
+                    } else {
+                        loadShortcutsFromSystem(context, packageManager)
+                    }
+                } else {
+                    loadShortcutsFromSystem(context, packageManager)
+                }
             shortcutCache.saveShortcuts(systemShortcuts)
             val customShortcuts = shortcutCache.loadCustomShortcuts().orEmpty()
             val merged =
@@ -232,6 +245,20 @@ class AppShortcutRepository(
 
     private companion object {
         const val CUSTOM_DEEP_LINK_ID_PREFIX = "custom_deeplink_"
+
+        /**
+         * Toggle for switching between the two shortcut fetch implementations.
+         *
+         *  - `true`  -> Use the official [android.content.pm.LauncherApps] API
+         *               (requires the app to be set as the default launcher / home app).
+         *               See [loadShortcutsViaLauncherApps].
+         *  - `false` -> Use the legacy approach that parses each installed app's
+         *               `shortcuts.xml` resource directly. See [loadShortcutsFromSystem].
+         *
+         * Behaviour outside of fetching (custom shortcuts, hardcoded shortcuts, caching,
+         * launching) is intentionally unchanged.
+         */
+        const val USE_LAUNCHER_APPS_API_FOR_SHORTCUTS = true
     }
 
     suspend fun addSearchTargetQueryShortcut(

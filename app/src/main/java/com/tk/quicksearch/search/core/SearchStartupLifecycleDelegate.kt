@@ -12,6 +12,7 @@ import com.tk.quicksearch.search.apps.prefetchAppIcons
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.shared.util.WallpaperUtils
+import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -62,6 +63,7 @@ internal data class SearchLoadedPreferencesSnapshot(
     val overlayModeEnabled: Boolean,
     val appSuggestionsEnabled: Boolean,
     val selectedAppSuggestionTab: AppSuggestionTabType,
+    val enabledAppSuggestionTabs: Set<AppSuggestionTabType>,
     val showAppLabels: Boolean,
     val phoneAppGridColumns: Int,
     val appIconShape: AppIconShape,
@@ -324,6 +326,7 @@ internal class SearchStartupLifecycleDelegate(
                     hasApiKey = userPreferences.hasAnyLlmApiKey(),
                     geminiApiKeyLast4 = aiSearchHandler.getGeminiApiKey()?.takeLast(4),
                     llmApiKeyLast4ByProvider = userPreferences.getLlmApiKeyLast4ByProvider(),
+                    customLlmBaseUrlByProvider = userPreferences.getCustomLlmBaseUrlByProvider(),
                     aiSearchLlmProviderId = aiSearchHandler.getAiSearchProviderId(),
                     personalContext = aiSearchHandler.getPersonalContext(),
                     geminiModel = aiSearchHandler.getGeminiModel(),
@@ -350,6 +353,7 @@ internal class SearchStartupLifecycleDelegate(
                     showSearchBarWelcomeAnimation = shouldShowSearchBarWelcome(),
                     appSuggestionsEnabled = userPreferences.areAppSuggestionsEnabled(),
                     selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(),
+                    enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
                     showAppLabels = userPreferences.shouldShowAppLabels(),
                     phoneAppGridColumns = userPreferences.getPhoneAppGridColumns(),
                     bottomSearchBarEnabled = userPreferences.isBottomSearchBarEnabled(),
@@ -570,6 +574,7 @@ internal class SearchStartupLifecycleDelegate(
                 overlayModeEnabled = snapshot.overlayModeEnabled,
                 appSuggestionsEnabled = snapshot.appSuggestionsEnabled,
                 selectedAppSuggestionTab = snapshot.selectedAppSuggestionTab,
+                enabledAppSuggestionTabs = snapshot.enabledAppSuggestionTabs,
                 showAppLabels = snapshot.showAppLabels,
                 phoneAppGridColumns = snapshot.phoneAppGridColumns,
                 appIconShape = snapshot.appIconShape,
@@ -668,6 +673,7 @@ internal class SearchStartupLifecycleDelegate(
                         hasApiKey = hasApiKey,
                         geminiApiKeyLast4 = geminiApiKey?.takeLast(4),
                         llmApiKeyLast4ByProvider = userPreferences.getLlmApiKeyLast4ByProvider(),
+                        customLlmBaseUrlByProvider = userPreferences.getCustomLlmBaseUrlByProvider(),
                         aiSearchLlmProviderId = aiSearchHandler.getAiSearchProviderId(),
                         personalContext = personalContext,
                         geminiModel = geminiModel,
@@ -768,6 +774,7 @@ internal class SearchStartupLifecycleDelegate(
                 openKeyboardOnLaunch = startupSnapshot.openKeyboardOnLaunch,
                 appSuggestionsEnabled = suggestionsEnabled,
                 selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(),
+                enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
                 showAppLabels = labelsEnabled,
                 phoneAppGridColumns = columnsForPhone,
                 isStartupCoreSurfaceReady = true,
@@ -866,7 +873,7 @@ internal class SearchStartupLifecycleDelegate(
 
         val normalizedTools =
             tools.map { tool ->
-                if (tool.modelId in availableModelIdSet) {
+                if (tool.providerId != AiSearchLlmProviderId.GEMINI || tool.modelId in availableModelIdSet) {
                     tool
                 } else {
                     tool.copy(modelId = firstAvailableModelId)

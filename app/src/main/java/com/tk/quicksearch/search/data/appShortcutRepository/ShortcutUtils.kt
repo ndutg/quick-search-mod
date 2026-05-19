@@ -3,8 +3,10 @@ package com.tk.quicksearch.search.data.AppShortcutRepository
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.os.UserManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -588,23 +590,34 @@ fun filterShortcuts(
 ): List<StaticShortcut> =
     shortcuts.filter { shortcut ->
         val isCustomDeepLink = shortcut.id.startsWith("custom_deeplink_")
+        val isLauncherAppsShortcut = isLauncherAppsSentinelShortcut(shortcut)
         val shortcutKey = "${shortcut.packageName}:${shortcut.id}"
+        // The browser block list exists because the XML parser surfaced low-quality / broken
+        // entries from Chrome/Brave's shortcuts.xml. Shortcuts fetched via the official
+        // LauncherApps API are the same ones the system launcher shows, so no need to hide them.
         val isBlockedBrowserShortcut =
             (shortcut.packageName == "com.android.chrome" ||
                 shortcut.packageName == "com.brave.browser") &&
                 !isUserCreatedShortcut(shortcut) &&
+                !isLauncherAppsShortcut &&
                 shortcutKey !in HARDCODED_SHORTCUT_KEYS
         val isLaunchable =
-            if (isCustomDeepLink) {
-                shortcut.intents.any { !it.dataString.isNullOrBlank() }
-            } else {
-                canLaunchShortcut(shortcut, packageManager, context)
+            when {
+                isCustomDeepLink -> shortcut.intents.any { !it.dataString.isNullOrBlank() }
+                // LauncherApps-fetched shortcuts can't be resolved by PackageManager because
+                // their real intent is hidden from us. Trust them and rely on
+                // LauncherApps.startShortcut at launch time.
+                isLauncherAppsShortcut -> true
+                else -> canLaunchShortcut(shortcut, packageManager, context)
             }
         shortcut.enabled &&
             !isBlockedBrowserShortcut &&
             shortcut.intents.isNotEmpty() &&
             isLaunchable
     }
+
+private fun isLauncherAppsSentinelShortcut(shortcut: StaticShortcut): Boolean =
+    shortcut.intents.firstOrNull()?.action == ACTION_LAUNCHER_APPS_SHORTCUT
 
 private const val ANDROID_NS = "http://schemas.android.com/apk/res/android"
 private const val META_DATA_SHORTCUTS = "android.app.shortcuts"
@@ -616,6 +629,14 @@ fun launchStaticShortcut(
 ): String? {
     if (!shortcut.enabled) {
         return context.getString(R.string.error_shortcut_disabled)
+    }
+
+    // LauncherApps-fetched shortcuts are launched via the system shortcut service,
+    // not through Intent dispatch (the publisher-visible intent isn't exposed to us).
+    shortcut.intents.firstOrNull()?.let { firstIntent ->
+        if (firstIntent.action == ACTION_LAUNCHER_APPS_SHORTCUT) {
+            return launchLauncherAppsShortcut(context, shortcut, firstIntent)
+        }
     }
 
     val pm = context.packageManager
@@ -636,6 +657,15 @@ fun launchStaticShortcut(
         val details = formatIntentDetails(intent)
         val resolved = pm.resolveActivity(intent, 0)
         if (resolved == null) {
+            // Activities that can't be resolved via PackageManager (e.g., Knox-protected
+            // activities) may still be launchable directly. Try if this is an explicit
+            // component intent from a custom deep link (parsed from an intent URI).
+            val isExplicitComponentDeepLink =
+                shortcut.id.startsWith("custom_deeplink_") && intent.component != null
+            if (isExplicitComponentDeepLink) {
+                val error = runCatching { context.startActivity(intent) }.exceptionOrNull()
+                if (error == null) return null
+            }
             noActivityIntentDetails = details
             return@forEach
         }
@@ -695,6 +725,44 @@ fun launchStaticShortcut(
     }
 
     return context.getString(R.string.error_shortcut_no_activity_resolves) + noActivityIntentDetails.toSuffixDetail()
+}
+
+private fun launchLauncherAppsShortcut(
+    context: Context,
+    shortcut: StaticShortcut,
+    sentinel: Intent,
+): String? {
+    val launcherApps =
+        context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as? LauncherApps
+            ?: return context.getString(R.string.error_unknown)
+    if (!launcherApps.hasShortcutHostPermission()) {
+        return context.getString(R.string.error_unknown)
+    }
+    val targetPackage =
+        sentinel.getStringExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_PACKAGE)?.takeIf { it.isNotBlank() }
+            ?: shortcut.packageName
+    val shortcutId =
+        sentinel.getStringExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_ID)?.takeIf { it.isNotBlank() }
+            ?: shortcut.id
+    val userSerial = sentinel.getLongExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_USER_SERIAL, -1L)
+    val userHandle =
+        kotlin.runCatching {
+            val um = context.getSystemService(Context.USER_SERVICE) as UserManager
+            if (userSerial >= 0L) um.getUserForSerialNumber(userSerial) else android.os.Process.myUserHandle()
+        }.getOrNull() ?: android.os.Process.myUserHandle()
+
+    val error =
+        kotlin.runCatching {
+            launcherApps.startShortcut(targetPackage, shortcutId, null, null, userHandle)
+        }.exceptionOrNull()
+    return if (error == null) {
+        null
+    } else {
+        context.getString(
+            R.string.error_shortcut_launch_failed,
+            error.message ?: context.getString(R.string.error_unknown),
+        )
+    }
 }
 
 private fun formatIntentDetails(intent: Intent): String {

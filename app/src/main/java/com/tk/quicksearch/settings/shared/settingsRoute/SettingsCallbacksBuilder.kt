@@ -120,11 +120,11 @@ internal fun buildSettingsScreenCallbacks(
         onToggleCurrencyConverter = viewModel::setCurrencyConverterEnabled,
         onToggleWordClock = viewModel::setWordClockEnabled,
         onToggleDictionary = viewModel::setDictionaryEnabled,
-        onAddCustomTool = { name, prompt, modelId, groundingEnabled, aliasCode, thinkingEnabled ->
-            viewModel.addCustomTool(name, prompt, modelId, groundingEnabled, aliasCode, thinkingEnabled)
+        onAddCustomTool = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled ->
+            viewModel.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled)
         },
-        onUpdateCustomTool = { id, name, prompt, modelId, groundingEnabled, thinkingEnabled ->
-            viewModel.updateCustomTool(id, name, prompt, modelId, groundingEnabled, thinkingEnabled)
+        onUpdateCustomTool = { id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled ->
+            viewModel.updateCustomTool(id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled)
         },
         onDeleteCustomTool = viewModel::deleteCustomTool,
         onToggleCustomTool = viewModel::setCustomToolEnabled,
@@ -143,7 +143,7 @@ internal fun buildSettingsScreenCallbacks(
         onSetPersonalContext = viewModel::setPersonalContext,
         onSetGeminiModel = viewModel::setGeminiModel,
         onSetLlmModel = viewModel::setLlmModel,
-        onSetAiToolModel = viewModel::setAiBackedToolModel,
+        onSetAiToolSettings = viewModel::setAiBackedToolSettings,
         onSetGeminiGroundingEnabled = viewModel::setGeminiGroundingEnabled,
         onSetGeminiThinkingEnabled = viewModel::setGeminiThinkingEnabled,
         onRefreshAvailableGeminiModels = viewModel::refreshAvailableGeminiModels,

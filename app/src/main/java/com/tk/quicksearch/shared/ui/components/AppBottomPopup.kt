@@ -2,9 +2,11 @@ package com.tk.quicksearch.shared.ui.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,7 +90,14 @@ fun AppBottomPopup(
             ),
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = onDismiss,
+                ),
             contentAlignment = Alignment.BottomCenter,
         ) {
             Surface(
@@ -121,6 +130,11 @@ fun AppBottomPopup(
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = {},
+                            )
                             .padding(horizontal = 12.dp, vertical = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp),
                 ) {

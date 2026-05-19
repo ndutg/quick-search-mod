@@ -68,6 +68,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private val ConfigureApiKeyCardVerticalPadding =
+    DesignTokens.CardVerticalPadding + DesignTokens.SpacingSmall
+
 @Composable
 internal fun SettingsDetailLevel2Screen(
     modifier: Modifier = Modifier,
@@ -440,18 +443,27 @@ internal fun SettingsDetailLevel2Screen(
                                 toolId = tool,
                                 title = context.getString(R.string.currency_converter_toggle_title),
                                 modelId = preferences.getCurrencyConverterModel(),
+                                providerId = preferences.getCurrencyConverterProviderId(),
+                                groundingEnabled = preferences.isCurrencyConverterGroundingEnabled(),
+                                thinkingEnabled = preferences.isCurrencyConverterThinkingEnabled(),
                                 aliasFeatureId = AliasHandler.CURRENCY_CONVERTER_ALIAS_FEATURE_ID,
                             )
                             AiBackedToolConfigId.WORD_CLOCK -> BuiltInToolConfig(
                                 toolId = tool,
                                 title = context.getString(R.string.word_clock_toggle_title),
                                 modelId = preferences.getWordClockModel(),
+                                providerId = preferences.getWordClockProviderId(),
+                                groundingEnabled = preferences.isWordClockGroundingEnabled(),
+                                thinkingEnabled = preferences.isWordClockThinkingEnabled(),
                                 aliasFeatureId = AliasHandler.WORD_CLOCK_ALIAS_FEATURE_ID,
                             )
                             AiBackedToolConfigId.DICTIONARY -> BuiltInToolConfig(
                                 toolId = tool,
                                 title = context.getString(R.string.dictionary_toggle_title),
                                 modelId = preferences.getDictionaryModel(),
+                                providerId = preferences.getDictionaryProviderId(),
+                                groundingEnabled = preferences.isDictionaryGroundingEnabled(),
+                                thinkingEnabled = preferences.isDictionaryThinkingEnabled(),
                                 aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
                             )
                         }
@@ -478,19 +490,25 @@ internal fun SettingsDetailLevel2Screen(
                     availableModelsByProvider = state.availableLlmModelsByProvider,
                     configuredProviderIds = state.llmApiKeyLast4ByProvider.keys,
                     onRefreshAvailableGeminiModels = callbacks.onRefreshAvailableGeminiModels,
-                    onProviderModelSelected = callbacks.onSetLlmModel,
+                    onProviderModelSelected = { _, _ -> },
                     showNameInput = builtInToolConfig == null,
                     showPromptInput = builtInToolConfig == null,
                     showAliasInput = builtInToolConfig == null,
                     shouldAutoFocusTitle = builtInToolConfig == null && shouldAutoFocusTitle,
-                    onSave = { name, prompt, modelId, groundingEnabled, aliasCode, thinkingEnabled ->
+                    onSave = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled ->
                         if (builtInToolConfig != null) {
-                            callbacks.onSetAiToolModel(builtInToolConfig.toolId, modelId)
+                            callbacks.onSetAiToolSettings(
+                                builtInToolConfig.toolId,
+                                providerId,
+                                modelId,
+                                groundingEnabled,
+                                thinkingEnabled,
+                            )
                         } else if (existingTool != null) {
-                            callbacks.onUpdateCustomTool(existingTool.id, name, prompt, modelId, groundingEnabled, thinkingEnabled)
+                            callbacks.onUpdateCustomTool(existingTool.id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled)
                             callbacks.onSetSearchSectionAlias(existingTool.id, aliasCode)
                         } else {
-                            callbacks.onAddCustomTool(name, prompt, modelId, groundingEnabled, aliasCode, thinkingEnabled)
+                            callbacks.onAddCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled)
                         }
                         callbacks.onBack()
                     },
@@ -691,7 +709,7 @@ internal fun SettingsDetailLevel2Screen(
                                         ),
                                     contentPadding = PaddingValues(
                                         horizontal = DesignTokens.CardHorizontalPadding,
-                                        vertical = DesignTokens.CardVerticalPadding,
+                                        vertical = ConfigureApiKeyCardVerticalPadding,
                                     ),
                                 )
                             }
@@ -732,6 +750,7 @@ internal fun SettingsDetailLevel2Screen(
                         SettingsDetailType.API_KEY_SETUP -> {
                             ApiKeySetupScreen(
                                 apiKeyLast4ByProvider = state.llmApiKeyLast4ByProvider,
+                                customProviderBaseUrlByProvider = state.customLlmBaseUrlByProvider,
                                 isSavingApiKey = state.isSavingGeminiApiKey,
                                 onSetApiKey = callbacks.onSetLlmApiKey,
                                 onAddCustomProvider = callbacks.onAddCustomLlmProvider,
@@ -910,6 +929,9 @@ private data class BuiltInToolConfig(
     val toolId: AiBackedToolConfigId,
     val title: String,
     val modelId: String,
+    val providerId: AiSearchLlmProviderId,
+    val groundingEnabled: Boolean,
+    val thinkingEnabled: Boolean,
     val aliasFeatureId: String,
 ) {
     fun toCustomTool(): CustomTool =
@@ -918,7 +940,8 @@ private data class BuiltInToolConfig(
             name = title,
             prompt = "builtin",
             modelId = modelId,
-            groundingEnabled = false,
-            thinkingEnabled = false,
+            providerId = providerId,
+            groundingEnabled = groundingEnabled,
+            thinkingEnabled = thinkingEnabled,
         )
 }

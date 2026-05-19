@@ -4,24 +4,26 @@ import android.provider.OpenableColumns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
+import androidx.compose.material.icons.rounded.AudioFile
+import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.VisibilityOff
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,19 +37,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.AppMenuGridButton
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.utils.FileUtils
-import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/** Menu item data class for file dropdown menu. */
 private data class FileMenuItem(
         val textResId: Int,
+        val textArg: String? = null,
+        val enableMarquee: Boolean = false,
         val icon: @Composable () -> Unit,
         val onClick: () -> Unit,
 )
@@ -132,10 +138,6 @@ fun FileInfoDialog(
     )
 }
 
-/**
- * Dropdown menu for file result rows with actions like pin/unpin, nickname, exclude, and exclude
- * extension.
- */
 @Composable
 fun FileDropdownMenu(
         expanded: Boolean,
@@ -154,177 +156,116 @@ fun FileDropdownMenu(
         onShareClick: () -> Unit = {},
         onAddToHome: () -> Unit,
 ) {
-    DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = onDismissRequest,
-            shape = RoundedCornerShape(24.dp),
-            properties = PopupProperties(focusable = false),
-            containerColor = AppColors.DialogBackground,
-    ) {
-        val menuItems = buildList {
-            add(
-                    FileMenuItem(
-                            textResId =
-                                    if (isPinned) R.string.action_unpin_app
-                                    else R.string.action_pin_app,
-                            icon = {
-                                Icon(
-                                        painter =
-                                                painterResource(
-                                                        if (isPinned) R.drawable.ic_unpin
-                                                        else R.drawable.ic_pin,
-                                                ),
-                                        contentDescription = null,
-                                )
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onTogglePin()
-                            },
-                    ),
-            )
-            add(
-                    FileMenuItem(
-                            textResId =
-                                    if (hasTrigger) R.string.action_edit_trigger
-                                    else R.string.action_add_trigger,
-                            icon = {
-                                Icon(imageVector = Icons.Rounded.Edit, contentDescription = null)
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onTriggerClick()
-                            },
-                    ),
-            )
-            add(
-                    FileMenuItem(
-                            textResId = R.string.action_add_to_home,
-                            icon = {
-                                Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onAddToHome()
-                            },
-                    ),
-            )
-            add(
-                    FileMenuItem(
-                            textResId =
-                                    if (hasNickname) R.string.action_edit_nickname
-                                    else R.string.action_add_nickname,
-                            icon = {
-                                Icon(imageVector = Icons.Rounded.Edit, contentDescription = null)
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onNicknameClick()
-                            },
-                    ),
-            )
-            add(
-                    FileMenuItem(
-                            textResId = R.string.action_exclude_generic,
-                            icon = {
-                                Icon(
-                                        imageVector = Icons.Rounded.VisibilityOff,
-                                        contentDescription = null
-                                )
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onExclude()
-                            },
-                    ),
-            )
-
-            val fileExtension = FileUtils.getFileExtension(deviceFile.displayName)
-            if (fileExtension != null) {
-                add(
-                        FileMenuItem(
-                                textResId = R.string.action_exclude_extension,
-                                icon = {
-                                    Icon(
-                                            imageVector = Icons.Rounded.VisibilityOff,
-                                            contentDescription = null
-                                    )
-                                },
-                                onClick = {
-                                    onDismissRequest()
-                                    onExcludeExtension()
-                                },
-                        ),
-                )
-            }
-            if (!deviceFile.isDirectory) {
-                add(
-                        FileMenuItem(
-                                textResId = R.string.action_open_folder,
-                                icon = {
-                                    Icon(
-                                            imageVector = Icons.Rounded.Folder,
-                                            contentDescription = null
-                                    )
-                                },
-                                onClick = {
-                                    onDismissRequest()
-                                    onOpenFolderClick()
-                                },
-                        ),
-                )
-            }
-        }
-
-        menuItems.forEachIndexed { index, item ->
-            if (index > 0) {
-                HorizontalDivider()
-            }
-            DropdownMenuItem(
-                    text = {
-                        Text(
-                                text =
-                                        stringResource(
-                                                item.textResId,
-                                                FileUtils.getFileExtension(deviceFile.displayName)
-                                                        ?: ""
-                                        )
-                        )
-                    },
-                    leadingIcon = { item.icon() },
-                    onClick = item.onClick,
-            )
-        }
-
+    val fileExtension = FileUtils.getFileExtension(deviceFile.displayName)
+    val menuItems = buildList {
         if (!deviceFile.isDirectory) {
-            HorizontalDivider()
-            val actionIconColor = MaterialTheme.colorScheme.onSurface
-            Row(modifier = Modifier.fillMaxWidth()) {
-                IconButton(
-                        onClick = {
-                            onDismissRequest()
-                            onShareClick()
-                        },
-                        modifier = Modifier.weight(1f),
-                ) {
+            add(FileMenuItem(
+                    textResId = R.string.action_share,
+                    icon = { Icon(imageVector = Icons.Rounded.Share, contentDescription = null) },
+                    onClick = { onDismissRequest(); onShareClick() },
+            ))
+            add(FileMenuItem(
+                    textResId = R.string.action_file_info,
+                    icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
+                    onClick = { onDismissRequest(); onFileInfoClick() },
+            ))
+            add(FileMenuItem(
+                    textResId = R.string.action_open_folder,
+                    icon = { Icon(imageVector = Icons.Rounded.Folder, contentDescription = null) },
+                    onClick = { onDismissRequest(); onOpenFolderClick() },
+            ))
+        }
+        add(FileMenuItem(
+                textResId = if (isPinned) R.string.action_unpin_app else R.string.action_pin_app,
+                icon = {
                     Icon(
-                            imageVector = Icons.Rounded.Share,
-                            contentDescription = stringResource(R.string.action_share),
-                            tint = actionIconColor,
+                            painter = painterResource(if (isPinned) R.drawable.ic_unpin else R.drawable.ic_pin),
+                            contentDescription = null,
                     )
-                }
-                IconButton(
-                        onClick = {
-                            onDismissRequest()
-                            onFileInfoClick()
-                        },
-                        modifier = Modifier.weight(1f),
-                ) {
+                },
+                onClick = { onDismissRequest(); onTogglePin() },
+        ))
+        add(FileMenuItem(
+                textResId = if (hasNickname) R.string.action_edit_nickname else R.string.action_add_nickname,
+                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                onClick = { onDismissRequest(); onNicknameClick() },
+        ))
+        add(FileMenuItem(
+                textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,
+                icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null) },
+                onClick = { onDismissRequest(); onTriggerClick() },
+        ))
+        add(FileMenuItem(
+                textResId = R.string.action_add_to_home,
+                icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                onClick = { onDismissRequest(); onAddToHome() },
+        ))
+        add(FileMenuItem(
+                textResId = R.string.action_exclude_generic,
+                icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+                onClick = { onDismissRequest(); onExclude() },
+        ))
+        if (fileExtension != null) {
+            add(FileMenuItem(
+                    textResId = R.string.action_exclude_extension,
+                    textArg = fileExtension,
+                    enableMarquee = true,
+                    icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+                    onClick = { onDismissRequest(); onExcludeExtension() },
+            ))
+        }
+    }
+
+    val fileIcon = when {
+        deviceFile.isDirectory -> Icons.Rounded.Folder
+        deviceFile.mimeType?.startsWith("image/") == true -> Icons.Rounded.Image
+        deviceFile.mimeType?.startsWith("video/") == true -> Icons.Rounded.VideoLibrary
+        deviceFile.mimeType?.startsWith("audio/") == true -> Icons.Rounded.AudioFile
+        else -> Icons.AutoMirrored.Rounded.InsertDriveFile
+    }
+
+    if (expanded) {
+        AppBottomPopup(
+                onDismiss = onDismissRequest,
+                leadingContent = {
                     Icon(
-                            imageVector = Icons.Rounded.Info,
-                            contentDescription = stringResource(R.string.action_file_info),
-                            tint = actionIconColor,
+                            imageVector = fileIcon,
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                },
+                title = {
+                    Text(
+                            text = deviceFile.displayName,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                    )
+                },
+        ) {
+            Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+            ) {
+                menuItems.chunked(3).forEach { row ->
+                    Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        row.forEach { item ->
+                            AppMenuGridButton(
+                                    label = if (item.textArg != null) stringResource(item.textResId, item.textArg) else stringResource(item.textResId),
+                                    icon = { item.icon() },
+                                    onClick = item.onClick,
+                                    enableMarquee = item.enableMarquee,
+                                    modifier = Modifier.weight(1f),
+                            )
+                        }
+                        repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                    }
                 }
             }
         }

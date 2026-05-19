@@ -358,6 +358,7 @@ class AiSearchHandler(
     fun requestCustomToolSearch(
         query: String,
         systemInstruction: String,
+        providerId: AiSearchLlmProviderId,
         modelId: String,
         groundingEnabled: Boolean,
         thinkingEnabled: Boolean = false,
@@ -366,7 +367,8 @@ class AiSearchHandler(
         val trimmedQuery = query.trim()
         if (trimmedQuery.isBlank()) return
 
-        val apiKey = llmApiKey
+        val provider = AiSearchLlmProviderRegistry.get(providerId, context)
+        val apiKey = userPreferences.getLlmApiKey(providerId)?.trim()
         if (apiKey.isNullOrBlank()) {
             _aiSearchState.update {
                 AiSearchState(
@@ -388,9 +390,16 @@ class AiSearchHandler(
                     )
                 }
 
-                val useSystemInstruction = modelSupportsSystemInstructions(modelId)
+                val providerModels =
+                    if (providerId == activeProviderId) availableGeminiModels else provider.fallbackTextModels
+                val useSystemInstruction =
+                    providerModels.firstOrNull { it.id == modelId }?.supportsSystemInstructions
+                        ?: !modelId.lowercase().startsWith("gemma-")
+                val supportsGrounding =
+                    providerModels.firstOrNull { it.id == modelId }?.supportsGrounding
+                        ?: !modelId.lowercase().startsWith("gemma-")
                 val result =
-                    activeProvider.fetchAnswer(
+                    provider.fetchAnswer(
                         apiKey = apiKey,
                         context = context,
                         request =
@@ -399,14 +408,14 @@ class AiSearchHandler(
                                 personalContext = null,
                                 modelId = modelId,
                                 useGroundingWithGoogleSearch =
-                                    activeProviderId != AiSearchLlmProviderId.OPENAI &&
-                                        !activeProviderId.isCustom &&
+                                    providerId != AiSearchLlmProviderId.OPENAI &&
+                                        !providerId.isCustom &&
                                         groundingEnabled &&
-                                        modelSupportsGrounding(modelId),
+                                        supportsGrounding,
                                 thinkingEnabled =
-                                    (this@AiSearchHandler.thinkingEnabled || thinkingEnabled) &&
-                                        activeProviderId != AiSearchLlmProviderId.OPENAI &&
-                                        !activeProviderId.isCustom,
+                                    thinkingEnabled &&
+                                        providerId != AiSearchLlmProviderId.OPENAI &&
+                                        !providerId.isCustom,
                                 useSystemInstruction = useSystemInstruction,
                                 systemInstruction = systemInstruction,
                             ),

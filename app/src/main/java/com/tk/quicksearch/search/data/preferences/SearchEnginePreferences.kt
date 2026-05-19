@@ -124,6 +124,10 @@ class SearchEnginePreferences(
                     val name = item.optString("name")
                     val prompt = item.optString("prompt")
                     val modelId = item.optString("modelId")
+                    val providerId =
+                        com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId.fromStorageValue(
+                            item.optString("providerId").takeIf { it.isNotBlank() },
+                        )
                     if (id.isBlank() || name.isBlank()) continue
                     add(
                         CustomTool(
@@ -131,7 +135,9 @@ class SearchEnginePreferences(
                             name = name,
                             prompt = prompt,
                             modelId = modelId.ifBlank { "gemini-flash-latest" },
+                            providerId = providerId,
                             groundingEnabled = item.optBoolean("groundingEnabled", false),
+                            thinkingEnabled = item.optBoolean("thinkingEnabled", false),
                         ),
                     )
                 }
@@ -148,7 +154,9 @@ class SearchEnginePreferences(
                     put("name", tool.name)
                     put("prompt", tool.prompt)
                     put("modelId", tool.modelId)
+                    put("providerId", tool.providerId.storageValue)
                     put("groundingEnabled", tool.groundingEnabled)
+                    put("thinkingEnabled", tool.thinkingEnabled)
                 }
             array.put(item)
         }

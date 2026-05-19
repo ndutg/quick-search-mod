@@ -2,6 +2,7 @@ package com.tk.quicksearch.settings.shared
 
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
@@ -18,6 +19,11 @@ sealed interface SettingsCommand {
     ) : SettingsCommand
 
     data class WebSuggestionsCount(val count: Int) : SettingsCommand
+
+    data class AppSuggestionTabEnabled(
+        val tab: AppSuggestionTabType,
+        val enabled: Boolean,
+    ) : SettingsCommand
 
     data class TopMatchesLimit(val limit: Int) : SettingsCommand
 
@@ -121,6 +127,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         }
 
         is SettingsCommand.WebSuggestionsCount -> setWebSuggestionsCount(command.count)
+        is SettingsCommand.AppSuggestionTabEnabled ->
+            setAppSuggestionTabEnabled(command.tab, command.enabled)
         is SettingsCommand.TopMatchesLimit -> setTopMatchesLimit(command.limit)
         is SettingsCommand.TopMatchesSectionOrder -> setTopMatchesSectionOrder(command.order)
         is SettingsCommand.TopMatchesSectionEnabled ->
