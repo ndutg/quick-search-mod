@@ -373,21 +373,6 @@ fun QuickSearchTheme(
                 )
             }
         }
-
-    // Override text-facing colors when image background is active and brightness is known.
-    // This ensures text is always readable regardless of wallpaper brightness.
-    val contrastAwareScheme =
-        if (isWallpaperLight != null && backgroundSource != BackgroundSource.THEME) {
-            val textScheme = if (isWallpaperLight == true) LightColorScheme else DarkColorScheme
-            colorScheme.copy(
-                onBackground = textScheme.onBackground,
-                onSurface = textScheme.onSurface,
-                onSurfaceVariant = textScheme.onSurfaceVariant,
-            )
-        } else {
-            colorScheme
-        }
-
     val appPalette =
         if (useDarkTheme) {
             DarkQuickSearchAppColorPalette
@@ -406,7 +391,7 @@ fun QuickSearchTheme(
         LocalWallpaperIsLight provides isWallpaperLight,
     ) {
         MaterialTheme(
-            colorScheme = contrastAwareScheme,
+            colorScheme = colorScheme,
             typography = quickSearchTypography(useSystemFont),
             content = content,
         )
