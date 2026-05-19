@@ -1,48 +1,70 @@
-name: Find Wallpaper Removal Commit
+name: Dump Source Files for Investigation
 
 on:
   workflow_dispatch:
 
 jobs:
-  find-removal:
+  dump-source:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository with full history and tags
+      - name: Checkout restore-wallpaper-feature
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: restore-wallpaper-feature
 
-      - name: Show tags
+      - name: Dump WallpaperUtils.kt
         run: |
-          git fetch --all --tags
-          echo "=== Available tags ==="
-          git tag -l | sort -V
+          echo "========== WallpaperUtils.kt =========="
+          cat app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt || echo "NOT FOUND"
 
-      - name: Search for READ_MEDIA_IMAGES removal
+      - name: Dump AppThemeSettings.kt
         run: |
-          echo "=== Commits that added or removed READ_MEDIA_IMAGES ==="
-          git log --oneline -S'READ_MEDIA_IMAGES' -- app || echo "No results found"
+          echo "========== AppThemeSettings.kt =========="
+          cat app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt || echo "NOT FOUND"
 
-      - name: Search for wallpaper and background related changes
+      - name: Dump search screen composables for background rendering
         run: |
-          echo "=== Commits mentioning wallpaper/background/blur ==="
-          git log --oneline -G'wallpaper|Wallpaper|blur|Background|background' -- app || echo "No results found"
-
-      - name: Try compare between 3.4 and 3.5 tags
-        run: |
-          echo "=== Trying 3.4..3.5 ==="
-          git log --oneline 3.4..3.5 2>/dev/null || echo "Tags 3.4 / 3.5 not found"
+          echo "========== Looking for wallpaper/background rendering =========="
+          grep -rn "wallpaper\|Wallpaper\|WallpaperUtils\|backgroundBitmap\|blur\|scrim\|overlay" \
+            app/src/main/java/com/tk/quicksearch/ \
+            --include="*.kt" -l
 
           echo ""
-          echo "=== Trying v3.4..v3.5 ==="
-          git log --oneline v3.4..v3.5 2>/dev/null || echo "Tags v3.4 / v3.5 not found"
+          echo "========== Files referencing WallpaperUtils =========="
+          grep -rn "WallpaperUtils" \
+            app/src/main/java/com/tk/quicksearch/ \
+            --include="*.kt"
 
-      - name: List changed files between tags
+      - name: Dump icon pack related files
         run: |
-          echo "=== Changed files 3.4..3.5 ==="
-          git diff --name-only 3.4..3.5 2>/dev/null || echo "Tags 3.4 / 3.5 not found"
+          echo "========== Icon pack files =========="
+          find app/src/main/java/com/tk/quicksearch/ -name "*.kt" | xargs grep -l -i "iconpack\|icon_pack\|IconPack\|iconPack\|THEMES\|adw" || echo "No icon pack files found"
 
           echo ""
-          echo "=== Changed files v3.4..v3.5 ==="
-          git diff --name-only v3.4..v3.5 2>/dev/null || echo "Tags v3.4 / v3.5 not found"
+          echo "========== Icon pack code =========="
+          find app/src/main/java/com/tk/quicksearch/ -name "*Icon*Pack*" -o -name "*icon*pack*" | while read f; do
+            echo ""
+            echo "========== $f =========="
+            cat "$f"
+          done
+
+      - name: Dump color/theme related code
+        run: |
+          echo "========== Theme/color files referencing wallpaper =========="
+          grep -rn "textColor\|TextColor\|onBackground\|onSurface\|contentColor\|wallpaper" \
+            app/src/main/java/com/tk/quicksearch/shared/ \
+            --include="*.kt" | head -60
+
+          echo ""
+          echo "========== AppColors or design tokens =========="
+          find app/src/main/java/com/tk/quicksearch/ -name "*Color*" -o -name "*Theme*" -o -name "*DesignToken*" | while read f; do
+            echo ""
+            echo "========== $f =========="
+            cat "$f"
+          done
+
+      - name: Dump SettingsRouteFlows for wallpaper toggle
+        run: |
+          echo "========== SettingsRouteFlows.kt =========="
+          cat app/src/main/java/com/tk/quicksearch/settings/shared/settingsRoute/SettingsRouteFlows.kt || echo "NOT FOUND"
