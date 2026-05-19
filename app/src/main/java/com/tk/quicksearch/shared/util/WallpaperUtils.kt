@@ -1,12 +1,11 @@
 package com.tk.quicksearch.shared.util
 
-import android.Manifest
 import android.app.WallpaperManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.media.ExifInterface
@@ -17,14 +16,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.shared.permissions.PermissionHelper
-import androidx.core.content.ContextCompat
 import java.io.File
 import java.io.FileOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import android.graphics.Color
 
 private const val MAX_BACKGROUND_BITMAP_DIMENSION = 2400
 private const val MAX_BACKGROUND_BITMAP_PIXELS = 4_000_000
@@ -49,11 +46,6 @@ object WallpaperUtils {
     @Volatile
     private var cachedOverlayCustomAppearanceUri: String? = null
     @Volatile
-    private var cachedWallpaperIsLight: Boolean? = null
-    @Volatile
-    private var cachedOverlayCustomIsLightUri: String? = null
-    @Volatile
-    private var cachedOverlayCustomIsLight: Boolean? = null
     private var cachedOverlayCustomAppearance: ImageAppearance? = null
     private val wallpaperBitmapMutex = Mutex()
     private val customImageBitmapMutex = Mutex()
@@ -73,78 +65,45 @@ object WallpaperUtils {
     data class WallpaperAccessState(
         val wallpaperAvailable: Boolean,
         val needsPermission: Boolean,
-        val requiresImagePermissionAfterSecurityError: Boolean,
+        val securityError: Boolean,
         val shouldSelectSystemWallpaper: Boolean,
-        val shouldShowFallbackDialog: Boolean,
     )
 
-    /**
-     * Permission gate used by wallpaper background selection flows.
-     * This follows the app's files-permission model for wallpaper access.
-     */
     fun hasWallpaperAccessPermission(context: Context): Boolean =
         PermissionHelper.checkFilesPermission(context)
 
-    /**
-     * Checks if the app has permission to access wallpapers on Android 13+.
-     */
-    fun hasWallpaperPermission(context: Context): Boolean =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_MEDIA_IMAGES,
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            // On older Android versions, wallpaper access doesn't require special permissions
-            true
-        }
-
-    /**
-     * Checks if wallpaper access would require special permission on this device.
-     * This is used to determine if we should show permission prompts to the user.
-     */
-    fun wallpaperRequiresPermission(context: Context): Boolean =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasWallpaperPermission(context)
-
-    fun resolveWallpaperAccessState(
-        result: WallpaperLoadResult,
-        showFallbackDialogOnSecurityError: Boolean = true,
-    ): WallpaperAccessState =
+    fun resolveWallpaperAccessState(result: WallpaperLoadResult): WallpaperAccessState =
         when (result) {
             is WallpaperLoadResult.Success ->
                 WallpaperAccessState(
                     wallpaperAvailable = true,
                     needsPermission = false,
-                    requiresImagePermissionAfterSecurityError = false,
+                    securityError = false,
                     shouldSelectSystemWallpaper = true,
-                    shouldShowFallbackDialog = false,
-                )
-
-            WallpaperLoadResult.SecurityError ->
-                WallpaperAccessState(
-                    wallpaperAvailable = false,
-                    needsPermission = true,
-                    requiresImagePermissionAfterSecurityError = true,
-                    shouldSelectSystemWallpaper = false,
-                    shouldShowFallbackDialog = showFallbackDialogOnSecurityError,
                 )
 
             WallpaperLoadResult.PermissionRequired ->
                 WallpaperAccessState(
                     wallpaperAvailable = false,
                     needsPermission = true,
-                    requiresImagePermissionAfterSecurityError = false,
+                    securityError = false,
                     shouldSelectSystemWallpaper = false,
-                    shouldShowFallbackDialog = false,
+                )
+
+            WallpaperLoadResult.SecurityError ->
+                WallpaperAccessState(
+                    wallpaperAvailable = false,
+                    needsPermission = false,
+                    securityError = true,
+                    shouldSelectSystemWallpaper = false,
                 )
 
             WallpaperLoadResult.Unavailable ->
                 WallpaperAccessState(
                     wallpaperAvailable = false,
                     needsPermission = false,
-                    requiresImagePermissionAfterSecurityError = false,
+                    securityError = false,
                     shouldSelectSystemWallpaper = false,
-                    shouldShowFallbackDialog = false,
                 )
         }
 
@@ -171,15 +130,36 @@ object WallpaperUtils {
      */
     fun getCachedWallpaperBitmap(): Bitmap? = cachedBitmap
 
-    /**
-     * Clears the in-memory system wallpaper cache so the next read fetches the latest wallpaper.
-     */
+    fun copyImageToInternalStorage(context: Context, sourceUri: Uri): String? =
+        runCatching {
+            val dir = File(context.filesDir, "backgrounds")
+            if (!dir.exists()) dir.mkdirs()
+            val dest = File(dir, "custom_background_${System.currentTimeMillis()}.jpg")
+            val bitmap =
+                decodeBitmapWithOrientation(context, sourceUri)
+                    ?: run {
+                        Log.w("WallpaperUtils", "Failed to decode selected custom background image")
+                        return@runCatching null
+                    }
+            val writeSucceeded =
+                FileOutputStream(dest).use { output ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, STARTUP_PREVIEW_QUALITY, output)
+                }
+            bitmap.recycle()
+            if (!writeSucceeded) return@runCatching null
+            if (!dest.exists() || dest.length() == 0L) return@runCatching null
+            dir.listFiles { f -> f.name.startsWith("custom_background_") && f != dest }
+                ?.forEach { it.delete() }
+            Uri.fromFile(dest).toString()
+        }
+            .onFailure { Log.w("WallpaperUtils", "Failed to save custom background image", it) }
+            .getOrNull()
+
     fun invalidateWallpaperCache() {
         cachedBitmap = null
         cachedSystemWallpaperId = null
         cachedWallpaperAppearance = null
         WallpaperContrastUtils.invalidateWallpaperLightnessCache()
-        cachedWallpaperIsLight = null
     }
 
     fun clearMemoryCaches() {
@@ -189,8 +169,6 @@ object WallpaperUtils {
         cachedOverlayCustomAppearanceUri = null
         cachedOverlayCustomAppearance = null
         WallpaperContrastUtils.clearAll()
-        cachedOverlayCustomIsLightUri = null
-        cachedOverlayCustomIsLight = null
     }
 
     /**
@@ -438,6 +416,36 @@ object WallpaperUtils {
     }
 
     private fun decodeBitmapWithOrientation(
+        context: Context,
+        uri: Uri,
+    ): Bitmap? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            decodeBitmapWithImageDecoder(context, uri) ?: decodeBitmapWithBitmapFactory(context, uri)
+        } else {
+            decodeBitmapWithBitmapFactory(context, uri)
+        }
+
+    private fun decodeBitmapWithImageDecoder(
+        context: Context,
+        uri: Uri,
+    ): Bitmap? =
+        runCatching {
+            val source = ImageDecoder.createSource(context.contentResolver, uri)
+            val decoded =
+                ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                    val width = info.size.width
+                    val height = info.size.height
+                    if (width > 0 && height > 0) {
+                        decoder.setTargetSampleSize(computeSampleSize(width, height))
+                    }
+                }
+            clampBitmapToBounds(decoded)
+        }
+            .onFailure { Log.w("WallpaperUtils", "ImageDecoder failed for custom background", it) }
+            .getOrNull()
+
+    private fun decodeBitmapWithBitmapFactory(
         context: Context,
         uri: Uri,
     ): Bitmap? {

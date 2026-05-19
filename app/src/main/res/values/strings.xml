@@ -601,6 +601,7 @@
     <string name="settings_overlay_mode_desc_launcher_blocked">Unavailable while Quick Search is your default launcher</string>
     <string name="settings_overlay_source_add_custom">Add custom image</string>
     <string name="settings_overlay_source_custom">Custom</string>
+    <string name="settings_overlay_source_custom_save_failed">Unable to use that image.</string>
     <string name="settings_overlay_source_edit_custom">Edit custom image</string>
     <string name="settings_overlay_source_needs_permission">Needs permission</string>
     <string name="settings_overlay_source_wallpaper">Wallpaper</string>

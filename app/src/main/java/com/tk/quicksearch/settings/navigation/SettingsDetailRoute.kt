@@ -3,6 +3,7 @@ package com.tk.quicksearch.settings.navigation
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,9 +31,11 @@ import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.AppShortcutsSettings.*
 import com.tk.quicksearch.settings.settingsDetailScreen.*
 import com.tk.quicksearch.tile.requestAddQuickSearchTile
+import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.shared.util.isDefaultDigitalAssistant
 import com.tk.quicksearch.widgets.utils.requestAddQuickSearchWidget
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -54,6 +58,7 @@ fun SettingsDetailRoute(
     val state = uiState.toSettingsScreenState()
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val wallpaperPermissionController =
             rememberWallpaperPermissionController(
                     onSetWallpaperAvailable = viewModel::setWallpaperAvailable,
@@ -63,22 +68,26 @@ fun SettingsDetailRoute(
 
     val overlayCustomImagePickerLauncher =
             rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.OpenDocument(),
+                    contract = ActivityResultContracts.PickVisualMedia(),
             ) { uri ->
                 if (uri == null) return@rememberLauncherForActivityResult
-                runCatching {
-                            context.contentResolver.takePersistableUriPermission(
-                                    uri,
-                                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                            )
-                        }
-                        .onFailure {
-                            // Some providers do not support persistable permissions.
-                        }
-                viewModel.applySettingsCommand(SettingsCommand.CustomImageUriSetting(uri.toString()))
-                viewModel.applySettingsCommand(
-                    SettingsCommand.BackgroundSourceSetting(BackgroundSource.CUSTOM_IMAGE),
-                )
+                scope.launch {
+                    val persistedUri = withContext(Dispatchers.IO) {
+                        WallpaperUtils.copyImageToInternalStorage(context, uri)
+                    }
+                    if (persistedUri != null) {
+                        viewModel.applySettingsCommand(SettingsCommand.CustomImageUriSetting(persistedUri))
+                        viewModel.applySettingsCommand(
+                            SettingsCommand.BackgroundSourceSetting(BackgroundSource.CUSTOM_IMAGE),
+                        )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.settings_overlay_source_custom_save_failed),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
             }
 
     val onSelectWallpaperSource: () -> Unit = wallpaperPermissionController.onRequestPermission
@@ -263,7 +272,9 @@ fun SettingsDetailRoute(
                                     onBack = onBackAction,
                                     onToggleOverlayMode = viewModel::setOverlayModeEnabled,
                                     onPickCustomImage = {
-                                        overlayCustomImagePickerLauncher.launch(arrayOf("image/*"))
+                                        overlayCustomImagePickerLauncher.launch(
+                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                        )
                                     },
                                     onToggleDirectDial = viewModel::setDirectDialEnabled,
                                     onToggleSection = onToggleSection,
@@ -392,7 +403,6 @@ fun SettingsDetailRoute(
         )
     }
 
-    WallpaperPermissionFallbackDialog(controller = wallpaperPermissionController)
     AppShortcutSourceFlowDialogs(
             flowState = appShortcutSourceFlow,
             sources = filteredAppShortcutSources,

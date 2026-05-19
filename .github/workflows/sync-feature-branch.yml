@@ -26,89 +26,104 @@ jobs:
       - name: Fetch latest main
         run: |
           git fetch origin main
-          echo "=== Latest main commit ==="
-          git log -1 --oneline origin/main
-
-          echo ""
-          echo "=== Latest restore-wallpaper-feature commit ==="
-          git log -1 --oneline
-
-          echo ""
-          echo "=== Commits on main not in feature branch ==="
+          echo "=== Commits to merge ==="
           git log --oneline restore-wallpaper-feature..origin/main | head -20
 
-      - name: Create test merge branch
+      - name: Attempt merge with conflict resolution
         run: |
-          git checkout -B test-merge-upstream
-          echo "✅ Created test-merge-upstream from restore-wallpaper-feature"
-
-      - name: Attempt merge
-        id: merge
-        run: |
-          echo "=== Attempting merge of origin/main into test branch ==="
+          echo "=== Attempting merge ==="
           if git merge origin/main --no-edit; then
-            echo "merge_result=clean" >> $GITHUB_OUTPUT
-            echo "✅ Merge completed cleanly — no conflicts"
-
-            echo ""
-            echo "=== Files changed by merge ==="
-            git diff --stat HEAD~1..HEAD
-
-            echo ""
-            echo "=== Our custom files still intact? ==="
-            echo -n "WallpaperContrastUtils.kt: "
-            [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "✅" || echo "❌"
-
-            echo -n "Dark scrim in SearchScreenBackground.kt: "
-            grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "✅" || echo "❌"
-
-            echo -n "White label fix in AppGridView.kt: "
-            grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "✅" || echo "❌"
-
-            echo -n "READ_MEDIA_IMAGES in manifest: "
-            grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "✅" || echo "❌"
-
-            echo -n "LocalWallpaperIsLight in Theme.kt: "
-            grep -q "LocalWallpaperIsLight" app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "✅" || echo "❌"
+            echo "✅ Merge completed cleanly"
           else
-            echo "merge_result=conflict" >> $GITHUB_OUTPUT
-            echo "⚠️ Merge has conflicts"
+            echo "⚠️ Conflicts detected — resolving..."
 
-            echo ""
-            echo "=== Conflicted files ==="
-            git diff --name-only --diff-filter=U
+            # List conflicted files
+            CONFLICTED=$(git diff --name-only --diff-filter=U)
+            echo "Conflicted files:"
+            echo "$CONFLICTED"
 
-            echo ""
-            echo "=== Conflict details ==="
-            git diff --name-only --diff-filter=U | while read f; do
-              echo "--- $f ---"
-              grep -n "<<<<<<" "$f" || true
+            for f in $CONFLICTED; do
+              echo ""
+              echo "=== Resolving: $f ==="
+
+              if [[ "$f" == *"WallpaperUtils.kt"* ]]; then
+                # For WallpaperUtils: accept upstream version, then re-add our cache invalidation lines
+                echo "Strategy: accept upstream + re-add contrast cache invalidation"
+                git checkout --theirs "$f"
+                
+                # Re-add our WallpaperContrastUtils invalidation calls
+                python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
+          with open(file_path, "r") as f:
+              content = f.read()
+
+          # Add contrast invalidation in invalidateWallpaperCache if not present
+          if "WallpaperContrastUtils.invalidateWallpaperLightnessCache()" not in content:
+              content = content.replace(
+                  "cachedWallpaperAppearance = null",
+                  "cachedWallpaperAppearance = null\n        WallpaperContrastUtils.invalidateWallpaperLightnessCache()"
+              )
+              print("✅ Re-added contrast invalidation in invalidateWallpaperCache")
+
+          # Add contrast clearAll in clearMemoryCaches if not present
+          if "WallpaperContrastUtils.clearAll()" not in content:
+              content = content.replace(
+                  "cachedOverlayCustomAppearance = null",
+                  "cachedOverlayCustomAppearance = null\n        WallpaperContrastUtils.clearAll()"
+              )
+              print("✅ Re-added contrast clearAll in clearMemoryCaches")
+
+          with open(file_path, "w") as f:
+              f.write(content)
+          PYEOF
+
+              elif [[ "$f" == *"SettingsDetailRoute.kt"* ]]; then
+                # For SettingsDetailRoute: accept upstream version
+                # Our wallpaper revert added a route entry here, but upstream restructured it
+                # Accept upstream and check if wallpaper settings still work
+                echo "Strategy: accept upstream version"
+                git checkout --theirs "$f"
+
+              else
+                # For any other file: accept upstream
+                echo "Strategy: accept upstream version (default)"
+                git checkout --theirs "$f"
+              fi
+
+              git add "$f"
+              echo "✅ Resolved: $f"
             done
 
-            git merge --abort
-            echo ""
-            echo "Merge aborted — restore-wallpaper-feature is safe"
+            # Complete the merge
+            git commit --no-edit
+            echo "✅ Merge completed with conflict resolution"
           fi
 
-      - name: Apply clean merge to feature branch
-        if: steps.merge.outputs.merge_result == 'clean'
+      - name: Verify custom patches
         run: |
-          git checkout restore-wallpaper-feature
-          git merge origin/main --no-edit
+          echo "=== Custom patches check ==="
+
+          echo -n "WallpaperContrastUtils.kt: "
+          [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "✅" || echo "❌"
+
+          echo -n "Dark scrim in SearchScreenBackground.kt: "
+          grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "✅" || echo "❌"
+
+          echo -n "White label fix in AppGridView.kt: "
+          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "✅" || echo "❌"
+
+          echo -n "READ_MEDIA_IMAGES in manifest: "
+          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "✅" || echo "❌"
+
+          echo -n "LocalWallpaperIsLight in Theme.kt: "
+          grep -q "LocalWallpaperIsLight" app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "✅" || echo "❌"
+
+          echo -n "Contrast invalidation in WallpaperUtils.kt: "
+          grep -q "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt && echo "✅" || echo "⚠️ (optional)"
+
+      - name: Push
+        run: |
           git push origin restore-wallpaper-feature
           echo ""
-          echo "✅ restore-wallpaper-feature is now up to date with main"
-          echo "This will auto-trigger the APK build workflow"
-
-      - name: Report conflict (do not apply)
-        if: steps.merge.outputs.merge_result == 'conflict'
-        run: |
-          echo "========================================="
-          echo "⚠️ MERGE HAS CONFLICTS"
-          echo ""
-          echo "Your restore-wallpaper-feature branch is SAFE — nothing was changed."
-          echo "The conflicted files are listed above."
-          echo ""
-          echo "To resolve: open a GitHub Codespace, manually fix the conflicts,"
-          echo "then commit and push."
-          echo "========================================="
+          echo "✅ restore-wallpaper-feature synced and pushed"
+          echo "APK build will auto-trigger"
