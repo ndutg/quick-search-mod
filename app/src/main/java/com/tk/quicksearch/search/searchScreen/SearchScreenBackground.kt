@@ -140,6 +140,7 @@ internal fun SearchScreenBackground(
                     modifier =
                         wallpaperModifier
                             .blur(radius = effectiveBlurRadius.dp)
+                                .graphicsLayer(alpha = wallpaperLayerAlpha),
                             
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.TopCenter,
