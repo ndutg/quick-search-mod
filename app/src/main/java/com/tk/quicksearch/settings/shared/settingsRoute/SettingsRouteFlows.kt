@@ -47,7 +47,7 @@ internal fun rememberWallpaperPermissionController(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showWallpaperFallbackDialog by remember { mutableStateOf(false) }
-    var needsPermission by remember { mutableStateOf(false) }
+    var securityError by remember { mutableStateOf(false) }
     var wallpaperButtonHasPermission by
         remember { mutableStateOf(WallpaperUtils.hasWallpaperAccessPermission(context)) }
 
