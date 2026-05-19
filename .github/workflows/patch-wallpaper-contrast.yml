@@ -23,216 +23,183 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Create WallpaperContrastUtils.kt
+      - name: Patch Theme.kt with wallpaper contrast support
         run: |
-          cat > app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt << 'ENDOFFILE'
-          package com.tk.quicksearch.shared.util
+          FILE="app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
 
-          import android.content.Context
-          import android.graphics.Bitmap
-          import android.graphics.Color
-          import com.tk.quicksearch.search.core.BackgroundSource
-          import kotlinx.coroutines.Dispatchers
-          import kotlinx.coroutines.sync.Mutex
-          import kotlinx.coroutines.sync.withLock
-          import kotlinx.coroutines.withContext
+          echo "=== Patching Theme.kt ==="
 
+          python3 << 'PYEOF'
+          import re
+
+          file_path = "app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
+
+          with open(file_path, "r") as f:
+              content = f.read()
+
+          # 1. Add import for WallpaperContrastUtils after the WallpaperUtils import
+          if "WallpaperContrastUtils" not in content:
+              content = content.replace(
+                  "import com.tk.quicksearch.shared.util.WallpaperUtils",
+                  "import com.tk.quicksearch.shared.util.WallpaperUtils\nimport com.tk.quicksearch.shared.util.WallpaperContrastUtils"
+              )
+              print("✅ Added WallpaperContrastUtils import")
+          else:
+              print("ℹ️ WallpaperContrastUtils import already exists")
+
+          # 2. Add LocalWallpaperIsLight CompositionLocal declaration
+          #    Insert it before the DarkColorScheme definition
+          local_declaration = '''
           /**
-           * Utility for determining whether the current background image is light or dark.
-           * Used by the UI layer to pick readable text/icon colors over wallpaper backgrounds.
+           * CompositionLocal indicating whether the current wallpaper/image background is light.
+           * UI components can read this to pick readable text/icon colors.
+           * - true  = light wallpaper → use dark text
+           * - false = dark wallpaper → use light text
+           * - null  = no image background active (use normal theme colors)
            */
-          object WallpaperContrastUtils {
+          val LocalWallpaperIsLight = androidx.compose.runtime.compositionLocalOf<Boolean?> { null }
+          '''
 
-              @Volatile
-              private var cachedWallpaperIsLight: Boolean? = null
-              @Volatile
-              private var cachedCustomImageIsLightUri: String? = null
-              @Volatile
-              private var cachedCustomImageIsLight: Boolean? = null
+          if "LocalWallpaperIsLight" not in content:
+              content = content.replace(
+                  "// ============================================================================\n// Base Color Schemes\n// ============================================================================",
+                  local_declaration.strip() + "\n\n// ============================================================================\n// Base Color Schemes\n// ============================================================================"
+              )
+              print("✅ Added LocalWallpaperIsLight declaration")
+          else:
+              print("ℹ️ LocalWallpaperIsLight already exists")
 
-              private val mutex = Mutex()
-
-              /**
-               * Returns true if the current background is light (use dark text),
-               * false if dark (use light text), or null if not applicable.
-               */
-              suspend fun isBackgroundLight(
-                  context: Context,
-                  backgroundSource: BackgroundSource,
-                  customImageUri: String?,
-              ): Boolean? {
-                  return when (backgroundSource) {
-                      BackgroundSource.SYSTEM_WALLPAPER -> getWallpaperIsLight(context)
-                      BackgroundSource.CUSTOM_IMAGE -> {
-                          val normalized = customImageUri?.trim()?.takeIf { it.isNotEmpty() } ?: return null
-                          getCustomImageIsLight(context, normalized)
-                      }
-                      BackgroundSource.THEME -> null
-                  }
-              }
-
-              /**
-               * Call this when wallpaper changes to force re-evaluation.
-               */
-              fun invalidateWallpaperLightnessCache() {
-                  cachedWallpaperIsLight = null
-              }
-
-              /**
-               * Call this when custom image changes to force re-evaluation.
-               */
-              fun invalidateCustomImageLightnessCache() {
-                  cachedCustomImageIsLightUri = null
-                  cachedCustomImageIsLight = null
-              }
-
-              /**
-               * Clears all lightness caches.
-               */
-              fun clearAll() {
-                  invalidateWallpaperLightnessCache()
-                  invalidateCustomImageLightnessCache()
-              }
-
-              private suspend fun getWallpaperIsLight(context: Context): Boolean? {
-                  cachedWallpaperIsLight?.let { return it }
-
-                  val bitmap = WallpaperUtils.getWallpaperBitmap(context) ?: return null
-                  return mutex.withLock {
-                      // Double-check after acquiring lock
-                      cachedWallpaperIsLight?.let { return it }
-                      withContext(Dispatchers.Default) {
-                          computeIsLight(bitmap)
-                      }.also { result ->
-                          cachedWallpaperIsLight = result
-                      }
-                  }
-              }
-
-              private suspend fun getCustomImageIsLight(
-                  context: Context,
-                  normalizedUri: String,
-              ): Boolean? {
-                  if (cachedCustomImageIsLightUri == normalizedUri && cachedCustomImageIsLight != null) {
-                      return cachedCustomImageIsLight
+          # 3. Add isWallpaperLight produceState after the imageAppearance produceState block
+          #    Find the imageAccentSlots assignment and insert before it
+          is_light_block = '''
+              val isWallpaperLight by
+                  produceState<Boolean?>(
+                      null,
+                      backgroundSource,
+                      customImageUri,
+                      wallpaperChangeVersion,
+                  ) {
+                      value =
+                          if (backgroundSource != BackgroundSource.THEME) {
+                              WallpaperContrastUtils.isBackgroundLight(
+                                  context = context,
+                                  backgroundSource = backgroundSource,
+                                  customImageUri = customImageUri,
+                              )
+                          } else {
+                              null
+                          }
                   }
 
-                  // Use the wallpaper utils to get the custom image bitmap via appearance path
-                  val bitmap = WallpaperUtils.getCachedWallpaperBitmap()
-                  // Fallback: try loading wallpaper bitmap if custom not directly accessible
-                  val targetBitmap = bitmap ?: WallpaperUtils.getWallpaperBitmap(context) ?: return null
+          '''
 
-                  return mutex.withLock {
-                      if (cachedCustomImageIsLightUri == normalizedUri && cachedCustomImageIsLight != null) {
-                          return cachedCustomImageIsLight
-                      }
-                      withContext(Dispatchers.Default) {
-                          computeIsLight(targetBitmap)
-                      }.also { result ->
-                          cachedCustomImageIsLightUri = normalizedUri
-                          cachedCustomImageIsLight = result
-                      }
-                  }
-              }
+          if "isWallpaperLight by" not in content:
+              content = content.replace(
+                  "    val imageAccentSlots =",
+                  is_light_block + "    val imageAccentSlots ="
+              )
+              print("✅ Added isWallpaperLight produceState")
+          else:
+              print("ℹ️ isWallpaperLight already exists")
 
-              /**
-               * Downscales the bitmap to 50x50 and computes average perceived luminance.
-               * Returns true if the image is considered light (avg luminance > 128).
-               */
-              private fun computeIsLight(bitmap: Bitmap): Boolean {
-                  if (bitmap.width <= 0 || bitmap.height <= 0) return false
-
-                  val sw = bitmap.width.coerceAtMost(50).coerceAtLeast(1)
-                  val sh = bitmap.height.coerceAtMost(50).coerceAtLeast(1)
-                  val scaled = Bitmap.createScaledBitmap(bitmap, sw, sh, true)
-
-                  var totalLuminance = 0.0
-                  val w = scaled.width
-                  val h = scaled.height
-                  val pixelCount = w * h
-
-                  for (x in 0 until w) {
-                      for (y in 0 until h) {
-                          val pixel = scaled.getPixel(x, y)
-                          totalLuminance += 0.299 * Color.red(pixel) +
-                                            0.587 * Color.green(pixel) +
-                                            0.114 * Color.blue(pixel)
-                      }
+          # 4. Add contrast-aware text color override after colorScheme is built
+          #    Find the appPalette assignment and insert before it
+          contrast_override_block = '''
+              // Override text-facing colors when image background is active and brightness is known.
+              // This ensures text is always readable regardless of wallpaper brightness.
+              val contrastAwareScheme =
+                  if (isWallpaperLight != null && backgroundSource != BackgroundSource.THEME) {
+                      val textScheme = if (isWallpaperLight == true) LightColorScheme else DarkColorScheme
+                      colorScheme.copy(
+                          onBackground = textScheme.onBackground,
+                          onSurface = textScheme.onSurface,
+                          onSurfaceVariant = textScheme.onSurfaceVariant,
+                      )
+                  } else {
+                      colorScheme
                   }
 
-                  if (scaled !== bitmap) {
-                      scaled.recycle()
-                  }
+          '''
 
-                  return (totalLuminance / pixelCount) > 128.0
-              }
-          }
-          ENDOFFILE
+          if "contrastAwareScheme" not in content:
+              content = content.replace(
+                  "    val appPalette =",
+                  contrast_override_block + "    val appPalette ="
+              )
+              print("✅ Added contrastAwareScheme override")
+          else:
+              print("ℹ️ contrastAwareScheme already exists")
 
-          echo "✅ WallpaperContrastUtils.kt created"
+          # 5. Replace colorScheme with contrastAwareScheme in MaterialTheme call
+          if "colorScheme = contrastAwareScheme" not in content:
+              content = content.replace(
+                  "colorScheme = colorScheme,",
+                  "colorScheme = contrastAwareScheme,"
+              )
+              print("✅ Updated MaterialTheme to use contrastAwareScheme")
+          else:
+              print("ℹ️ MaterialTheme already uses contrastAwareScheme")
 
-      - name: Patch WallpaperUtils.kt to call contrast invalidation
+          # 6. Add LocalWallpaperIsLight to CompositionLocalProvider
+          if "LocalWallpaperIsLight provides" not in content:
+              content = content.replace(
+                  'LocalIsSystemWallpaperActive provides (backgroundSource == BackgroundSource.SYSTEM_WALLPAPER),',
+                  'LocalIsSystemWallpaperActive provides (backgroundSource == BackgroundSource.SYSTEM_WALLPAPER),\n        LocalWallpaperIsLight provides isWallpaperLight,'
+              )
+              print("✅ Added LocalWallpaperIsLight to CompositionLocalProvider")
+          else:
+              print("ℹ️ LocalWallpaperIsLight already in CompositionLocalProvider")
+
+          # 7. Also invalidate contrast cache when wallpaper changes (in the BroadcastReceiver)
+          if "WallpaperContrastUtils.invalidateWallpaperLightnessCache()" not in content:
+              content = content.replace(
+                  "WallpaperUtils.invalidateWallpaperCache()\n                        wallpaperChangeVersion++",
+                  "WallpaperUtils.invalidateWallpaperCache()\n                        WallpaperContrastUtils.invalidateWallpaperLightnessCache()\n                        wallpaperChangeVersion++"
+              )
+              print("✅ Added contrast cache invalidation on wallpaper change")
+          else:
+              print("ℹ️ Contrast cache invalidation already present")
+
+          with open(file_path, "w") as f:
+              f.write(content)
+
+          print("\n✅ All patches applied to Theme.kt")
+          PYEOF
+
+      - name: Verify patched Theme.kt
         run: |
-          FILE="app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
+          FILE="app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
 
-          echo "=== Before patch: invalidateWallpaperCache ==="
-          grep -n "invalidateWallpaperCache\|clearMemoryCaches\|WallpaperContrastUtils" "$FILE" || true
+          echo "=== Checking for all expected changes ==="
 
-          # Add import for WallpaperContrastUtils if not already present
-          # (It's in the same package, so no import needed)
+          echo -n "WallpaperContrastUtils import: "
+          grep -c "import com.tk.quicksearch.shared.util.WallpaperContrastUtils" "$FILE" && echo "✅" || echo "❌"
 
-          # Patch invalidateWallpaperCache to also clear contrast cache
-          # Find the function and add our call after cachedWallpaperAppearance = null
-          sed -i '/cachedWallpaperAppearance = null/a\        WallpaperContrastUtils.invalidateWallpaperLightnessCache()' "$FILE"
+          echo -n "LocalWallpaperIsLight declaration: "
+          grep -c "val LocalWallpaperIsLight" "$FILE" && echo "✅" || echo "❌"
 
-          # Patch clearMemoryCaches to also clear contrast caches
-          # Add after cachedOverlayCustomAppearance = null
-          sed -i '/cachedOverlayCustomAppearance = null/a\        WallpaperContrastUtils.clearAll()' "$FILE"
+          echo -n "isWallpaperLight produceState: "
+          grep -c "isWallpaperLight by" "$FILE" && echo "✅" || echo "❌"
 
-          echo ""
-          echo "=== After patch ==="
-          grep -n "invalidateWallpaperCache\|clearMemoryCaches\|WallpaperContrastUtils" "$FILE" || true
+          echo -n "contrastAwareScheme: "
+          grep -c "contrastAwareScheme" "$FILE" && echo "✅" || echo "❌"
 
-          echo ""
-          echo "✅ WallpaperUtils.kt patched"
+          echo -n "MaterialTheme uses contrastAwareScheme: "
+          grep -c "colorScheme = contrastAwareScheme" "$FILE" && echo "✅" || echo "❌"
 
-      - name: Verify both files
-        run: |
-          echo "=== WallpaperContrastUtils.kt exists ==="
-          ls -la app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt
+          echo -n "LocalWallpaperIsLight in CompositionLocalProvider: "
+          grep -c "LocalWallpaperIsLight provides" "$FILE" && echo "✅" || echo "❌"
 
-          echo ""
-          echo "=== WallpaperContrastUtils.kt content ==="
-          cat app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt
-
-          echo ""
-          echo "=== WallpaperUtils.kt contrast references ==="
-          grep -n "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt || echo "No references found"
+          echo -n "Contrast cache invalidation: "
+          grep -c "WallpaperContrastUtils.invalidateWallpaperLightnessCache" "$FILE" && echo "✅" || echo "❌"
 
       - name: Commit and push
         run: |
           git add -A
           git status
-          git commit -m "feat: add wallpaper contrast detection for adaptive text color"
+          git diff --cached --stat
+          git commit -m "feat: adaptive text color based on wallpaper brightness"
           git push origin restore-wallpaper-feature
           echo ""
           echo "✅ Changes pushed to restore-wallpaper-feature"
-
-      - name: Summary
-        run: |
-          echo "========================================="
-          echo "DONE! Changes pushed."
-          echo ""
-          echo "New file:  WallpaperContrastUtils.kt"
-          echo "Patched:   WallpaperUtils.kt (cache invalidation sync)"
-          echo ""
-          echo "Usage from UI composables:"
-          echo ""
-          echo "  val isLight = WallpaperContrastUtils.isBackgroundLight("
-          echo "      context = context,"
-          echo "      backgroundSource = backgroundSource,"
-          echo "      customImageUri = customImageUri,"
-          echo "  )"
-          echo ""
-          echo "  val textColor = if (isLight == true) Color.Black else Color.White"
-          echo "========================================="
+          echo "This will auto-trigger the APK build workflow."
