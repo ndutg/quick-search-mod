@@ -32,56 +32,54 @@ jobs:
               lines = f.readlines()
 
           new_lines = []
-          skip_scrim_block = False
-          scrim_lines_removed = 0
-          scrim_inserted = False
+          graphicslayer_restored = False
+          scrim_exists = False
 
-          i = 0
-          while i < len(lines):
-              line = lines[i]
+          for i, line in enumerate(lines):
               stripped = line.strip()
 
-              # Remove any previously broken scrim block
-              if "// Scrim overlay for text readability" in line or "// Dark scrim for text readability" in line:
-                  skip_scrim_block = True
-                  scrim_lines_removed += 1
-                  i += 1
+              # Check if scrim already exists
+              if "Dark scrim for text readability" in line:
+                  scrim_exists = True
+
+              # Fix: restore the missing .graphicsLayer line after .blur(...)
+              # The line after .blur should be .graphicsLayer, but currently it jumps to contentScale
+              if ".blur(radius = effectiveBlurRadius.dp)" in stripped and not graphicslayer_restored:
+                  new_lines.append(line)
+                  # Check if the next line is NOT .graphicsLayer (meaning it was deleted)
+                  if i + 1 < len(lines):
+                      next_stripped = lines[i + 1].strip()
+                      if ".graphicsLayer" not in next_stripped:
+                          # Restore the missing line with matching indentation
+                          indent = line[:len(line) - len(line.lstrip())]
+                          new_lines.append(f"{indent}    .graphicsLayer(alpha = wallpaperLayerAlpha),\n")
+                          graphicslayer_restored = True
+                          print("✅ Restored missing .graphicsLayer(alpha = wallpaperLayerAlpha) line")
+                      else:
+                          print("ℹ️ .graphicsLayer already present after .blur")
                   continue
 
-              if skip_scrim_block:
-                  # Skip lines that are part of the scrim Box() block
-                  if stripped in ["Box(", "modifier = Modifier", ".fillMaxSize()", ")", ""] or \
-                     ".background(Color.Black.copy" in stripped or \
-                     ".graphicsLayer(alpha = wallpaperLayerAlpha)," in stripped or \
-                     "modifier =" == stripped:
-                      scrim_lines_removed += 1
-                      i += 1
-                      # End the skip when we hit the closing )
-                      if stripped == ")":
-                          skip_scrim_block = False
-                      continue
-                  else:
-                      skip_scrim_block = False
-
-              # Insert scrim BEFORE the tint overlay comment
-              if "Tint overlay" in line and "dark mode" in line and not scrim_inserted:
-                  # Detect the indentation from the tint overlay line
-                  indent = line[:len(line) - len(line.lstrip())]
-
-                  new_lines.append(f"{indent}// Dark scrim for text readability over any wallpaper\n")
-                  new_lines.append(f"{indent}Box(\n")
-                  new_lines.append(f"{indent}    modifier =\n")
-                  new_lines.append(f"{indent}        Modifier\n")
-                  new_lines.append(f"{indent}            .fillMaxSize()\n")
-                  new_lines.append(f"{indent}            .background(Color.Black.copy(alpha = 0.3f))\n")
-                  new_lines.append(f"{indent}            .graphicsLayer(alpha = wallpaperLayerAlpha),\n")
-                  new_lines.append(f"{indent})\n")
-                  new_lines.append(f"\n")
-                  scrim_inserted = True
-                  print(f"✅ Inserted scrim at line {len(new_lines)} with indent='{indent}'")
-
               new_lines.append(line)
-              i += 1
+
+          # Now add the scrim if it doesn't exist
+          if not scrim_exists:
+              final_lines = []
+              for i, line in enumerate(new_lines):
+                  # Insert scrim before tint overlay
+                  if "Tint overlay" in line and "dark mode" in line:
+                      indent = line[:len(line) - len(line.lstrip())]
+                      final_lines.append(f"{indent}// Dark scrim for text readability over any wallpaper\n")
+                      final_lines.append(f"{indent}Box(\n")
+                      final_lines.append(f"{indent}    modifier =\n")
+                      final_lines.append(f"{indent}        Modifier\n")
+                      final_lines.append(f"{indent}            .fillMaxSize()\n")
+                      final_lines.append(f"{indent}            .background(Color.Black.copy(alpha = 0.3f))\n")
+                      final_lines.append(f"{indent}            .graphicsLayer(alpha = wallpaperLayerAlpha),\n")
+                      final_lines.append(f"{indent})\n")
+                      final_lines.append(f"\n")
+                      print("✅ Added scrim Box before tint overlay")
+                  final_lines.append(line)
+              new_lines = final_lines
 
           # Ensure Color import exists
           has_color_import = any("import androidx.compose.ui.graphics.Color" in l for l in new_lines)
@@ -95,37 +93,37 @@ jobs:
           with open(file_path, "w") as f:
               f.writelines(new_lines)
 
-          if scrim_lines_removed > 0:
-              print(f"✅ Removed {scrim_lines_removed} broken scrim lines")
-          if scrim_inserted:
-              print("✅ Scrim properly inserted before tint overlay")
-          else:
-              print("⚠️ Could not find tint overlay comment to insert scrim")
-
           # Verify
           with open(file_path, "r") as f:
               final = f.read()
 
+          # Check Image() is complete
+          if ".blur(radius = effectiveBlurRadius.dp)" in final and \
+             ".graphicsLayer(alpha = wallpaperLayerAlpha)," in final and \
+             "contentScale = ContentScale.Crop," in final:
+              print("✅ VERIFIED: Image() composable is complete")
+          else:
+              print("❌ Image() composable may still be broken")
+
           if "Dark scrim for text readability" in final:
-              print("✅ VERIFIED: Scrim text found in final file")
+              print("✅ VERIFIED: Scrim present")
           else:
-              print("❌ FAILED: Scrim text NOT found")
+              print("❌ Scrim NOT found")
 
-          if "bitmap = bitmap," in final and "contentScale = ContentScale.Crop" in final:
-              print("✅ VERIFIED: Image() composable intact")
+          if "Tint overlay" in final:
+              print("✅ VERIFIED: Tint overlay intact")
           else:
-              print("⚠️ Image() composable may be broken")
+              print("❌ Tint overlay missing")
 
-          # Show context
+          # Show Image area
           final_lines = final.split("\n")
           for i, line in enumerate(final_lines):
-              if "Dark scrim" in line:
-                  start = max(0, i - 5)
-                  end = min(len(final_lines), i + 15)
-                  print("\n=== Context around scrim ===")
+              if "Image(" in line and "bitmap" not in line:
+                  start = max(0, i)
+                  end = min(len(final_lines), i + 25)
+                  print(f"\n=== Image() through scrim and tint (lines {start+1}-{end+1}) ===")
                   for j in range(start, end):
-                      marker = ">>>" if j == i else "   "
-                      print(f"{marker} {j+1}: {final_lines[j]}")
+                      print(f"  {j+1}: {final_lines[j]}")
                   break
 
           print("\n✅ Done")
@@ -139,7 +137,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "fix: proper scrim overlay between wallpaper Image and tint overlay"
+            git commit -m "fix: restore missing graphicsLayer in Image() + proper scrim placement"
             git push origin restore-wallpaper-feature
             echo "✅ Changes pushed — build will auto-trigger"
           fi
