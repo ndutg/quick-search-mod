@@ -1053,7 +1053,7 @@ private fun AppLabelText(
     val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
     val labelColor = when (imageBackgroundIsDark) {
         true -> Color.White
-        false -> Color.Black
+        false -> Color.White  // scrim makes background dark
         null -> MaterialTheme.colorScheme.onSurface
     }
     Spacer(
