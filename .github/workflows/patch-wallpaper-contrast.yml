@@ -23,100 +23,145 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Revert Theme.kt to remove global override
+      - name: Find where wallpaper Image is rendered
         run: |
-          FILE="app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
-
-          python3 << 'PYEOF'
-          file_path = "app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
-
-          with open(file_path, "r") as f:
-              content = f.read()
-
-          # 1. Remove the contrastAwareScheme block entirely
-          #    Replace the block with nothing, and restore colorScheme in MaterialTheme
-          content = content.replace("colorScheme = contrastAwareScheme,", "colorScheme = colorScheme,")
-          print("✅ Restored colorScheme in MaterialTheme")
-
-          # 2. Remove the contrastAwareScheme variable block
-          import re
-          content = re.sub(
-              r'\s*// Override text-facing colors when image background.*?'
-              r'val contrastAwareScheme =.*?colorScheme\s*\}\s*\n',
-              '\n',
-              content,
-              flags=re.DOTALL
-          )
-          print("✅ Removed contrastAwareScheme block")
-
-          with open(file_path, "w") as f:
-              f.write(content)
-
-          print("✅ Theme.kt cleaned up — global override removed")
-          print("   (LocalWallpaperIsLight and isWallpaperLight kept for future use)")
-          PYEOF
-
-      - name: Find and patch SearchScreenWallpaper.kt with scrim overlay
-        run: |
-          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt"
-
-          echo "=== Current SearchScreenWallpaper.kt ==="
-          cat "$FILE"
+          echo "=== Files calling SearchScreenWallpaperLogic ==="
+          grep -rn "SearchScreenWallpaperLogic" app/src/main/java/ --include="*.kt"
 
           echo ""
-          echo "=== Patching with scrim overlay ==="
+          echo "=== Files with Image( composable + bitmap ==="
+          grep -rn "Image(" app/src/main/java/com/tk/quicksearch/search/searchScreen/ --include="*.kt" | grep -i "bitmap\|wallpaper\|background\|imageBitmap"
+
+          echo ""
+          echo "=== SearchScreenBackground.kt content ==="
+          cat app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt
+
+          echo ""
+          echo "=== SearchScreen.kt - wallpaper related lines ==="
+          grep -n "Image\|wallpaper\|background\|bitmap\|scrim\|overlay\|Box\|Modifier.*fill\|alpha\|Color\." \
+            app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreen.kt | head -40
+
+      - name: Patch SearchScreenBackground.kt with scrim
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
 
           python3 << 'PYEOF'
-          file_path = "app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt"
+          import re
+
+          file_path = "app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
 
           with open(file_path, "r") as f:
               content = f.read()
 
-          # Add necessary imports if not present
-          imports_to_add = []
-          if "import androidx.compose.foundation.background" not in content:
-              imports_to_add.append("import androidx.compose.foundation.background")
-          if "import androidx.compose.ui.graphics.Color" not in content:
-              imports_to_add.append("import androidx.compose.ui.graphics.Color")
-          if "import androidx.compose.foundation.layout.Box" not in content:
-              imports_to_add.append("import androidx.compose.foundation.layout.Box")
-          if "import androidx.compose.foundation.layout.fillMaxSize" not in content:
-              imports_to_add.append("import androidx.compose.foundation.layout.fillMaxSize")
+          original = content
 
+          # Add imports if missing
+          imports_needed = {
+              "import androidx.compose.foundation.background": False,
+              "import androidx.compose.ui.graphics.Color": False,
+              "import androidx.compose.foundation.layout.Box": False,
+              "import androidx.compose.foundation.layout.fillMaxSize": False,
+              "import androidx.compose.ui.Modifier": False,
+          }
+
+          for imp in imports_needed:
+              if imp not in content:
+                  imports_needed[imp] = True
+
+          imports_to_add = [imp for imp, needed in imports_needed.items() if needed]
           if imports_to_add:
-              # Find last import line and add after it
-              import re
               last_import = None
               for m in re.finditer(r'^import .+$', content, re.MULTILINE):
                   last_import = m
               if last_import:
                   insert_pos = last_import.end()
                   content = content[:insert_pos] + "\n" + "\n".join(imports_to_add) + content[insert_pos:]
-                  print(f"✅ Added {len(imports_to_add)} missing imports")
+                  print(f"✅ Added {len(imports_to_add)} imports")
 
-          # Save the file so we can inspect it
-          with open(file_path, "w") as f:
-              f.write(content)
+          # Strategy: Find where the wallpaper Image is drawn.
+          # Look for patterns like:
+          #   Image(bitmap = ..., or
+          #   Image(painter = ..., or
+          #   Image(imageBitmap, or similar
+          # And add a scrim Box right after the Image() call's closing
 
-          print("✅ Imports updated")
-          print("")
-          print("=== Now searching for Image composable to add scrim after ==="
+          # First, let's see what we have
+          image_pattern = re.findall(r'(Image\s*\([^)]*(?:bitmap|painter|imageBitmap)[^)]*\))', content, re.DOTALL)
+          print(f"Found {len(image_pattern)} Image() calls with bitmap/painter")
 
-          # Look for the pattern where the wallpaper bitmap Image is drawn
-          # We need to add a Box with scrim overlay right after it
-          )
+          for i, match in enumerate(image_pattern):
+              print(f"  Image call {i}: {match[:80]}...")
+
+          # Add scrim overlay after the wallpaper/background Image
+          # The scrim is a semi-transparent dark overlay that ensures text readability
+          scrim_code = '''
+                    // Scrim overlay for text readability over wallpaper
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.35f))
+                    )'''
+
+          # Try to find the Image composable that draws the wallpaper
+          # It's usually inside a Box or similar container
+          # We look for Image followed by contentDescription containing wallpaper/background
+          # or the first Image in the file
+
+          # Pattern: Find Image(...) block and add scrim after it
+          # Look for the closing of Image() composable
+
+          if "// Scrim overlay" not in content:
+              # Try multiple patterns to find the right Image call
+              
+              # Pattern 1: Image with bitmap parameter
+              pattern1 = re.search(
+                  r'(Image\s*\([^)]*(?:bitmap|imageBitmap|painter)[^)]*\)\s*)',
+                  content,
+                  re.DOTALL
+              )
+              
+              if pattern1:
+                  insert_pos = pattern1.end()
+                  content = content[:insert_pos] + scrim_code + content[insert_pos:]
+                  print("✅ Added scrim after Image() composable (pattern 1)")
+              else:
+                  # Pattern 2: Just find any Image( and add after
+                  pattern2 = re.search(r'(Image\s*\([^)]*\)\s*)', content, re.DOTALL)
+                  if pattern2:
+                      insert_pos = pattern2.end()
+                      content = content[:insert_pos] + scrim_code + content[insert_pos:]
+                      print("✅ Added scrim after Image() composable (pattern 2)")
+                  else:
+                      print("⚠️ Could not find Image() composable — dumping file for manual review")
+                      print(content[:3000])
+          else:
+              print("ℹ️ Scrim already present")
+
+          if content != original:
+              with open(file_path, "w") as f:
+                  f.write(content)
+              print("✅ File saved")
+          else:
+              print("⚠️ No changes made")
+
+          # Show the area around where we inserted
+          if "// Scrim overlay" in content:
+              lines = content.split("\n")
+              for i, line in enumerate(lines):
+                  if "Scrim overlay" in line:
+                      start = max(0, i - 5)
+                      end = min(len(lines), i + 10)
+                      print("\n=== Context around scrim insertion ===")
+                      for j in range(start, end):
+                          marker = ">>>" if j == i else "   "
+                          print(f"{marker} {j+1}: {lines[j]}")
+                      break
           PYEOF
 
-      - name: Inspect SearchScreenWallpaper.kt structure
+      - name: Show patched file
         run: |
-          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt"
-
-          echo "=== Lines containing Image, Box, bitmap, background, Modifier ==="
-          grep -n "Image\|Box\|bitmap\|background\|Modifier\|fillMaxSize\|alpha\|scrim\|overlay\|Color" "$FILE" | head -60
-
-          echo ""
-          echo "=== Full file content ==="
-          cat "$FILE"
+          echo "=== Patched SearchScreenBackground.kt ==="
+          cat app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt
 
       - name: Commit and push
         run: |
@@ -127,7 +172,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "fix: revert global text override, inspect wallpaper screen for scrim"
+            git commit -m "feat: add dark scrim overlay on wallpaper for text readability"
             git push origin restore-wallpaper-feature
-            echo "✅ Changes pushed"
+            echo "✅ Changes pushed — build will auto-trigger"
           fi
