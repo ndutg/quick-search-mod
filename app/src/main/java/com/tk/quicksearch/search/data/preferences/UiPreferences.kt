@@ -10,6 +10,7 @@ import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionRegistry
+import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 
 /** Preferences for UI-related settings such as layout, messaging app, banners, etc. */
 class UiPreferences(
@@ -556,6 +557,21 @@ class UiPreferences(
         prefs.edit().putString(UiPreferences.KEY_SELECTED_APP_SUGGESTION_TAB, tab.name).apply()
     }
 
+    fun getEnabledAppSuggestionTabs(): Set<AppSuggestionTabType> {
+        val raw = prefs.getStringSet(UiPreferences.KEY_ENABLED_APP_SUGGESTION_TABS, null)
+        return AppSuggestionTabType.parseEnabledTabs(raw)
+    }
+
+    fun setEnabledAppSuggestionTabs(tabs: Set<AppSuggestionTabType>) {
+        prefs
+            .edit()
+            .putStringSet(
+                UiPreferences.KEY_ENABLED_APP_SUGGESTION_TABS,
+                tabs.map { it.name }.toSet(),
+            )
+            .apply()
+    }
+
     // ============================================================================
     // Web Search Suggestions Preferences
     // ============================================================================
@@ -642,6 +658,31 @@ class UiPreferences(
             .apply()
     }
 
+    fun getCurrencyConverterProviderId(): AiSearchLlmProviderId =
+        AiSearchLlmProviderId.fromStorageValue(
+            prefs.getString(UiPreferences.KEY_CURRENCY_CONVERTER_PROVIDER_ID, null),
+        )
+
+    fun setCurrencyConverterProviderId(providerId: AiSearchLlmProviderId) {
+        prefs.edit()
+            .putString(UiPreferences.KEY_CURRENCY_CONVERTER_PROVIDER_ID, providerId.storageValue)
+            .apply()
+    }
+
+    fun isCurrencyConverterGroundingEnabled(): Boolean =
+        getBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_GROUNDING_ENABLED, true)
+
+    fun setCurrencyConverterGroundingEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_GROUNDING_ENABLED, enabled)
+    }
+
+    fun isCurrencyConverterThinkingEnabled(): Boolean =
+        getBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_THINKING_ENABLED, false)
+
+    fun setCurrencyConverterThinkingEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_THINKING_ENABLED, enabled)
+    }
+
     fun getWordClockModel(): String =
         prefs.getString(UiPreferences.KEY_WORD_CLOCK_MODEL, null).orEmpty().ifBlank {
             getCurrencyConverterModel()
@@ -653,6 +694,29 @@ class UiPreferences(
         prefs.edit().putString(UiPreferences.KEY_WORD_CLOCK_MODEL, normalized).apply()
     }
 
+    fun getWordClockProviderId(): AiSearchLlmProviderId =
+        AiSearchLlmProviderId.fromStorageValue(
+            prefs.getString(UiPreferences.KEY_WORD_CLOCK_PROVIDER_ID, null),
+        )
+
+    fun setWordClockProviderId(providerId: AiSearchLlmProviderId) {
+        prefs.edit().putString(UiPreferences.KEY_WORD_CLOCK_PROVIDER_ID, providerId.storageValue).apply()
+    }
+
+    fun isWordClockGroundingEnabled(): Boolean =
+        getBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, true)
+
+    fun setWordClockGroundingEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, enabled)
+    }
+
+    fun isWordClockThinkingEnabled(): Boolean =
+        getBooleanPref(UiPreferences.KEY_WORD_CLOCK_THINKING_ENABLED, false)
+
+    fun setWordClockThinkingEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_WORD_CLOCK_THINKING_ENABLED, enabled)
+    }
+
     fun getDictionaryModel(): String =
         prefs.getString(UiPreferences.KEY_DICTIONARY_MODEL, null).orEmpty().ifBlank {
             getCurrencyConverterModel()
@@ -662,6 +726,29 @@ class UiPreferences(
         val normalized = modelId.trim()
         if (normalized.isEmpty()) return
         prefs.edit().putString(UiPreferences.KEY_DICTIONARY_MODEL, normalized).apply()
+    }
+
+    fun getDictionaryProviderId(): AiSearchLlmProviderId =
+        AiSearchLlmProviderId.fromStorageValue(
+            prefs.getString(UiPreferences.KEY_DICTIONARY_PROVIDER_ID, null),
+        )
+
+    fun setDictionaryProviderId(providerId: AiSearchLlmProviderId) {
+        prefs.edit().putString(UiPreferences.KEY_DICTIONARY_PROVIDER_ID, providerId.storageValue).apply()
+    }
+
+    fun isDictionaryGroundingEnabled(): Boolean =
+        getBooleanPref(UiPreferences.KEY_DICTIONARY_GROUNDING_ENABLED, false)
+
+    fun setDictionaryGroundingEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_DICTIONARY_GROUNDING_ENABLED, enabled)
+    }
+
+    fun isDictionaryThinkingEnabled(): Boolean =
+        getBooleanPref(UiPreferences.KEY_DICTIONARY_THINKING_ENABLED, false)
+
+    fun setDictionaryThinkingEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_DICTIONARY_THINKING_ENABLED, enabled)
     }
 
     // ============================================================================
@@ -875,6 +962,7 @@ class UiPreferences(
         // App suggestions preferences keys
         const val KEY_APP_SUGGESTIONS_ENABLED = "app_suggestions_enabled"
         const val KEY_SELECTED_APP_SUGGESTION_TAB = "selected_app_suggestion_tab"
+        const val KEY_ENABLED_APP_SUGGESTION_TABS = "enabled_app_suggestion_tabs"
 
         // Recent queries preferences keys
         const val KEY_RECENT_QUERIES = "recent_queries"
@@ -910,6 +998,15 @@ class UiPreferences(
         const val KEY_CURRENCY_CONVERTER_MODEL = "currency_converter_model"
         const val KEY_WORD_CLOCK_MODEL = "word_clock_model"
         const val KEY_DICTIONARY_MODEL = "dictionary_model"
+        const val KEY_CURRENCY_CONVERTER_PROVIDER_ID = "currency_converter_provider_id"
+        const val KEY_WORD_CLOCK_PROVIDER_ID = "word_clock_provider_id"
+        const val KEY_DICTIONARY_PROVIDER_ID = "dictionary_provider_id"
+        const val KEY_CURRENCY_CONVERTER_GROUNDING_ENABLED = "currency_converter_grounding_enabled"
+        const val KEY_CURRENCY_CONVERTER_THINKING_ENABLED = "currency_converter_thinking_enabled"
+        const val KEY_WORD_CLOCK_GROUNDING_ENABLED = "word_clock_grounding_enabled"
+        const val KEY_WORD_CLOCK_THINKING_ENABLED = "word_clock_thinking_enabled"
+        const val KEY_DICTIONARY_GROUNDING_ENABLED = "dictionary_grounding_enabled"
+        const val KEY_DICTIONARY_THINKING_ENABLED = "dictionary_thinking_enabled"
         /** Previous preference key; migrated automatically on read/write. */
         const val LEGACY_KEY_CURRENCY_CONVERTER_MODEL_PREF = "currency_converter_gemini_model"
 

@@ -44,7 +44,7 @@ fun CustomToolEditorScreen(
     configuredProviderIds: Set<AiSearchLlmProviderId>,
     onRefreshAvailableGeminiModels: () -> Unit,
     onProviderModelSelected: (AiSearchLlmProviderId, String) -> Unit,
-    onSave: (name: String, prompt: String, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean) -> Unit,
+    onSave: (name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean) -> Unit,
     showNameInput: Boolean = true,
     showPromptInput: Boolean = true,
     showAliasInput: Boolean = true,
@@ -61,7 +61,7 @@ fun CustomToolEditorScreen(
         mutableStateOf(existingTool?.modelId ?: GeminiModelCatalog.DEFAULT_MODEL_ID)
     }
     var selectedProviderInput by remember(existingTool?.id, selectedProviderId) {
-        mutableStateOf(selectedProviderId)
+        mutableStateOf(existingTool?.providerId ?: selectedProviderId)
     }
     var aliasInput by remember(existingTool?.id) {
         mutableStateOf(existingAlias)
@@ -235,6 +235,7 @@ fun CustomToolEditorScreen(
                         onSave(
                             nameInput.trim(),
                             promptInput.trim(),
+                            selectedProviderInput,
                             selectedModelId,
                             groundingEnabled,
                             aliasInput.trim(),

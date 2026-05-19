@@ -64,7 +64,7 @@ class WordClockHandler(
     suspend fun convert(
             confirmed: ConfirmedWordClockQuery,
     ): Result<Pair<WordClockModelResult, String>> {
-        val providerId = userPreferences.getAiSearchProviderId()
+        val providerId = userPreferences.getWordClockProviderId()
         val provider = AiSearchLlmProviderRegistry.get(providerId, context)
         val apiKey = userPreferences.getLlmApiKey(providerId)?.trim().orEmpty()
         if (apiKey.isEmpty()) {
@@ -76,6 +76,8 @@ class WordClockHandler(
                 userPreferences.getWordClockModel().trim().ifBlank {
                     provider.defaultModelId
                 }
+        val groundingEnabled = userPreferences.isWordClockGroundingEnabled()
+        val thinkingEnabled = userPreferences.isWordClockThinkingEnabled()
         val currentTimeGmt = gmtTimeFormatter.format(Instant.now())
         val userMessage =
                 "Resolve this request into local clock time and date: ${confirmed.timeExpression}. " +
@@ -91,7 +93,8 @@ class WordClockHandler(
                                         query = userMessage,
                                         personalContext = null,
                                         modelId = modelId,
-                                        useGroundingWithGoogleSearch = true,
+                                        useGroundingWithGoogleSearch = groundingEnabled,
+                                        thinkingEnabled = thinkingEnabled,
                                         useSystemInstruction = true,
                                         systemInstruction = WORD_CLOCK_SYSTEM_INSTRUCTION,
                                         responseMimeType = "application/json",

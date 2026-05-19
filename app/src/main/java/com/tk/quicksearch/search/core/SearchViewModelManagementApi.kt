@@ -54,6 +54,8 @@ internal interface SearchViewModelManagementApi {
 
     fun unpinApp(appInfo: AppInfo) = managementApiDelegate.unpinApp(appInfo)
 
+    fun reorderPinnedApps(apps: List<AppInfo>) = managementApiDelegate.reorderPinnedApps(apps)
+
     fun setAppNickname(appInfo: AppInfo, nickname: String?) =
         managementApiDelegate.setAppNickname(appInfo, nickname)
 
@@ -382,6 +384,8 @@ class SearchViewModelManagementApiDelegate internal constructor(
     fun pinApp(appInfo: AppInfo) = appManager().pinApp(appInfo)
 
     fun unpinApp(appInfo: AppInfo) = appManager().unpinApp(appInfo)
+
+    fun reorderPinnedApps(apps: List<AppInfo>) = appManager().reorderPinnedApps(apps)
 
     fun setAppNickname(appInfo: AppInfo, nickname: String?) = appManager().setAppNickname(appInfo, nickname)
 

@@ -37,6 +37,7 @@
     <string name="common_theme_device">Device</string>
     <string name="common_theme_system">System</string>
     <string name="common_action_add">Add</string>
+    <string name="action_clear">Clear</string>
     <string name="common_close">Close</string>
     <string name="common_time">Time</string>
     <string name="alias_trigger_after_space">Trigger after space</string>
@@ -143,6 +144,7 @@
     <string name="action_file_info">File Info</string>
     <string name="action_open_folder">Open Folder</string>
     <string name="action_share">Share</string>
+    <string name="action_open">Open</string>
     <string name="calendar_section_permission_subtitle">Calendar permission is required to perform calendar search</string>
     <string name="file_extension_label">.%s files</string>
     <string name="file_info_file_type">File type</string>
@@ -166,13 +168,15 @@
     <!-- ============================================================================
          Common Actions
          ============================================================================ -->
-    <string name="action_add_nickname">Add Nickname</string>
-    <string name="action_add_trigger">Add Trigger</string>
+    <string name="action_add_nickname">Nickname</string>
+    <string name="action_add_trigger">Trigger</string>
     <string name="action_add_to_home">Add to Home</string>
     <string name="action_app_info">App Info</string>
     <string name="action_edit_icon">Edit Icon</string>
     <string name="action_edit_nickname">Edit Nickname</string>
     <string name="action_edit_trigger">Edit Trigger</string>
+    <string name="app_menu_section_shortcuts">Shortcuts</string>
+    <string name="app_menu_section_actions">Actions</string>
     <string name="action_exclude_extension">Exclude .%s files</string>
     <string name="action_exclude_generic">Exclude</string>
     <string name="action_expand_more">More</string>
@@ -493,7 +497,6 @@
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_custom_label">Custom</string>
-    <string name="settings_add_custom_provider_button">Add Custom Provider</string>
     <string name="settings_add_custom_provider_title">Add Custom Provider</string>
     <string name="settings_add_custom_provider_desc">Add an OpenAI-compatible provider.</string>
     <string name="settings_custom_provider_base_url_label">OpenAI Base URL</string>
@@ -861,6 +864,7 @@
     <string name="app_suggestions_tab_pinned">Pinned</string>
     <string name="app_suggestions_tab_recent">Recents</string>
     <string name="app_suggestions_tab_most_used">Most Used</string>
+    <string name="app_suggestions_tab_required_toast">Keep at least one app suggestion tab enabled</string>
     <string name="app_suggestions_usage_access_link">usage access permission</string>
     <string name="app_suggestions_usage_access_tip">Grant usage access permission to see more appropriate suggestions</string>
     <string name="search_section_app_settings_toggle_desc">Turn app settings search on or off</string>

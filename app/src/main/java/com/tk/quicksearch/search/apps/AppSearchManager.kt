@@ -152,11 +152,15 @@ class AppSearchManager(
     fun computePinnedApps(exclusion: Set<String>): List<AppInfo> {
         val pinnedPackages = userPreferences.getPinnedPackages()
         if (cachedApps.isEmpty() || pinnedPackages.isEmpty()) return emptyList()
+        val pinnedOrder = userPreferences.getPinnedPackageOrder().withIndex().associate { it.value to it.index }
 
         return cachedApps
             .asSequence()
             .filter { pinnedPackages.contains(it.launchCountKey()) && !exclusion.contains(it.launchCountKey()) }
-            .sortedBy { it.appName.lowercase(Locale.getDefault()) }
+            .sortedWith(
+                compareBy<AppInfo> { pinnedOrder[it.launchCountKey()] ?: Int.MAX_VALUE }
+                    .thenBy { it.appName.lowercase(Locale.getDefault()) },
+            )
             .toList()
     }
 

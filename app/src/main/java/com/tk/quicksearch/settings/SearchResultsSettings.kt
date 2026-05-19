@@ -1,5 +1,7 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import com.tk.quicksearch.settings.shared.SectionSettingsSection
 import com.tk.quicksearch.settings.shared.SettingsScreenCallbacks
 import com.tk.quicksearch.settings.shared.SettingsScreenState
@@ -8,12 +10,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Bolt
@@ -28,6 +33,7 @@ import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.HorizontalDivider
@@ -36,6 +42,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +52,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
@@ -55,6 +63,7 @@ import androidx.core.view.HapticFeedbackConstantsCompat
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.NicknamePreferences
 import com.tk.quicksearch.search.data.preferences.TriggerPreferences
+import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.ItemPriorityConfig
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
@@ -72,8 +81,10 @@ import sh.calvin.reorderable.ReorderableColumn
 @Composable
 private fun SearchOptionsCard(
     appSuggestionsEnabled: Boolean,
+    enabledAppSuggestionTabs: Set<AppSuggestionTabType>,
     hasUsagePermission: Boolean,
     onAppSuggestionsToggle: (Boolean) -> Unit,
+    onAppSuggestionTabEnabledChange: (AppSuggestionTabType, Boolean) -> Unit,
     onRequestUsagePermission: () -> Unit,
     webSuggestionsEnabled: Boolean,
     onWebSuggestionsToggle: (Boolean) -> Unit,
@@ -136,6 +147,15 @@ private fun SearchOptionsCard(
                 isLastItem = false,
             )
 
+            SettingsNavigationToggleRow(
+                title = stringResource(R.string.recent_queries_toggle_title),
+                subtitle = stringResource(R.string.recent_queries_toggle_desc),
+                checked = recentQueriesEnabled,
+                onCheckedChange = onRecentQueriesToggle,
+                leadingIcon = Icons.Rounded.History,
+            )
+            HorizontalDivider(color = AppColors.SettingsDivider)
+
             SettingsToggleRow(
                 title = stringResource(R.string.app_suggestions_toggle_title),
                 subtitle = stringResource(R.string.app_suggestions_toggle_desc),
@@ -149,15 +169,14 @@ private fun SearchOptionsCard(
                 tipBannerLinkText = stringResource(R.string.app_suggestions_usage_access_link),
                 onTipBannerLinkClick = onRequestUsagePermission,
                 onTipBannerDismiss = { appSuggestionsTipDismissed = true },
+                showDivider = false,
             )
-
-            SettingsNavigationToggleRow(
-                title = stringResource(R.string.recent_queries_toggle_title),
-                subtitle = stringResource(R.string.recent_queries_toggle_desc),
-                checked = recentQueriesEnabled,
-                onCheckedChange = onRecentQueriesToggle,
-                leadingIcon = Icons.Rounded.History,
-            )
+            if (appSuggestionsEnabled) {
+                AppSuggestionTabCheckboxes(
+                    enabledTabs = enabledAppSuggestionTabs,
+                    onTabEnabledChange = onAppSuggestionTabEnabledChange,
+                )
+            }
 
             val hasAnyNavigationRows = hasNicknames || hasTriggers || hasExcludedItems
             var hasRenderedNavigationRow = false
@@ -225,6 +244,126 @@ private fun SearchOptionsCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun AppSuggestionTabCheckboxes(
+    enabledTabs: Set<AppSuggestionTabType>,
+    onTabEnabledChange: (AppSuggestionTabType, Boolean) -> Unit,
+) {
+    val context = LocalView.current.context
+    val lastTabError = stringResource(R.string.app_suggestions_tab_required_toast)
+    val configurableTabs =
+        listOf(
+            AppSuggestionTabType.PINNED to stringResource(R.string.app_suggestions_tab_pinned),
+            AppSuggestionTabType.RECENTS to stringResource(R.string.app_suggestions_tab_recent),
+            AppSuggestionTabType.NEW_UPDATED to stringResource(R.string.app_suggestions_tab_new_updated),
+            AppSuggestionTabType.MOST_USED to stringResource(R.string.app_suggestions_tab_most_used),
+        )
+    val rows = configurableTabs.chunked(2)
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    start =
+                        DesignTokens.SpacingXXLarge +
+                            DesignTokens.IconSizeSmall +
+                            DesignTokens.ItemRowSpacing,
+                    top = DesignTokens.SpacingXXSmall,
+                    end = DesignTokens.SpacingXXLarge,
+                    bottom = DesignTokens.SpacingMedium,
+                ),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        rows.forEach { rowTabs ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+            ) {
+                rowTabs.forEach { (tab, title) ->
+                    val isPinnedTab = tab == AppSuggestionTabType.PINNED
+                    AppSuggestionTabCheckboxItem(
+                        title = title,
+                        checked = isPinnedTab || tab in enabledTabs,
+                        isLocked = isPinnedTab,
+                        onCheckedChange = { enabled ->
+                            if (!enabled && enabledTabs.size == 1 && tab in enabledTabs) {
+                                Toast.makeText(context, lastTabError, Toast.LENGTH_SHORT).show()
+                            } else {
+                                onTabEnabledChange(tab, enabled)
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                if (rowTabs.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppSuggestionTabCheckboxItem(
+    title: String,
+    checked: Boolean,
+    isLocked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val lockedColor = AppColors.SettingsDivider
+    val contentColor =
+        if (isLocked) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.62f) else MaterialTheme.colorScheme.onSurfaceVariant
+
+    Row(
+        modifier =
+            modifier
+                .clip(DesignTokens.ShapeFull)
+                .border(
+                    width = 1.dp,
+                    color =
+                        if (isLocked) {
+                            lockedColor
+                        } else if (checked) {
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.72f)
+                        } else {
+                            AppColors.SettingsDivider
+                        },
+                    shape = DesignTokens.ShapeFull,
+                )
+                .clickable { if (!isLocked) onCheckedChange(!checked) }
+                .padding(
+                    horizontal = DesignTokens.SpacingSmall,
+                    vertical = DesignTokens.SpacingXSmall,
+                ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
+    ) {
+        Checkbox(
+            checked = checked,
+            onCheckedChange = { if (!isLocked) onCheckedChange(it) },
+            colors =
+                if (isLocked) {
+                    CheckboxDefaults.colors(
+                        checkedColor = lockedColor,
+                        uncheckedColor = lockedColor,
+                        checkmarkColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+                    )
+                } else {
+                    CheckboxDefaults.colors()
+                },
+            modifier = Modifier.scale(0.72f),
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelSmall,
+            color = contentColor,
+            modifier = Modifier.offset(x = (-2).dp),
+        )
     }
 }
 
@@ -718,6 +857,7 @@ fun SearchResultsSettingsSection(
 
         SearchOptionsCard(
             appSuggestionsEnabled = state.appSuggestionsEnabled,
+            enabledAppSuggestionTabs = state.enabledAppSuggestionTabs,
             hasUsagePermission = hasUsagePermission,
             onAppSuggestionsToggle = { enabled ->
                 callbacks.onApplySettingsCommand(
@@ -725,6 +865,11 @@ fun SearchResultsSettingsSection(
                         key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.APP_SUGGESTIONS,
                         enabled = enabled,
                     ),
+                )
+            },
+            onAppSuggestionTabEnabledChange = { tab, enabled ->
+                callbacks.onApplySettingsCommand(
+                    SettingsCommand.AppSuggestionTabEnabled(tab = tab, enabled = enabled),
                 )
             },
             onRequestUsagePermission = callbacks.onRequestUsagePermission,

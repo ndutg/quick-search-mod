@@ -47,7 +47,7 @@ class CurrencyConverterHandler(
     }
 
     suspend fun convert(confirmed: ConfirmedCurrencyQuery): Result<Pair<CurrencyConversionModelResult, String>> {
-        val providerId = userPreferences.getAiSearchProviderId()
+        val providerId = userPreferences.getCurrencyConverterProviderId()
         val provider = AiSearchLlmProviderRegistry.get(providerId, context)
         val apiKey = userPreferences.getLlmApiKey(providerId)?.trim().orEmpty()
         if (apiKey.isEmpty()) {
@@ -57,6 +57,8 @@ class CurrencyConverterHandler(
                 userPreferences.getCurrencyConverterModel().trim().ifBlank {
                     provider.defaultModelId
                 }
+        val groundingEnabled = userPreferences.isCurrencyConverterGroundingEnabled()
+        val thinkingEnabled = userPreferences.isCurrencyConverterThinkingEnabled()
         val userMessage =
                 "Convert ${confirmed.amount} ${confirmed.fromCurrency} to ${confirmed.toCurrency}. " +
                         "Original user query: ${confirmed.originalQuery}"
@@ -69,7 +71,8 @@ class CurrencyConverterHandler(
                                         query = userMessage,
                                         personalContext = null,
                                         modelId = modelId,
-                                        useGroundingWithGoogleSearch = true,
+                                        useGroundingWithGoogleSearch = groundingEnabled,
+                                        thinkingEnabled = thinkingEnabled,
                                         useSystemInstruction = true,
                                         systemInstruction = CURRENCY_SYSTEM_INSTRUCTION,
                                         responseMimeType = "application/json",
@@ -83,7 +86,7 @@ class CurrencyConverterHandler(
 
     /** Used in alias mode — sends the raw query to the AI without pre-parsing. */
     suspend fun convertRaw(rawQuery: String): Result<Pair<CurrencyConversionModelResult, String>> {
-        val providerId = userPreferences.getAiSearchProviderId()
+        val providerId = userPreferences.getCurrencyConverterProviderId()
         val provider = AiSearchLlmProviderRegistry.get(providerId, context)
         val apiKey = userPreferences.getLlmApiKey(providerId)?.trim().orEmpty()
         if (apiKey.isEmpty()) {
@@ -93,6 +96,8 @@ class CurrencyConverterHandler(
                 userPreferences.getCurrencyConverterModel().trim().ifBlank {
                     provider.defaultModelId
                 }
+        val groundingEnabled = userPreferences.isCurrencyConverterGroundingEnabled()
+        val thinkingEnabled = userPreferences.isCurrencyConverterThinkingEnabled()
         val result =
                 provider.fetchAnswer(
                         apiKey = apiKey,
@@ -102,7 +107,8 @@ class CurrencyConverterHandler(
                                         query = "Currency conversion: $rawQuery",
                                         personalContext = null,
                                         modelId = modelId,
-                                        useGroundingWithGoogleSearch = true,
+                                        useGroundingWithGoogleSearch = groundingEnabled,
+                                        thinkingEnabled = thinkingEnabled,
                                         useSystemInstruction = true,
                                         systemInstruction = CURRENCY_SYSTEM_INSTRUCTION,
                                         responseMimeType = "application/json",

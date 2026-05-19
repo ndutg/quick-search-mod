@@ -1,20 +1,28 @@
 package com.tk.quicksearch.search.appShortcuts
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
@@ -30,15 +38,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
+import com.tk.quicksearch.search.apps.AppMenuGridButton
+import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
@@ -379,6 +392,7 @@ internal fun AppShortcutRow(
                                 onEditCustomShortcut = onEditCustomShortcut,
                                 onEditShortcutIcon = onEditShortcutIcon,
                                 onAddToHome = { addToHomeHandler.addAppShortcutToHome(shortcut) },
+                                iconPackPackage = iconPackPackage,
                         )
                 }
         }
@@ -408,185 +422,148 @@ private fun AppShortcutDropdownMenu(
         onEditCustomShortcut: (StaticShortcut) -> Unit,
         onEditShortcutIcon: (StaticShortcut) -> Unit,
         onAddToHome: () -> Unit,
+        iconPackPackage: String?,
 ) {
-        androidx.compose.material3.DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = onDismissRequest,
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
-                properties = PopupProperties(focusable = false),
-                containerColor = AppColors.DialogBackground,
-        ) {
-                val menuItems = buildList {
-                        add(
-                                AppShortcutMenuItem(
-                                        textResId = R.string.action_app_info,
-                                        icon = {
-                                                Icon(
-                                                        imageVector = Icons.Rounded.Info,
-                                                        contentDescription = null,
-                                                )
-                                        },
-                                        onClick = {
-                                                onDismissRequest()
-                                                onAppInfoClick()
-                                        },
-                                ),
-                        )
-                        add(
-                                AppShortcutMenuItem(
-                                        textResId =
-                                                if (hasTrigger) {
-                                                        R.string.action_edit_trigger
-                                                } else {
-                                                        R.string.action_add_trigger
-                                                },
-                                        icon = {
-                                                Icon(
-                                                        imageVector = Icons.Rounded.Edit,
-                                                        contentDescription = null,
-                                                )
-                                        },
-                                        onClick = {
-                                                onDismissRequest()
-                                                onTriggerClick()
-                                        },
-                                ),
-                        )
-                        add(
-                                AppShortcutMenuItem(
-                                        textResId = R.string.action_add_to_home,
-                                        icon = {
-                                                Icon(
-                                                        imageVector = Icons.Rounded.Home,
-                                                        contentDescription = null,
-                                                )
-                                        },
-                                        onClick = {
-                                                onDismissRequest()
-                                                onAddToHome()
-                                        },
-                                ),
-                        )
-                        add(
-                                AppShortcutMenuItem(
-                                        textResId =
-                                                if (isPinned) {
-                                                        R.string.action_unpin_app
-                                                } else {
-                                                        R.string.action_pin_app
-                                                },
-                                        icon = {
-                                                Icon(
-                                                        painter =
-                                                                painterResource(
-                                                                        if (isPinned) {
-                                                                                R.drawable.ic_unpin
-                                                                        } else {
-                                                                                R.drawable.ic_pin
-                                                                        },
-                                                                ),
-                                                        contentDescription = null,
-                                                )
-                                        },
-                                        onClick = {
-                                                onDismissRequest()
-                                                onTogglePin()
-                                        },
-                                ),
-                        )
-                        if (isUserCreatedShortcut(shortcut)) {
-                                add(
-                                        AppShortcutMenuItem(
-                                                textResId = R.string.settings_edit_label,
-                                                icon = {
-                                                        Icon(
-                                                                imageVector = Icons.Rounded.Edit,
-                                                                contentDescription = null,
-                                                        )
-                                                },
-                                                onClick = {
-                                                        onDismissRequest()
-                                                        onEditCustomShortcut(shortcut)
-                                                },
-                                        ),
-                                )
-                        } else {
-                                add(
-                                        AppShortcutMenuItem(
-                                                textResId = R.string.action_edit_icon,
-                                                icon = {
-                                                        Icon(
-                                                                imageVector = Icons.Rounded.Edit,
-                                                                contentDescription = null,
-                                                        )
-                                                },
-                                                onClick = {
-                                                        onDismissRequest()
-                                                        onEditShortcutIcon(shortcut)
-                                                },
-                                        ),
-                                )
-                        }
-                        add(
-                                AppShortcutMenuItem(
-                                        textResId =
-                                                if (hasNickname) {
-                                                        R.string.action_edit_nickname
-                                                } else {
-                                                        R.string.action_add_nickname
-                                                },
-                                        icon = {
-                                                Icon(
-                                                        imageVector = Icons.Rounded.Edit,
-                                                        contentDescription = null,
-                                                )
-                                        },
-                                        onClick = {
-                                                onDismissRequest()
-                                                onNicknameClick()
-                                        },
-                                ),
-                        )
-                        add(
-                                AppShortcutMenuItem(
-                                        textResId =
-                                                if (isExcluded) {
-                                                        R.string.action_include_generic
-                                                } else {
-                                                        R.string.action_exclude_generic
-                                                },
-                                        icon = {
-                                                Icon(
-                                                        imageVector =
-                                                                if (isExcluded) {
-                                                                        Icons.Rounded.Visibility
-                                                                } else {
-                                                                        Icons.Rounded.VisibilityOff
-                                                                },
-                                                        contentDescription = null,
-                                                )
-                                        },
-                                        onClick = {
-                                                onDismissRequest()
-                                                if (isExcluded) {
-                                                        onInclude()
-                                                } else {
-                                                        onExclude()
-                                                }
-                                        },
-                                ),
-                        )
-                }
+        val context = LocalContext.current
+        val displayName = shortcutDisplayName(shortcut)
+        val density = LocalDensity.current
+        val iconSizePx = remember(density) { with(density) { 48.dp.roundToPx().coerceAtLeast(1) } }
+        val iconBitmap = rememberShortcutIcon(shortcut = shortcut, iconSizePx = iconSizePx)
+        val appIconResult = rememberAppIcon(packageName = shortcut.packageName, iconPackPackage = iconPackPackage)
+        val headerIcon = if (!shortcut.iconBase64.isNullOrBlank()) iconBitmap else (iconBitmap ?: appIconResult.bitmap)
+        val isUserCreated = isUserCreatedShortcut(shortcut)
 
-                menuItems.forEachIndexed { index, item ->
-                        if (index > 0) {
-                                HorizontalDivider()
+        val menuItems = buildList {
+                // Row 1: Pin | Trigger | Nickname
+                add(AppShortcutMenuItem(
+                        textResId = if (isPinned) R.string.action_unpin_app else R.string.action_pin_app,
+                        icon = {
+                                Icon(
+                                        painter = painterResource(if (isPinned) R.drawable.ic_unpin else R.drawable.ic_pin),
+                                        contentDescription = null,
+                                )
+                        },
+                        onClick = { onDismissRequest(); onTogglePin() },
+                ))
+                add(AppShortcutMenuItem(
+                        textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,
+                        icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null) },
+                        onClick = { onDismissRequest(); onTriggerClick() },
+                ))
+                add(AppShortcutMenuItem(
+                        textResId = if (hasNickname) R.string.action_edit_nickname else R.string.action_add_nickname,
+                        icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                        onClick = { onDismissRequest(); onNicknameClick() },
+                ))
+
+                // Row 2: Edit icon | Add to Home | Exclude
+                if (isUserCreated) {
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.settings_edit_label,
+                                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                                onClick = { onDismissRequest(); onEditCustomShortcut(shortcut) },
+                        ))
+                } else {
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.action_edit_icon,
+                                icon = { Icon(imageVector = Icons.Rounded.Image, contentDescription = null) },
+                                onClick = { onDismissRequest(); onEditShortcutIcon(shortcut) },
+                        ))
+                }
+                add(AppShortcutMenuItem(
+                        textResId = R.string.action_add_to_home,
+                        icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                        onClick = { onDismissRequest(); onAddToHome() },
+                ))
+                add(AppShortcutMenuItem(
+                        textResId = if (isExcluded) R.string.action_include_generic else R.string.action_exclude_generic,
+                        icon = {
+                                Icon(
+                                        imageVector = if (isExcluded) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
+                                        contentDescription = null,
+                                )
+                        },
+                        onClick = { onDismissRequest(); if (isExcluded) onInclude() else onExclude() },
+                ))
+
+                // Row 3: App Info | Uninstall
+                add(AppShortcutMenuItem(
+                        textResId = R.string.action_app_info,
+                        icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
+                        onClick = { onDismissRequest(); onAppInfoClick() },
+                ))
+                if (!isUserCreated) {
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.action_uninstall_app,
+                                icon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                                onClick = {
+                                        onDismissRequest()
+                                        try {
+                                                val intent = Intent(Intent.ACTION_DELETE).apply {
+                                                        data = Uri.parse("package:${shortcut.packageName}")
+                                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                }
+                                                context.startActivity(intent)
+                                        } catch (_: Exception) {}
+                                },
+                        ))
+                }
+        }
+
+        if (expanded) {
+                AppBottomPopup(
+                        onDismiss = onDismissRequest,
+                        leadingContent = {
+                                headerIcon?.let { bitmap ->
+                                        Image(
+                                                bitmap = bitmap,
+                                                contentDescription = displayName,
+                                                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)),
+                                                contentScale = ContentScale.Fit,
+                                        )
+                                }
+                        },
+                        title = {
+                                Column {
+                                        Text(
+                                                text = displayName,
+                                                style = MaterialTheme.typography.titleLarge,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                        )
+                                        shortcut.appLabel?.let { label ->
+                                                Text(
+                                                        text = label,
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                )
+                                        }
+                                }
+                        },
+                ) {
+                        Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                        ) {
+                                menuItems.chunked(3).forEach { row ->
+                                        Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                                        ) {
+                                                row.forEach { item ->
+                                                        AppMenuGridButton(
+                                                                label = stringResource(item.textResId),
+                                                                icon = { item.icon() },
+                                                                onClick = item.onClick,
+                                                                modifier = Modifier.weight(1f),
+                                                        )
+                                                }
+                                                repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                                        }
+                                }
                         }
-                        androidx.compose.material3.DropdownMenuItem(
-                                text = { Text(text = stringResource(item.textResId)) },
-                                leadingIcon = { item.icon() },
-                                onClick = item.onClick,
-                        )
                 }
         }
 }

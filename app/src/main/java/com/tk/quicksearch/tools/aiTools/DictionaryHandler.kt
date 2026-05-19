@@ -53,7 +53,7 @@ class DictionaryHandler(
     suspend fun define(
             confirmed: ConfirmedDictionaryQuery,
     ): Result<Pair<DictionaryModelResult, String>> {
-        val providerId = userPreferences.getAiSearchProviderId()
+        val providerId = userPreferences.getDictionaryProviderId()
         val provider = AiSearchLlmProviderRegistry.get(providerId, context)
         val apiKey = userPreferences.getLlmApiKey(providerId)?.trim().orEmpty()
         if (apiKey.isEmpty()) {
@@ -65,6 +65,8 @@ class DictionaryHandler(
                 userPreferences.getDictionaryModel().trim().ifBlank {
                     provider.defaultModelId
                 }
+        val groundingEnabled = userPreferences.isDictionaryGroundingEnabled()
+        val thinkingEnabled = userPreferences.isDictionaryThinkingEnabled()
         val userMessage =
                 "Provide a dictionary entry for: ${confirmed.term}. " +
                         "Original user query: ${confirmed.originalQuery}"
@@ -77,7 +79,8 @@ class DictionaryHandler(
                                         query = userMessage,
                                         personalContext = null,
                                         modelId = modelId,
-                                        useGroundingWithGoogleSearch = false,
+                                        useGroundingWithGoogleSearch = groundingEnabled,
+                                        thinkingEnabled = thinkingEnabled,
                                         useSystemInstruction = true,
                                         systemInstruction = DICTIONARY_SYSTEM_INSTRUCTION,
                                         responseMimeType = "application/json",

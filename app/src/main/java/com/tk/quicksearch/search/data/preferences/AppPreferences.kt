@@ -23,6 +23,29 @@ class AppPreferences(
 
     fun getPinnedPackages(): Set<String> = getPinnedStringItems(BasePreferences.KEY_PINNED)
 
+    fun getPinnedPackageOrder(): List<String> =
+        getStringListPref(BasePreferences.KEY_PINNED_APP_ORDER)
+            .filter { getPinnedPackages().contains(it) }
+
+    fun setPinnedPackageOrder(packageNames: List<String>): List<String> {
+        val pinnedPackages = getPinnedPackages()
+        val normalized =
+            buildList {
+                packageNames.forEach { packageName ->
+                    if (pinnedPackages.contains(packageName) && !contains(packageName)) {
+                        add(packageName)
+                    }
+                }
+                pinnedPackages.forEach { packageName ->
+                    if (!contains(packageName)) {
+                        add(packageName)
+                    }
+                }
+            }
+        setStringListPref(BasePreferences.KEY_PINNED_APP_ORDER, normalized)
+        return normalized
+    }
+
     fun hidePackageInSuggestions(packageName: String): Set<String> =
         updateStringSet(BasePreferences.KEY_HIDDEN_SUGGESTIONS) {
             it.add(packageName)
@@ -43,9 +66,20 @@ class AppPreferences(
             it.remove(packageName)
         }
 
-    fun pinPackage(packageName: String): Set<String> = pinStringItem(BasePreferences.KEY_PINNED, packageName)
+    fun pinPackage(packageName: String): Set<String> {
+        val existingOrder = getPinnedPackageOrder()
+        val updated = pinStringItem(BasePreferences.KEY_PINNED, packageName)
+        if (existingOrder.isNotEmpty() && !existingOrder.contains(packageName)) {
+            setStringListPref(BasePreferences.KEY_PINNED_APP_ORDER, existingOrder + packageName)
+        }
+        return updated
+    }
 
-    fun unpinPackage(packageName: String): Set<String> = unpinStringItem(BasePreferences.KEY_PINNED, packageName)
+    fun unpinPackage(packageName: String): Set<String> {
+        val updated = unpinStringItem(BasePreferences.KEY_PINNED, packageName)
+        setStringListPref(BasePreferences.KEY_PINNED_APP_ORDER, getPinnedPackageOrder().filterNot { it == packageName })
+        return updated
+    }
 
     fun clearAllHiddenAppsInSuggestions(): Set<String> = clearStringSet(BasePreferences.KEY_HIDDEN_SUGGESTIONS)
 

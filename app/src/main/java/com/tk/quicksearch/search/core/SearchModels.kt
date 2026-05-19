@@ -69,6 +69,7 @@ data class CustomTool(
         val name: String,
         val prompt: String,
         val modelId: String,
+        val providerId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val groundingEnabled: Boolean = false,
         val thinkingEnabled: Boolean = false,
 )
@@ -532,6 +533,7 @@ data class SearchUiState(
         val deviceThemeEnabled: Boolean = false,
         val appSuggestionsEnabled: Boolean = true,
         val selectedAppSuggestionTab: AppSuggestionTabType = AppSuggestionTabType.RECENTS,
+        val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         // Section visibility preferences
         val disabledSections: Set<SearchSection> = emptySet(),
         // Web suggestions
@@ -551,6 +553,7 @@ data class SearchUiState(
         val hasApiKey: Boolean = false,
         val geminiApiKeyLast4: String? = null,
         val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
+        val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
         val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val isSavingGeminiApiKey: Boolean = false,
         val personalContext: String = "",
@@ -710,6 +713,7 @@ fun SearchUiState(
                 hasApiKey = features.hasApiKey,
                 geminiApiKeyLast4 = features.geminiApiKeyLast4,
                 llmApiKeyLast4ByProvider = features.llmApiKeyLast4ByProvider,
+                customLlmBaseUrlByProvider = features.customLlmBaseUrlByProvider,
                 aiSearchLlmProviderId = features.aiSearchLlmProviderId,
                 isSavingGeminiApiKey = features.isSavingGeminiApiKey,
                 personalContext = features.personalContext,
@@ -772,6 +776,7 @@ fun SearchUiState(
                 deviceThemeEnabled = config.deviceThemeEnabled,
                 appSuggestionsEnabled = config.appSuggestionsEnabled,
                 selectedAppSuggestionTab = config.selectedAppSuggestionTab,
+                enabledAppSuggestionTabs = config.enabledAppSuggestionTabs,
                 selectedIconPackPackage = config.selectedIconPackPackage,
                 availableIconPacks = config.availableIconPacks,
                 maskUnsupportedIconPackIcons = config.maskUnsupportedIconPackIcons,

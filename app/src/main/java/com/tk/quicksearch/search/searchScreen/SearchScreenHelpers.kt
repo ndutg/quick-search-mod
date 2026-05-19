@@ -296,6 +296,7 @@ data class AppsSectionParams(
     val isSearching: Boolean,
     val hasUsagePermission: Boolean,
     val selectedSuggestionTab: AppSuggestionTabType,
+    val enabledSuggestionTabs: Set<AppSuggestionTabType>,
     val onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
     val hasAppResults: Boolean,
     val pinnedPackageNames: Set<String>,
@@ -306,6 +307,7 @@ data class AppsSectionParams(
     val onHideApp: (AppInfo) -> Unit,
     val onPinApp: (AppInfo) -> Unit,
     val onUnpinApp: (AppInfo) -> Unit,
+    val onReorderPinnedApps: (List<AppInfo>) -> Unit,
     val onNicknameClick: (AppInfo) -> Unit,
     val onTriggerClick: (AppInfo) -> Unit,
     val getAppNickname: (String) -> String?,
@@ -438,6 +440,7 @@ internal fun buildSectionParams(
     onHideApp: (AppInfo) -> Unit,
     onPinApp: (AppInfo) -> Unit,
     onUnpinApp: (AppInfo) -> Unit,
+    onReorderPinnedApps: (List<AppInfo>) -> Unit,
     onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
     getFileNickname: (String) -> String?,
     getContactNickname: (Long) -> String?,
@@ -824,6 +827,7 @@ internal fun buildSectionParams(
             isSearching = derivedState.isSearching,
             hasUsagePermission = state.hasUsagePermission,
             selectedSuggestionTab = state.selectedAppSuggestionTab,
+            enabledSuggestionTabs = state.enabledAppSuggestionTabs,
             onSuggestionTabSelected = onSuggestionTabSelected,
             hasAppResults = derivedState.hasAppResults,
             pinnedPackageNames = derivedState.pinnedPackageNames,
@@ -834,6 +838,7 @@ internal fun buildSectionParams(
             onHideApp = onHideApp,
             onPinApp = onPinApp,
             onUnpinApp = onUnpinApp,
+            onReorderPinnedApps = onReorderPinnedApps,
             onNicknameClick = { app ->
                 onUpdateNicknameDialogState(
                     NicknameDialogState.App(

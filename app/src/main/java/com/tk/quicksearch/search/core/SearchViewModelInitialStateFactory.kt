@@ -130,6 +130,7 @@ internal object SearchViewModelInitialStateFactory {
                     startupSnapshot?.appSuggestionsEnabled
                         ?: startupPreferencesReader.areAppSuggestionsEnabled(),
                 selectedAppSuggestionTab = startupPreferencesReader.getSelectedAppSuggestionTab(),
+                enabledAppSuggestionTabs = startupPreferencesReader.getEnabledAppSuggestionTabs(),
                 selectRetainedQuery = !clearQueryOnLaunch && inMemoryRetainedQuery.isNotEmpty(),
             )
 
