@@ -26,6 +26,7 @@ import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import androidx.compose.ui.graphics.Color
 
 @Composable
 internal fun SearchScreenBackground(
@@ -139,7 +140,13 @@ internal fun SearchScreenBackground(
                     modifier =
                         wallpaperModifier
                             .blur(radius = effectiveBlurRadius.dp)
-                            .graphicsLayer(alpha = wallpaperLayerAlpha),
+                            
+          // Scrim overlay for text readability over wallpaper
+          Box(
+              modifier = Modifier
+                  .fillMaxSize()
+                  .background(Color.Black.copy(alpha = 0.35f))
+          ).graphicsLayer(alpha = wallpaperLayerAlpha),
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.TopCenter,
                 )
