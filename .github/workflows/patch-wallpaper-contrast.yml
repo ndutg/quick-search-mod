@@ -23,131 +23,34 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Investigate and patch AppGridView.kt
+      - name: Patch AppGridView.kt label color
         run: |
-          python3 << 'PYEOF'
-          import re
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
 
-          file_path = "app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          echo "=== Before patch ==="
+          grep -n "false -> Color" "$FILE"
 
-          with open(file_path, "r") as f:
-              content = f.read()
-              lines = content.split("\n")
+          # Since we have a dark scrim overlay, the background is always effectively dark
+          # when wallpaper is active. So use Color.White for both true and false.
+          sed -i 's/false -> Color.Black/false -> Color.White  \/\/ scrim makes background dark/' "$FILE"
 
-          # Show all lines with color references
-          print("=== Lines with color/text references ===")
-          for i, line in enumerate(lines):
-              if any(kw in line.lower() for kw in ["color", "text(", "label", "appname", "app_name", "fontweight", "style ="]):
-                  print(f"  {i+1}: {line.rstrip()}")
+          echo ""
+          echo "=== After patch ==="
+          grep -n "Color.White\|Color.Black\|labelColor" "$FILE" | grep -i "label\|false\|true\|null"
 
-          print("\n=== Lines with Color.Black or hardcoded colors ===")
-          for i, line in enumerate(lines):
-              if "Color.Black" in line or "Color.White" in line or "Color(" in line:
-                  print(f"  {i+1}: {line.rstrip()}")
+          echo ""
+          echo "=== Full AppLabelText function ==="
+          grep -A 20 "private fun AppLabelText" "$FILE"
 
-          print("\n=== Lines with MaterialTheme references ===")
-          for i, line in enumerate(lines):
-              if "MaterialTheme" in line or "onSurface" in line or "onBackground" in line:
-                  print(f"  {i+1}: {line.rstrip()}")
-
-          # Find Text composables that render app names/labels
-          print("\n=== Text() composables (potential app labels) ===")
-          for i, line in enumerate(lines):
-              if "Text(" in line:
-                  start = max(0, i - 2)
-                  end = min(len(lines), i + 8)
-                  print(f"  --- Text at line {i+1} ---")
-                  for j in range(start, end):
-                      print(f"    {j+1}: {lines[j].rstrip()}")
-                  print()
-
-          # Now patch: replace Color.Black with MaterialTheme.colorScheme.onSurface
-          # for text/label contexts
-          patched = content
-
-          # Strategy 1: Replace Color.Black in text color contexts
-          # Look for patterns like: color = Color.Black or color = AppColors.xxx
-          changes = 0
-
-          # Replace Color.Black used as text color
-          if "Color.Black" in patched:
-              # Only replace in text/label contexts, not backgrounds
-              new_lines = []
-              for line in patched.split("\n"):
-                  if "Color.Black" in line and ("color =" in line.lower() or "color=" in line.lower()):
-                      # Check context - is this likely a text color?
-                      if any(kw in line.lower() for kw in ["text", "label", "title", "name", "font"]):
-                          old = line
-                          line = line.replace("Color.Black", "MaterialTheme.colorScheme.onSurface")
-                          if old != line:
-                              changes += 1
-                              print(f"✅ Replaced Color.Black with onSurface: {line.strip()}")
-                  new_lines.append(line)
-              patched = "\n".join(new_lines)
-
-          # Strategy 2: Find Text composables with hardcoded dark colors
-          # Look for color = Color(0xFF... with dark values
-          dark_color_pattern = re.findall(r'color\s*=\s*Color\(0x[Ff][Ff][0-3][0-9a-fA-F]', patched)
-          if dark_color_pattern:
-              print(f"\n⚠️ Found {len(dark_color_pattern)} potential dark hardcoded colors")
-              for p in dark_color_pattern:
-                  print(f"  {p}")
-
-          # Strategy 3: If app uses a specific AppColors constant for label text
-          label_color_patterns = re.findall(r'(AppColors\.\w*[Ll]abel\w*|AppColors\.\w*[Tt]ext\w*|AppColors\.\w*[Nn]ame\w*)', patched)
-          if label_color_patterns:
-              print(f"\n=== AppColors label/text constants found ===")
-              for p in label_color_patterns:
-                  print(f"  {p}")
-
-          # Strategy 4: Check if there's a LocalImageBackgroundIsDark usage
-          if "LocalImageBackgroundIsDark" in patched:
-              print("\n✅ File already uses LocalImageBackgroundIsDark")
-          else:
-              print("\nℹ️ File does NOT use LocalImageBackgroundIsDark")
-
-          # Strategy 5: Most aggressive - find ALL color assignments near Text()
-          print("\n=== All color assignments in the file ===")
-          for i, line in enumerate(patched.split("\n")):
-              stripped = line.strip()
-              if re.match(r'color\s*=', stripped):
-                  print(f"  {i+1}: {stripped}")
-
-          # If no Color.Black replacements were made, try a broader approach
-          if changes == 0:
-              print("\n⚠️ No direct Color.Black text replacements found")
-              print("Trying broader approach - looking for the label text style...")
-
-              # Find where app name/label text color is set
-              # Common patterns:
-              #   style = MaterialTheme.typography.xxx.copy(color = ...)
-              #   color = someColor
-              for i, line in enumerate(patched.split("\n")):
-                  if "style" in line.lower() and "copy" in line.lower() and "color" in line.lower():
-                      print(f"  Style+copy+color at {i+1}: {line.strip()}")
-
-          # Save if changes were made
-          if patched != content:
-              with open(file_path, "w") as f:
-                  f.write(patched)
-              print(f"\n✅ Saved {changes} changes to AppGridView.kt")
-          else:
-              print("\nℹ️ No automatic changes made yet - need manual review based on output above")
-
-          # Print full file for reference
-          print("\n=== FULL FILE CONTENT ===")
-          print(patched)
-          PYEOF
-
-      - name: Commit and push if changes
+      - name: Commit and push
         run: |
           git add -A
           git diff --cached --stat
 
           if git diff --cached --quiet; then
-            echo "ℹ️ No changes to commit — review the investigation output above"
+            echo "⚠️ No changes to commit"
           else
-            git commit -m "fix: patch app label text color in AppGridView for wallpaper readability"
+            git commit -m "fix: use white text for app labels when wallpaper + scrim is active"
             git push origin restore-wallpaper-feature
             echo "✅ Changes pushed — build will auto-trigger"
           fi
