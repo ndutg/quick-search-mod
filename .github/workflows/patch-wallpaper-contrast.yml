@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout restore-wallpaper-feature with full history
+      - name: Checkout restore-wallpaper-feature
         uses: actions/checkout@v4
         with:
           ref: restore-wallpaper-feature
@@ -23,183 +23,111 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Patch Theme.kt with wallpaper contrast support
+      - name: Revert Theme.kt to remove global override
         run: |
           FILE="app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
 
-          echo "=== Patching Theme.kt ==="
-
           python3 << 'PYEOF'
-          import re
-
           file_path = "app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
 
           with open(file_path, "r") as f:
               content = f.read()
 
-          # 1. Add import for WallpaperContrastUtils after the WallpaperUtils import
-          if "WallpaperContrastUtils" not in content:
-              content = content.replace(
-                  "import com.tk.quicksearch.shared.util.WallpaperUtils",
-                  "import com.tk.quicksearch.shared.util.WallpaperUtils\nimport com.tk.quicksearch.shared.util.WallpaperContrastUtils"
-              )
-              print("✅ Added WallpaperContrastUtils import")
-          else:
-              print("ℹ️ WallpaperContrastUtils import already exists")
+          # 1. Remove the contrastAwareScheme block entirely
+          #    Replace the block with nothing, and restore colorScheme in MaterialTheme
+          content = content.replace("colorScheme = contrastAwareScheme,", "colorScheme = colorScheme,")
+          print("✅ Restored colorScheme in MaterialTheme")
 
-          # 2. Add LocalWallpaperIsLight CompositionLocal declaration
-          #    Insert it before the DarkColorScheme definition
-          local_declaration = '''
-          /**
-           * CompositionLocal indicating whether the current wallpaper/image background is light.
-           * UI components can read this to pick readable text/icon colors.
-           * - true  = light wallpaper → use dark text
-           * - false = dark wallpaper → use light text
-           * - null  = no image background active (use normal theme colors)
-           */
-          val LocalWallpaperIsLight = androidx.compose.runtime.compositionLocalOf<Boolean?> { null }
-          '''
-
-          if "LocalWallpaperIsLight" not in content:
-              content = content.replace(
-                  "// ============================================================================\n// Base Color Schemes\n// ============================================================================",
-                  local_declaration.strip() + "\n\n// ============================================================================\n// Base Color Schemes\n// ============================================================================"
-              )
-              print("✅ Added LocalWallpaperIsLight declaration")
-          else:
-              print("ℹ️ LocalWallpaperIsLight already exists")
-
-          # 3. Add isWallpaperLight produceState after the imageAppearance produceState block
-          #    Find the imageAccentSlots assignment and insert before it
-          is_light_block = '''
-              val isWallpaperLight by
-                  produceState<Boolean?>(
-                      null,
-                      backgroundSource,
-                      customImageUri,
-                      wallpaperChangeVersion,
-                  ) {
-                      value =
-                          if (backgroundSource != BackgroundSource.THEME) {
-                              WallpaperContrastUtils.isBackgroundLight(
-                                  context = context,
-                                  backgroundSource = backgroundSource,
-                                  customImageUri = customImageUri,
-                              )
-                          } else {
-                              null
-                          }
-                  }
-
-          '''
-
-          if "isWallpaperLight by" not in content:
-              content = content.replace(
-                  "    val imageAccentSlots =",
-                  is_light_block + "    val imageAccentSlots ="
-              )
-              print("✅ Added isWallpaperLight produceState")
-          else:
-              print("ℹ️ isWallpaperLight already exists")
-
-          # 4. Add contrast-aware text color override after colorScheme is built
-          #    Find the appPalette assignment and insert before it
-          contrast_override_block = '''
-              // Override text-facing colors when image background is active and brightness is known.
-              // This ensures text is always readable regardless of wallpaper brightness.
-              val contrastAwareScheme =
-                  if (isWallpaperLight != null && backgroundSource != BackgroundSource.THEME) {
-                      val textScheme = if (isWallpaperLight == true) LightColorScheme else DarkColorScheme
-                      colorScheme.copy(
-                          onBackground = textScheme.onBackground,
-                          onSurface = textScheme.onSurface,
-                          onSurfaceVariant = textScheme.onSurfaceVariant,
-                      )
-                  } else {
-                      colorScheme
-                  }
-
-          '''
-
-          if "contrastAwareScheme" not in content:
-              content = content.replace(
-                  "    val appPalette =",
-                  contrast_override_block + "    val appPalette ="
-              )
-              print("✅ Added contrastAwareScheme override")
-          else:
-              print("ℹ️ contrastAwareScheme already exists")
-
-          # 5. Replace colorScheme with contrastAwareScheme in MaterialTheme call
-          if "colorScheme = contrastAwareScheme" not in content:
-              content = content.replace(
-                  "colorScheme = colorScheme,",
-                  "colorScheme = contrastAwareScheme,"
-              )
-              print("✅ Updated MaterialTheme to use contrastAwareScheme")
-          else:
-              print("ℹ️ MaterialTheme already uses contrastAwareScheme")
-
-          # 6. Add LocalWallpaperIsLight to CompositionLocalProvider
-          if "LocalWallpaperIsLight provides" not in content:
-              content = content.replace(
-                  'LocalIsSystemWallpaperActive provides (backgroundSource == BackgroundSource.SYSTEM_WALLPAPER),',
-                  'LocalIsSystemWallpaperActive provides (backgroundSource == BackgroundSource.SYSTEM_WALLPAPER),\n        LocalWallpaperIsLight provides isWallpaperLight,'
-              )
-              print("✅ Added LocalWallpaperIsLight to CompositionLocalProvider")
-          else:
-              print("ℹ️ LocalWallpaperIsLight already in CompositionLocalProvider")
-
-          # 7. Also invalidate contrast cache when wallpaper changes (in the BroadcastReceiver)
-          if "WallpaperContrastUtils.invalidateWallpaperLightnessCache()" not in content:
-              content = content.replace(
-                  "WallpaperUtils.invalidateWallpaperCache()\n                        wallpaperChangeVersion++",
-                  "WallpaperUtils.invalidateWallpaperCache()\n                        WallpaperContrastUtils.invalidateWallpaperLightnessCache()\n                        wallpaperChangeVersion++"
-              )
-              print("✅ Added contrast cache invalidation on wallpaper change")
-          else:
-              print("ℹ️ Contrast cache invalidation already present")
+          # 2. Remove the contrastAwareScheme variable block
+          import re
+          content = re.sub(
+              r'\s*// Override text-facing colors when image background.*?'
+              r'val contrastAwareScheme =.*?colorScheme\s*\}\s*\n',
+              '\n',
+              content,
+              flags=re.DOTALL
+          )
+          print("✅ Removed contrastAwareScheme block")
 
           with open(file_path, "w") as f:
               f.write(content)
 
-          print("\n✅ All patches applied to Theme.kt")
+          print("✅ Theme.kt cleaned up — global override removed")
+          print("   (LocalWallpaperIsLight and isWallpaperLight kept for future use)")
           PYEOF
 
-      - name: Verify patched Theme.kt
+      - name: Find and patch SearchScreenWallpaper.kt with scrim overlay
         run: |
-          FILE="app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt"
+          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt"
 
-          echo "=== Checking for all expected changes ==="
+          echo "=== Current SearchScreenWallpaper.kt ==="
+          cat "$FILE"
 
-          echo -n "WallpaperContrastUtils import: "
-          grep -c "import com.tk.quicksearch.shared.util.WallpaperContrastUtils" "$FILE" && echo "✅" || echo "❌"
+          echo ""
+          echo "=== Patching with scrim overlay ==="
 
-          echo -n "LocalWallpaperIsLight declaration: "
-          grep -c "val LocalWallpaperIsLight" "$FILE" && echo "✅" || echo "❌"
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt"
 
-          echo -n "isWallpaperLight produceState: "
-          grep -c "isWallpaperLight by" "$FILE" && echo "✅" || echo "❌"
+          with open(file_path, "r") as f:
+              content = f.read()
 
-          echo -n "contrastAwareScheme: "
-          grep -c "contrastAwareScheme" "$FILE" && echo "✅" || echo "❌"
+          # Add necessary imports if not present
+          imports_to_add = []
+          if "import androidx.compose.foundation.background" not in content:
+              imports_to_add.append("import androidx.compose.foundation.background")
+          if "import androidx.compose.ui.graphics.Color" not in content:
+              imports_to_add.append("import androidx.compose.ui.graphics.Color")
+          if "import androidx.compose.foundation.layout.Box" not in content:
+              imports_to_add.append("import androidx.compose.foundation.layout.Box")
+          if "import androidx.compose.foundation.layout.fillMaxSize" not in content:
+              imports_to_add.append("import androidx.compose.foundation.layout.fillMaxSize")
 
-          echo -n "MaterialTheme uses contrastAwareScheme: "
-          grep -c "colorScheme = contrastAwareScheme" "$FILE" && echo "✅" || echo "❌"
+          if imports_to_add:
+              # Find last import line and add after it
+              import re
+              last_import = None
+              for m in re.finditer(r'^import .+$', content, re.MULTILINE):
+                  last_import = m
+              if last_import:
+                  insert_pos = last_import.end()
+                  content = content[:insert_pos] + "\n" + "\n".join(imports_to_add) + content[insert_pos:]
+                  print(f"✅ Added {len(imports_to_add)} missing imports")
 
-          echo -n "LocalWallpaperIsLight in CompositionLocalProvider: "
-          grep -c "LocalWallpaperIsLight provides" "$FILE" && echo "✅" || echo "❌"
+          # Save the file so we can inspect it
+          with open(file_path, "w") as f:
+              f.write(content)
 
-          echo -n "Contrast cache invalidation: "
-          grep -c "WallpaperContrastUtils.invalidateWallpaperLightnessCache" "$FILE" && echo "✅" || echo "❌"
+          print("✅ Imports updated")
+          print("")
+          print("=== Now searching for Image composable to add scrim after ==="
+
+          # Look for the pattern where the wallpaper bitmap Image is drawn
+          # We need to add a Box with scrim overlay right after it
+          )
+          PYEOF
+
+      - name: Inspect SearchScreenWallpaper.kt structure
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt"
+
+          echo "=== Lines containing Image, Box, bitmap, background, Modifier ==="
+          grep -n "Image\|Box\|bitmap\|background\|Modifier\|fillMaxSize\|alpha\|scrim\|overlay\|Color" "$FILE" | head -60
+
+          echo ""
+          echo "=== Full file content ==="
+          cat "$FILE"
 
       - name: Commit and push
         run: |
           git add -A
           git status
           git diff --cached --stat
-          git commit -m "feat: adaptive text color based on wallpaper brightness"
-          git push origin restore-wallpaper-feature
-          echo ""
-          echo "✅ Changes pushed to restore-wallpaper-feature"
-          echo "This will auto-trigger the APK build workflow."
+
+          if git diff --cached --quiet; then
+            echo "⚠️ No changes to commit"
+          else
+            git commit -m "fix: revert global text override, inspect wallpaper screen for scrim"
+            git push origin restore-wallpaper-feature
+            echo "✅ Changes pushed"
+          fi
