@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.media.ExifInterface
@@ -132,14 +133,27 @@ object WallpaperUtils {
     fun copyImageToInternalStorage(context: Context, sourceUri: Uri): String? =
         runCatching {
             val dir = File(context.filesDir, "backgrounds")
-            dir.listFiles { f -> f.name.startsWith("custom_background_") }?.forEach { it.delete() }
             if (!dir.exists()) dir.mkdirs()
             val dest = File(dir, "custom_background_${System.currentTimeMillis()}.jpg")
-            context.contentResolver.openInputStream(sourceUri)?.use { input ->
-                FileOutputStream(dest).use { output -> input.copyTo(output) }
-            }
+            val bitmap =
+                decodeBitmapWithOrientation(context, sourceUri)
+                    ?: run {
+                        Log.w("WallpaperUtils", "Failed to decode selected custom background image")
+                        return@runCatching null
+                    }
+            val writeSucceeded =
+                FileOutputStream(dest).use { output ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, STARTUP_PREVIEW_QUALITY, output)
+                }
+            bitmap.recycle()
+            if (!writeSucceeded) return@runCatching null
+            if (!dest.exists() || dest.length() == 0L) return@runCatching null
+            dir.listFiles { f -> f.name.startsWith("custom_background_") && f != dest }
+                ?.forEach { it.delete() }
             Uri.fromFile(dest).toString()
-        }.getOrNull()
+        }
+            .onFailure { Log.w("WallpaperUtils", "Failed to save custom background image", it) }
+            .getOrNull()
 
     fun invalidateWallpaperCache() {
         cachedBitmap = null
@@ -398,6 +412,36 @@ object WallpaperUtils {
     }
 
     private fun decodeBitmapWithOrientation(
+        context: Context,
+        uri: Uri,
+    ): Bitmap? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            decodeBitmapWithImageDecoder(context, uri) ?: decodeBitmapWithBitmapFactory(context, uri)
+        } else {
+            decodeBitmapWithBitmapFactory(context, uri)
+        }
+
+    private fun decodeBitmapWithImageDecoder(
+        context: Context,
+        uri: Uri,
+    ): Bitmap? =
+        runCatching {
+            val source = ImageDecoder.createSource(context.contentResolver, uri)
+            val decoded =
+                ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                    val width = info.size.width
+                    val height = info.size.height
+                    if (width > 0 && height > 0) {
+                        decoder.setTargetSampleSize(computeSampleSize(width, height))
+                    }
+                }
+            clampBitmapToBounds(decoded)
+        }
+            .onFailure { Log.w("WallpaperUtils", "ImageDecoder failed for custom background", it) }
+            .getOrNull()
+
+    private fun decodeBitmapWithBitmapFactory(
         context: Context,
         uri: Uri,
     ): Bitmap? {

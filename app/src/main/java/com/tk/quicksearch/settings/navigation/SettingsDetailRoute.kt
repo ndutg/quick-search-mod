@@ -80,6 +80,12 @@ fun SettingsDetailRoute(
                         viewModel.applySettingsCommand(
                             SettingsCommand.BackgroundSourceSetting(BackgroundSource.CUSTOM_IMAGE),
                         )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.settings_overlay_source_custom_save_failed),
+                            Toast.LENGTH_SHORT,
+                        ).show()
                     }
                 }
             }
