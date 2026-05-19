@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import android.graphics.Color
 
 private const val MAX_BACKGROUND_BITMAP_DIMENSION = 2400
 private const val MAX_BACKGROUND_BITMAP_PIXELS = 4_000_000
@@ -48,6 +49,11 @@ object WallpaperUtils {
     @Volatile
     private var cachedOverlayCustomAppearanceUri: String? = null
     @Volatile
+    private var cachedWallpaperIsLight: Boolean? = null
+    @Volatile
+    private var cachedOverlayCustomIsLightUri: String? = null
+    @Volatile
+    private var cachedOverlayCustomIsLight: Boolean? = null
     private var cachedOverlayCustomAppearance: ImageAppearance? = null
     private val wallpaperBitmapMutex = Mutex()
     private val customImageBitmapMutex = Mutex()
@@ -172,6 +178,7 @@ object WallpaperUtils {
         cachedBitmap = null
         cachedSystemWallpaperId = null
         cachedWallpaperAppearance = null
+        cachedWallpaperIsLight = null
     }
 
     fun clearMemoryCaches() {
@@ -180,6 +187,8 @@ object WallpaperUtils {
         cachedOverlayCustomBitmap = null
         cachedOverlayCustomAppearanceUri = null
         cachedOverlayCustomAppearance = null
+        cachedOverlayCustomIsLightUri = null
+        cachedOverlayCustomIsLight = null
     }
 
     /**
