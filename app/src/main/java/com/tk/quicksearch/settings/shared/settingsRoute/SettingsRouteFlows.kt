@@ -4,9 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.settings.AppShortcutsSettings.AppActivityPickerDialog
@@ -32,10 +28,6 @@ internal data class WallpaperPermissionController(
     val hasWallpaperPermission: Boolean,
     val onRequestPermission: () -> Unit,
     val onRefreshPermissionState: () -> Unit,
-    val showFallbackDialog: Boolean,
-    val onDismissFallbackDialog: () -> Unit,
-    val onConfirmFallbackDialog: () -> Unit,
-    val onCancelFallbackDialog: () -> Unit,
 )
 
 @Composable
@@ -46,33 +38,26 @@ internal fun rememberWallpaperPermissionController(
 ): WallpaperPermissionController {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var showWallpaperFallbackDialog by remember { mutableStateOf(false) }
-    var securityError by remember { mutableStateOf(false) }
     var wallpaperButtonHasPermission by
         remember { mutableStateOf(WallpaperUtils.hasWallpaperAccessPermission(context)) }
 
-    suspend fun tryFetchWallpaperWithFilesPermission(
-        autoSelectWallpaper: Boolean = true,
-    ) {
+    suspend fun tryFetchWallpaper(autoSelectWallpaper: Boolean = true) {
         val accessState =
             WallpaperUtils.resolveWallpaperAccessState(
                 result = WallpaperUtils.getWallpaperBitmapResult(context),
             )
 
-        needsPermission =
-            accessState.needsPermission
         if (accessState.needsPermission) {
             wallpaperButtonHasPermission = false
         } else if (accessState.wallpaperAvailable) {
             wallpaperButtonHasPermission = true
+        } else if (accessState.securityError) {
+            wallpaperButtonHasPermission = false
         }
 
         onSetWallpaperAvailable(accessState.wallpaperAvailable)
         if (autoSelectWallpaper && accessState.shouldSelectSystemWallpaper) {
             onSetBackgroundSource(BackgroundSource.SYSTEM_WALLPAPER)
-        }
-        if (accessState.needsPermission) {
-            showWallpaperFallbackDialog = true
         }
     }
 
@@ -81,23 +66,10 @@ internal fun rememberWallpaperPermissionController(
             contract = ActivityResultContracts.StartActivityForResult(),
         ) {
             val filesGranted = WallpaperUtils.hasWallpaperAccessPermission(context)
-            wallpaperButtonHasPermission = filesGranted && !needsPermission
+            wallpaperButtonHasPermission = filesGranted
             if (filesGranted) {
-                scope.launch { tryFetchWallpaperWithFilesPermission() }
+                scope.launch { tryFetchWallpaper() }
             } else {
-                onSetWallpaperAvailable(false)
-            }
-            onOptionalPermissionChanged()
-        }
-
-    val wallpaperPermissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-        ) { isGranted ->
-            if (isGranted) {
-                scope.launch { tryFetchWallpaperWithFilesPermission() }
-            } else {
-                wallpaperButtonHasPermission = false
                 onSetWallpaperAvailable(false)
             }
             onOptionalPermissionChanged()
@@ -107,11 +79,10 @@ internal fun rememberWallpaperPermissionController(
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),
         ) { isGranted ->
+            wallpaperButtonHasPermission = isGranted
             if (isGranted) {
-                wallpaperButtonHasPermission = !needsPermission
-                scope.launch { tryFetchWallpaperWithFilesPermission() }
+                scope.launch { tryFetchWallpaper() }
             } else {
-                wallpaperButtonHasPermission = false
                 onSetWallpaperAvailable(false)
             }
             onOptionalPermissionChanged()
@@ -120,15 +91,13 @@ internal fun rememberWallpaperPermissionController(
     val onRequestWallpaperPermission: () -> Unit = {
         PermissionHelper.requestWallpaperPermission(
             context = context,
-            needsPermission = needsPermission,
-            imagePermissionLauncher = wallpaperPermissionLauncher,
             legacyFilesPermissionLauncher = legacyFilesPermissionLauncher,
             allFilesLauncher = wallpaperFilesAccessLauncher,
             onRequestingFilesPermission = {
                 wallpaperButtonHasPermission = false
             },
             onFilesPermissionAlreadyGranted = {
-                scope.launch { tryFetchWallpaperWithFilesPermission() }
+                scope.launch { tryFetchWallpaper() }
             },
         )
     }
@@ -138,61 +107,11 @@ internal fun rememberWallpaperPermissionController(
         onRequestPermission = onRequestWallpaperPermission,
         onRefreshPermissionState = {
             val filesPermissionGranted = WallpaperUtils.hasWallpaperAccessPermission(context)
-            if (!filesPermissionGranted || needsPermission) {
+            if (!filesPermissionGranted) {
                 wallpaperButtonHasPermission = false
                 onSetWallpaperAvailable(false)
             } else {
-                scope.launch {
-                    tryFetchWallpaperWithFilesPermission(
-                        autoSelectWallpaper = false,
-                    )
-                }
-            }
-        },
-        showFallbackDialog = showWallpaperFallbackDialog,
-        onDismissFallbackDialog = {
-            showWallpaperFallbackDialog = false
-            wallpaperButtonHasPermission = false
-        },
-        onConfirmFallbackDialog = {
-            showWallpaperFallbackDialog = false
-            PermissionHelper.requestWallpaperGalleryPermission(
-                imagePermissionLauncher = wallpaperPermissionLauncher,
-                onUnsupportedVersion = {
-                    scope.launch { tryFetchWallpaperWithFilesPermission() }
-                },
-            )
-        },
-        onCancelFallbackDialog = {
-            showWallpaperFallbackDialog = false
-            wallpaperButtonHasPermission = false
-            needsPermission = true
-            onSetWallpaperAvailable(false)
-        },
-    )
-}
-
-@Composable
-internal fun WallpaperPermissionFallbackDialog(controller: WallpaperPermissionController) {
-    if (!controller.showFallbackDialog) return
-    val context = LocalContext.current
-
-    AppAlertDialog(
-        onDismissRequest = controller.onDismissFallbackDialog,
-        title = {
-            Text(text = context.getString(R.string.wallpaper_permission_fallback_title))
-        },
-        text = {
-            Text(text = context.getString(R.string.wallpaper_permission_fallback_message))
-        },
-        confirmButton = {
-            TextButton(onClick = controller.onConfirmFallbackDialog) {
-                Text(text = context.getString(R.string.dialog_ok))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = controller.onCancelFallbackDialog) {
-                Text(text = context.getString(R.string.dialog_cancel))
+                scope.launch { tryFetchWallpaper(autoSelectWallpaper = false) }
             }
         },
     )
