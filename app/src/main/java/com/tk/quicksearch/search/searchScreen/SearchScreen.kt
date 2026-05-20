@@ -196,6 +196,7 @@ fun SearchScreen(
     onOverlayNumberKeyboardUiChanged: ((Boolean, Boolean) -> Unit)? = null,
     onOverlayScrollableContentChanged: ((Boolean) -> Unit)? = null,
     onOpenPermissionsSettings: () -> Unit = {},
+    onChangeWallpaperClick: () -> Unit = {},
 ) {
     val directAnswerContactName = stringResource(R.string.direct_answer_contact_name)
 
@@ -492,11 +493,13 @@ fun SearchScreen(
             expandedSection = stateResult.expandedSection,
             manuallySwitchedToNumberKeyboard = stateResult.manuallySwitchedToNumberKeyboard,
             scrollState = stateResult.scrollState,
+            searchFocusRequester = stateResult.searchFocusRequester,
             onClearDetectedShortcut = onClearDetectedShortcut,
             onSectionSelected = onSectionSelected,
             isOverlayPresentation = isOverlayPresentation,
             showSearchField = true,
             onOpenPermissionsSettings = onOpenPermissionsSettings,
+            onChangeWallpaperClick = onChangeWallpaperClick,
             getAllTriggerWordsById = getAllTriggerWordsById,
             getAllContactActionTriggers = getAllContactActionTriggers,
             onContactActionTrigger = onContactActionTrigger,

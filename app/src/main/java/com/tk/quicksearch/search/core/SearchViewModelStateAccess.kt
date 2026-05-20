@@ -59,6 +59,12 @@ internal class SearchViewModelPreferencesStateAccess(
             state.bottomSearchBarEnabled = value
         }
 
+    override var settingsIconEnabled: Boolean
+        get() = state.settingsIconEnabled
+        set(value) {
+            state.settingsIconEnabled = value
+        }
+
     override var topResultIndicatorEnabled: Boolean
         get() = state.topResultIndicatorEnabled
         set(value) {
@@ -105,6 +111,12 @@ internal class SearchViewModelPreferencesStateAccess(
         get() = state.phoneAppGridColumns
         set(value) {
             state.phoneAppGridColumns = value
+        }
+
+    override var appIconSizeStep: Int
+        get() = state.appIconSizeStep
+        set(value) {
+            state.appIconSizeStep = value
         }
 
     override var appIconShape: AppIconShape

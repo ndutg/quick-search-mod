@@ -65,6 +65,8 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setPhoneAppGridColumns(columns: Int) = preferencesApiDelegate.setPhoneAppGridColumns(columns)
 
+    fun setAppIconSizeStep(step: Int) = preferencesApiDelegate.setAppIconSizeStep(step)
+
     fun setWebSuggestionsEnabled(enabled: Boolean) =
         preferencesApiDelegate.setWebSuggestionsEnabled(enabled)
 
@@ -154,6 +156,12 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setBottomSearchBarEnabled(enabled: Boolean) =
         preferencesApiDelegate.setBottomSearchBarEnabled(enabled)
+
+    fun setSearchHintsEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setSearchHintsEnabled(enabled)
+
+    fun setSettingsIconEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setSettingsIconEnabled(enabled)
 
     fun setOpenKeyboardOnLaunchEnabled(enabled: Boolean) =
         preferencesApiDelegate.setOpenKeyboardOnLaunchEnabled(enabled)
@@ -283,6 +291,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setPhoneAppGridColumns(columns: Int) = preferencesDelegate.setPhoneAppGridColumns(columns)
 
+    fun setAppIconSizeStep(step: Int) = preferencesDelegate.setAppIconSizeStep(step)
+
     fun setWebSuggestionsEnabled(enabled: Boolean) = webSuggestionHandler.setEnabled(enabled)
 
     fun setWebSuggestionsCount(count: Int) = preferencesDelegate.setWebSuggestionsCount(count)
@@ -360,6 +370,12 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setBottomSearchBarEnabled(enabled: Boolean) =
         preferencesDelegate.setBottomSearchBarEnabled(enabled)
+
+    fun setSearchHintsEnabled(enabled: Boolean) =
+        preferencesDelegate.setSearchHintsEnabled(enabled)
+
+    fun setSettingsIconEnabled(enabled: Boolean) =
+        preferencesDelegate.setSettingsIconEnabled(enabled)
 
     fun setOpenKeyboardOnLaunchEnabled(enabled: Boolean) =
         preferencesDelegate.setOpenKeyboardOnLaunchEnabled(enabled)

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
@@ -31,8 +30,6 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Reorder
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -259,7 +256,7 @@ private fun AppSuggestionTabCheckboxes(
             AppSuggestionTabType.PINNED to stringResource(R.string.app_suggestions_tab_pinned),
             AppSuggestionTabType.RECENTS to stringResource(R.string.app_suggestions_tab_recent),
             AppSuggestionTabType.NEW_UPDATED to stringResource(R.string.app_suggestions_tab_new_updated),
-            AppSuggestionTabType.MOST_USED to stringResource(R.string.app_suggestions_tab_most_used),
+            AppSuggestionTabType.MOST_USED to stringResource(R.string.common_most_used),
         )
     val rows = configurableTabs.chunked(2)
 
@@ -377,6 +374,7 @@ private fun TopMatchesCard(
     disabledTopMatchesSections: Set<SearchSection>,
     onTopMatchesSectionOrderChange: (List<SearchSection>) -> Unit,
     onTopMatchesSectionEnabledChange: (SearchSection, Boolean) -> Unit,
+    isLocked: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     var showPriorityDialog by rememberSaveable { mutableStateOf(false) }
@@ -393,6 +391,7 @@ private fun TopMatchesCard(
                 checked = topMatchesEnabled,
                 onCheckedChange = onTopMatchesToggle,
                 leadingIcon = Icons.Rounded.AutoAwesome,
+                enabled = !isLocked,
                 isFirstItem = true,
                 isLastItem = !topMatchesEnabled,
             )
@@ -413,7 +412,7 @@ private fun TopMatchesCard(
                         ),
                 )
                 HorizontalDivider(color = AppColors.SettingsDivider)
-                TopMatchesLimitChips(
+                TopMatchesLimitSlider(
                     selectedLimit = topMatchesLimit,
                     onLimitSelected = onTopMatchesLimitChange,
                 )
@@ -433,65 +432,42 @@ private fun TopMatchesCard(
 }
 
 @Composable
-private fun TopMatchesLimitChips(
+private fun TopMatchesLimitSlider(
     selectedLimit: Int,
     onLimitSelected: (Int) -> Unit,
 ) {
     val view = LocalView.current
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = DesignTokens.SpacingXXLarge,
-                    vertical = DesignTokens.SpacingLarge,
-                ),
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall)) {
-            Text(
-                text = stringResource(R.string.top_matches_count_label),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-            ) {
-                com.tk.quicksearch.search.data.preferences.UiPreferences.TOP_MATCHES_LIMIT_OPTIONS.forEach { limit ->
-                    val selected = selectedLimit == limit
-                    AssistChip(
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            hapticToggle(view)()
-                            onLimitSelected(limit)
-                        },
-                        label = {
-                            Text(
-                                text = limit.toString(),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        },
-                        shape = DesignTokens.ShapeFull,
-                        border = if (selected) null else BorderStroke(1.dp, AppColors.SettingsDivider),
-                        colors =
-                            AssistChipDefaults.assistChipColors(
-                                containerColor =
-                                    if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                labelColor =
-                                    if (selected) {
-                                        MaterialTheme.colorScheme.onPrimary
-                                    } else {
-                                        MaterialTheme.colorScheme.primary
-                                    },
-                            ),
-                    )
-                }
-            }
-        }
+    val limitOptions = com.tk.quicksearch.search.data.preferences.UiPreferences.TOP_MATCHES_LIMIT_OPTIONS
+    val currentIndex = limitOptions.indexOf(selectedLimit).coerceAtLeast(0)
+    var lastIndex by remember { mutableStateOf(currentIndex) }
+    LaunchedEffect(selectedLimit) {
+        lastIndex = limitOptions.indexOf(selectedLimit).coerceAtLeast(0)
     }
+
+    SettingsToggleRow(
+        title = stringResource(R.string.top_matches_count_label),
+        checked = true,
+        onCheckedChange = {},
+        sliderDetails =
+            SettingsToggleSliderDetails(
+                value = currentIndex.toFloat(),
+                onValueChange = { value ->
+                    val index = value.toInt().coerceIn(0, limitOptions.size - 1)
+                    if (index != lastIndex) {
+                        hapticToggle(view)()
+                        lastIndex = index
+                    }
+                    onLimitSelected(limitOptions[index])
+                },
+                valueRange = 0f..(limitOptions.size - 1).toFloat(),
+                steps = limitOptions.size - 2,
+                valueLabel = selectedLimit.toString(),
+                valueLabelWidth = 24.dp,
+            ),
+        isFirstItem = false,
+        isLastItem = true,
+        showSwitch = false,
+    )
 }
 
 @Composable
@@ -582,7 +558,17 @@ private fun PriorityReorderDialog(
                             Switch(
                                 modifier = Modifier.scale(0.7f),
                                 checked = item !in disabledSections,
-                                onCheckedChange = { enabled -> onItemEnabledChange(item, enabled) },
+                                onCheckedChange = { enabled ->
+                                    if (!enabled && items.count { it !in disabledSections } <= 1 && item !in disabledSections) {
+                                        Toast.makeText(
+                                            view.context,
+                                            view.context.getString(R.string.settings_sections_at_least_one_required),
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                    } else {
+                                        onItemEnabledChange(item, enabled)
+                                    }
+                                },
                             )
                         }
                     }
@@ -767,13 +753,16 @@ fun SearchResultsSettingsSection(
             state.excludedAppShortcuts.isNotEmpty() ||
             state.excludedFileExtensions.isNotEmpty()
 
+    val sectionOrder =
+        ItemPriorityConfig
+            .getSearchResultsPriority()
+            .filter { section -> FeatureFlags.isSearchSectionEnabled(section) }
+    val allSectionsDisabled = sectionOrder.isNotEmpty() && sectionOrder.all { it in state.disabledSections }
+
     Column(modifier = modifier) {
         // Search Sections Section
         SectionSettingsSection(
-            sectionOrder =
-                ItemPriorityConfig
-                    .getSearchResultsPriority()
-                    .filter { section -> FeatureFlags.isSearchSectionEnabled(section) },
+            sectionOrder = sectionOrder,
             disabledSections = state.disabledSections,
             onToggleSection = callbacks.onToggleSection,
             sectionAliasCodes = state.shortcutCodes,
@@ -852,6 +841,7 @@ fun SearchResultsSettingsSection(
                     SettingsCommand.TopMatchesSectionEnabled(section, enabled),
                 )
             },
+            isLocked = allSectionsDisabled,
             modifier = Modifier.padding(top = DesignTokens.SpacingLarge),
         )
 

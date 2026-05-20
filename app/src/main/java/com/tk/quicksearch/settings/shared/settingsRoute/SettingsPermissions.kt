@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.os.Environment
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -203,20 +202,11 @@ fun rememberSectionToggleHandler(
                     }
                 }
             } else {
-                // Check if disabling this section would leave no sections enabled
                 val enabledSectionsCount = SearchSection.values().count { it !in disabledSections }
-                if (enabledSectionsCount <= 1 && section !in disabledSections) {
-                    // This is the last enabled section, prevent disabling
-                    Toast
-                        .makeText(
-                            context,
-                            context.getString(
-                                R.string.settings_sections_at_least_one_required,
-                            ),
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                } else {
-                    viewModel.setSectionEnabled(section, false)
+                val isLastEnabledSection = enabledSectionsCount <= 1 && section !in disabledSections
+                viewModel.setSectionEnabled(section, false)
+                if (isLastEnabledSection) {
+                    viewModel.setTopMatchesEnabled(true)
                 }
             }
         }

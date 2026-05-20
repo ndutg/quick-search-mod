@@ -585,7 +585,7 @@ private fun FolderSearchDialog(
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Rounded.Search,
-                            contentDescription = stringResource(R.string.desc_search_icon),
+                            contentDescription = stringResource(R.string.common_search),
                         )
                     },
                     trailingIcon = {

@@ -103,15 +103,13 @@ internal object SearchViewModelInitialStateFactory {
                 startupBackgroundPreviewPath = initialPreviewPath,
                 oneHandedMode =
                     startupSnapshot?.oneHandedMode ?: startupPreferencesReader.isOneHandedMode(),
-                bottomSearchBarEnabled =
-                    startupSnapshot?.bottomSearchBarEnabled
-                        ?: startupPreferencesReader.isBottomSearchBarEnabled(),
+                bottomSearchBarEnabled = startupPreferencesReader.isBottomSearchBarEnabled(),
+                searchHintsEnabled = startupPreferencesReader.isSearchHintsEnabled(),
+                settingsIconEnabled = startupPreferencesReader.isSettingsIconEnabled(),
                 topResultIndicatorEnabled =
                     startupSnapshot?.topResultIndicatorEnabled
                         ?: startupPreferencesReader.isTopResultIndicatorEnabled(),
-                openKeyboardOnLaunch =
-                    startupSnapshot?.openKeyboardOnLaunch
-                        ?: startupPreferencesReader.isOpenKeyboardOnLaunchEnabled(),
+                openKeyboardOnLaunch = startupPreferencesReader.isOpenKeyboardOnLaunchEnabled(),
                 clearQueryOnLaunch = clearQueryOnLaunch,
                 autoCloseOverlay = startupPreferencesReader.isAutoCloseOverlayEnabled(),
                 fontScaleMultiplier =
@@ -126,6 +124,9 @@ internal object SearchViewModelInitialStateFactory {
                 launcherAppIcon = startupPreferencesReader.getLauncherAppIcon(),
                 showAppLabels =
                     startupSnapshot?.showAppLabels ?: startupPreferencesReader.shouldShowAppLabels(),
+                appIconSizeStep =
+                    startupSnapshot?.appIconSizeStep
+                        ?: startupPreferencesReader.getAppIconSizeStep(),
                 appSuggestionsEnabled =
                     startupSnapshot?.appSuggestionsEnabled
                         ?: startupPreferencesReader.areAppSuggestionsEnabled(),

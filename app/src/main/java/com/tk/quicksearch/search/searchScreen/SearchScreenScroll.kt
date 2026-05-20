@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -162,6 +163,7 @@ fun ScrollBasedKeyboardBehavior(
     overlayModeEnabled: Boolean,
     oneHandedMode: Boolean,
     reverseScrolling: Boolean,
+    searchFocusRequester: FocusRequester? = null,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     
@@ -214,6 +216,7 @@ fun ScrollBasedKeyboardBehavior(
                     }
                     
                     if (isAtBottom && !wasAtBottom && !isInCooldown) {
+                        searchFocusRequester?.requestFocus()
                         keyboardController?.show()
                     } else if (isScrollingUp && !isAtBottom) {
                         keyboardController?.hide()
@@ -239,6 +242,7 @@ fun ScrollBasedKeyboardBehavior(
                     }
                     
                     if (isAtTop && !wasAtTop && !isInCooldown) {
+                        searchFocusRequester?.requestFocus()
                         keyboardController?.show()
                     } else if (isScrollingDown && !isAtTop) {
                         keyboardController?.hide()

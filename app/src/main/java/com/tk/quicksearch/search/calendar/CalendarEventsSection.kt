@@ -399,7 +399,7 @@ internal fun CalendarEventRow(
                                 if (hasNickname) {
                                     R.string.action_edit_nickname
                                 } else {
-                                    R.string.action_add_nickname
+                                    R.string.common_nickname
                                 },
                             icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
                             onClick = {

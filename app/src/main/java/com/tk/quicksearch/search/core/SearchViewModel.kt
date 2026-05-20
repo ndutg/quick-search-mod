@@ -56,6 +56,7 @@ import com.tk.quicksearch.searchEngines.SearchEngineManager
 import com.tk.quicksearch.searchEngines.SecondarySearchOrchestrator
 import com.tk.quicksearch.searchEngines.AliasHandler
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
+import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import com.tk.quicksearch.tools.aiTools.CurrencyConverterHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryHandler
@@ -92,12 +93,17 @@ class SearchViewModel(
     private val startupPreferencesReader = UserAppPreferences(appContext)
     private val startupSurfaceStore = StartupSurfaceStore(appContext)
     private val initialState =
-        SearchViewModelInitialStateFactory.create(
-            appContext = appContext,
-            startupPreferencesReader = startupPreferencesReader,
-            startupSurfaceStore = startupSurfaceStore,
-            inMemoryRetainedQuery = inMemoryRetainedQuery,
-        )
+        run {
+            startupPreferencesReader.applyDefaultLauncherPreferencesIfNeeded(
+                appContext.isDefaultHomeApp(),
+            )
+            SearchViewModelInitialStateFactory.create(
+                appContext = appContext,
+                startupPreferencesReader = startupPreferencesReader,
+                startupSurfaceStore = startupSurfaceStore,
+                inMemoryRetainedQuery = inMemoryRetainedQuery,
+            )
+        }
     private val instantStartupSurfaceEnabled = initialState.instantStartupSurfaceEnabled
     private val initialResultsState = initialState.resultsState
     private val initialConfigState = initialState.configState
@@ -354,6 +360,10 @@ class SearchViewModel(
     private var oneHandedMode by legacyPreferenceState::oneHandedMode
     @set:JvmName("setBottomSearchBarEnabledLegacy")
     private var bottomSearchBarEnabled by legacyPreferenceState::bottomSearchBarEnabled
+    @set:JvmName("setSearchHintsEnabledLegacy")
+    private var searchHintsEnabled by legacyPreferenceState::searchHintsEnabled
+    @set:JvmName("setSettingsIconEnabledLegacy")
+    private var settingsIconEnabled by legacyPreferenceState::settingsIconEnabled
     @set:JvmName("setTopResultIndicatorEnabledLegacy")
     private var topResultIndicatorEnabled by legacyPreferenceState::topResultIndicatorEnabled
     @set:JvmName("setWallpaperAccentEnabledLegacy")
@@ -372,6 +382,8 @@ class SearchViewModel(
     private var showAppLabels by legacyPreferenceState::showAppLabels
     @set:JvmName("setPhoneAppGridColumnsLegacy")
     private var phoneAppGridColumns by legacyPreferenceState::phoneAppGridColumns
+    @set:JvmName("setAppIconSizeStepLegacy")
+    private var appIconSizeStep by legacyPreferenceState::appIconSizeStep
     @set:JvmName("setAppIconShapeLegacy")
     private var appIconShape by legacyPreferenceState::appIconShape
     @set:JvmName("setLauncherAppIconLegacy")
@@ -421,8 +433,8 @@ class SearchViewModel(
     private fun applyPreferenceCacheToLegacyVars() {
         legacyPreferenceState.applyPreferenceCacheToLegacyVars(prefCache)
     }
-    private fun startupPreferencesSnapshot() = SearchStartupPreferencesSnapshot(oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, topResultIndicatorEnabled = topResultIndicatorEnabled, wallpaperAccentEnabled = wallpaperAccentEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, useSystemFont = useSystemFont, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, customImageUri = customImageUri)
-    private fun loadedPreferencesSnapshot() = SearchLoadedPreferencesSnapshot(enabledFileTypes = enabledFileTypes, oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, topResultIndicatorEnabled = topResultIndicatorEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, overlayModeEnabled = overlayModeEnabled, appSuggestionsEnabled = appSuggestionsEnabled, selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(), enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(), showAppLabels = showAppLabels, phoneAppGridColumns = phoneAppGridColumns, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, fontScaleMultiplier = fontScaleMultiplier, useSystemFont = useSystemFont, customImageUri = customImageUri, showFolders = showFolders, showSystemFiles = showSystemFiles, folderWhitelistPatterns = folderWhitelistPatterns, folderBlacklistPatterns = folderBlacklistPatterns, excludedFileExtensions = excludedFileExtensions, amazonDomain = amazonDomain, directDialEnabled = directDialEnabled, assistantLaunchVoiceModeEnabled = assistantLaunchVoiceModeEnabled)
+    private fun startupPreferencesSnapshot() = SearchStartupPreferencesSnapshot(oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, topResultIndicatorEnabled = topResultIndicatorEnabled, wallpaperAccentEnabled = wallpaperAccentEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, useSystemFont = useSystemFont, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, customImageUri = customImageUri)
+    private fun loadedPreferencesSnapshot() = SearchLoadedPreferencesSnapshot(enabledFileTypes = enabledFileTypes, oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, searchHintsEnabled = userPreferences.isSearchHintsEnabled(), settingsIconEnabled = userPreferences.isSettingsIconEnabled(), topResultIndicatorEnabled = topResultIndicatorEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, overlayModeEnabled = overlayModeEnabled, appSuggestionsEnabled = appSuggestionsEnabled, selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(), enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(), showAppLabels = showAppLabels, phoneAppGridColumns = phoneAppGridColumns, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, fontScaleMultiplier = fontScaleMultiplier, useSystemFont = useSystemFont, customImageUri = customImageUri, showFolders = showFolders, showSystemFiles = showSystemFiles, folderWhitelistPatterns = folderWhitelistPatterns, folderBlacklistPatterns = folderBlacklistPatterns, excludedFileExtensions = excludedFileExtensions, amazonDomain = amazonDomain, directDialEnabled = directDialEnabled, assistantLaunchVoiceModeEnabled = assistantLaunchVoiceModeEnabled)
     private fun onNavigationTriggered() {
         pendingNavigationClear = true
         _externalNavigationEvent.tryEmit(Unit)

@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
@@ -132,7 +133,7 @@ fun TipBanner(
                     Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = stringResource(R.string.common_close),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        tint = AppColors.Accent,
                     )
                 }
             }

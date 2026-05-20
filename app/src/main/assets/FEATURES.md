@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 3.5 (Updated May 12 2026)
+**Version**: 3.6 (Updated May 19 2026)
 
 ### Search
 
@@ -94,7 +94,7 @@ Add aliases at the start of your query to quickly let the app know what you want
 Long-press on most results to open a context menu with quick actions.
 
 - **Triggers** - Long-press a result to add a trigger phrase. When you type that trigger and press space, Quick Search opens that result automatically.
-- **Pin / Unpin** - Pin or unpin apps, app shortcuts, contacts, files, and device settings so that they stay on your home screen when you open the app.
+- **Pin / Unpin** - Pin or unpin apps, app shortcuts, contacts, files, and device settings so that they stay on your home screen when you open the app. Hold and drag any pinned item to reorder it.
 - **Add / Edit Nickname** - Add or edit nicknames for apps, app shortcuts, contacts, files, and device settings so you can search them using custom names.
 - **Exclude / Include** - Exclude individual contacts, app shortcuts, files, and device settings from results. You can include them again later by clearing them from Excluded Items list in Search Results settings.
 - **Add to Home Screen** - Add apps, app shortcuts, contacts, files, and device settings directly to your home screen as shortcuts for one-tap access.
@@ -119,6 +119,7 @@ Long-press on most results to open a context menu with quick actions.
 - **One-Handed Mode** - Most relevant items appear at the bottom of your screen for easy access.
 - **Bottom Searchbar** - You can choose to move the search bar to the bottom.
 - **Apps Per Row** - Choose no. of apps displayed per row in results and suggestions.
+- **App Icon Size** - Adjust the size of app icons displayed in results and suggestions.
 - **App Labels** - You can choose to hide app labels.
 - **Circular App icons** - Option to force circular app icons
 - **Icon Packs** - Select an installed icon pack. If none of them are installed, tapping on the card will open the Play Store and search for icon packs. Once installed, come back to the app and hit the refresh button on the icon packs option to refresh the icon packs list.
@@ -129,7 +130,7 @@ Long-press on most results to open a context menu with quick actions.
 
 - **Search Sections Management** - Enable/disable individual result sections (apps, app shortcuts, contacts, files, device settings, history, etc.), and assign alias shortcuts to each section. Tap on the search type options to navigate to their respective screen, which offers additional options.
 - **Top Matches** - Turn on Top Matches to show the best results for your query across enabled categories. You can include or exclude categories and reorder them to control priority.
-- **App Suggestions** - You can choose to disable app suggestions if you want a cleaner home screen. 
+- **App Suggestions** - You can choose to disable app suggestions if you want a cleaner home screen. Toggle the suggestion tabs (New & Updated, Pinned, Most Used) to show only the ones you want.
 - **Web Search Suggestions** - Turn web suggestions on or off and control how many suggestions (1–5) appear under the search bar.
 - **Search History** - Enable or disable search history. The expanded list shows up to 15 items; **Clear all** history is available at the bottom of the list. Your search queries, recently opened items (files, contacts, etc.) appear in your search history. Swipe left or right on the expanded list to switch between **recent queries** and **recently opened results**.
 - **Excluded Items** - When you exclude any item on the search results page, you can find them here and clear them if you want to.
@@ -177,6 +178,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Excluded Extensions** - See and remove file extensions that are currently excluded from results.
 - **System & Hidden Files** - Show or hide system files and hidden files from file search results.
 - **Folder Filters (Whitelist / Blacklist)** - Configure which folders should be included or excluded for files search.
+- **File Previews** - Tap to preview PDFs and images directly within the app before opening them.
 
 ---
 
@@ -218,6 +220,9 @@ Long-press on most results to open a context menu with quick actions.
 - **Open Keyboard Toggle** - Choose to disable automatic keyboard opening during app launch. This is useful if you want to use this app just to quickly access pinned items.
 - **Clear Query** - The app clears your query by default when you reopen the app; you can choose to keep the query by disabling this toggle.
 - **Auto-Close App** - Option to toggle auto-close app after any action
+- **Search Hints** - Option to show or hide the rotating search hints displayed in the search bar.
+- **Settings Icon** - Option to show or hide the settings icon in the search bar.
+- **Quick Note** - Option to disable the quick note feature (swipe left from home) if you don't use it.
 
 ---
 
@@ -226,6 +231,15 @@ Long-press on most results to open a context menu with quick actions.
 - **Default Assistant** - Set Quick Search as your default assistant app to replace Google Assistant or Gemini. You can enable Assistant Voice Mode to open the app with voice typing enabled when triggered with digital assistant gesture.
 - **Set as Launcher** - Set Quick Search as your default launcher so it opens directly from the home button. Swipe right to access widgets.
 - **Quick Settings Tile** - Add a Quick Search tile to notification quick settings for quick access
+
+---
+
+### Launcher Features
+
+- **Swipe Down for Notifications** - Swipe down on the home screen to open the notification shade.
+- **Swipe Up for Keyboard** - Swipe up on the home screen to open Quick Search with the keyboard raised, ready to type.
+- **Long Press to Change Wallpaper** - Long press on an empty area of the home screen to change your wallpaper.
+- **More App Shortcuts** - You will see more app shortcuts from the system when you set Quick Search as your launcher.
 
 ---
 

@@ -186,7 +186,7 @@ fun FileDropdownMenu(
                 onClick = { onDismissRequest(); onTogglePin() },
         ))
         add(FileMenuItem(
-                textResId = if (hasNickname) R.string.action_edit_nickname else R.string.action_add_nickname,
+                textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
                 icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
                 onClick = { onDismissRequest(); onNicknameClick() },
         ))

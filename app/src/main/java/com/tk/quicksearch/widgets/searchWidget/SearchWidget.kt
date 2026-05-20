@@ -571,7 +571,7 @@ private fun WidgetContent(
                         ) {
                             Image(
                                 provider = ImageProvider(R.drawable.ic_widget_search),
-                                contentDescription = context.getString(R.string.desc_search_icon),
+                                contentDescription = context.getString(R.string.common_search),
                                 modifier = GlanceModifier.size(20.dp),
                                 colorFilter = ColorFilter.tint(textIconColorProvider),
                             )
@@ -598,7 +598,7 @@ private fun WidgetContent(
                         if (showSearchIcon) {
                             Image(
                                 provider = ImageProvider(R.drawable.ic_widget_search),
-                                contentDescription = context.getString(R.string.desc_search_icon),
+                                contentDescription = context.getString(R.string.common_search),
                                 modifier = GlanceModifier.size(20.dp),
                                 colorFilter = ColorFilter.tint(textIconColorProvider),
                             )

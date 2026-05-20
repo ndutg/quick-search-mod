@@ -75,7 +75,7 @@ private enum class AppSortOption(
 ) {
     NAME(R.string.settings_app_sort_name),
     APK_SIZE(R.string.settings_app_sort_apk_size),
-    MOST_USED(R.string.settings_app_sort_most_used, requiresUsagePermission = true),
+    MOST_USED(R.string.common_most_used, requiresUsagePermission = true),
     LEAST_USED(R.string.settings_app_sort_least_used, requiresUsagePermission = true),
     INSTALLATION_DATE(R.string.settings_app_info_install_date),
     LAST_UPDATE(R.string.settings_app_info_last_update),

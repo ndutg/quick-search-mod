@@ -379,7 +379,7 @@ fun CalendarEventsBottomBar(
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Search,
-                    contentDescription = stringResource(R.string.desc_search_icon),
+                    contentDescription = stringResource(R.string.common_search),
                     modifier = Modifier.size(22.dp),
                 )
             }
@@ -649,7 +649,7 @@ private fun CustomEventFormDialog(
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    text = stringResource(R.string.calendar_create_event_add_time),
+                                    text = stringResource(R.string.common_time),
                                     modifier = Modifier.weight(1f),
                                 )
                             }

@@ -58,7 +58,7 @@ fun SettingsManagementSearchBar(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Rounded.Search,
-                contentDescription = stringResource(R.string.desc_search_icon),
+                contentDescription = stringResource(R.string.common_search),
                 modifier = Modifier.offset(x = 2.dp),
             )
         },
@@ -79,7 +79,7 @@ fun SettingsManagementSearchBar(
                 null
             },
         placeholder = {
-            Text(text = stringResource(R.string.desc_search_icon))
+            Text(text = stringResource(R.string.common_search))
         },
         colors =
             TextFieldDefaults.colors(

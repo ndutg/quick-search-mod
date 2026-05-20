@@ -27,6 +27,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -198,10 +199,14 @@ internal fun AppSettingResultRow(
     val isWebSuggestionsToggle = setting.toggleKey == AppSettingsToggleKey.WEB_SUGGESTIONS
     val isAppsPerRowSetting = setting.toggleKey == AppSettingsToggleKey.APPS_PER_ROW
     val context = LocalContext.current
+    val isDefaultLauncher = context.isDefaultHomeApp()
     val isOverlayBlockedByLauncher =
-        setting.toggleKey == AppSettingsToggleKey.OVERLAY_MODE && context.isDefaultHomeApp()
+        setting.toggleKey == AppSettingsToggleKey.OVERLAY_MODE && isDefaultLauncher
+    val isAutoCloseBlockedByLauncher =
+        setting.toggleKey == AppSettingsToggleKey.AUTO_CLOSE_OVERLAY && isDefaultLauncher
+    val isBlockedByLauncher = isOverlayBlockedByLauncher || isAutoCloseBlockedByLauncher
     val effectiveDescription =
-        if (isOverlayBlockedByLauncher) {
+        if (isBlockedByLauncher) {
             stringResource(R.string.settings_overlay_mode_desc_launcher_blocked)
         } else {
             setting.description
@@ -214,6 +219,7 @@ internal fun AppSettingResultRow(
             .topPredictedRowContentPadding(isTopPredicted = isPredicted)
             .padding(vertical = DesignTokens.SpacingLarge)
             .combinedClickable(
+                enabled = !isBlockedByLauncher,
                 onClick = {
                     if (setting.isNavigateAction) {
                         hapticConfirm(view)()
@@ -232,7 +238,8 @@ internal fun AppSettingResultRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier.size(ICON_SIZE.dp).padding(start = DesignTokens.SpacingXSmall),
+            modifier = Modifier.size(ICON_SIZE.dp).padding(start = DesignTokens.SpacingXSmall)
+                .then(if (isBlockedByLauncher) Modifier.alpha(0.5f) else Modifier),
         ) {
             appIconResult.bitmap?.let { iconBitmap ->
                 Image(
@@ -250,7 +257,11 @@ internal fun AppSettingResultRow(
             Text(
                 text = setting.title,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = if (isBlockedByLauncher) {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -258,7 +269,11 @@ internal fun AppSettingResultRow(
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (isBlockedByLauncher) {
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -327,6 +342,7 @@ internal fun AppSettingResultRow(
                     hapticToggle(view)()
                     onToggle(setting, enabled)
                 },
+                enabled = !isBlockedByLauncher,
                 modifier = Modifier.scale(TOGGLE_SCALE),
                 colors = SwitchDefaults.colors(
                     uncheckedTrackColor = Color.Transparent,

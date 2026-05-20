@@ -505,7 +505,7 @@ fun WallpaperCard(
                                 onPickCustomImage()
                             }
                         },
-                        label = stringResource(R.string.settings_overlay_source_custom),
+                        label = stringResource(R.string.common_custom),
                 ) {
                     if (customPreviewBitmap != null) {
                         Box(modifier = Modifier.fillMaxSize()) {

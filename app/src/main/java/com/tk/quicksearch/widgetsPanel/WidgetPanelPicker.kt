@@ -236,7 +236,7 @@ private fun WidgetPickerSearchField(
                 decorationBox = { inner ->
                     if (query.isBlank()) {
                         Text(
-                            text = stringResource(R.string.widgets_picker_search_hint),
+                            text = stringResource(R.string.common_search),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

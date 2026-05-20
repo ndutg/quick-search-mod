@@ -23,6 +23,7 @@ internal interface SearchPreferencesStateAccess {
     var folderBlacklistPatterns: Set<String>
     var oneHandedMode: Boolean
     var bottomSearchBarEnabled: Boolean
+    var settingsIconEnabled: Boolean
     var topResultIndicatorEnabled: Boolean
     var wallpaperAccentEnabled: Boolean
     var openKeyboardOnLaunch: Boolean
@@ -31,6 +32,7 @@ internal interface SearchPreferencesStateAccess {
     var appSuggestionsEnabled: Boolean
     var showAppLabels: Boolean
     var phoneAppGridColumns: Int
+    var appIconSizeStep: Int
     var appIconShape: AppIconShape
     var launcherAppIcon: LauncherAppIcon
     var themedIconsEnabled: Boolean
@@ -200,6 +202,20 @@ internal class SearchPreferencesDelegate(
             stateAccess.phoneAppGridColumns = columns
             updateConfigState { state -> state.copy(phoneAppGridColumns = columns) }
             refreshAppSuggestions()
+            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+        }
+    }
+
+    fun setAppIconSizeStep(step: Int) {
+        scope.launch(Dispatchers.IO) {
+            val normalized =
+                step.coerceIn(
+                    UiPreferences.MIN_APP_ICON_SIZE_STEP,
+                    UiPreferences.MAX_APP_ICON_SIZE_STEP,
+                )
+            userPreferences.setAppIconSizeStep(normalized)
+            stateAccess.appIconSizeStep = normalized
+            updateConfigState { state -> state.copy(appIconSizeStep = normalized) }
             stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
         }
     }
@@ -614,6 +630,27 @@ internal class SearchPreferencesDelegate(
                 stateAccess.bottomSearchBarEnabled = it
                 updateUiState { state -> state.copy(bottomSearchBarEnabled = it) }
                 stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+            },
+        )
+    }
+
+    fun setSearchHintsEnabled(enabled: Boolean) {
+        updateBooleanPreference(
+            value = enabled,
+            preferenceSetter = userPreferences::setSearchHintsEnabled,
+            stateUpdater = {
+                updateUiState { state -> state.copy(searchHintsEnabled = it) }
+            },
+        )
+    }
+
+    fun setSettingsIconEnabled(enabled: Boolean) {
+        updateBooleanPreference(
+            value = enabled,
+            preferenceSetter = userPreferences::setSettingsIconEnabled,
+            stateUpdater = {
+                stateAccess.settingsIconEnabled = it
+                updateUiState { state -> state.copy(settingsIconEnabled = it) }
             },
         )
     }

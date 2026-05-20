@@ -61,7 +61,6 @@ import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentP
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
-import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardStyleOverrides
 import com.tk.quicksearch.search.utils.SearchRankingUtils
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -309,6 +308,7 @@ internal fun TopMatchesSection(
     matches: List<TopMatchItem>,
     params: SectionRenderParams,
     showWallpaperBackground: Boolean,
+    showTopResultIndicator: Boolean,
     reverseOrder: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
@@ -346,18 +346,17 @@ internal fun TopMatchesSection(
         }
 
         displayedMatches.forEach { item ->
-            val isTopPredicted = item == bestMatch
+            val isTopPredicted = showTopResultIndicator && item == bestMatch
             SearchResultCard(
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .predictedSubmitHighlight(
                             isPredicted = isTopPredicted,
-                            shape = DesignTokens.ShapeLarge,
+                            shape = SearchResultCardDefaults.shape,
                             opaqueCardTopResultBorder = true,
                         ),
                 showWallpaperBackground = showWallpaperBackground,
-                styleOverrides = SearchResultCardStyleOverrides(shape = DesignTokens.ShapeLarge),
             ) {
                 Column(
                     modifier =

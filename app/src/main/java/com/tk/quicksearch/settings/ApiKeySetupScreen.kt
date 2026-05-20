@@ -203,7 +203,7 @@ private fun AddCustomProviderCard(
                         apiKeyInput = ""
                     },
                 ) {
-                    Text(text = stringResource(R.string.settings_gemini_api_key_clear))
+                    Text(text = stringResource(R.string.common_action_clear))
                 }
                 Button(
                     enabled = !isSaving && canSave,
@@ -376,7 +376,7 @@ private fun ProviderApiKeyCard(
                                 inputByProvider.remove(providerId)
                             },
                         ) {
-                            Text(text = stringResource(R.string.settings_gemini_api_key_clear))
+                            Text(text = stringResource(R.string.common_action_clear))
                         }
                         Button(
                             enabled = !isSavingApiKey,
@@ -462,7 +462,7 @@ private fun ProviderLogo(
         }
         else -> {
             Text(
-                text = stringResource(R.string.settings_ai_provider_custom_label),
+                text = stringResource(R.string.common_custom),
                 style = MaterialTheme.typography.titleMedium,
                 color = contentColor,
             )

@@ -291,7 +291,7 @@ class DeviceSettingsRepository(
         add(
             createShortcut(
                 id = "home",
-                titleRes = R.string.settings_shortcut_home,
+                titleRes = R.string.settings_default_launcher_title,
                 descriptionRes = R.string.device_settings_category_apps_permissions,
                 keywords = listOf("launcher", "default", "home app"),
                 action = Settings.ACTION_HOME_SETTINGS,

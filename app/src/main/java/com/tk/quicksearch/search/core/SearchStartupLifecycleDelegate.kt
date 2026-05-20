@@ -12,6 +12,7 @@ import com.tk.quicksearch.search.apps.prefetchAppIcons
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.shared.util.WallpaperUtils
+import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import kotlinx.coroutines.CoroutineDispatcher
@@ -44,6 +45,7 @@ internal data class SearchStartupPreferencesSnapshot(
     val appTheme: AppTheme,
     val overlayThemeIntensity: Float,
     val useSystemFont: Boolean,
+    val appIconSizeStep: Int,
     val appIconShape: AppIconShape,
     val launcherAppIcon: LauncherAppIcon,
     val themedIconsEnabled: Boolean,
@@ -56,6 +58,8 @@ internal data class SearchLoadedPreferencesSnapshot(
     val enabledFileTypes: Set<FileType>,
     val oneHandedMode: Boolean,
     val bottomSearchBarEnabled: Boolean,
+    val searchHintsEnabled: Boolean,
+    val settingsIconEnabled: Boolean,
     val topResultIndicatorEnabled: Boolean,
     val openKeyboardOnLaunch: Boolean,
     val clearQueryOnLaunch: Boolean,
@@ -66,6 +70,7 @@ internal data class SearchLoadedPreferencesSnapshot(
     val enabledAppSuggestionTabs: Set<AppSuggestionTabType>,
     val showAppLabels: Boolean,
     val phoneAppGridColumns: Int,
+    val appIconSizeStep: Int,
     val appIconShape: AppIconShape,
     val launcherAppIcon: LauncherAppIcon,
     val themedIconsEnabled: Boolean,
@@ -229,12 +234,30 @@ internal class SearchStartupLifecycleDelegate(
 
     fun refreshPermissionSnapshotAtLaunch() {
         scope.launch(Dispatchers.Default) {
+            applyDefaultLauncherPreferenceTransition()
             val latestUsagePermission = repository.hasUsageAccess()
             if (permissionStateProvider().hasUsagePermission != latestUsagePermission) {
                 updatePermissionState { it.copy(hasUsagePermission = latestUsagePermission) }
             }
             refreshOptionalPermissions()
         }
+    }
+
+    private fun applyDefaultLauncherPreferenceTransition() {
+        val appliedDefaults =
+            userPreferences.applyDefaultLauncherPreferencesIfNeeded(
+                applicationProvider().isDefaultHomeApp(),
+            )
+        if (!appliedDefaults) return
+
+        updateConfigState { state ->
+            state.copy(
+                oneHandedMode = userPreferences.isOneHandedMode(),
+                bottomSearchBarEnabled = userPreferences.isBottomSearchBarEnabled(),
+                openKeyboardOnLaunch = userPreferences.isOpenKeyboardOnLaunchEnabled(),
+            )
+        }
+        saveStartupSurfaceSnapshotAsync(true, false)
     }
 
     fun refreshOptionalPermissions(): Boolean {
@@ -353,10 +376,13 @@ internal class SearchStartupLifecycleDelegate(
                     showSearchBarWelcomeAnimation = shouldShowSearchBarWelcome(),
                     appSuggestionsEnabled = userPreferences.areAppSuggestionsEnabled(),
                     selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(),
-                    enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
-                    showAppLabels = userPreferences.shouldShowAppLabels(),
-                    phoneAppGridColumns = userPreferences.getPhoneAppGridColumns(),
-                    bottomSearchBarEnabled = userPreferences.isBottomSearchBarEnabled(),
+                enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
+                showAppLabels = userPreferences.shouldShowAppLabels(),
+                phoneAppGridColumns = userPreferences.getPhoneAppGridColumns(),
+                appIconSizeStep = userPreferences.getAppIconSizeStep(),
+                bottomSearchBarEnabled = userPreferences.isBottomSearchBarEnabled(),
+                searchHintsEnabled = userPreferences.isSearchHintsEnabled(),
+                settingsIconEnabled = userPreferences.isSettingsIconEnabled(),
                     topResultIndicatorEnabled = userPreferences.isTopResultIndicatorEnabled(),
                     openKeyboardOnLaunch = userPreferences.isOpenKeyboardOnLaunchEnabled(),
                     clearQueryOnLaunch = userPreferences.isClearQueryOnLaunchEnabled(),
@@ -567,6 +593,8 @@ internal class SearchStartupLifecycleDelegate(
                 enabledFileTypes = snapshot.enabledFileTypes,
                 oneHandedMode = snapshot.oneHandedMode,
                 bottomSearchBarEnabled = snapshot.bottomSearchBarEnabled,
+                searchHintsEnabled = snapshot.searchHintsEnabled,
+                settingsIconEnabled = snapshot.settingsIconEnabled,
                 topResultIndicatorEnabled = snapshot.topResultIndicatorEnabled,
                 openKeyboardOnLaunch = snapshot.openKeyboardOnLaunch,
                 clearQueryOnLaunch = snapshot.clearQueryOnLaunch,
@@ -577,6 +605,7 @@ internal class SearchStartupLifecycleDelegate(
                 enabledAppSuggestionTabs = snapshot.enabledAppSuggestionTabs,
                 showAppLabels = snapshot.showAppLabels,
                 phoneAppGridColumns = snapshot.phoneAppGridColumns,
+                appIconSizeStep = snapshot.appIconSizeStep,
                 appIconShape = snapshot.appIconShape,
                 launcherAppIcon = snapshot.launcherAppIcon,
                 themedIconsEnabled = snapshot.themedIconsEnabled,
@@ -754,6 +783,8 @@ internal class SearchStartupLifecycleDelegate(
         val labelsEnabled = startupPrefs?.showAppLabels ?: userPreferences.shouldShowAppLabels()
         val columnsForPhone =
             startupPrefs?.phoneAppGridColumns ?: userPreferences.getPhoneAppGridColumns()
+        val appIconSizeStep =
+            startupPrefs?.appIconSizeStep ?: userPreferences.getAppIconSizeStep()
 
         updateResultsState {
             it.copy(
@@ -777,6 +808,7 @@ internal class SearchStartupLifecycleDelegate(
                 enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
                 showAppLabels = labelsEnabled,
                 phoneAppGridColumns = columnsForPhone,
+                appIconSizeStep = appIconSizeStep,
                 isStartupCoreSurfaceReady = true,
             )
         }

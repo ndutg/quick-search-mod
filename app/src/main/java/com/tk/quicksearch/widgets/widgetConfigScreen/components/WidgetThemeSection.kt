@@ -193,7 +193,7 @@ fun WidgetThemeSection(
                     },
                 selected = isCustomSelected,
                 onClick = { showCustomBgColorDialog = true },
-                label = stringResource(R.string.settings_overlay_source_custom),
+                label = stringResource(R.string.common_custom),
                 icon = {
                     Icon(
                         imageVector = Icons.Rounded.Edit,

@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -78,6 +79,8 @@ import com.tk.quicksearch.shared.ui.theme.LocalSearchColorTheme
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
+import com.tk.quicksearch.shared.util.isDefaultHomeApp
+import com.tk.quicksearch.shared.util.openNotificationShade
 import com.tk.quicksearch.tools.aiTools.WordClockIntentParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -134,12 +137,14 @@ internal fun SearchScreenContent(
         expandedSection: ExpandedSection,
         manuallySwitchedToNumberKeyboard: Boolean,
         scrollState: androidx.compose.foundation.ScrollState,
+        searchFocusRequester: FocusRequester,
         onClearDetectedShortcut: () -> Unit,
         onSectionSelected: (com.tk.quicksearch.search.core.SearchSection) -> Unit = {},
         modifier: Modifier = Modifier,
         isOverlayPresentation: Boolean = false,
         showSearchField: Boolean = true,
         onOpenPermissionsSettings: () -> Unit = {},
+        onChangeWallpaperClick: () -> Unit = {},
         getAllTriggerWordsById: () -> Map<String, String> = { emptyMap() },
         getAllContactActionTriggers: () -> Map<com.tk.quicksearch.search.data.preferences.ContactActionTriggerKey, com.tk.quicksearch.search.data.preferences.ResultTrigger> = { emptyMap() },
         onContactActionTrigger: (Long, com.tk.quicksearch.search.contacts.models.ContactCardAction) -> Unit = { _, _ -> },
@@ -178,6 +183,7 @@ internal fun SearchScreenContent(
             }
     val isImeVisible = WindowInsets.ime.getBottom(density) > 0
     val isCalculatorMode = state.calculatorState.isCalculatorMode
+    val isDefaultLauncher = context.isDefaultHomeApp()
     val isToolMode = state.calculatorState.isToolMode
     val isUnitConverterMode = state.calculatorState.isUnitConverterMode
     val activeToolType = if (isToolMode) state.calculatorState.toolType else null
@@ -188,6 +194,14 @@ internal fun SearchScreenContent(
     val triggerWords = remember(getAllTriggerWordsById, state.nicknameUpdateVersion) { getAllTriggerWordsById().values }
 
     val hintSearchAnything = stringResource(R.string.search_hint)
+    val staticSearchHint =
+        stringResource(
+            if (isDefaultLauncher) {
+                R.string.common_search
+            } else {
+                R.string.search_hint_static
+            },
+        )
     val cycleHints = stringArrayResource(R.array.search_hints_cycle)
     // Indices must stay in sync with R.array.search_hints_cycle order in strings.xml
     val defaultHints = remember(
@@ -233,8 +247,8 @@ internal fun SearchScreenContent(
 
     var hintIndex by remember { mutableStateOf(0) }
 
-    LaunchedEffect(isDefaultHintMode) {
-        if (!isDefaultHintMode) {
+    LaunchedEffect(isDefaultHintMode, state.searchHintsEnabled) {
+        if (!isDefaultHintMode || !state.searchHintsEnabled) {
             hintIndex = 0
             return@LaunchedEffect
         }
@@ -259,6 +273,7 @@ internal fun SearchScreenContent(
                             .metadataFor(state.detectedAliasSearchSection)
                             .searchHintRes,
                     )
+                !state.searchHintsEnabled -> staticSearchHint
                 else -> defaultHints[hintIndex % defaultHints.size]
             }
     val showCurrencyConverter =
@@ -747,6 +762,7 @@ internal fun SearchScreenContent(
                 onQueryChange = onQueryChanged,
                 onClearQuery = onClearQuery,
                 onSettingsClick = onSettingsClick,
+                showSettingsIcon = state.settingsIconEnabled,
                 dismissKeyboardBeforeSettingsClick = isOverlayPresentation,
                 enabledTargets = enabledTargets,
                 shortcutCodes = state.shortcutCodes,
@@ -770,6 +786,7 @@ internal fun SearchScreenContent(
                 onClearDetectedShortcut = onClearDetectedShortcut,
                 onSectionSelected = onSectionSelected,
                 onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
+                focusRequester = searchFocusRequester,
                 forceRestingOutline = showBottomSearchBar,
                 modifier = searchFieldModifier,
                 onSearchAction = {
@@ -977,6 +994,9 @@ internal fun SearchScreenContent(
                 isSearchHistoryExpanded = isSearchHistoryExpanded,
                 onSearchHistoryCollapseRequested = { searchHistoryCollapseRequestKey += 1 },
                 onOpenPermissionsSettings = onOpenPermissionsSettings,
+                onChangeWallpaperClick = onChangeWallpaperClick,
+                onOpenSettingsClick = onSettingsClick,
+                showOpenSettingsOption = !state.settingsIconEnabled,
                 showCalculator = state.calculatorState.isToolMode || state.calculatorState.result != null || state.calculatorState.parsedDateMillis != null || state.calculatorState.dateDiffLabel != null || state.calculatorState.timeResultLabel != null,
                 showCurrencyConverter = showCurrencyConverter,
                 showWordClock = showWordClock,
@@ -984,6 +1004,14 @@ internal fun SearchScreenContent(
                 showAiSearch = state.AiSearchState.status != AiSearchStatus.Idle,
                 aiSearchState = state.AiSearchState,
                 isOverlayPresentation = isOverlayPresentation,
+                isDefaultLauncher = isDefaultLauncher,
+                onBottomOneHandedOverscrollUp = {
+                    searchFocusRequester.requestFocus()
+                    keyboardController?.show()
+                },
+                onLauncherOverscrollDown = {
+                    context.openNotificationShade()
+                },
         )
 
         // Fixed search engines section at the bottom (above keyboard, not scrollable)
@@ -1039,6 +1067,7 @@ internal fun SearchScreenContent(
                                         compactRowCount = state.searchEngineCompactRowCount,
                                         predictedTarget = predictedTargetForIndicator,
                                         appIconShape = state.appIconShape,
+                                        iconPackPackage = state.selectedIconPackPackage,
                                         toolActionLabel = activeToolCardConfig?.label,
                                         toolActionIcon = activeToolCardConfig?.icon,
                                         onToolActionClick = activeToolCardConfig?.onClick,
@@ -1059,6 +1088,7 @@ internal fun SearchScreenContent(
                                         compactRowCount = 1,
                                         predictedTarget = predictedTargetForIndicator,
                                         appIconShape = state.appIconShape,
+                                        iconPackPackage = state.selectedIconPackPackage,
                                 )
                             },
                             shortcutContent = { target ->
@@ -1075,6 +1105,7 @@ internal fun SearchScreenContent(
                                         compactRowCount = 1,
                                         predictedTarget = predictedTargetForIndicator,
                                         appIconShape = state.appIconShape,
+                                        iconPackPackage = state.selectedIconPackPackage,
                                 )
                             },
                             hiddenContent = {
@@ -1093,6 +1124,7 @@ internal fun SearchScreenContent(
                                             compactRowCount = state.searchEngineCompactRowCount,
                                             predictedTarget = predictedTargetForIndicator,
                                             appIconShape = state.appIconShape,
+                                            iconPackPackage = state.selectedIconPackPackage,
                                             toolActionLabel = activeToolCardConfig.label,
                                             toolActionIcon = activeToolCardConfig.icon,
                                             onToolActionClick = activeToolCardConfig.onClick,

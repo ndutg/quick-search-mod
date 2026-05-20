@@ -144,7 +144,7 @@ private fun WebSuggestionItem(
 
         Icon(
             imageVector = icon,
-            contentDescription = stringResource(R.string.desc_search_icon),
+            contentDescription = stringResource(R.string.common_search),
             tint = iconColor,
             modifier =
                 Modifier

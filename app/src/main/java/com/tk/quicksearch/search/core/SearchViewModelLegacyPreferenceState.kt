@@ -14,6 +14,8 @@ internal class SearchViewModelLegacyPreferenceState(
     var excludedFileExtensions: Set<String> = emptySet()
     var oneHandedMode: Boolean = false
     var bottomSearchBarEnabled: Boolean = false
+    var searchHintsEnabled: Boolean = true
+    var settingsIconEnabled: Boolean = true
     var topResultIndicatorEnabled: Boolean = true
     var wallpaperAccentEnabled: Boolean = true
     var openKeyboardOnLaunch: Boolean = true
@@ -25,6 +27,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var appSuggestionsEnabled: Boolean = true
     var showAppLabels: Boolean = true
     var phoneAppGridColumns: Int = UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS
+    var appIconSizeStep: Int = UiPreferences.DEFAULT_APP_ICON_SIZE_STEP
     var appIconShape: AppIconShape = AppIconShape.DEFAULT
     var launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT
     var themedIconsEnabled: Boolean = false
@@ -57,6 +60,8 @@ internal class SearchViewModelLegacyPreferenceState(
         excludedFileExtensions = prefCache.excludedFileExtensions
         oneHandedMode = prefCache.oneHandedMode
         bottomSearchBarEnabled = prefCache.bottomSearchBarEnabled
+        searchHintsEnabled = prefCache.searchHintsEnabled
+        settingsIconEnabled = prefCache.settingsIconEnabled
         topResultIndicatorEnabled = prefCache.topResultIndicatorEnabled
         wallpaperAccentEnabled = prefCache.wallpaperAccentEnabled
         openKeyboardOnLaunch = prefCache.openKeyboardOnLaunch
@@ -68,6 +73,7 @@ internal class SearchViewModelLegacyPreferenceState(
         appSuggestionsEnabled = prefCache.appSuggestionsEnabled
         showAppLabels = prefCache.showAppLabels
         phoneAppGridColumns = prefCache.phoneAppGridColumns
+        appIconSizeStep = prefCache.appIconSizeStep
         appIconShape = prefCache.appIconShape
         launcherAppIcon = prefCache.launcherAppIcon
         themedIconsEnabled = prefCache.themedIconsEnabled

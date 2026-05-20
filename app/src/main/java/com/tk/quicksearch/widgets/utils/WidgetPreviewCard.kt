@@ -109,7 +109,7 @@ fun WidgetPreviewCard(
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_widget_search),
-                                contentDescription = stringResource(R.string.desc_search_icon),
+                                contentDescription = stringResource(R.string.common_search),
                                 tint = colors.textIcon,
                                 modifier = Modifier.size(WidgetConfigConstants.PREVIEW_ICON_SIZE),
                             )
@@ -128,7 +128,7 @@ fun WidgetPreviewCard(
                     if (widgetVariant == WidgetVariant.STANDARD && previewState.showSearchIcon) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_widget_search),
-                            contentDescription = stringResource(R.string.desc_search_icon),
+                            contentDescription = stringResource(R.string.common_search),
                             tint = colors.textIcon,
                             modifier = Modifier.size(WidgetConfigConstants.PREVIEW_ICON_SIZE),
                         )

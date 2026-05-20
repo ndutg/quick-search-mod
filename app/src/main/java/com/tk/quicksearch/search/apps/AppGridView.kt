@@ -86,6 +86,7 @@ import com.tk.quicksearch.search.core.StartupPhase
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.launchStaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
+import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -193,6 +194,7 @@ fun AppGridView(
         modifier: Modifier = Modifier,
         rowCount: Int = ROW_COUNT,
         phoneColumnOverride: Int = 5,
+        appIconSizeStep: Int = UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
         iconPackPackage: String? = null,
         showAppLabels: Boolean = true,
         oneHandedMode: Boolean = false,
@@ -210,7 +212,7 @@ fun AppGridView(
     val pinnedTitle = stringResource(R.string.app_suggestions_tab_pinned)
     val recentsTitle = stringResource(R.string.app_suggestions_tab_recent)
     val newUpdatedTitle = stringResource(R.string.app_suggestions_tab_new_updated)
-    val mostUsedTitle = stringResource(R.string.app_suggestions_tab_most_used)
+    val mostUsedTitle = stringResource(R.string.common_most_used)
     val suggestionTabs =
             remember(
                     hasUsagePermission,
@@ -455,6 +457,7 @@ fun AppGridView(
                                 shortcutsByPackage = shortcutsByPackage,
                                 rowCount = rowCount,
                                 phoneColumnOverride = phoneColumnOverride,
+                                appIconSizeStep = appIconSizeStep,
                                 iconPackPackage = iconPackPackage,
                                 showAppLabels = showAppLabels,
                                 oneHandedMode = oneHandedMode,
@@ -486,6 +489,7 @@ fun AppGridView(
                             shortcutsByPackage = shortcutsByPackage,
                             rowCount = rowCount,
                             phoneColumnOverride = phoneColumnOverride,
+                            appIconSizeStep = appIconSizeStep,
                             iconPackPackage = iconPackPackage,
                             showAppLabels = showAppLabels,
                             oneHandedMode = oneHandedMode,
@@ -615,6 +619,7 @@ private fun AppGrid(
         shortcutsByPackage: Map<String, List<StaticShortcut>>,
         rowCount: Int = ROW_COUNT,
         phoneColumnOverride: Int = 5,
+        appIconSizeStep: Int = UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
         iconPackPackage: String?,
         showAppLabels: Boolean,
         oneHandedMode: Boolean,
@@ -658,8 +663,18 @@ private fun AppGrid(
                     visibleDisplayedApps
                 }
             }
-    val firstResultKey = remember(visibleDisplayedApps, suppressTopResultIndicator) {
-        if (suppressTopResultIndicator) null else visibleDisplayedApps.firstOrNull()?.launchCountKey()
+    val predictedAppKey = remember(predictedTarget, suppressTopResultIndicator) {
+        if (suppressTopResultIndicator) {
+            null
+        } else {
+            (predictedTarget as? PredictedSubmitTarget.App)?.let { target ->
+                if (target.userHandleId == null) {
+                    target.packageName
+                } else {
+                    "${target.packageName}:${target.userHandleId}"
+                }
+            }
+        }
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
@@ -811,8 +826,9 @@ private fun AppGrid(
                             appActions = createAppActions(app),
                             appState = createAppState(app),
                             iconPackPackage = iconPackPackage,
-                            isPredicted = app.launchCountKey() == firstResultKey,
+                            isPredicted = app.launchCountKey() == predictedAppKey,
                             oneHandedMode = oneHandedMode,
+                            appIconSizeStep = appIconSizeStep,
                             appIconShape = appIconShape,
                             themedIconsEnabled = themedIconsEnabled,
                             showWallpaperBackground = showWallpaperBackground,
@@ -854,6 +870,7 @@ private fun AppGridItem(
         iconPackPackage: String?,
         isPredicted: Boolean = false,
         oneHandedMode: Boolean = false,
+        appIconSizeStep: Int = UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
         appIconShape: AppIconShape = AppIconShape.DEFAULT,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
@@ -889,7 +906,8 @@ private fun AppGridItem(
             )
     var showOptions by remember { mutableStateOf(false) }
     val appIconSize =
-            remember(appState.isOverlayPresentation) {
+            remember(appState.isOverlayPresentation, appIconSizeStep) {
+                val sizeScale = UiPreferences.appIconSizeScale(appIconSizeStep)
                 when (
                     if (appState.isOverlayPresentation) {
                         AppIconDisplayMode.OVERLAY
@@ -897,16 +915,17 @@ private fun AppGridItem(
                         AppIconDisplayMode.REGULAR
                     }
                 ) {
-                    AppIconDisplayMode.OVERLAY -> OverlayAppIconSize
-                    AppIconDisplayMode.REGULAR -> RegularAppIconSize
+                    AppIconDisplayMode.OVERLAY -> OverlayAppIconSize * sizeScale
+                    AppIconDisplayMode.REGULAR -> RegularAppIconSize * sizeScale
                 }
             }
     val appIconSurfaceSize =
-            remember(appState.isOverlayPresentation) {
+            remember(appState.isOverlayPresentation, appIconSizeStep) {
+                val sizeScale = UiPreferences.appIconSizeScale(appIconSizeStep)
                 if (appState.isOverlayPresentation) {
-                    OverlayAppIconSurfaceSize
+                    OverlayAppIconSurfaceSize * sizeScale
                 } else {
-                    DesignTokens.AppIconSize
+                    DesignTokens.AppIconSize * sizeScale
                 }
             }
     val indicatorAlpha = if (isPredicted) 1f else 0f
@@ -932,6 +951,7 @@ private fun AppGridItem(
                 Modifier.pointerInput(appInfo.launchCountKey()) {
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
+                        down.consume()
                         val longPress = awaitLongPressOrCancellation(down.id)
                         if (longPress == null) {
                             if (currentEvent.changes.any { it.id == down.id && it.changedToUp() }) {

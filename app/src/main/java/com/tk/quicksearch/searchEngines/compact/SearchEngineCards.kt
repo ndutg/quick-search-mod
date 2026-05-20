@@ -58,6 +58,7 @@ fun NoResultsSearchEngineCards(
     showWallpaperBackground: Boolean = false,
     predictedTarget: PredictedSubmitTarget? = null,
     appIconShape: AppIconShape = AppIconShape.DEFAULT,
+    iconPackPackage: String? = null,
 ) {
     val currentQuery = rememberUpdatedState(query)
     val actionLabelResId =
@@ -105,6 +106,7 @@ fun NoResultsSearchEngineCards(
                         (predictedTarget as? PredictedSubmitTarget.SearchTarget)?.targetId ==
                             engine.getId(),
                     appIconShape = appIconShape,
+                    iconPackPackage = iconPackPackage,
                 )
             }
         }
@@ -133,6 +135,7 @@ fun SearchEngineCard(
     onClear: (() -> Unit)? = null,
     isPredicted: Boolean = false,
     appIconShape: AppIconShape = AppIconShape.DEFAULT,
+    iconPackPackage: String? = null,
 ) {
     val view = LocalView.current
     val targetName = target.getDisplayName()
@@ -178,6 +181,7 @@ fun SearchEngineCard(
                 iconSize = SearchTargetConstants.DEFAULT_ICON_SIZE,
                 style = IconRenderStyle.SIMPLE,
                 appIconShape = appIconShape,
+                iconPackPackage = iconPackPackage,
             )
 
             androidx.compose.foundation.layout
@@ -219,6 +223,7 @@ private fun SearchTargetCard(
     showWallpaperBackground: Boolean = false,
     isPredicted: Boolean = false,
     appIconShape: AppIconShape = AppIconShape.DEFAULT,
+    iconPackPackage: String? = null,
 ) {
     val view = LocalView.current
     SearchResultCard(
@@ -256,6 +261,7 @@ private fun SearchTargetCard(
                 iconSize = SearchTargetConstants.DEFAULT_ICON_SIZE,
                 style = IconRenderStyle.SIMPLE,
                 appIconShape = appIconShape,
+                iconPackPackage = iconPackPackage,
             )
 
             androidx.compose.foundation.layout

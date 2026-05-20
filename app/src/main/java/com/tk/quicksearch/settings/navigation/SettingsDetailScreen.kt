@@ -279,6 +279,24 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
+                            searchHintsEnabled = state.searchHintsEnabled,
+                            onToggleSearchHints = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.SEARCH_HINTS,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
+                            settingsIconEnabled = state.settingsIconEnabled,
+                            onToggleSettingsIcon = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.SETTINGS_ICON,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
                             wallpaperBackgroundAlpha = state.wallpaperBackgroundAlpha,
                             wallpaperBlurRadius = state.wallpaperBlurRadius,
                             onWallpaperBackgroundAlphaChange = { alpha ->
@@ -362,6 +380,12 @@ internal fun SettingsDetailLevel1Screen(
                             onSetPhoneAppGridColumns = { columns ->
                                 callbacks.onApplySettingsCommand(
                                     SettingsCommand.PhoneAppGridColumns(columns),
+                                )
+                            },
+                            appIconSizeStep = state.appIconSizeStep,
+                            onSetAppIconSizeStep = { step ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.AppIconSizeStep(step),
                                 )
                             },
                             onSelectIconPack = { packageName ->
