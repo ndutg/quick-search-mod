@@ -128,6 +128,7 @@ fun SearchEngineIconsSection(
     compactRowCount: Int = 1,
     predictedTarget: PredictedSubmitTarget? = null,
     appIconShape: AppIconShape = AppIconShape.DEFAULT,
+    iconPackPackage: String? = null,
     toolActionLabel: String? = null,
     toolActionIcon: ImageVector? = null,
     onToolActionClick: (() -> Unit)? = null,
@@ -163,6 +164,7 @@ fun SearchEngineIconsSection(
                         (predictedTarget as? PredictedSubmitTarget.SearchTarget)?.targetId ==
                             detectedShortcutTarget.getId(),
                     appIconShape = appIconShape,
+                    iconPackPackage = iconPackPackage,
                 )
             }
         }
@@ -217,6 +219,7 @@ fun SearchEngineIconsSection(
                         compactRowCount = compactRowCount,
                         predictedTarget = predictedTarget,
                         appIconShape = appIconShape,
+                        iconPackPackage = iconPackPackage,
                     )
                     AnimatedVisibility(
                         visible = hasToolAction,
@@ -254,6 +257,7 @@ private fun SearchEngineContent(
     compactRowCount: Int,
     predictedTarget: PredictedSubmitTarget?,
     appIconShape: AppIconShape,
+    iconPackPackage: String?,
 ) {
     Row(
         modifier =
@@ -283,6 +287,7 @@ private fun SearchEngineContent(
             compactRowCount = compactRowCount,
             predictedTarget = predictedTarget,
             appIconShape = appIconShape,
+            iconPackPackage = iconPackPackage,
         )
     }
 }
@@ -402,6 +407,7 @@ private fun ScrollableEngineIcons(
     compactRowCount: Int,
     predictedTarget: PredictedSubmitTarget?,
     appIconShape: AppIconShape,
+    iconPackPackage: String?,
 ) {
     val resolvedRowCount = compactRowCount.coerceIn(1, 2)
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -458,6 +464,7 @@ private fun ScrollableEngineIcons(
                                     (predictedTarget as? PredictedSubmitTarget.SearchTarget)
                                         ?.targetId == topEngine.getId(),
                                 appIconShape = appIconShape,
+                                iconPackPackage = iconPackPackage,
                             )
                         }
                         column.bottom?.let { bottomEngine ->
@@ -472,6 +479,7 @@ private fun ScrollableEngineIcons(
                                     (predictedTarget as? PredictedSubmitTarget.SearchTarget)
                                         ?.targetId == bottomEngine.getId(),
                                 appIconShape = appIconShape,
+                                iconPackPackage = iconPackPackage,
                             )
                         }
                     }
@@ -502,6 +510,7 @@ private fun ScrollableEngineIcons(
                             (predictedTarget as? PredictedSubmitTarget.SearchTarget)?.targetId ==
                                 engine.getId(),
                         appIconShape = appIconShape,
+                        iconPackPackage = iconPackPackage,
                     )
                 }
             }

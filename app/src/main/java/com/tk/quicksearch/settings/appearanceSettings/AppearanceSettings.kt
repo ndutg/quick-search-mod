@@ -36,6 +36,10 @@ fun AppearanceSettingsSection(
         onToggleOneHandedMode: (Boolean) -> Unit,
         bottomSearchBarEnabled: Boolean,
         onToggleBottomSearchBar: (Boolean) -> Unit,
+        searchHintsEnabled: Boolean,
+        onToggleSearchHints: (Boolean) -> Unit,
+        settingsIconEnabled: Boolean,
+        onToggleSettingsIcon: (Boolean) -> Unit,
         wallpaperBackgroundAlpha: Float,
         wallpaperBlurRadius: Float,
         onWallpaperBackgroundAlphaChange: (Float) -> Unit,
@@ -67,6 +71,8 @@ fun AppearanceSettingsSection(
         onToggleAppLabels: (Boolean) -> Unit,
         phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
         onSetPhoneAppGridColumns: (Int) -> Unit = {},
+        appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
+        onSetAppIconSizeStep: (Int) -> Unit = {},
         onSelectIconPack: (String?) -> Unit,
         onSetMaskUnsupportedIconPackIcons: (Boolean) -> Unit,
         onRefreshIconPacks: () -> Unit,
@@ -178,6 +184,20 @@ fun AppearanceSettingsSection(
                         checked = bottomSearchBarEnabled,
                         onCheckedChange = onToggleBottomSearchBar,
                         extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_search_hints_title),
+                        subtitle = stringResource(R.string.settings_search_hints_desc),
+                        checked = searchHintsEnabled,
+                        onCheckedChange = onToggleSearchHints,
+                        extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_icon_title),
+                        subtitle = stringResource(R.string.settings_icon_desc),
+                        checked = settingsIconEnabled,
+                        onCheckedChange = onToggleSettingsIcon,
+                        extraVerticalPadding = 8.dp,
                         showDivider = false,
                 )
             }
@@ -191,6 +211,8 @@ fun AppearanceSettingsSection(
                 onToggleAppLabels = onToggleAppLabels,
                 phoneAppGridColumns = phoneAppGridColumns,
                 onSetPhoneAppGridColumns = onSetPhoneAppGridColumns,
+                appIconSizeStep = appIconSizeStep,
+                onSetAppIconSizeStep = onSetAppIconSizeStep,
                 iconPackTitle =
                         androidx.compose.ui.res.stringResource(R.string.settings_icon_pack_title),
                 iconPackDescription =

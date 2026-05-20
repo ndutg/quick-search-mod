@@ -45,6 +45,7 @@ fun SearchEngineIconItem(
     onSearchEngineLongPress: (() -> Unit)? = null,
     isPredicted: Boolean = false,
     appIconShape: AppIconShape = AppIconShape.DEFAULT,
+    iconPackPackage: String? = null,
     modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
@@ -114,6 +115,7 @@ fun SearchEngineIconItem(
             iconSize = compactVisualIconSize,
             style = IconRenderStyle.ADVANCED,
             appIconShape = appIconShape,
+            iconPackPackage = iconPackPackage,
             modifier = iconShadowModifier,
         )
     }

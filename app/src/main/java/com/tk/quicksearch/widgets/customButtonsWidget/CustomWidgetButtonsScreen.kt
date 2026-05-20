@@ -530,7 +530,7 @@ private fun CustomWidgetButtonDialog(
                         Icon(
                             imageVector = Icons.Rounded.Search,
                             contentDescription =
-                                stringResource(R.string.desc_search_icon),
+                                stringResource(R.string.common_search),
                         )
                     },
                     trailingIcon = {

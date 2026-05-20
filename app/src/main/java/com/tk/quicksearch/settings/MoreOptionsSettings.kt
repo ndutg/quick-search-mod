@@ -9,12 +9,14 @@ import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
+import com.tk.quicksearch.shared.util.isDefaultHomeApp
 
 @Composable
 fun MoreOptionsSettings(
@@ -22,6 +24,9 @@ fun MoreOptionsSettings(
     onApplySettingsCommand: (SettingsCommand) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    val isDefaultLauncher = context.isDefaultHomeApp()
+
     val toggleItems =
         listOf(
             ToggleItem(
@@ -55,10 +60,17 @@ fun MoreOptionsSettings(
     ) {
         Column {
             toggleItems.forEachIndexed { index, item ->
+                val isItemEnabled = if (item.key == AppSettingsToggleKey.AUTO_CLOSE_OVERLAY) !isDefaultLauncher else true
+                val itemSubtitle = if (item.key == AppSettingsToggleKey.AUTO_CLOSE_OVERLAY && isDefaultLauncher) {
+                    stringResource(R.string.settings_overlay_mode_desc_launcher_blocked)
+                } else {
+                    stringResource(item.subtitleRes)
+                }
                 SettingsToggleRow(
                     title = stringResource(item.titleRes),
-                    subtitle = stringResource(item.subtitleRes),
+                    subtitle = itemSubtitle,
                     checked = isToggleEnabled(item.key),
+                    enabled = isItemEnabled,
                     onCheckedChange = { enabled ->
                         onApplySettingsCommand(
                             SettingsCommand.Toggle(

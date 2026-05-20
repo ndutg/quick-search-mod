@@ -398,7 +398,7 @@ private fun AddSearchEngineForm(
             TextButton(
                 onClick = { resetForm() },
             ) {
-                Text(text = stringResource(R.string.action_clear))
+                Text(text = stringResource(R.string.common_action_clear))
             }
             Button(
                 onClick = {

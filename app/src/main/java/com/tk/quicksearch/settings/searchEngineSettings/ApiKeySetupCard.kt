@@ -104,7 +104,7 @@ fun ApiKeySetupCard(
                         modifier = Modifier.size(24.dp),
                     )
                     Text(
-                        text = stringResource(R.string.settings_direct_search_toggle),
+                        text = stringResource(R.string.common_api_key_setup),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -231,7 +231,7 @@ fun ApiKeySetupCard(
                                     enabled = !isSavingGeminiApiKey,
                                     onClick = { apiKeyInput = "" },
                                 ) {
-                                    Text(text = stringResource(R.string.settings_gemini_api_key_clear))
+                                    Text(text = stringResource(R.string.common_action_clear))
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Button(

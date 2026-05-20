@@ -96,7 +96,7 @@ fun AppItemDropdownMenu(
             onClick = { onDismiss(); if (isPinned) onUnpinApp() else onPinApp() },
         ))
         add(AppMenuItem(
-            textResId = if (hasNickname) R.string.action_edit_nickname else R.string.action_add_nickname,
+            textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
             icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
             onClick = { onDismiss(); onNicknameClick() },
         ))

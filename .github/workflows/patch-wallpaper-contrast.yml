@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout restore-wallpaper-feature
+      - name: Checkout restore-wallpaper-feature with full history
         uses: actions/checkout@v4
         with:
           ref: restore-wallpaper-feature
@@ -23,24 +23,22 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Patch AppGridView.kt label color
+      - name: Replace SettingsRouteFlows.kt with upstream version
         run: |
-          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          FILE="app/src/main/java/com/tk/quicksearch/settings/shared/settingsRoute/SettingsRouteFlows.kt"
 
-          echo "=== Before patch ==="
-          grep -n "false -> Color" "$FILE"
+          echo "=== Restoring upstream version of SettingsRouteFlows.kt ==="
+          git checkout origin/main -- "$FILE"
 
-          # Since we have a dark scrim overlay, the background is always effectively dark
-          # when wallpaper is active. So use Color.White for both true and false.
-          sed -i 's/false -> Color.Black/false -> Color.White  \/\/ scrim makes background dark/' "$FILE"
+          echo "✅ Replaced with upstream version"
 
           echo ""
-          echo "=== After patch ==="
-          grep -n "Color.White\|Color.Black\|labelColor" "$FILE" | grep -i "label\|false\|true\|null"
+          echo "=== Verify no broken references ==="
+          grep -n "requiresImagePermissionAfterSecurityError\|showFallbackDialogOnSecurityError\|shouldShowFallbackDialog" "$FILE" || echo "✅ No old API references"
 
           echo ""
-          echo "=== Full AppLabelText function ==="
-          grep -A 20 "private fun AppLabelText" "$FILE"
+          echo "=== Verify file compiles context ==="
+          grep -n "resolveWallpaperAccessState\|WallpaperAccessState\|securityError\|needsPermission" "$FILE" | head -20
 
       - name: Commit and push
         run: |
@@ -50,7 +48,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "fix: use white text for app labels when wallpaper + scrim is active"
+            git commit -m "fix: replace SettingsRouteFlows.kt with upstream version to fix API mismatch"
             git push origin restore-wallpaper-feature
             echo "✅ Changes pushed — build will auto-trigger"
           fi

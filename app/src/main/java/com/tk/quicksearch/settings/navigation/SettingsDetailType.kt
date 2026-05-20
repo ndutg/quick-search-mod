@@ -134,13 +134,13 @@ internal object SettingsDestinationRegistry {
                 ),
             SettingsDetailType.GEMINI_API_CONFIG to
                 SettingsDestinationSpec(
-                    titleResId = R.string.settings_ai_provider_title,
+                    titleResId = R.string.common_ai_provider,
                     level = 3,
                     preferSourceBackDestination = true,
                 ),
             SettingsDetailType.API_KEY_SETUP to
                 SettingsDestinationSpec(
-                    titleResId = R.string.settings_api_key_setup_title,
+                    titleResId = R.string.common_api_key_setup,
                     level = 3,
                     preferSourceBackDestination = true,
                 ),

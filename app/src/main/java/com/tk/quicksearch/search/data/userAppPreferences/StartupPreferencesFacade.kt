@@ -31,6 +31,8 @@ class StartupPreferencesFacade(
             val excludedFileExtensions: Set<String>,
             val oneHandedMode: Boolean,
             val bottomSearchBarEnabled: Boolean,
+            val searchHintsEnabled: Boolean,
+            val settingsIconEnabled: Boolean,
             val topResultIndicatorEnabled: Boolean,
             val openKeyboardOnLaunch: Boolean,
             val clearQueryOnLaunch: Boolean,
@@ -63,6 +65,7 @@ class StartupPreferencesFacade(
             val wallpaperAccentEnabled: Boolean = true,
             val maskUnsupportedIconPackIcons: Boolean = false,
             val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
+            val appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
     )
 
     /**
@@ -186,6 +189,20 @@ class StartupPreferencesFacade(
                         ] as?
                                 Boolean
                                 ?: false,
+                searchHintsEnabled =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_SEARCH_HINTS_ENABLED,
+                        ] as?
+                                Boolean
+                                ?: true,
+                settingsIconEnabled =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_SETTINGS_ICON_ENABLED,
+                        ] as?
+                                Boolean
+                                ?: true,
                 topResultIndicatorEnabled =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -463,6 +480,20 @@ class StartupPreferencesFacade(
                         ] as?
                                 Boolean
                                 ?: false,
+                phoneAppGridColumns =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_PHONE_APP_GRID_COLUMNS,
+                        ] as?
+                                Int
+                                ?: com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
+                appIconSizeStep =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_APP_ICON_SIZE_STEP,
+                        ] as?
+                                Int
+                                ?: com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
         )
     }
 
@@ -569,6 +600,20 @@ class StartupPreferencesFacade(
                                 ] as?
                                         Boolean
                                         ?: false,
+                        searchHintsEnabled =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_SEARCH_HINTS_ENABLED,
+                                ] as?
+                                        Boolean
+                                        ?: true,
+                        settingsIconEnabled =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_SETTINGS_ICON_ENABLED,
+                                ] as?
+                                        Boolean
+                                        ?: true,
                         topResultIndicatorEnabled =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -856,6 +901,13 @@ class StartupPreferencesFacade(
                                 ] as?
                                         Int
                                         ?: com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
+                        appIconSizeStep =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_APP_ICON_SIZE_STEP,
+                                ] as?
+                                        Int
+                                        ?: com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
                 )
 
         return StartupConfig(

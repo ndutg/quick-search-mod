@@ -60,6 +60,7 @@ fun SearchTargetIcon(
     iconSize: Dp,
     style: IconRenderStyle = IconRenderStyle.SIMPLE,
     appIconShape: AppIconShape = AppIconShape.DEFAULT,
+    iconPackPackage: String? = null,
     modifier: Modifier = Modifier,
 ) {
     when (target) {
@@ -70,6 +71,7 @@ fun SearchTargetIcon(
                     packageName to
                         rememberAppIcon(
                             packageName = packageName,
+                            iconPackPackage = iconPackPackage,
                             forceCircularMask = appIconShape == AppIconShape.CIRCLE,
                         )
                 }
@@ -203,6 +205,7 @@ fun SearchTargetIcon(
             val iconResult =
                 rememberAppIcon(
                     packageName = target.app.packageName,
+                    iconPackPackage = iconPackPackage,
                     forceCircularMask = appIconShape == AppIconShape.CIRCLE,
                 )
             if (iconResult.bitmap != null) {

@@ -216,6 +216,7 @@ internal fun SearchScreenStateManagement(
     // Section expansion state
     var expandedSection by remember { mutableStateOf(ExpandedSection.NONE) }
     val scrollState = rememberScrollState()
+    val searchFocusRequester = remember { FocusRequester() }
     val showAiSearch = state.AiSearchState.status != AiSearchStatus.Idle
     val alignResultsToBottom =
         state.oneHandedMode && expandedSection == ExpandedSection.NONE && !showAiSearch
@@ -337,6 +338,7 @@ internal fun SearchScreenStateManagement(
         overlayModeEnabled = state.overlayModeEnabled,
         oneHandedMode = state.oneHandedMode,
         reverseScrolling = alignResultsToBottom,
+        searchFocusRequester = searchFocusRequester,
     )
 
     val (imageBitmap, useImageBackground, useMonoThemeFallback) = SearchScreenWallpaperLogic(
@@ -520,6 +522,7 @@ internal fun SearchScreenStateManagement(
         derivedState = derivedState,
         expandedSection = expandedSection,
         scrollState = scrollState,
+        searchFocusRequester = searchFocusRequester,
         showAiSearch = showAiSearch,
         alignResultsToBottom = alignResultsToBottom,
         shortcutToEdit = shortcutToEdit,
@@ -555,6 +558,7 @@ internal data class SearchScreenStateResult(
     val derivedState: DerivedState,
     val expandedSection: ExpandedSection,
     val scrollState: androidx.compose.foundation.ScrollState,
+    val searchFocusRequester: FocusRequester,
     val showAiSearch: Boolean,
     val alignResultsToBottom: Boolean,
     val shortcutToEdit: StaticShortcut?,

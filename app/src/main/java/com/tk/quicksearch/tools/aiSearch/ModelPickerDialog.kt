@@ -314,7 +314,7 @@ private fun ProviderWordmark(
         }
         else -> {
             Text(
-                text = stringResource(R.string.settings_ai_provider_custom_label),
+                text = stringResource(R.string.common_custom),
                 style = MaterialTheme.typography.labelSmall,
                 color = contentColor,
             )

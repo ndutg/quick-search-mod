@@ -357,7 +357,7 @@ fun SettingsScreen(
                     )
                     add(
                         SettingsCardItem(
-                            title = stringResource(R.string.settings_backup_export_option_gemini_title),
+                            title = stringResource(R.string.common_ai_provider),
                             description = stringResource(R.string.settings_gemini_api_config_desc),
                             iconResId = R.drawable.direct_search,
                             actionOnPress = {

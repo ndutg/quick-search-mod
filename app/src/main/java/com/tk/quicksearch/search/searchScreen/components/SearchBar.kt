@@ -140,6 +140,7 @@ internal fun PersistentSearchBar(
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
     onSettingsClick: () -> Unit,
+    showSettingsIcon: Boolean = true,
     dismissKeyboardBeforeSettingsClick: Boolean = false,
     enabledTargets: List<SearchTarget>,
     shortcutCodes: Map<String, String> = emptyMap(),
@@ -166,9 +167,10 @@ internal fun PersistentSearchBar(
     onClearDetectedShortcut: () -> Unit = {},
     onSectionSelected: (SearchSection) -> Unit = {},
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
+    focusRequester: FocusRequester? = null,
     modifier: Modifier = Modifier,
 ) {
-    val focusRequester = remember { FocusRequester() }
+    val focusRequester = focusRequester ?: remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val view = LocalView.current
@@ -699,7 +701,7 @@ internal fun PersistentSearchBar(
                                 tint = accentColor,
                             )
                         }
-                    } else {
+                    } else if (showSettingsIcon) {
                         IconButton(
                             onClick = {
                                 hapticStrong(view)()
@@ -848,7 +850,7 @@ private fun SearchBarLeadingIcon(
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap,
-                        contentDescription = stringResource(R.string.desc_search_icon),
+                        contentDescription = stringResource(R.string.common_search),
                         modifier = Modifier
                             .padding(start = DesignTokens.SpacingSmall)
                             .size(DesignTokens.IconSize),
@@ -856,7 +858,7 @@ private fun SearchBarLeadingIcon(
                 } else {
                     Icon(
                         imageVector = Icons.Rounded.Settings,
-                        contentDescription = stringResource(R.string.desc_search_icon),
+                        contentDescription = stringResource(R.string.common_search),
                         tint = iconTint,
                         modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
                     )
@@ -865,7 +867,7 @@ private fun SearchBarLeadingIcon(
                 Icon(
                     imageVector =
                         SearchSectionUiMetadataRegistry.metadataFor(iconState.section).searchBarIcon,
-                    contentDescription = stringResource(R.string.desc_search_icon),
+                    contentDescription = stringResource(R.string.common_search),
                     tint = iconTint,
                     modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
                 )
@@ -875,7 +877,7 @@ private fun SearchBarLeadingIcon(
         LeadingIconState.Search -> {
             Icon(
                 imageVector = Icons.Rounded.Search,
-                contentDescription = stringResource(R.string.desc_search_icon),
+                contentDescription = stringResource(R.string.common_search),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
             )

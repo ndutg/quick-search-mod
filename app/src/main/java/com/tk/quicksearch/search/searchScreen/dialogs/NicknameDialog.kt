@@ -71,7 +71,7 @@ fun NicknameDialog(
                         if (hasExistingNickname) {
                             R.string.action_edit_nickname
                         } else {
-                            R.string.action_add_nickname
+                            R.string.common_nickname
                         },
                     ),
             )
@@ -89,7 +89,7 @@ fun NicknameDialog(
                 OutlinedTextField(
                     value = nicknameText,
                     onValueChange = { nicknameText = it },
-                    label = { Text(stringResource(R.string.dialog_nickname_hint)) },
+                    label = { Text(stringResource(R.string.common_nickname)) },
                     modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                     singleLine = true,
                     trailingIcon = {

@@ -317,6 +317,10 @@ class UserAppPreferences(
     fun ensureNoteIdCounterAtLeast(nextCandidate: Long) =
             notesPreferences.ensureNoteIdCounterAtLeast(nextCandidate)
 
+    fun isQuickNoteEnabled(): Boolean = notesPreferences.isQuickNoteEnabled()
+
+    fun setQuickNoteEnabled(enabled: Boolean) = notesPreferences.setQuickNoteEnabled(enabled)
+
     // ============================================================================
     // App Shortcut Preferences
     // ============================================================================
@@ -911,10 +915,21 @@ class UserAppPreferences(
     fun setBottomSearchBarEnabled(enabled: Boolean) =
             uiPreferences.setBottomSearchBarEnabled(enabled)
 
+    fun isSearchHintsEnabled(): Boolean = uiPreferences.isSearchHintsEnabled()
+
+    fun setSearchHintsEnabled(enabled: Boolean) = uiPreferences.setSearchHintsEnabled(enabled)
+
+    fun isSettingsIconEnabled(): Boolean = uiPreferences.isSettingsIconEnabled()
+
+    fun setSettingsIconEnabled(enabled: Boolean) = uiPreferences.setSettingsIconEnabled(enabled)
+
     fun isOpenKeyboardOnLaunchEnabled(): Boolean = uiPreferences.isOpenKeyboardOnLaunchEnabled()
 
     fun setOpenKeyboardOnLaunchEnabled(enabled: Boolean) =
             uiPreferences.setOpenKeyboardOnLaunchEnabled(enabled)
+
+    fun applyDefaultLauncherPreferencesIfNeeded(isDefaultLauncher: Boolean): Boolean =
+            uiPreferences.applyDefaultLauncherPreferencesIfNeeded(isDefaultLauncher)
 
     fun isTopResultIndicatorEnabled(): Boolean = uiPreferences.isTopResultIndicatorEnabled()
 
@@ -1151,6 +1166,10 @@ class UserAppPreferences(
     fun getPhoneAppGridColumns(): Int = uiPreferences.getPhoneAppGridColumns()
 
     fun setPhoneAppGridColumns(columns: Int) = uiPreferences.setPhoneAppGridColumns(columns)
+
+    fun getAppIconSizeStep(): Int = uiPreferences.getAppIconSizeStep()
+
+    fun setAppIconSizeStep(step: Int) = uiPreferences.setAppIconSizeStep(step)
 
     fun areWebSuggestionsEnabled(): Boolean = uiPreferences.areWebSuggestionsEnabled()
 

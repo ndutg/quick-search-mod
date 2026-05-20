@@ -175,7 +175,7 @@ fun BorderColorChoiceSegmentedButtonRow(
             icon = {},
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.settings_overlay_source_custom))
+                Text(stringResource(R.string.common_custom))
                 if (customColor != null) {
                     Spacer(modifier = Modifier.width(6.dp))
                     Box(

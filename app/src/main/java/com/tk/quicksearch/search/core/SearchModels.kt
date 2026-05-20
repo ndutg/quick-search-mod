@@ -489,6 +489,8 @@ data class SearchUiState(
         // Layout preferences
         val oneHandedMode: Boolean = false,
         val bottomSearchBarEnabled: Boolean = false,
+        val searchHintsEnabled: Boolean = true,
+        val settingsIconEnabled: Boolean = true,
         val topResultIndicatorEnabled: Boolean = true,
         val openKeyboardOnLaunch: Boolean = true,
         val clearQueryOnLaunch: Boolean = true,
@@ -527,6 +529,7 @@ data class SearchUiState(
         // App display
         val showAppLabels: Boolean = true,
         val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
+        val appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
         val appIconShape: AppIconShape = AppIconShape.DEFAULT,
         val launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT,
         val themedIconsEnabled: Boolean = true,
@@ -760,6 +763,8 @@ fun SearchUiState(
                 overlayModeEnabled = config.overlayModeEnabled,
                 oneHandedMode = config.oneHandedMode,
                 bottomSearchBarEnabled = config.bottomSearchBarEnabled,
+                searchHintsEnabled = config.searchHintsEnabled,
+                settingsIconEnabled = config.settingsIconEnabled,
                 topResultIndicatorEnabled = config.topResultIndicatorEnabled,
                 wallpaperAccentEnabled = config.wallpaperAccentEnabled,
                 openKeyboardOnLaunch = config.openKeyboardOnLaunch,
@@ -770,6 +775,7 @@ fun SearchUiState(
                 useSystemFont = config.useSystemFont,
                 showAppLabels = config.showAppLabels,
                 phoneAppGridColumns = config.phoneAppGridColumns,
+                appIconSizeStep = config.appIconSizeStep,
                 appIconShape = config.appIconShape,
                 launcherAppIcon = config.launcherAppIcon,
                 themedIconsEnabled = config.themedIconsEnabled,

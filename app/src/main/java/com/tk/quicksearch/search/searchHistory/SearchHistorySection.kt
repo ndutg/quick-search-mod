@@ -369,7 +369,7 @@ private fun SearchHistoryTabs(
         if (showWallpaperBackground) {
             Color.Transparent
         } else {
-            MaterialTheme.colorScheme.surface
+            AppColors.getSettingsCardContainerColor()
         }
 
     PrimaryTabRow(
@@ -949,7 +949,7 @@ private fun RecentQueryRow(
     ) {
         Icon(
             imageVector = Icons.Rounded.Search,
-            contentDescription = stringResource(R.string.desc_search_icon),
+            contentDescription = stringResource(R.string.common_search),
             tint = iconColor,
             modifier =
                 Modifier

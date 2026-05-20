@@ -43,7 +43,7 @@ private val unitCategories = listOf(
         examples = listOf("1 gallon in litres", "500 ml in cups", "2 tbsp in tsp"),
     ),
     UnitCategory(
-        nameRes = R.string.unit_converter_category_time,
+        nameRes = R.string.common_time,
         examples = listOf("2 hours in minutes", "90 mins in hours", "1 week in days"),
     ),
     UnitCategory(

@@ -328,6 +328,7 @@ fun ContentLayout(
                 matches = topMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
+                showTopResultIndicator = state.topResultIndicatorEnabled,
                 reverseOrder = false,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -594,6 +595,7 @@ fun ContentLayout(
                                 effectiveShowWallpaperBackground,
                             predictedTarget = predictedTarget,
                             appIconShape = state.appIconShape,
+                            iconPackPackage = state.selectedIconPackPackage,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
@@ -634,6 +636,7 @@ fun ContentLayout(
                 matches = topMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
+                showTopResultIndicator = state.topResultIndicatorEnabled,
                 reverseOrder = true,
                 modifier = Modifier.fillMaxWidth(),
             )

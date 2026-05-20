@@ -123,7 +123,7 @@ fun SettingsExportDialog(
                     isLastItem = false,
                 )
                 SettingsCheckboxRow(
-                    title = stringResource(R.string.settings_backup_export_option_gemini_title),
+                    title = stringResource(R.string.common_ai_provider),
                     description = "",
                     checked = selectionState.includeGeminiApi,
                     onCheckedChange = {
