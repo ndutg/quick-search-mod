@@ -462,7 +462,6 @@ fun SettingsRoute(
         scrollState = scrollState,
     )
 
-    WallpaperPermissionFallbackDialog(controller = wallpaperPermissionController)
     AppShortcutSourceFlowDialogs(
         flowState = appShortcutSourceFlow,
         sources = filteredAppShortcutSources,
