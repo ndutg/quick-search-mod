@@ -8,12 +8,7 @@ import android.content.pm.ShortcutInfo
 import android.os.Build
 import android.os.Process
 import android.os.UserHandle
-import android.util.DisplayMetrics
 import android.util.Log
-import androidx.core.graphics.drawable.toBitmap
-import android.graphics.Bitmap
-import android.util.Base64
-import java.io.ByteArrayOutputStream
 import java.util.Locale
 
 /**
@@ -196,8 +191,6 @@ private fun convertShortcutInfo(
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
 
-    val iconBase64 = loadShortcutIconBase64(launcherApps, info) ?: loadAppIconBase64(context, packageName)
-
     return StaticShortcut(
         packageName = packageName,
         appLabel = appLabel,
@@ -205,29 +198,8 @@ private fun convertShortcutInfo(
         shortLabel = shortLabel,
         longLabel = longLabel,
         iconResId = null,
-        iconBase64 = iconBase64,
+        iconBase64 = null,
         enabled = info.isEnabled,
         intents = listOf(sentinelIntent),
     )
 }
-
-private fun loadShortcutIconBase64(
-    launcherApps: LauncherApps,
-    info: ShortcutInfo,
-): String? {
-    val drawable =
-        kotlin.runCatching {
-            launcherApps.getShortcutIconDrawable(info, DisplayMetrics.DENSITY_DEFAULT)
-        }.getOrNull() ?: return null
-    val bitmap = kotlin.runCatching { drawable.toBitmap(width = 96, height = 96) }.getOrNull() ?: return null
-    return bitmapToBase64Png(bitmap)
-}
-
-private fun bitmapToBase64Png(bitmap: Bitmap): String? =
-    kotlin.runCatching {
-        ByteArrayOutputStream().use { output ->
-            if (!bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)) return null
-            Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)
-        }
-    }.getOrNull()
-

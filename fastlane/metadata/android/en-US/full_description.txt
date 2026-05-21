@@ -1,0 +1,20 @@
+Quick Search is a fast Android launcher and search app that unifies results from apps, app shortcuts, contacts, calendar events, files, device settings, app settings, and the web—plus built-in tools like calculator, unit converter, currency converter, and optional AI search.
+
+<b>Search everything</b>
+• Apps and shortcuts with smart ranking and typo tolerance
+• Contacts with call, text, and messaging integrations
+• Calendar events, notes, files, and folders
+• Android system settings and Quick Search settings
+• 25+ web search engines with customizable shortcuts
+
+<b>Tools from the search bar</b>
+• Calculator, unit converter, currency rates, world clock, date math
+• Optional AI answers when you add your own API keys (Gemini, OpenAI, Claude, Groq, or compatible APIs)
+
+<b>Customize your experience</b>
+• Overlay mode, home screen widgets, Quick Settings tile, or default launcher
+• Themes, Material You colors, wallpapers, bottom search bar, and font size
+• Import/export settings and granular permission controls
+
+<b>Privacy</b>
+Search runs on your device. There are no ads or analytics. Network access is used only for features you enable (web search, optional AI, currency rates).

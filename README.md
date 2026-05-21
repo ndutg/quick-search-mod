@@ -87,12 +87,18 @@ Enable AI-powered answers by:
 git clone https://github.com/teja2495/quick-search.git
 cd quick-search
 
-# Build with Gradle
-./gradlew assembleRelease
+# Google Play / GitHub releases (includes Play in-app review & updates)
+./gradlew assembleStandardRelease
+
+# F-Droid build (no Google Play libraries bundled)
+./gradlew assembleFdroidRelease
 ```
+
+See [docs/FDROID.md](docs/FDROID.md) for publishing to F-Droid.
 
 ### Download
 - **Google Play Store**: Get the app from [Google Play Store](https://play.google.com/store/apps/details?id=com.tk.quicksearch) for automatic updates
+- **F-Droid**: After inclusion, install from [F-Droid](https://f-droid.org/) (build with the `fdroid` flavor)
 - **APK Release**: Download the latest APK from the [Releases](https://github.com/teja2495/quick-search/releases) page
 
 ## 🛡️ Permissions & Privacy

@@ -1,0 +1,968 @@
+<resources>
+
+    <!-- Language: Simplified Chinese -->
+
+    <!-- Translation Guidelines:
+         - Translate user-facing text into this locale.
+         - Do not translate brand/product names and technical identifiers (e.g., Quick Search, AI, API, Gemini, Android, Amazon, USD, INR, lbs, kgs).
+         - Do not translate placeholders or format specifiers (%1$s, %1$d, %s, %%).
+         - In search_hints_cycle, keep the example queries in English.
+    -->
+
+    <!-- ============================================================================
+         App &amp; Search Entry
+         ============================================================================ -->
+    <string name="app_name">Quick Search</string>
+    <string name="direct_answer_contact_name">AI 回答</string>
+    <string name="direct_search_enter_query">请输入要搜索的内容。</string>
+    <string name="direct_search_error_generic">无法获取 AI 回答。请重试。</string>
+    <string name="direct_search_error_no_key">请在设置（AI 提供商）中添加 API 密钥以获取 AI 回答。</string>
+    <string name="direct_search_powered_by">技术支持由</string>
+    <string name="empty_state_subtitle">启动应用或优化您的搜索以查看建议。</string>
+    <string name="empty_state_title">暂无内容显示</string>
+    <string name="error_action_not_available">操作不可用</string>
+    <string name="error_gemini_empty_response">Gemini 返回响应为空</string>
+    <string name="error_gemini_load_models_failed">无法加载 Gemini 模型</string>
+    <string name="error_gemini_request_failed">请求失败 (%1$d)</string>
+    <string name="error_unknown">未知错误</string>
+    <string name="gemini_model_flash_latest">Gemini Flash (最新版)</string>
+    <string name="keyboard_switch_back">普通键盘</string>
+    <string name="keyboard_switch_to_number">数字键盘</string>
+    <string name="no_results_found">未找到结果。请尝试点击下方的搜索引擎来搜索网页。</string>
+    <string name="search_hint">搜索任何内容…</string>
+    <string name="search_hint_app_settings">搜索应用设置…</string>
+    <string name="search_hint_app_shortcuts">搜索应用快捷方式…</string>
+    <string name="search_hint_apps">搜索应用…</string>
+    <string name="search_hint_calendar">搜索日历日程…</string>
+    <string name="search_hint_contacts">搜索联系人…</string>
+    <string name="search_hint_currency_converter">转换货币，例如 100 USD to INR</string>
+    <string name="search_hint_dictionary">输入任意单词</string>
+    <string name="search_hint_files">搜索文件…</string>
+    <string name="search_hint_notes">搜索笔记…</string>
+    <string name="search_hint_settings">搜索设备设置…</string>
+    <string name="search_hint_static">搜索任何内容</string>
+    <string name="search_hint_word_clock">输入任意地点以获取其当地时间</string>
+    <string-array name="search_hints_cycle">
+        <item >搜索联系人</item>
+        <item >搜索文件</item>
+        <item >日历日程</item>
+        <item >搜索应用</item>
+        <item >搜索应用快捷方式</item>
+        <item >搜索设置</item>
+        <!-- These examples should not be translated -->
+        <item >5 USD to INR</item>
+        <item >5 lbs in kgs</item>
+        <item >3 months from now</item>
+        <item >225 + 456</item>
+        <item >Time in UK</item>
+        <item >Define Serendipity</item>
+    </string-array>
+    <string name="search_provider_description">使用 Quick Search 搜索应用、联系人、文件、设置等更多内容。</string>
+
+    <!-- ============================================================================
+         Common Actions, Labels &amp; Dialogs
+         ============================================================================ -->
+    <string name="action_add_to_home">添加到主屏幕</string>
+    <string name="action_add_trigger">添加触发词</string>
+    <string name="action_app_info">应用信息</string>
+    <string name="action_archive_today_event">归档</string>
+    <string name="action_change_icon">更改图标</string>
+    <string name="action_change_wallpaper">更改壁纸</string>
+    <string name="action_clear_all_history">清空历史记录</string>
+    <string name="action_edit_icon">编辑图标</string>
+    <string name="action_edit_nickname">编辑昵称</string>
+    <string name="action_edit_trigger">编辑触发词</string>
+    <string name="action_exclude_extension">排除 .%s 文件</string>
+    <string name="action_exclude_generic">排除</string>
+    <string name="action_expand_more">更多</string>
+    <string name="action_expand_more_app_settings">更多应用设置</string>
+    <string name="action_expand_more_contacts">更多联系人</string>
+    <string name="action_expand_more_device_settings">更多设置</string>
+    <string name="action_expand_more_events">更多日程</string>
+    <string name="action_expand_more_files">更多文件</string>
+    <string name="action_expand_more_notes">更多笔记</string>
+    <string name="action_expand_more_shortcuts">更多快捷方式</string>
+    <string name="action_file_info">文件信息</string>
+    <string name="action_include_generic">包含</string>
+    <string name="action_more_search_history">更多历史记录</string>
+    <string name="action_open">打开</string>
+    <string name="action_open_folder">打开文件夹</string>
+    <string name="action_open_keyboard">打开键盘</string>
+    <string name="action_open_settings">打开设置</string>
+    <string name="action_pin_app">固定</string>
+    <string name="action_remove">移除</string>
+    <string name="action_remove_from_history">从历史记录中移除</string>
+    <string name="action_reset_app_shortcut_icon">恢复默认图标</string>
+    <string name="action_retry">重试</string>
+    <string name="action_share">分享</string>
+    <string name="action_move_up">上移</string>
+    <string name="action_move_down">下移</string>
+    <string name="action_undo">撤销</string>
+    <string name="action_uninstall_app">卸载</string>
+    <string name="action_unpin_app">取消固定</string>
+    <string name="alias_trigger_after_space">在空格后触发</string>
+    <string name="common_action_add">添加</string>
+    <string name="common_action_clear">清除</string>
+    <string name="common_ai_provider">AI 提供商</string>
+    <string name="common_api_key_setup">API 密钥设置</string>
+    <string name="common_close">关闭</string>
+    <string name="common_custom">自定义</string>
+    <string name="common_error_unable_to_open">无法打开 %1$s</string>
+    <string name="common_most_used">最常使用</string>
+    <string name="common_nickname">昵称</string>
+    <string name="common_search">搜索</string>
+    <string name="common_theme_dark">深色</string>
+    <string name="common_theme_device">设备默认</string>
+    <string name="common_theme_light">浅色</string>
+    <string name="common_theme_system">系统默认</string>
+    <string name="common_time">时间</string>
+    <string name="dialog_add_alias_for_search_type_title">为“%1$s”添加别名</string>
+    <string name="dialog_alias_info_search_engine">在查询内容的开头或结尾输入此别名，即可快速启动 %1$s 搜索。</string>
+    <string name="dialog_alias_info_search_engine_start_only">在查询内容的开头输入此别名，即可快速启动 %1$s 搜索。</string>
+    <string name="dialog_alias_info_search_type">在查询内容的开头输入此别名，即可触发 %1$s 搜索。</string>
+    <string name="dialog_alias_info_tool">在查询内容的开头输入此别名，即可进入 %1$s 模式。</string>
+    <string name="dialog_app_shortcut_icon_message">为“%1$s”选择一张图片。这只会更改该快捷方式在 Quick Search 中的显示外观。</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_choose_contact_action_title">选择一个操作以替换 %1$s</string>
+    <string name="dialog_clear_all_history_message">确定要清空所有的搜索历史记录吗？此操作无法撤销。</string>
+    <string name="dialog_clear_all_history_title">清空所有历史记录？</string>
+    <string name="dialog_delete">删除</string>
+    <string name="dialog_direct_dial_change_later">您可以随时在“设置”中更改此项。</string>
+    <string name="dialog_direct_dial_option_dialer">打开拨号盘</string>
+    <string name="dialog_direct_dial_option_dialer_desc">在拨打电话前，先在拨号盘中确认号码。</string>
+    <string name="dialog_direct_dial_option_direct">直接拨打</string>
+    <string name="dialog_direct_dial_option_direct_desc">立即呼叫（需要通话权限）。</string>
+    <string name="dialog_direct_dial_title">选择拨打方式</string>
+    <string name="dialog_done">完成</string>
+    <string name="dialog_edit_alias_error_prefix">此别名已被占用。</string>
+    <string name="dialog_edit_alias_error_trigger_conflict">此别名与现有的触发词冲突。</string>
+    <string name="dialog_edit_alias_for_search_type_title">编辑“%1$s”的别名</string>
+    <string name="dialog_edit_alias_title">编辑别名</string>
+    <string name="dialog_edit_amazon_domain_error">域名无效</string>
+    <string name="dialog_edit_amazon_domain_hint">例如：amazon.com、amazon.in、amazon.ca 等。</string>
+    <string name="dialog_edit_amazon_domain_message">更新适用于您所在国家的 Amazon 域名。</string>
+    <string name="dialog_edit_amazon_domain_title">编辑 Amazon 域名</string>
+    <string name="dialog_enjoying_app_title">您觉得这个应用好用吗？</string>
+    <string name="dialog_feedback_hint">告诉我们哪里可以改进</string>
+    <string name="dialog_gemini_model_picker_title">选择模型</string>
+    <string name="dialog_nickname_message">为“%1$s”输入一个昵称。此后您可以使用该昵称来搜索它。</string>
+    <string name="dialog_no">否</string>
+    <string name="dialog_ok">继续</string>
+    <string name="dialog_okay">好的</string>
+    <string name="dialog_remember_choice">记住此选择</string>
+    <string name="dialog_save">保存</string>
+    <string name="dialog_select_phone_number_message">为 %1$s 选择一个电话号码</string>
+    <string name="dialog_select_phone_number_title">选择电话号码</string>
+    <string name="dialog_send">发送</string>
+    <string name="dialog_trigger_error_alias_conflict">此触发词与现有的别名冲突。</string>
+    <string name="dialog_trigger_error_taken">此触发词已被占用。</string>
+    <string name="dialog_trigger_hint">触发词</string>
+    <string name="dialog_trigger_message">为“%1$s”输入一个单字的触发词。</string>
+    <string name="dialog_yes">是</string>
+    <string name="exclude_marker"> 已从</string>
+    <string name="permission_action_manage_android">在 Android 设置中管理</string>
+    <string name="permission_settings_dialog_message">此操作需要 %1$s 权限。系统将带您前往系统设置以授予该权限。</string>
+    <string name="permission_settings_dialog_title">需要 %1$s 权限</string>
+    <string name="toast_excluded_from_results">%1$s 已从结果中排除</string>
+    <string name="toast_excluded_from_suggestions">%1$s 已从建议中排除</string>
+
+    <!-- ============================================================================
+         Accessibility
+         ============================================================================ -->
+    <string name="desc_clear_search">清除搜索文字</string>
+    <string name="desc_collapse">折叠</string>
+    <string name="desc_expand">展开</string>
+    <string name="desc_launch_app">打开 %1$s</string>
+    <string name="desc_navigate_back">返回上一页</string>
+    <string name="desc_navigate_forward">前进至下一页</string>
+    <string name="desc_open_settings">打开 Quick Search 设置</string>
+    <string name="desc_selected">已选中</string>
+    <string name="desc_voice_search_icon">启动语音搜索</string>
+
+    <!-- ============================================================================
+         Search Result Sections &amp; Ranking
+         ============================================================================ -->
+    <string name="app_suggestions_tab_new_updated">新增/更新</string>
+    <string name="app_suggestions_tab_pinned">已固定</string>
+    <string name="app_suggestions_tab_recent">最近使用</string>
+    <string name="app_suggestions_tab_required_toast">请至少保留一个启用的应用建议标签页</string>
+    <string name="app_suggestions_toggle_desc">在主屏幕上显示或隐藏建议的应用</string>
+    <string name="app_suggestions_toggle_title">应用建议</string>
+    <string name="app_suggestions_usage_access_link">使用情况访问权限</string>
+    <string name="app_suggestions_usage_access_tip">授予使用情况访问权限以获取更精准的应用建议</string>
+    <string name="clear_query_toggle_desc">应用启动时自动清除上次的查询内容</string>
+    <string name="clear_query_toggle_title">清除查询内容</string>
+    <string name="more_results_title">更多结果</string>
+    <string name="open_keyboard_toggle_desc">应用启动时自动打开键盘</string>
+    <string name="recent_queries_toggle_desc">在主屏幕上显示您的搜索历史记录。</string>
+    <string name="recent_queries_toggle_title">搜索历史</string>
+    <string name="search_history_tab_recently_opened">结果</string>
+    <string name="search_history_tab_searches">搜索记录</string>
+    <string name="search_history_tip_link">设置</string>
+    <string name="search_history_tip_message">您可以在此处停用搜索历史记录：</string>
+    <string name="search_section_app_settings_toggle_desc">开启或关闭应用设置的搜索</string>
+    <string name="search_section_app_settings_toggle_title">应用设置搜索</string>
+    <string name="search_section_app_shortcuts_toggle_desc">开启或关闭应用快捷方式的搜索</string>
+    <string name="search_section_app_shortcuts_toggle_title">应用快捷方式搜索</string>
+    <string name="search_section_apps_toggle_desc">开启或关闭应用搜索</string>
+    <string name="search_section_apps_toggle_title">应用搜索</string>
+    <string name="search_section_calendar_toggle_desc">开启或关闭日历搜索</string>
+    <string name="search_section_calendar_toggle_title">日历搜索</string>
+    <string name="search_section_contacts_toggle_desc">开启或关闭联系人搜索</string>
+    <string name="search_section_contacts_toggle_title">联系人搜索</string>
+    <string name="search_section_device_settings_toggle_desc">开启或关闭设备设置的搜索</string>
+    <string name="search_section_device_settings_toggle_title">设备设置搜索</string>
+    <string name="search_section_files_toggle_desc">开启或关闭文件搜索</string>
+    <string name="search_section_files_toggle_title">文件搜索</string>
+    <string name="search_section_notes_toggle_desc">开启或关闭笔记搜索</string>
+    <string name="search_section_notes_toggle_title">笔记搜索</string>
+    <string name="section_app_settings">应用设置</string>
+    <string name="section_app_shortcuts">应用快捷方式</string>
+    <string name="section_apps">应用</string>
+    <string name="section_calendar">日历日程</string>
+    <string name="section_files">文件</string>
+    <string name="section_notes">笔记</string>
+    <string name="section_settings">设备设置</string>
+    <string name="top_match_title">最佳匹配</string>
+    <string name="top_matches_count_label">匹配项数量</string>
+    <string name="top_matches_priority_desc">更改最佳匹配中的项目优先级或将其停用</string>
+    <string name="top_matches_priority_dialog_info">长按并拖动以更改优先级，利用开关可以启用或停用某些特定的结果类型。</string>
+    <string name="top_matches_priority_title">管理最佳匹配</string>
+    <string name="top_matches_title">最佳匹配</string>
+    <string name="top_matches_toggle_desc">在顶部展示跨越所有类型的最佳匹配结果。</string>
+    <string name="top_result_indicator_toggle_desc">高亮显示可通过键盘直接打开的最佳结果。</string>
+    <string name="top_result_indicator_toggle_title">最佳结果指示器</string>
+    <string name="web_search_suggestions_title">网络联想建议</string>
+
+    <!-- ============================================================================
+         Apps
+         ============================================================================ -->
+    <string name="app_menu_section_actions">操作</string>
+    <string name="app_menu_section_shortcuts">快捷方式</string>
+    <string name="apps_refreshed_successfully">应用数据刷新成功</string>
+    <string name="error_loading_user_apps">我们无法加载您的应用。请稍后重试。</string>
+    <string name="error_uninstall_app">无法卸载 %1$s</string>
+    <string name="error_uninstall_self">您无法在此处卸载 Quick Search。</string>
+    <string name="failed_to_refresh_apps">刷新应用失败</string>
+    <string name="settings_app_apk_size_format">APK 大小: %1$.2f Mb</string>
+    <string name="settings_app_columns_4">4</string>
+    <string name="settings_app_columns_5">5</string>
+    <string name="settings_app_columns_title">每行应用数</string>
+    <string name="settings_app_icon_size_percent">%1$d%%</string>
+    <string name="settings_app_icon_size_title">应用图标大小</string>
+    <string name="settings_app_info_install_date">安装日期</string>
+    <string name="settings_app_info_last_update">最近更新</string>
+    <string name="settings_app_info_minimum_sdk">最低 SDK</string>
+    <string name="settings_app_info_not_available">不可用</string>
+    <string name="settings_app_info_package_name">包名</string>
+    <string name="settings_app_info_target_sdk">目标 SDK</string>
+    <string name="settings_app_info_version">版本</string>
+    <string name="settings_app_info_version_code">版本代码</string>
+    <string name="settings_app_sort_api_level">API 级别</string>
+    <string name="settings_app_sort_apk_size">APK 大小</string>
+    <string name="settings_app_sort_ascending">升序排列</string>
+    <string name="settings_app_sort_by_format">排序方式: %1$s</string>
+    <string name="settings_app_sort_descending">降序排列</string>
+    <string name="settings_app_sort_least_used">最少使用</string>
+    <string name="settings_app_sort_name">名称</string>
+    <string name="settings_app_uninstall_selected_format">卸载 (%1$d)</string>
+    <string name="settings_apps_empty">未找到任何应用。</string>
+    <string name="settings_manage_apps_desc">管理您的应用</string>
+    <string name="settings_manage_apps_title">管理应用</string>
+    <string name="settings_refresh_apps_disabled">应用搜索功能已被停用，无法刷新应用数据</string>
+    <string name="settings_refresh_apps_title">重新加载应用</string>
+    <string name="usage_permission_subtitle">如果您希望在建议中看到最近使用的应用，请授予使用情况访问权限。</string>
+    <string name="usage_permission_title">授予使用情况访问权限</string>
+
+    <!-- ============================================================================
+         App Shortcuts
+         ============================================================================ -->
+    <string name="error_shortcut_activity_not_exported">解析出的 Activity 未导出 (not exported)。</string>
+    <string name="error_shortcut_creation_failed">创建快捷方式失败</string>
+    <string name="error_shortcut_disabled">该快捷方式已被停用。</string>
+    <string name="error_shortcut_launch_failed">启动快捷方式失败：%1$s。</string>
+    <string name="error_shortcut_no_activity_resolves">没有 Activity 可以解析此 Intent。</string>
+    <string name="error_shortcut_requires_permission">快捷方式需要权限：%1$s。</string>
+    <string name="error_shortcuts_not_supported">此设备不支持向主屏幕添加快捷方式</string>
+    <string name="settings_app_shortcuts_activity_dialog_title">选择应用 Activity</string>
+    <string name="settings_app_shortcuts_activity_empty">没有可用的应用 Activity。</string>
+    <string name="settings_app_shortcuts_activity_warning">某些 Activity 的工作效果可能不符合预期</string>
+    <string name="settings_app_shortcuts_add_button">添加快捷方式</string>
+    <string name="settings_app_shortcuts_add_deep_link">应用深层链接 (Deep Link)</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_message">添加一个支持的 URL 或 Intent 链接，用于打开应用内的特定界面。不支持的链接将在浏览器中打开。</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_title">添加应用深层链接</string>
+    <string name="settings_app_shortcuts_add_dialog_title">选择快捷方式来源</string>
+    <string name="settings_app_shortcuts_add_failed">无法添加快捷方式。</string>
+    <string name="settings_app_shortcuts_add_query_dialog_title">添加自定义搜索查询快捷方式到 %1$s</string>
+    <string name="settings_app_shortcuts_add_query_shortcut">自定义搜索查询</string>
+    <string name="settings_app_shortcuts_add_success">快捷方式已添加。</string>
+    <string name="settings_app_shortcuts_add_success_with_app_name">新快捷方式已添加到 %1$s</string>
+    <string name="settings_app_shortcuts_add_url_dialog_title">添加 URL 快捷方式到 %1$s</string>
+    <string name="settings_app_shortcuts_add_url_shortcut">自定义 URL</string>
+    <plurals name="settings_app_shortcuts_card_count">
+        <item quantity="one">%d 个快捷方式</item>
+        <item quantity="other">%d 个快捷方式</item>
+    </plurals>
+    <string name="settings_app_shortcuts_collapse_all">全部折叠</string>
+    <string name="settings_app_shortcuts_create_not_supported">此设备上没有应用支持快捷方式的创建。</string>
+    <string name="settings_app_shortcuts_deep_link_label">URL 或 Intent</string>
+    <string name="settings_app_shortcuts_delete_action">删除快捷方式</string>
+    <string name="settings_app_shortcuts_delete_success">快捷方式已删除。</string>
+    <string name="settings_app_shortcuts_description_with_count">点击任意应用以查看其快捷方式。支持启用、停用或添加自定义快捷方式。\n\n可用快捷方式：%1$s</string>
+    <string name="settings_app_shortcuts_edit_dialog_title">编辑快捷方式</string>
+    <string name="settings_app_shortcuts_empty">未找到应用快捷方式。</string>
+    <string name="settings_app_shortcuts_expand_all">全部展开</string>
+    <string name="settings_app_shortcuts_filter_all_apps">所有应用</string>
+    <string name="settings_app_shortcuts_filter_apps_with_shortcuts">包含快捷方式的应用</string>
+    <string name="settings_app_shortcuts_filter_browsers">浏览器</string>
+    <string name="settings_app_shortcuts_filter_search_engines">搜索引擎</string>
+    <string name="settings_app_shortcuts_query_label">查询内容</string>
+    <string name="settings_app_shortcuts_shortcut_name_label">快捷方式名称</string>
+    <string name="settings_app_shortcuts_update_failed">无法更新快捷方式。</string>
+    <string name="settings_app_shortcuts_update_success">快捷方式已更新。</string>
+    <string name="settings_app_shortcuts_url_label">URL</string>
+    <string name="shortcut_song_search_label">歌曲搜索</string>
+    <string name="shortcut_watch_later_label">稍后观看</string>
+
+    <!-- ============================================================================
+         Contacts &amp; Calls
+         ============================================================================ -->
+    <string name="contact_method_call_label">电话呼叫</string>
+    <string name="contact_method_email_label">发送电子邮件</string>
+    <string name="contact_method_fallback_label">其他方式</string>
+    <string name="contact_method_google_meet_label">Google Meet</string>
+    <string name="contact_method_message_label">发送短信</string>
+    <string name="contact_method_signal_message_label">Signal</string>
+    <string name="contact_method_signal_video_call_label">Signal 视频通话</string>
+    <string name="contact_method_signal_voice_call_label">Signal 语音通话</string>
+    <string name="contact_method_telegram_message_label">Telegram</string>
+    <string name="contact_method_telegram_video_call_label">Telegram 视频通话</string>
+    <string name="contact_method_telegram_voice_call_label">Telegram 语音通话</string>
+    <string name="contact_method_view_in_contacts_label">在通讯录应用中查看</string>
+    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_video_call_label">WhatsApp 视频通话</string>
+    <string name="contact_method_whatsapp_voice_call_label">WhatsApp 语音通话</string>
+    <string name="contacts_action_button_chat">聊天</string>
+    <string name="contacts_action_button_contacts">通讯录</string>
+    <string name="contacts_action_button_meet">Meet</string>
+    <string name="contacts_action_button_video_call">视频通话</string>
+    <string name="contacts_action_button_voice_call">语音通话</string>
+    <string name="contacts_action_call">呼叫联系人</string>
+    <string name="contacts_action_hint_message">提示：长按此处的任意操作可以为单独的联系人进行个性化定制。</string>
+    <string name="contacts_action_next_number">下一个电话号码</string>
+    <string name="contacts_action_previous_number">上一个电话号码</string>
+    <string name="contacts_action_signal">使用 Signal 联系</string>
+    <string name="contacts_action_sms">给联系人发短信</string>
+    <string name="contacts_action_telegram">使用 Telegram 联系</string>
+    <string name="contacts_action_whatsapp">使用 WhatsApp 联系</string>
+    <string name="contacts_no_methods_available">没有可用的联系方式</string>
+    <string name="contacts_refreshed_successfully">联系人数据刷新成功</string>
+    <string name="contacts_section_permission_subtitle">需要通讯录权限才能执行联系人搜索</string>
+    <string name="error_call_permission_required">此操作需要电话权限</string>
+    <string name="error_google_meet_call_failed">Google Meet 呼叫失败 - 应用可能不支持此方式</string>
+    <string name="error_google_meet_no_phone">无法进行 Google Meet 呼叫 - 未找到电话号码</string>
+    <string name="error_google_meet_not_installed">未安装 Google Meet</string>
+    <string name="error_google_meet_video_call_failed">无法打开 Google Meet 视频通话</string>
+    <string name="error_missing_phone_number">没有可用的电话号码</string>
+    <string name="error_open_contact">无法打开该联系人</string>
+    <string name="error_signal_call_failed">Signal 呼叫失败。请确保已安装 Signal。</string>
+    <string name="error_signal_chat_failed">无法打开 Signal 聊天</string>
+    <string name="error_signal_not_installed">未安装 Signal</string>
+    <string name="error_signal_video_call_failed">无法打开 Signal 视频通话</string>
+    <string name="error_telegram_call_failed">Telegram 呼叫失败。请确保已安装 Telegram。</string>
+    <string name="error_telegram_chat_failed">无法打开 Telegram 聊天</string>
+    <string name="error_telegram_not_installed">未安装 Telegram</string>
+    <string name="error_whatsapp_call_failed">WhatsApp 呼叫失败。请确保已安装 WhatsApp。</string>
+    <string name="error_whatsapp_chat_failed">无法打开 WhatsApp 聊天</string>
+    <string name="error_whatsapp_not_installed">未安装 WhatsApp</string>
+    <string name="error_whatsapp_video_call_failed">无法打开 WhatsApp 视频通话</string>
+    <string name="error_whatsapp_video_call_missing_data">无法进行 WhatsApp 视频通话 - 缺少联系人数据</string>
+    <string name="error_whatsapp_video_call_unavailable">WhatsApp 目前不支持视频通话</string>
+    <string name="settings_call_permission_title">电话</string>
+    <string name="settings_calling_card_title">默认通话应用</string>
+    <string name="settings_calls_texts_title">通话与短信</string>
+    <string name="settings_direct_dial_desc">直接拨打电话，无需先打开拨号盘。</string>
+    <string name="settings_direct_dial_title">直接拨号</string>
+    <string name="settings_messaging_app_not_installed">您的设备上未安装 %s</string>
+    <string name="settings_messaging_card_title">默认短信应用</string>
+    <string name="settings_messaging_option_messages">信息</string>
+
+    <!-- ============================================================================
+         Files &amp; Folders
+         ============================================================================ -->
+    <string name="excluded_item_type_file">文件</string>
+    <string name="excluded_item_type_file_extension">文件扩展名</string>
+    <string name="excluded_item_type_folder">文件夹</string>
+    <string name="file_extension_label">.%s 文件</string>
+    <string name="file_info_file_type">文件类型</string>
+    <string name="file_info_modified">修改时间</string>
+    <string name="file_info_path">路径</string>
+    <string name="file_info_size">大小</string>
+    <string name="file_info_type">类型</string>
+    <string name="file_type_apks">APK 文件</string>
+    <string name="file_type_audio">音频</string>
+    <string name="file_type_documents">文档</string>
+    <string name="file_type_pictures">图片</string>
+    <string name="file_type_videos">视频</string>
+    <string name="files_refreshed_successfully">文件数据刷新成功</string>
+    <string name="files_section_permission_subtitle">需要文件访问权限才能执行文件搜索</string>
+    <string name="settings_excluded_extensions_title">已排除的文件扩展名</string>
+    <string name="settings_file_types_title">文件与文件夹</string>
+    <string name="settings_folder_blacklist_add">添加屏蔽的文件夹</string>
+    <string name="settings_folder_blacklist_helper">搜索时将忽略这些文件夹</string>
+    <string name="settings_folder_blacklist_title">黑名单</string>
+    <string name="settings_folder_filter_helper">搜索并添加文件夹，用以控制文件及文件夹搜索结果的呈现范围。</string>
+    <string name="settings_folder_filters_title">文件夹路径过滤器</string>
+    <string name="settings_folder_search_hint">搜索要添加的文件夹</string>
+    <string name="settings_folder_search_no_results">未找到文件夹</string>
+    <string name="settings_folder_whitelist_add">添加允许的文件夹</string>
+    <string name="settings_folder_whitelist_helper">执行文件与文件夹搜索时，将仅在这些文件夹中检索</string>
+    <string name="settings_folder_whitelist_title">白名单</string>
+    <string name="settings_folders_toggle">文件夹</string>
+    <string name="settings_refresh_files_disabled">文件搜索功能已被停用，无法刷新文件数据</string>
+    <string name="settings_refresh_files_title">重新加载文件</string>
+    <string name="settings_system_files_toggle">系统文件</string>
+
+    <!-- ============================================================================
+         Calendar
+         ============================================================================ -->
+    <string name="app_settings_create_calendar_event_desc">创建并添加新日程</string>
+    <string name="app_settings_create_calendar_event_title">新日历日程</string>
+    <string name="calendar_create_event_name_hint">日程名称</string>
+    <string name="calendar_create_event_select_date">选择日期</string>
+    <string name="calendar_create_event_sync_notice">此日程不会同步到您的设备系统日历</string>
+    <string name="calendar_create_event_title">新日程</string>
+    <string name="calendar_edit_event_title">编辑日程</string>
+    <string name="calendar_relative_ago_format">%1$s前</string>
+    <plurals name="calendar_relative_days">
+        <item quantity="one">%d 天</item>
+        <item quantity="other">%d 天</item>
+    </plurals>
+    <string name="calendar_relative_in_format">%1$s后</string>
+    <plurals name="calendar_relative_months">
+        <item quantity="one">%d 个月</item>
+        <item quantity="other">%d 个月</item>
+    </plurals>
+    <string name="calendar_relative_today">今天</string>
+    <string name="calendar_relative_tomorrow">明天</string>
+    <plurals name="calendar_relative_years">
+        <item quantity="one">%d 年</item>
+        <item quantity="other">%d 年</item>
+    </plurals>
+    <string name="calendar_relative_yesterday">昨天</string>
+    <string name="calendar_repeats_daily">每天</string>
+    <plurals name="calendar_repeats_every_days">
+        <item quantity="one">每 %d 天</item>
+        <item quantity="other">每 %d 天</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_months">
+        <item quantity="one">每 %d 个月</item>
+        <item quantity="other">每 %d 个月</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_weeks">
+        <item quantity="one">每 %d 周</item>
+        <item quantity="other">每 %d 周</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_years">
+        <item quantity="one">每 %d 年</item>
+        <item quantity="other">每 %d 年</item>
+    </plurals>
+    <string name="calendar_repeats_generic">定期重复</string>
+    <string name="calendar_repeats_monthly">每月</string>
+    <string name="calendar_repeats_weekly">每周</string>
+    <string name="calendar_repeats_yearly">每年</string>
+    <string name="calendar_section_permission_subtitle">需要日历权限才能执行日历搜索</string>
+    <string name="error_open_calendar_event">无法打开日历日程</string>
+    <string name="settings_calendar_events_empty">无可用日历日程。</string>
+    <string name="settings_calendar_include_past_events_desc">在搜索结果中包含过去的日程。</string>
+    <string name="settings_calendar_include_past_events_title">过去的日程</string>
+    <string name="settings_calendar_permission_title">日历</string>
+    <string name="settings_calendar_show_today_events_desc">在主屏幕上显示今天的日程。</string>
+    <string name="settings_calendar_show_today_events_title">显示今日日程</string>
+    <string name="settings_calendar_view_all_events_desc">查看所有日程</string>
+
+    <!-- ============================================================================
+         Notes
+         ============================================================================ -->
+    <string name="app_settings_search_create_note_desc">在编辑器中开始一条新笔记</string>
+    <string name="app_settings_search_create_note_title">创建笔记</string>
+    <string name="notes_body_hint">在此处撰写您的笔记</string>
+    <string name="notes_create_note_cta">新笔记</string>
+    <string name="notes_delete_confirm_message">这条笔记将被永久删除。</string>
+    <string name="notes_delete_confirm_title">删除这条笔记吗？</string>
+    <string name="notes_delete_note_desc">删除笔记</string>
+    <string name="notes_delete_selected_confirm_message">这些笔记将被永久删除。</string>
+    <string name="notes_delete_selected_confirm_title">删除所选笔记吗？</string>
+    <string name="notes_editor_action_open_link">打开链接</string>
+    <string name="notes_editor_action_send_email">发送电子邮件</string>
+    <string name="notes_editor_title">笔记编辑器</string>
+    <string name="notes_empty_note_subtext">空白笔记</string>
+    <string name="notes_quick_note_title">快捷笔记</string>
+    <string name="notes_quick_note_toggle_desc">支持通过滑动导航打开快捷笔记</string>
+    <string name="notes_title_hint">标题</string>
+    <string name="notes_untitled">无标题</string>
+    <string name="settings_notes_view_all_desc">查看所有笔记</string>
+
+    <!-- ============================================================================
+         Device Settings Shortcuts
+         ============================================================================ -->
+    <string name="device_settings_category_apps_permissions">应用与权限</string>
+    <string name="device_settings_category_battery_performance">电池与性能</string>
+    <string name="device_settings_category_developer_advanced">开发者与高级功能</string>
+    <string name="device_settings_category_language_input">语言与输入法</string>
+    <string name="device_settings_category_network_connectivity">网络与连接</string>
+    <string name="device_settings_category_notifications_accessibility">通知与无障碍</string>
+    <string name="device_settings_category_security_privacy">安全与隐私</string>
+    <string name="device_settings_category_system_device">系统与设备</string>
+    <string name="settings_device_settings_empty">没有可用的设备设置。</string>
+    <string name="settings_shortcut_about_phone">关于手机</string>
+    <string name="settings_shortcut_accessibility">无障碍</string>
+    <string name="settings_shortcut_airplane">飞行模式</string>
+    <string name="settings_shortcut_all_files">所有文件访问权限</string>
+    <string name="settings_shortcut_battery_optimization">电池优化</string>
+    <string name="settings_shortcut_battery_saver">省电模式</string>
+    <string name="settings_shortcut_battery_usage">电量使用情况</string>
+    <string name="settings_shortcut_bluetooth">蓝牙</string>
+    <string name="settings_shortcut_cast">投放屏幕</string>
+    <string name="settings_shortcut_data_usage">流量使用情况</string>
+    <string name="settings_shortcut_date_time">日期与时间</string>
+    <string name="settings_shortcut_default_apps">默认应用</string>
+    <string name="settings_shortcut_developer_options">开发者选项</string>
+    <string name="settings_shortcut_display">显示</string>
+    <string name="settings_shortcut_do_not_disturb">请勿打扰</string>
+    <string name="settings_shortcut_hotspot">热点与网络共享</string>
+    <string name="settings_shortcut_locale">语言</string>
+    <string name="settings_shortcut_location">位置信息</string>
+    <string name="settings_shortcut_mobile_data">移动数据网络</string>
+    <string name="settings_shortcut_network">网络和互联网</string>
+    <string name="settings_shortcut_nfc">NFC</string>
+    <string name="settings_shortcut_notification_listener">通知访问权限</string>
+    <string name="settings_shortcut_notifications">通知</string>
+    <string name="settings_shortcut_overlay_permission">显示在其他应用上层</string>
+    <string name="settings_shortcut_privacy">隐私</string>
+    <string name="settings_shortcut_security">安全</string>
+    <string name="settings_shortcut_sound">声音与振动</string>
+    <string name="settings_shortcut_storage">存储空间</string>
+    <string name="settings_shortcut_usage_access">使用情况访问权限</string>
+    <string name="settings_shortcut_voice_input">数字助理应用</string>
+    <string name="settings_shortcut_vpn">VPN</string>
+    <string name="settings_shortcut_wifi">Wi\u2011Fi</string>
+    <string name="settings_unable_to_open_settings">无法打开设置</string>
+
+    <!-- ============================================================================
+         App Settings Search
+         ============================================================================ -->
+    <string name="settings_all_quick_search_features">功能列表</string>
+    <string name="settings_all_quick_search_features_desc">查看完整的功能与能力清单</string>
+    <string name="settings_app_settings_desc">搜索 Quick Search 本身的设置选项</string>
+    <string name="settings_features_load_failed">无法加载功能说明文档。</string>
+    <string name="settings_features_sections_title">目录内容</string>
+    <string name="settings_search_description_change_app_theme">更改应用主题颜色</string>
+    <string name="settings_search_description_change_font_size">更改应用字体大小</string>
+    <string name="settings_search_description_change_icon_pack">更改应用图标包</string>
+    <string name="settings_search_description_change_layout">更改应用布局选项</string>
+    <string name="settings_search_description_change_wallpaper">更改壁纸的外观效果</string>
+    <string name="settings_search_dynamic_description_template">管理 %1$s 设置</string>
+    <string name="settings_view_all_desc">查看所有设置</string>
+
+    <!-- ============================================================================
+         Settings - Main Navigation &amp; Appearance
+         ============================================================================ -->
+    <string name="customize_search_engines">自定义搜索引擎</string>
+    <string name="settings_app_theme_aurora">极光</string>
+    <string name="settings_app_theme_forest">森林</string>
+    <string name="settings_app_theme_monochrome">单色</string>
+    <string name="settings_app_theme_sunset">落日</string>
+    <string name="settings_app_theme_title">主题</string>
+    <string name="settings_appearance_desc">壁纸、搜索引擎样式、单手模式等。</string>
+    <string name="settings_appearance_title">外观效果</string>
+    <string name="settings_assistant_voice_mode_desc">作为数字助理唤醒时自动启动语音输入</string>
+    <string name="settings_assistant_voice_mode_title">助理语音模式</string>
+    <string name="settings_beta_features_disabled">测试版 (Beta) 功能已停用</string>
+    <string name="settings_beta_features_enabled">全新测试版 (Beta) 功能已启用</string>
+    <string name="settings_beta_features_unavailable">暂无可用新功能</string>
+    <string name="settings_beta_tag">测试版</string>
+    <string name="settings_bottom_searchbar_desc">将搜索栏放置在屏幕底部</string>
+    <string name="settings_bottom_searchbar_title">底部搜索栏</string>
+    <string name="settings_cache_cleared_toast">缓存已清除。正在重新构建应用索引\u2026</string>
+    <string name="settings_circular_app_icons_desc">强制将应用图标转换为圆形</string>
+    <string name="settings_circular_app_icons_title">圆形应用图标</string>
+    <string name="settings_compact_rows_one_row">单行</string>
+    <string name="settings_compact_rows_two_rows">双行</string>
+    <string name="settings_default_assistant_desc">将此应用设置为您的默认数字助理应用。</string>
+    <string name="settings_default_assistant_desc_change">更改您的默认数字助理应用。</string>
+    <string name="settings_default_assistant_title">默认助理</string>
+    <string name="settings_default_launcher_desc">将此应用设置为您的默认启动器。</string>
+    <string name="settings_default_launcher_title">默认启动器</string>
+    <string name="settings_device_theme_blocked_toast">当 Material You 主题启用时此项已被禁用</string>
+    <string name="settings_device_theme_desc">将设备的动态调色板应用为应用自身的主题色彩</string>
+    <string name="settings_device_theme_title">Material You</string>
+    <string name="settings_edit_label">编辑</string>
+    <string name="settings_font_size_big">大</string>
+    <string name="settings_font_size_medium">中</string>
+    <string name="settings_font_size_small">小</string>
+    <string name="settings_font_size_title">字体大小</string>
+    <string name="settings_home_screen_widget_confirm_message">您即将将 Quick Search 小部件添加到主屏幕。长按该小部件可访问包含丰富自定义选项的设置页面。</string>
+    <string name="settings_home_screen_widget_desc">将 Quick Search 小部件添加到主屏幕。</string>
+    <string name="settings_home_screen_widget_title">主屏幕小部件</string>
+    <string name="settings_icon_desc">在搜索栏中显示/隐藏齿轮设置图标。您随时可以通过向左滑动或进行搜索来访问设置。</string>
+    <string name="settings_icon_pack_empty">未找到任何图标包。</string>
+    <string name="settings_icon_pack_mask_unsupported_icons">为不支持的图标添加蒙版</string>
+    <string name="settings_icon_pack_option_system">系统默认图标</string>
+    <string name="settings_icon_pack_picker_title">选择图标包</string>
+    <string name="settings_icon_pack_search_query">免费图标包</string>
+    <string name="settings_icon_pack_selected_label">当前: %1$s</string>
+    <string name="settings_icon_pack_title">图标包</string>
+    <string name="settings_icon_title">设置图标</string>
+    <string name="settings_launch_options_desc">启动此应用的不同方式</string>
+    <string name="settings_launch_options_title">启动选项</string>
+    <string name="settings_launcher_icon_reset_default">重置为默认</string>
+    <string name="settings_launcher_icon_title">启动器应用图标</string>
+    <string name="settings_layout_option_bottom_desc">最相关的匹配项将显示在底部，以便于轻松触达</string>
+    <string name="settings_layout_option_bottom_title">单手模式</string>
+    <string name="settings_more_options_desc">其他杂项自定义选项</string>
+    <string name="settings_more_options_title">更多选项</string>
+    <string name="settings_overlay_assistant_setup_now">立即设置</string>
+    <string name="settings_overlay_assistant_tip">提示：将此应用设为数字助理后，即可在任意界面打开悬浮搜索层。</string>
+    <string name="settings_overlay_mode_desc">搜索栏以悬浮窗形式显示在其他应用之上</string>
+    <string name="settings_overlay_mode_desc_launcher_blocked">当 Quick Search 作为您的默认启动器时此项不可用</string>
+    <string name="settings_overlay_mode_title">悬浮窗模式</string>
+    <string name="settings_overlay_source_add_custom">添加自定义图片</string>
+    <string name="settings_overlay_source_custom_save_failed">无法使用该图片。</string>
+    <string name="settings_overlay_source_edit_custom">编辑自定义图片</string>
+    <string name="settings_overlay_source_needs_permission">需要获取权限</string>
+    <string name="settings_overlay_source_wallpaper">使用桌面壁纸</string>
+    <string name="settings_overlay_theme_tone_darker">更深</string>
+    <string name="settings_overlay_theme_tone_lighter">更浅</string>
+    <string name="settings_permissions_desc">此应用启用各项功能所需的系统权限</string>
+    <string name="settings_permissions_title">权限管理</string>
+    <string name="settings_quick_settings_tile_desc">将 Quick Search 添加到通知栏的快捷设置磁贴中。</string>
+    <string name="settings_quick_settings_tile_title">快捷设置磁贴</string>
+    <string name="settings_refresh_contacts_disabled">联系人搜索功能已被停用，无法刷新联系人数据</string>
+    <string name="settings_refresh_contacts_title">重新加载联系人</string>
+    <string name="settings_refresh_data_note">数据会自动刷新。您可以使用这些按钮执行手动强制刷新。</string>
+    <string name="settings_refresh_data_title">刷新数据</string>
+    <string name="settings_refresh_icon_packs">刷新图标包</string>
+    <string name="settings_refreshing_icon_packs">正在刷新图标包列表</string>
+    <string name="settings_scroll_to_top">滚动到顶部</string>
+    <string name="settings_search_hints_desc">开启或关闭轮播搜索提示</string>
+    <string name="settings_search_hints_title">搜索提示语</string>
+    <string name="settings_search_results_desc">管理结果显示类型、网络建议和搜索历史记录</string>
+    <string name="settings_search_results_title">搜索结果</string>
+    <string name="settings_sections_at_least_one_required">必须至少启用一个项目</string>
+    <string name="settings_show_app_labels_desc">在建议和搜索结果中显示应用名称标签</string>
+    <string name="settings_show_app_labels_title">应用标签</string>
+    <string name="settings_themed_icons_desc">让应用图标带上色调以匹配您自身的主题风格</string>
+    <string name="settings_themed_icons_title">主题应用图标</string>
+    <string name="settings_tools_desc">计算器、单位转换、字典及更多工具</string>
+    <string name="settings_tools_gemini_api_desc">添加 API 密钥可解锁启用更多工具。</string>
+    <string name="settings_tools_gemini_api_title">配置 AI 提供商</string>
+    <string name="settings_tools_info_examples_header">以下是您可以在搜索栏中尝试输入的一些示例</string>
+    <string name="settings_tools_title">实用工具</string>
+    <string name="settings_use_system_font_desc">匹配并跟随您设备的系统字体样式</string>
+    <string name="settings_use_system_font_title">使用系统字体</string>
+    <string name="settings_wallpaper_accent_desc">从背景图片中自动提取出强调色</string>
+    <string name="settings_wallpaper_accent_title">强调色</string>
+    <string name="settings_wallpaper_blur_label">模糊度</string>
+    <string name="settings_wallpaper_card_title">壁纸背景</string>
+    <string name="settings_wallpaper_transparency_label">透明度</string>
+
+    <!-- ============================================================================
+         Settings - Search Engines &amp; AI Provider
+         ============================================================================ -->
+    <string name="error_open_email">未找到可用于发送邮件的电子邮件应用。</string>
+    <string name="settings_add_alias">设置别名</string>
+    <string name="settings_add_custom_provider_desc">添加一个兼容 OpenAI 接口标准的提供商。</string>
+    <string name="settings_add_custom_provider_title">添加自定义提供商</string>
+    <string name="settings_add_search_engine_button">添加搜索引擎</string>
+    <string name="settings_add_search_engine_dialog_message">输入 URL 或带有查询占位符的 Android Intent 模板。\n\n示例：\nwww.google.com/search?q={{query}}</string>
+    <string name="settings_add_search_engine_error_multiple_placeholders">请仅使用一次 {{query}}。</string>
+    <string name="settings_add_search_engine_error_placeholder">URL 必须包含占位符 {{query}}</string>
+    <string name="settings_add_search_engine_error_required">请输入 URL 模板。</string>
+    <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_openai">OpenAI</string>
+    <string name="settings_alias_label">别名：</string>
+    <string name="settings_amazon_domain_default">amazon.com</string>
+    <string name="settings_amazon_domain_label">域名：</string>
+    <string name="settings_api_key_saved_last4">已保存以 ****%1$s 结尾的密钥</string>
+    <string name="settings_api_key_setup_desc">配置 API 密钥以访问对应 AI 提供商的模型。</string>
+    <string name="settings_api_key_setup_nav_desc">添加或移除提供商的 API 密钥</string>
+    <string name="settings_configure_api_key_title">配置 API 密钥</string>
+    <string name="settings_custom_provider_base_url_hint">例如：https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_input_label">接口根地址 (Base URL)</string>
+    <string name="settings_direct_search_desc">支持 Gemini、OpenAI、Claude 和 Groq 的 API 密钥</string>
+    <string name="settings_direct_search_desc_intro">添加 API 密钥以启用 AI 驱动的搜索和相关实用工具。</string>
+    <string name="settings_direct_search_grounding_label">联网搜索</string>
+    <string name="settings_direct_search_how_to">获取免费 API 密钥</string>
+    <string name="settings_direct_search_model_label">模型</string>
+    <string name="settings_direct_search_personal_context">个人背景信息</string>
+    <string name="settings_direct_search_personal_context_hint">添加您希望 AI 在生成回答时参考的背景信息。</string>
+    <string name="settings_direct_search_personal_context_unsupported">该模型不支持个人背景信息功能。</string>
+    <string name="settings_direct_search_setup_nav_desc">添加 API 密钥以解锁开启 AI 搜索</string>
+    <string name="settings_direct_search_setup_nav_title">AI 搜索</string>
+    <string name="settings_direct_search_thinking_label">思考过程</string>
+    <string name="settings_edit_search_engine_dialog_title">编辑搜索引擎</string>
+    <string name="settings_gemini_api_config_desc">配置您的 AI 提供商来支持 AI 搜索和专属工具</string>
+    <string name="settings_gemini_api_desc">配置 AI 提供商</string>
+    <string name="settings_gemini_api_key_paste_hint">点击此处粘贴密钥</string>
+    <string name="settings_gemini_api_key_reset">重置密钥</string>
+    <string name="settings_gemini_api_key_saving">正在保存...</string>
+    <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
+    <string name="settings_model_picker_search_hint">搜索模型</string>
+    <string name="settings_search_engine_alias_suffix_desc">当您在查询内容的末尾加上别名时触发该搜索引擎。别名放在句首时也将始终保持生效。</string>
+    <string name="settings_search_engine_alias_suffix_title">查询后别名</string>
+    <string name="settings_search_engine_browser_default">系统默认浏览器</string>
+    <string name="settings_search_engine_browser_label">打开于</string>
+    <string name="settings_search_engine_display_compact_desc">始终在键盘上方以水平列表的形式可见展示</string>
+    <string name="settings_search_engine_display_compact_title">紧凑样式</string>
+    <string name="settings_search_engine_display_inline_desc">搜索时在结果展示区域内以卡片形式呈现</string>
+    <string name="settings_search_engine_display_inline_title">内嵌样式</string>
+    <string name="settings_search_engine_display_title">搜索引擎样式</string>
+    <string name="settings_search_engines_desc">管理搜索引擎并重新调整其顺序</string>
+    <string name="settings_search_engines_more_search_engines">更多搜索引擎</string>
+
+    <!-- ============================================================================
+         Settings - Backup, Feedback &amp; About
+         ============================================================================ -->
+    <string name="release_notes_action_all_features">所有功能</string>
+    <string name="release_notes_action_got_it">知道了</string>
+    <string name="release_notes_title">Quick Search v%1$s 版本更新日志</string>
+    <string name="release_notes_title_no_version">Quick Search 版本更新日志</string>
+    <string name="settings_backup_export_api_key_warning_message">继续操作需自行承担风险。导出的 API 密钥未经加密，任何能够访问您备份文件的人均可获取该密钥。</string>
+    <string name="settings_backup_export_button">导出</string>
+    <string name="settings_backup_export_failed">无法导出设置。</string>
+    <string name="settings_backup_export_option_pinned_items_title">固定的项目</string>
+    <string name="settings_backup_export_option_settings_title">配置设置</string>
+    <string name="settings_backup_export_selection_title">导出数据</string>
+    <string name="settings_backup_export_success">配置设置导出成功。</string>
+    <string name="settings_backup_import_button">导入</string>
+    <string name="settings_backup_import_failed">无法导入设置。</string>
+    <string name="settings_backup_import_success">配置设置导入成功。</string>
+    <string name="settings_backup_import_warning_message">此操作将会覆盖您当前现有的配置设置。</string>
+    <string name="settings_backup_import_warning_title">导入配置设置吗？</string>
+    <string name="settings_backup_restore_desc">导出或导入您的应用配置设置</string>
+    <string name="settings_backup_restore_title">备份与恢复</string>
+    <string name="settings_feedback_developer_desc">创作者：%1$s</string>
+    <string name="settings_feedback_developer_name">Teja Karlapudi</string>
+    <string name="settings_feedback_developer_title">%1$s v%2$s</string>
+    <string name="settings_feedback_github_desc">在 GitHub 上查看此开源项目的源码</string>
+    <string name="settings_feedback_github_title">开发进度</string>
+    <string name="settings_feedback_rate_desc">如果您觉得本应用对您有所帮助，请留下 5 星好评</string>
+    <string name="settings_feedback_rate_title">为 Quick Search 评分</string>
+    <string name="settings_feedback_send_desc">反馈故障 Bug 或提交新功能需求</string>
+    <string name="settings_feedback_send_title">发送反馈</string>
+    <string name="settings_open_source_licenses_load_failed">无法加载开源许可证。</string>
+    <string name="settings_open_source_licenses_loading">正在加载许可证…</string>
+    <string name="settings_open_source_licenses_tap_to_view">点击以查看许可证正文文本</string>
+    <string name="settings_open_source_licenses_title">开源许可证</string>
+
+    <!-- ============================================================================
+         Tools - Calculator, Converter, Time &amp; Dictionary
+         ============================================================================ -->
+    <string name="calculator_enter_math_expression_hint">输入数学算式</string>
+    <string name="calculator_invalid_or_unsupported_expression">算式无效或不受支持</string>
+    <string name="calculator_toggle_desc">直接计算并显示基础数学算式的结果</string>
+    <string name="calculator_toggle_title">计算器</string>
+    <string name="currency_converter_invalid_input">货币转换输入格式无效</string>
+    <string name="currency_converter_requires_gemini_key">此功能需要配置 AI 提供商的 API 密钥</string>
+    <string name="currency_converter_toggle_desc">例如：100 USD to INR</string>
+    <string name="currency_converter_toggle_title">货币转换器</string>
+    <string name="date_calculator_category_absolute_time">绝对时间</string>
+    <string name="date_calculator_category_date_differences">日期差异</string>
+    <string name="date_calculator_category_named_dates">特定纪念日/节日</string>
+    <string name="date_calculator_category_offset_from_date">日期时间偏移量</string>
+    <string name="date_calculator_category_relative_dates">相对日期</string>
+    <string name="date_calculator_category_time_arithmetic">时间计算</string>
+    <string name="date_calculator_category_time_offset">时间偏移</string>
+    <string name="date_calculator_category_time_ranges">时间段范围</string>
+    <string name="date_calculator_info_title">日期与时间计算器</string>
+    <string name="date_calculator_invalid_date">日期或时间无效或无法识别</string>
+    <string name="date_calculator_toggle_action_desc">开启或关闭日期时间计算器</string>
+    <string name="date_calculator_toggle_desc">使用实例指南</string>
+    <string name="dictionary_example_label">示例：%1$s</string>
+    <string name="dictionary_synonyms_label">同义词：%1$s</string>
+    <string name="dictionary_toggle_desc">例如：define serendipity</string>
+    <string name="dictionary_toggle_title">词典</string>
+    <string name="get_currency_value">获取货币汇率</string>
+    <string name="get_time">获取时间</string>
+    <string name="search_in_dictionary">在词典中查询</string>
+    <string name="unit_converter_category_angle">角度</string>
+    <string name="unit_converter_category_area">面积</string>
+    <string name="unit_converter_category_data">数据容量</string>
+    <string name="unit_converter_category_energy">能量</string>
+    <string name="unit_converter_category_frequency">频率</string>
+    <string name="unit_converter_category_length">长度</string>
+    <string name="unit_converter_category_power">功率</string>
+    <string name="unit_converter_category_pressure">压强</string>
+    <string name="unit_converter_category_speed">速度</string>
+    <string name="unit_converter_category_temperature">温度</string>
+    <string name="unit_converter_category_volume">体积</string>
+    <string name="unit_converter_category_weight_mass">重量 / 质量</string>
+    <string name="unit_converter_enter_conversion_hint">输入要转换的单位 (例如, 5lbs in kgs)</string>
+    <string name="unit_converter_info_title">单位转换器</string>
+    <string name="unit_converter_invalid_or_unsupported_query">单位转换请求无效或暂不支持</string>
+    <string name="unit_converter_toggle_action_desc">开启或关闭单位转换器</string>
+    <string name="word_clock_error_not_recognized">无法解析该时间请求。请尝试输入城市、国家、时区或明确的时间表达方式。</string>
+    <string name="word_clock_toggle_desc">例如：Time in Tokyo</string>
+    <string name="word_clock_toggle_title">世界时钟</string>
+
+    <!-- ============================================================================
+         Widgets &amp; Shortcuts
+         ============================================================================ -->
+    <string name="home_screen_widget_error">无法请求添加该部件。请重试。</string>
+    <string name="home_screen_widget_not_supported">当前 Android 版本不支持直接将小部件固定至桌面。请从系统主屏幕的小部件列表中进行手动添加。</string>
+    <string name="quick_settings_tile_added">Quick Search 快捷磁贴已添加</string>
+    <string name="quick_settings_tile_already_added">Quick Search 快捷磁贴此前已完成添加</string>
+    <string name="quick_settings_tile_error">无法请求快捷设置磁贴。请重试。</string>
+    <string name="quick_settings_tile_not_added">磁贴未被添加</string>
+    <string name="quick_settings_tile_not_supported">当前 Android 版本不支持直接在应用内请求磁贴。请下拉通知栏点击编辑来手动添加它。</string>
+    <string name="shortcut_voice_search_disabled_message">语音搜索快捷方式当前不可用。</string>
+    <string name="shortcut_voice_search_long_label">开启语音搜索</string>
+    <string name="shortcut_voice_search_short_label">语音搜索</string>
+    <string name="voice_input_not_available">目前无法使用语音输入法。</string>
+    <string name="widget_background_color_custom_dialog_hint">十六进制颜色代码 (RRGGBB)</string>
+    <string name="widget_background_color_custom_dialog_title">自定义色彩</string>
+    <string name="widget_background_color_custom_invalid">请输入有效的 6 位十六进制颜色值。</string>
+    <string name="widget_border_color">边框颜色</string>
+    <string name="widget_custom_button_add_desc">添加自定义按钮</string>
+    <string name="widget_custom_buttons_dialog_hint">您可以关联搜索应用、应用快捷方式、联系人、文件、文件夹、笔记及设备系统设置。</string>
+    <string name="widget_custom_buttons_dialog_title">选择关联操作</string>
+    <string name="widget_custom_buttons_no_results">未找到匹配项结果。</string>
+    <string name="widget_custom_buttons_restriction">当自定义按钮处于激活状态时此项不可用。</string>
+    <string name="widget_custom_buttons_title">自定义快捷按钮</string>
+    <string name="widget_custom_buttons_widget_title">自定义按钮小部件</string>
+    <string name="widget_icon_center">居中</string>
+    <string name="widget_icon_left">居左</string>
+    <string name="widget_icon_off">关闭</string>
+    <string name="widget_loading_state">正在加载小部件设置…</string>
+    <string name="widget_mic_action_default">默认语音</string>
+    <string name="widget_mic_action_digital_assistant">数字助理</string>
+    <string name="widget_mic_action_digital_assistant_limitation">受 Android 系统机制限制，除非您已将 Google 设为默认的数字助理应用，否则无法正常呼出助理。</string>
+    <string name="widget_mic_action_digital_assistant_link_phrase">数字助理应用</string>
+    <string name="widget_mic_icon">麦克风图标</string>
+    <string name="widget_search_icon">搜索图标</string>
+    <string name="widget_settings_title">搜索小部件样式</string>
+    <string name="widget_slider_border">边框粗细</string>
+    <string name="widget_slider_internal_padding">外边距</string>
+    <string name="widget_slider_internal_padding_horizontal">水平间距</string>
+    <string name="widget_slider_internal_padding_vertical">垂直间距</string>
+    <string name="widget_slider_radius">圆角半径</string>
+    <string name="widget_slider_transparency_background">背景不透明度</string>
+    <string name="widget_slider_transparency_border">边框不透明度</string>
+    <string name="widget_text_icon_color">文本及图标色彩</string>
+    <string name="widget_text_icon_color_black">黑色</string>
+    <string name="widget_text_icon_color_white">白色</string>
+    <string name="widget_toggle_show_label">Quick Search 文本提示</string>
+    <string name="widgets_panel_title">小部件管理</string>
+    <string name="widgets_picker_empty">未找到任何小部件。</string>
+    <string name="widgets_picker_preview_unavailable">暂无预览效果</string>
+    <string name="widgets_picker_title">添加小部件</string>
+    <string name="widgets_picker_widget_count">%1$d 个小部件</string>
+    <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+
+    <!-- ============================================================================
+         Permissions &amp; Onboarding
+         ============================================================================ -->
+    <string name="permissions_calendar_desc">开启此项以检索并展示您设备系统日历中的日程事件。</string>
+    <string name="permissions_calling_desc">允许直接呼叫您的联系人，省去跳转并开启系统拨号盘的步骤。</string>
+    <string name="permissions_contacts_desc">允许检索、匹配并展示您设备通讯录中的联系人信息。</string>
+    <string name="permissions_files_desc">用于在您的个人文档、下载内容和其他本地文件中开展精确检索。</string>
+    <string name="permissions_files_title">文件读写权限</string>
+    <string name="permissions_granted">已授予</string>
+    <string name="permissions_mandatory_indicator">*</string>
+    <string name="permissions_reminder_dialog_message">若您后续改变了关于 %1$s 权限的想法，可以随时前往应用系统设置页面内重新授予该项权限。</string>
+    <string name="permissions_reminder_dialog_title">权限未授予</string>
+    <string name="permissions_screen_subtitle">这些系统权限可以解锁更多高级功能。它们是可选的。您的数据将保存在本地设备中。</string>
+    <string name="permissions_usage_desc">用于在智能建议面板中优先展示您近期最常使用或新运行的应用。</string>
+    <string name="setup_action_next">下一步</string>
+    <string name="setup_action_start">开始搜索！</string>
+    <string name="setup_final_title">大功告成！</string>
+    <string name="setup_import_backup_found_subtitle">检测到备份，是否要从该备份文件中还原所有设置？</string>
+    <string name="setup_import_backup_found_title">找到可用的备份文件</string>
+    <string name="setup_import_button">导入配置设置</string>
+    <string name="setup_import_description_subtitle">通过之前导出的备份文件还原 Quick Search 的设置。</string>
+    <string name="setup_import_description_title">要从备份恢复吗？</string>
+    <string name="setup_import_error_subtitle">无法读取该备份文件的数据流。请稍后重试。</string>
+    <string name="setup_import_error_title">导入失败</string>
+    <string name="setup_import_importing">正在导入设置数据…</string>
+    <string name="setup_import_restore_button">还原</string>
+    <string name="setup_import_skip">跳过此步</string>
+    <string name="setup_import_success_subtitle">您的设置已成功导入。点击下方按钮开始搜索。</string>
+    <string name="setup_import_success_title">设置还原成功</string>
+    <string name="setup_import_title">恢复配置设置</string>
+    <string name="setup_search_engines_subtitle">一键开启所需的各平台搜索引擎，并可依据个人偏好随意拖动调整其排序次序。</string>
+
+    <!-- ============================================================================
+         Search Engines
+         ============================================================================ -->
+    <string name="browser_brave_name">Brave 浏览器</string>
+    <string name="browser_in_app_name">内置浏览器</string>
+    <string name="open_with_engine">使用 %1$s 打开</string>
+    <string name="search_engine_ai_mode">AI 模式</string>
+    <string name="search_engine_amazon">Amazon</string>
+    <string name="search_engine_bing">Bing</string>
+    <string name="search_engine_brave">Brave 搜索</string>
+    <string name="search_engine_chatgpt">ChatGPT</string>
+    <string name="search_engine_claude">Claude</string>
+    <string name="search_engine_custom">自定义搜索</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+    <string name="search_engine_gemini">Gemini</string>
+    <string name="search_engine_google">Google</string>
+    <string name="search_engine_google_drive">Google Drive</string>
+    <string name="search_engine_google_maps">Google Maps</string>
+    <string name="search_engine_google_photos">Google Photos</string>
+    <string name="search_engine_google_play">Google Play</string>
+    <string name="search_engine_grok">Grok</string>
+    <string name="search_engine_onboarding_description">当您输入搜索内容并点击这些搜索引擎图标时，系统将直接前往对应的应用进行定向检索。您可以通过长按来对它们进行修改编辑。</string>
+    <string name="search_engine_perplexity">Perplexity</string>
+    <string name="search_engine_reddit">Reddit</string>
+    <string name="search_engine_spotify">Spotify</string>
+    <string name="search_engine_startpage">Startpage</string>
+    <string name="search_engine_waze">Waze</string>
+    <string name="search_engine_wikipedia">维基百科 (Wikipedia)</string>
+    <string name="search_engine_x">X</string>
+    <string name="search_engine_you_com">You.com</string>
+    <string name="search_engine_youtube">YouTube</string>
+    <string name="search_engine_youtube_music">YouTube Music</string>
+    <string name="search_on_engine">在 %1$s 上搜索</string>
+
+    <!-- ============================================================================
+         Miscellaneous
+         ============================================================================ -->
+    <string name="auto_close_overlay_toggle_desc">当成功开启搜索结果目标项后，应用将自动退出至后台</string>
+    <string name="auto_close_overlay_toggle_title">自动关闭应用</string>
+    <string name="excluded_item_type_app_results">应用 (搜索结果)</string>
+    <string name="excluded_item_type_app_shortcut">应用快捷方式</string>
+    <string name="excluded_item_type_app_suggestions">应用 (桌面建议)</string>
+    <string name="excluded_item_type_contact">联系人</string>
+    <string name="excluded_item_type_setting">设置项</string>
+    <string name="permission_required_title">需要相关权限</string>
+    <string name="settings_action_clear_all">清除全部</string>
+    <string name="settings_action_move_down">移至底部</string>
+    <string name="settings_action_move_up">移至顶部</string>
+    <string name="settings_action_reorder">长按拖拽重排顺序</string>
+    <string name="settings_create_new_tool_button">新建自定义工具</string>
+    <string name="settings_custom_tool_alias_hint">快速呼出调用此专属工具的关联关键字别名</string>
+    <string name="settings_custom_tool_alias_label">别名关键词</string>
+    <string name="settings_custom_tool_delete_button">删除该工具</string>
+    <string name="settings_custom_tool_editor_title">自定义工具面板</string>
+    <string name="settings_custom_tool_name_label">工具显示名称</string>
+    <string name="settings_custom_tool_prompt_hint">详细描述此工具的功能逻辑。该提示词将在工具被成功触发后，精确引导规范 AI 的底层行为。</string>
+    <string name="settings_custom_tool_prompt_label">系统级提示词 (System Prompt)</string>
+    <string name="settings_excluded_items_clear_all">清空全部排除项</string>
+    <string name="settings_excluded_items_clear_all_confirmation">您确定要彻底清空所有的排除项名单吗？该操作执行后将无法复原。</string>
+    <string name="settings_excluded_items_desc">查看并统一编辑管理此前已被您手动移除隐藏的所有名单项</string>
+    <string name="settings_excluded_items_empty">您当前没有排除隐藏任何项目。</string>
+    <string name="settings_excluded_items_title">已排除过滤的项目</string>
+    <string name="settings_manage_calls_texts_contacts_desc">统一配置定制各独立联系人的专属通话与短信应用快捷动作</string>
+    <string name="settings_manage_files_desc">管理结果中显示的文件类型</string>
+    <string name="settings_manage_shortcuts_desc">管理您的应用快捷方式</string>
+    <string name="settings_nicknames_desc">查看并管理您设置的自定义昵称</string>
+    <string name="settings_nicknames_empty">您当前未设置过任何专属昵称。</string>
+    <string name="settings_nicknames_title">专属搜索昵称</string>
+    <string name="settings_search_tip_banner_message">小提示：您只需直接在主搜索栏内输入关键词，即可实现对设备系统设置项的精准穿透搜索。</string>
+    <string name="settings_triggers_desc">查看并管理您设置的触发词</string>
+    <string name="settings_triggers_empty">您当前未绑定设置过任何触发词。</string>
+    <string name="settings_triggers_title">别名触发词</string>
+</resources>

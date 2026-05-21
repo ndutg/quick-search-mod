@@ -1,0 +1,967 @@
+<resources>
+
+    <!-- Language: Turkish -->
+
+    <!-- Translation Guidelines:
+         - Translate user-facing text into this locale.
+         - Do not translate brand/product names and technical identifiers (e.g., Quick Search, AI, API, Gemini, Android, Amazon, USD, INR, lbs, kgs).
+         - Do not translate placeholders or format specifiers (%1$s, %1$d, %s, %%).
+         - In search_hints_cycle, keep the example queries in English.
+    -->
+<!-- ============================================================================
+     App &amp; Search Entry
+     ============================================================================ -->
+<string name="app_name">Quick Search</string>
+<string name="direct_answer_contact_name">AI Yanıtı</string>
+<string name="direct_search_enter_query">Lütfen aramak için bir sorgu girin.</string>
+<string name="direct_search_error_generic">AI yanıtı alınamadı. Tekrar deneyin.</string>
+<string name="direct_search_error_no_key">AI yanıtlarını almak için ayarlardan (AI Sağlayıcısı) bir API anahtarı ekleyin.</string>
+<string name="direct_search_powered_by">Destekleyen:</string>
+<string name="empty_state_subtitle">Önerileri görmek için bir uygulama başlatın veya aramanızı detaylandırın.</string>
+<string name="empty_state_title">Henüz gösterilecek bir şey yok</string>
+<string name="error_action_not_available">İşlem kullanılabilir değil</string>
+<string name="error_gemini_empty_response">Gemini\'den boş yanıt</string>
+<string name="error_gemini_load_models_failed">Gemini modelleri yüklenemedi</string>
+<string name="error_gemini_request_failed">İstek başarısız oldu (%1$d)</string>
+<string name="error_unknown">Bilinmeyen hata</string>
+<string name="gemini_model_flash_latest">Gemini Flash (En Yeni)</string>
+<string name="keyboard_switch_back">Normal klavye</string>
+<string name="keyboard_switch_to_number">Sayı klavyesi</string>
+<string name="no_results_found">Sonuç bulunamadı. Web\'de aramak için aşağıdaki arama motorlarından birine dokunmayı deneyin.</string>
+<string name="search_hint">Her şeyi ara…</string>
+<string name="search_hint_app_settings">Uygulama ayarlarında ara…</string>
+<string name="search_hint_app_shortcuts">Uygulama kısayollarında ara…</string>
+<string name="search_hint_apps">Uygulama ara…</string>
+<string name="search_hint_calendar">Takvim etkinliklerinde ara…</string>
+<string name="search_hint_contacts">Kişilerde ara…</string>
+<string name="search_hint_currency_converter">Para birimi dönüştür, örn: 100 USD to INR</string>
+<string name="search_hint_dictionary">Bir kelime girin</string>
+<string name="search_hint_files">Dosyalarda ara…</string>
+<string name="search_hint_notes">Notlarda ara…</string>
+<string name="search_hint_settings">Cihaz ayarlarında ara…</string>
+<string name="search_hint_static">Her şeyi ara</string>
+<string name="search_hint_word_clock">Yerel saati öğrenmek için bir yer girin</string>
+<string-array name="search_hints_cycle">
+    <item>Kişilerde ara</item>
+    <item>Dosyalarda ara</item>
+    <item>Takvim etkinlikleri</item>
+    <item>Uygulamalarda ara</item>
+    <item>Uygulama kısayollarında ara</item>
+    <item>Ayarlarda ara</item>
+    <!-- These examples should not be translated -->
+    <item>5 USD to INR</item>
+    <item>5 lbs in kgs</item>
+    <item>3 months from now</item>
+    <item>225 + 456</item>
+    <item>Time in UK</item>
+    <item>Define Serendipity</item>
+</string-array>
+<string name="search_provider_description">Quick Search ile uygulamaları, kişileri, dosyaları, ayarları ve daha fazlasını arayın.</string>
+
+<!-- ============================================================================
+     Common Actions, Labels &amp; Dialogs
+     ============================================================================ -->
+<string name="action_add_to_home">Ana ekrana ekle</string>
+<string name="action_add_trigger">Tetikleyici</string>
+<string name="action_app_info">Uygulama bilgisi</string>
+<string name="action_archive_today_event">Arşivle</string>
+<string name="action_change_icon">Simgeyi değiştir</string>
+<string name="action_change_wallpaper">Duvar kağıdını değiştir</string>
+<string name="action_clear_all_history">Geçmişi temizle</string>
+<string name="action_edit_icon">Simgeyi düzenle</string>
+<string name="action_edit_nickname">Takma adı düzenle</string>
+<string name="action_edit_trigger">Tetikleyiciyi düzenle</string>
+<string name="action_exclude_extension">.%s dosyalarını hariç tut</string>
+<string name="action_exclude_generic">Hariç tut</string>
+<string name="action_expand_more">Daha fazla</string>
+<string name="action_expand_more_app_settings">Daha fazla uygulama ayarı</string>
+<string name="action_expand_more_contacts">Daha fazla kişi</string>
+<string name="action_expand_more_device_settings">Daha fazla ayar</string>
+<string name="action_expand_more_events">Daha fazla etkinlik</string>
+<string name="action_expand_more_files">Daha fazla dosya</string>
+<string name="action_expand_more_notes">Daha fazla not</string>
+<string name="action_expand_more_shortcuts">Daha fazla kısayol</string>
+<string name="action_file_info">Dosya bilgisi</string>
+<string name="action_include_generic">Dahil et</string>
+<string name="action_more_search_history">Daha fazla geçmiş</string>
+<string name="action_open">Aç</string>
+<string name="action_open_folder">Klasörü aç</string>
+<string name="action_open_keyboard">Klavyeyi aç</string>
+<string name="action_open_settings">Ayarları aç</string>
+<string name="action_pin_app">Sabitle</string>
+<string name="action_remove">Kaldır</string>
+<string name="action_remove_from_history">Geçmişten kaldır</string>
+<string name="action_reset_app_shortcut_icon">Varsayılan simgeye sıfırla</string>
+<string name="action_retry">Yeniden dene</string>
+<string name="action_share">Paylaş</string>
+<string name="action_move_up">Yukarı taşı</string>
+<string name="action_move_down">Aşağı taşı</string>
+<string name="action_undo">Geri al</string>
+<string name="action_uninstall_app">Yüklemeyi kaldır</string>
+<string name="action_unpin_app">Sabitlemeyi kaldır</string>
+<string name="alias_trigger_after_space">Boşluktan sonra tetikle</string>
+<string name="common_action_add">Ekle</string>
+<string name="common_action_clear">Temizle</string>
+<string name="common_ai_provider">AI Sağlayıcısı</string>
+<string name="common_api_key_setup">API Anahtarı Kurulumu</string>
+<string name="common_close">Kapat</string>
+<string name="common_custom">Özel</string>
+<string name="common_error_unable_to_open">%1$s açılamıyor</string>
+<string name="common_most_used">En çok kullanılanlar</string>
+<string name="common_nickname">Takma ad</string>
+<string name="common_search">Ara</string>
+<string name="common_theme_dark">Koyu</string>
+<string name="common_theme_device">Cihaz</string>
+<string name="common_theme_light">Açık</string>
+<string name="common_theme_system">Sistem</string>
+<string name="common_time">Saat</string>
+<string name="dialog_add_alias_for_search_type_title">"%1$s" için kısaltma ekle</string>
+<string name="dialog_alias_info_search_engine">%1$s ile hızlıca arama başlatmak için bu kısaltmayı sorgunuzun başına veya sonuna yazın.</string>
+<string name="dialog_alias_info_search_engine_start_only">%1$s ile hızlıca arama başlatmak için bu kısaltmayı sorgunuzun başına yazın.</string>
+<string name="dialog_alias_info_search_type">%1$s aramasını tetiklemek için bu kısaltmayı sorgunuzun başına yazın.</string>
+<string name="dialog_alias_info_tool">%1$s moduna geçmek için bu kısaltmayı sorgunuzun başına yazın.</string>
+<string name="dialog_app_shortcut_icon_message">\"%1$s\" için bir simge seçin. Bu işlem yalnızca kısayolun Quick Search içindeki görünümünü değiştirir.</string>
+<string name="dialog_cancel">İptal</string>
+<string name="dialog_choose_contact_action_title">"%1$s" işlemini değiştirmek için bir eylem seçin</string>
+<string name="dialog_clear_all_history_message">Tüm arama geçmişini temizlemek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
+<string name="dialog_clear_all_history_title">Tüm geçmiş temizlensin mi?</string>
+<string name="dialog_delete">Sil</string>
+<string name="dialog_direct_dial_change_later">Bunu istediğiniz zaman Ayarlar\'dan değiştirebilirsiniz.</string>
+<string name="dialog_direct_dial_option_dialer">Arama ekranını aç</string>
+<string name="dialog_direct_dial_option_dialer_desc">Arama yapmadan önce numarayı arama ekranınızda inceleyin.</string>
+<string name="dialog_direct_dial_option_direct">Doğrudan ara</string>
+<string name="dialog_direct_dial_option_direct_desc">Aramayı hemen başlatır (arama izni gerektirir).</string>
+<string name="dialog_direct_dial_title">Nasıl aranacağını seçin</string>
+<string name="dialog_done">Bitti</string>
+<string name="dialog_edit_alias_error_prefix">Bu kısaltma zaten kullanımda.</string>
+<string name="dialog_edit_alias_error_trigger_conflict">Bu kısaltma mevcut bir tetikleyici ile çakışıyor.</string>
+<string name="dialog_edit_alias_for_search_type_title">"%1$s" için kısaltmayı düzenle</string>
+<string name="dialog_edit_alias_title">Kısaltmayı düzenle</string>
+<string name="dialog_edit_amazon_domain_error">Geçersiz alan adı</string>
+<string name="dialog_edit_amazon_domain_hint">Örnekler: amazon.com, amazon.in, amazon.ca vb.</string>
+<string name="dialog_edit_amazon_domain_message">Ülkeniz için Amazon alan adını güncelleyin.</string>
+<string name="dialog_edit_amazon_domain_title">Amazon alan adını düzenle</string>
+<string name="dialog_enjoying_app_title">Bu uygulamayı faydalı buluyor musunuz?</string>
+<string name="dialog_feedback_hint">Neyi geliştirebileceğimizi bize söyleyin</string>
+<string name="dialog_gemini_model_picker_title">Model seçin</string>
+<string name="dialog_nickname_message">"%1$s" için bir takma ad girin. Bu takma adı kullanarak arama yapabilirsiniz.</string>
+<string name="dialog_no">Hayır</string>
+<string name="dialog_ok">Devam et</string>
+<string name="dialog_okay">Tamam</string>
+<string name="dialog_remember_choice">Seçimimi hatırla</string>
+<string name="dialog_save">Kaydet</string>
+<string name="dialog_select_phone_number_message">%1$s için bir numara seçin</string>
+<string name="dialog_select_phone_number_title">Telefon numarası seçin</string>
+<string name="dialog_send">Gönder</string>
+<string name="dialog_trigger_error_alias_conflict">Bu tetikleyici mevcut bir kısaltma ile çakışıyor.</string>
+<string name="dialog_trigger_error_taken">Bu tetikleyici zaten kullanımda.</string>
+<string name="dialog_trigger_hint">Tetikleyici kelime</string>
+<string name="dialog_trigger_message">"%1$s" için tek kelimelik bir tetikleyici girin.</string>
+<string name="dialog_yes">Evet</string>
+<string name="exclude_marker"> - </string>
+<string name="permission_action_manage_android">Android ayarlarından yönet</string>
+<string name="permission_settings_dialog_message">Bu işlem %1$s izni gerektiriyor. İzin vermek için sistem ayarlarına yönlendirileceksiniz.</string>
+<string name="permission_settings_dialog_title">%1$s İzni Gerekli</string>
+<string name="toast_excluded_from_results">%1$s - sonuçlardan hariç tutuldu</string>
+<string name="toast_excluded_from_suggestions">%1$s - önerilerden hariç tutuldu</string>
+
+<!-- ============================================================================
+     Accessibility
+     ============================================================================ -->
+<string name="desc_clear_search">Arama metnini temizle</string>
+<string name="desc_collapse">Daralt</string>
+<string name="desc_expand">Genişlet</string>
+<string name="desc_launch_app">%1$s uygulamasını aç</string>
+<string name="desc_navigate_back">Geri git</string>
+<string name="desc_navigate_forward">İleri git</string>
+<string name="desc_open_settings">Quick Search ayarlarını aç</string>
+<string name="desc_selected">Seçildi</string>
+<string name="desc_voice_search_icon">Sesli aramayı başlat</string>
+
+<!-- ============================================================================
+     Search Result Sections &amp; Ranking
+     ============================================================================ -->
+<string name="app_suggestions_tab_new_updated">Yeni/Güncellenen</string>
+<string name="app_suggestions_tab_pinned">Sabitlenenler</string>
+<string name="app_suggestions_tab_recent">Son kullanılanlar</string>
+<string name="app_suggestions_tab_required_toast">En az bir uygulama önerisi sekmesini etkin tutmalısınız</string>
+<string name="app_suggestions_toggle_desc">Ana ekranda önerilen uygulamaları göster veya gizle</string>
+<string name="app_suggestions_toggle_title">Uygulama önerileri</string>
+<string name="app_suggestions_usage_access_link">kullanım erişimi izni</string>
+<string name="app_suggestions_usage_access_tip">Daha uygun öneriler görmek için kullanım erişimi izni verin</string>
+<string name="clear_query_toggle_desc">Uygulama başlatıldığında eski sorguyu otomatik olarak temizle</string>
+<string name="clear_query_toggle_title">Sorguyu temizle</string>
+<string name="more_results_title">Daha fazla sonuç</string>
+<string name="open_keyboard_toggle_desc">Uygulama başlatıldığında klavyeyi otomatik olarak aç</string>
+<string name="recent_queries_toggle_desc">Arama geçmişinizi ana ekranda göster.</string>
+<string name="recent_queries_toggle_title">Arama geçmişi</string>
+<string name="search_history_tab_recently_opened">Sonuçlar</string>
+<string name="search_history_tab_searches">Aramalar</string>
+<string name="search_history_tip_link">ayarlar</string>
+<string name="search_history_tip_message">Arama geçmişini şuradan devre dışı bırakabilirsiniz:</string>
+<string name="search_section_app_settings_toggle_desc">Uygulama ayarları aramasını aç veya kapat</string>
+<string name="search_section_app_settings_toggle_title">Uygulama ayarları araması</string>
+<string name="search_section_app_shortcuts_toggle_desc">Uygulama kısayolları aramasını aç veya kapat</string>
+<string name="search_section_app_shortcuts_toggle_title">Uygulama kısayolları araması</string>
+<string name="search_section_apps_toggle_desc">Uygulama aramasını aç veya kapat</string>
+<string name="search_section_apps_toggle_title">Uygulama araması</string>
+<string name="search_section_calendar_toggle_desc">Takvim aramasını aç veya kapat</string>
+<string name="search_section_calendar_toggle_title">Takvim araması</string>
+<string name="search_section_contacts_toggle_desc">Kişi aramasını aç veya kapat</string>
+<string name="search_section_contacts_toggle_title">Kişi araması</string>
+<string name="search_section_device_settings_toggle_desc">Cihaz ayarları aramasını aç veya kapat</string>
+<string name="search_section_device_settings_toggle_title">Cihaz ayarları araması</string>
+<string name="search_section_files_toggle_desc">Dosya aramasını aç veya kapat</string>
+<string name="search_section_files_toggle_title">Dosya araması</string>
+<string name="search_section_notes_toggle_desc">Not aramasını aç veya kapat</string>
+<string name="search_section_notes_toggle_title">Not araması</string>
+<string name="section_app_settings">Uygulama ayarları</string>
+<string name="section_app_shortcuts">Uygulama kısayolları</string>
+<string name="section_apps">Uygulamalar</string>
+<string name="section_calendar">Takvim etkinlikleri</string>
+<string name="section_files">Dosyalar</string>
+<string name="section_notes">Notlar</string>
+<string name="section_settings">Cihaz ayarları</string>
+<string name="top_match_title">En iyi eşleşme</string>
+<string name="top_matches_count_label">Eşleşme sayısı</string>
+<string name="top_matches_priority_desc">En iyi eşleşmelerdeki öğelerin önceliğini değiştir ve devre dışı bırak</string>
+<string name="top_matches_priority_dialog_info">Önceliği değiştirmek için basılı tutup sürükle; belirli sonuç türlerini etkinleştirmek veya devre dışı bırakmak için anahtarı kullan.</string>
+<string name="top_matches_priority_title">En iyi eşleşmeleri yönet</string>
+<string name="top_matches_title">En iyi eşleşmeler</string>
+<string name="top_matches_toggle_desc">Tüm türlerdeki en iyi eşleşen sonuçları en üstte göster.</string>
+<string name="top_result_indicator_toggle_desc">Klavye ile açılabilecek en üstteki sonucu vurgula.</string>
+<string name="top_result_indicator_toggle_title">En iyi sonuç göstergesi</string>
+<string name="web_search_suggestions_title">Web önerileri</string>
+
+<!-- ============================================================================
+     Apps
+     ============================================================================ -->
+<string name="app_menu_section_actions">İşlemler</string>
+<string name="app_menu_section_shortcuts">Kısayollar</string>
+<string name="apps_refreshed_successfully">Uygulamalar başarıyla yenilendi</string>
+<string name="error_loading_user_apps">Uygulamalarınız yüklenemedi. Birazdan tekrar deneyin.</string>
+<string name="error_uninstall_app">%1$s kaldırılamadı</string>
+<string name="error_uninstall_self">Quick Search uygulamasını buradan kaldıramazsın.</string>
+<string name="failed_to_refresh_apps">Uygulamalar yenilenemedi</string>
+<string name="settings_app_apk_size_format">APK boyutu: %1$.2f Mb</string>
+<string name="settings_app_columns_4">4</string>
+<string name="settings_app_columns_5">5</string>
+<string name="settings_app_columns_title">Satır başına uygulama</string>
+<string name="settings_app_icon_size_percent">%1$d%%</string>
+<string name="settings_app_icon_size_title">Uygulama simge boyutu</string>
+<string name="settings_app_info_install_date">Yükleme tarihi</string>
+<string name="settings_app_info_last_update">Son güncelleme</string>
+<string name="settings_app_info_minimum_sdk">Minimum SDK</string>
+<string name="settings_app_info_not_available">Kullanılamıyor</string>
+<string name="settings_app_info_package_name">Paket adı</string>
+<string name="settings_app_info_target_sdk">Hedef SDK</string>
+<string name="settings_app_info_version">Sürüm</string>
+<string name="settings_app_info_version_code">Sürüm kodu</string>
+<string name="settings_app_sort_api_level">API seviyesi</string>
+<string name="settings_app_sort_apk_size">APK boyutu</string>
+<string name="settings_app_sort_ascending">Artan düzende sırala</string>
+<string name="settings_app_sort_by_format">Sıralama ölçütü: %1$s</string>
+<string name="settings_app_sort_descending">Azalan düzende sırala</string>
+<string name="settings_app_sort_least_used">En az kullanılan</string>
+<string name="settings_app_sort_name">Ad</string>
+<string name="settings_app_uninstall_selected_format">Kaldır (%1$d)</string>
+<string name="settings_apps_empty">Uygulama bulunamadı.</string>
+<string name="settings_manage_apps_desc">Uygulamalarını yönet</string>
+<string name="settings_manage_apps_title">Uygulamaları yönet</string>
+<string name="settings_refresh_apps_disabled">Uygulama araması devre dışı, uygulama verileri yenilenemiyor</string>
+<string name="settings_refresh_apps_title">Uygulamaları yeniden yükle</string>
+<string name="usage_permission_subtitle">Son kullanılan uygulamalarını önerilerde görmek istiyorsan kullanım erişimi izni ver.</string>
+<string name="usage_permission_title">Kullanım erişimi izni ver</string>
+
+<!-- ============================================================================
+     App Shortcuts
+     ============================================================================ -->
+<string name="error_shortcut_activity_not_exported">Hedeflenen aktivite dışa aktarılmadı.</string>
+<string name="error_shortcut_creation_failed">Kısayol oluşturulamadı</string>
+<string name="error_shortcut_disabled">Kısayol devre dışı.</string>
+<string name="error_shortcut_launch_failed">Kısayol başlatılamadı: %1$s.</string>
+<string name="error_shortcut_no_activity_resolves">İstemi (intent) karşılayan hiçbir aktivite bulunamadı.</string>
+<string name="error_shortcut_requires_permission">Kısayol şu izni gerektiriyor: %1$s.</string>
+<string name="error_shortcuts_not_supported">Ana ekrana kısayol ekleme bu cihazda desteklenmiyor</string>
+<string name="settings_app_shortcuts_activity_dialog_title">Uygulama aktivitesi seç</string>
+<string name="settings_app_shortcuts_activity_empty">Kullanılabilir uygulama aktivitesi yok.</string>
+<string name="settings_app_shortcuts_activity_warning">Bazı aktiviteler beklendiği gibi çalışmayabilir</string>
+<string name="settings_app_shortcuts_add_button">Kısayol ekle</string>
+<string name="settings_app_shortcuts_add_deep_link">Uygulama derin bağlantısı</string>
+<string name="settings_app_shortcuts_add_deep_link_dialog_message">Uygulamada belirli bir screen\'i açan desteklenen bir URL veya intent bağlantısı ekle. Desteklenmeyen bağlantılar tarayıcında açılacaktır.</string>
+<string name="settings_app_shortcuts_add_deep_link_dialog_title">Uygulama derin bağlantısı ekle</string>
+<string name="settings_app_shortcuts_add_dialog_title">Kısayol kaynağını seç</string>
+<string name="settings_app_shortcuts_add_failed">Kısayol eklenemedi.</string>
+<string name="settings_app_shortcuts_add_query_dialog_title">%1$s için özel arama sorgusu kısayolu ekle</string>
+<string name="settings_app_shortcuts_add_query_shortcut">Özel arama sorgusu</string>
+<string name="settings_app_shortcuts_add_success">Kısayol eklendi.</string>
+<string name="settings_app_shortcuts_add_success_with_app_name">Yeni kısayol %1$s uygulamasına eklendi</string>
+<string name="settings_app_shortcuts_add_url_dialog_title">%1$s için URL kısayolu ekle</string>
+<string name="settings_app_shortcuts_add_url_shortcut">Özel URL</string>
+<plurals name="settings_app_shortcuts_card_count">
+    <item quantity="one">%d kısayol</item>
+    <item quantity="other">%d kısayol</item>
+</plurals>
+<string name="settings_app_shortcuts_collapse_all">Tümünü daralt</string>
+<string name="settings_app_shortcuts_create_not_supported">Bu cihazda kısayol oluşturmayı destekleyen uygulama yok.</string>
+<string name="settings_app_shortcuts_deep_link_label">URL veya Intent</string>
+<string name="settings_app_shortcuts_delete_action">Kısayolu sil</string>
+<string name="settings_app_shortcuts_delete_success">Kısayol silindi.</string>
+<string name="settings_app_shortcuts_description_with_count">Kısayollarını görmek için herhangi bir uygulamaya dokun. Özel kısayolları etkinleştir, devre dışı bırak veya ekle.\n\nMevcut Kısayollar: %1$s</string>
+<string name="settings_app_shortcuts_edit_dialog_title">Kısayolu düzenle</string>
+<string name="settings_app_shortcuts_empty">Uygulama kısayolu bulunamadı.</string>
+<string name="settings_app_shortcuts_expand_all">Tümünü genişlet</string>
+<string name="settings_app_shortcuts_filter_all_apps">Tüm uygulamalar</string>
+<string name="settings_app_shortcuts_filter_apps_with_shortcuts">Kısayolu olan uygulamalar</string>
+<string name="settings_app_shortcuts_filter_browsers">Tarayıcılar</string>
+<string name="settings_app_shortcuts_filter_search_engines">Arama motorları</string>
+<string name="settings_app_shortcuts_query_label">Sorgu</string>
+<string name="settings_app_shortcuts_shortcut_name_label">Kısayol adı</string>
+<string name="settings_app_shortcuts_update_failed">Kısayol güncellenemedi.</string>
+<string name="settings_app_shortcuts_update_success">Kısayol güncellendi.</string>
+<string name="settings_app_shortcuts_url_label">URL</string>
+<string name="shortcut_song_search_label">Şarkı arama</string>
+<string name="shortcut_watch_later_label">Daha sonra izle</string>
+
+<!-- ============================================================================
+     Contacts &amp; Calls
+     ============================================================================ -->
+<string name="contact_method_call_label">Ara</string>
+<string name="contact_method_email_label">E-posta gönder</string>
+<string name="contact_method_fallback_label">Diğer</string>
+<string name="contact_method_google_meet_label">Google Meet</string>
+<string name="contact_method_message_label">Mesaj gönder</string>
+<string name="contact_method_signal_message_label">Signal</string>
+<string name="contact_method_signal_video_call_label">Signal görüntülü arama</string>
+<string name="contact_method_signal_voice_call_label">Signal sesli arama</string>
+<string name="contact_method_telegram_message_label">Telegram</string>
+<string name="contact_method_telegram_video_call_label">Telegram görüntülü arama</string>
+<string name="contact_method_telegram_voice_call_label">Telegram sesli arama</string>
+<string name="contact_method_view_in_contacts_label">Kişiler uygulamasında görüntüle</string>
+<string name="contact_method_whatsapp_message_label">WhatsApp</string>
+<string name="contact_method_whatsapp_video_call_label">WhatsApp görüntülü arama</string>
+<string name="contact_method_whatsapp_voice_call_label">WhatsApp sesli arama</string>
+<string name="contacts_action_button_chat">Sohbet</string>
+<string name="contacts_action_button_contacts">Kişiler</string>
+<string name="contacts_action_button_meet">Meet</string>
+<string name="contacts_action_button_video_call">Görüntülü arama</string>
+<string name="contacts_action_button_voice_call">Sesli arama</string>
+<string name="contacts_action_call">Kişiyi ara</string>
+<string name="contacts_action_hint_message">İpucu: Buradaki herhangi bir işleme basılı tutarak kişiye özel hale getirebilirsin.</string>
+<string name="contacts_action_next_number">Sonraki telefon numarası</string>
+<string name="contacts_action_previous_number">Önceki telefon numarası</string>
+<string name="contacts_action_signal">Signal ile ulaş</string>
+<string name="contacts_action_sms">Mesaj gönder</string>
+<string name="contacts_action_telegram">Telegram ile ulaş</string>
+<string name="contacts_action_whatsapp">WhatsApp ile ulaş</string>
+<string name="contacts_no_methods_available">Kullanılabilir iletişim yöntemi yok</string>
+<string name="contacts_refreshed_successfully">Kişiler başarıyla yenilendi</string>
+<string name="contacts_section_permission_subtitle">Kişi araması yapabilmek için kişiler izni gereklidir</string>
+<string name="error_call_permission_required">Bu işlem için telefon izni gerekir</string>
+<string name="error_google_meet_call_failed">Google Meet araması başarısız oldu - uygulama bu yöntemi desteklemiyor olabilir</string>
+<string name="error_google_meet_no_phone">Google Meet araması yapılamıyor - telefon numarası bulunamadı</string>
+<string name="error_google_meet_not_installed">Google Meet yüklü değil</string>
+<string name="error_google_meet_video_call_failed">Google Meet görüntülü araması açılamadı</string>
+<string name="error_missing_phone_number">Telefon numarası bulunamadı</string>
+<string name="error_open_contact">Bu kişi açılamadı</string>
+<string name="error_signal_call_failed">Signal araması başarısız oldu. Lütfen Signal\'in yüklü olduğundan emin olun.</string>
+<string name="error_signal_chat_failed">Signal sohbeti açılamadı</string>
+<string name="error_signal_not_installed">Signal yüklü değil</string>
+<string name="error_signal_video_call_failed">Signal görüntülü araması açılamadı</string>
+<string name="error_telegram_call_failed">Telegram araması başarısız oldu. Lütfen Telegram\'ın yüklü olduğundan emin olun.</string>
+<string name="error_telegram_chat_failed">Telegram sohbeti açılamadı</string>
+<string name="error_telegram_not_installed">Telegram yüklü değil</string>
+<string name="error_whatsapp_call_failed">WhatsApp araması başarısız oldu. Lütfen WhatsApp\'ın yüklü olduğundan emin olun.</string>
+<string name="error_whatsapp_chat_failed">WhatsApp sohbeti açılamadı</string>
+<string name="error_whatsapp_not_installed">WhatsApp yüklü değil</string>
+<string name="error_whatsapp_video_call_failed">WhatsApp görüntülü araması açılamadı</string>
+<string name="error_whatsapp_video_call_missing_data">WhatsApp görüntülü araması yapılamıyor - kişi verisi eksik</string>
+<string name="error_whatsapp_video_call_unavailable">WhatsApp görüntülü aramalar için kullanılamıyor</string>
+<string name="settings_call_permission_title">Telefon</string>
+<string name="settings_calling_card_title">Varsayılan arama uygulaması</string>
+<string name="settings_calls_texts_title">Aramalar &amp; Mesajlar</string>
+<string name="settings_direct_dial_desc">Arama ekranını açmadan doğrudan arama yap.</string>
+<string name="settings_direct_dial_title">Doğrudan arama</string>
+<string name="settings_messaging_app_not_installed">%s cihazında yüklü değil</string>
+<string name="settings_messaging_card_title">Varsayılan mesajlaşma uygulaması</string>
+<string name="settings_messaging_option_messages">Mesajlar</string>
+
+<!-- ============================================================================
+     Files &amp; Folders
+     ============================================================================ -->
+<string name="excluded_item_type_file">Dosya</string>
+<string name="excluded_item_type_file_extension">Dosya uzantısı</string>
+<string name="excluded_item_type_folder">Klasör</string>
+<string name="file_extension_label">.%s dosyaları</string>
+<string name="file_info_file_type">Dosya türü</string>
+<string name="file_info_modified">Değiştirilme tarihi</string>
+<string name="file_info_path">Yol</string>
+<string name="file_info_size">Boyut</string>
+<string name="file_info_type">Tür</string>
+<string name="file_type_apks">APK\'lar</string>
+<string name="file_type_audio">Ses</string>
+<string name="file_type_documents">Belgeler</string>
+<string name="file_type_pictures">Görseller</string>
+<string name="file_type_videos">Videolar</string>
+<string name="files_refreshed_successfully">Dosyalar başarıyla yenilendi</string>
+<string name="files_section_permission_subtitle">Dosya araması yapabilmek için dosya izni gereklidir</string>
+<string name="settings_excluded_extensions_title">Hariç tutulan dosya uzantıları</string>
+<string name="settings_file_types_title">Dosyalar &amp; Klasörler</string>
+<string name="settings_folder_blacklist_add">Engellenen klasör ekle</string>
+<string name="settings_folder_blacklist_helper">Bu klasörler arama yapılırken göz ardı edilir.</string>
+<string name="settings_folder_blacklist_title">Kara liste</string>
+<string name="settings_folder_filter_helper">Klasörleri arayıp ekleyerek dosya ve klasör sonuçlarının nerede görüneceğini kontrol et.</string>
+<string name="settings_folder_filters_title">Klasör yolu filtreleri</string>
+<string name="settings_folder_search_hint">Eklemek için bir klasör ara</string>
+<string name="settings_folder_search_no_results">Klasör bulunamadı</string>
+<string name="settings_folder_whitelist_add">İzin verilen klasör ekle</string>
+<string name="settings_folder_whitelist_helper">Dosya ve klasör aramalarında yalnızca bu klasörler taranacaktır</string>
+<string name="settings_folder_whitelist_title">Beyaz liste</string>
+<string name="settings_folders_toggle">Klasörler</string>
+<string name="settings_refresh_files_disabled">Dosya araması devre dışı, dosya verileri yenilenemiyor</string>
+<string name="settings_refresh_files_title">Dosyaları yeniden yükle</string>
+<string name="settings_system_files_toggle">Sistem dosyaları</string>
+
+<!-- ============================================================================
+     Calendar
+     ============================================================================ -->
+<string name="app_settings_create_calendar_event_desc">Yeni bir etkinlik oluştur ve ekle</string>
+<string name="app_settings_create_calendar_event_title">Yeni takvim etkinliği</string>
+<string name="calendar_create_event_name_hint">Etkinlik adı</string>
+<string name="calendar_create_event_select_date">Tarih seç</string>
+<string name="calendar_create_event_sync_notice">Bu etkinlik cihaz takviminle senkronize edilmez</string>
+<string name="calendar_create_event_title">Yeni etkinlik</string>
+<string name="calendar_edit_event_title">Etkinliği düzenle</string>
+<string name="calendar_relative_ago_format">%1$s önce</string>
+<plurals name="calendar_relative_days">
+    <item quantity="one">%d gün</item>
+    <item quantity="other">%d gün</item>
+</plurals>
+<string name="calendar_relative_in_format">%1$s içinde</string>
+<plurals name="calendar_relative_months">
+    <item quantity="one">%d ay</item>
+    <item quantity="other">%d ay</item>
+</plurals>
+<string name="calendar_relative_today">Bugün</string>
+<string name="calendar_relative_tomorrow">Yarın</string>
+<plurals name="calendar_relative_years">
+    <item quantity="one">%d yıl</item>
+    <item quantity="other">%d yıl</item>
+</plurals>
+<string name="calendar_relative_yesterday">Dün</string>
+<string name="calendar_repeats_daily">Her gün</string>
+<plurals name="calendar_repeats_every_days">
+    <item quantity="one">Her %d günde bir</item>
+    <item quantity="other">Her %d günde bir</item>
+</plurals>
+<plurals name="calendar_repeats_every_months">
+    <item quantity="one">Her %d ayda bir</item>
+    <item quantity="other">Her %d ayda bir</item>
+</plurals>
+<plurals name="calendar_repeats_every_weeks">
+    <item quantity="one">Her %d haftada bir</item>
+    <item quantity="other">Her %d haftada bir</item>
+</plurals>
+<plurals name="calendar_repeats_every_years">
+    <item quantity="one">Her %d yılda bir</item>
+    <item quantity="other">Her %d yılda bir</item>
+</plurals>
+<string name="calendar_repeats_generic">Tekrarlayan</string>
+<string name="calendar_repeats_monthly">Her ay</string>
+<string name="calendar_repeats_weekly">Her hafta</string>
+<string name="calendar_repeats_yearly">Her yıl</string>
+<string name="calendar_section_permission_subtitle">Takvim araması yapabilmek için takvim izni gereklidir</string>
+<string name="error_open_calendar_event">Takvim etkinliği açılamadı</string>
+<string name="settings_calendar_events_empty">Takvim etkinliği bulunmuyor.</string>
+<string name="settings_calendar_include_past_events_desc">Geçmiş etkinlikleri arama sonuçlarına dahil et.</string>
+<string name="settings_calendar_include_past_events_title">Geçmiş etkinlikler</string>
+<string name="settings_calendar_permission_title">Takvim</string>
+<string name="settings_calendar_show_today_events_desc">Bugünün etkinliklerini ana ekranda göster.</string>
+<string name="settings_calendar_show_today_events_title">Bugünün etkinliklerini göster</string>
+<string name="settings_calendar_view_all_events_desc">Tüm etkinlikleri görüntüle</string>
+
+<!-- ============================================================================
+     Notes
+     ============================================================================ -->
+<string name="app_settings_search_create_note_desc">Düzenleyicide yeni bir not başlat</string>
+<string name="app_settings_search_create_note_title">Not oluştur</string>
+<string name="notes_body_hint">Notunu buraya yazın</string>
+<string name="notes_create_note_cta">Yeni not</string>
+<string name="notes_delete_confirm_message">Bu not kalıcı olarak silinecek.</string>
+<string name="notes_delete_confirm_title">Bu not silinsin mi?</string>
+<string name="notes_delete_note_desc">Notu sil</string>
+<string name="notes_delete_selected_confirm_message">Bu notlar kalıcı olarak silinecek.</string>
+<string name="notes_delete_selected_confirm_title">Seçilen notlar silinsin mi?</string>
+<string name="notes_editor_action_open_link">Bağlantıyı aç</string>
+<string name="notes_editor_action_send_email">E-posta gönder</string>
+<string name="notes_editor_title">Not düzenleyici</string>
+<string name="notes_empty_note_subtext">Boş not</string>
+<string name="notes_quick_note_title">Hızlı not</string>
+<string name="notes_quick_note_toggle_desc">Kaydırma navigasyonundan Hızlı Not\'u aç</string>
+<string name="notes_title_hint">Başlık</string>
+<string name="notes_untitled">Başlıksız</string>
+<string name="settings_notes_view_all_desc">Tüm notları görüntüle</string>
+
+<!-- ============================================================================
+     Device Settings Shortcuts
+     ============================================================================ -->
+<string name="device_settings_category_apps_permissions">Uygulamalar &amp; İzinler</string>
+<string name="device_settings_category_battery_performance">Pil &amp; Performans</string>
+<string name="device_settings_category_developer_advanced">Geliştirici &amp; Gelişmiş</string>
+<string name="device_settings_category_language_input">Dil &amp; Giriş</string>
+<string name="device_settings_category_network_connectivity">Ağ &amp; Bağlantı</string>
+<string name="device_settings_category_notifications_accessibility">Bildirimler &amp; Erişilebilirlik</string>
+<string name="device_settings_category_security_privacy">Güvenlik &amp; Gizlilik</string>
+<string name="device_settings_category_system_device">Sistem &amp; Cihaz</string>
+<string name="settings_device_settings_empty">Cihaz ayarı bulunamadı.</string>
+<string name="settings_shortcut_about_phone">Telefon hakkında</string>
+<string name="settings_shortcut_accessibility">Erişilebilirlik</string>
+<string name="settings_shortcut_airplane">Uçak modu</string>
+<string name="settings_shortcut_all_files">Tüm dosyalara erişim</string>
+<string name="settings_shortcut_battery_optimization">Pil optimizasyonu</string>
+<string name="settings_shortcut_battery_saver">Pil tasarrufu</string>
+<string name="settings_shortcut_battery_usage">Pil kullanımı</string>
+<string name="settings_shortcut_bluetooth">Bluetooth</string>
+<string name="settings_shortcut_cast">Yansıt</string>
+<string name="settings_shortcut_data_usage">Veri kullanımı</string>
+<string name="settings_shortcut_date_time">Tarih &amp; Saat</string>
+<string name="settings_shortcut_default_apps">Varsayılan uygulamalar</string>
+<string name="settings_shortcut_developer_options">Geliştirici seçenekleri</string>
+<string name="settings_shortcut_display">Ekran</string>
+<string name="settings_shortcut_do_not_disturb">Rahatsız etmeyin</string>
+<string name="settings_shortcut_hotspot">Hotspot &amp; İnternet paylaşımı</string>
+<string name="settings_shortcut_locale">Dil</string>
+<string name="settings_shortcut_location">Konum</string>
+<string name="settings_shortcut_mobile_data">Mobil veri</string>
+<string name="settings_shortcut_network">Ağ &amp; İnternet</string>
+<string name="settings_shortcut_nfc">NFC</string>
+<string name="settings_shortcut_notification_listener">Bildirim erişimi</string>
+<string name="settings_shortcut_notifications">Bildirimler</string>
+<string name="settings_shortcut_overlay_permission">Diğer uygulamaların üzerinde göster</string>
+<string name="settings_shortcut_privacy">Gizlilik</string>
+<string name="settings_shortcut_security">Güvenlik</string>
+<string name="settings_shortcut_sound">Ses &amp; Titreşim</string>
+<string name="settings_shortcut_storage">Depolama</string>
+<string name="settings_shortcut_usage_access">Kullanım erişimi</string>
+<string name="settings_shortcut_voice_input">Dijital asistan</string>
+<string name="settings_shortcut_vpn">VPN</string>
+<string name="settings_shortcut_wifi">Wi\u2011Fi</string>
+<string name="settings_unable_to_open_settings">Ayarlar açılamadı</string>
+
+<!-- ============================================================================
+     App Settings Search
+     ============================================================================ -->
+<string name="settings_all_quick_search_features">Özellik listesi</string>
+<string name="settings_all_quick_search_features_desc">Tüm özelliklerin ve yeteneklerin tam listesini görüntüle</string>
+<string name="settings_app_settings_desc">Quick Search ayarlarında ara</string>
+<string name="settings_features_load_failed">Özellik dokümantasyonu yüklenemedi.</string>
+<string name="settings_features_sections_title">İçindekiler</string>
+<string name="settings_search_description_change_app_theme">Uygulama temasını değiştir</string>
+<string name="settings_search_description_change_font_size">Uygulama yazı tipi boyutunu değiştir</string>
+<string name="settings_search_description_change_icon_pack">Simge paketini değiştir</string>
+<string name="settings_search_description_change_layout">Uygulama düzeni seçeneklerini değiştir</string>
+<string name="settings_search_description_change_wallpaper">Duvar kağıdı görünümünü değiştir</string>
+<string name="settings_search_dynamic_description_template">%1$s ayarlarını yönet</string>
+<string name="settings_view_all_desc">Tüm ayarları görüntüle</string>
+
+<!-- ============================================================================
+     Settings - Main Navigation &amp; Appearance
+     ============================================================================ -->
+<string name="customize_search_engines">Arama motorlarını özelleştir</string>
+<string name="settings_app_theme_aurora">Aurora</string>
+<string name="settings_app_theme_forest">Orman</string>
+<string name="settings_app_theme_monochrome">Mono</string>
+<string name="settings_app_theme_sunset">Gün batımı</string>
+<string name="settings_app_theme_title">Tema</string>
+<string name="settings_appearance_desc">Duvar kağıdı, arama motoru stilleri, tek el modu vb.</string>
+<string name="settings_appearance_title">Görünüm</string>
+<string name="settings_assistant_voice_mode_desc">Dijital asistan olarak başlatıldığında sesli yazmayı aç</string>
+<string name="settings_assistant_voice_mode_title">Asistan ses modu</string>
+<string name="settings_beta_features_disabled">Beta özellikleri devre dışı</string>
+<string name="settings_beta_features_enabled">Yeni beta özellikleri etkin</string>
+<string name="settings_beta_features_unavailable">Yeni özellik bulunmuyor</string>
+<string name="settings_beta_tag">Beta</string>
+<string name="settings_bottom_searchbar_desc">Arama çubuğunu ekranın altına yerleştir</string>
+<string name="settings_bottom_searchbar_title">Alt arama çubuğu</string>
+<string name="settings_cache_cleared_toast">Önbellek temizlendi. Uygulama dizini yeniden oluşturuluyor\u2026</string>
+<string name="settings_circular_app_icons_desc">Uygulama simgelerini yuvarlak olmaya zorla</string>
+<string name="settings_circular_app_icons_title">Yuvarlak uygulama simgeleri</string>
+<string name="settings_compact_rows_one_row">Tek satır</string>
+<string name="settings_compact_rows_two_rows">İki satır</string>
+<string name="settings_default_assistant_desc">Bu uygulamayı varsayılan dijital asistan uygulaman olarak ayarla.</string>
+<string name="settings_default_assistant_desc_change">Varsayılan dijital asistan uygulamanı değiştir.</string>
+<string name="settings_default_assistant_title">Varsayılan asistan</string>
+<string name="settings_default_launcher_desc">Bu uygulamayı varsayılan ana ekran uygulaman olarak ayarla.</string>
+<string name="settings_default_launcher_title">Varsayılan başlatıcı</string>
+<string name="settings_device_theme_blocked_toast">Material You teması etkinken devre dışı</string>
+<string name="settings_device_theme_desc">Cihazının dinamik renk paletini uygulama teması olarak kullan</string>
+<string name="settings_device_theme_title">Material You</string>
+<string name="settings_edit_label">Düzenle</string>
+<string name="settings_font_size_big">Büyük</string>
+<string name="settings_font_size_medium">Orta</string>
+<string name="settings_font_size_small">Küçük</string>
+<string name="settings_font_size_title">Yazı tipi boyutu</string>
+<string name="settings_home_screen_widget_confirm_message">Ana ekranına Quick Search widget\'ı eklemek üzeresin. Birçok özelleştirme seçeneği sunan widget ayarları sayfasına erişmek için widget\'a basılı tut.</string>
+<string name="settings_home_screen_widget_desc">Ana ekranına Quick Search widget\'ı ekle.</string>
+<string name="settings_home_screen_widget_title">Ana ekran widget\'ı</string>
+<string name="settings_icon_desc">Arama çubuğundaki ayarlar (dişli) simgesini göster/gizle. Sola kaydırarak veya arama yaparak ayarlara istediğin zaman erişebilirsin.</string>
+<string name="settings_icon_pack_empty">Simge paketi bulunamadı.</string>
+<string name="settings_icon_pack_mask_unsupported_icons">Desteklenmeyen simgeleri maskele</string>
+<string name="settings_icon_pack_option_system">Sistem simgeleri</string>
+<string name="settings_icon_pack_picker_title">Simge paketi seç</string>
+<string name="settings_icon_pack_search_query">Ücretsiz simge paketleri</string>
+<string name="settings_icon_pack_selected_label">Mevcut: %1$s</string>
+<string name="settings_icon_pack_title">Simge paketi</string>
+<string name="settings_icon_title">Ayarlar simgesi</string>
+<string name="settings_launch_options_desc">Bu uygulamayı başlatmanın farklı yolları</string>
+<string name="settings_launch_options_title">Başlatma seçenekleri</string>
+<string name="settings_launcher_icon_reset_default">Varsayılana sıfırla</string>
+<string name="settings_launcher_icon_title">Başlatıcı uygulama simgesi</string>
+<string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>
+<string name="settings_layout_option_bottom_title">Tek el modu</string>
+<string name="settings_more_options_desc">Çeşitli özelleştirme seçenekleri</string>
+<string name="settings_more_options_title">Daha fazla seçenek</string>
+<string name="settings_overlay_assistant_setup_now">Şimdi kur</string>
+<string name="settings_overlay_assistant_tip">İpucu: Katmanı her yerden açabilmek için bu uygulamayı dijital asistanın olarak ayarla.</string>
+<string name="settings_overlay_mode_desc">Arama çubuğu diğer uygulamaların üzerinde bir katman olarak açılır</string>
+<string name="settings_overlay_mode_desc_launcher_blocked">Quick Search varsayılan başlatıcınken kullanılamaz</string>
+<string name="settings_overlay_mode_title">Katman modu (Overlay)</string>
+<string name="settings_overlay_source_add_custom">Özel görsel ekle</string>
+<string name="settings_overlay_source_custom_save_failed">Bu görsel kullanılamadı.</string>
+<string name="settings_overlay_source_edit_custom">Özel görseli düzenle</string>
+<string name="settings_overlay_source_needs_permission">İzin gerekli</string>
+<string name="settings_overlay_source_wallpaper">Duvar kağıdı</string>
+<string name="settings_overlay_theme_tone_darker">Daha koyu</string>
+<string name="settings_overlay_theme_tone_lighter">Daha açık</string>
+<string name="settings_permissions_desc">Özellikleri etkinleştirmek için bu uygulamanın ihtiyaç duyduğu izinler</string>
+<string name="settings_permissions_title">İzinler</string>
+<string name="settings_quick_settings_tile_desc">Hızlı Ayarlar paneline Quick Search ekle.</string>
+<string name="settings_quick_settings_tile_title">Hızlı ayarlar kutucuğu</string>
+<string name="settings_refresh_contacts_disabled">Kişi araması devre dışı, kişi verileri yenilenemiyor</string>
+<string name="settings_refresh_contacts_title">Kişileri yeniden yükle</string>
+<string name="settings_refresh_data_note">Veriler otomatik olarak yenilenir. Manuel olarak yenilemeye zorlamak için bu butonları kullan.</string>
+<string name="settings_refresh_data_title">Verileri yenile</string>
+<string name="settings_refresh_icon_packs">Simge paketlerini yenile</string>
+<string name="settings_refreshing_icon_packs">Simge paketleri listesi yenileniyor</string>
+<string name="settings_scroll_to_top">En üste kaydır</string>
+<string name="settings_search_hints_desc">Dönüşümlü arama ipuçlarını etkinleştir/devre dışı bırak</string>
+<string name="settings_search_hints_title">Arama ipuçları</string>
+<string name="settings_search_results_desc">Sonuç türlerini, web önerilerini ve arama geçmişini yönet</string>
+<string name="settings_search_results_title">Arama sonuçları</string>
+<string name="settings_sections_at_least_one_required">En az bir öğe etkinleştirilmeli</string>
+<string name="settings_show_app_labels_desc">Öneri ve sonuçlarda uygulama adlarını göster</string>
+<string name="settings_show_app_labels_title">Uygulama etiketleri</string>
+<string name="settings_themed_icons_desc">Uygulama simgelerini temana uyacak şekilde renklendir ve uyarla</string>
+<string name="settings_themed_icons_title">Temalı uygulama simgeleri</string>
+<string name="settings_tools_desc">Hesap makinesi, birim dönüştürücü, sözlük ve daha fazlası</string>
+<string name="settings_tools_gemini_api_desc">Bir API anahtarı eklemek daha fazla aracı etkinleştirir.</string>
+<string name="settings_tools_gemini_api_title">AI sağlayıcısını yapılandır</string>
+<string name="settings_tools_info_examples_header">Arama çubuğunda sorabileceğin şeylere dair some örnekler</string>
+<string name="settings_tools_title">Araçlar</string>
+<string name="settings_use_system_font_desc">Cihazının yazı tipi stilini takip et</string>
+<string name="settings_use_system_font_title">Sistem yazı tipini kullan</string>
+<string name="settings_wallpaper_accent_desc">Vurgu renklerini arka plan görselinden türet</string>
+<string name="settings_wallpaper_accent_title">Vurgu renkleri</string>
+<string name="settings_wallpaper_blur_label">Bulanıklık</string>
+<string name="settings_wallpaper_card_title">Duvar kağıdı arka planı</string>
+<string name="settings_wallpaper_transparency_label">Şeffaflık</string>
+
+<!-- ============================================================================
+     Settings - Search Engines &amp; AI Provider
+     ============================================================================ -->
+<string name="error_open_email">Posta göndermek için bir e-posta uygulaması bulunamadı.</string>
+<string name="settings_add_alias">Kısaltma kurulumu</string>
+<string name="settings_add_custom_provider_desc">OpenAI uyumlu bir sağlayıcı ekle.</string>
+<string name="settings_add_custom_provider_title">Özel sağlayıcı ekle</string>
+<string name="settings_add_search_engine_button">Arama motoru ekle</string>
+<string name="settings_add_search_engine_dialog_message">Sorgu yer tutucusu içeren bir URL veya Android intent şablonu girin.\n\nÖrnek:\nwww.google.com/search?q={{query}}</string>
+<string name="settings_add_search_engine_error_multiple_placeholders">{{query}} ifadesini yalnızca bir kez kullan.</string>
+<string name="settings_add_search_engine_error_placeholder">URL {{query}} içermelidir</string>
+<string name="settings_add_search_engine_error_required">Lütfen bir URL şablonu gir.</string>
+<string name="settings_ai_provider_groq">Groq</string>
+<string name="settings_ai_provider_openai">OpenAI</string>
+<string name="settings_alias_label">Kısaltma:</string>
+<string name="settings_amazon_domain_default">amazon.com</string>
+<string name="settings_amazon_domain_label">Alan adı:</string>
+<string name="settings_api_key_saved_last4">Kaydedilen anahtar sonu: ****%1$s</string>
+<string name="settings_api_key_setup_desc">İlgili AI sağlayıcısındaki modellere erişmek için API anahtarlarını yapılandır.</string>
+<string name="settings_api_key_setup_nav_desc">Sağlayıcı API anahtarlarını ekle veya kaldır</string>
+<string name="settings_configure_api_key_title">API anahtarını yapılandır</string>
+<string name="settings_custom_provider_base_url_hint">Örnek: https://openrouter.ai/api/v1</string>
+<string name="settings_custom_provider_base_url_input_label">Temel URL</string>
+<string name="settings_direct_search_desc">Gemini, OpenAI, Claude ve Groq API anahtarları desteklenir</string>
+<string name="settings_direct_search_desc_intro">AI destekli aramayı ve araçları etkinleştirmek için bir API anahtarı ek.</string>
+<string name="settings_direct_search_grounding_label">Web araması</string>
+<string name="settings_direct_search_how_to">Ücretsiz API anahtarı al</string>
+<string name="settings_direct_search_model_label">Model</string>
+<string name="settings_direct_search_personal_context">Kişisel bağlam</string>
+<string name="settings_direct_search_personal_context_hint">Cevaplar oluşturulurken AI\'ın kullanmasını istediğin bilgileri ek.</string>
+<string name="settings_direct_search_personal_context_unsupported">Kişisel bağlam bu model için desteklenmiyor.</string>
+<string name="settings_direct_search_setup_nav_desc">AI destekli aramayı etkinleştirmek için bir API anahtarı ek</string>
+<string name="settings_direct_search_setup_nav_title">AI arama</string>
+<string name="settings_direct_search_thinking_label">Düşünme</string>
+<string name="settings_edit_search_engine_dialog_title">Arama motorunu düzenle</string>
+<string name="settings_gemini_api_config_desc">AI destekli arama ve araçlar için AI sağlayıcını yapılandır</string>
+<string name="settings_gemini_api_desc">AI sağlayıcısını yapılandır</string>
+<string name="settings_gemini_api_key_paste_hint">Yapıştırmak için dokun</string>
+<string name="settings_gemini_api_key_reset">Anahtarı sıfırla</string>
+<string name="settings_gemini_api_key_saving">Kaydediliyor...</string>
+<string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
+<string name="settings_model_picker_search_hint">Modelleri ara</string>
+<string name="settings_search_engine_alias_suffix_desc">Sorgunun sonuna bir kısaltma eklediğinde arama motorunu tetikler. Kısaltmalar sorgunun başında da her zaman çalışır.</string>
+<string name="settings_search_engine_alias_suffix_title">Sorgudan sonra kısaltma</string>
+<string name="settings_search_engine_browser_default">Varsayılan tarayıcı</string>
+<string name="settings_search_engine_browser_label">Şurada aç:</string>
+<string name="settings_search_engine_display_compact_desc">Klavyenin üzerinde yatay bir liste olarak her zaman görünür</string>
+<string name="settings_search_engine_display_compact_title">Kompakt</string>
+<string name="settings_search_engine_display_inline_desc">Arama yaparken sonuçlar alanında kartlar olarak gösterilir</string>
+<string name="settings_search_engine_display_inline_title">Satır içi</string>
+<string name="settings_search_engine_display_title">Arama motoru stili</string>
+<string name="settings_search_engines_desc">Arama motorlarını yönet ve yeniden sırala</string>
+<string name="settings_search_engines_more_search_engines">Daha fazla arama motoru</string>
+
+<!-- ============================================================================
+     Settings - Backup, Feedback &amp; About
+     ============================================================================ -->
+<string name="release_notes_action_all_features">Tüm özellikler</string>
+<string name="release_notes_action_got_it">Anladım</string>
+<string name="release_notes_title">Quick Search v%1$s sürüm notları</string>
+<string name="release_notes_title_no_version">Quick Search sürüm notları</string>
+<string name="settings_backup_export_api_key_warning_message">Sorumluluk sana aittir. Dışa aktarılan API anahtarı şifrelenmez ve yedek dosyana erişimi olan herkes tarafından görüntülenebilir.</string>
+<string name="settings_backup_export_button">Dışa aktar</string>
+<string name="settings_backup_export_failed">Ayarlar dışa aktarılamadı.</string>
+<string name="settings_backup_export_option_pinned_items_title">Sabitlenen öğeler</string>
+<string name="settings_backup_export_option_settings_title">Ayarlar</string>
+<string name="settings_backup_export_selection_title">Verileri dışa aktar</string>
+<string name="settings_backup_export_success">Ayarlar başarıyla dışa aktarıldı.</string>
+<string name="settings_backup_import_button">İçe aktar</string>
+<string name="settings_backup_import_failed">Ayarlar içe aktarılamadı.</string>
+<string name="settings_backup_import_success">Ayarlar başarıyla içe aktarıldı.</string>
+<string name="settings_backup_import_warning_message">Bu işlem mevcut ayarlarının üzerine yazacaktır.</string>
+<string name="settings_backup_import_warning_title">Ayarlar içe aktarılsın mı?</string>
+<string name="settings_backup_restore_desc">Uygulama ayarlarını dışa aktar veya içe aktar</string>
+<string name="settings_backup_restore_title">Yedekle &amp; Geri yükle</string>
+<string name="settings_feedback_developer_desc">%1$s tarafından geliştirildi</string>
+<string name="settings_feedback_developer_name">Teja Karlapudi</string>
+<string name="settings_feedback_developer_title">%1$s v%2$s</string>
+<string name="settings_feedback_github_desc">Bu projenin kaynak kodunu GitHub\'da görüntüle</string>
+<string name="settings_feedback_github_title">Geliştirme</string>
+<string name="settings_feedback_rate_desc">Uygulamayı faydalı buluyorsan 5 yıldız ver</string>
+<string name="settings_feedback_rate_title">Quick Search\'ü değerlendir</string>
+<string name="settings_feedback_send_desc">Hataları bildir veya özellik iste</string>
+<string name="settings_feedback_send_title">Geri bildirim gönder</string>
+<string name="settings_open_source_licenses_load_failed">Lisanslar yüklenemedi.</string>
+<string name="settings_open_source_licenses_loading">Lisanslar yükleniyor…</string>
+<string name="settings_open_source_licenses_tap_to_view">Lisans metnini görüntülemek için dokun</string>
+<string name="settings_open_source_licenses_title">Açık kaynak lisansları</string>
+
+<!-- ============================================================================
+     Tools - Calculator, Converter, Time &amp; Dictionary
+     ============================================================================ -->
+<string name="calculator_enter_math_expression_hint">Matematiksel bir ifade gir</string>
+<string name="calculator_invalid_or_unsupported_expression">Geçersiz veya desteklenmeyen ifade</string>
+<string name="calculator_toggle_desc">Temel matematiksel ifadelerin sonuçları</string>
+<string name="calculator_toggle_title">Hesap makinesi</string>
+<string name="currency_converter_invalid_input">Geçersiz döviz çevirme girdisi</string>
+<string name="currency_converter_requires_gemini_key">Bir AI sağlayıcı API anahtarı gerektirir</string>
+<string name="currency_converter_toggle_desc">Örnek: 100 USD to INR</string>
+<string name="currency_converter_toggle_title">Döviz dönüştürücü</string>
+<string name="date_calculator_category_absolute_time">Mutlak zaman</string>
+<string name="date_calculator_category_date_differences">Tarih farkları</string>
+<string name="date_calculator_category_named_dates">Adlandırılmış tarihler</string>
+<string name="date_calculator_category_offset_from_date">Bir tarihten itibaren sapma</string>
+<string name="date_calculator_category_relative_dates">Göreceli tarihler</string>
+<string name="date_calculator_category_time_arithmetic">Zaman aritmetiği</string>
+<string name="date_calculator_category_time_offset">Zaman sapması</string>
+<string name="date_calculator_category_time_ranges">Zaman aralıkları</string>
+<string name="date_calculator_info_title">Tarih &amp; Saat hesaplayıcı</string>
+<string name="date_calculator_invalid_date">Geçersiz veya tanınmayan tarih ya da saat</string>
+<string name="date_calculator_toggle_action_desc">Tarih &amp; saat hesaplayıcıyı aç veya kapat</string>
+<string name="date_calculator_toggle_desc">Kullanım örnekleri</string>
+<string name="dictionary_example_label">Örnek: %1$s</string>
+<string name="dictionary_synonyms_label">Eş anlamlılar: %1$s</string>
+<string name="dictionary_toggle_desc">Örnek: define serendipity</string>
+<string name="dictionary_toggle_title">Sözlük</string>
+<string name="get_currency_value">Döviz değerini al</string>
+<string name="get_time">Saati al</string>
+<string name="search_in_dictionary">Sözlükte ara</string>
+<string name="unit_converter_category_angle">Açı</string>
+<string name="unit_converter_category_area">Alan</string>
+<string name="unit_converter_category_data">Veri</string>
+<string name="unit_converter_category_energy">Enerji</string>
+<string name="unit_converter_category_frequency">Frekans</string>
+<string name="unit_converter_category_length">Uzunluk</string>
+<string name="unit_converter_category_power">Güç</string>
+<string name="unit_converter_category_pressure">Basınç</string>
+<string name="unit_converter_category_speed">Hız</string>
+<string name="unit_converter_category_temperature">Sıcaklık</string>
+<string name="unit_converter_category_volume">Hacim</string>
+<string name="unit_converter_category_weight_mass">Ağırlık / Kütle</string>
+<string name="unit_converter_enter_conversion_hint">Bir dönüşüm gir (örn. 5lbs in kgs)</string>
+<string name="unit_converter_info_title">Birim dönüştürücü</string>
+<string name="unit_converter_invalid_or_unsupported_query">Geçersiz veya desteklenmeyen dönüşüm</string>
+<string name="unit_converter_toggle_action_desc">Birim dönüştürücüyü aç veya kapat</string>
+<string name="word_clock_error_not_recognized">Bu saat isteği çözümlenemedi. Bir şehir, ülke, saat dilimi veya net bir saat girmeyi dene.</string>
+<string name="word_clock_toggle_desc">Örnek: Time in Tokyo</string>
+<string name="word_clock_toggle_title">Dünya saati</string>
+
+<!-- ============================================================================
+     Widgets &amp; Shortcuts
+     ============================================================================ -->
+<string name="home_screen_widget_error">Widget talep edilemedi. Tekrar dene.</string>
+<string name="home_screen_widget_not_supported">Doğrudan widget sabitleme bu Android sürümünde desteklenmiyor. Lütfen ana ekranının widget listesinden ekle.</string>
+<string name="quick_settings_tile_added">Quick Search kutucuğu eklendi</string>
+<string name="quick_settings_tile_already_added">Quick Search kutucuğu zaten ekli</string>
+<string name="quick_settings_tile_error">Hızlı Ayarlar kutucuğu talep edilemedi. Tekrar dene.</string>
+<string name="quick_settings_tile_not_added">Kutucuk eklenmedi</string>
+<string name="quick_settings_tile_not_supported">Doğrudan kutucuk talepleri bu Android sürümünde desteklenmiyor. Eklemek için Hızlı Ayarlar düzenleme modunu kullan.</string>
+<string name="shortcut_voice_search_disabled_message">Sesli arama kısayolu kullanılamıyor.</string>
+<string name="shortcut_voice_search_long_label">Sesli aramayı aç</string>
+<string name="shortcut_voice_search_short_label">Sesli arama</string>
+<string name="voice_input_not_available">Sesli yazma şu anda kullanılamıyor.</string>
+<string name="widget_background_color_custom_dialog_hint">Hex rengi (RRGGBB)</string>
+<string name="widget_background_color_custom_dialog_title">Özel renk</string>
+<string name="widget_background_color_custom_invalid">Geçersiz, 6 haneli bir hex rengi gir.</string>
+<string name="widget_border_color">Kenarlık rengi</string>
+<string name="widget_custom_button_add_desc">Özel buton ekle</string>
+<string name="widget_custom_buttons_dialog_hint">Uygulamalar, Uygulama Kısayolları, Kişiler, Dosyalar, Klasörler, Notlar &amp; Cihaz ayarları için arama yapabilirsin.</string>
+<string name="widget_custom_buttons_dialog_title">İşlem seç</string>
+<string name="widget_custom_buttons_no_results">Sonuç bulunamadı.</string>
+<string name="widget_custom_buttons_restriction">Özel butonlar aktifken kullanılamaz.</string>
+<string name="widget_custom_buttons_title">Özel butonlar</string>
+<string name="widget_custom_buttons_widget_title">Özel butonlar widget\'ı</string>
+<string name="widget_icon_center">Ortala</string>
+<string name="widget_icon_left">Sola hizala</string>
+<string name="widget_icon_off">Kapalı</string>
+<string name="widget_loading_state">Widget ayarları yükleniyor…</string>
+<string name="widget_mic_action_default">Varsayılan</string>
+<string name="widget_mic_action_digital_assistant">Asistan</string>
+<string name="widget_mic_action_digital_assistant_limitation">Android kısıtlamaları nedeniyle, Google varsayılan dijital asistan uygulaması olarak ayarlanmadığı sürece asistanı tetikleyemezsin.</string>
+<string name="widget_mic_action_digital_assistant_link_phrase">dijital asistan uygulaması</string>
+<string name="widget_mic_icon">Mikrofon simgesi</string>
+<string name="widget_search_icon">Arama simgesi</string>
+<string name="widget_settings_title">Arama widget\'ı</string>
+<string name="widget_slider_border">Kenarlık kalınlığı</string>
+<string name="widget_slider_internal_padding">Dış kenar boşluğu</string>
+<string name="widget_slider_internal_padding_horizontal">Yatay</string>
+<string name="widget_slider_internal_padding_vertical">Dikey</string>
+<string name="widget_slider_radius">Köşe yuvarlama</string>
+<string name="widget_slider_transparency_background">Arka plan</string>
+<string name="widget_slider_transparency_border">Kenarlık</string>
+<string name="widget_text_icon_color">Metin &amp; simge rengi</string>
+<string name="widget_text_icon_color_black">Siyah</string>
+<string name="widget_text_icon_color_white">Beyaz</string>
+<string name="widget_toggle_show_label">Quick Search metni</string>
+<string name="widgets_panel_title">Widget\'lar</string>
+<string name="widgets_picker_empty">Widget bulunamadı.</string>
+<string name="widgets_picker_preview_unavailable">Önizleme mevcut değil</string>
+<string name="widgets_picker_title">Widget ekle</string>
+<string name="widgets_picker_widget_count">%1$d widget</string>
+<string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+
+<!-- ============================================================================
+     Permissions &amp; Onboarding
+     ============================================================================ -->
+<string name="permissions_calendar_desc">Takvim etkinliklerinde arama yapmak için gereklidir.</string>
+<string name="permissions_calling_desc">Arama ekranını açmadan kişilerini doğrudan aramak için gereklidir.</string>
+<string name="permissions_contacts_desc">Kişilerinde arama yapmak için gereklidir.</string>
+<string name="permissions_files_desc">Belgelerin ve diğer dosyaların arasında arama yapmak için gereklidir.</string>
+<string name="permissions_files_title">Dosya erişimi</string>
+<string name="permissions_granted">İzin verildi</string>
+<string name="permissions_mandatory_indicator">*</string>
+<string name="permissions_reminder_dialog_message">Daha sonra %1$s izni hakkında fikrini değiştirirsen, uygulama ayarlarından bu izni verebilirsin.</string>
+<string name="permissions_reminder_dialog_title">İzinler verilmedi</string>
+<string name="permissions_screen_subtitle">Bu izinler ek özellikleri kullanmanı sağlar. İsteğe bağlıdır. Verilerin cihazında kalır.</string>
+<string name="permissions_usage_desc">Son kullandığın uygulamaları önerilerde göstermek için gereklidir.</string>
+<string name="setup_action_next">Sonraki</string>
+<string name="setup_action_start">Aramaya başla!</string>
+<string name="setup_final_title">Neredeyse bitti!</string>
+<string name="setup_import_backup_found_subtitle">Ayarlarını bu dosyadan geri yüklemek istiyor musun?</string>
+<string name="setup_import_backup_found_title">Yedek dosyası bulundu</string>
+<string name="setup_import_button">Ayarları içe aktar</string>
+<string name="setup_import_description_subtitle">Daha önce dışa aktardığın bir yedekleme dosyasını kullanarak Quick Search ayarlarını içe aktar.</string>
+<string name="setup_import_description_title">Yedeğin var mı?</string>
+<string name="setup_import_error_subtitle">Yedekleme dosyası okunamadı. Lütfen tekrar dene.</string>
+<string name="setup_import_error_title">İçe aktarma başarısız oldu</string>
+<string name="setup_import_importing">Ayarlar içe aktarılıyor…</string>
+<string name="setup_import_restore_button">Geri yükle</string>
+<string name="setup_import_skip">Atla</string>
+<string name="setup_import_success_subtitle">Ayarların içe aktarıldı. Aramaya başlamak için aşağıya dokun.</string>
+<string name="setup_import_success_title">Ayarlar geri yüklendi</string>
+<string name="setup_import_title">Ayarları geri yükle</string>
+<string name="setup_search_engines_subtitle">İhtiyacın olan arama motorlarını etkinleştir ve dilediğin gibi sırala.</string>
+
+<!-- ============================================================================
+     Search Engines
+     ============================================================================ -->
+<string name="browser_brave_name">Brave Browser</string>
+<string name="browser_in_app_name">Uygulama içi tarayıcı</string>
+<string name="open_with_engine">%1$s ile aç</string>
+<string name="search_engine_ai_mode">AI modu</string>
+<string name="search_engine_amazon">Amazon</string>
+<string name="search_engine_bing">Bing</string>
+<string name="search_engine_brave">Brave Search</string>
+<string name="search_engine_chatgpt">ChatGPT</string>
+<string name="search_engine_claude">Claude</string>
+<string name="search_engine_custom">Özel arama</string>
+<string name="search_engine_duckduckgo">DuckDuckGo</string>
+<string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+<string name="search_engine_gemini">Gemini</string>
+<string name="search_engine_google">Google</string>
+<string name="search_engine_google_drive">Google Drive</string>
+<string name="search_engine_google_maps">Google Maps</string>
+<string name="search_engine_google_photos">Google Photos</string>
+<string name="search_engine_google_play">Google Play</string>
+<string name="search_engine_grok">Grok</string>
+<string name="search_engine_onboarding_description">Arama sorgunu yazıp bu arama motorlarından herhangi birine dokunduğunda, ilgili uygulama içinde arama tetiklenir. Üzerlerine uzun basarak bunları düzenleyebilirsin.</string>
+<string name="search_engine_perplexity">Perplexity</string>
+<string name="search_engine_reddit">Reddit</string>
+<string name="search_engine_spotify">Spotify</string>
+<string name="search_engine_startpage">Startpage</string>
+<string name="search_engine_waze">Waze</string>
+<string name="search_engine_wikipedia">Wikipedia</string>
+<string name="search_engine_x">X</string>
+<string name="search_engine_you_com">You.com</string>
+<string name="search_engine_youtube">YouTube</string>
+<string name="search_engine_youtube_music">YouTube Music</string>
+<string name="search_on_engine">%1$s üzerinde ara</string>
+
+<!-- ============================================================================
+     Miscellaneous
+     ============================================================================ -->
+<string name="auto_close_overlay_toggle_desc">Sonuç açıldıktan sonra uygulamayı otomatik olarak kapat</string>
+<string name="auto_close_overlay_toggle_title">Uygulamayı otomatik kapat</string>
+<string name="excluded_item_type_app_results">Uygulama (Sonuçlar)</string>
+<string name="excluded_item_type_app_shortcut">Uygulama kısayolu</string>
+<string name="excluded_item_type_app_suggestions">Uygulama (Öneriler)</string>
+<string name="excluded_item_type_contact">Kişi</string>
+<string name="excluded_item_type_setting">Ayar</string>
+<string name="permission_required_title">İzin gerekli</string>
+<string name="settings_action_clear_all">Tümünü temizle</string>
+<string name="settings_action_move_down">En alta taşı</string>
+<string name="settings_action_move_up">En üste taşı</string>
+<string name="settings_action_reorder">Yeniden sıralamak için sürükle</string>
+<string name="settings_create_new_tool_button">Yeni araç oluştur</string>
+<string name="settings_custom_tool_alias_hint">Bu aracı tetikleyecek bir anahtar kelime</string>
+<string name="settings_custom_tool_alias_label">Kısaltma</string>
+<string name="settings_custom_tool_delete_button">Aracı sil</string>
+<string name="settings_custom_tool_editor_title">Özel araç</string>
+<string name="settings_custom_tool_name_label">Araç adı</string>
+<string name="settings_custom_tool_prompt_hint">Bu aracın ne işe yaradığını açıkla. Bu yönlendirme, araç tetiklendiğinde AI\'a rehberlik eder.</string>
+<string name="settings_custom_tool_prompt_label">Sistem yönlendirmesi</string>
+<string name="settings_excluded_items_clear_all">Tüm hariç tutulanları temizle</string>
+<string name="settings_excluded_items_clear_all_confirmation">Hariç tutulan tüm öğeleri temizlemek istediğinden emin misin? Bu işlem geri alınamaz.</string>
+<string name="settings_excluded_items_desc">Hariç tuttuğun öğeleri görüntüle ve yönet</string>
+<string name="settings_excluded_items_empty">Hariç tutulan bir öğen bulunmuyor.</string>
+<string name="settings_excluded_items_title">Hariç tutulan öğeler</string>
+<string name="settings_manage_calls_texts_contacts_desc">Kişiler için Arama &amp; Mesaj işlemlerini yönet</string>
+<string name="settings_manage_files_desc">Hangi dosya türlerinin sonuçlarda görüneceğini yönet</string>
+<string name="settings_manage_shortcuts_desc">Uygulama kısayollarını yönet</string>
+<string name="settings_nicknames_desc">Belirlediğin özel takma adları görüntüle ve yönet</string>
+<string name="settings_nicknames_empty">Belirlenmiş bir takma adın yok.</string>
+<string name="settings_nicknames_title">Takma adlar</string>
+<string name="settings_search_tip_banner_message">İpucu: Ayarları doğrudan arama çubuğundan arayabilirsin.</string>
+<string name="settings_triggers_desc">Belirlediğin tetikleyici kelimeleri görüntüle ve yönet</string>
+<string name="settings_triggers_empty">Belirlenmiş bir tetikleyicin yok.</string>
+<string name="settings_triggers_title">Tetikleyiciler</string>
+</resources>

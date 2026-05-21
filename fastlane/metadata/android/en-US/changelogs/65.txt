@@ -1,0 +1,1 @@
+Version 3.6: maintenance and improvements. See the project release notes on GitHub for details.
