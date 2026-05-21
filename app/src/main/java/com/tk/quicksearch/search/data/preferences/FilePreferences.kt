@@ -13,11 +13,24 @@ class FilePreferences(
 
     fun getPinnedFileUris(): Set<String> = getPinnedStringItems(BasePreferences.KEY_PINNED_FILE_URIS)
 
+    fun getPinnedFileOrder(): List<String> = getStringListPref(BasePreferences.KEY_PINNED_FILE_ORDER)
+
+    fun setPinnedFileOrder(order: List<String>): List<String> =
+        order.distinct().also { setStringListPref(BasePreferences.KEY_PINNED_FILE_ORDER, it) }
+
     fun getExcludedFileUris(): Set<String> = getExcludedStringItems(BasePreferences.KEY_EXCLUDED_FILE_URIS)
 
-    fun pinFile(uri: String): Set<String> = pinStringItem(BasePreferences.KEY_PINNED_FILE_URIS, uri)
+    fun pinFile(uri: String): Set<String> =
+        pinStringItem(BasePreferences.KEY_PINNED_FILE_URIS, uri).also {
+            if (uri !in getPinnedFileOrder()) {
+                setPinnedFileOrder(getPinnedFileOrder() + uri)
+            }
+        }
 
-    fun unpinFile(uri: String): Set<String> = unpinStringItem(BasePreferences.KEY_PINNED_FILE_URIS, uri)
+    fun unpinFile(uri: String): Set<String> =
+        unpinStringItem(BasePreferences.KEY_PINNED_FILE_URIS, uri).also {
+            setPinnedFileOrder(getPinnedFileOrder().filterNot { it == uri })
+        }
 
     fun excludeFile(uri: String): Set<String> = excludeStringItem(BasePreferences.KEY_EXCLUDED_FILE_URIS, uri)
 

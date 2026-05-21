@@ -85,6 +85,7 @@ internal fun ContactResultRow(
         onContactMethodClick: (ContactMethod) -> Unit,
         isPinned: Boolean = false,
         onTogglePin: (ContactInfo) -> Unit = {},
+        onMovePinned: (ContactInfo, Boolean) -> Unit = { _, _ -> },
         onExclude: (ContactInfo) -> Unit = {},
         onNicknameClick: (ContactInfo) -> Unit = {},
         hasNickname: Boolean = false,
@@ -95,6 +96,7 @@ internal fun ContactResultRow(
         icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
         iconTint: Color = MaterialTheme.colorScheme.secondary,
         isPredicted: Boolean = false,
+        showPinnedItemMenu: Boolean = false,
 ) {
         val context = LocalContext.current
         val addToHomeHandler =
@@ -211,10 +213,13 @@ internal fun ContactResultRow(
                                 hasNickname = hasNickname,
                                 hasTrigger = hasTrigger,
                                 onTogglePin = { onTogglePin(contactInfo) },
+                                onMoveUp = { onMovePinned(contactInfo, true) },
+                                onMoveDown = { onMovePinned(contactInfo, false) },
                                 onExclude = { onExclude(contactInfo) },
                                 onNicknameClick = { onNicknameClick(contactInfo) },
                                 onTriggerClick = { onTriggerClick(contactInfo) },
                                 onAddToHome = { addToHomeHandler.addContactToHome(contactInfo) },
+                                showPinnedItemMenu = showPinnedItemMenu,
                         )
                 }
         }

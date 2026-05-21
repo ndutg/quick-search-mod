@@ -154,6 +154,7 @@ fun SearchContentArea(
     val hideOtherResults =
                 showAiSearch ||
                 showCalculator ||
+                showCurrencyConverter ||
                 showWordClock ||
                 showDictionary ||
                 (state.detectedShortcutTarget != null) ||

@@ -18,6 +18,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -27,6 +29,8 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.search.apps.AppMenuGridButton
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.R
@@ -84,6 +89,7 @@ fun AppShortcutResultsSection(
         excludedShortcutIds: Set<String>,
         onShortcutClick: (StaticShortcut) -> Unit,
         onTogglePin: (StaticShortcut) -> Unit,
+        onMovePinned: (StaticShortcut, Boolean) -> Unit = { _, _ -> },
         onExclude: (StaticShortcut) -> Unit,
         onInclude: (StaticShortcut) -> Unit,
         onAppInfoClick: (StaticShortcut) -> Unit,
@@ -101,6 +107,7 @@ fun AppShortcutResultsSection(
         showWallpaperBackground: Boolean,
         predictedTarget: PredictedSubmitTarget? = null,
         fillExpandedHeight: Boolean = false,
+        showPinnedItemMenu: Boolean = false,
 ) {
         val overlayCardColor = LocalOverlayResultCardColor.current
         val overlayDividerColor = LocalOverlayDividerColor.current
@@ -156,6 +163,7 @@ fun AppShortcutResultsSection(
                                         excludedShortcutIds = excludedShortcutIds,
                                         onShortcutClick = onShortcutClick,
                                         onTogglePin = onTogglePin,
+                                        onMovePinned = onMovePinned,
                                         onExclude = onExclude,
                                         onInclude = onInclude,
                                         onAppInfoClick = onAppInfoClick,
@@ -176,6 +184,7 @@ fun AppShortcutResultsSection(
                                                 } else {
                                                         0.dp
                                                 },
+                                        showPinnedItemMenu = showPinnedItemMenu,
                                 )
                         }
                 }
@@ -191,6 +200,7 @@ private fun AppShortcutsCardContent(
         excludedShortcutIds: Set<String>,
         onShortcutClick: (StaticShortcut) -> Unit,
         onTogglePin: (StaticShortcut) -> Unit,
+        onMovePinned: (StaticShortcut, Boolean) -> Unit,
         onExclude: (StaticShortcut) -> Unit,
         onInclude: (StaticShortcut) -> Unit,
         onAppInfoClick: (StaticShortcut) -> Unit,
@@ -206,6 +216,7 @@ private fun AppShortcutsCardContent(
         predictedShortcutId: String?,
         useCardLevelPrediction: Boolean,
         bottomContentPadding: Dp,
+        showPinnedItemMenu: Boolean,
 ) {
         Column(
                 modifier =
@@ -227,6 +238,7 @@ private fun AppShortcutsCardContent(
                                         hasTrigger = getShortcutTrigger(shortcutId)?.word?.isNotBlank() == true,
                                         onShortcutClick = onShortcutClick,
                                         onTogglePin = onTogglePin,
+                                        onMovePinned = onMovePinned,
                                         onExclude = onExclude,
                                         onInclude = onInclude,
                                         onAppInfoClick = onAppInfoClick,
@@ -236,6 +248,7 @@ private fun AppShortcutsCardContent(
                                         onEditShortcutIcon = onEditShortcutIcon,
                                         iconPackPackage = iconPackPackage,
                                         isPredicted = showPredictedOnRow,
+                                        showPinnedItemMenu = showPinnedItemMenu,
                                 )
                                 if (index < displayShortcuts.lastIndex && !showPredictedOnRow) {
                                         HorizontalDivider(
@@ -267,6 +280,7 @@ internal fun AppShortcutRow(
         hasTrigger: Boolean = false,
         onShortcutClick: (StaticShortcut) -> Unit,
         onTogglePin: (StaticShortcut) -> Unit,
+        onMovePinned: (StaticShortcut, Boolean) -> Unit = { _, _ -> },
         onExclude: (StaticShortcut) -> Unit,
         onInclude: (StaticShortcut) -> Unit,
         onAppInfoClick: (StaticShortcut) -> Unit,
@@ -282,6 +296,7 @@ internal fun AppShortcutRow(
         icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
         iconTint: Color = MaterialTheme.colorScheme.secondary,
         isPredicted: Boolean = false,
+        showPinnedItemMenu: Boolean = false,
 ) {
         val context = androidx.compose.ui.platform.LocalContext.current
         val addToHomeHandler =
@@ -384,6 +399,8 @@ internal fun AppShortcutRow(
                                 hasNickname = hasNickname,
                                 hasTrigger = hasTrigger,
                                 onTogglePin = { onTogglePin(shortcut) },
+                                onMoveUp = { onMovePinned(shortcut, true) },
+                                onMoveDown = { onMovePinned(shortcut, false) },
                                 onExclude = { onExclude(shortcut) },
                                 onInclude = { onInclude(shortcut) },
                                 onAppInfoClick = { onAppInfoClick(shortcut) },
@@ -393,6 +410,7 @@ internal fun AppShortcutRow(
                                 onEditShortcutIcon = onEditShortcutIcon,
                                 onAddToHome = { addToHomeHandler.addAppShortcutToHome(shortcut) },
                                 iconPackPackage = iconPackPackage,
+                                showPinnedItemMenu = showPinnedItemMenu,
                         )
                 }
         }
@@ -414,6 +432,8 @@ private fun AppShortcutDropdownMenu(
         hasNickname: Boolean,
         hasTrigger: Boolean,
         onTogglePin: () -> Unit,
+        onMoveUp: () -> Unit = {},
+        onMoveDown: () -> Unit = {},
         onExclude: () -> Unit,
         onInclude: () -> Unit,
         onAppInfoClick: () -> Unit,
@@ -423,6 +443,7 @@ private fun AppShortcutDropdownMenu(
         onEditShortcutIcon: (StaticShortcut) -> Unit,
         onAddToHome: () -> Unit,
         iconPackPackage: String?,
+        showPinnedItemMenu: Boolean = false,
 ) {
         val context = LocalContext.current
         val displayName = shortcutDisplayName(shortcut)
@@ -434,6 +455,24 @@ private fun AppShortcutDropdownMenu(
         val isUserCreated = isUserCreatedShortcut(shortcut)
 
         val menuItems = buildList {
+                if (showPinnedItemMenu && isPinned) {
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.action_unpin_app,
+                                icon = { Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null) },
+                                onClick = { onDismissRequest(); onTogglePin() },
+                        ))
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.action_move_up,
+                                icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                                onClick = { onDismissRequest(); onMoveUp() },
+                        ))
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.action_move_down,
+                                icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                                onClick = { onDismissRequest(); onMoveDown() },
+                        ))
+                        return@buildList
+                }
                 // Row 1: Pin | Trigger | Nickname
                 add(AppShortcutMenuItem(
                         textResId = if (isPinned) R.string.action_unpin_app else R.string.action_pin_app,
@@ -508,6 +547,28 @@ private fun AppShortcutDropdownMenu(
                                 },
                         ))
                 }
+        }
+
+        if (showPinnedItemMenu && isPinned) {
+                DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = onDismissRequest,
+                        shape = RoundedCornerShape(24.dp),
+                        properties = PopupProperties(focusable = false),
+                        containerColor = AppColors.DialogBackground,
+                ) {
+                        menuItems.forEachIndexed { index, item ->
+                                if (index > 0) {
+                                        HorizontalDivider()
+                                }
+                                DropdownMenuItem(
+                                        text = { Text(text = stringResource(item.textResId)) },
+                                        leadingIcon = { item.icon() },
+                                        onClick = item.onClick,
+                                )
+                        }
+                }
+                return
         }
 
         if (expanded) {

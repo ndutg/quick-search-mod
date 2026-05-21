@@ -47,6 +47,7 @@ import com.tk.quicksearch.search.searchScreen.AppsSectionParams
 import com.tk.quicksearch.search.searchScreen.CalendarSectionParams
 import com.tk.quicksearch.search.searchScreen.NotesSectionParams
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
+import com.tk.quicksearch.search.searchScreen.PinnedNonAppItemsSection
 import com.tk.quicksearch.search.searchScreen.components.SectionPermissionResultCard
 import com.tk.quicksearch.R
 import androidx.compose.ui.res.stringResource
@@ -322,6 +323,21 @@ fun ContentLayout(
         }
     }
 
+    val showPinnedNonAppItems =
+        !hasQuery &&
+            !hideResults &&
+            !isSectionAliasMode &&
+            !hidePinnedAndAppsWhenSearchHistoryExpanded &&
+            (
+                sectionContext.shouldRenderAppShortcuts ||
+                    sectionContext.shouldRenderContacts ||
+                    sectionContext.shouldRenderFiles ||
+                    sectionContext.shouldRenderSettings ||
+                    sectionContext.shouldRenderCalendar ||
+                    sectionContext.shouldRenderNotes
+            )
+    var pinnedNonAppItemsRendered = false
+
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         if (showTopMatches && !isReversed) {
             TopMatchesSection(
@@ -356,6 +372,30 @@ fun ContentLayout(
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
                 if (deferNonAppContentUntilAppsReady && section != SearchSection.APPS) return@forEach
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
+
+                if (!hasQuery && section != SearchSection.APPS && showPinnedNonAppItems) {
+                    if (!pinnedNonAppItemsRendered) {
+                        PinnedNonAppItemsSection(
+                            pinnedItemOrder = state.pinnedNonAppItemOrder,
+                            contacts = renderingState.pinnedContacts,
+                            files = renderingState.pinnedFiles,
+                            appShortcuts = renderingState.pinnedAppShortcuts,
+                            settings = renderingState.pinnedSettings,
+                            calendarEvents = renderingState.pinnedCalendarEvents,
+                            notes = renderingState.pinnedNotes,
+                            contactsParams = effectiveContactsParams,
+                            filesParams = effectiveFilesParams,
+                            appShortcutsParams = effectiveAppShortcutsParams,
+                            settingsParams = effectiveSettingsParams,
+                            calendarParams = effectiveCalendarParams,
+                            notesParams = effectiveNotesParams,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        pinnedNonAppItemsRendered = true
+                    }
+                    return@forEach
+                }
 
                 val showAliasRecentForSection =
                     showAliasRecentItems && section in ALIAS_RECENT_ELIGIBLE_SECTIONS

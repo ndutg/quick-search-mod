@@ -42,6 +42,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
@@ -61,7 +62,10 @@ internal fun ReleaseNotesDialog(
         } else {
             stringResource(R.string.release_notes_title_no_version)
         }
-    val releaseNotesMarkdown = stringResource(R.string.release_notes_markdown)
+    val context = LocalContext.current
+    val releaseNotesMarkdown = remember {
+        context.assets.open("RELEASE_NOTES.md").bufferedReader().use { it.readText() }
+    }
     val scrollBarAlpha = remember { Animatable(1f) }
     LaunchedEffect(scrollState) {
         val scope = this

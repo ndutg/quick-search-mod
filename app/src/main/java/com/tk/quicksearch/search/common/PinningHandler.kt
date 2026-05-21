@@ -102,6 +102,7 @@ class PinningHandler(
         return contactRepository
             .getContactsByIds(pinnedIds)
             .filterNot { excludedIds.contains(it.contactId) }
+            .sortedByPinnedOrder(userPreferences.getPinnedContactOrder()) { it.contactId }
     }
 
     private fun loadPinnedFiles(hasPermission: Boolean): List<com.tk.quicksearch.search.models.DeviceFile> {
@@ -114,6 +115,7 @@ class PinningHandler(
         return fileRepository
             .getFilesByUris(pinnedUris)
             .filterNot { excludedUris.contains(it.uri.toString()) }
+            .sortedByPinnedOrder(userPreferences.getPinnedFileOrder()) { it.uri.toString() }
     }
 
     private fun loadExcludedContacts(hasPermission: Boolean): List<com.tk.quicksearch.search.models.ContactInfo> {
@@ -140,10 +142,20 @@ class PinningHandler(
         return notesRepository
             .getAllNotes()
             .filter { pinnedIds.contains(it.noteId) }
+            .sortedByPinnedOrder(userPreferences.getPinnedNoteOrder()) { it.noteId }
     }
 
     private data class PermissionsState(
         val contacts: Boolean,
         val files: Boolean,
     )
+}
+
+private fun <T, K> List<T>.sortedByPinnedOrder(
+    order: List<K>,
+    keySelector: (T) -> K,
+): List<T> {
+    if (order.isEmpty()) return this
+    val orderIndex = order.withIndex().associate { it.value to it.index }
+    return sortedBy { orderIndex[keySelector(it)] ?: Int.MAX_VALUE }
 }

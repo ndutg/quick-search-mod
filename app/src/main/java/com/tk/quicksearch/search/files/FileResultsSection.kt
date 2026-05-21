@@ -199,6 +199,7 @@ fun FileResultsSection(
         onRequestPermission: () -> Unit,
         pinnedFileUris: Set<String> = emptySet(),
         onTogglePin: (DeviceFile) -> Unit = {},
+        onMovePinned: (DeviceFile, Boolean) -> Unit = { _, _ -> },
         onExclude: (DeviceFile) -> Unit = {},
         onExcludeExtension: (DeviceFile) -> Unit = {},
         onNicknameClick: (DeviceFile) -> Unit = {},
@@ -213,6 +214,7 @@ fun FileResultsSection(
         showWallpaperBackground: Boolean = false,
         predictedTarget: PredictedSubmitTarget? = null,
         fillExpandedHeight: Boolean = false,
+        showPinnedItemMenu: Boolean = false,
 ) {
     val hasVisibleContent = (hasPermission && files.isNotEmpty()) || !hasPermission
     if (!hasVisibleContent) return
@@ -232,6 +234,7 @@ fun FileResultsSection(
                         onOpenFolder = onOpenFolder,
                         pinnedFileUris = pinnedFileUris,
                         onTogglePin = onTogglePin,
+                        onMovePinned = onMovePinned,
                         onExclude = onExclude,
                         onExcludeExtension = onExcludeExtension,
                         onNicknameClick = onNicknameClick,
@@ -243,6 +246,7 @@ fun FileResultsSection(
                         showWallpaperBackground = showWallpaperBackground,
                         predictedTarget = predictedTarget,
                         fillExpandedHeight = fillExpandedHeight,
+                        showPinnedItemMenu = showPinnedItemMenu,
                 )
             }
             !hasPermission -> {
@@ -271,6 +275,7 @@ private fun FilesResultCard(
         onOpenFolder: (DeviceFile) -> Unit,
         pinnedFileUris: Set<String>,
         onTogglePin: (DeviceFile) -> Unit,
+        onMovePinned: (DeviceFile, Boolean) -> Unit,
         onExclude: (DeviceFile) -> Unit,
         onExcludeExtension: (DeviceFile) -> Unit,
         onNicknameClick: (DeviceFile) -> Unit,
@@ -282,6 +287,7 @@ private fun FilesResultCard(
         showWallpaperBackground: Boolean = false,
         predictedTarget: PredictedSubmitTarget?,
         fillExpandedHeight: Boolean,
+        showPinnedItemMenu: Boolean,
 ) {
     val overlayCardColor = LocalOverlayResultCardColor.current
     val overlayDividerColor = LocalOverlayDividerColor.current
@@ -326,6 +332,7 @@ private fun FilesResultCard(
                     onOpenFolder = onOpenFolder,
                     pinnedFileUris = pinnedFileUris,
                     onTogglePin = onTogglePin,
+                    onMovePinned = onMovePinned,
                     onExclude = onExclude,
                     onExcludeExtension = onExcludeExtension,
                     onNicknameClick = onNicknameClick,
@@ -344,6 +351,7 @@ private fun FilesResultCard(
                             } else {
                                     0.dp
                             },
+                    showPinnedItemMenu = showPinnedItemMenu,
             )
         }
     }
@@ -364,6 +372,7 @@ private fun FileCardContent(
         onOpenFolder: (DeviceFile) -> Unit,
         pinnedFileUris: Set<String>,
         onTogglePin: (DeviceFile) -> Unit,
+        onMovePinned: (DeviceFile, Boolean) -> Unit,
         onExclude: (DeviceFile) -> Unit,
         onExcludeExtension: (DeviceFile) -> Unit,
         onNicknameClick: (DeviceFile) -> Unit,
@@ -376,6 +385,7 @@ private fun FileCardContent(
         predictedFileUri: String?,
         useCardLevelPrediction: Boolean,
         bottomContentPadding: Dp,
+        showPinnedItemMenu: Boolean,
 ) {
     if (useLazyList) {
         LazyColumn(
@@ -403,6 +413,7 @@ private fun FileCardContent(
                         onOpenFolder = onOpenFolder,
                         isPinned = pinnedFileUris.contains(file.uri.toString()),
                         onTogglePin = onTogglePin,
+                        onMovePinned = onMovePinned,
                         onExclude = onExclude,
                         onExcludeExtension = onExcludeExtension,
                         onNicknameClick = onNicknameClick,
@@ -410,6 +421,7 @@ private fun FileCardContent(
                         hasNickname = !getFileNickname(file.uri.toString()).isNullOrBlank(),
                         hasTrigger = getFileTrigger(file.uri.toString())?.word?.isNotBlank() == true,
                         isPredicted = showPredictedOnRow,
+                        showPinnedItemMenu = showPinnedItemMenu,
                 )
                 if (index != displayFiles.lastIndex && !showPredictedOnRow) {
                     HorizontalDivider(
@@ -458,6 +470,7 @@ private fun FileCardContent(
                         onOpenFolder = onOpenFolder,
                         isPinned = pinnedFileUris.contains(file.uri.toString()),
                         onTogglePin = onTogglePin,
+                        onMovePinned = onMovePinned,
                         onExclude = onExclude,
                         onExcludeExtension = onExcludeExtension,
                         onNicknameClick = onNicknameClick,
@@ -465,6 +478,7 @@ private fun FileCardContent(
                         hasNickname = !getFileNickname(file.uri.toString()).isNullOrBlank(),
                         hasTrigger = getFileTrigger(file.uri.toString())?.word?.isNotBlank() == true,
                         isPredicted = showPredictedOnRow,
+                        showPinnedItemMenu = showPinnedItemMenu,
                 )
                 if (index != displayFiles.lastIndex && !showPredictedOnRow) {
                     HorizontalDivider(
@@ -642,6 +656,7 @@ internal fun FileResultRow(
         onOpenFolder: (DeviceFile) -> Unit = {},
         isPinned: Boolean = false,
         onTogglePin: (DeviceFile) -> Unit = {},
+        onMovePinned: (DeviceFile, Boolean) -> Unit = { _, _ -> },
         onExclude: (DeviceFile) -> Unit = {},
         onExcludeExtension: (DeviceFile) -> Unit = {},
         onNicknameClick: (DeviceFile) -> Unit = {},
@@ -653,6 +668,7 @@ internal fun FileResultRow(
         icon: ImageVector? = null,
         iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         isPredicted: Boolean = false,
+        showPinnedItemMenu: Boolean = false,
 ) {
     val context = LocalContext.current
     val addToHomeHandler =
@@ -709,6 +725,8 @@ internal fun FileResultRow(
                     hasNickname = hasNickname,
                     hasTrigger = hasTrigger,
                     onTogglePin = { onTogglePin(deviceFile) },
+                    onMoveUp = { onMovePinned(deviceFile, true) },
+                    onMoveDown = { onMovePinned(deviceFile, false) },
                     onExclude = { onExclude(deviceFile) },
                     onExcludeExtension = { onExcludeExtension(deviceFile) },
                     onNicknameClick = { onNicknameClick(deviceFile) },
@@ -717,6 +735,7 @@ internal fun FileResultRow(
                     onFileInfoClick = { showFileInfoDialog = true },
                     onShareClick = { FileIntents.shareFile(context, deviceFile) },
                     onAddToHome = { addToHomeHandler.addFileToHome(deviceFile) },
+                    showPinnedItemMenu = showPinnedItemMenu,
             )
         }
         if (showFileInfoDialog) {

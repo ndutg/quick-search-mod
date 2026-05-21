@@ -158,6 +158,7 @@ data class FilesSectionParams(
     val onOpenFolder: (DeviceFile) -> Unit,
     val onRequestPermission: () -> Unit,
     val onTogglePin: (DeviceFile) -> Unit,
+    val onMovePinned: (DeviceFile, Boolean) -> Unit = { _, _ -> },
     val onExclude: (DeviceFile) -> Unit,
     val onExcludeExtension: (DeviceFile) -> Unit,
     val onNicknameClick: (DeviceFile) -> Unit,
@@ -197,6 +198,7 @@ data class SettingsSectionParams(
     val appSettingPhoneAppGridColumns: Int,
     val onAppSettingPhoneAppGridColumnsChange: (Int) -> Unit,
     val onTogglePin: (DeviceSetting) -> Unit,
+    val onMovePinned: (DeviceSetting, Boolean) -> Unit = { _, _ -> },
     val onExclude: (DeviceSetting) -> Unit,
     val onNicknameClick: (DeviceSetting) -> Unit,
     val onTriggerClick: (DeviceSetting) -> Unit,
@@ -220,6 +222,7 @@ data class AppShortcutsSectionParams(
     val excludedShortcutIds: Set<String>,
     val onShortcutClick: (StaticShortcut) -> Unit,
     val onTogglePin: (StaticShortcut) -> Unit,
+    val onMovePinned: (StaticShortcut, Boolean) -> Unit = { _, _ -> },
     val onExclude: (StaticShortcut) -> Unit,
     val onInclude: (StaticShortcut) -> Unit,
     val onAppInfoClick: (StaticShortcut) -> Unit,
@@ -253,6 +256,7 @@ data class ContactsSectionParams(
     val onSmsContact: (ContactInfo) -> Unit,
     val onContactMethodClick: (ContactInfo, com.tk.quicksearch.search.models.ContactMethod) -> Unit,
     val onTogglePin: (ContactInfo) -> Unit,
+    val onMovePinned: (ContactInfo, Boolean) -> Unit = { _, _ -> },
     val onExclude: (ContactInfo) -> Unit,
     val onNicknameClick: (ContactInfo) -> Unit,
     val onTriggerClick: (ContactInfo) -> Unit,
@@ -340,6 +344,7 @@ data class CalendarSectionParams(
     val onEventClick: (CalendarEventInfo) -> Unit,
     val onRequestPermission: () -> Unit,
     val onTogglePin: (CalendarEventInfo) -> Unit,
+    val onMovePinned: (CalendarEventInfo, Boolean) -> Unit = { _, _ -> },
     val onExclude: (CalendarEventInfo) -> Unit,
     val onInclude: (CalendarEventInfo) -> Unit,
     val onNicknameClick: (CalendarEventInfo) -> Unit,
@@ -367,6 +372,7 @@ data class NotesSectionParams(
     val pinnedNoteIds: Set<Long>,
     val onNoteClick: (NoteInfo) -> Unit,
     val onTogglePin: (NoteInfo) -> Unit,
+    val onMovePinned: (NoteInfo, Boolean) -> Unit = { _, _ -> },
     val onDelete: (NoteInfo) -> Unit,
     val onTriggerClick: (NoteInfo) -> Unit,
     val getNoteTrigger: (Long) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
@@ -387,6 +393,7 @@ internal fun buildSectionParams(
     onOpenFolder: (DeviceFile) -> Unit,
     onPinFile: (DeviceFile) -> Unit,
     onUnpinFile: (DeviceFile) -> Unit,
+    onMovePinnedFile: (DeviceFile, Boolean) -> Unit,
     onExcludeFile: (DeviceFile) -> Unit,
     onExcludeFileExtension: (DeviceFile) -> Unit,
     onOpenStorageAccessSettings: () -> Unit,
@@ -400,10 +407,12 @@ internal fun buildSectionParams(
     onAppSettingPhoneAppGridColumnsChange: (Int) -> Unit,
     onPinSetting: (DeviceSetting) -> Unit,
     onUnpinSetting: (DeviceSetting) -> Unit,
+    onMovePinnedSetting: (DeviceSetting, Boolean) -> Unit,
     onExcludeSetting: (DeviceSetting) -> Unit,
     onAppShortcutClick: (StaticShortcut) -> Unit,
     onPinAppShortcut: (StaticShortcut) -> Unit,
     onUnpinAppShortcut: (StaticShortcut) -> Unit,
+    onMovePinnedAppShortcut: (StaticShortcut, Boolean) -> Unit,
     onExcludeAppShortcut: (StaticShortcut) -> Unit,
     onIncludeAppShortcut: (StaticShortcut) -> Unit,
     onAppShortcutAppInfoClick: (StaticShortcut) -> Unit,
@@ -416,16 +425,19 @@ internal fun buildSectionParams(
     onContactMethodClick: (ContactInfo, com.tk.quicksearch.search.models.ContactMethod) -> Unit,
     onPinContact: (ContactInfo) -> Unit,
     onUnpinContact: (ContactInfo) -> Unit,
+    onMovePinnedContact: (ContactInfo, Boolean) -> Unit,
     onExcludeContact: (ContactInfo) -> Unit,
     onCalendarEventClick: (CalendarEventInfo) -> Unit,
     onPinCalendarEvent: (CalendarEventInfo) -> Unit,
     onUnpinCalendarEvent: (CalendarEventInfo) -> Unit,
+    onMovePinnedCalendarEvent: (CalendarEventInfo, Boolean) -> Unit,
     onExcludeCalendarEvent: (CalendarEventInfo) -> Unit,
     onIncludeCalendarEvent: (CalendarEventInfo) -> Unit,
     onArchiveTodayCalendarEvent: (CalendarEventInfo) -> Unit,
     onNoteClick: (NoteInfo) -> Unit,
     onPinNote: (NoteInfo) -> Unit,
     onUnpinNote: (NoteInfo) -> Unit,
+    onMovePinnedNote: (NoteInfo, Boolean) -> Unit,
     onDeleteNote: (NoteInfo) -> Unit,
     onOpenCalendarPermissionSettings: () -> Unit,
     getPrimaryContactCardAction: (Long) -> com.tk.quicksearch.search.contacts.models.ContactCardAction?,
@@ -468,6 +480,7 @@ internal fun buildSectionParams(
     onOpenFolder,
     onPinFile,
     onUnpinFile,
+    onMovePinnedFile,
     onExcludeFile,
     onExcludeFileExtension,
     onOpenStorageAccessSettings,
@@ -481,10 +494,12 @@ internal fun buildSectionParams(
     onAppSettingPhoneAppGridColumnsChange,
     onPinSetting,
     onUnpinSetting,
+    onMovePinnedSetting,
     onExcludeSetting,
     onAppShortcutClick,
     onPinAppShortcut,
     onUnpinAppShortcut,
+    onMovePinnedAppShortcut,
     onExcludeAppShortcut,
     onIncludeAppShortcut,
     onAppShortcutAppInfoClick,
@@ -497,14 +512,17 @@ internal fun buildSectionParams(
     onContactMethodClick,
     onPinContact,
     onUnpinContact,
+    onMovePinnedContact,
     onExcludeContact,
     onCalendarEventClick,
     onPinCalendarEvent,
     onUnpinCalendarEvent,
+    onMovePinnedCalendarEvent,
     onExcludeCalendarEvent,
     onIncludeCalendarEvent,
     onArchiveTodayCalendarEvent,
     onOpenCalendarPermissionSettings,
+    onMovePinnedNote,
     onOpenAppSettings,
     getPrimaryContactCardAction,
     getSecondaryContactCardAction,
@@ -555,6 +573,7 @@ internal fun buildSectionParams(
                     onPinFile(file)
                 }
             },
+            onMovePinned = onMovePinnedFile,
             onExclude = onExcludeFile,
             onExcludeExtension = onExcludeFileExtension,
             onNicknameClick = { file ->
@@ -625,6 +644,7 @@ internal fun buildSectionParams(
                     onPinAppShortcut(shortcut)
                 }
             },
+            onMovePinned = onMovePinnedAppShortcut,
             onExclude = onExcludeAppShortcut,
             onInclude = onIncludeAppShortcut,
             onAppInfoClick = onAppShortcutAppInfoClick,
@@ -690,6 +710,7 @@ internal fun buildSectionParams(
                     onPinSetting(setting)
                 }
             },
+            onMovePinned = onMovePinnedSetting,
             onExclude = onExcludeSetting,
             onNicknameClick = { setting ->
                 onUpdateNicknameDialogState(
@@ -758,6 +779,7 @@ internal fun buildSectionParams(
                     onPinContact(contact)
                 }
             },
+            onMovePinned = onMovePinnedContact,
             onExclude = onExcludeContact,
             onNicknameClick = { contact ->
                 onUpdateNicknameDialogState(
@@ -891,6 +913,7 @@ internal fun buildSectionParams(
                     onPinCalendarEvent(event)
                 }
             },
+            onMovePinned = onMovePinnedCalendarEvent,
             onExclude = onExcludeCalendarEvent,
             onInclude = onIncludeCalendarEvent,
             onArchiveTodayEvent = onArchiveTodayCalendarEvent,
@@ -937,6 +960,7 @@ internal fun buildSectionParams(
                     onPinNote(note)
                 }
             },
+            onMovePinned = onMovePinnedNote,
             onDelete = onDeleteNote,
             onTriggerClick = { note ->
                 onUpdateTriggerDialogState(

@@ -69,6 +69,7 @@ fun ContactResultsSection(
     onContactMethodClick: (ContactInfo, ContactMethod) -> Unit = { _, _ -> },
     pinnedContactIds: Set<Long> = emptySet(),
     onTogglePin: (ContactInfo) -> Unit = {},
+    onMovePinned: (ContactInfo, Boolean) -> Unit = { _, _ -> },
     onExclude: (ContactInfo) -> Unit = {},
     onNicknameClick: (ContactInfo) -> Unit = {},
     onTriggerClick: (ContactInfo) -> Unit = {},
@@ -98,6 +99,7 @@ fun ContactResultsSection(
     showWallpaperBackground: Boolean = false,
     predictedTarget: PredictedSubmitTarget? = null,
     fillExpandedHeight: Boolean = false,
+    showPinnedItemMenu: Boolean = false,
 ) {
     val hasVisibleContent = (hasPermission && contacts.isNotEmpty()) || !hasPermission
     if (!hasVisibleContent) return
@@ -122,6 +124,7 @@ fun ContactResultsSection(
                     onContactMethodClick = onContactMethodClick,
                     pinnedContactIds = pinnedContactIds,
                     onTogglePin = onTogglePin,
+                    onMovePinned = onMovePinned,
                     onExclude = onExclude,
                     onNicknameClick = onNicknameClick,
                     onTriggerClick = onTriggerClick,
@@ -140,6 +143,7 @@ fun ContactResultsSection(
                     showWallpaperBackground = showWallpaperBackground,
                     predictedTarget = predictedTarget,
                     fillExpandedHeight = fillExpandedHeight,
+                    showPinnedItemMenu = showPinnedItemMenu,
                 )
             }
 
@@ -174,6 +178,7 @@ private fun ContactsResultCard(
     onContactMethodClick: (ContactInfo, ContactMethod) -> Unit,
     pinnedContactIds: Set<Long>,
     onTogglePin: (ContactInfo) -> Unit,
+    onMovePinned: (ContactInfo, Boolean) -> Unit,
     onExclude: (ContactInfo) -> Unit,
     onNicknameClick: (ContactInfo) -> Unit,
     onTriggerClick: (ContactInfo) -> Unit,
@@ -191,6 +196,7 @@ private fun ContactsResultCard(
     showWallpaperBackground: Boolean = false,
     predictedTarget: PredictedSubmitTarget?,
     fillExpandedHeight: Boolean,
+    showPinnedItemMenu: Boolean,
 ) {
     val overlayCardColor = LocalOverlayResultCardColor.current
     val overlayDividerColor = LocalOverlayDividerColor.current
@@ -249,6 +255,7 @@ private fun ContactsResultCard(
                     onContactMethodClick = onContactMethodClick,
                     pinnedContactIds = pinnedContactIds,
                     onTogglePin = onTogglePin,
+                    onMovePinned = onMovePinned,
                     onExclude = onExclude,
                     onNicknameClick = onNicknameClick,
                     onTriggerClick = onTriggerClick,
@@ -275,6 +282,7 @@ private fun ContactsResultCard(
                         } else {
                             0.dp
                         },
+                    showPinnedItemMenu = showPinnedItemMenu,
                 )
             }
         }
@@ -299,6 +307,7 @@ private fun ContactList(
     onContactMethodClick: (ContactInfo, ContactMethod) -> Unit,
     pinnedContactIds: Set<Long>,
     onTogglePin: (ContactInfo) -> Unit,
+    onMovePinned: (ContactInfo, Boolean) -> Unit,
     onExclude: (ContactInfo) -> Unit,
     onNicknameClick: (ContactInfo) -> Unit,
     onTriggerClick: (ContactInfo) -> Unit,
@@ -316,6 +325,7 @@ private fun ContactList(
     predictedContactId: Long?,
     useCardLevelPrediction: Boolean,
     bottomContentPadding: Dp,
+    showPinnedItemMenu: Boolean,
 ) {
     Column(
         modifier =
@@ -353,6 +363,7 @@ private fun ContactList(
                     },
                     isPinned = pinnedContactIds.contains(contactInfo.contactId),
                     onTogglePin = onTogglePin,
+                    onMovePinned = onMovePinned,
                     onExclude = onExclude,
                     onNicknameClick = onNicknameClick,
                     onTriggerClick = onTriggerClick,
@@ -370,6 +381,7 @@ private fun ContactList(
                     onSecondaryActionLongPress = onSecondaryActionLongPress,
                     onCustomAction = onCustomAction,
                     isPredicted = showPredictedOnRow,
+                    showPinnedItemMenu = showPinnedItemMenu,
                 )
             }
             if (index == 0 && showContactActionHint) {

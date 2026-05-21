@@ -218,7 +218,9 @@ internal class SearchStaticDataDelegate(
         val excludedIds = userPreferences.getExcludedCalendarEventIds()
         val pinnedIds =
             userPreferences.getPinnedCalendarEventIds().filterNot { excludedIds.contains(it) }.toSet()
-        val pinned = calendarRepository.getEventsByIds(pinnedIds)
+        val pinned =
+            calendarRepository.getEventsByIds(pinnedIds)
+                .sortedByPinnedOrder(userPreferences.getPinnedCalendarEventOrder()) { it.eventId }
         val excluded = calendarRepository.getEventsByIds(excludedIds)
         val showTodayEvents = userPreferences.getShowTodayEvents()
         val archivedIds = userPreferences.getArchivedTodayEventIds()
@@ -473,4 +475,13 @@ internal class SearchStaticDataDelegate(
         refreshSettingsState(updateResults = false)
         refreshAppShortcutsState(updateResults = false)
     }
+}
+
+private fun <T, K> List<T>.sortedByPinnedOrder(
+    order: List<K>,
+    keySelector: (T) -> K,
+): List<T> {
+    if (order.isEmpty()) return this
+    val orderIndex = order.withIndex().associate { it.value to it.index }
+    return sortedBy { orderIndex[keySelector(it)] ?: Int.MAX_VALUE }
 }

@@ -62,6 +62,7 @@ private fun renderFilesSection(
             onRequestPermission = filesParams.onRequestPermission,
             pinnedFileUris = filesParams.pinnedFileUris,
             onTogglePin = filesParams.onTogglePin,
+            onMovePinned = filesParams.onMovePinned,
             onExclude = filesParams.onExclude,
             onExcludeExtension = filesParams.onExcludeExtension,
             onNicknameClick = filesParams.onNicknameClick,
@@ -76,6 +77,7 @@ private fun renderFilesSection(
             showWallpaperBackground = filesParams.showWallpaperBackground,
             predictedTarget = filesParams.predictedTarget,
             fillExpandedHeight = false,
+            showPinnedItemMenu = context.showAllFilesResults,
         )
     }
 }
@@ -108,6 +110,7 @@ private fun renderContactsSection(
             onContactMethodClick = contactsParams.onContactMethodClick,
             pinnedContactIds = contactsParams.pinnedContactIds,
             onTogglePin = contactsParams.onTogglePin,
+            onMovePinned = contactsParams.onMovePinned,
             onExclude = contactsParams.onExclude,
             onNicknameClick = contactsParams.onNicknameClick,
             onTriggerClick = contactsParams.onTriggerClick,
@@ -129,6 +132,7 @@ private fun renderContactsSection(
             showWallpaperBackground = contactsParams.showWallpaperBackground,
             predictedTarget = contactsParams.predictedTarget,
             fillExpandedHeight = false,
+            showPinnedItemMenu = context.showAllContactsResults,
         )
     }
 }
@@ -203,6 +207,7 @@ private fun renderAppShortcutsSection(
             excludedShortcutIds = appShortcutsParams.excludedShortcutIds,
             onShortcutClick = appShortcutsParams.onShortcutClick,
             onTogglePin = appShortcutsParams.onTogglePin,
+            onMovePinned = appShortcutsParams.onMovePinned,
             onExclude = appShortcutsParams.onExclude,
             onInclude = appShortcutsParams.onInclude,
             onAppInfoClick = appShortcutsParams.onAppInfoClick,
@@ -220,6 +225,7 @@ private fun renderAppShortcutsSection(
             showWallpaperBackground = appShortcutsParams.showWallpaperBackground,
             predictedTarget = appShortcutsParams.predictedTarget,
             fillExpandedHeight = false,
+            showPinnedItemMenu = context.showAllAppShortcutsResults,
         )
     }
 }
@@ -242,6 +248,7 @@ private fun renderSettingsSection(
             pinnedSettingIds = settingsParams.pinnedSettingIds,
             onSettingClick = settingsParams.onSettingClick,
             onTogglePin = settingsParams.onTogglePin,
+            onMovePinned = settingsParams.onMovePinned,
             onExclude = settingsParams.onExclude,
             onNicknameClick = settingsParams.onNicknameClick,
             onTriggerClick = settingsParams.onTriggerClick,
@@ -254,6 +261,7 @@ private fun renderSettingsSection(
             showWallpaperBackground = settingsParams.showWallpaperBackground,
             predictedTarget = settingsParams.predictedTarget,
             fillExpandedHeight = false,
+            showPinnedItemMenu = context.showAllSettingsResults,
         )
     }
 }
@@ -308,6 +316,7 @@ private fun renderCalendarSection(
             onEventClick = calendarParams.onEventClick,
             onRequestPermission = calendarParams.onRequestPermission,
             onTogglePin = calendarParams.onTogglePin,
+            onMovePinned = calendarParams.onMovePinned,
             onExclude = calendarParams.onExclude,
             onInclude = calendarParams.onInclude,
             onNicknameClick = calendarParams.onNicknameClick,
@@ -322,6 +331,7 @@ private fun renderCalendarSection(
             predictedTarget = calendarParams.predictedTarget,
             fillExpandedHeight = false,
             isHomeScreenMode = context.isHomeScreenCalendarMode,
+            showPinnedItemMenu = context.showAllCalendarResults,
         )
     }
 }
@@ -338,6 +348,7 @@ private fun renderNotesSection(
             pinnedNoteIds = notesParams.pinnedNoteIds,
             onNoteClick = notesParams.onNoteClick,
             onTogglePin = notesParams.onTogglePin,
+            onMovePinned = notesParams.onMovePinned,
             onDelete = notesParams.onDelete,
             onTriggerClick = notesParams.onTriggerClick,
             getNoteTrigger = notesParams.getNoteTrigger,
@@ -349,6 +360,7 @@ private fun renderNotesSection(
             showWallpaperBackground = notesParams.showWallpaperBackground,
             predictedTarget = notesParams.predictedTarget,
             fillExpandedHeight = false,
+            showPinnedItemMenu = context.showAllNotesResults,
         )
     }
 }

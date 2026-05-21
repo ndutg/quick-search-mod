@@ -10,13 +10,26 @@ class AppShortcutPreferences(
 ) : BasePreferences(context) {
     fun getPinnedAppShortcutIds(): Set<String> = getPinnedStringItems(BasePreferences.KEY_PINNED_APP_SHORTCUTS)
 
+    fun getPinnedAppShortcutOrder(): List<String> = getStringListPref(BasePreferences.KEY_PINNED_APP_SHORTCUT_ORDER)
+
+    fun setPinnedAppShortcutOrder(order: List<String>): List<String> =
+        order.distinct().also { setStringListPref(BasePreferences.KEY_PINNED_APP_SHORTCUT_ORDER, it) }
+
     fun getExcludedAppShortcutIds(): Set<String> = getExcludedStringItems(BasePreferences.KEY_EXCLUDED_APP_SHORTCUTS)
 
     fun getDisabledAppShortcutIds(): Set<String> = getStringSet(BasePreferences.KEY_DISABLED_APP_SHORTCUTS)
 
-    fun pinAppShortcut(id: String): Set<String> = pinStringItem(BasePreferences.KEY_PINNED_APP_SHORTCUTS, id)
+    fun pinAppShortcut(id: String): Set<String> =
+        pinStringItem(BasePreferences.KEY_PINNED_APP_SHORTCUTS, id).also {
+            if (id !in getPinnedAppShortcutOrder()) {
+                setPinnedAppShortcutOrder(getPinnedAppShortcutOrder() + id)
+            }
+        }
 
-    fun unpinAppShortcut(id: String): Set<String> = unpinStringItem(BasePreferences.KEY_PINNED_APP_SHORTCUTS, id)
+    fun unpinAppShortcut(id: String): Set<String> =
+        unpinStringItem(BasePreferences.KEY_PINNED_APP_SHORTCUTS, id).also {
+            setPinnedAppShortcutOrder(getPinnedAppShortcutOrder().filterNot { orderedId -> orderedId == id })
+        }
 
     fun excludeAppShortcut(id: String): Set<String> = excludeStringItem(BasePreferences.KEY_EXCLUDED_APP_SHORTCUTS, id)
 

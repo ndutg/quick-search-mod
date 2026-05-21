@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Archive
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Repeat
@@ -74,6 +76,7 @@ fun CalendarEventsSection(
     onEventClick: (CalendarEventInfo) -> Unit,
     onRequestPermission: () -> Unit,
     onTogglePin: (CalendarEventInfo) -> Unit,
+    onMovePinned: (CalendarEventInfo, Boolean) -> Unit = { _, _ -> },
     onExclude: (CalendarEventInfo) -> Unit,
     onInclude: (CalendarEventInfo) -> Unit,
     onNicknameClick: (CalendarEventInfo) -> Unit,
@@ -96,6 +99,7 @@ fun CalendarEventsSection(
     showWallpaperBackground: Boolean,
     predictedTarget: PredictedSubmitTarget? = null,
     fillExpandedHeight: Boolean = false,
+    showPinnedItemMenu: Boolean = false,
 ) {
     if (!hasPermission) {
         permissionDisabledCard(
@@ -187,12 +191,14 @@ fun CalendarEventsSection(
                                 }
                             },
                             onTogglePin = onTogglePin,
+                            onMovePinned = onMovePinned,
                             onExclude = onExclude,
                             onInclude = onInclude,
                             onNicknameClick = onNicknameClick,
                             isPredicted = showPredictedOnRow,
                             isHomescreenTodayEvent = isHomeScreenMode && !isPinned,
                             onArchive = onArchiveTodayEvent,
+                            showPinnedItemMenu = showPinnedItemMenu,
                         )
                         if (index < displayEvents.lastIndex && !showPredictedOnRow) {
                             HorizontalDivider(
@@ -241,12 +247,14 @@ internal fun CalendarEventRow(
     hasNickname: Boolean,
     onClick: (CalendarEventInfo) -> Unit,
     onTogglePin: (CalendarEventInfo) -> Unit,
+    onMovePinned: (CalendarEventInfo, Boolean) -> Unit = { _, _ -> },
     onExclude: (CalendarEventInfo) -> Unit,
     onInclude: (CalendarEventInfo) -> Unit,
     onNicknameClick: (CalendarEventInfo) -> Unit,
     isPredicted: Boolean,
     isHomescreenTodayEvent: Boolean = false,
     onArchive: (CalendarEventInfo) -> Unit = {},
+    showPinnedItemMenu: Boolean = false,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val rowView = androidx.compose.ui.platform.LocalView.current
@@ -341,6 +349,39 @@ internal fun CalendarEventRow(
                 )
             } else {
                 buildList {
+                    if (showPinnedItemMenu && isPinned) {
+                        add(
+                            CalendarMenuItem(
+                                textResId = R.string.action_unpin_app,
+                                icon = { Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null) },
+                                onClick = {
+                                    showMenu = false
+                                    onTogglePin(event)
+                                },
+                            ),
+                        )
+                        add(
+                            CalendarMenuItem(
+                                textResId = R.string.action_move_up,
+                                icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                                onClick = {
+                                    showMenu = false
+                                    onMovePinned(event, true)
+                                },
+                            ),
+                        )
+                        add(
+                            CalendarMenuItem(
+                                textResId = R.string.action_move_down,
+                                icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                                onClick = {
+                                    showMenu = false
+                                    onMovePinned(event, false)
+                                },
+                            ),
+                        )
+                        return@buildList
+                    }
                     add(
                         CalendarMenuItem(
                             textResId =

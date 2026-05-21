@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.AudioFile
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Folder
@@ -23,6 +26,9 @@ import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.VisibilityOff
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,11 +46,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.AppMenuGridButton
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.utils.FileUtils
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -147,6 +155,8 @@ fun FileDropdownMenu(
         hasNickname: Boolean,
         hasTrigger: Boolean,
         onTogglePin: () -> Unit,
+        onMoveUp: () -> Unit = {},
+        onMoveDown: () -> Unit = {},
         onExclude: () -> Unit,
         onExcludeExtension: () -> Unit,
         onNicknameClick: () -> Unit,
@@ -155,9 +165,41 @@ fun FileDropdownMenu(
         onFileInfoClick: () -> Unit = {},
         onShareClick: () -> Unit = {},
         onAddToHome: () -> Unit,
+        showPinnedItemMenu: Boolean = false,
 ) {
     val fileExtension = FileUtils.getFileExtension(deviceFile.displayName)
     val menuItems = buildList {
+        if (showPinnedItemMenu && isPinned) {
+            add(FileMenuItem(
+                    textResId = R.string.action_unpin_app,
+                    icon = { Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null) },
+                    onClick = { onDismissRequest(); onTogglePin() },
+            ))
+            if (!deviceFile.isDirectory) {
+                add(FileMenuItem(
+                        textResId = R.string.action_share,
+                        icon = { Icon(imageVector = Icons.Rounded.Share, contentDescription = null) },
+                        onClick = { onDismissRequest(); onShareClick() },
+                ))
+                add(FileMenuItem(
+                        textResId = R.string.action_open_folder,
+                        icon = { Icon(imageVector = Icons.Rounded.Folder, contentDescription = null) },
+                        onClick = { onDismissRequest(); onOpenFolderClick() },
+                ))
+            }
+            add(FileMenuItem(
+                    textResId = R.string.action_move_up,
+                    icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                    onClick = { onDismissRequest(); onMoveUp() },
+            ))
+            add(FileMenuItem(
+                    textResId = R.string.action_move_down,
+                    icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                    onClick = { onDismissRequest(); onMoveDown() },
+            ))
+            return@buildList
+        }
+
         if (!deviceFile.isDirectory) {
             add(FileMenuItem(
                     textResId = R.string.action_share,
@@ -214,6 +256,37 @@ fun FileDropdownMenu(
                     onClick = { onDismissRequest(); onExcludeExtension() },
             ))
         }
+    }
+
+    if (showPinnedItemMenu && isPinned) {
+        DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = onDismissRequest,
+                shape = RoundedCornerShape(24.dp),
+                properties = PopupProperties(focusable = false),
+                containerColor = AppColors.DialogBackground,
+        ) {
+            menuItems.forEachIndexed { index, item ->
+                if (index > 0) {
+                    HorizontalDivider()
+                }
+                DropdownMenuItem(
+                        text = {
+                            Text(
+                                    text =
+                                            if (item.textArg != null) {
+                                                stringResource(item.textResId, item.textArg)
+                                            } else {
+                                                stringResource(item.textResId)
+                                            },
+                            )
+                        },
+                        leadingIcon = { item.icon() },
+                        onClick = item.onClick,
+                )
+            }
+        }
+        return
     }
 
     val fileIcon = when {

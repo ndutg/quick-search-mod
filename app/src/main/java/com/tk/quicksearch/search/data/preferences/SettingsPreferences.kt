@@ -19,11 +19,24 @@ class SettingsPreferences(
 
     fun getPinnedSettingIds(): Set<String> = getPinnedStringItems(BasePreferences.KEY_PINNED_SETTINGS)
 
+    fun getPinnedSettingOrder(): List<String> = getStringListPref(BasePreferences.KEY_PINNED_SETTINGS_ORDER)
+
+    fun setPinnedSettingOrder(order: List<String>): List<String> =
+        order.distinct().also { setStringListPref(BasePreferences.KEY_PINNED_SETTINGS_ORDER, it) }
+
     fun getExcludedSettingIds(): Set<String> = getExcludedStringItems(BasePreferences.KEY_EXCLUDED_SETTINGS)
 
-    fun pinSetting(id: String): Set<String> = pinStringItem(BasePreferences.KEY_PINNED_SETTINGS, id)
+    fun pinSetting(id: String): Set<String> =
+        pinStringItem(BasePreferences.KEY_PINNED_SETTINGS, id).also {
+            if (id !in getPinnedSettingOrder()) {
+                setPinnedSettingOrder(getPinnedSettingOrder() + id)
+            }
+        }
 
-    fun unpinSetting(id: String): Set<String> = unpinStringItem(BasePreferences.KEY_PINNED_SETTINGS, id)
+    fun unpinSetting(id: String): Set<String> =
+        unpinStringItem(BasePreferences.KEY_PINNED_SETTINGS, id).also {
+            setPinnedSettingOrder(getPinnedSettingOrder().filterNot { it == id })
+        }
 
     fun excludeSetting(id: String): Set<String> = excludeStringItem(BasePreferences.KEY_EXCLUDED_SETTINGS, id)
 

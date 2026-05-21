@@ -79,6 +79,9 @@ internal interface SearchViewModelManagementApi {
 
     fun unpinContact(contactInfo: ContactInfo) = managementApiDelegate.unpinContact(contactInfo)
 
+    fun movePinnedContact(contactInfo: ContactInfo, moveUp: Boolean) =
+        managementApiDelegate.movePinnedContact(contactInfo, moveUp)
+
     fun excludeContact(contactInfo: ContactInfo) = managementApiDelegate.excludeContact(contactInfo)
 
     fun removeExcludedContact(contactInfo: ContactInfo) =
@@ -116,6 +119,9 @@ internal interface SearchViewModelManagementApi {
 
     fun unpinFile(deviceFile: DeviceFile) = managementApiDelegate.unpinFile(deviceFile)
 
+    fun movePinnedFile(deviceFile: DeviceFile, moveUp: Boolean) =
+        managementApiDelegate.movePinnedFile(deviceFile, moveUp)
+
     fun excludeFile(deviceFile: DeviceFile) = managementApiDelegate.excludeFile(deviceFile)
 
     fun excludeFileExtension(deviceFile: DeviceFile) = managementApiDelegate.excludeFileExtension(deviceFile)
@@ -141,6 +147,9 @@ internal interface SearchViewModelManagementApi {
 
     fun unpinSetting(setting: DeviceSetting) = managementApiDelegate.unpinSetting(setting)
 
+    fun movePinnedSetting(setting: DeviceSetting, moveUp: Boolean) =
+        managementApiDelegate.movePinnedSetting(setting, moveUp)
+
     fun excludeSetting(setting: DeviceSetting) = managementApiDelegate.excludeSetting(setting)
 
     fun setSettingNickname(setting: DeviceSetting, nickname: String?) =
@@ -162,6 +171,9 @@ internal interface SearchViewModelManagementApi {
 
     fun unpinCalendarEvent(event: CalendarEventInfo) = managementApiDelegate.unpinCalendarEvent(event)
 
+    fun movePinnedCalendarEvent(event: CalendarEventInfo, moveUp: Boolean) =
+        managementApiDelegate.movePinnedCalendarEvent(event, moveUp)
+
     fun excludeCalendarEvent(event: CalendarEventInfo) = managementApiDelegate.excludeCalendarEvent(event)
 
     fun removeExcludedCalendarEvent(event: CalendarEventInfo) =
@@ -179,6 +191,9 @@ internal interface SearchViewModelManagementApi {
 
     fun unpinNote(noteInfo: NoteInfo) = managementApiDelegate.unpinNote(noteInfo)
 
+    fun movePinnedNote(noteInfo: NoteInfo, moveUp: Boolean) =
+        managementApiDelegate.movePinnedNote(noteInfo, moveUp)
+
     fun stageDeleteNote(noteInfo: NoteInfo): NoteInfo? = managementApiDelegate.stageDeleteNote(noteInfo)
 
     fun undoDeleteNote(noteId: Long) = managementApiDelegate.undoDeleteNote(noteId)
@@ -193,6 +208,9 @@ internal interface SearchViewModelManagementApi {
     fun pinAppShortcut(shortcut: StaticShortcut) = managementApiDelegate.pinAppShortcut(shortcut)
 
     fun unpinAppShortcut(shortcut: StaticShortcut) = managementApiDelegate.unpinAppShortcut(shortcut)
+
+    fun movePinnedAppShortcut(shortcut: StaticShortcut, moveUp: Boolean) =
+        managementApiDelegate.movePinnedAppShortcut(shortcut, moveUp)
 
     fun excludeAppShortcut(shortcut: StaticShortcut) = managementApiDelegate.excludeAppShortcut(shortcut)
 
@@ -404,11 +422,34 @@ class SearchViewModelManagementApiDelegate internal constructor(
 
     fun clearCachedApps() = appSearchManager().clearCachedApps()
 
-    fun pinContact(contactInfo: ContactInfo) = contactManager().pinContact(contactInfo)
+    fun pinContact(contactInfo: ContactInfo) {
+        contactManager().pinContact(contactInfo)
+        appendPinnedNonAppItem(contactInfo.pinnedNonAppItemKey())
+    }
 
     fun unpinContact(contactInfo: ContactInfo) {
         contactManager().unpinContact(contactInfo)
+        removePinnedNonAppItem(contactInfo.pinnedNonAppItemKey())
         refreshRecentItems()
+    }
+
+    fun movePinnedContact(contactInfo: ContactInfo, moveUp: Boolean) {
+        updateUiState { state ->
+            val reordered =
+                state.pinnedContacts.moveItem(
+                    item = contactInfo,
+                    moveUp = moveUp,
+                    sameItem = { a, b -> a.contactId == b.contactId },
+                )
+            if (reordered != null) {
+                userPreferences.setPinnedContactOrder(reordered.map { it.contactId })
+            }
+            val updatedOrder = movePinnedNonAppItem(state, contactInfo.pinnedNonAppItemKey(), moveUp)
+            state.copy(
+                pinnedContacts = reordered ?: state.pinnedContacts,
+                pinnedNonAppItemOrder = updatedOrder,
+            )
+        }
     }
 
     fun excludeContact(contactInfo: ContactInfo) = contactManager().excludeContact(contactInfo)
@@ -448,11 +489,34 @@ class SearchViewModelManagementApiDelegate internal constructor(
         Map<com.tk.quicksearch.search.data.preferences.ContactActionTriggerKey, ResultTrigger> =
         userPreferences.getAllContactActionTriggers()
 
-    fun pinFile(deviceFile: DeviceFile) = fileManager().pinFile(deviceFile)
+    fun pinFile(deviceFile: DeviceFile) {
+        fileManager().pinFile(deviceFile)
+        appendPinnedNonAppItem(deviceFile.pinnedNonAppItemKey())
+    }
 
     fun unpinFile(deviceFile: DeviceFile) {
         fileManager().unpinFile(deviceFile)
+        removePinnedNonAppItem(deviceFile.pinnedNonAppItemKey())
         refreshRecentItems()
+    }
+
+    fun movePinnedFile(deviceFile: DeviceFile, moveUp: Boolean) {
+        updateUiState { state ->
+            val reordered =
+                state.pinnedFiles.moveItem(
+                    item = deviceFile,
+                    moveUp = moveUp,
+                    sameItem = { a, b -> a.uri.toString() == b.uri.toString() },
+                )
+            if (reordered != null) {
+                userPreferences.setPinnedFileOrder(reordered.map { it.uri.toString() })
+            }
+            val updatedOrder = movePinnedNonAppItem(state, deviceFile.pinnedNonAppItemKey(), moveUp)
+            state.copy(
+                pinnedFiles = reordered ?: state.pinnedFiles,
+                pinnedNonAppItemOrder = updatedOrder,
+            )
+        }
     }
 
     fun excludeFile(deviceFile: DeviceFile) = fileManager().excludeFile(deviceFile)
@@ -484,11 +548,34 @@ class SearchViewModelManagementApiDelegate internal constructor(
 
     fun getFileTrigger(uri: String): ResultTrigger? = userPreferences.getFileTrigger(uri)
 
-    fun pinSetting(setting: DeviceSetting) = settingsManager().pinSetting(setting)
+    fun pinSetting(setting: DeviceSetting) {
+        settingsManager().pinSetting(setting)
+        appendPinnedNonAppItem(setting.pinnedNonAppItemKey())
+    }
 
     fun unpinSetting(setting: DeviceSetting) {
         settingsManager().unpinSetting(setting)
+        removePinnedNonAppItem(setting.pinnedNonAppItemKey())
         refreshRecentItems()
+    }
+
+    fun movePinnedSetting(setting: DeviceSetting, moveUp: Boolean) {
+        updateUiState { state ->
+            val reordered =
+                state.pinnedSettings.moveItem(
+                    item = setting,
+                    moveUp = moveUp,
+                    sameItem = { a, b -> a.id == b.id },
+                )
+            if (reordered != null) {
+                userPreferences.setPinnedSettingOrder(reordered.map { it.id })
+            }
+            val updatedOrder = movePinnedNonAppItem(state, setting.pinnedNonAppItemKey(), moveUp)
+            state.copy(
+                pinnedSettings = reordered ?: state.pinnedSettings,
+                pinnedNonAppItemOrder = updatedOrder,
+            )
+        }
     }
 
     fun excludeSetting(setting: DeviceSetting) = settingsManager().excludeSetting(setting)
@@ -509,9 +596,34 @@ class SearchViewModelManagementApiDelegate internal constructor(
 
     fun clearAllExcludedSettings() = settingsManager().clearAllExcludedSettings()
 
-    fun pinCalendarEvent(event: CalendarEventInfo) = calendarManager().pinItem(event)
+    fun pinCalendarEvent(event: CalendarEventInfo) {
+        calendarManager().pinItem(event)
+        appendPinnedNonAppItem(event.pinnedNonAppItemKey())
+    }
 
-    fun unpinCalendarEvent(event: CalendarEventInfo) = calendarManager().unpinItem(event)
+    fun unpinCalendarEvent(event: CalendarEventInfo) {
+        calendarManager().unpinItem(event)
+        removePinnedNonAppItem(event.pinnedNonAppItemKey())
+    }
+
+    fun movePinnedCalendarEvent(event: CalendarEventInfo, moveUp: Boolean) {
+        updateUiState { state ->
+            val reordered =
+                state.pinnedCalendarEvents.moveItem(
+                    item = event,
+                    moveUp = moveUp,
+                    sameItem = { a, b -> a.eventId == b.eventId },
+                )
+            if (reordered != null) {
+                userPreferences.setPinnedCalendarEventOrder(reordered.map { it.eventId })
+            }
+            val updatedOrder = movePinnedNonAppItem(state, event.pinnedNonAppItemKey(), moveUp)
+            state.copy(
+                pinnedCalendarEvents = reordered ?: state.pinnedCalendarEvents,
+                pinnedNonAppItemOrder = updatedOrder,
+            )
+        }
+    }
 
     fun excludeCalendarEvent(event: CalendarEventInfo) = calendarManager().excludeItem(event)
 
@@ -527,6 +639,7 @@ class SearchViewModelManagementApiDelegate internal constructor(
     fun pinNote(noteInfo: NoteInfo) {
         scope.launch(Dispatchers.IO) {
             notesRepository().pinNote(noteInfo.noteId)
+            appendPinnedNonAppItem(noteInfo.pinnedNonAppItemKey())
             refreshNotesState()
         }
     }
@@ -534,8 +647,28 @@ class SearchViewModelManagementApiDelegate internal constructor(
     fun unpinNote(noteInfo: NoteInfo) {
         scope.launch(Dispatchers.IO) {
             notesRepository().unpinNote(noteInfo.noteId)
+            removePinnedNonAppItem(noteInfo.pinnedNonAppItemKey())
             refreshNotesState()
             refreshRecentItems()
+        }
+    }
+
+    fun movePinnedNote(noteInfo: NoteInfo, moveUp: Boolean) {
+        updateUiState { state ->
+            val reordered =
+                state.pinnedNotes.moveItem(
+                    item = noteInfo,
+                    moveUp = moveUp,
+                    sameItem = { a, b -> a.noteId == b.noteId },
+                )
+            if (reordered != null) {
+                notesRepository().setPinnedNoteOrder(reordered.map { it.noteId })
+            }
+            val updatedOrder = movePinnedNonAppItem(state, noteInfo.pinnedNonAppItemKey(), moveUp)
+            state.copy(
+                pinnedNotes = reordered ?: state.pinnedNotes,
+                pinnedNonAppItemOrder = updatedOrder,
+            )
         }
     }
 
@@ -563,11 +696,34 @@ class SearchViewModelManagementApiDelegate internal constructor(
 
     fun getNoteTrigger(noteId: Long): ResultTrigger? = userPreferences.getNoteTrigger(noteId)
 
-    fun pinAppShortcut(shortcut: StaticShortcut) = appShortcutManager().pinShortcut(shortcut)
+    fun pinAppShortcut(shortcut: StaticShortcut) {
+        appShortcutManager().pinShortcut(shortcut)
+        appendPinnedNonAppItem(shortcut.pinnedNonAppItemKey())
+    }
 
     fun unpinAppShortcut(shortcut: StaticShortcut) {
         appShortcutManager().unpinShortcut(shortcut)
+        removePinnedNonAppItem(shortcut.pinnedNonAppItemKey())
         refreshRecentItems()
+    }
+
+    fun movePinnedAppShortcut(shortcut: StaticShortcut, moveUp: Boolean) {
+        updateUiState { state ->
+            val reordered =
+                state.pinnedAppShortcuts.moveItem(
+                    item = shortcut,
+                    moveUp = moveUp,
+                    sameItem = { a, b -> shortcutKey(a) == shortcutKey(b) },
+                )
+            if (reordered != null) {
+                userPreferences.setPinnedAppShortcutOrder(reordered.map { shortcutKey(it) })
+            }
+            val updatedOrder = movePinnedNonAppItem(state, shortcut.pinnedNonAppItemKey(), moveUp)
+            state.copy(
+                pinnedAppShortcuts = reordered ?: state.pinnedAppShortcuts,
+                pinnedNonAppItemOrder = updatedOrder,
+            )
+        }
     }
 
     fun excludeAppShortcut(shortcut: StaticShortcut) = appShortcutManager().excludeShortcut(shortcut)
@@ -596,6 +752,41 @@ class SearchViewModelManagementApiDelegate internal constructor(
 
     fun getAppShortcutTrigger(shortcutId: String): ResultTrigger? =
         userPreferences.getAppShortcutTrigger(shortcutId)
+
+    private fun appendPinnedNonAppItem(key: String) {
+        updateUiState { state ->
+            if (key in state.pinnedNonAppItemOrder) {
+                state
+            } else {
+                val updatedOrder = state.pinnedNonAppItemOrder + key
+                userPreferences.setPinnedNonAppItemOrder(updatedOrder)
+                state.copy(pinnedNonAppItemOrder = updatedOrder)
+            }
+        }
+    }
+
+    private fun removePinnedNonAppItem(key: String) {
+        updateUiState { state ->
+            if (key !in state.pinnedNonAppItemOrder) {
+                state
+            } else {
+                val updatedOrder = state.pinnedNonAppItemOrder.filterNot { it == key }
+                userPreferences.setPinnedNonAppItemOrder(updatedOrder)
+                state.copy(pinnedNonAppItemOrder = updatedOrder)
+            }
+        }
+    }
+
+    private fun movePinnedNonAppItem(
+        state: SearchUiState,
+        key: String,
+        moveUp: Boolean,
+    ): List<String> {
+        val currentOrder = state.completePinnedNonAppItemOrder()
+        val updatedOrder = currentOrder.moveItem(key, moveUp) { a, b -> a == b } ?: currentOrder
+        userPreferences.setPinnedNonAppItemOrder(updatedOrder)
+        return updatedOrder
+    }
 
     fun removeExcludedAppShortcut(shortcut: StaticShortcut) =
         appShortcutManager().removeExcludedShortcut(shortcut)
@@ -695,7 +886,10 @@ class SearchViewModelManagementApiDelegate internal constructor(
         val repository = notesRepository()
         val allNotes = repository.getAllNotes()
         val pinnedIds = repository.getPinnedNoteIds()
-        val pinnedNotes = allNotes.filter { pinnedIds.contains(it.noteId) }
+        val pinnedNotes =
+            allNotes
+                .filter { pinnedIds.contains(it.noteId) }
+                .sortedByPinnedOrder(repository.getPinnedNoteOrder()) { it.noteId }
         updateUiState { state ->
             val refreshedResults =
                 if (state.query.isBlank()) {
@@ -711,4 +905,54 @@ class SearchViewModelManagementApiDelegate internal constructor(
     }
 
     fun clearAllExclusions() = staticDataDelegate.clearAllExclusions()
+}
+
+private fun <T, K> List<T>.sortedByPinnedOrder(
+    order: List<K>,
+    keySelector: (T) -> K,
+): List<T> {
+    if (order.isEmpty()) return this
+    val orderIndex = order.withIndex().associate { it.value to it.index }
+    return sortedBy { orderIndex[keySelector(it)] ?: Int.MAX_VALUE }
+}
+
+private fun <T> List<T>.moveItem(
+    item: T,
+    moveUp: Boolean,
+    sameItem: (T, T) -> Boolean,
+): List<T>? {
+    val currentIndex = indexOfFirst { sameItem(it, item) }
+    if (currentIndex == -1) return null
+    val targetIndex = if (moveUp) currentIndex - 1 else currentIndex + 1
+    if (targetIndex !in indices) return null
+    return toMutableList().apply {
+        val moved = removeAt(currentIndex)
+        add(targetIndex, moved)
+    }
+}
+
+private fun ContactInfo.pinnedNonAppItemKey(): String = "contact:$contactId"
+
+private fun DeviceFile.pinnedNonAppItemKey(): String = "file:${uri}"
+
+private fun DeviceSetting.pinnedNonAppItemKey(): String = "setting:$id"
+
+private fun CalendarEventInfo.pinnedNonAppItemKey(): String = "calendar:$eventId"
+
+private fun NoteInfo.pinnedNonAppItemKey(): String = "note:$noteId"
+
+private fun StaticShortcut.pinnedNonAppItemKey(): String = "shortcut:${shortcutKey(this)}"
+
+private fun SearchUiState.completePinnedNonAppItemOrder(): List<String> {
+    val liveKeys =
+        buildList {
+            addAll(pinnedAppShortcuts.map { it.pinnedNonAppItemKey() })
+            addAll(pinnedContacts.map { it.pinnedNonAppItemKey() })
+            addAll(pinnedFiles.map { it.pinnedNonAppItemKey() })
+            addAll(pinnedCalendarEvents.map { it.pinnedNonAppItemKey() })
+            addAll(pinnedSettings.map { it.pinnedNonAppItemKey() })
+            addAll(pinnedNotes.map { it.pinnedNonAppItemKey() })
+        }
+    val liveKeySet = liveKeys.toSet()
+    return pinnedNonAppItemOrder.filter { it in liveKeySet } + liveKeys.filterNot { it in pinnedNonAppItemOrder }
 }

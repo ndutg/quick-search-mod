@@ -62,13 +62,11 @@ class UiPreferences(
 
         if (wasDefaultLauncher) return false
 
-        val currentOneHandedMode = isOneHandedMode()
         val currentBottomSearchBarEnabled = isBottomSearchBarEnabled()
         val currentOpenKeyboardOnLaunch = isOpenKeyboardOnLaunchEnabled()
 
         prefs.edit()
             .putBoolean(KEY_WAS_DEFAULT_LAUNCHER, true)
-            .putBoolean(KEY_DEFAULT_LAUNCHER_PREVIOUS_ONE_HANDED_MODE, currentOneHandedMode)
             .putBoolean(
                 KEY_DEFAULT_LAUNCHER_PREVIOUS_BOTTOM_SEARCH_BAR_ENABLED,
                 currentBottomSearchBarEnabled,
@@ -77,7 +75,6 @@ class UiPreferences(
                 KEY_DEFAULT_LAUNCHER_PREVIOUS_OPEN_KEYBOARD_ON_LAUNCH,
                 currentOpenKeyboardOnLaunch,
             )
-            .putBoolean(KEY_ONE_HANDED_MODE, true)
             .putBoolean(KEY_BOTTOM_SEARCH_BAR_ENABLED, true)
             .putBoolean(KEY_OPEN_KEYBOARD_ON_LAUNCH, false)
             .apply()
@@ -90,18 +87,10 @@ class UiPreferences(
         val editor =
             prefs.edit()
                 .putBoolean(KEY_WAS_DEFAULT_LAUNCHER, false)
-                .remove(KEY_DEFAULT_LAUNCHER_PREVIOUS_ONE_HANDED_MODE)
                 .remove(KEY_DEFAULT_LAUNCHER_PREVIOUS_BOTTOM_SEARCH_BAR_ENABLED)
                 .remove(KEY_DEFAULT_LAUNCHER_PREVIOUS_OPEN_KEYBOARD_ON_LAUNCH)
 
         var restoredAny = false
-        if (isOneHandedMode() == true && prefs.contains(KEY_DEFAULT_LAUNCHER_PREVIOUS_ONE_HANDED_MODE)) {
-            editor.putBoolean(
-                KEY_ONE_HANDED_MODE,
-                prefs.getBoolean(KEY_DEFAULT_LAUNCHER_PREVIOUS_ONE_HANDED_MODE, false),
-            )
-            restoredAny = true
-        }
         if (
             isBottomSearchBarEnabled() == true &&
                 prefs.contains(KEY_DEFAULT_LAUNCHER_PREVIOUS_BOTTOM_SEARCH_BAR_ENABLED)
@@ -989,8 +978,6 @@ class UiPreferences(
         const val KEY_SETTINGS_ICON_ENABLED = "settings_icon_enabled"
         const val KEY_OPEN_KEYBOARD_ON_LAUNCH = "open_keyboard_on_launch"
         const val KEY_WAS_DEFAULT_LAUNCHER = "was_default_launcher"
-        const val KEY_DEFAULT_LAUNCHER_PREVIOUS_ONE_HANDED_MODE =
-                "default_launcher_previous_one_handed_mode"
         const val KEY_DEFAULT_LAUNCHER_PREVIOUS_BOTTOM_SEARCH_BAR_ENABLED =
                 "default_launcher_previous_bottom_search_bar_enabled"
         const val KEY_DEFAULT_LAUNCHER_PREVIOUS_OPEN_KEYBOARD_ON_LAUNCH =

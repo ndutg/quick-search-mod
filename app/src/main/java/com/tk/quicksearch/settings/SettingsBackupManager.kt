@@ -336,11 +336,19 @@ object SettingsBackupManager {
     ): Boolean {
         if (prefName != BasePreferences.PREFS_NAME) return false
         return key == BasePreferences.KEY_PINNED ||
+            key == BasePreferences.KEY_PINNED_NON_APP_ITEM_ORDER ||
             key == BasePreferences.KEY_PINNED_CONTACT_IDS ||
+            key == BasePreferences.KEY_PINNED_CONTACT_ORDER ||
             key == BasePreferences.KEY_PINNED_FILE_URIS ||
+            key == BasePreferences.KEY_PINNED_FILE_ORDER ||
             key == BasePreferences.KEY_PINNED_SETTINGS ||
+            key == BasePreferences.KEY_PINNED_SETTINGS_ORDER ||
             key == BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS ||
-            key == BasePreferences.KEY_PINNED_APP_SHORTCUTS
+            key == BasePreferences.KEY_PINNED_CALENDAR_EVENT_ORDER ||
+            key == BasePreferences.KEY_PINNED_NOTE_IDS ||
+            key == BasePreferences.KEY_PINNED_NOTE_ORDER ||
+            key == BasePreferences.KEY_PINNED_APP_SHORTCUTS ||
+            key == BasePreferences.KEY_PINNED_APP_SHORTCUT_ORDER
     }
 
     private fun isShortcutKey(

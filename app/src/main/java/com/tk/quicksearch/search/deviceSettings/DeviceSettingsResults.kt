@@ -56,6 +56,7 @@ fun DeviceSettingsResultsSection(
         pinnedSettingIds: Set<String>,
         onSettingClick: (DeviceSetting) -> Unit,
         onTogglePin: (DeviceSetting) -> Unit,
+        onMovePinned: (DeviceSetting, Boolean) -> Unit = { _, _ -> },
         onExclude: (DeviceSetting) -> Unit,
         onNicknameClick: (DeviceSetting) -> Unit,
         onTriggerClick: (DeviceSetting) -> Unit,
@@ -68,6 +69,7 @@ fun DeviceSettingsResultsSection(
         showWallpaperBackground: Boolean = false,
         predictedTarget: PredictedSubmitTarget? = null,
         fillExpandedHeight: Boolean = false,
+        showPinnedItemMenu: Boolean = false,
 ) {
         val overlayCardColor = LocalOverlayResultCardColor.current
         val overlayDividerColor = LocalOverlayDividerColor.current
@@ -146,6 +148,7 @@ fun DeviceSettingsResultsSection(
                                                                 ),
                                                         onClick = onSettingClick,
                                                         onTogglePin = onTogglePin,
+                                                        onMovePinned = onMovePinned,
                                                         onExclude = onExclude,
                                                         onNicknameClick = onNicknameClick,
                                                         onTriggerClick = onTriggerClick,
@@ -155,6 +158,7 @@ fun DeviceSettingsResultsSection(
                                                         hasTrigger =
                                                                 getSettingTrigger(shortcut.id)?.word?.isNotBlank() == true,
                                                         isPredicted = showPredictedOnRow,
+                                                        showPinnedItemMenu = showPinnedItemMenu,
                                                 )
 
                                                 if (index != displayRows.lastIndex &&
@@ -190,6 +194,7 @@ internal fun SettingResultRow(
         isPinned: Boolean,
         onClick: (DeviceSetting) -> Unit,
         onTogglePin: (DeviceSetting) -> Unit,
+        onMovePinned: (DeviceSetting, Boolean) -> Unit = { _, _ -> },
         onExclude: (DeviceSetting) -> Unit,
         onNicknameClick: (DeviceSetting) -> Unit,
         hasNickname: Boolean,
@@ -201,6 +206,7 @@ internal fun SettingResultRow(
         icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
         iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
         isPredicted: Boolean = false,
+        showPinnedItemMenu: Boolean = false,
 ) {
         val context = LocalContext.current
         val addToHomeHandler =
@@ -271,10 +277,13 @@ internal fun SettingResultRow(
                                 hasNickname = hasNickname,
                                 hasTrigger = hasTrigger,
                                 onTogglePin = { onTogglePin(shortcut) },
+                                onMoveUp = { onMovePinned(shortcut, true) },
+                                onMoveDown = { onMovePinned(shortcut, false) },
                                 onExclude = { onExclude(shortcut) },
                                 onNicknameClick = { onNicknameClick(shortcut) },
                                 onTriggerClick = { onTriggerClick(shortcut) },
                                 onAddToHome = { addToHomeHandler.addDeviceSettingToHome(shortcut) },
+                                showPinnedItemMenu = showPinnedItemMenu,
                         )
                 }
         }

@@ -76,6 +76,21 @@ class UserAppPreferences(
     // App Preferences
     // ============================================================================
 
+    fun getPinnedNonAppItemOrder(): List<String> =
+            PreferenceUtils.getStringListPref(
+                    sharedPrefs,
+                    BasePreferences.KEY_PINNED_NON_APP_ITEM_ORDER,
+            )
+
+    fun setPinnedNonAppItemOrder(order: List<String>): List<String> =
+            order.distinct().also {
+                PreferenceUtils.setStringListPref(
+                        sharedPrefs,
+                        BasePreferences.KEY_PINNED_NON_APP_ITEM_ORDER,
+                        it,
+                )
+            }
+
     fun getSuggestionHiddenPackages(): Set<String> = appPreferences.getSuggestionHiddenPackages()
 
     fun getResultHiddenPackages(): Set<String> = appPreferences.getResultHiddenPackages()
@@ -134,6 +149,11 @@ class UserAppPreferences(
     // ============================================================================
 
     fun getPinnedContactIds(): Set<Long> = contactPreferences.getPinnedContactIds()
+
+    fun getPinnedContactOrder(): List<Long> = contactPreferences.getPinnedContactOrder()
+
+    fun setPinnedContactOrder(order: List<Long>): List<Long> =
+            contactPreferences.setPinnedContactOrder(order)
 
     fun getExcludedContactIds(): Set<Long> = contactPreferences.getExcludedContactIds()
 
@@ -196,6 +216,11 @@ class UserAppPreferences(
 
     fun getPinnedFileUris(): Set<String> = filePreferences.getPinnedFileUris()
 
+    fun getPinnedFileOrder(): List<String> = filePreferences.getPinnedFileOrder()
+
+    fun setPinnedFileOrder(order: List<String>): List<String> =
+            filePreferences.setPinnedFileOrder(order)
+
     fun getExcludedFileUris(): Set<String> = filePreferences.getExcludedFileUris()
 
     fun pinFile(uri: String): Set<String> = filePreferences.pinFile(uri)
@@ -252,6 +277,11 @@ class UserAppPreferences(
 
     fun getPinnedSettingIds(): Set<String> = settingsPreferences.getPinnedSettingIds()
 
+    fun getPinnedSettingOrder(): List<String> = settingsPreferences.getPinnedSettingOrder()
+
+    fun setPinnedSettingOrder(order: List<String>): List<String> =
+            settingsPreferences.setPinnedSettingOrder(order)
+
     fun getExcludedSettingIds(): Set<String> = settingsPreferences.getExcludedSettingIds()
 
     fun pinSetting(id: String): Set<String> = settingsPreferences.pinSetting(id)
@@ -276,6 +306,11 @@ class UserAppPreferences(
     // ============================================================================
 
     fun getPinnedCalendarEventIds(): Set<Long> = calendarPreferences.getPinnedEventIds()
+
+    fun getPinnedCalendarEventOrder(): List<Long> = calendarPreferences.getPinnedEventOrder()
+
+    fun setPinnedCalendarEventOrder(order: List<Long>): List<Long> =
+            calendarPreferences.setPinnedEventOrder(order)
 
     fun getExcludedCalendarEventIds(): Set<Long> = calendarPreferences.getExcludedEventIds()
 
@@ -304,6 +339,11 @@ class UserAppPreferences(
 
     fun getPinnedNoteIds(): Set<Long> = notesPreferences.getPinnedNoteIds()
 
+    fun getPinnedNoteOrder(): List<Long> = notesPreferences.getPinnedNoteOrder()
+
+    fun setPinnedNoteOrder(order: List<Long>): List<Long> =
+            notesPreferences.setPinnedNoteOrder(order)
+
     fun pinNote(noteId: Long): Set<Long> = notesPreferences.pinNote(noteId)
 
     fun unpinNote(noteId: Long): Set<Long> = notesPreferences.unpinNote(noteId)
@@ -326,6 +366,11 @@ class UserAppPreferences(
     // ============================================================================
 
     fun getPinnedAppShortcutIds(): Set<String> = appShortcutPreferences.getPinnedAppShortcutIds()
+
+    fun getPinnedAppShortcutOrder(): List<String> = appShortcutPreferences.getPinnedAppShortcutOrder()
+
+    fun setPinnedAppShortcutOrder(order: List<String>): List<String> =
+            appShortcutPreferences.setPinnedAppShortcutOrder(order)
 
     fun getExcludedAppShortcutIds(): Set<String> =
             appShortcutPreferences.getExcludedAppShortcutIds()

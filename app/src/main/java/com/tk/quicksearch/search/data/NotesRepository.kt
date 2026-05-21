@@ -145,6 +145,10 @@ class NotesRepository(
         return notesPreferences.unpinNote(noteId)
     }
 
+    fun getPinnedNoteOrder(): List<Long> = notesPreferences.getPinnedNoteOrder()
+
+    fun setPinnedNoteOrder(order: List<Long>): List<Long> = notesPreferences.setPinnedNoteOrder(order)
+
     fun isPinned(noteId: Long): Boolean = notesPreferences.getPinnedNoteIds().contains(noteId)
 
     fun getPinnedNoteIds(): Set<Long> {

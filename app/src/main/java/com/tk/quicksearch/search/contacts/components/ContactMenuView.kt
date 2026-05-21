@@ -2,6 +2,8 @@ package com.tk.quicksearch.search.contacts.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Home
@@ -35,10 +37,13 @@ fun ContactDropdownMenu(
         hasNickname: Boolean,
         hasTrigger: Boolean,
         onTogglePin: () -> Unit,
+        onMoveUp: () -> Unit = {},
+        onMoveDown: () -> Unit = {},
         onExclude: () -> Unit,
         onNicknameClick: () -> Unit,
         onTriggerClick: () -> Unit,
         onAddToHome: () -> Unit,
+        showPinnedItemMenu: Boolean = false,
 ) {
     DropdownMenu(
             expanded = expanded,
@@ -48,6 +53,40 @@ fun ContactDropdownMenu(
             containerColor = AppColors.DialogBackground,
     ) {
         val menuItems = buildList {
+            if (showPinnedItemMenu && isPinned) {
+                add(
+                        ContactMenuItem(
+                                textResId = R.string.action_unpin_app,
+                                icon = { Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null) },
+                                onClick = {
+                                    onDismissRequest()
+                                    onTogglePin()
+                                },
+                        ),
+                )
+                add(
+                        ContactMenuItem(
+                                textResId = R.string.action_move_up,
+                                icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                                onClick = {
+                                    onDismissRequest()
+                                    onMoveUp()
+                                },
+                        ),
+                )
+                add(
+                        ContactMenuItem(
+                                textResId = R.string.action_move_down,
+                                icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                                onClick = {
+                                    onDismissRequest()
+                                    onMoveDown()
+                                },
+                        ),
+                )
+                return@buildList
+            }
+
             add(
                     ContactMenuItem(
                             textResId =
