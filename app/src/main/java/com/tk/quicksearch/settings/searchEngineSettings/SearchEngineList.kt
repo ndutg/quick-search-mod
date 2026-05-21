@@ -100,37 +100,30 @@ fun SearchEngineListCard(
         onUpdateCustomSearchEngine != null &&
         onDeleteCustomSearchEngine != null
     ) {
-        SettingsCard(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 24.dp),
-        ) {
-            EditCustomSearchEngineCard(
-                customEngine = customEngineToEdit!!,
-                existingShortcuts = shortcutCodes,
-                currentShortcutCode = shortcutCodes["custom:${customEngineToEdit!!.id}"].orEmpty(),
-                availableBrowsers = availableBrowsers,
-                onSave = { name, normalizedTemplate, shortcutCode, iconBase64, browserPackage ->
-                    val editingEngine = customEngineToEdit!!
-                    onUpdateCustomSearchEngine(
-                        editingEngine.id,
-                        name,
-                        normalizedTemplate,
-                        iconBase64,
-                        browserPackage,
-                    )
-                    setAliasCode?.invoke(SearchTarget.Custom(editingEngine), shortcutCode)
-                    setAliasEnabled?.invoke(SearchTarget.Custom(editingEngine), true)
-                    customEngineToEdit = null
-                },
-                onDelete = {
-                    onDeleteCustomSearchEngine(customEngineToEdit!!.id)
-                    customEngineToEdit = null
-                },
-                onCancel = { customEngineToEdit = null },
-            )
-        }
+        val editingEngine = customEngineToEdit!!
+        EditCustomSearchEngineDialog(
+            customEngine = editingEngine,
+            existingShortcuts = shortcutCodes,
+            currentShortcutCode = shortcutCodes["custom:${editingEngine.id}"].orEmpty(),
+            availableBrowsers = availableBrowsers,
+            onSave = { name, normalizedTemplate, shortcutCode, iconBase64, browserPackage ->
+                onUpdateCustomSearchEngine(
+                    editingEngine.id,
+                    name,
+                    normalizedTemplate,
+                    iconBase64,
+                    browserPackage,
+                )
+                setAliasCode?.invoke(SearchTarget.Custom(editingEngine), shortcutCode)
+                setAliasEnabled?.invoke(SearchTarget.Custom(editingEngine), true)
+                customEngineToEdit = null
+            },
+            onDelete = {
+                onDeleteCustomSearchEngine(editingEngine.id)
+                customEngineToEdit = null
+            },
+            onDismiss = { customEngineToEdit = null },
+        )
     }
 
     Column {

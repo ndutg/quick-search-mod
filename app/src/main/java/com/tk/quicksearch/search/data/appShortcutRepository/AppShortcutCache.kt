@@ -27,13 +27,21 @@ internal class AppShortcutCache(
         return runCatching {
             val json = prefs.getString(KEY_SHORTCUT_LIST, null) ?: return null
             if (json.length < 10 || json == "[]") return null
+            if (json.length > MAX_SYSTEM_CACHE_CHARS) {
+                prefs.edit().remove(KEY_SHORTCUT_LIST).remove(KEY_LAST_UPDATE).apply()
+                return null
+            }
             JSONArray(json).toShortcutList()
         }.getOrNull()
     }
 
     fun saveShortcuts(shortcuts: List<StaticShortcut>): Boolean =
         runCatching {
-            val json = shortcuts.toShortcutJsonArray().toString()
+            val json =
+                shortcuts
+                    .map { shortcut -> shortcut.copy(iconBase64 = null) }
+                    .toShortcutJsonArray()
+                    .toString()
             prefs
                 .edit()
                 .putString(KEY_SHORTCUT_LIST, json)
@@ -67,6 +75,7 @@ internal class AppShortcutCache(
         private const val KEY_SHORTCUT_LIST = "shortcut_list"
         private const val KEY_CUSTOM_SHORTCUT_LIST = "custom_shortcut_list"
         private const val KEY_LAST_UPDATE = "last_update"
+        private const val MAX_SYSTEM_CACHE_CHARS = 2_000_000
 
         private const val FIELD_PACKAGE_NAME = "packageName"
         private const val FIELD_APP_LABEL = "appLabel"
@@ -102,7 +111,6 @@ internal class AppShortcutCache(
                 val jsonObject = getJSONObject(index)
                 val id = jsonObject.getString(FIELD_ID).trim()
                 val enabled = jsonObject.optBoolean(FIELD_ENABLED, true)
-                if (!enabled || !isValidShortcutId(id)) continue
                 val packageName = jsonObject.getString(FIELD_PACKAGE_NAME)
                 val appLabel = jsonObject.optString(FIELD_APP_LABEL, packageName)
                 val shortLabel = jsonObject.getNullableString(FIELD_SHORT_LABEL)
@@ -121,6 +129,7 @@ internal class AppShortcutCache(
                     }
                 val intentsJson = jsonObject.optJSONArray(FIELD_INTENTS) ?: JSONArray()
                 val intents = intentsJson.toIntentList(packageName)
+                if (!enabled || !isCacheableShortcutId(id, intents)) continue
 
                 shortcuts.add(
                     StaticShortcut(
@@ -313,5 +322,9 @@ internal class AppShortcutCache(
                 }
             }
         }
+
+        private fun isCacheableShortcutId(id: String, intents: List<Intent>): Boolean =
+            isValidShortcutId(id) ||
+                intents.any { intent -> intent.action == ACTION_LAUNCHER_APPS_SHORTCUT }
     }
 }

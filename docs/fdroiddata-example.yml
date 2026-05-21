@@ -1,0 +1,29 @@
+# Example fdroiddata entry — copy to metadata/com.tk.quicksearch.yml in
+# https://gitlab.com/fdroid/fdroiddata (adjust fields after your RFP is accepted).
+
+Categories:
+  - System
+
+License: MIT
+
+SourceCode: https://github.com/teja2495/quick-search
+IssueTracker: https://github.com/teja2495/quick-search/issues
+Changelog: https://github.com/teja2495/quick-search/releases
+
+RepoType: git
+Repo: https://github.com/teja2495/quick-search
+
+Builds:
+  - versionName: '3.6'
+    versionCode: 65
+    commit: REPLACE_WITH_FDROID_RELEASE_TAG_OR_COMMIT_SHA
+    gradle:
+      - fdroid
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^[0-9.]+-fdroid$
+CurrentVersion: '3.6'
+CurrentVersionCode: 65
+
+AntiFeatures:
+  - NonFreeNet

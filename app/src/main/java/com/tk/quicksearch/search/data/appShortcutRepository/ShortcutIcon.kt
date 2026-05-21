@@ -1,9 +1,12 @@
 package com.tk.quicksearch.search.data.AppShortcutRepository
 
 import android.content.Context
+import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.LruCache
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,7 +73,7 @@ internal fun rememberShortcutIcon(
             initialValue = null,
             key1 = shortcut.packageName,
             key2 = shortcut.iconResId,
-            key3 = shortcut.iconBase64 to iconSizePx,
+            key3 = (shortcut.iconBase64?.hashCode() ?: 0) to iconSizePx,
         ) {
             value =
                 withContext(Dispatchers.IO) {
@@ -89,12 +92,20 @@ private fun loadShortcutIconBitmap(
     shortcut: StaticShortcut,
     iconSizePx: Int,
 ): ImageBitmap? {
+    val cacheKey = shortcutIconCacheKey(shortcut, iconSizePx)
+    ShortcutIconMemoryCache.get(cacheKey)?.let { return it }
+
     val embedded = shortcut.iconBase64?.takeIf { it.isNotBlank() }
     if (embedded != null) {
         val decoded = kotlin.runCatching { Base64.decode(embedded, Base64.DEFAULT) }.getOrNull()
         val bitmap =
-            decoded?.let { bytes -> BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
-        return bitmap?.asImageBitmap()
+            decoded?.let { bytes -> decodeScaledBitmap(bytes, iconSizePx) }
+        return bitmap?.asImageBitmap()?.also { ShortcutIconMemoryCache.put(cacheKey, it) }
+    }
+
+    loadLauncherAppsShortcutIcon(context, shortcut, iconSizePx)?.let { icon ->
+        ShortcutIconMemoryCache.put(cacheKey, icon)
+        return icon
     }
 
     val resId = shortcut.iconResId ?: return null
@@ -110,4 +121,122 @@ private fun loadShortcutIconBitmap(
     val sizePx = iconSizePx.coerceAtLeast(1)
     return kotlin.runCatching { drawable.toBitmap(width = sizePx, height = sizePx).asImageBitmap() }
         .getOrNull()
+        ?.also { ShortcutIconMemoryCache.put(cacheKey, it) }
+}
+
+private fun shortcutIconCacheKey(shortcut: StaticShortcut, iconSizePx: Int): String {
+    val launcherIntent = shortcut.launcherAppsIntent()
+    val launcherId =
+        launcherIntent?.let { intent ->
+            listOf(
+                intent.getStringExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_PACKAGE),
+                intent.getStringExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_ID),
+                intent.getLongExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_USER_SERIAL, -1L),
+            ).joinToString(":")
+        }
+    return listOf(
+        shortcut.packageName,
+        shortcut.id,
+        launcherId.orEmpty(),
+        shortcut.iconResId ?: 0,
+        shortcut.iconBase64?.hashCode() ?: 0,
+        iconSizePx,
+    ).joinToString("|")
+}
+
+private fun StaticShortcut.launcherAppsIntent() =
+    intents.firstOrNull { intent -> intent.action == ACTION_LAUNCHER_APPS_SHORTCUT }
+
+private fun decodeScaledBitmap(bytes: ByteArray, iconSizePx: Int): Bitmap? {
+    val targetSize = iconSizePx.coerceAtLeast(1)
+    val bounds =
+        BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, this)
+        }
+    val sampleSize =
+        calculateInSampleSize(
+            width = bounds.outWidth,
+            height = bounds.outHeight,
+            targetSize = targetSize,
+        )
+    return BitmapFactory.decodeByteArray(
+        bytes,
+        0,
+        bytes.size,
+        BitmapFactory.Options().apply { inSampleSize = sampleSize },
+    )
+}
+
+private fun calculateInSampleSize(width: Int, height: Int, targetSize: Int): Int {
+    if (width <= targetSize && height <= targetSize) return 1
+    var sampleSize = 1
+    var halfWidth = width / 2
+    var halfHeight = height / 2
+    while (halfWidth / sampleSize >= targetSize && halfHeight / sampleSize >= targetSize) {
+        sampleSize *= 2
+    }
+    return sampleSize.coerceAtLeast(1)
+}
+
+private fun loadLauncherAppsShortcutIcon(
+    context: Context,
+    shortcut: StaticShortcut,
+    iconSizePx: Int,
+): ImageBitmap? {
+    val launcherIntent = shortcut.launcherAppsIntent() ?: return null
+    val packageName =
+        launcherIntent.getStringExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_PACKAGE)
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
+    val shortcutId =
+        launcherIntent.getStringExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_ID)
+            ?.takeIf { it.isNotBlank() }
+            ?: return null
+    val userSerial = launcherIntent.getLongExtra(EXTRA_LAUNCHER_APPS_SHORTCUT_USER_SERIAL, -1L)
+    val launcherApps =
+        context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as? LauncherApps ?: return null
+    if (!launcherApps.hasShortcutHostPermission()) return null
+
+    val userHandle =
+        runCatching {
+            val userManager = context.getSystemService(Context.USER_SERVICE) as android.os.UserManager
+            launcherApps.profiles.firstOrNull { profile ->
+                userManager.getSerialNumberForUser(profile) == userSerial
+            } ?: launcherApps.profiles.firstOrNull()
+        }.getOrNull() ?: return null
+
+    val query =
+        LauncherApps.ShortcutQuery().apply {
+            setPackage(packageName)
+            setShortcutIds(listOf(shortcutId))
+            setQueryFlags(
+                LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or
+                    LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or
+                    LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED,
+            )
+        }
+    val info: ShortcutInfo =
+        runCatching { launcherApps.getShortcuts(query, userHandle) }
+            .getOrNull()
+            .orEmpty()
+            .firstOrNull { it.`package` == packageName && it.id == shortcutId && it.isEnabled }
+            ?: return null
+    val density = context.resources.displayMetrics.densityDpi
+    val drawable =
+        runCatching { launcherApps.getShortcutIconDrawable(info, density) }.getOrNull()
+            ?: return null
+    val sizePx = iconSizePx.coerceAtLeast(1)
+    return runCatching { drawable.toBitmap(width = sizePx, height = sizePx).asImageBitmap() }
+        .getOrNull()
+}
+
+private object ShortcutIconMemoryCache {
+    private val cache = LruCache<String, ImageBitmap>(128)
+
+    fun get(key: String): ImageBitmap? = synchronized(cache) { cache.get(key) }
+
+    fun put(key: String, icon: ImageBitmap) {
+        synchronized(cache) { cache.put(key, icon) }
+    }
 }

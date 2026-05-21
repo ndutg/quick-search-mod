@@ -1,26 +1,35 @@
 package com.tk.quicksearch.search.searchScreen
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.search.appShortcuts.AppShortcutRow
+import com.tk.quicksearch.search.calendar.CalendarEventRow
+import com.tk.quicksearch.search.contacts.components.ContactResultRow
+import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
+import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.MessagingApp
-import com.tk.quicksearch.search.appShortcuts.AppShortcutResultsSection
-import com.tk.quicksearch.search.calendar.CalendarEventsSection
-import com.tk.quicksearch.search.contacts.ContactResultsSection
+import com.tk.quicksearch.search.deviceSettings.SettingResultRow
+import com.tk.quicksearch.search.files.FileResultRow
+import com.tk.quicksearch.search.notes.NoteRow
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
-import com.tk.quicksearch.search.deviceSettings.DeviceSettingsResultsSection
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
-import com.tk.quicksearch.search.files.FileResultsSection
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
-import com.tk.quicksearch.search.notes.NotesResultsSection
+import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
+import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
+import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 @Composable
@@ -64,179 +73,161 @@ internal fun PinnedNonAppItemsSection(
 
     if (orderedItems.isEmpty()) return
 
-    Column(
+    val overlayCardColor = LocalOverlayResultCardColor.current
+    val overlayDividerColor = LocalOverlayDividerColor.current
+    val dividerColor = overlayDividerColor
+        ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant
+
+    SearchResultCard(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+        showWallpaperBackground = showWallpaperBackground,
+        overlayContainerColor = overlayCardColor,
     ) {
-        orderedItems.forEach { item ->
-            when (item) {
-                is PinnedNonAppItem.AppShortcut ->
-                    AppShortcutResultsSection(
-                        shortcuts = listOf(item.shortcut),
-                        isExpanded = true,
-                        pinnedShortcutIds = appShortcutsParams.pinnedShortcutIds,
-                        excludedShortcutIds = appShortcutsParams.excludedShortcutIds,
-                        onShortcutClick = appShortcutsParams.onShortcutClick,
-                        onTogglePin = appShortcutsParams.onTogglePin,
-                        onMovePinned = appShortcutsParams.onMovePinned,
-                        onExclude = appShortcutsParams.onExclude,
-                        onInclude = appShortcutsParams.onInclude,
-                        onAppInfoClick = appShortcutsParams.onAppInfoClick,
-                        onNicknameClick = appShortcutsParams.onNicknameClick,
-                        onTriggerClick = appShortcutsParams.onTriggerClick,
-                        onEditCustomShortcut = appShortcutsParams.onEditCustomShortcut,
-                        onEditShortcutIcon = appShortcutsParams.onEditShortcutIcon,
-                        getShortcutNickname = appShortcutsParams.getShortcutNickname,
-                        getShortcutTrigger = appShortcutsParams.getShortcutTrigger,
-                        showAllResults = true,
-                        showExpandControls = false,
-                        onExpandClick = appShortcutsParams.onExpandClick,
-                        expandedCardMaxHeight = appShortcutsParams.expandedCardMaxHeight,
-                        iconPackPackage = appShortcutsParams.iconPackPackage,
-                        showWallpaperBackground = showWallpaperBackground,
-                        predictedTarget = null,
-                        fillExpandedHeight = false,
-                        showPinnedItemMenu = true,
-                    )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp),
+        ) {
+            orderedItems.forEachIndexed { index, item ->
+                when (item) {
+                    is PinnedNonAppItem.AppShortcut -> {
+                        val shortcut = item.shortcut
+                        val shortcutId = shortcutKey(shortcut)
+                        AppShortcutRow(
+                            shortcut = shortcut,
+                            isPinned = appShortcutsParams.pinnedShortcutIds.contains(shortcutId),
+                            isExcluded = appShortcutsParams.excludedShortcutIds.contains(shortcutId),
+                            hasNickname = !appShortcutsParams.getShortcutNickname(shortcutId).isNullOrBlank(),
+                            hasTrigger = appShortcutsParams.getShortcutTrigger(shortcutId)?.word?.isNotBlank() == true,
+                            onShortcutClick = appShortcutsParams.onShortcutClick,
+                            onTogglePin = appShortcutsParams.onTogglePin,
+                            onMovePinned = appShortcutsParams.onMovePinned,
+                            onExclude = appShortcutsParams.onExclude,
+                            onInclude = appShortcutsParams.onInclude,
+                            onAppInfoClick = appShortcutsParams.onAppInfoClick,
+                            onNicknameClick = appShortcutsParams.onNicknameClick,
+                            onTriggerClick = appShortcutsParams.onTriggerClick,
+                            onEditCustomShortcut = appShortcutsParams.onEditCustomShortcut,
+                            onEditShortcutIcon = appShortcutsParams.onEditShortcutIcon,
+                            iconPackPackage = appShortcutsParams.iconPackPackage,
+                            showPinnedItemMenu = true,
+                        )
+                    }
 
-                is PinnedNonAppItem.Contact ->
-                    ContactResultsSection(
-                        hasPermission = contactsParams.hasPermission,
-                        contacts = listOf(item.contact),
-                        isExpanded = true,
-                        callingApp = contactsParams.callingApp ?: CallingApp.CALL,
-                        messagingApp = contactsParams.messagingApp ?: MessagingApp.MESSAGES,
-                        onContactClick = contactsParams.onContactClick,
-                        onShowContactMethods = contactsParams.onShowContactMethods,
-                        onCallContact = contactsParams.onCallContact,
-                        onSmsContact = contactsParams.onSmsContact,
-                        onContactMethodClick = contactsParams.onContactMethodClick,
-                        pinnedContactIds = contactsParams.pinnedContactIds,
-                        onTogglePin = contactsParams.onTogglePin,
-                        onMovePinned = contactsParams.onMovePinned,
-                        onExclude = contactsParams.onExclude,
-                        onNicknameClick = contactsParams.onNicknameClick,
-                        onTriggerClick = contactsParams.onTriggerClick,
-                        getContactNickname = contactsParams.getContactNickname,
-                        getContactTrigger = contactsParams.getContactTrigger,
-                        getPrimaryContactCardAction = contactsParams.getPrimaryContactCardAction,
-                        getSecondaryContactCardAction = contactsParams.getSecondaryContactCardAction,
-                        onPrimaryActionLongPress = contactsParams.onPrimaryActionLongPress,
-                        onSecondaryActionLongPress = contactsParams.onSecondaryActionLongPress,
-                        onCustomAction = contactsParams.onCustomAction,
-                        onOpenAppSettings = contactsParams.onOpenAppSettings,
-                        showAllResults = true,
-                        showExpandControls = false,
-                        onExpandClick = contactsParams.onExpandClick,
-                        expandedCardMaxHeight = contactsParams.expandedCardMaxHeight,
-                        showContactActionHint = false,
-                        onContactActionHintDismissed = contactsParams.onContactActionHintDismissed,
-                        permissionDisabledCard = contactsParams.permissionDisabledCard,
-                        showWallpaperBackground = showWallpaperBackground,
-                        predictedTarget = null,
-                        fillExpandedHeight = false,
-                        showPinnedItemMenu = true,
-                    )
+                    is PinnedNonAppItem.Contact -> {
+                        val contact = item.contact
+                        ContactResultRow(
+                            contactInfo = contact,
+                            callingApp = ContactCallingAppResolver.resolveCallingAppForContact(
+                                contact,
+                                contactsParams.callingApp ?: CallingApp.CALL,
+                            ),
+                            messagingApp = ContactMessagingAppResolver.resolveMessagingAppForContact(
+                                contact,
+                                contactsParams.messagingApp ?: MessagingApp.MESSAGES,
+                            ),
+                            primaryAction = contactsParams.getPrimaryContactCardAction(contact.contactId),
+                            secondaryAction = contactsParams.getSecondaryContactCardAction(contact.contactId),
+                            onContactClick = contactsParams.onContactClick,
+                            onShowContactMethods = contactsParams.onShowContactMethods,
+                            onCallContact = contactsParams.onCallContact,
+                            onSmsContact = contactsParams.onSmsContact,
+                            onContactMethodClick = { method -> contactsParams.onContactMethodClick(contact, method) },
+                            isPinned = contactsParams.pinnedContactIds.contains(contact.contactId),
+                            onTogglePin = contactsParams.onTogglePin,
+                            onMovePinned = contactsParams.onMovePinned,
+                            onExclude = contactsParams.onExclude,
+                            onNicknameClick = contactsParams.onNicknameClick,
+                            hasNickname = !contactsParams.getContactNickname(contact.contactId).isNullOrBlank(),
+                            onTriggerClick = contactsParams.onTriggerClick,
+                            hasTrigger = contactsParams.getContactTrigger(contact.contactId)?.word?.isNotBlank() == true,
+                            onPrimaryActionLongPress = contactsParams.onPrimaryActionLongPress,
+                            onSecondaryActionLongPress = contactsParams.onSecondaryActionLongPress,
+                            onCustomAction = contactsParams.onCustomAction,
+                            showPinnedItemMenu = true,
+                        )
+                    }
 
-                is PinnedNonAppItem.File ->
-                    FileResultsSection(
-                        hasPermission = filesParams.hasPermission,
-                        files = listOf(item.file),
-                        isExpanded = true,
-                        onFileClick = filesParams.onFileClick,
-                        onOpenFolder = filesParams.onOpenFolder,
-                        onRequestPermission = filesParams.onRequestPermission,
-                        pinnedFileUris = filesParams.pinnedFileUris,
-                        onTogglePin = filesParams.onTogglePin,
-                        onMovePinned = filesParams.onMovePinned,
-                        onExclude = filesParams.onExclude,
-                        onExcludeExtension = filesParams.onExcludeExtension,
-                        onNicknameClick = filesParams.onNicknameClick,
-                        onTriggerClick = filesParams.onTriggerClick,
-                        getFileNickname = filesParams.getFileNickname,
-                        getFileTrigger = filesParams.getFileTrigger,
-                        showAllResults = true,
-                        showExpandControls = false,
-                        onExpandClick = filesParams.onExpandClick,
-                        expandedCardMaxHeight = filesParams.expandedCardMaxHeight,
-                        permissionDisabledCard = filesParams.permissionDisabledCard,
-                        showWallpaperBackground = showWallpaperBackground,
-                        predictedTarget = null,
-                        fillExpandedHeight = false,
-                        showPinnedItemMenu = true,
-                    )
+                    is PinnedNonAppItem.File -> {
+                        val file = item.file
+                        val fileUri = file.uri.toString()
+                        FileResultRow(
+                            deviceFile = file,
+                            onClick = filesParams.onFileClick,
+                            onOpenFolder = filesParams.onOpenFolder,
+                            isPinned = filesParams.pinnedFileUris.contains(fileUri),
+                            onTogglePin = filesParams.onTogglePin,
+                            onMovePinned = filesParams.onMovePinned,
+                            onExclude = filesParams.onExclude,
+                            onExcludeExtension = filesParams.onExcludeExtension,
+                            onNicknameClick = filesParams.onNicknameClick,
+                            hasNickname = !filesParams.getFileNickname(fileUri).isNullOrBlank(),
+                            onTriggerClick = filesParams.onTriggerClick,
+                            hasTrigger = filesParams.getFileTrigger(fileUri)?.word?.isNotBlank() == true,
+                            showPinnedItemMenu = true,
+                        )
+                    }
 
-                is PinnedNonAppItem.Setting ->
-                    DeviceSettingsResultsSection(
-                        settings = listOf(item.setting),
-                        isExpanded = true,
-                        pinnedSettingIds = settingsParams.pinnedSettingIds,
-                        onSettingClick = settingsParams.onSettingClick,
-                        onTogglePin = settingsParams.onTogglePin,
-                        onMovePinned = settingsParams.onMovePinned,
-                        onExclude = settingsParams.onExclude,
-                        onNicknameClick = settingsParams.onNicknameClick,
-                        onTriggerClick = settingsParams.onTriggerClick,
-                        getSettingNickname = settingsParams.getSettingNickname,
-                        getSettingTrigger = settingsParams.getSettingTrigger,
-                        showAllResults = true,
-                        showExpandControls = false,
-                        onExpandClick = settingsParams.onExpandClick,
-                        expandedCardMaxHeight = settingsParams.expandedCardMaxHeight,
-                        showWallpaperBackground = showWallpaperBackground,
-                        predictedTarget = null,
-                        fillExpandedHeight = false,
-                        showPinnedItemMenu = true,
-                    )
+                    is PinnedNonAppItem.Setting -> {
+                        val setting = item.setting
+                        SettingResultRow(
+                            shortcut = setting,
+                            isPinned = settingsParams.pinnedSettingIds.contains(setting.id),
+                            onClick = settingsParams.onSettingClick,
+                            onTogglePin = settingsParams.onTogglePin,
+                            onMovePinned = settingsParams.onMovePinned,
+                            onExclude = settingsParams.onExclude,
+                            onNicknameClick = settingsParams.onNicknameClick,
+                            hasNickname = !settingsParams.getSettingNickname(setting.id).isNullOrBlank(),
+                            onTriggerClick = settingsParams.onTriggerClick,
+                            hasTrigger = settingsParams.getSettingTrigger(setting.id)?.word?.isNotBlank() == true,
+                            showPinnedItemMenu = true,
+                        )
+                    }
 
-                is PinnedNonAppItem.CalendarEvent ->
-                    CalendarEventsSection(
-                        events = listOf(item.event),
-                        hasPermission = calendarParams.hasPermission,
-                        isExpanded = true,
-                        pinnedEventIds = calendarParams.pinnedEventIds,
-                        excludedEventIds = calendarParams.excludedEventIds,
-                        onEventClick = calendarParams.onEventClick,
-                        onRequestPermission = calendarParams.onRequestPermission,
-                        onTogglePin = calendarParams.onTogglePin,
-                        onMovePinned = calendarParams.onMovePinned,
-                        onExclude = calendarParams.onExclude,
-                        onInclude = calendarParams.onInclude,
-                        onNicknameClick = calendarParams.onNicknameClick,
-                        onArchiveTodayEvent = calendarParams.onArchiveTodayEvent,
-                        getEventNickname = calendarParams.getEventNickname,
-                        showAllResults = true,
-                        showExpandControls = false,
-                        onExpandClick = calendarParams.onExpandClick,
-                        expandedCardMaxHeight = calendarParams.expandedCardMaxHeight,
-                        permissionDisabledCard = calendarParams.permissionDisabledCard,
-                        showWallpaperBackground = showWallpaperBackground,
-                        predictedTarget = null,
-                        fillExpandedHeight = false,
-                        isHomeScreenMode = true,
-                        showPinnedItemMenu = true,
-                    )
+                    is PinnedNonAppItem.CalendarEvent -> {
+                        val event = item.event
+                        CalendarEventRow(
+                            event = event,
+                            isPinned = calendarParams.pinnedEventIds.contains(event.eventId),
+                            isExcluded = calendarParams.excludedEventIds.contains(event.eventId),
+                            hasNickname = !calendarParams.getEventNickname(event.eventId).isNullOrBlank(),
+                            onClick = calendarParams.onEventClick,
+                            onTogglePin = calendarParams.onTogglePin,
+                            onMovePinned = calendarParams.onMovePinned,
+                            onExclude = calendarParams.onExclude,
+                            onInclude = calendarParams.onInclude,
+                            onNicknameClick = calendarParams.onNicknameClick,
+                            isPredicted = false,
+                            isHomescreenTodayEvent = true,
+                            onArchive = calendarParams.onArchiveTodayEvent,
+                            showPinnedItemMenu = true,
+                        )
+                    }
 
-                is PinnedNonAppItem.Note ->
-                    NotesResultsSection(
-                        notes = listOf(item.note),
-                        pinnedNoteIds = notesParams.pinnedNoteIds,
-                        onNoteClick = notesParams.onNoteClick,
-                        onTogglePin = notesParams.onTogglePin,
-                        onMovePinned = notesParams.onMovePinned,
-                        onDelete = notesParams.onDelete,
-                        onTriggerClick = notesParams.onTriggerClick,
-                        getNoteTrigger = notesParams.getNoteTrigger,
-                        isExpanded = true,
-                        showAllResults = true,
-                        showExpandControls = false,
-                        onExpandClick = notesParams.onExpandClick,
-                        expandedCardMaxHeight = notesParams.expandedCardMaxHeight,
-                        showWallpaperBackground = showWallpaperBackground,
-                        predictedTarget = null,
-                        fillExpandedHeight = false,
-                        showPinnedItemMenu = true,
+                    is PinnedNonAppItem.Note -> {
+                        val note = item.note
+                        NoteRow(
+                            note = note,
+                            isPinned = notesParams.pinnedNoteIds.contains(note.noteId),
+                            onClick = notesParams.onNoteClick,
+                            onTogglePin = notesParams.onTogglePin,
+                            onMovePinned = notesParams.onMovePinned,
+                            onDelete = notesParams.onDelete,
+                            onTriggerClick = notesParams.onTriggerClick,
+                            hasTrigger = notesParams.getNoteTrigger(note.noteId)?.word?.isNotBlank() == true,
+                            isPredicted = false,
+                            showPinnedItemMenu = true,
+                        )
+                    }
+                }
+
+                if (index < orderedItems.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = dividerColor,
                     )
+                }
             }
         }
     }

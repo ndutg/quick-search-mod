@@ -1,8 +1,8 @@
+- Support for more languages: Telugu, Hindi, Spanish, Russian, Italian, Turkish, French, German, Simple Chinese, Brazilian-Portuguese, Greek and Arabic
 - File previews for PDFs and Images
-- Hold & drag to reorder pinned apps. Long press to reorder other pinned items.
+- Reorder pinned items.
 - Change app icon size
 - Show/Hide search hints & settings icon in the search bar
-- Disable Quick Note
 - Show/Hide app suggestion tabs
 - Launcher optimisations
 - UI enhancements & bug fixes

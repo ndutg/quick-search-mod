@@ -4,20 +4,18 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.material3.Button
@@ -41,6 +39,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CustomSearchEngine
 import com.tk.quicksearch.search.core.*
@@ -49,20 +48,20 @@ import com.tk.quicksearch.searchEngines.AliasValidator.hasExactAliasConflict
 import com.tk.quicksearch.searchEngines.AliasValidator.isValidGeneralAliasCode
 import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInput
 import com.tk.quicksearch.shared.util.withoutWhitespaces
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun EditCustomSearchEngineCard(
+fun EditCustomSearchEngineDialog(
     customEngine: CustomSearchEngine,
     existingShortcuts: Map<String, String>,
     currentShortcutCode: String,
     availableBrowsers: List<com.tk.quicksearch.search.core.BrowserApp> = emptyList(),
     onSave: (String, String, String, String?, String?) -> Unit,
     onDelete: () -> Unit,
-    onCancel: () -> Unit,
-    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
     var nameInput by remember(customEngine.id) {
@@ -135,40 +134,35 @@ fun EditCustomSearchEngineCard(
 
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        // Scrollable form content
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .padding(
-                        horizontal = DesignTokens.ContentHorizontalPadding,
-                        vertical = DesignTokens.SpacingLarge,
-                    ),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
-        ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_edit_search_engine_dialog_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.fillMaxWidth(0.95f),
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_edit_search_engine_dialog_title),
+                )
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = stringResource(R.string.dialog_delete),
+                        tint = MaterialTheme.colorScheme.error,
                     )
-                    IconButton(onClick = onDelete) {
-                        Icon(
-                            imageVector = Icons.Rounded.Delete,
-                            contentDescription = stringResource(R.string.dialog_delete),
-                            tint = MaterialTheme.colorScheme.error,
-                        )
-                    }
                 }
-
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -212,7 +206,6 @@ fun EditCustomSearchEngineCard(
                             onDone = {
                                 if (canSave) {
                                     onSave(trimmedName, validTemplate!!, normalizedShortcut, iconBase64, selectedBrowserPackage)
-                                    onCancel()
                                 }
                             },
                         ),
@@ -251,7 +244,6 @@ fun EditCustomSearchEngineCard(
                             onDone = {
                                 if (canSave) {
                                     onSave(trimmedName, validTemplate!!, normalizedShortcut, iconBase64, selectedBrowserPackage)
-                                    onCancel()
                                 }
                             },
                         ),
@@ -276,32 +268,23 @@ fun EditCustomSearchEngineCard(
                     onExpand = { coroutineScope.launch { scrollState.animateScrollTo(Int.MAX_VALUE) } },
                 )
             }
-
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = DesignTokens.ContentHorizontalPadding,
-                        vertical = DesignTokens.SpacingMedium,
-                    ),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TextButton(onClick = onCancel) {
-                Text(text = stringResource(R.string.dialog_cancel))
-            }
+        },
+        confirmButton = {
             Button(
                 onClick = {
                     if (canSave) {
                         onSave(trimmedName, validTemplate!!, normalizedShortcut, iconBase64, selectedBrowserPackage)
-                        onCancel()
                     }
                 },
                 enabled = canSave,
             ) {
                 Text(text = stringResource(R.string.dialog_save))
             }
-        }
-    }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.dialog_cancel))
+            }
+        },
+    )
 }
