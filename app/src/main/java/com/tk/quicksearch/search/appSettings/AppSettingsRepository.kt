@@ -270,7 +270,7 @@ class AppSettingsRepository(
                 titleRes = R.string.section_notes,
                 descriptionRes = R.string.settings_notes_view_all_desc,
                 destination = AppSettingsDestination.NOTES_LIST,
-                keywords = listOf("notebook", "memo", "list"),
+                keywords = listOf("quick note"),
             )
 
             addToggle(

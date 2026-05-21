@@ -94,7 +94,7 @@ Add aliases at the start of your query to quickly let the app know what you want
 Long-press on most results to open a context menu with quick actions.
 
 - **Triggers** - Long-press a result to add a trigger phrase. When you type that trigger and press space, Quick Search opens that result automatically.
-- **Pin / Unpin** - Pin or unpin apps, app shortcuts, contacts, files, and device settings so that they stay on your home screen when you open the app. Hold and drag any pinned item to reorder it.
+- **Pin / Unpin** - Pin or unpin apps, app shortcuts, contacts, files, and device settings so that they stay on your home screen when you open the app. Hold and drag any pinned item to reorder it. You can also long-press a pinned item and tap **Move Up** or **Move Down** to reorder it.
 - **Add / Edit Nickname** - Add or edit nicknames for apps, app shortcuts, contacts, files, and device settings so you can search them using custom names.
 - **Exclude / Include** - Exclude individual contacts, app shortcuts, files, and device settings from results. You can include them again later by clearing them from Excluded Items list in Search Results settings.
 - **Add to Home Screen** - Add apps, app shortcuts, contacts, files, and device settings directly to your home screen as shortcuts for one-tap access.

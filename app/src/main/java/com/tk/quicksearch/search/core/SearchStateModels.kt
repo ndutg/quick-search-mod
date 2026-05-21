@@ -48,6 +48,7 @@ data class SearchResultsState(
         // null = no staged results (normal write-through path).
         val pendingSearchResults: List<AppInfo>? = null,
         val pinnedApps: List<AppInfo> = emptyList(),
+        val pinnedNonAppItemOrder: List<String> = emptyList(),
         val allApps: List<AppInfo> = emptyList(),
         val suggestionExcludedApps: List<AppInfo> = emptyList(),
         val resultExcludedApps: List<AppInfo> = emptyList(),

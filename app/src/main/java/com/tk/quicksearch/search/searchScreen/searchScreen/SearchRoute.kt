@@ -1,9 +1,11 @@
 package com.tk.quicksearch.search.searchScreen
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -35,7 +37,6 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
-import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
@@ -60,7 +61,6 @@ import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.shared.permissions.PermissionSettingsDialog
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.settings.shared.applySettingsCommand
@@ -75,6 +75,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val SWIPE_NAVIGATION_THRESHOLD_PX = 140f
+
+private fun launchSystemWallpaperPicker(context: Context) {
+    val intent = Intent(Intent.ACTION_SET_WALLPAPER)
+    try {
+        context.startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(
+            context,
+            context.getString(
+                R.string.common_error_unable_to_open,
+                context.getString(R.string.action_change_wallpaper),
+            ),
+            Toast.LENGTH_SHORT,
+        ).show()
+    }
+}
 
 @Composable
 fun SearchRoute(
@@ -150,30 +166,6 @@ fun SearchRoute(
     val snackbarHostState = remember { SnackbarHostState() }
     val effectiveSnackbarHostState = overlaySnackbarHostState ?: snackbarHostState
     val snackbarScope = rememberCoroutineScope()
-    val customWallpaperPickerLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia(),
-        ) { uri ->
-            if (uri == null) return@rememberLauncherForActivityResult
-            snackbarScope.launch {
-                val persistedUri =
-                    withContext(Dispatchers.IO) {
-                        WallpaperUtils.copyImageToInternalStorage(context, uri)
-                    }
-                if (persistedUri != null) {
-                    viewModel.applySettingsCommand(SettingsCommand.CustomImageUriSetting(persistedUri))
-                    viewModel.applySettingsCommand(
-                        SettingsCommand.BackgroundSourceSetting(BackgroundSource.CUSTOM_IMAGE),
-                    )
-                } else {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.settings_overlay_source_custom_save_failed),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
-            }
-        }
     val undoLabel = stringResource(R.string.action_undo)
     var isQuickNoteNavigationInProgress by remember { mutableStateOf(false) }
 
@@ -590,6 +582,7 @@ fun SearchRoute(
             },
             onPinContact = viewModel::pinContact,
             onUnpinContact = viewModel::unpinContact,
+            onMovePinnedContact = viewModel::movePinnedContact,
             onExcludeContact = onExcludeContactWithUndo,
             onCalendarEventClick = { event: com.tk.quicksearch.search.models.CalendarEventInfo ->
                 if (event.eventId < 0) {
@@ -600,6 +593,7 @@ fun SearchRoute(
             },
             onPinCalendarEvent = viewModel::pinCalendarEvent,
             onUnpinCalendarEvent = viewModel::unpinCalendarEvent,
+            onMovePinnedCalendarEvent = viewModel::movePinnedCalendarEvent,
             onExcludeCalendarEvent = onExcludeCalendarEventWithUndo,
             onIncludeCalendarEvent = viewModel::removeExcludedCalendarEvent,
             onArchiveTodayCalendarEvent = { event -> viewModel.archiveTodayCalendarEvent(event.eventId) },
@@ -610,9 +604,11 @@ fun SearchRoute(
             },
             onPinNote = viewModel::pinNote,
             onUnpinNote = viewModel::unpinNote,
+            onMovePinnedNote = viewModel::movePinnedNote,
             onDeleteNote = onDeleteNoteWithUndo,
             onPinFile = viewModel::pinFile,
             onUnpinFile = viewModel::unpinFile,
+            onMovePinnedFile = viewModel::movePinnedFile,
             onExcludeFile = onExcludeFileWithUndo,
             onExcludeFileExtension = onExcludeFileExtensionWithUndo,
             onSettingClick = { setting: com.tk.quicksearch.search.deviceSettings.DeviceSetting ->
@@ -627,12 +623,14 @@ fun SearchRoute(
             onAppSettingPhoneAppGridColumnsChange = viewModel::setPhoneAppGridColumns,
             onPinSetting = viewModel::pinSetting,
             onUnpinSetting = viewModel::unpinSetting,
+            onMovePinnedSetting = viewModel::movePinnedSetting,
             onExcludeSetting = onExcludeSettingWithUndo,
             onAppShortcutClick = { shortcut: com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut ->
                 viewModel.launchAppShortcut(shortcut)
             },
             onPinAppShortcut = viewModel::pinAppShortcut,
             onUnpinAppShortcut = viewModel::unpinAppShortcut,
+            onMovePinnedAppShortcut = viewModel::movePinnedAppShortcut,
             onExcludeAppShortcut = onExcludeAppShortcutWithUndo,
             onIncludeAppShortcut = viewModel::removeExcludedAppShortcut,
             onAppShortcutAppInfoClick = { shortcut: com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut ->
@@ -771,9 +769,7 @@ fun SearchRoute(
                 onOpenAppSettingDestination(AppSettingsDestination.PERMISSIONS)
             },
             onChangeWallpaperClick = {
-                customWallpaperPickerLauncher.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                )
+                launchSystemWallpaperPicker(context)
             },
         )
 

@@ -53,7 +53,10 @@ class DeviceSettingsSearchHandler(
         val pinned =
             availableSettings
                 .filter { pinnedIds.contains(it.id) && !excludedIds.contains(it.id) }
-                .sortedBy { it.title.lowercase(Locale.getDefault()) }
+                .sortedByPinnedOrder(
+                    order = userPreferences.getPinnedSettingOrder(),
+                    fallbackSelector = { it.title.lowercase(Locale.getDefault()) },
+                ) { it.id }
         val excluded =
             availableSettings.filter { excludedIds.contains(it.id) }.sortedBy {
                 it.title.lowercase(Locale.getDefault())
@@ -73,7 +76,10 @@ class DeviceSettingsSearchHandler(
         val pinned =
             availableSettings
                 .filter { pinnedIds.contains(it.id) && !excludedIds.contains(it.id) }
-                .sortedBy { it.title.lowercase(Locale.getDefault()) }
+                .sortedByPinnedOrder(
+                    order = userPreferences.getPinnedSettingOrder(),
+                    fallbackSelector = { it.title.lowercase(Locale.getDefault()) },
+                ) { it.id }
         val excluded =
             availableSettings.filter { excludedIds.contains(it.id) }.sortedBy {
                 it.title.lowercase(Locale.getDefault())
@@ -147,4 +153,16 @@ class DeviceSettingsSearchHandler(
         RecentResultRankingUtils
             .buildRecencyIndex(userPreferences.getRecentResultOpens())
             .settingScores
+}
+
+private fun <T, K> List<T>.sortedByPinnedOrder(
+    order: List<K>,
+    fallbackSelector: (T) -> String,
+    keySelector: (T) -> K,
+): List<T> {
+    val orderIndex = order.withIndex().associate { it.value to it.index }
+    return sortedWith(
+        compareBy<T> { orderIndex[keySelector(it)] ?: Int.MAX_VALUE }
+            .thenBy(fallbackSelector),
+    )
 }

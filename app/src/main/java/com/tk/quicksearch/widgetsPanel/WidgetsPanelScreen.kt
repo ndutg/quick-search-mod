@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -81,8 +82,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
+import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
-import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlin.math.roundToInt
 
@@ -126,11 +127,12 @@ fun WidgetsPanelScreen(
 ) {
     val context = LocalContext.current
     val appContext = context.applicationContext
-    val isDefaultLauncher = context.isDefaultHomeApp()
     val density = LocalDensity.current
     val appWidgetManager = remember(appContext) { AppWidgetManager.getInstance(appContext) }
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, WIDGET_PANEL_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
+    val notesPreferences = remember(appContext) { NotesPreferences(appContext) }
+    val isQuickNoteEnabled = remember(appContext) { notesPreferences.isQuickNoteEnabled() }
 
     var widgets by remember { mutableStateOf(preferences.getWidgets()) }
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
@@ -323,11 +325,11 @@ fun WidgetsPanelScreen(
                 modifier =
                     Modifier
                         .fillMaxSize()
+                        .statusBarsPadding()
                         .padding(horizontal = DesignTokens.ContentHorizontalPadding)
                         .padding(bottom = DesignTokens.SpacingLarge),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
             ) {
-                Spacer(modifier = Modifier.height(DesignTokens.SpacingXXLarge))
 
                 WidgetsPanelHeader(
                     inEditMode = editingWidgetId != null,
@@ -342,7 +344,7 @@ fun WidgetsPanelScreen(
                             .verticalScroll(panelScrollState),
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
                 ) {
-                    if (!isDefaultLauncher) {
+                    if (isQuickNoteEnabled) {
                         CompactQuickNoteWidget(modifier = Modifier.fillMaxWidth())
                     }
 

@@ -10,6 +10,7 @@ internal object SearchStateExtractor {
             searchResults = s.searchResults,
             pendingSearchResults = s.pendingSearchResults,
             pinnedApps = s.pinnedApps,
+            pinnedNonAppItemOrder = s.pinnedNonAppItemOrder,
             allApps = s.allApps,
             suggestionExcludedApps = s.suggestionExcludedApps,
             resultExcludedApps = s.resultExcludedApps,

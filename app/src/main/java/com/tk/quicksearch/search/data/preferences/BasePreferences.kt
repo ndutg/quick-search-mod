@@ -445,9 +445,11 @@ abstract class BasePreferences(
         const val KEY_PINNED = "pinned_packages"
         const val KEY_PINNED_APP_ORDER = "pinned_app_order"
         const val KEY_RECENT_APP_LAUNCHES = "recent_app_launches"
+        const val KEY_PINNED_NON_APP_ITEM_ORDER = "pinned_non_app_item_order"
 
         // Contact preferences keys
         const val KEY_PINNED_CONTACT_IDS = "pinned_contact_ids"
+        const val KEY_PINNED_CONTACT_ORDER = "pinned_contact_order"
         const val KEY_EXCLUDED_CONTACT_IDS = "excluded_contact_ids"
         const val KEY_PREFERRED_PHONE_PREFIX = "preferred_phone_"
         const val KEY_LAST_SHOWN_PHONE_PREFIX = "last_shown_phone_"
@@ -457,6 +459,7 @@ abstract class BasePreferences(
 
         // File preferences keys
         const val KEY_PINNED_FILE_URIS = "pinned_file_uris"
+        const val KEY_PINNED_FILE_ORDER = "pinned_file_order"
         const val KEY_EXCLUDED_FILE_URIS = "excluded_file_uris"
         const val KEY_EXCLUDED_FILE_EXTENSIONS = "excluded_file_extensions"
         const val KEY_ENABLED_FILE_TYPES = "enabled_file_types"
@@ -469,11 +472,13 @@ abstract class BasePreferences(
 
         // Settings preferences keys
         const val KEY_PINNED_SETTINGS = "pinned_settings"
+        const val KEY_PINNED_SETTINGS_ORDER = "pinned_settings_order"
         const val KEY_EXCLUDED_SETTINGS = "excluded_settings"
         const val KEY_ASSISTANT_LAUNCH_VOICE_MODE_ENABLED = "assistant_launch_voice_mode_enabled"
 
         // Calendar preferences keys
         const val KEY_PINNED_CALENDAR_EVENT_IDS = "pinned_calendar_event_ids"
+        const val KEY_PINNED_CALENDAR_EVENT_ORDER = "pinned_calendar_event_order"
         const val KEY_EXCLUDED_CALENDAR_EVENT_IDS = "excluded_calendar_event_ids"
         const val KEY_CALENDAR_INCLUDE_PAST_EVENTS = "calendar_include_past_events"
         const val KEY_CALENDAR_SHOW_TODAY_EVENTS = "calendar_show_today_events"
@@ -483,6 +488,7 @@ abstract class BasePreferences(
 
         // Notes preferences keys
         const val KEY_PINNED_NOTE_IDS = "pinned_note_ids"
+        const val KEY_PINNED_NOTE_ORDER = "pinned_note_order"
         const val KEY_NOTES_DATA = "notes_data"
         const val KEY_NOTE_ID_COUNTER = "note_id_counter"
         const val KEY_QUICK_NOTE_ID = "quick_note_id"
@@ -490,6 +496,7 @@ abstract class BasePreferences(
 
         // App shortcut preferences keys
         const val KEY_PINNED_APP_SHORTCUTS = "pinned_app_shortcuts"
+        const val KEY_PINNED_APP_SHORTCUT_ORDER = "pinned_app_shortcut_order"
         const val KEY_EXCLUDED_APP_SHORTCUTS = "excluded_app_shortcuts"
         const val KEY_DISABLED_APP_SHORTCUTS = "disabled_app_shortcuts"
         const val KEY_APP_SHORTCUT_ICON_OVERRIDE_PREFIX = "app_shortcut_icon_override_"

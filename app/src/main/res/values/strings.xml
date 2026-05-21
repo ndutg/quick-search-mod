@@ -85,6 +85,8 @@
     <string name="action_reset_app_shortcut_icon">Reset to default icon</string>
     <string name="action_retry">Retry</string>
     <string name="action_share">Share</string>
+    <string name="action_move_up">Move Up</string>
+    <string name="action_move_down">Move Down</string>
     <string name="action_undo">Undo</string>
     <string name="action_uninstall_app">Uninstall</string>
     <string name="action_unpin_app">Unpin</string>
@@ -714,7 +716,6 @@
          ============================================================================ -->
     <string name="release_notes_action_all_features">All Features</string>
     <string name="release_notes_action_got_it">Got it</string>
-    <string name="release_notes_markdown">- File previews for PDFs and Images.\n- Hold &amp; drag to reorder pinned apps.\n- Change app icon size.\n- Show/Hide search hints &amp; settings icon in the search bar.\n- Disable Quick Note.\n- Show/Hide app suggestion tabs.\n- Launcher optimisations.\n- UI enhancements and bug fixes.</string>
     <string name="release_notes_title">Quick Search v%1$s Release Notes</string>
     <string name="release_notes_title_no_version">Quick Search Release Notes</string>
     <string name="settings_backup_export_api_key_warning_message">Proceed at your own risk. Exported API key is not encrypted and can be accessed by anyone who has access to your backup file.</string>

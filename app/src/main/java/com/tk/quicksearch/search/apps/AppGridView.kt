@@ -644,8 +644,8 @@ private fun AppGrid(
                 }
             }
     val visibleAppLimit =
-            remember(isOverlayPresentation, rowCount, columns) {
-                if (isOverlayPresentation) {
+            remember(isOverlayPresentation, reorderPinnedApps, rowCount, columns) {
+                if (isOverlayPresentation && !reorderPinnedApps) {
                     (rowCount * columns).coerceAtLeast(1)
                 } else {
                     Int.MAX_VALUE

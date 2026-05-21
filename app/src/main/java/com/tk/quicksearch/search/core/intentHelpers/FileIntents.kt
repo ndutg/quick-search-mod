@@ -159,6 +159,13 @@ internal object FileIntents {
         context: Application,
         folderPath: String,
     ): Boolean {
+        val packageManager = context.packageManager
+        try {
+            packageManager.getPackageInfo("com.sec.android.app.myfiles", 0)
+        } catch (_: android.content.pm.PackageManager.NameNotFoundException) {
+            return false
+        }
+
         val samsungIntent =
             Intent("samsung.myfiles.intent.action.LAUNCH_MY_FILES").apply {
                 setComponent(

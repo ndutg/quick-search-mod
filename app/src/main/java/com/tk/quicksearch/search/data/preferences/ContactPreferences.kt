@@ -15,11 +15,27 @@ class ContactPreferences(
 
     fun getPinnedContactIds(): Set<Long> = getPinnedLongItems(BasePreferences.KEY_PINNED_CONTACT_IDS)
 
+    fun getPinnedContactOrder(): List<Long> =
+        getStringListPref(BasePreferences.KEY_PINNED_CONTACT_ORDER).mapNotNull { it.toLongOrNull() }
+
+    fun setPinnedContactOrder(order: List<Long>): List<Long> =
+        order.distinct().also {
+            setStringListPref(BasePreferences.KEY_PINNED_CONTACT_ORDER, it.map(Long::toString))
+        }
+
     fun getExcludedContactIds(): Set<Long> = getExcludedLongItems(BasePreferences.KEY_EXCLUDED_CONTACT_IDS)
 
-    fun pinContact(contactId: Long): Set<Long> = pinLongItem(BasePreferences.KEY_PINNED_CONTACT_IDS, contactId)
+    fun pinContact(contactId: Long): Set<Long> =
+        pinLongItem(BasePreferences.KEY_PINNED_CONTACT_IDS, contactId).also {
+            if (contactId !in getPinnedContactOrder()) {
+                setPinnedContactOrder(getPinnedContactOrder() + contactId)
+            }
+        }
 
-    fun unpinContact(contactId: Long): Set<Long> = unpinLongItem(BasePreferences.KEY_PINNED_CONTACT_IDS, contactId)
+    fun unpinContact(contactId: Long): Set<Long> =
+        unpinLongItem(BasePreferences.KEY_PINNED_CONTACT_IDS, contactId).also {
+            setPinnedContactOrder(getPinnedContactOrder().filterNot { it == contactId })
+        }
 
     fun excludeContact(contactId: Long): Set<Long> = excludeLongItem(BasePreferences.KEY_EXCLUDED_CONTACT_IDS, contactId)
 

@@ -76,7 +76,10 @@ class AppShortcutSearchHandler(
                     pinnedIds.contains(shortcutKey(it)) &&
                         !excludedIds.contains(shortcutKey(it)) &&
                         !disabledIds.contains(shortcutKey(it))
-                }.sortedBy { shortcutDisplayName(it).lowercase(Locale.getDefault()) }
+                }.sortedByPinnedOrder(
+                    order = userPreferences.getPinnedAppShortcutOrder(),
+                    fallbackSelector = { shortcutDisplayName(it).lowercase(Locale.getDefault()) },
+                ) { shortcutKey(it) }
 
         val excluded =
             availableShortcuts.filter { excludedIds.contains(shortcutKey(it)) }.sortedBy {
@@ -104,7 +107,10 @@ class AppShortcutSearchHandler(
                     pinnedIds.contains(shortcutKey(it)) &&
                         !excludedIds.contains(shortcutKey(it)) &&
                         !disabledIds.contains(shortcutKey(it))
-                }.sortedBy { shortcutDisplayName(it).lowercase(Locale.getDefault()) }
+                }.sortedByPinnedOrder(
+                    order = userPreferences.getPinnedAppShortcutOrder(),
+                    fallbackSelector = { shortcutDisplayName(it).lowercase(Locale.getDefault()) },
+                ) { shortcutKey(it) }
 
         val excluded =
             availableShortcuts.filter { excludedIds.contains(shortcutKey(it)) }.sortedBy {
@@ -195,4 +201,16 @@ class AppShortcutSearchHandler(
                     !isUserCreatedShortcut(it)
             }
             .distinctBy { shortcutKey(it) }
+}
+
+private fun <T, K> List<T>.sortedByPinnedOrder(
+    order: List<K>,
+    fallbackSelector: (T) -> String,
+    keySelector: (T) -> K,
+): List<T> {
+    val orderIndex = order.withIndex().associate { it.value to it.index }
+    return sortedWith(
+        compareBy<T> { orderIndex[keySelector(it)] ?: Int.MAX_VALUE }
+            .thenBy(fallbackSelector),
+    )
 }

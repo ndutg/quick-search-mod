@@ -58,6 +58,7 @@ internal object SearchViewModelInitialStateFactory {
             SearchResultsState(
                 query = if (clearQueryOnLaunch) "" else inMemoryRetainedQuery,
                 recentApps = startupSnapshot?.suggestedApps.orEmpty(),
+                pinnedNonAppItemOrder = startupPreferencesReader.getPinnedNonAppItemOrder(),
                 indexedAppCount = startupSnapshot?.suggestedApps?.size ?: 0,
             )
 

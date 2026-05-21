@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Bolt
@@ -59,6 +61,7 @@ fun NotesResultsSection(
     pinnedNoteIds: Set<Long>,
     onNoteClick: (NoteInfo) -> Unit,
     onTogglePin: (NoteInfo) -> Unit,
+    onMovePinned: (NoteInfo, Boolean) -> Unit = { _, _ -> },
     onDelete: (NoteInfo) -> Unit,
     onTriggerClick: (NoteInfo) -> Unit,
     getNoteTrigger: (Long) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
@@ -70,6 +73,7 @@ fun NotesResultsSection(
     showWallpaperBackground: Boolean,
     predictedTarget: PredictedSubmitTarget? = null,
     fillExpandedHeight: Boolean = false,
+    showPinnedItemMenu: Boolean = false,
 ) {
     if (notes.isEmpty()) return
 
@@ -130,10 +134,12 @@ fun NotesResultsSection(
                             isPinned = pinnedNoteIds.contains(note.noteId),
                             onClick = onNoteClick,
                             onTogglePin = onTogglePin,
+                            onMovePinned = onMovePinned,
                             onDelete = onDelete,
                             onTriggerClick = onTriggerClick,
                             hasTrigger = getNoteTrigger(note.noteId)?.word?.isNotBlank() == true,
                             isPredicted = showPredictedOnRow,
+                            showPinnedItemMenu = showPinnedItemMenu,
                         )
                         if (index < displayNotes.lastIndex && !showPredictedOnRow) {
                             HorizontalDivider(
@@ -169,10 +175,12 @@ internal fun NoteRow(
     isPinned: Boolean,
     onClick: (NoteInfo) -> Unit,
     onTogglePin: (NoteInfo) -> Unit,
+    onMovePinned: (NoteInfo, Boolean) -> Unit = { _, _ -> },
     onDelete: (NoteInfo) -> Unit,
     onTriggerClick: (NoteInfo) -> Unit,
     hasTrigger: Boolean,
     isPredicted: Boolean,
+    showPinnedItemMenu: Boolean = false,
 ) {
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
@@ -236,6 +244,39 @@ internal fun NoteRow(
                 properties = PopupProperties(focusable = false),
                 containerColor = AppColors.DialogBackground,
             ) {
+                if (showPinnedItemMenu && isPinned) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_unpin_app)) },
+                        onClick = {
+                            showMenu = false
+                            onTogglePin(note)
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_unpin),
+                                contentDescription = null,
+                            )
+                        },
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_move_up)) },
+                        onClick = {
+                            showMenu = false
+                            onMovePinned(note, true)
+                        },
+                        leadingIcon = { Icon(Icons.Rounded.ArrowUpward, contentDescription = null) },
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.action_move_down)) },
+                        onClick = {
+                            showMenu = false
+                            onMovePinned(note, false)
+                        },
+                        leadingIcon = { Icon(Icons.Rounded.ArrowDownward, contentDescription = null) },
+                    )
+                } else {
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -294,6 +335,7 @@ internal fun NoteRow(
                     },
                     leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
                 )
+                }
             }
         }
 

@@ -1,5 +1,5 @@
 # Baseline Profile for Quick Search App
-# Updated to reflect current startup code paths and package structure.
+# Updated 2026-05-20 to reflect current startup code paths and package structure.
 
 # Primary startup entry points
 Lcom/tk/quicksearch/app/MainActivity;
@@ -131,9 +131,9 @@ Lcom/tk/quicksearch/search/utils/SearchRankingUtils;
 HSPLcom/tk/quicksearch/search/utils/SearchRankingUtils;->calculateMatchPriorityWithNickname(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
 
 Lcom/tk/quicksearch/shared/util/WallpaperUtils;
-HSPLcom/tk/quicksearch/shared/util/WallpaperUtils;->preloadWallpaper(Landroid/content/Context;)V
+HSPLcom/tk/quicksearch/shared/util/WallpaperUtils;->preloadWallpaper(Landroid/content/Context;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 HSPLcom/tk/quicksearch/shared/util/WallpaperUtils;->getStartupBackgroundPreviewBitmap(Landroid/content/Context;Ljava/lang/String;)Landroid/graphics/Bitmap;
-HSPLcom/tk/quicksearch/shared/util/WallpaperUtils;->saveStartupBackgroundPreview(Landroid/content/Context;Lcom/tk/quicksearch/search/core/BackgroundSource;Ljava/lang/String;)Ljava/lang/String;
+HSPLcom/tk/quicksearch/shared/util/WallpaperUtils;->saveStartupBackgroundPreview(Landroid/content/Context;Lcom/tk/quicksearch/search/core/BackgroundSource;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 
 Lcom/tk/quicksearch/search/utils/PermissionUtils;
 HSPLcom/tk/quicksearch/search/utils/PermissionUtils;->hasFileAccessPermission(Landroid/content/Context;)Z

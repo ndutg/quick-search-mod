@@ -8,11 +8,27 @@ class CalendarPreferences(
 ) : BasePreferences(context) {
     fun getPinnedEventIds(): Set<Long> = getPinnedLongItems(BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS)
 
+    fun getPinnedEventOrder(): List<Long> =
+        getStringListPref(BasePreferences.KEY_PINNED_CALENDAR_EVENT_ORDER).mapNotNull { it.toLongOrNull() }
+
+    fun setPinnedEventOrder(order: List<Long>): List<Long> =
+        order.distinct().also {
+            setStringListPref(BasePreferences.KEY_PINNED_CALENDAR_EVENT_ORDER, it.map(Long::toString))
+        }
+
     fun getExcludedEventIds(): Set<Long> = getExcludedLongItems(BasePreferences.KEY_EXCLUDED_CALENDAR_EVENT_IDS)
 
-    fun pinEvent(eventId: Long): Set<Long> = pinLongItem(BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS, eventId)
+    fun pinEvent(eventId: Long): Set<Long> =
+        pinLongItem(BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS, eventId).also {
+            if (eventId !in getPinnedEventOrder()) {
+                setPinnedEventOrder(getPinnedEventOrder() + eventId)
+            }
+        }
 
-    fun unpinEvent(eventId: Long): Set<Long> = unpinLongItem(BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS, eventId)
+    fun unpinEvent(eventId: Long): Set<Long> =
+        unpinLongItem(BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS, eventId).also {
+            setPinnedEventOrder(getPinnedEventOrder().filterNot { it == eventId })
+        }
 
     fun excludeEvent(eventId: Long): Set<Long> = excludeLongItem(BasePreferences.KEY_EXCLUDED_CALENDAR_EVENT_IDS, eventId)
 

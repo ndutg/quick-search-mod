@@ -7,9 +7,25 @@ class NotesPreferences(
 ) : BasePreferences(context) {
     fun getPinnedNoteIds(): Set<Long> = getPinnedLongItems(BasePreferences.KEY_PINNED_NOTE_IDS)
 
-    fun pinNote(noteId: Long): Set<Long> = pinLongItem(BasePreferences.KEY_PINNED_NOTE_IDS, noteId)
+    fun getPinnedNoteOrder(): List<Long> =
+        getStringListPref(BasePreferences.KEY_PINNED_NOTE_ORDER).mapNotNull { it.toLongOrNull() }
 
-    fun unpinNote(noteId: Long): Set<Long> = unpinLongItem(BasePreferences.KEY_PINNED_NOTE_IDS, noteId)
+    fun setPinnedNoteOrder(order: List<Long>): List<Long> =
+        order.distinct().also {
+            setStringListPref(BasePreferences.KEY_PINNED_NOTE_ORDER, it.map(Long::toString))
+        }
+
+    fun pinNote(noteId: Long): Set<Long> =
+        pinLongItem(BasePreferences.KEY_PINNED_NOTE_IDS, noteId).also {
+            if (noteId !in getPinnedNoteOrder()) {
+                setPinnedNoteOrder(getPinnedNoteOrder() + noteId)
+            }
+        }
+
+    fun unpinNote(noteId: Long): Set<Long> =
+        unpinLongItem(BasePreferences.KEY_PINNED_NOTE_IDS, noteId).also {
+            setPinnedNoteOrder(getPinnedNoteOrder().filterNot { it == noteId })
+        }
 
     fun getNotesJson(): String = prefs.getString(BasePreferences.KEY_NOTES_DATA, null).orEmpty()
 
