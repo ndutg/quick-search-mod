@@ -29,6 +29,8 @@ F-Droid reads listing text and graphics from:
 fastlane/metadata/android/en-US/
 ```
 
+Keep the app listing text in this `fastlane` structure. Do not duplicate summary or full description in `fdroiddata` metadata; F-Droid pulls that text from this repo.
+
 When releasing, update `versionCode` / `versionName` in `app/build.gradle.kts`, add `changelogs/<versionCode>.txt`, and tag the release commit. If you keep the current F-Droid-specific tagging scheme, use tags like `3.7-fdroid`.
 
 ## Submit to F-Droid
@@ -38,7 +40,7 @@ When releasing, update `versionCode` / `versionName` in `app/build.gradle.kts`, 
 2. **Request for Packaging** — Open an issue: https://gitlab.com/fdroid/rfp/-/issues/new  
    Include app id `com.tk.quicksearch`, source URL, license, and confirm you approve inclusion.
 
-3. **fdroiddata metadata** — Fork https://gitlab.com/fdroid/fdroiddata and add `metadata/com.tk.quicksearch.yml`. A starter file is in [docs/fdroiddata-example.yml](fdroiddata-example.yml). The important build block:
+3. **fdroiddata metadata** — Fork https://gitlab.com/fdroid/fdroiddata and add `metadata/com.tk.quicksearch.yml`. A starter file is in [docs/fdroiddata-example.yml](fdroiddata-example.yml). Keep that file focused on build/update metadata and anti-features; summary/description stay in `fastlane`. The important build block:
 
    ```yaml
    Builds:
@@ -53,7 +55,24 @@ When releasing, update `versionCode` / `versionName` in `app/build.gradle.kts`, 
 
 5. **Test** — Use [fdroidserver](https://f-droid.org/en/docs/Installing_the_Server_and_Repo_Tools) or fdroiddata CI: `fdroid lint com.tk.quicksearch`, `fdroid build com.tk.quicksearch`.
 
-6. **Merge request** — Submit to fdroiddata; after merge, the app is built on F-Droid’s infrastructure (typically 24–48 hours to appear).
+6. **Merge request** — Submit to fdroiddata; after merge, the app is built on F-Droid’s infrastructure (typically 24–48 hours to appear). When opening the MR, switch to the App Inclusion template, follow its instructions, and check the required task boxes.
+
+## Checklist prep
+
+The current repo already covers most of the App Inclusion template:
+
+- `fastlane/metadata/android/en-US/` exists with summary, full description, screenshots, icon, and changelog text.
+- `docs/fdroiddata-example.yml` includes `AutoUpdateMode`, tag-based `UpdateCheckMode`, issue tracker, website, and author contact fields.
+- The existing tagged F-Droid release is `3.6-fdroid`.
+- Local release verification completed with `./gradlew assembleFdroidRelease` and `./gradlew assembleStandardRelease`.
+
+Manual items that still happen outside this repo:
+
+- Open the RFP issue and state that you are the upstream author and approve inclusion.
+- Reference the RFP issue (and any `fdroiddata` issue) in the merge request body.
+- Wait for `fdroid build` and the GitLab pipelines to pass on the `fdroiddata` merge request.
+
+For copy-paste issue and merge-request text, use [docs/FDROID_SUBMISSION_TEMPLATE.md](FDROID_SUBMISSION_TEMPLATE.md).
 
 ## Release checklist
 
