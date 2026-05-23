@@ -175,7 +175,7 @@ data class WidgetPreferences(
 
     fun coerceToValidRanges(): WidgetPreferences {
         val normalizedButtons = normalizeCustomButtons(customButtons, WidgetButtonSlotConfig.MAX_COUNT)
-        val shouldHideLabel = normalizedButtons.any { it != null }
+        val hasCustomButtons = normalizedButtons.any { it != null }
         return copy(
             borderRadiusDp =
                 borderRadiusDp.coerceFiniteIn(
@@ -208,9 +208,9 @@ data class WidgetPreferences(
                     WidgetRanges.INTERNAL_VERTICAL_PADDING_MAX,
                 ),
             customButtons = normalizedButtons,
-            showLabel = if (shouldHideLabel) false else showLabel,
+            showLabel = if (hasCustomButtons) false else showLabel,
             searchIconDisplay =
-                if (shouldHideLabel && searchIconDisplay == SearchIconDisplay.CENTER) {
+                if (hasCustomButtons) {
                     SearchIconDisplay.LEFT
                 } else {
                     searchIconDisplay

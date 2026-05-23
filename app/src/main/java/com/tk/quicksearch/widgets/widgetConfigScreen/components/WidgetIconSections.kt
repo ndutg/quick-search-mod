@@ -43,7 +43,7 @@ fun WidgetSearchIconSection(
         SearchIconChoiceSegmentedButtonRow(
             selectedDisplay = state.searchIconDisplay,
             onSelectionChange = { display ->
-                if (display == SearchIconDisplay.CENTER && state.hasCustomButtons) {
+                if (display != SearchIconDisplay.LEFT && state.hasCustomButtons) {
                     Toast
                         .makeText(
                             context,
