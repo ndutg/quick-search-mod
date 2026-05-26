@@ -19,16 +19,14 @@ jobs:
       - name: Verify wallpaper code is present
         run: |
           echo "=== Checking AndroidManifest.xml for READ_MEDIA_IMAGES ==="
-          grep -n "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml || echo "❌ READ_MEDIA_IMAGES NOT FOUND"
-
+          grep -n "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml || echo "READ_MEDIA_IMAGES NOT FOUND"
           echo ""
           echo "=== Checking WallpaperUtils.kt exists ==="
           if [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt" ]; then
-            echo "✅ WallpaperUtils.kt exists"
+            echo "WallpaperUtils.kt exists"
           else
-            echo "❌ WallpaperUtils.kt NOT FOUND"
+            echo "WallpaperUtils.kt NOT FOUND"
           fi
-
           echo ""
           echo "=== Last 3 commits ==="
           git log -3 --oneline
@@ -47,34 +45,35 @@ jobs:
             -keyalg RSA \
             -keysize 2048 \
             -validity 10000 \
-            -keystore ${{ github.workspace }}/release.keystore \
+            -keystore $GITHUB_WORKSPACE/release.keystore \
             -storepass quicksearch123 \
             -keypass quicksearch123 \
             -dname "CN=Quick Search Mod, OU=Personal, O=Personal, L=Christchurch, ST=Canterbury, C=NZ"
-          echo "✅ Keystore generated at ${{ github.workspace }}/release.keystore"
+          echo "Keystore generated"
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
-      - name: Build release APK with signing
+      - name: Build fdroid release APK
         run: |
-          ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=${{ github.workspace }}/release.keystore \
+          ./gradlew assembleFdroidRelease \
+            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/release.keystore \
             -Pandroid.injected.signing.store.password=quicksearch123 \
             -Pandroid.injected.signing.key.alias=quicksearch \
             -Pandroid.injected.signing.key.password=quicksearch123
+        env:
+          GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=512m"
 
       - name: Verify APK is signed
         run: |
-          RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+          RELEASE_APK=$(find app/build/outputs/apk -name "*.apk" | head -1)
           echo "Found APK: $RELEASE_APK"
           ls -lh "$RELEASE_APK"
-
           BUILD_TOOLS=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | sort -V | tail -1)
           if $BUILD_TOOLS/apksigner verify --print-certs "$RELEASE_APK"; then
-            echo "✅ APK is properly signed"
+            echo "APK is properly signed"
           else
-            echo "❌ APK signature verification failed"
+            echo "APK signature verification failed"
             exit 1
           fi
 
@@ -82,4 +81,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: quick-search-wallpaper-release
-          path: app/build/outputs/apk/release/*.apk
+          path: "app/build/outputs/apk/**/*.apk"
