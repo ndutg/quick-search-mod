@@ -51,22 +51,24 @@ jobs:
             -storepass quicksearch123 \
             -keypass quicksearch123 \
             -dname "CN=Quick Search Mod, OU=Personal, O=Personal, L=Christchurch, ST=Canterbury, C=NZ"
-          echo "✅ Keystore generated at ${{ github.workspace }}/release.keystore"
+          echo "✅ Keystore generated"
 
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
-      - name: Build release APK with signing
+      - name: Build fdroid release APK
         run: |
-          ./gradlew assembleRelease \
+          ./gradlew assembleFdroidRelease \
             -Pandroid.injected.signing.store.file=${{ github.workspace }}/release.keystore \
             -Pandroid.injected.signing.store.password=quicksearch123 \
             -Pandroid.injected.signing.key.alias=quicksearch \
             -Pandroid.injected.signing.key.password=quicksearch123
+        env:
+          GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=512m"
 
       - name: Verify APK is signed
         run: |
-          RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+          RELEASE_APK=$(find app/build/outputs/apk -name "*.apk" | head -1)
           echo "Found APK: $RELEASE_APK"
           ls -lh "$RELEASE_APK"
 
@@ -82,4 +84,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: quick-search-wallpaper-release
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/**/*.apk
