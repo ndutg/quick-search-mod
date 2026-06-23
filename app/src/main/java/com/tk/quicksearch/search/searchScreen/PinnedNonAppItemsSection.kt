@@ -16,18 +16,16 @@ import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
 import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.MessagingApp
-import com.tk.quicksearch.search.deviceSettings.SettingResultRow
-import com.tk.quicksearch.search.files.FileResultRow
-import com.tk.quicksearch.search.notes.NoteRow
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
+import com.tk.quicksearch.search.deviceSettings.SettingResultRow
+import com.tk.quicksearch.search.files.FileResultRow
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
-import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
-import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
+import com.tk.quicksearch.search.notes.NoteRow
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -73,15 +71,16 @@ internal fun PinnedNonAppItemsSection(
 
     if (orderedItems.isEmpty()) return
 
-    val overlayCardColor = LocalOverlayResultCardColor.current
-    val overlayDividerColor = LocalOverlayDividerColor.current
-    val dividerColor = overlayDividerColor
-        ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant
+    val dividerColor =
+        if (showWallpaperBackground) {
+            AppColors.WallpaperDivider
+        } else {
+            MaterialTheme.colorScheme.outlineVariant
+        }
 
     SearchResultCard(
         modifier = modifier.fillMaxWidth(),
         showWallpaperBackground = showWallpaperBackground,
-        overlayContainerColor = overlayCardColor,
     ) {
         Column(
             modifier = Modifier
@@ -199,7 +198,7 @@ internal fun PinnedNonAppItemsSection(
                             onInclude = calendarParams.onInclude,
                             onNicknameClick = calendarParams.onNicknameClick,
                             isPredicted = false,
-                            isHomescreenTodayEvent = true,
+                            isHomescreenTodayEvent = false,
                             onArchive = calendarParams.onArchiveTodayEvent,
                             showPinnedItemMenu = true,
                         )

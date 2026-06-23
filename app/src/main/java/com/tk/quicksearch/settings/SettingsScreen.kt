@@ -21,10 +21,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -39,6 +42,7 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.Upload
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -48,6 +52,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,6 +66,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -79,6 +85,8 @@ import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.AppLanguageManager
+import com.tk.quicksearch.shared.util.AppLanguageOption
 import com.tk.quicksearch.shared.util.FeedbackUtils
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import java.text.SimpleDateFormat
@@ -130,7 +138,11 @@ fun SettingsScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     FeatureFlags.initialize(context)
+    val availableLanguages = remember(context) { AppLanguageManager.getAvailableLanguages(context) }
+    val selectedLanguageLabel = AppLanguageManager.getSelectedLanguageLabel(context)
+    val selectedLanguageTag = AppLanguageManager.getSelectedLanguageTag(context)
     var showImportWarningDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
     var pendingImportSourceUri by remember { mutableStateOf<Uri?>(null) }
     var showExportSelectionDialog by remember { mutableStateOf(false) }
     var exportSelectionState by remember { mutableStateOf(ExportSelectionState()) }
@@ -409,6 +421,31 @@ fun SettingsScreen(
                     SettingsNavigationRow(
                         item =
                             SettingsCardItem(
+                                title = stringResource(R.string.settings_app_language_title),
+                                description =
+                                    stringResource(
+                                        R.string.settings_app_language_desc,
+                                        selectedLanguageLabel,
+                                    ),
+                                icon = Icons.Rounded.Translate,
+                                actionOnPress = {
+                                    showLanguageDialog = true
+                                },
+                            ),
+                        contentPadding =
+                            PaddingValues(
+                                horizontal = DesignTokens.SpacingXXLarge,
+                                vertical = DesignTokens.SpacingLarge,
+                            ),
+                    )
+
+                    HorizontalDivider(
+                        color = AppColors.SettingsDivider,
+                    )
+
+                    SettingsNavigationRow(
+                        item =
+                            SettingsCardItem(
                                 title = stringResource(R.string.settings_more_options_title),
                                 description = stringResource(R.string.settings_more_options_desc),
                                 icon = Icons.Rounded.Tune,
@@ -566,6 +603,20 @@ fun SettingsScreen(
                 showExportSelectionDialog = false
                 val defaultName = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
                 exportLauncher.launch("quick-search-settings-$defaultName.quicksearch")
+            },
+        )
+    }
+
+    if (showLanguageDialog) {
+        AppLanguagePickerDialog(
+            selectedLanguageTag = selectedLanguageTag,
+            languageOptions = availableLanguages,
+            onDismiss = {
+                showLanguageDialog = false
+            },
+            onLanguageSelected = { languageTag ->
+                showLanguageDialog = false
+                AppLanguageManager.setAppLanguage(context, languageTag)
             },
         )
     }
@@ -729,6 +780,73 @@ fun SettingsMoreOptions(
             }
         }
     }
+}
+
+@Composable
+private fun AppLanguagePickerDialog(
+    selectedLanguageTag: String?,
+    languageOptions: List<AppLanguageOption>,
+    onDismiss: () -> Unit,
+    onLanguageSelected: (String?) -> Unit,
+) {
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.fillMaxWidth(0.94f),
+        title = {
+            Text(text = stringResource(R.string.settings_app_language_picker_title))
+        },
+        text = {
+            LazyColumn(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 420.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                items(languageOptions) { option ->
+                    val isSelected = option.languageTag == selectedLanguageTag
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clip(MaterialTheme.shapes.medium)
+                                .clickable {
+                                    onLanguageSelected(option.languageTag)
+                                }
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        RadioButton(
+                            selected = isSelected,
+                            onClick = {
+                                onLanguageSelected(option.languageTag)
+                            },
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = option.label,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            option.supportingLabel?.let { supportingLabel ->
+                                Text(
+                                    text = supportingLabel,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.common_close))
+            }
+        },
+    )
 }
 
 @Composable

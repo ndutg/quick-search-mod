@@ -2,7 +2,6 @@ package com.tk.quicksearch.search.searchHistory
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -14,9 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
@@ -28,7 +29,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -46,7 +46,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -88,6 +90,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 private const val QUERY_ROW_ICON_SIZE = 40
+private const val AI_QUERY_ROW_ICON_SIZE = 34
 private const val QUERY_ICON_START_PADDING = 16
 private const val QUERY_TEXT_START_PADDING = 12
 private const val QUERY_TEXT_END_PADDING = 16
@@ -104,7 +107,7 @@ fun SearchHistorySection(
     items: List<RecentSearchItem>,
     callingApp: CallingApp,
     messagingApp: MessagingApp,
-    onRecentQueryClick: (String) -> Unit,
+    onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
     onContactClick: (ContactInfo) -> Unit,
     onShowContactMethods: (ContactInfo) -> Unit,
     onCallContact: (ContactInfo) -> Unit,
@@ -389,33 +392,47 @@ private fun SearchHistoryTabs(
             HorizontalDivider(color = contentColor.copy(alpha = 0.10f))
         },
     ) {
-        Tab(
+        SearchHistoryTabItem(
+            text = stringResource(R.string.search_history_tab_searches),
             selected = selectedTab == SearchHistoryTab.SEARCHES,
+            contentColor = contentColor,
             onClick = { onTabSelected(SearchHistoryTab.SEARCHES) },
-            modifier = Modifier.height(SEARCH_HISTORY_TAB_ROW_HEIGHT.dp),
-            text = {
-                Text(
-                    text = stringResource(R.string.search_history_tab_searches),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            },
         )
-        Tab(
+        SearchHistoryTabItem(
+            text = stringResource(R.string.search_history_tab_recently_opened),
             selected = selectedTab == SearchHistoryTab.RECENTLY_OPENED,
+            contentColor = contentColor,
             onClick = { onTabSelected(SearchHistoryTab.RECENTLY_OPENED) },
-            modifier = Modifier.height(SEARCH_HISTORY_TAB_ROW_HEIGHT.dp),
-            text = {
-                Text(
-                    text = stringResource(R.string.search_history_tab_recently_opened),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            },
+        )
+    }
+}
+
+@Composable
+private fun SearchHistoryTabItem(
+    text: String,
+    selected: Boolean,
+    contentColor: Color,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .height(SEARCH_HISTORY_TAB_ROW_HEIGHT.dp)
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                role = Role.Tab,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.fillMaxWidth(),
+            color = if (selected) contentColor else contentColor.copy(alpha = 0.72f),
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -459,7 +476,7 @@ private fun RecentSearchItemRow(
     iconColor: Color,
     callingApp: CallingApp,
     messagingApp: MessagingApp,
-    onRecentQueryClick: (String) -> Unit,
+    onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
     onContactClick: (ContactInfo) -> Unit,
     onShowContactMethods: (ContactInfo) -> Unit,
     onCallContact: (ContactInfo) -> Unit,
@@ -494,9 +511,10 @@ private fun RecentSearchItemRow(
             is RecentSearchItem.Query -> {
                 RecentQueryRow(
                     query = item.value,
+                    showAiSearchIcon = item.entry.hasAiSnapshot,
                     textColor = textColor,
                     iconColor = iconColor,
-                    onClick = { onRecentQueryClick(item.value) },
+                    onClick = { onRecentQueryClick(item.entry) },
                     onLongPress = { showRemoveMenu = true },
                 )
             }
@@ -923,6 +941,7 @@ private fun dividerColor(
 @Composable
 private fun RecentQueryRow(
     query: String,
+    showAiSearchIcon: Boolean,
     textColor: Color,
     iconColor: Color,
     onClick: () -> Unit,
@@ -947,18 +966,33 @@ private fun RecentQueryRow(
                 ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Search,
-            contentDescription = stringResource(R.string.common_search),
-            tint = iconColor,
-            modifier =
-                Modifier
-                    .size(QUERY_ROW_ICON_SIZE.dp)
-                    .padding(
-                        start = DesignTokens.SpacingXSmall,
-                        end = QUERY_TEXT_START_PADDING.dp,
-                    ),
-        )
+        if (showAiSearchIcon) {
+            Icon(
+                painter = painterResource(R.drawable.direct_search),
+                contentDescription = stringResource(R.string.settings_direct_search_setup_nav_title),
+                tint = Color.Unspecified,
+                modifier =
+                    Modifier
+                        .size(AI_QUERY_ROW_ICON_SIZE.dp)
+                        .padding(
+                            start = DesignTokens.SpacingXSmall,
+                            end = QUERY_TEXT_START_PADDING.dp,
+                        ),
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Rounded.Search,
+                contentDescription = stringResource(R.string.common_search),
+                tint = iconColor,
+                modifier =
+                    Modifier
+                        .size(QUERY_ROW_ICON_SIZE.dp)
+                        .padding(
+                            start = DesignTokens.SpacingXSmall,
+                            end = QUERY_TEXT_START_PADDING.dp,
+                        ),
+            )
+        }
 
         Text(
             text = query,

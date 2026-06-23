@@ -1,0 +1,37 @@
+name: Remove labels on close
+
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  issues: write
+
+jobs:
+  remove-labels:
+    name: Remove labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove labels from closed issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labelsToRemove = ['pending-release', 'low-priority'];
+            const issueLabels = context.payload.issue.labels ?? [];
+
+            for (const labelName of labelsToRemove) {
+              const hasLabel = issueLabels.some((label) => label.name === labelName);
+
+              if (!hasLabel) {
+                core.info(`Issue #${context.issue.number} does not have ${labelName}; skipping.`);
+                continue;
+              }
+
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: labelName,
+              });
+              core.info(`Removed ${labelName} from issue #${context.issue.number}.`);
+            }

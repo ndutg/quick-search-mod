@@ -15,6 +15,7 @@ import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.searchHistory.SearchHistoryPreferences
 import com.tk.quicksearch.searchEngines.AliasValidator.isValidGeneralAliasCode
 import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInput
+import com.tk.quicksearch.shared.util.isPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
 import com.tk.quicksearch.tools.aiSearch.OpenAiModelCatalog
@@ -908,6 +909,12 @@ class UserAppPreferences(
             AiSearchLlmProviderId.custom(provider.id) to provider.baseUrl
         }
 
+    fun getCustomLlmAdvancedPayloadByProvider(): Map<AiSearchLlmProviderId, Pair<Boolean, String>> =
+        customLlmProviderPreferences.getProviders().mapNotNull { provider ->
+            val payload = provider.advancedPayload?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+            AiSearchLlmProviderId.custom(provider.id) to (provider.advancedPayloadEnabled to payload)
+        }.toMap()
+
     fun getConfiguredLlmProviderIds(): List<AiSearchLlmProviderId> =
         AiSearchLlmProviderId.entries +
             customLlmProviderPreferences.getProviders().map { AiSearchLlmProviderId.custom(it.id) }
@@ -923,6 +930,12 @@ class UserAppPreferences(
         apiKey: String,
     ): CustomLlmProviderConfig? =
         customLlmProviderPreferences.addProvider(baseUrl, apiKey)
+
+    fun setCustomLlmAdvancedPayload(
+        providerId: AiSearchLlmProviderId,
+        payload: String?,
+        enabled: Boolean,
+    ) = customLlmProviderPreferences.setProviderAdvancedPayload(providerId, payload, enabled)
 
     // Backward-compatible Gemini facade methods kept for existing call sites.
     fun getGeminiApiKey(): String? = geminiPreferences.getGeminiApiKey()
@@ -960,6 +973,11 @@ class UserAppPreferences(
     fun setBottomSearchBarEnabled(enabled: Boolean) =
             uiPreferences.setBottomSearchBarEnabled(enabled)
 
+    fun isUnifiedPinnedItemsEnabled(): Boolean = uiPreferences.isUnifiedPinnedItemsEnabled()
+
+    fun setUnifiedPinnedItemsEnabled(enabled: Boolean) =
+            uiPreferences.setUnifiedPinnedItemsEnabled(enabled)
+
     fun isSearchHintsEnabled(): Boolean = uiPreferences.isSearchHintsEnabled()
 
     fun setSearchHintsEnabled(enabled: Boolean) = uiPreferences.setSearchHintsEnabled(enabled)
@@ -973,6 +991,12 @@ class UserAppPreferences(
     fun setOpenKeyboardOnLaunchEnabled(enabled: Boolean) =
             uiPreferences.setOpenKeyboardOnLaunchEnabled(enabled)
 
+    fun getReservedKeyboardHeightDp(isLandscape: Boolean): Float =
+            uiPreferences.getReservedKeyboardHeightDp(isLandscape)
+
+    fun setReservedKeyboardHeightDp(isLandscape: Boolean, dp: Float) =
+            uiPreferences.setReservedKeyboardHeightDp(isLandscape, dp)
+
     fun applyDefaultLauncherPreferencesIfNeeded(isDefaultLauncher: Boolean): Boolean =
             uiPreferences.applyDefaultLauncherPreferencesIfNeeded(isDefaultLauncher)
 
@@ -980,6 +1004,8 @@ class UserAppPreferences(
 
     fun setTopResultIndicatorEnabled(enabled: Boolean) =
             uiPreferences.setTopResultIndicatorEnabled(enabled)
+
+    fun isPhysicalKeyboardConnected(): Boolean = context.isPhysicalKeyboardConnected()
 
     fun isTopMatchesEnabled(): Boolean = uiPreferences.isTopMatchesEnabled()
 
@@ -1061,6 +1087,10 @@ class UserAppPreferences(
 
     fun setUseSystemFont(enabled: Boolean) = uiPreferences.setUseSystemFont(enabled)
 
+    fun getAppLanguageTag(): String? = uiPreferences.getAppLanguageTag()
+
+    fun setAppLanguageTag(languageTag: String?) = uiPreferences.setAppLanguageTag(languageTag)
+
     fun getBackgroundSource(): BackgroundSource = uiPreferences.getBackgroundSource()
 
     fun setBackgroundSource(source: BackgroundSource) =
@@ -1114,6 +1144,19 @@ class UserAppPreferences(
 
     fun setDisabledSearchEnginesExpanded(expanded: Boolean) =
             uiPreferences.setDisabledSearchEnginesExpanded(expanded)
+
+    fun isHomePinnedSectionExpanded(section: SearchSection): Boolean =
+            uiPreferences.isHomePinnedSectionExpanded(section)
+
+    fun setHomePinnedSectionExpanded(
+            section: SearchSection,
+            expanded: Boolean,
+    ) = uiPreferences.setHomePinnedSectionExpanded(section, expanded)
+
+    fun isUnifiedPinnedItemsExpanded(): Boolean = uiPreferences.isUnifiedPinnedItemsExpanded()
+
+    fun setUnifiedPinnedItemsExpanded(expanded: Boolean) =
+            uiPreferences.setUnifiedPinnedItemsExpanded(expanded)
 
     fun isInstantStartupSurfaceEnabled(): Boolean = uiPreferences.isInstantStartupSurfaceEnabled()
 
@@ -1191,6 +1234,16 @@ class UserAppPreferences(
     fun areAppSuggestionsEnabled(): Boolean = uiPreferences.areAppSuggestionsEnabled()
 
     fun setAppSuggestionsEnabled(enabled: Boolean) = uiPreferences.setAppSuggestionsEnabled(enabled)
+
+    fun shouldShowAllAppsButton(): Boolean = uiPreferences.shouldShowAllAppsButton()
+
+    fun setShowAllAppsButton(enabled: Boolean) = uiPreferences.setShowAllAppsButton(enabled)
+
+    fun shouldIncludeNonLaunchableAppsInSearch(): Boolean =
+            uiPreferences.shouldIncludeNonLaunchableAppsInSearch()
+
+    fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) =
+            uiPreferences.setIncludeNonLaunchableAppsInSearch(enabled)
 
     fun getSelectedAppSuggestionTab(): AppSuggestionTabType =
             uiPreferences.getSelectedAppSuggestionTab()
@@ -1356,28 +1409,26 @@ class UserAppPreferences(
     }
 
     // ============================================================================
-    // In-App Review Preferences
+    // Rate Quick Search Prompt Preferences
     // ============================================================================
 
     fun getFirstAppOpenTime(): Long = uiPreferences.getFirstAppOpenTime()
 
     fun recordFirstAppOpenTime() = uiPreferences.recordFirstAppOpenTime()
 
-    fun getLastReviewPromptTime(): Long = uiPreferences.getLastReviewPromptTime()
-
-    fun recordReviewPromptTime() = uiPreferences.recordReviewPromptTime()
-
-    fun getReviewPromptedCount(): Int = uiPreferences.getReviewPromptedCount()
-
-    fun incrementReviewPromptedCount() = uiPreferences.incrementReviewPromptedCount()
-
     fun getAppOpenCount(): Int = uiPreferences.getAppOpenCount()
 
     fun incrementAppOpenCount() = uiPreferences.incrementAppOpenCount()
 
-    fun recordAppOpenCountAtPrompt() = uiPreferences.recordAppOpenCountAtPrompt()
+    fun hasCompletedRateQuickSearch(): Boolean = uiPreferences.hasCompletedRateQuickSearch()
 
-    fun shouldShowReviewPrompt(): Boolean = uiPreferences.shouldShowReviewPrompt()
+    fun markRateQuickSearchCompleted() = uiPreferences.markRateQuickSearchCompleted()
+
+    fun getRateQuickSearchLastDismissedAt(): Long = uiPreferences.getRateQuickSearchLastDismissedAt()
+
+    fun recordRateQuickSearchDismissed() = uiPreferences.recordRateQuickSearchDismissed()
+
+    fun shouldShowRateQuickSearchCard(): Boolean = uiPreferences.shouldShowRateQuickSearchCard()
 
     // ============================================================================
     // In-App Update Session Tracking

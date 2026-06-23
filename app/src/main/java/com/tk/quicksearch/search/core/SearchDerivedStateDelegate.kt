@@ -90,7 +90,12 @@ internal class SearchDerivedStateDelegate(
             userPreferences.setRecentAppLaunches(initialRecents)
         }
 
-        val pinnedAppsForSuggestions = appSearchManager.computePinnedApps(emptySet())
+        val pinnedAppsForSuggestions =
+            if (suggestionsEnabled) {
+                appSearchManager.computePinnedApps(emptySet())
+            } else {
+                emptyList()
+            }
         val pinnedAppsForResults =
             computePinnedApps(
                 apps = apps,
@@ -365,6 +370,7 @@ internal class SearchDerivedStateDelegate(
         apps: List<AppInfo>,
         resultHiddenPackages: Set<String>,
         pinnedPackages: Set<String>,
+        includeNonLaunchableApps: Boolean = configStateProvider().includeNonLaunchableAppsInSearch,
         pinnedAppsForResults: List<AppInfo> =
             computePinnedApps(
                 apps = apps,
@@ -379,7 +385,7 @@ internal class SearchDerivedStateDelegate(
                 resultHiddenPackages.contains(app.launchCountKey()) ||
                     resultHiddenPackages.contains(app.packageName) ||
                     pinnedPackages.contains(app.launchCountKey())
-            }
+            }.filter { app -> includeNonLaunchableApps || app.hasLaunchIntent }
         return (pinnedAppsForResults + nonPinnedApps).distinctBy { it.launchCountKey() }
     }
 
@@ -393,7 +399,11 @@ internal class SearchDerivedStateDelegate(
 
         return apps
             .asSequence()
-            .filter { pinnedPackages.contains(it.launchCountKey()) && !exclusion.contains(it.launchCountKey()) }
+            .filter {
+                pinnedPackages.contains(it.launchCountKey()) &&
+                    !exclusion.contains(it.launchCountKey()) &&
+                    it.hasLaunchIntent
+            }
             .sortedWith(
                 compareBy<AppInfo> { pinnedOrder[it.launchCountKey()] ?: Int.MAX_VALUE }
                     .thenBy { it.appName.lowercase(Locale.getDefault()) },

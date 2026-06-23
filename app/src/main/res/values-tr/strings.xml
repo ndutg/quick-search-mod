@@ -98,6 +98,8 @@
 <string name="action_move_down">Aşağı taşı</string>
 <string name="action_undo">Geri al</string>
 <string name="action_uninstall_app">Yüklemeyi kaldır</string>
+<string name="action_rate">Şimdi değerlendir</string>
+<string name="action_not_now">Şimdi değil</string>
 <string name="action_unpin_app">Sabitlemeyi kaldır</string>
 <string name="alias_trigger_after_space">Boşluktan sonra tetikle</string>
 <string name="common_action_add">Ekle</string>
@@ -141,8 +143,6 @@
 <string name="dialog_edit_amazon_domain_hint">Örnekler: amazon.com, amazon.in, amazon.ca vb.</string>
 <string name="dialog_edit_amazon_domain_message">Ülkeniz için Amazon alan adını güncelleyin.</string>
 <string name="dialog_edit_amazon_domain_title">Amazon alan adını düzenle</string>
-<string name="dialog_enjoying_app_title">Bu uygulamayı faydalı buluyor musunuz?</string>
-<string name="dialog_feedback_hint">Neyi geliştirebileceğimizi bize söyleyin</string>
 <string name="dialog_gemini_model_picker_title">Model seçin</string>
 <string name="dialog_nickname_message">"%1$s" için bir takma ad girin. Bu takma adı kullanarak arama yapabilirsiniz.</string>
 <string name="dialog_no">Hayır</string>
@@ -184,9 +184,15 @@
 <string name="app_suggestions_tab_new_updated">Yeni/Güncellenen</string>
 <string name="app_suggestions_tab_pinned">Sabitlenenler</string>
 <string name="app_suggestions_tab_recent">Son kullanılanlar</string>
+<string name="app_suggestions_tabs_dialog_message">Ana ekranda hangi uygulama önerisi sekmelerinin görüneceğini seçin.</string>
+<string name="app_suggestions_tabs_dialog_title">Uygulama Önerisi Sekmeleri</string>
+<string name="app_suggestions_enabled_tabs_picker_hint">Sekmeleri Seç</string>
+<string name="app_suggestions_enabled_tabs_summary">Mevcut: %1$s</string>
 <string name="app_suggestions_tab_required_toast">En az bir uygulama önerisi sekmesini etkin tutmalısınız</string>
 <string name="app_suggestions_toggle_desc">Ana ekranda önerilen uygulamaları göster veya gizle</string>
 <string name="app_suggestions_toggle_title">Uygulama önerileri</string>
+<string name="show_all_apps_button_toggle_title">Tüm uygulamalar</string>
+<string name="show_all_apps_button_toggle_desc">Uygulama önerilerinin altında \"Tüm uygulamalar\" düğmesini göster</string>
 <string name="app_suggestions_usage_access_link">kullanım erişimi izni</string>
 <string name="app_suggestions_usage_access_tip">Daha uygun öneriler görmek için kullanım erişimi izni verin</string>
 <string name="clear_query_toggle_desc">Uygulama başlatıldığında eski sorguyu otomatik olarak temizle</string>
@@ -219,6 +225,7 @@
 <string name="section_app_shortcuts">Uygulama kısayolları</string>
 <string name="section_apps">Uygulamalar</string>
 <string name="section_calendar">Takvim etkinlikleri</string>
+<string name="section_contacts">Kişiler</string>
 <string name="section_files">Dosyalar</string>
 <string name="section_notes">Notlar</string>
 <string name="section_settings">Cihaz ayarları</string>
@@ -231,6 +238,8 @@
 <string name="top_matches_toggle_desc">Tüm türlerdeki en iyi eşleşen sonuçları en üstte göster.</string>
 <string name="top_result_indicator_toggle_desc">Klavye ile açılabilecek en üstteki sonucu vurgula.</string>
 <string name="top_result_indicator_toggle_title">En iyi sonuç göstergesi</string>
+<string name="include_non_launchable_apps_toggle_title">Başlatılamayan Uygulamalar</string>
+<string name="include_non_launchable_apps_toggle_desc">Arama sonuçlarında başlatma etkinliği olmayan uygulamaları da göster.</string>
 <string name="web_search_suggestions_title">Web önerileri</string>
 
 <!-- ============================================================================
@@ -619,6 +628,8 @@
 <string name="settings_launcher_icon_title">Başlatıcı uygulama simgesi</string>
 <string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>
 <string name="settings_layout_option_bottom_title">Tek el modu</string>
+<string name="settings_unified_pinned_items_title">Birleştirilmiş Sabitlenen Öğeler</string>
+<string name="settings_unified_pinned_items_desc">Sabitlenen öğeleri ana ekranda tek bir birleştirilmiş liste olarak göster.</string>
 <string name="settings_more_options_desc">Çeşitli özelleştirme seçenekleri</string>
 <string name="settings_more_options_title">Daha fazla seçenek</string>
 <string name="settings_overlay_assistant_setup_now">Şimdi kur</string>
@@ -689,6 +700,10 @@
 <string name="settings_configure_api_key_title">API anahtarını yapılandır</string>
 <string name="settings_custom_provider_base_url_hint">Örnek: https://openrouter.ai/api/v1</string>
 <string name="settings_custom_provider_base_url_input_label">Temel URL</string>
+<string name="settings_custom_provider_advanced_payload_desc">Bu sağlayıcı aracılığıyla gönderilen her isteğe birleştirilir.</string>
+<string name="settings_custom_provider_advanced_payload_error">Geçerli bir JSON nesnesi girin.</string>
+<string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+<string name="settings_custom_provider_advanced_payload_title">Gelişmiş İstek Yükü</string>
 <string name="settings_direct_search_desc">Gemini, OpenAI, Claude ve Groq API anahtarları desteklenir</string>
 <string name="settings_direct_search_desc_intro">AI destekli aramayı ve araçları etkinleştirmek için bir API anahtarı ek.</string>
 <string name="settings_direct_search_grounding_label">Web araması</string>

@@ -43,7 +43,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -450,15 +449,7 @@ fun NoteEditor(
                     LinkStyledNoteTextField(
                         value = bodyInput,
                         onValueChange = { newValue ->
-                            val previousNewlines = bodyInput.text.count { it == '\n' }
-                            val nextNewlines = newValue.text.count { it == '\n' }
                             bodyInput = applyNoteLinkHighlighting(newValue, linkColor)
-                            if (nextNewlines > previousNewlines) {
-                                scrollBodyToCaretScope.launch {
-                                    withFrameNanos { }
-                                    noteScrollState.animateScrollTo(Int.MAX_VALUE)
-                                }
-                            }
                         },
                         modifier =
                             Modifier

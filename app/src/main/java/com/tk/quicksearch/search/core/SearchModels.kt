@@ -181,6 +181,7 @@ data class AiSearchState(
         val errorMessage: String? = null,
         val activeQuery: String? = null,
         val usedModelId: String? = null,
+        val llmProviderId: AiSearchLlmProviderId? = null,
 )
 
 data class CurrencyConverterState(
@@ -491,6 +492,7 @@ data class SearchUiState(
         // Layout preferences
         val oneHandedMode: Boolean = false,
         val bottomSearchBarEnabled: Boolean = false,
+        val unifiedPinnedItemsEnabled: Boolean = false,
         val searchHintsEnabled: Boolean = true,
         val settingsIconEnabled: Boolean = true,
         val topResultIndicatorEnabled: Boolean = true,
@@ -537,6 +539,8 @@ data class SearchUiState(
         val themedIconsEnabled: Boolean = true,
         val deviceThemeEnabled: Boolean = false,
         val appSuggestionsEnabled: Boolean = true,
+        val showAllAppsButton: Boolean = false,
+        val includeNonLaunchableAppsInSearch: Boolean = false,
         val selectedAppSuggestionTab: AppSuggestionTabType = AppSuggestionTabType.RECENTS,
         val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         // Section visibility preferences
@@ -559,6 +563,7 @@ data class SearchUiState(
         val geminiApiKeyLast4: String? = null,
         val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
         val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
+        val customLlmAdvancedPayloadByProvider: Map<AiSearchLlmProviderId, Pair<Boolean, String>> = emptyMap(),
         val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val isSavingGeminiApiKey: Boolean = false,
         val personalContext: String = "",
@@ -607,6 +612,8 @@ data class SearchUiState(
         val showTodayEvents: Boolean = true,
         // Usage permission banner
         val shouldShowUsagePermissionBanner: Boolean = false,
+        // Home screen prompt card
+        val showRateQuickSearchCard: Boolean = false,
         // Versioning for cache invalidation
         val contactActionsVersion: Int = 0,
         val nicknameUpdateVersion: Int = 0,
@@ -720,6 +727,7 @@ fun SearchUiState(
                 geminiApiKeyLast4 = features.geminiApiKeyLast4,
                 llmApiKeyLast4ByProvider = features.llmApiKeyLast4ByProvider,
                 customLlmBaseUrlByProvider = features.customLlmBaseUrlByProvider,
+                customLlmAdvancedPayloadByProvider = features.customLlmAdvancedPayloadByProvider,
                 aiSearchLlmProviderId = features.aiSearchLlmProviderId,
                 isSavingGeminiApiKey = features.isSavingGeminiApiKey,
                 personalContext = features.personalContext,
@@ -748,6 +756,7 @@ fun SearchUiState(
                 directDialEnabled = features.directDialEnabled,
                 assistantLaunchVoiceModeEnabled = features.assistantLaunchVoiceModeEnabled,
                 shouldShowUsagePermissionBanner = features.shouldShowUsagePermissionBanner,
+                showRateQuickSearchCard = features.showRateQuickSearchCard,
                 // ── SearchUiConfigState ───────────────────────────────────────────
                 startupPhase = config.startupPhase,
                 isInitializing = config.isInitializing,
@@ -766,6 +775,7 @@ fun SearchUiState(
                 overlayModeEnabled = config.overlayModeEnabled,
                 oneHandedMode = config.oneHandedMode,
                 bottomSearchBarEnabled = config.bottomSearchBarEnabled,
+                unifiedPinnedItemsEnabled = config.unifiedPinnedItemsEnabled,
                 searchHintsEnabled = config.searchHintsEnabled,
                 settingsIconEnabled = config.settingsIconEnabled,
                 topResultIndicatorEnabled = config.topResultIndicatorEnabled,
@@ -784,6 +794,8 @@ fun SearchUiState(
                 themedIconsEnabled = config.themedIconsEnabled,
                 deviceThemeEnabled = config.deviceThemeEnabled,
                 appSuggestionsEnabled = config.appSuggestionsEnabled,
+                showAllAppsButton = config.showAllAppsButton,
+                includeNonLaunchableAppsInSearch = config.includeNonLaunchableAppsInSearch,
                 selectedAppSuggestionTab = config.selectedAppSuggestionTab,
                 enabledAppSuggestionTabs = config.enabledAppSuggestionTabs,
                 selectedIconPackPackage = config.selectedIconPackPackage,

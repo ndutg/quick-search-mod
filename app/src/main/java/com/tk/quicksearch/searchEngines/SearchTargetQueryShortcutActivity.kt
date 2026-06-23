@@ -14,9 +14,15 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.SearchTargetShortcut
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.overlay.OverlayModeController
+import com.tk.quicksearch.shared.util.AppLanguageManager
 
 class SearchTargetQueryShortcutActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLanguageManager.wrapContext(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppLanguageManager.applySavedAppLanguage(this)
         super.onCreate(savedInstanceState)
         handleShortcutIntent(intent)
         finish()

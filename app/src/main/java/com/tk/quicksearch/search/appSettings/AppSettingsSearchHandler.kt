@@ -75,10 +75,14 @@ class AppSettingsSearchHandler(
             val shouldHideWallpaperAccent =
                 setting.toggleKey == AppSettingsToggleKey.WALLPAPER_ACCENT &&
                     backgroundSource == BackgroundSource.THEME
+            val shouldHideTopResultIndicator =
+                setting.toggleKey == AppSettingsToggleKey.TOP_RESULT_INDICATOR &&
+                    userPreferences.isPhysicalKeyboardConnected()
             !shouldHideExcludedItems &&
                 !shouldHideNicknames &&
                 !shouldHideTriggers &&
-                !shouldHideWallpaperAccent
+                !shouldHideWallpaperAccent &&
+                !shouldHideTopResultIndicator
         }
     }
 

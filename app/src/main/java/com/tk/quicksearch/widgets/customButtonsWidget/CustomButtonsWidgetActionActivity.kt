@@ -28,10 +28,16 @@ import com.tk.quicksearch.search.utils.PhoneNumberUtils
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
+import com.tk.quicksearch.shared.util.AppLanguageManager
 import kotlinx.coroutines.launch
 
 class WidgetActionActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLanguageManager.wrapContext(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppLanguageManager.applySavedAppLanguage(this)
         super.onCreate(savedInstanceState)
         val action =
             CustomWidgetButtonAction.fromJson(

@@ -75,6 +75,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val SWIPE_NAVIGATION_THRESHOLD_PX = 140f
+private const val RATE_QUICK_SEARCH_SETTING_ID = "app_settings_rate_quick_search"
 
 private fun launchSystemWallpaperPicker(context: Context) {
     val intent = Intent(Intent.ACTION_SET_WALLPAPER)
@@ -393,6 +394,16 @@ fun SearchRoute(
         setting.toggleKey?.let { toggleKey -> uiState.isAppSettingToggleEnabled(toggleKey) } ?: false
     }
 
+    val rateQuickSearchSetting =
+        remember {
+            AppSettingResult(
+                id = RATE_QUICK_SEARCH_SETTING_ID,
+                title = "",
+                action = AppSettingResultAction.NAVIGATE,
+                destination = AppSettingsDestination.RATE_QUICK_SEARCH,
+            )
+        }
+
     val onAppSettingToggle: (AppSettingResult, Boolean) -> Unit = { setting, enabled ->
         viewModel.trackRecentAppSettingTap(setting.id)
         when (val toggleKey = setting.toggleKey) {
@@ -438,6 +449,9 @@ fun SearchRoute(
         viewModel.trackRecentAppSettingTap(setting.id)
         if (setting.action != AppSettingResultAction.NAVIGATE) return@appSettingClick
         setting.destination?.let { destination ->
+            if (destination == AppSettingsDestination.RATE_QUICK_SEARCH) {
+                viewModel.markRateQuickSearchCompleted()
+            }
             onOpenAppSettingDestination(destination)
         }
     }
@@ -448,6 +462,7 @@ fun SearchRoute(
                 when (event) {
                     Lifecycle.Event.ON_RESUME -> {
                         viewModel.handleOnResume()
+                        viewModel.refreshRateQuickSearchCardState()
                         if (uiState.overlayModeEnabled && context.isDefaultHomeApp()) {
                             viewModel.setOverlayModeEnabled(false)
                         }
@@ -555,6 +570,11 @@ fun SearchRoute(
             onUnpinApp = viewModel::unpinApp,
             onReorderPinnedApps = viewModel::reorderPinnedApps,
             onSuggestionTabSelected = viewModel::setSelectedAppSuggestionTab,
+            onRateQuickSearchClick = { onAppSettingClick(rateQuickSearchSetting) },
+            onRateQuickSearchNotNowClick = {
+                viewModel.trackRecentAppSettingTap(RATE_QUICK_SEARCH_SETTING_ID)
+                viewModel.dismissRateQuickSearchForNow()
+            },
             onContactClick = { contact: com.tk.quicksearch.search.models.ContactInfo ->
                 viewModel.openContact(contact)
             },
@@ -738,6 +758,7 @@ fun SearchRoute(
             onWebSuggestionClick = { suggestion: String ->
                 viewModel.onWebSuggestionTap(suggestion)
             },
+            onRecentQueryClick = viewModel::onRecentQueryTap,
             onSearchEngineOnboardingDismissed = viewModel::onSearchEngineOnboardingDismissed,
             onContactActionHintDismissed = viewModel::onContactActionHintDismissed,
             onCustomizeSearchEnginesClick = onCustomizeSearchEnginesClick,

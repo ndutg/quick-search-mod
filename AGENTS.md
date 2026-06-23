@@ -243,9 +243,10 @@ Always read the guide, then follow the steps in order.
 ## 14) Testing and Validation Checklist (Minimum)
 
 - Build compiles after changes.
-- After every completed coding task, run:
+- After every completed coding task, the agent must always run this command before considering the task complete:
   - `./gradlew assembleStandardDebug && adb install --user 0 -r app/build/outputs/apk/standard/debug/app-standard-debug.apk && adb shell am force-stop com.tk.quicksearch && adb shell am force-stop com.tk.quicksearch.debug && adb shell am start -W -n com.tk.quicksearch.debug/com.tk.quicksearch.app.MainActivity`
-  - If this command fails, treat it as a blocking issue and fix the errors before considering the task complete.
+  - Do not skip this step, even for small or localized code changes.
+  - If this command fails at any point, treat it as a blocking issue, fix the problem, and rerun the same command until it succeeds before considering the task complete.
 - Search behavior verified for:
   - empty query
   - normal query

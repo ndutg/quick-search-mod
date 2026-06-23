@@ -35,8 +35,8 @@ fun WidgetSlidersSection(
         SliderRow(
             label = stringResource(R.string.widget_slider_radius),
             value = state.borderRadiusDp,
-            valueRange = 0f..30f,
-            steps = 30,
+            valueRange = 0f..40f,
+            steps = 40,
             valueFormatter = { "${it.roundToInt()} dp" },
             onValueChange = { onStateChange(state.copy(borderRadiusDp = it)) },
         )

@@ -2,11 +2,13 @@ package com.tk.quicksearch.app
 
 import android.app.SearchManager
 import android.content.ComponentCallbacks2
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.os.Bundle
 import android.os.Trace
+import android.view.KeyEvent
 import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -43,8 +45,8 @@ import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
+import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.CrashLogManager
-import com.tk.quicksearch.shared.util.FeedbackUtils
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.searchWidget.SearchWidget
 import com.tk.quicksearch.widgets.searchWidget.MicAction
@@ -89,8 +91,6 @@ open class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             voiceSearchHandler.processVoiceInputResult(result, searchViewModel::onQueryChange)
         }
-    private val showReviewPromptDialog = mutableStateOf(false)
-    private val showFeedbackDialog = mutableStateOf(false)
     private val navigationRequest = mutableStateOf<NavigationRequest?>(null)
     private var pendingSearchTargetShortcut: Pair<String, SearchTarget>? = null
     private var pendingContactActionPickerRequest: PendingContactActionPickerRequest? = null
@@ -101,10 +101,15 @@ open class MainActivity : ComponentActivity() {
     private var hasWallpaperPreviewReadyTraced = false
     private var hasSuggestionsReadyTraced = false
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLanguageManager.wrapContext(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         CrashLogManager.install(this)
         Trace.beginSection(TRACE_ON_CREATE_ENTRY)
         try {
+            AppLanguageManager.applySavedAppLanguage(this)
             // Must be called before super.onCreate for edge-to-edge to work correctly on all versions
             val statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
             val navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
@@ -139,7 +144,7 @@ open class MainActivity : ComponentActivity() {
                     viewModel = searchViewModel,
                     userPreferences = userPreferences,
                     mode = StartupMode.MAIN,
-                    onReviewPromptEligible = { showReviewPromptDialog.value = true },
+                    onUsageTrackingUpdated = searchViewModel::refreshRateQuickSearchCardState,
                 )
             startupCoordinator.scheduleAfterFirstFrame(window)
 
@@ -183,6 +188,14 @@ open class MainActivity : ComponentActivity() {
         WallpaperUtils.clearMemoryCaches()
         invalidateAppIconCache()
         IconPackManager.clearAllCaches()
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_ESCAPE && event.action == KeyEvent.ACTION_UP) {
+            finish()
+            return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     private fun initializePreferences() {
@@ -353,36 +366,6 @@ open class MainActivity : ComponentActivity() {
                             finish()
                         },
                     )
-                    if (showReviewPromptDialog.value) {
-                        EnjoyingAppDialog(
-                            onYes = {
-                                showReviewPromptDialog.value = false
-                                ReviewHelper.requestReviewIfEligible(
-                                    this@MainActivity,
-                                    userPreferences,
-                                )
-                            },
-                            onNo = {
-                                showReviewPromptDialog.value = false
-                                showFeedbackDialog.value = true
-                                userPreferences.recordReviewPromptTime()
-                                userPreferences.recordAppOpenCountAtPrompt()
-                                userPreferences.incrementReviewPromptedCount()
-                            },
-                            onDismiss = { showReviewPromptDialog.value = false },
-                        )
-                    }
-                    if (showFeedbackDialog.value) {
-                        SendFeedbackDialog(
-                            onSend = { feedbackText ->
-                                FeedbackUtils.launchFeedbackEmail(
-                                    this@MainActivity,
-                                    feedbackText,
-                                )
-                            },
-                            onDismiss = { showFeedbackDialog.value = false },
-                        )
-                    }
                 }
             }
         }

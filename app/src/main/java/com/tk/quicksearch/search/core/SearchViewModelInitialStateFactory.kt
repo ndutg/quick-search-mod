@@ -73,6 +73,7 @@ internal object SearchViewModelInitialStateFactory {
                 topMatchesLimit = startupPreferencesReader.getTopMatchesLimit(),
                 topMatchesSectionOrder = startupPreferencesReader.getTopMatchesSectionOrder(),
                 disabledTopMatchesSections = startupPreferencesReader.getDisabledTopMatchesSections(),
+                showRateQuickSearchCard = startupPreferencesReader.shouldShowRateQuickSearchCard(),
             )
 
         val initialConfigState =
@@ -105,6 +106,7 @@ internal object SearchViewModelInitialStateFactory {
                 oneHandedMode =
                     startupSnapshot?.oneHandedMode ?: startupPreferencesReader.isOneHandedMode(),
                 bottomSearchBarEnabled = startupPreferencesReader.isBottomSearchBarEnabled(),
+                unifiedPinnedItemsEnabled = startupPreferencesReader.isUnifiedPinnedItemsEnabled(),
                 searchHintsEnabled = startupPreferencesReader.isSearchHintsEnabled(),
                 settingsIconEnabled = startupPreferencesReader.isSettingsIconEnabled(),
                 topResultIndicatorEnabled =
@@ -131,6 +133,9 @@ internal object SearchViewModelInitialStateFactory {
                 appSuggestionsEnabled =
                     startupSnapshot?.appSuggestionsEnabled
                         ?: startupPreferencesReader.areAppSuggestionsEnabled(),
+                showAllAppsButton = startupPreferencesReader.shouldShowAllAppsButton(),
+                includeNonLaunchableAppsInSearch =
+                    startupPreferencesReader.shouldIncludeNonLaunchableAppsInSearch(),
                 selectedAppSuggestionTab = startupPreferencesReader.getSelectedAppSuggestionTab(),
                 enabledAppSuggestionTabs = startupPreferencesReader.getEnabledAppSuggestionTabs(),
                 selectRetainedQuery = !clearQueryOnLaunch && inMemoryRetainedQuery.isNotEmpty(),

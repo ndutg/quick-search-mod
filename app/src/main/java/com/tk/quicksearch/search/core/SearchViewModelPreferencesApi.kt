@@ -53,6 +53,12 @@ internal interface SearchViewModelPreferencesApi {
     fun setAppSuggestionsEnabled(enabled: Boolean) =
         preferencesApiDelegate.setAppSuggestionsEnabled(enabled)
 
+    fun setShowAllAppsButton(enabled: Boolean) =
+        preferencesApiDelegate.setShowAllAppsButton(enabled)
+
+    fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) =
+        preferencesApiDelegate.setIncludeNonLaunchableAppsInSearch(enabled)
+
     fun setSelectedAppSuggestionTab(tab: AppSuggestionTabType) =
         preferencesApiDelegate.setSelectedAppSuggestionTab(tab)
 
@@ -157,6 +163,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setBottomSearchBarEnabled(enabled: Boolean) =
         preferencesApiDelegate.setBottomSearchBarEnabled(enabled)
 
+    fun setUnifiedPinnedItemsEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setUnifiedPinnedItemsEnabled(enabled)
+
     fun setSearchHintsEnabled(enabled: Boolean) =
         preferencesApiDelegate.setSearchHintsEnabled(enabled)
 
@@ -202,6 +211,12 @@ internal interface SearchViewModelPreferencesApi {
         providerId: AiSearchLlmProviderId,
         modelId: String?,
     ) = preferencesApiDelegate.setLlmModel(providerId, modelId)
+
+    fun setCustomLlmAdvancedPayload(
+        providerId: AiSearchLlmProviderId,
+        payload: String?,
+        enabled: Boolean,
+    ) = preferencesApiDelegate.setCustomLlmAdvancedPayload(providerId, payload, enabled)
 
     fun setAiBackedToolSettings(
         toolId: AiBackedToolConfigId,
@@ -278,6 +293,12 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setAppSuggestionsEnabled(enabled: Boolean) =
         preferencesDelegate.setAppSuggestionsEnabled(enabled)
+
+    fun setShowAllAppsButton(enabled: Boolean) =
+        preferencesDelegate.setShowAllAppsButton(enabled)
+
+    fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) =
+        preferencesDelegate.setIncludeNonLaunchableAppsInSearch(enabled)
 
     fun setSelectedAppSuggestionTab(tab: AppSuggestionTabType) =
         preferencesDelegate.setSelectedAppSuggestionTab(tab)
@@ -371,6 +392,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setBottomSearchBarEnabled(enabled: Boolean) =
         preferencesDelegate.setBottomSearchBarEnabled(enabled)
 
+    fun setUnifiedPinnedItemsEnabled(enabled: Boolean) =
+        preferencesDelegate.setUnifiedPinnedItemsEnabled(enabled)
+
     fun setSearchHintsEnabled(enabled: Boolean) =
         preferencesDelegate.setSearchHintsEnabled(enabled)
 
@@ -426,6 +450,12 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         providerId: AiSearchLlmProviderId,
         modelId: String?,
     ) = preferencesDelegate.setLlmModel(providerId, modelId)
+
+    fun setCustomLlmAdvancedPayload(
+        providerId: AiSearchLlmProviderId,
+        payload: String?,
+        enabled: Boolean,
+    ) = preferencesDelegate.setCustomLlmAdvancedPayload(providerId, payload, enabled)
 
     fun setAiBackedToolSettings(
         toolId: AiBackedToolConfigId,

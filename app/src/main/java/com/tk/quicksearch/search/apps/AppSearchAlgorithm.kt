@@ -176,7 +176,15 @@ object AppSearchAlgorithm {
         sortAppsByUsageEnabled: Boolean,
     ): Int =
         if (sortAppsByUsageEnabled) {
-            second.launchCount.compareTo(first.launchCount)
+            compareValuesBy(
+                second,
+                first,
+                AppInfo::lastUsedTime,
+                AppInfo::launchCount,
+            ).takeIf { it != 0 }
+                ?: first.appName
+                    .lowercase(Locale.getDefault())
+                    .compareTo(second.appName.lowercase(Locale.getDefault()))
         } else {
             first.appName
                 .lowercase(Locale.getDefault())

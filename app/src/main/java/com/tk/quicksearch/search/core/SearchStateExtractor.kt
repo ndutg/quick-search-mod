@@ -104,6 +104,7 @@ internal object SearchStateExtractor {
             geminiApiKeyLast4 = s.geminiApiKeyLast4,
             llmApiKeyLast4ByProvider = s.llmApiKeyLast4ByProvider,
             customLlmBaseUrlByProvider = s.customLlmBaseUrlByProvider,
+            customLlmAdvancedPayloadByProvider = s.customLlmAdvancedPayloadByProvider,
             aiSearchLlmProviderId = s.aiSearchLlmProviderId,
             personalContext = s.personalContext,
             geminiModel = s.geminiModel,
@@ -130,6 +131,7 @@ internal object SearchStateExtractor {
             hasDismissedSearchHistoryTip = s.hasDismissedSearchHistoryTip,
             directDialEnabled = s.directDialEnabled,
             shouldShowUsagePermissionBanner = s.shouldShowUsagePermissionBanner,
+            showRateQuickSearchCard = s.showRateQuickSearchCard,
         )
 
     fun extractConfigState(s: SearchUiState) =
@@ -151,6 +153,7 @@ internal object SearchStateExtractor {
             overlayModeEnabled = s.overlayModeEnabled,
             oneHandedMode = s.oneHandedMode,
             bottomSearchBarEnabled = s.bottomSearchBarEnabled,
+            unifiedPinnedItemsEnabled = s.unifiedPinnedItemsEnabled,
             searchHintsEnabled = s.searchHintsEnabled,
             settingsIconEnabled = s.settingsIconEnabled,
             topResultIndicatorEnabled = s.topResultIndicatorEnabled,
@@ -168,6 +171,8 @@ internal object SearchStateExtractor {
             themedIconsEnabled = s.themedIconsEnabled,
             deviceThemeEnabled = s.deviceThemeEnabled,
             appSuggestionsEnabled = s.appSuggestionsEnabled,
+            showAllAppsButton = s.showAllAppsButton,
+            includeNonLaunchableAppsInSearch = s.includeNonLaunchableAppsInSearch,
             selectedAppSuggestionTab = s.selectedAppSuggestionTab,
             enabledAppSuggestionTabs = s.enabledAppSuggestionTabs,
             selectedIconPackPackage = s.selectedIconPackPackage,

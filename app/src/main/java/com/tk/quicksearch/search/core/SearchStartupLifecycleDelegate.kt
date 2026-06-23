@@ -34,6 +34,7 @@ internal interface SearchStartupLifecycleStateAccess {
 internal data class SearchStartupPreferencesSnapshot(
     val oneHandedMode: Boolean,
     val bottomSearchBarEnabled: Boolean,
+    val unifiedPinnedItemsEnabled: Boolean,
     val topResultIndicatorEnabled: Boolean,
     val wallpaperAccentEnabled: Boolean,
     val openKeyboardOnLaunch: Boolean,
@@ -58,6 +59,7 @@ internal data class SearchLoadedPreferencesSnapshot(
     val enabledFileTypes: Set<FileType>,
     val oneHandedMode: Boolean,
     val bottomSearchBarEnabled: Boolean,
+    val unifiedPinnedItemsEnabled: Boolean,
     val searchHintsEnabled: Boolean,
     val settingsIconEnabled: Boolean,
     val topResultIndicatorEnabled: Boolean,
@@ -66,6 +68,8 @@ internal data class SearchLoadedPreferencesSnapshot(
     val autoCloseOverlay: Boolean,
     val overlayModeEnabled: Boolean,
     val appSuggestionsEnabled: Boolean,
+    val showAllAppsButton: Boolean,
+    val includeNonLaunchableAppsInSearch: Boolean,
     val selectedAppSuggestionTab: AppSuggestionTabType,
     val enabledAppSuggestionTabs: Set<AppSuggestionTabType>,
     val showAppLabels: Boolean,
@@ -255,6 +259,9 @@ internal class SearchStartupLifecycleDelegate(
                 oneHandedMode = userPreferences.isOneHandedMode(),
                 bottomSearchBarEnabled = userPreferences.isBottomSearchBarEnabled(),
                 openKeyboardOnLaunch = userPreferences.isOpenKeyboardOnLaunchEnabled(),
+                showAllAppsButton = userPreferences.shouldShowAllAppsButton(),
+                selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(),
+                enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
             )
         }
         saveStartupSurfaceSnapshotAsync(true, false)
@@ -350,6 +357,7 @@ internal class SearchStartupLifecycleDelegate(
                     geminiApiKeyLast4 = aiSearchHandler.getGeminiApiKey()?.takeLast(4),
                     llmApiKeyLast4ByProvider = userPreferences.getLlmApiKeyLast4ByProvider(),
                     customLlmBaseUrlByProvider = userPreferences.getCustomLlmBaseUrlByProvider(),
+                    customLlmAdvancedPayloadByProvider = userPreferences.getCustomLlmAdvancedPayloadByProvider(),
                     aiSearchLlmProviderId = aiSearchHandler.getAiSearchProviderId(),
                     personalContext = aiSearchHandler.getPersonalContext(),
                     geminiModel = aiSearchHandler.getGeminiModel(),
@@ -375,12 +383,14 @@ internal class SearchStartupLifecycleDelegate(
                             !userPreferences.hasSeenSearchEngineOnboarding(),
                     showSearchBarWelcomeAnimation = shouldShowSearchBarWelcome(),
                     appSuggestionsEnabled = userPreferences.areAppSuggestionsEnabled(),
+                    showAllAppsButton = userPreferences.shouldShowAllAppsButton(),
                     selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(),
                 enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
                 showAppLabels = userPreferences.shouldShowAppLabels(),
                 phoneAppGridColumns = userPreferences.getPhoneAppGridColumns(),
                 appIconSizeStep = userPreferences.getAppIconSizeStep(),
                 bottomSearchBarEnabled = userPreferences.isBottomSearchBarEnabled(),
+                unifiedPinnedItemsEnabled = userPreferences.isUnifiedPinnedItemsEnabled(),
                 searchHintsEnabled = userPreferences.isSearchHintsEnabled(),
                 settingsIconEnabled = userPreferences.isSettingsIconEnabled(),
                     topResultIndicatorEnabled = userPreferences.isTopResultIndicatorEnabled(),
@@ -500,6 +510,7 @@ internal class SearchStartupLifecycleDelegate(
                 it.copy(
                     oneHandedMode = startupSnapshot.oneHandedMode,
                     bottomSearchBarEnabled = startupSnapshot.bottomSearchBarEnabled,
+                    unifiedPinnedItemsEnabled = startupSnapshot.unifiedPinnedItemsEnabled,
                     topResultIndicatorEnabled = startupSnapshot.topResultIndicatorEnabled,
                     wallpaperAccentEnabled = startupSnapshot.wallpaperAccentEnabled,
                     openKeyboardOnLaunch = startupSnapshot.openKeyboardOnLaunch,
@@ -593,6 +604,7 @@ internal class SearchStartupLifecycleDelegate(
                 enabledFileTypes = snapshot.enabledFileTypes,
                 oneHandedMode = snapshot.oneHandedMode,
                 bottomSearchBarEnabled = snapshot.bottomSearchBarEnabled,
+                unifiedPinnedItemsEnabled = snapshot.unifiedPinnedItemsEnabled,
                 searchHintsEnabled = snapshot.searchHintsEnabled,
                 settingsIconEnabled = snapshot.settingsIconEnabled,
                 topResultIndicatorEnabled = snapshot.topResultIndicatorEnabled,
@@ -601,6 +613,8 @@ internal class SearchStartupLifecycleDelegate(
                 autoCloseOverlay = snapshot.autoCloseOverlay,
                 overlayModeEnabled = snapshot.overlayModeEnabled,
                 appSuggestionsEnabled = snapshot.appSuggestionsEnabled,
+                showAllAppsButton = snapshot.showAllAppsButton,
+                includeNonLaunchableAppsInSearch = snapshot.includeNonLaunchableAppsInSearch,
                 selectedAppSuggestionTab = snapshot.selectedAppSuggestionTab,
                 enabledAppSuggestionTabs = snapshot.enabledAppSuggestionTabs,
                 showAppLabels = snapshot.showAppLabels,
@@ -703,6 +717,7 @@ internal class SearchStartupLifecycleDelegate(
                         geminiApiKeyLast4 = geminiApiKey?.takeLast(4),
                         llmApiKeyLast4ByProvider = userPreferences.getLlmApiKeyLast4ByProvider(),
                         customLlmBaseUrlByProvider = userPreferences.getCustomLlmBaseUrlByProvider(),
+                        customLlmAdvancedPayloadByProvider = userPreferences.getCustomLlmAdvancedPayloadByProvider(),
                         aiSearchLlmProviderId = aiSearchHandler.getAiSearchProviderId(),
                         personalContext = personalContext,
                         geminiModel = geminiModel,
@@ -804,6 +819,9 @@ internal class SearchStartupLifecycleDelegate(
                 bottomSearchBarEnabled = startupSnapshot.bottomSearchBarEnabled,
                 openKeyboardOnLaunch = startupSnapshot.openKeyboardOnLaunch,
                 appSuggestionsEnabled = suggestionsEnabled,
+                showAllAppsButton = userPreferences.shouldShowAllAppsButton(),
+                includeNonLaunchableAppsInSearch =
+                    userPreferences.shouldIncludeNonLaunchableAppsInSearch(),
                 selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(),
                 enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(),
                 showAppLabels = labelsEnabled,
@@ -899,16 +917,17 @@ internal class SearchStartupLifecycleDelegate(
     }
 
     private fun normalizeCustomToolModels(tools: List<CustomTool>): List<CustomTool> {
-        val availableModelIds = handlersProvider().aiSearchHandler.getAvailableGeminiModels().map { it.id }
-        val firstAvailableModelId = availableModelIds.firstOrNull() ?: return tools
-        val availableModelIdSet = availableModelIds.toSet()
-
         val normalizedTools =
             tools.map { tool ->
-                if (tool.providerId != AiSearchLlmProviderId.GEMINI || tool.modelId in availableModelIdSet) {
+                if (tool.modelId.isNotBlank()) {
                     tool
                 } else {
-                    tool.copy(modelId = firstAvailableModelId)
+                    tool.copy(
+                        modelId =
+                            AiSearchLlmProviderRegistry
+                                .get(tool.providerId, applicationProvider())
+                                .defaultModelId,
+                    )
                 }
             }
 

@@ -36,6 +36,8 @@ fun AppearanceSettingsSection(
         onToggleOneHandedMode: (Boolean) -> Unit,
         bottomSearchBarEnabled: Boolean,
         onToggleBottomSearchBar: (Boolean) -> Unit,
+        unifiedPinnedItemsEnabled: Boolean,
+        onToggleUnifiedPinnedItems: (Boolean) -> Unit,
         searchHintsEnabled: Boolean,
         onToggleSearchHints: (Boolean) -> Unit,
         settingsIconEnabled: Boolean,
@@ -176,6 +178,13 @@ fun AppearanceSettingsSection(
                         checked = oneHandedMode,
                         onCheckedChange = onToggleOneHandedMode,
                         isFirstItem = true,
+                        extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_unified_pinned_items_title),
+                        subtitle = stringResource(R.string.settings_unified_pinned_items_desc),
+                        checked = unifiedPinnedItemsEnabled,
+                        onCheckedChange = onToggleUnifiedPinnedItems,
                         extraVerticalPadding = 8.dp,
                 )
                 SettingsToggleRow(

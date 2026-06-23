@@ -2,6 +2,7 @@ package com.tk.quicksearch.widgets.searchWidget
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -33,6 +34,7 @@ import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
+import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.widgets.WidgetConfigScreen.WidgetConfigScreen
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetVariant
@@ -52,7 +54,12 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
         val hasStoredConfig: Boolean,
     )
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLanguageManager.wrapContext(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppLanguageManager.applySavedAppLanguage(this)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
@@ -124,7 +131,11 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
 
     private suspend fun getGlanceId(appWidgetId: Int): GlanceId? {
         val manager = GlanceAppWidgetManager(this)
-        return manager.getGlanceIdBy(appWidgetId)
+        return try {
+            manager.getGlanceIdBy(appWidgetId)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
     }
 
     private suspend fun loadWidgetPreferences(appWidgetId: Int): LoadedWidgetPreferences {

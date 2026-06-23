@@ -99,6 +99,8 @@
 <string name="action_move_down">Переместить вниз</string>
 <string name="action_undo">Отменить</string>
 <string name="action_uninstall_app">Удалить</string>
+<string name="action_rate">Оценить сейчас</string>
+<string name="action_not_now">Не сейчас</string>
 <string name="action_unpin_app">Открепить</string>
 <string name="alias_trigger_after_space">Триггер после пробела</string>
 <string name="common_action_add">Добавить</string>
@@ -142,8 +144,6 @@
 <string name="dialog_edit_amazon_domain_hint">Примеры: amazon.com, amazon.in, amazon.ca и т. д.</string>
 <string name="dialog_edit_amazon_domain_message">Обновите домен Amazon для вашей страны.</string>
 <string name="dialog_edit_amazon_domain_title">Изменить домен Amazon</string>
-    <string name="dialog_enjoying_app_title">Вам нравится это приложение?</string>
-<string name="dialog_feedback_hint">Поделитесь, что мы можем улучшить</string>
 <string name="dialog_gemini_model_picker_title">Выберите модель</string>
     <string name="dialog_nickname_message">Введите псевдоним для «%1$s». Вы сможете искать его по этому псевдониму.</string>
 <string name="dialog_no">Нет</string>
@@ -185,9 +185,15 @@
 <string name="app_suggestions_tab_new_updated">Новые/Обновленные</string>
 <string name="app_suggestions_tab_pinned">Закрепленные</string>
 <string name="app_suggestions_tab_recent">Недавние</string>
+<string name="app_suggestions_tabs_dialog_message">Выберите, какие вкладки с подсказками приложений отображать на главном экране.</string>
+<string name="app_suggestions_tabs_dialog_title">Вкладки с подсказками приложений</string>
+<string name="app_suggestions_enabled_tabs_picker_hint">Выбрать вкладки</string>
+<string name="app_suggestions_enabled_tabs_summary">Текущий: %1$s</string>
 <string name="app_suggestions_tab_required_toast">Должна быть включена хотя бы одна вкладка с подсказками приложений</string>
 <string name="app_suggestions_toggle_desc">Показывать или скрывать рекомендуемые приложения на главном экране</string>
 <string name="app_suggestions_toggle_title">Подсказки приложений</string>
+<string name="show_all_apps_button_toggle_title">Все приложения</string>
+<string name="show_all_apps_button_toggle_desc">Показывать кнопку \"Все приложения\" под подсказками приложений</string>
 <string name="app_suggestions_usage_access_link">доступ к истории использования</string>
 <string name="app_suggestions_usage_access_tip">Предоставьте доступ к истории использования, чтобы видеть более точные рекомендации</string>
     <string name="clear_query_toggle_desc">Автоматически очищать старый запрос при запуске приложения</string>
@@ -220,6 +226,7 @@
 <string name="section_app_shortcuts">Ярлыки приложений</string>
 <string name="section_apps">Приложения</string>
 <string name="section_calendar">События календаря</string>
+<string name="section_contacts">Контакты</string>
 <string name="section_files">Файлы</string>
 <string name="section_notes">Заметки</string>
 <string name="section_settings">Настройки устройства</string>
@@ -232,6 +239,8 @@
 <string name="top_matches_toggle_desc">Показывать самые точные совпадения среди всех категорий в самом верху.</string>
 <string name="top_result_indicator_toggle_desc">Выделять главный результат, который можно открыть сразу с клавиатуры.</string>
 <string name="top_result_indicator_toggle_title">Индикатор лучшего результата</string>
+<string name="include_non_launchable_apps_toggle_title">Не запускаемые приложения</string>
+<string name="include_non_launchable_apps_toggle_desc">Показывать в результатах поиска приложения без активности запуска.</string>
 <string name="web_search_suggestions_title">Поисковые подсказки</string>
 
 <!-- ============================================================================
@@ -636,6 +645,8 @@
 <string name="settings_launcher_icon_title">Значок приложения в лаунчере</string>
 <string name="settings_layout_option_bottom_desc">Наиболее важные элементы отображаются внизу для удобного доступа</string>
 <string name="settings_layout_option_bottom_title">Режим управления одной рукой</string>
+<string name="settings_unified_pinned_items_title">Объединенные закрепленные элементы</string>
+<string name="settings_unified_pinned_items_desc">Показывать закрепленные элементы единым списком на главном экране.</string>
 <string name="settings_more_options_desc">Различные дополнительные параметры кастомизации</string>
 <string name="settings_more_options_title">Дополнительные параметры</string>
 <string name="settings_overlay_assistant_setup_now">Настроить сейчас</string>
@@ -706,6 +717,10 @@
 <string name="settings_configure_api_key_title">Настроить API-ключ</string>
     <string name="settings_custom_provider_base_url_hint">Пример: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Базовый URL</string>
+    <string name="settings_custom_provider_advanced_payload_desc">Объединяется с каждым запросом, отправленным через этого провайдера.</string>
+    <string name="settings_custom_provider_advanced_payload_error">Введите допустимый объект JSON.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">Расширенная полезная нагрузка запроса</string>
 <string name="settings_direct_search_desc">Поддерживаются API-ключи Gemini, OpenAI, Claude и Groq</string>
 <string name="settings_direct_search_desc_intro">Добавьте API-ключ, чтобы включить поиск и инструменты на базе искусственного интеллекта.</string>
 <string name="settings_direct_search_grounding_label">Поиск в Интернете</string>

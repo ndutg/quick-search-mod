@@ -6,6 +6,7 @@ import com.tk.quicksearch.search.appShortcuts.AppShortcutResultsSection
 import com.tk.quicksearch.search.apps.AppGridView
 import com.tk.quicksearch.search.calendar.CalendarEventsSection
 import com.tk.quicksearch.search.contacts.ContactResultsSection
+import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.SearchSection
@@ -145,9 +146,23 @@ private fun renderAppsSection(
 ) {
     val appsParams = params.appsParams ?: return
 
-    if (context.shouldRenderApps && appsParams.hasAppResults && appsParams.apps.isNotEmpty()) {
+    if (
+        context.shouldRenderApps &&
+            ((appsParams.hasAppResults && appsParams.apps.isNotEmpty()) || appsParams.showAllAppsButton)
+    ) {
+        val shouldShowRateQuickSearchCard = appsParams.showRateQuickSearchCard
+        val renderRateQuickSearchCardFirst = shouldShowRateQuickSearchCard && appsParams.oneHandedMode
+
+        if (renderRateQuickSearchCardFirst) {
+            RateQuickSearchCard(
+                showWallpaperBackground = appsParams.showWallpaperBackground,
+                onClick = appsParams.onRateQuickSearchClick,
+                onNotNowClick = appsParams.onRateQuickSearchNotNowClick,
+            )
+        }
         AppGridView(
             apps = appsParams.apps,
+            allApps = appsParams.allApps,
             pinnedAndRecentApps = appsParams.pinnedAndRecentApps,
             pinnedApps = appsParams.pinnedApps,
             newOrUpdatedApps = appsParams.newOrUpdatedApps,
@@ -159,6 +174,7 @@ private fun renderAppsSection(
             enabledSuggestionTabs = appsParams.enabledSuggestionTabs,
             onSuggestionTabSelected = appsParams.onSuggestionTabSelected,
             hasAppResults = appsParams.hasAppResults,
+            showAllAppsButton = appsParams.showAllAppsButton,
             onAppClick = appsParams.onAppClick,
             onAppInfoClick = appsParams.onAppInfoClick,
             onUninstallClick = appsParams.onUninstallClick,
@@ -189,6 +205,13 @@ private fun renderAppsSection(
             onGridAppeared = appsParams.onGridAppeared,
             suppressSuggestionsEnterAnimation = appsParams.suppressSuggestionsEnterAnimation,
         )
+        if (shouldShowRateQuickSearchCard && !renderRateQuickSearchCardFirst) {
+            RateQuickSearchCard(
+                showWallpaperBackground = appsParams.showWallpaperBackground,
+                onClick = appsParams.onRateQuickSearchClick,
+                onNotNowClick = appsParams.onRateQuickSearchNotNowClick,
+            )
+        }
     }
 }
 
@@ -274,7 +297,7 @@ private fun renderAppSettingsSection(
 ) {
     val settingsParams = params.settingsParams ?: return
     val shouldShowAppSettings =
-        context.shouldRenderSettings &&
+        context.shouldRenderAppSettings &&
             !context.isDeviceSettingsExpanded
 
     if (shouldShowAppSettings && context.appSettingsList.isNotEmpty()) {
@@ -306,7 +329,36 @@ private fun renderCalendarSection(
     context: SectionRenderContext,
 ) {
     val calendarParams = params.calendarParams ?: return
-    if (context.shouldRenderCalendar) {
+    if (context.shouldRenderCalendar || context.todayCalendarEventsList.isNotEmpty()) {
+        if (context.isHomeScreenCalendarMode && context.todayCalendarEventsList.isNotEmpty()) {
+            CalendarEventsSection(
+                events = context.todayCalendarEventsList,
+                hasPermission = calendarParams.hasPermission,
+                isExpanded = true,
+                pinnedEventIds = emptySet(),
+                excludedEventIds = calendarParams.excludedEventIds,
+                onEventClick = calendarParams.onEventClick,
+                onRequestPermission = calendarParams.onRequestPermission,
+                onTogglePin = calendarParams.onTogglePin,
+                onMovePinned = calendarParams.onMovePinned,
+                onExclude = calendarParams.onExclude,
+                onInclude = calendarParams.onInclude,
+                onNicknameClick = calendarParams.onNicknameClick,
+                onArchiveTodayEvent = calendarParams.onArchiveTodayEvent,
+                getEventNickname = calendarParams.getEventNickname,
+                showAllResults = true,
+                showExpandControls = false,
+                onExpandClick = context.calendarExpandClick,
+                expandedCardMaxHeight = calendarParams.expandedCardMaxHeight,
+                permissionDisabledCard = calendarParams.permissionDisabledCard,
+                showWallpaperBackground = calendarParams.showWallpaperBackground,
+                predictedTarget = calendarParams.predictedTarget,
+                fillExpandedHeight = false,
+                isHomeScreenMode = true,
+                showPinnedItemMenu = false,
+            )
+        }
+        if (context.calendarEventsList.isEmpty() && context.isHomeScreenCalendarMode) return
         CalendarEventsSection(
             events = context.calendarEventsList,
             hasPermission = calendarParams.hasPermission,
@@ -330,7 +382,7 @@ private fun renderCalendarSection(
             showWallpaperBackground = calendarParams.showWallpaperBackground,
             predictedTarget = calendarParams.predictedTarget,
             fillExpandedHeight = false,
-            isHomeScreenMode = context.isHomeScreenCalendarMode,
+            isHomeScreenMode = false,
             showPinnedItemMenu = context.showAllCalendarResults,
         )
     }

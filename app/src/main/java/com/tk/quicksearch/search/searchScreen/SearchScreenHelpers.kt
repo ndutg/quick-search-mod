@@ -292,6 +292,7 @@ data class ContactsSectionParams(
 /** Data class for Apps section parameters */
 data class AppsSectionParams(
     val apps: List<AppInfo>,
+    val allApps: List<AppInfo>,
     val pinnedAndRecentApps: List<AppInfo>,
     val pinnedApps: List<AppInfo>,
     val newOrUpdatedApps: List<AppInfo>,
@@ -303,6 +304,7 @@ data class AppsSectionParams(
     val enabledSuggestionTabs: Set<AppSuggestionTabType>,
     val onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
     val hasAppResults: Boolean,
+    val showAllAppsButton: Boolean,
     val pinnedPackageNames: Set<String>,
     val disabledAppShortcutIds: Set<String>,
     val onAppClick: (AppInfo) -> Unit,
@@ -330,6 +332,9 @@ data class AppsSectionParams(
     val predictedTarget: PredictedSubmitTarget? = null,
     val suppressTopResultIndicator: Boolean = false,
     val showWallpaperBackground: Boolean = false,
+    val showRateQuickSearchCard: Boolean = false,
+    val onRateQuickSearchClick: () -> Unit = {},
+    val onRateQuickSearchNotNowClick: () -> Unit = {},
     val onGridAppeared: (() -> Unit)? = null,
     val suppressSuggestionsEnterAnimation: Boolean = false,
 )
@@ -455,6 +460,8 @@ internal fun buildSectionParams(
     onUnpinApp: (AppInfo) -> Unit,
     onReorderPinnedApps: (List<AppInfo>) -> Unit,
     onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
+    onRateQuickSearchClick: () -> Unit,
+    onRateQuickSearchNotNowClick: () -> Unit,
     getFileNickname: (String) -> String?,
     getContactNickname: (Long) -> String?,
     getSettingNickname: (String) -> String?,
@@ -839,9 +846,15 @@ internal fun buildSectionParams(
             },
             showWallpaperBackground = state.showWallpaperBackground,
         )
+    val suggestionExcludedKeys = state.suggestionExcludedApps.map { it.launchCountKey() }.toSet()
+    val allSuggestionApps =
+        state.allApps.filter { app ->
+            app.hasLaunchIntent && !suggestionExcludedKeys.contains(app.launchCountKey())
+        }
     val appsParams =
         AppsSectionParams(
             apps = derivedState.displayApps,
+            allApps = allSuggestionApps,
             pinnedAndRecentApps = derivedState.pinnedAndRecentApps,
             pinnedApps = state.pinnedApps,
             newOrUpdatedApps = derivedState.newOrUpdatedApps,
@@ -853,6 +866,7 @@ internal fun buildSectionParams(
             enabledSuggestionTabs = state.enabledAppSuggestionTabs,
             onSuggestionTabSelected = onSuggestionTabSelected,
             hasAppResults = derivedState.hasAppResults,
+            showAllAppsButton = state.showAllAppsButton,
             pinnedPackageNames = derivedState.pinnedPackageNames,
             disabledAppShortcutIds = state.disabledAppShortcutIds,
             onAppClick = onAppClick,
@@ -895,6 +909,12 @@ internal fun buildSectionParams(
             startupPhase = state.startupPhase,
             isOverlayPresentation = isOverlayPresentation,
             showWallpaperBackground = state.showWallpaperBackground,
+            showRateQuickSearchCard =
+                state.showRateQuickSearchCard &&
+                    !derivedState.isSearching &&
+                    !isOverlayPresentation,
+            onRateQuickSearchClick = onRateQuickSearchClick,
+            onRateQuickSearchNotNowClick = onRateQuickSearchNotNowClick,
         )
 
     val calendarParams =

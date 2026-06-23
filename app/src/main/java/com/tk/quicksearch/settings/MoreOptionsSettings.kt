@@ -3,6 +3,7 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Keyboard
@@ -17,6 +18,7 @@ import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
+import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 
 @Composable
 fun MoreOptionsSettings(
@@ -26,9 +28,22 @@ fun MoreOptionsSettings(
 ) {
     val context = LocalContext.current
     val isDefaultLauncher = context.isDefaultHomeApp()
+    val isPhysicalKeyboardConnected = rememberPhysicalKeyboardConnected()
 
     val toggleItems =
         listOf(
+            ToggleItem(
+                key = AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON,
+                titleRes = R.string.show_all_apps_button_toggle_title,
+                subtitleRes = R.string.show_all_apps_button_toggle_desc,
+                leadingIcon = Icons.Rounded.Apps,
+            ),
+            ToggleItem(
+                key = AppSettingsToggleKey.INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH,
+                titleRes = R.string.include_non_launchable_apps_toggle_title,
+                subtitleRes = R.string.include_non_launchable_apps_toggle_desc,
+                leadingIcon = Icons.Rounded.Apps,
+            ),
             ToggleItem(
                 key = AppSettingsToggleKey.TOP_RESULT_INDICATOR,
                 titleRes = R.string.top_result_indicator_toggle_title,
@@ -54,6 +69,10 @@ fun MoreOptionsSettings(
                 leadingIcon = Icons.Rounded.Close,
             ),
         )
+            .filterNot {
+                isPhysicalKeyboardConnected &&
+                    it.key == AppSettingsToggleKey.TOP_RESULT_INDICATOR
+            }
 
     SettingsCard(
         modifier = modifier.fillMaxWidth(),
