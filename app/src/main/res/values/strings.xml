@@ -89,6 +89,8 @@
     <string name="action_move_down">Move Down</string>
     <string name="action_undo">Undo</string>
     <string name="action_uninstall_app">Uninstall</string>
+    <string name="action_rate">Rate Now</string>
+    <string name="action_not_now">Not now</string>
     <string name="action_unpin_app">Unpin</string>
     <string name="alias_trigger_after_space">Trigger after space</string>
     <string name="common_action_add">Add</string>
@@ -132,8 +134,6 @@
     <string name="dialog_edit_amazon_domain_hint">Examples: amazon.com, amazon.in, amazon.ca, etc.</string>
     <string name="dialog_edit_amazon_domain_message">Update Amazon domain for your country.</string>
     <string name="dialog_edit_amazon_domain_title">Edit Amazon Domain</string>
-    <string name="dialog_enjoying_app_title">Do you find this app useful?</string>
-    <string name="dialog_feedback_hint">Tell us what we can improve</string>
     <string name="dialog_gemini_model_picker_title">Select Model</string>
     <string name="dialog_nickname_message">Enter a nickname for "%1$s". You can search for it using this nickname.</string>
     <string name="dialog_no">No</string>
@@ -175,9 +175,15 @@
     <string name="app_suggestions_tab_new_updated">New/Updated</string>
     <string name="app_suggestions_tab_pinned">Pinned</string>
     <string name="app_suggestions_tab_recent">Recents</string>
+    <string name="app_suggestions_tabs_dialog_message">Choose which app suggestion tabs appear on the home screen.</string>
+    <string name="app_suggestions_tabs_dialog_title">App Suggestion Tabs</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">Choose Tabs</string>
+    <string name="app_suggestions_enabled_tabs_summary">Current: %1$s</string>
     <string name="app_suggestions_tab_required_toast">Keep at least one app suggestion tab enabled</string>
     <string name="app_suggestions_toggle_desc">Show or hide suggested apps on the home screen</string>
     <string name="app_suggestions_toggle_title">App Suggestions</string>
+    <string name="show_all_apps_button_toggle_title">All Apps</string>
+    <string name="show_all_apps_button_toggle_desc">Show All Apps button below app suggestions</string>
     <string name="app_suggestions_usage_access_link">usage access permission</string>
     <string name="app_suggestions_usage_access_tip">Grant usage access permission to see more appropriate suggestions</string>
     <string name="clear_query_toggle_desc">Automatically clear old query when the app launches</string>
@@ -210,6 +216,7 @@
     <string name="section_app_shortcuts">App Shortcuts</string>
     <string name="section_apps">Apps</string>
     <string name="section_calendar">Calendar Events</string>
+    <string name="section_contacts">Contacts</string>
     <string name="section_files">Files</string>
     <string name="section_notes">Notes</string>
     <string name="section_settings">Device Settings</string>
@@ -222,6 +229,8 @@
     <string name="top_matches_toggle_desc">Show top matched results across all types at the top.</string>
     <string name="top_result_indicator_toggle_desc">Highlight the top result that can be opened with the keyboard.</string>
     <string name="top_result_indicator_toggle_title">Top Result Indicator</string>
+    <string name="include_non_launchable_apps_toggle_title">Non-Launchable Apps</string>
+    <string name="include_non_launchable_apps_toggle_desc">Include apps that don’t have a launch activity in search results.</string>
     <string name="web_search_suggestions_title">Web Suggestions</string>
 
     <!-- ============================================================================
@@ -606,10 +615,16 @@
     <string name="settings_icon_title">Settings Icon</string>
     <string name="settings_launch_options_desc">Different ways to launch this app</string>
     <string name="settings_launch_options_title">Launch Options</string>
+    <string name="settings_app_language_title">App Language</string>
+    <string name="settings_app_language_desc">Current: %1$s</string>
+    <string name="settings_app_language_picker_title">Choose App Language</string>
+    <string name="settings_app_language_system_default">System default</string>
     <string name="settings_launcher_icon_reset_default">Reset to default</string>
     <string name="settings_launcher_icon_title">Launcher App Icon</string>
     <string name="settings_layout_option_bottom_desc">Most relevant items appear at bottom for easy access</string>
     <string name="settings_layout_option_bottom_title">One-Handed Mode</string>
+    <string name="settings_unified_pinned_items_title">Unified Pinned Items</string>
+    <string name="settings_unified_pinned_items_desc">Show pinned items as one unified list in home.</string>
     <string name="settings_more_options_desc">Miscellaneous customisation options</string>
     <string name="settings_more_options_title">More Options</string>
     <string name="settings_overlay_assistant_setup_now">Setup Now</string>
@@ -680,6 +695,10 @@
     <string name="settings_configure_api_key_title">Configure API key</string>
     <string name="settings_custom_provider_base_url_hint">Example: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Base URL</string>
+    <string name="settings_custom_provider_advanced_payload_desc">Merged into each request sent through this provider.</string>
+    <string name="settings_custom_provider_advanced_payload_error">Enter a valid JSON object.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">Advanced Request Payload</string>
     <string name="settings_direct_search_desc">Gemini, OpenAI, Claude and Groq API keys are supported</string>
     <string name="settings_direct_search_desc_intro">Add an API key to enable AI-powered search and tools.</string>
     <string name="settings_direct_search_grounding_label">Web Search</string>
@@ -845,6 +864,7 @@
     <string name="widget_toggle_show_label">Quick Search Text</string>
     <string name="widgets_panel_title">Widgets</string>
     <string name="widgets_picker_empty">No widgets found.</string>
+    <string name="widgets_picker_loading">Loading Widgets...</string>
     <string name="widgets_picker_preview_unavailable">Preview unavailable</string>
     <string name="widgets_picker_title">Add Widget</string>
     <string name="widgets_picker_widget_count">%1$d widgets</string>

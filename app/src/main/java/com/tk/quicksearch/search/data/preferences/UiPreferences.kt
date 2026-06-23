@@ -33,6 +33,13 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_BOTTOM_SEARCH_BAR_ENABLED, enabled)
     }
 
+    fun isUnifiedPinnedItemsEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_UNIFIED_PINNED_ITEMS_ENABLED, false)
+
+    fun setUnifiedPinnedItemsEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_UNIFIED_PINNED_ITEMS_ENABLED, enabled)
+    }
+
     fun isSearchHintsEnabled(): Boolean =
             getBooleanPref(UiPreferences.KEY_SEARCH_HINTS_ENABLED, true)
 
@@ -54,6 +61,29 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_OPEN_KEYBOARD_ON_LAUNCH, enabled)
     }
 
+    /**
+     * Last measured soft-keyboard height (in dp) per orientation. Used to reserve the
+     * keyboard space in the overlay from the first frame so the surface does not visibly
+     * resize when the (deferred) keyboard animates in. 0f means "not measured yet".
+     */
+    fun getReservedKeyboardHeightDp(isLandscape: Boolean): Float =
+            prefs.getFloat(
+                    if (isLandscape) UiPreferences.KEY_RESERVED_KEYBOARD_HEIGHT_LANDSCAPE
+                    else UiPreferences.KEY_RESERVED_KEYBOARD_HEIGHT_PORTRAIT,
+                    0f,
+            )
+
+    fun setReservedKeyboardHeightDp(isLandscape: Boolean, dp: Float) {
+        if (dp <= 0f) return
+        prefs.edit()
+                .putFloat(
+                        if (isLandscape) UiPreferences.KEY_RESERVED_KEYBOARD_HEIGHT_LANDSCAPE
+                        else UiPreferences.KEY_RESERVED_KEYBOARD_HEIGHT_PORTRAIT,
+                        dp,
+                )
+                .apply()
+    }
+
     fun applyDefaultLauncherPreferencesIfNeeded(isDefaultLauncher: Boolean): Boolean {
         val wasDefaultLauncher = prefs.getBoolean(KEY_WAS_DEFAULT_LAUNCHER, false)
         if (!isDefaultLauncher) {
@@ -64,8 +94,12 @@ class UiPreferences(
 
         val currentBottomSearchBarEnabled = isBottomSearchBarEnabled()
         val currentOpenKeyboardOnLaunch = isOpenKeyboardOnLaunchEnabled()
+        val currentEnabledTabs = getEnabledAppSuggestionTabs()
+        val autoEnabledTabs = currentEnabledTabs
+        val currentShowAllAppsButton = shouldShowAllAppsButton()
 
-        prefs.edit()
+        val editor =
+            prefs.edit()
             .putBoolean(KEY_WAS_DEFAULT_LAUNCHER, true)
             .putBoolean(
                 KEY_DEFAULT_LAUNCHER_PREVIOUS_BOTTOM_SEARCH_BAR_ENABLED,
@@ -77,7 +111,21 @@ class UiPreferences(
             )
             .putBoolean(KEY_BOTTOM_SEARCH_BAR_ENABLED, true)
             .putBoolean(KEY_OPEN_KEYBOARD_ON_LAUNCH, false)
-            .apply()
+            .putStringSet(
+                KEY_DEFAULT_LAUNCHER_PREVIOUS_ENABLED_APP_SUGGESTION_TABS,
+                currentEnabledTabs.map { it.name }.toSet(),
+            )
+            .putStringSet(
+                KEY_DEFAULT_LAUNCHER_AUTO_ENABLED_APP_SUGGESTION_TABS,
+                autoEnabledTabs.map { it.name }.toSet(),
+            )
+            .putBoolean(
+                KEY_DEFAULT_LAUNCHER_PREVIOUS_SHOW_ALL_APPS_BUTTON,
+                currentShowAllAppsButton,
+            )
+            .putBoolean(KEY_SHOW_ALL_APPS_BUTTON, true)
+        persistEnabledAppSuggestionTabs(editor, autoEnabledTabs)
+        editor.apply()
         return true
     }
 
@@ -89,6 +137,9 @@ class UiPreferences(
                 .putBoolean(KEY_WAS_DEFAULT_LAUNCHER, false)
                 .remove(KEY_DEFAULT_LAUNCHER_PREVIOUS_BOTTOM_SEARCH_BAR_ENABLED)
                 .remove(KEY_DEFAULT_LAUNCHER_PREVIOUS_OPEN_KEYBOARD_ON_LAUNCH)
+                .remove(KEY_DEFAULT_LAUNCHER_PREVIOUS_ENABLED_APP_SUGGESTION_TABS)
+                .remove(KEY_DEFAULT_LAUNCHER_AUTO_ENABLED_APP_SUGGESTION_TABS)
+                .remove(KEY_DEFAULT_LAUNCHER_PREVIOUS_SHOW_ALL_APPS_BUTTON)
 
         var restoredAny = false
         if (
@@ -108,6 +159,31 @@ class UiPreferences(
             editor.putBoolean(
                 KEY_OPEN_KEYBOARD_ON_LAUNCH,
                 prefs.getBoolean(KEY_DEFAULT_LAUNCHER_PREVIOUS_OPEN_KEYBOARD_ON_LAUNCH, true),
+            )
+            restoredAny = true
+        }
+        val previousEnabledTabsRaw =
+            prefs.getStringSet(KEY_DEFAULT_LAUNCHER_PREVIOUS_ENABLED_APP_SUGGESTION_TABS, null)
+        val autoEnabledTabsRaw =
+            prefs.getStringSet(KEY_DEFAULT_LAUNCHER_AUTO_ENABLED_APP_SUGGESTION_TABS, null)
+        if (previousEnabledTabsRaw != null && autoEnabledTabsRaw != null) {
+            val currentEnabledTabs = getEnabledAppSuggestionTabs()
+            val autoEnabledTabs = AppSuggestionTabType.parseEnabledTabs(autoEnabledTabsRaw)
+            if (currentEnabledTabs == autoEnabledTabs) {
+                persistEnabledAppSuggestionTabs(
+                    editor,
+                    AppSuggestionTabType.parseEnabledTabs(previousEnabledTabsRaw),
+                )
+                restoredAny = true
+            }
+        }
+        if (
+            shouldShowAllAppsButton() &&
+                prefs.contains(KEY_DEFAULT_LAUNCHER_PREVIOUS_SHOW_ALL_APPS_BUTTON)
+        ) {
+            editor.putBoolean(
+                KEY_SHOW_ALL_APPS_BUTTON,
+                prefs.getBoolean(KEY_DEFAULT_LAUNCHER_PREVIOUS_SHOW_ALL_APPS_BUTTON, false),
             )
             restoredAny = true
         }
@@ -366,6 +442,12 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_USE_SYSTEM_FONT, enabled)
     }
 
+    fun getAppLanguageTag(): String? = prefs.getString(BasePreferences.KEY_APP_LANGUAGE_TAG, null)?.takeIf { it.isNotBlank() }
+
+    fun setAppLanguageTag(languageTag: String?) {
+        prefs.edit().putString(BasePreferences.KEY_APP_LANGUAGE_TAG, languageTag?.takeIf { it.isNotBlank() }).apply()
+    }
+
     fun getBackgroundSource(): BackgroundSource {
         val saved = prefs.getString(KEY_BACKGROUND_SOURCE, null)
         if (saved != null) {
@@ -497,6 +579,29 @@ class UiPreferences(
 
     fun setDisabledSearchEnginesExpanded(expanded: Boolean) {
         setBooleanPref(UiPreferences.KEY_DISABLED_SEARCH_ENGINES_EXPANDED, expanded)
+    }
+
+    fun isHomePinnedSectionExpanded(section: SearchSection): Boolean =
+            getBooleanPref(
+                    "${UiPreferences.KEY_HOME_PINNED_SECTION_EXPANDED_PREFIX}${section.name}",
+                    true,
+            )
+
+    fun setHomePinnedSectionExpanded(
+            section: SearchSection,
+            expanded: Boolean,
+    ) {
+        setBooleanPref(
+                "${UiPreferences.KEY_HOME_PINNED_SECTION_EXPANDED_PREFIX}${section.name}",
+                expanded,
+        )
+    }
+
+    fun isUnifiedPinnedItemsExpanded(): Boolean =
+            getBooleanPref(UiPreferences.KEY_UNIFIED_PINNED_ITEMS_EXPANDED, true)
+
+    fun setUnifiedPinnedItemsExpanded(expanded: Boolean) {
+        setBooleanPref(UiPreferences.KEY_UNIFIED_PINNED_ITEMS_EXPANDED, expanded)
     }
 
     fun isInstantStartupSurfaceEnabled(): Boolean =
@@ -636,6 +741,20 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_APP_SUGGESTIONS_ENABLED, enabled)
     }
 
+    fun shouldShowAllAppsButton(): Boolean =
+            getBooleanPref(UiPreferences.KEY_SHOW_ALL_APPS_BUTTON, false)
+
+    fun setShowAllAppsButton(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_SHOW_ALL_APPS_BUTTON, enabled)
+    }
+
+    fun shouldIncludeNonLaunchableAppsInSearch(): Boolean =
+            getBooleanPref(UiPreferences.KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH, false)
+
+    fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH, enabled)
+    }
+
     fun getSelectedAppSuggestionTab(): AppSuggestionTabType {
         val raw = prefs.getString(UiPreferences.KEY_SELECTED_APP_SUGGESTION_TAB, null)
         return raw
@@ -653,13 +772,26 @@ class UiPreferences(
     }
 
     fun setEnabledAppSuggestionTabs(tabs: Set<AppSuggestionTabType>) {
-        prefs
-            .edit()
-            .putStringSet(
-                UiPreferences.KEY_ENABLED_APP_SUGGESTION_TABS,
-                tabs.map { it.name }.toSet(),
+        prefs.edit().also { editor -> persistEnabledAppSuggestionTabs(editor, tabs) }.apply()
+    }
+
+    private fun persistEnabledAppSuggestionTabs(
+        editor: android.content.SharedPreferences.Editor,
+        tabs: Set<AppSuggestionTabType>,
+    ) {
+        val normalizedTabs =
+            tabs.ifEmpty { AppSuggestionTabType.DefaultEnabledTabs }
+        editor.putStringSet(
+            UiPreferences.KEY_ENABLED_APP_SUGGESTION_TABS,
+            normalizedTabs.map { it.name }.toSet(),
+        )
+        val selectedTab = getSelectedAppSuggestionTab()
+        if (selectedTab !in normalizedTabs && selectedTab != AppSuggestionTabType.PINNED) {
+            editor.putString(
+                UiPreferences.KEY_SELECTED_APP_SUGGESTION_TAB,
+                normalizedTabs.firstOrNull()?.name ?: AppSuggestionTabType.RECENTS.name,
             )
-            .apply()
+        }
     }
 
     // ============================================================================
@@ -857,90 +989,72 @@ class UiPreferences(
     }
 
     // ============================================================================
-    // In-App Review Preferences
+    // Rate Quick Search Prompt Preferences
     // ============================================================================
 
     fun getFirstAppOpenTime(): Long = timingPrefs.getLong(UiPreferences.KEY_FIRST_APP_OPEN_TIME, 0L)
 
     fun recordFirstAppOpenTime() {
-        if (getFirstAppOpenTime() == 0L) {
-            timingPrefs
-                    .edit()
-                    .putLong(UiPreferences.KEY_FIRST_APP_OPEN_TIME, System.currentTimeMillis())
-                    .apply()
-        }
-    }
+        if (getFirstAppOpenTime() != 0L) return
 
-    fun getLastReviewPromptTime(): Long =
-            timingPrefs.getLong(UiPreferences.KEY_LAST_REVIEW_PROMPT_TIME, 0L)
-
-    fun recordReviewPromptTime() {
         timingPrefs
-                .edit()
-                .putLong(UiPreferences.KEY_LAST_REVIEW_PROMPT_TIME, System.currentTimeMillis())
-                .apply()
-    }
-
-    fun getReviewPromptedCount(): Int =
-            timingPrefs.getInt(UiPreferences.KEY_REVIEW_PROMPTED_COUNT, 0)
-
-    fun incrementReviewPromptedCount() {
-        val currentCount = getReviewPromptedCount()
-        timingPrefs.edit().putInt(UiPreferences.KEY_REVIEW_PROMPTED_COUNT, currentCount + 1).apply()
+            .edit()
+            .putLong(UiPreferences.KEY_FIRST_APP_OPEN_TIME, System.currentTimeMillis())
+            .apply()
     }
 
     fun getAppOpenCount(): Int = timingPrefs.getInt(UiPreferences.KEY_APP_OPEN_COUNT, 0)
 
     fun incrementAppOpenCount() {
-        val currentCount = getAppOpenCount()
-        timingPrefs.edit().putInt(UiPreferences.KEY_APP_OPEN_COUNT, currentCount + 1).apply()
-    }
-
-    fun getAppOpenCountAtLastPrompt(): Int =
-            timingPrefs.getInt(UiPreferences.KEY_APP_OPEN_COUNT_AT_LAST_PROMPT, 0)
-
-    fun recordAppOpenCountAtPrompt() {
-        val currentOpenCount = getAppOpenCount()
         timingPrefs
-                .edit()
-                .putInt(UiPreferences.KEY_APP_OPEN_COUNT_AT_LAST_PROMPT, currentOpenCount)
-                .apply()
+            .edit()
+            .putInt(UiPreferences.KEY_APP_OPEN_COUNT, getAppOpenCount() + 1)
+            .apply()
     }
 
-    fun shouldShowReviewPrompt(): Boolean {
+    fun hasCompletedRateQuickSearch(): Boolean =
+        timingPrefs.getBoolean(UiPreferences.KEY_RATE_QUICK_SEARCH_COMPLETED, false)
+
+    fun markRateQuickSearchCompleted() {
+        timingPrefs
+            .edit()
+            .putBoolean(UiPreferences.KEY_RATE_QUICK_SEARCH_COMPLETED, true)
+            .apply()
+    }
+
+    fun getRateQuickSearchLastDismissedAt(): Long =
+        timingPrefs.getLong(UiPreferences.KEY_RATE_QUICK_SEARCH_LAST_DISMISSED_AT, 0L)
+
+    fun getRateQuickSearchDismissCount(): Int =
+        timingPrefs.getInt(UiPreferences.KEY_RATE_QUICK_SEARCH_DISMISS_COUNT, 0)
+
+    fun recordRateQuickSearchDismissed() {
+        timingPrefs
+            .edit()
+            .putLong(
+                UiPreferences.KEY_RATE_QUICK_SEARCH_LAST_DISMISSED_AT,
+                System.currentTimeMillis(),
+            ).putInt(
+                UiPreferences.KEY_RATE_QUICK_SEARCH_DISMISS_COUNT,
+                getRateQuickSearchDismissCount() + 1,
+            ).apply()
+    }
+
+    fun shouldShowRateQuickSearchCard(): Boolean {
+        if (!RATE_QUICK_SEARCH_ENABLED) return false
+        if (hasCompletedRateQuickSearch()) return false
+        if (getRateQuickSearchDismissCount() >= RATE_QUICK_SEARCH_MAX_DISMISS_COUNT) return false
+
         val firstOpenTime = getFirstAppOpenTime()
-        val promptedCount = getReviewPromptedCount()
-        val lastPromptTime = getLastReviewPromptTime()
-        val totalOpens = getAppOpenCount()
-        val opensAtLastPrompt = getAppOpenCountAtLastPrompt()
+        if (firstOpenTime == 0L) return false
+        if (getAppOpenCount() < RATE_QUICK_SEARCH_MIN_OPEN_COUNT) return false
 
-        // If never opened before, can't show review
-        if (firstOpenTime == 0L) {
-            return false
-        }
+        val now = System.currentTimeMillis()
+        val daysSinceFirstOpen = (now - firstOpenTime) / DAY_IN_MILLIS
+        if (daysSinceFirstOpen < RATE_QUICK_SEARCH_MIN_DAYS_USED) return false
 
-        val currentTime = System.currentTimeMillis()
-        val daysSinceFirstOpen = (currentTime - firstOpenTime) / (1000 * 60 * 60 * 24)
-
-        return when (promptedCount) {
-            0 -> {
-                // First review: at least 2 days AND at least 5 opens
-                daysSinceFirstOpen >= 2 && totalOpens >= 5
-            }
-            1 -> {
-                if (lastPromptTime == 0L) {
-                    false
-                } else {
-                    val daysSinceLastPrompt = (currentTime - lastPromptTime) / (1000 * 60 * 60 * 24)
-                    val opensSinceLastPrompt = totalOpens - opensAtLastPrompt
-                    // Second review: at least 4 days AND at least 5 more opens
-                    daysSinceLastPrompt >= 4 && opensSinceLastPrompt >= 5
-                }
-            }
-            else -> {
-                false
-            } // Never show after 2 prompts
-        }
+        val lastDismissedAt = getRateQuickSearchLastDismissedAt()
+        return lastDismissedAt == 0L || now - lastDismissedAt >= RATE_QUICK_SEARCH_DISMISS_COOLDOWN_MS
     }
 
     // ============================================================================
@@ -974,14 +1088,23 @@ class UiPreferences(
         // UI preferences keys
         const val KEY_ONE_HANDED_MODE = "one_handed_mode"
         const val KEY_BOTTOM_SEARCH_BAR_ENABLED = "bottom_search_bar_enabled"
+        const val KEY_UNIFIED_PINNED_ITEMS_ENABLED = "unified_pinned_items_enabled"
         const val KEY_SEARCH_HINTS_ENABLED = "search_hints_enabled"
         const val KEY_SETTINGS_ICON_ENABLED = "settings_icon_enabled"
         const val KEY_OPEN_KEYBOARD_ON_LAUNCH = "open_keyboard_on_launch"
+        const val KEY_RESERVED_KEYBOARD_HEIGHT_PORTRAIT = "reserved_keyboard_height_portrait"
+        const val KEY_RESERVED_KEYBOARD_HEIGHT_LANDSCAPE = "reserved_keyboard_height_landscape"
         const val KEY_WAS_DEFAULT_LAUNCHER = "was_default_launcher"
         const val KEY_DEFAULT_LAUNCHER_PREVIOUS_BOTTOM_SEARCH_BAR_ENABLED =
                 "default_launcher_previous_bottom_search_bar_enabled"
         const val KEY_DEFAULT_LAUNCHER_PREVIOUS_OPEN_KEYBOARD_ON_LAUNCH =
                 "default_launcher_previous_open_keyboard_on_launch"
+        const val KEY_DEFAULT_LAUNCHER_PREVIOUS_ENABLED_APP_SUGGESTION_TABS =
+            "default_launcher_previous_enabled_app_suggestion_tabs"
+        const val KEY_DEFAULT_LAUNCHER_AUTO_ENABLED_APP_SUGGESTION_TABS =
+            "default_launcher_auto_enabled_app_suggestion_tabs"
+        const val KEY_DEFAULT_LAUNCHER_PREVIOUS_SHOW_ALL_APPS_BUTTON =
+            "default_launcher_previous_show_all_apps_button"
         const val KEY_TOP_RESULT_INDICATOR_ENABLED = "top_result_indicator_enabled"
         const val KEY_TOP_MATCHES_ENABLED = "top_matches_enabled"
         const val KEY_TOP_MATCHES_LIMIT = "top_matches_limit"
@@ -1038,6 +1161,8 @@ class UiPreferences(
         const val KEY_LAST_SEEN_VERSION_CODE = "last_seen_version_code"
         const val KEY_AI_SEARCH_SETUP_EXPANDED = "direct_search_setup_expanded"
         const val KEY_DISABLED_SEARCH_ENGINES_EXPANDED = "disabled_search_engines_expanded"
+        const val KEY_HOME_PINNED_SECTION_EXPANDED_PREFIX = "home_pinned_section_expanded_"
+        const val KEY_UNIFIED_PINNED_ITEMS_EXPANDED = "unified_pinned_items_expanded"
         const val KEY_INSTANT_STARTUP_SURFACE_ENABLED = "instant_startup_surface_v1"
         const val KEY_HAS_SEEN_SEARCH_BAR_WELCOME = "has_seen_search_bar_welcome"
         const val KEY_FORCE_SEARCH_BAR_WELCOME_ON_NEXT_OPEN =
@@ -1065,6 +1190,9 @@ class UiPreferences(
 
         // App suggestions preferences keys
         const val KEY_APP_SUGGESTIONS_ENABLED = "app_suggestions_enabled"
+        const val KEY_SHOW_ALL_APPS_BUTTON = "show_all_apps_button"
+        const val KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH =
+            "include_non_launchable_apps_in_search"
         const val KEY_SELECTED_APP_SUGGESTION_TAB = "selected_app_suggestion_tab"
         const val KEY_ENABLED_APP_SUGGESTION_TABS = "enabled_app_suggestion_tabs"
 
@@ -1114,15 +1242,22 @@ class UiPreferences(
         /** Previous preference key; migrated automatically on read/write. */
         const val LEGACY_KEY_CURRENCY_CONVERTER_MODEL_PREF = "currency_converter_gemini_model"
 
-        // In-app review preferences keys
+        // Rate Quick Search prompt keys
         const val KEY_FIRST_APP_OPEN_TIME = "first_app_open_time"
-        const val KEY_LAST_REVIEW_PROMPT_TIME = "last_review_prompt_time"
-        const val KEY_REVIEW_PROMPTED_COUNT = "review_prompted_count"
         const val KEY_APP_OPEN_COUNT = "app_open_count"
-        const val KEY_APP_OPEN_COUNT_AT_LAST_PROMPT = "app_open_count_at_last_prompt"
+        const val KEY_RATE_QUICK_SEARCH_LAST_DISMISSED_AT =
+            "rate_quick_search_last_dismissed_at"
+        const val KEY_RATE_QUICK_SEARCH_DISMISS_COUNT = "rate_quick_search_dismiss_count"
+        const val KEY_RATE_QUICK_SEARCH_COMPLETED = "rate_quick_search_completed"
 
         // In-app update session tracking keys
         const val KEY_UPDATE_CHECK_SHOWN_THIS_SESSION = "update_check_shown_this_session"
+
+        private const val DAY_IN_MILLIS = 24 * 60 * 60 * 1000L
+        private const val RATE_QUICK_SEARCH_MIN_DAYS_USED = 3L
+        private const val RATE_QUICK_SEARCH_MIN_OPEN_COUNT = 6
+        private const val RATE_QUICK_SEARCH_DISMISS_COOLDOWN_MS = 14 * DAY_IN_MILLIS
+        private const val RATE_QUICK_SEARCH_MAX_DISMISS_COUNT = 2
 
         fun appIconSizeScale(step: Int): Float {
             val normalized = step.coerceIn(MIN_APP_ICON_SIZE_STEP, MAX_APP_ICON_SIZE_STEP)

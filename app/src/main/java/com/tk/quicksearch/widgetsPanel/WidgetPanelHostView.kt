@@ -48,6 +48,17 @@ internal class WidgetPanelHost(
             liveViews.add(view)
         }
 
+    override fun onProviderChanged(
+        appWidgetId: Int,
+        appWidget: AppWidgetProviderInfo,
+    ) {
+        super.onProviderChanged(appWidgetId, appWidget)
+    }
+
+    override fun onProvidersChanged() {
+        super.onProvidersChanged()
+    }
+
     /**
      * Cancel any pending long-press timers across every live widget host view. Called when the
      * surrounding scroll starts so a finger that landed on a widget right before a scroll began
@@ -79,6 +90,13 @@ private class WidgetPanelHostView(
 
     fun cancelPendingLongPress() {
         removeCallbacks(longPressRunnable)
+    }
+
+    override fun setAppWidget(
+        appWidgetId: Int,
+        info: AppWidgetProviderInfo?,
+    ) {
+        super.setAppWidget(appWidgetId, info)
     }
 
     private val longPressTimeout = ViewConfiguration.getLongPressTimeout().toLong()

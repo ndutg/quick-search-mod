@@ -5,6 +5,7 @@ import android.os.Build
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionRegistry
+import com.tk.quicksearch.search.data.preferences.RATE_QUICK_SEARCH_ENABLED
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.shared.util.isTablet
 
@@ -238,13 +239,15 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.SEND_FEEDBACK,
                 keywords = listOf("support", "bug", "request"),
             )
-            addNavigation(
-                id = "app_settings_rate_quick_search",
-                titleRes = R.string.settings_feedback_rate_title,
-                descriptionRes = R.string.settings_feedback_rate_desc,
-                destination = AppSettingsDestination.RATE_QUICK_SEARCH,
-                keywords = listOf("review"),
-            )
+            if (RATE_QUICK_SEARCH_ENABLED) {
+                addNavigation(
+                    id = "app_settings_rate_quick_search",
+                    titleRes = R.string.settings_feedback_rate_title,
+                    descriptionRes = R.string.settings_feedback_rate_desc,
+                    destination = AppSettingsDestination.RATE_QUICK_SEARCH,
+                    keywords = listOf("review"),
+                )
+            }
             addNavigation(
                 id = "app_settings_development",
                 titleRes = R.string.settings_feedback_github_title,
@@ -290,6 +293,13 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_bottom_searchbar_title,
                 descriptionRes = R.string.settings_bottom_searchbar_desc,
                 toggleKey = AppSettingsToggleKey.BOTTOM_SEARCHBAR,
+            )
+            addToggle(
+                id = "app_toggle_unified_pinned_items",
+                titleRes = R.string.settings_unified_pinned_items_title,
+                descriptionRes = R.string.settings_unified_pinned_items_desc,
+                toggleKey = AppSettingsToggleKey.UNIFIED_PINNED_ITEMS,
+                keywords = listOf("pinned", "home", "sections", "list"),
             )
             addToggle(
                 id = "app_toggle_search_hints",
@@ -367,6 +377,20 @@ class AppSettingsRepository(
                 titleRes = R.string.app_suggestions_toggle_title,
                 descriptionRes = R.string.app_suggestions_toggle_desc,
                 toggleKey = AppSettingsToggleKey.APP_SUGGESTIONS,
+            )
+            addToggle(
+                id = "app_toggle_show_all_apps_button",
+                titleRes = R.string.show_all_apps_button_toggle_title,
+                descriptionRes = R.string.show_all_apps_button_toggle_desc,
+                toggleKey = AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON,
+                keywords = listOf("all apps", "app drawer"),
+            )
+            addToggle(
+                id = "app_toggle_include_non_launchable_apps",
+                titleRes = R.string.include_non_launchable_apps_toggle_title,
+                descriptionRes = R.string.include_non_launchable_apps_toggle_desc,
+                toggleKey = AppSettingsToggleKey.INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH,
+                keywords = listOf("app info", "launch activity", "hidden apps"),
             )
             addToggle(
                 id = "app_toggle_web_suggestions",

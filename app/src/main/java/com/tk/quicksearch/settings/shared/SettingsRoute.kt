@@ -43,6 +43,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +62,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.ReviewHelper
 import com.tk.quicksearch.app.navigation.openDefaultAssistantSettings
 import com.tk.quicksearch.app.navigation.openDefaultLauncherSettings
 import com.tk.quicksearch.search.core.*
@@ -97,8 +99,10 @@ fun SettingsRoute(
         androidx.compose.foundation.rememberScrollState(),
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val userPreferences = remember { UserAppPreferences(context) }
+    var hasRequestedSettingsReviewPrompt by rememberSaveable { mutableStateOf(false) }
 
     val onToggleSection = rememberSectionToggleHandler(viewModel, uiState.disabledSections)
 
@@ -128,6 +132,15 @@ fun SettingsRoute(
     androidx.compose.runtime.LaunchedEffect(Unit) {
         viewModel.refreshIconPacks()
         viewModel.handleOptionalPermissionChange()
+    }
+
+    androidx.compose.runtime.LaunchedEffect(activity, uiState.showRateQuickSearchCard) {
+        if (activity == null || hasRequestedSettingsReviewPrompt || !uiState.showRateQuickSearchCard) {
+            return@LaunchedEffect
+        }
+
+        hasRequestedSettingsReviewPrompt = true
+        ReviewHelper.launchInAppReview(activity)
     }
 
     val contactsPermissionLauncher =

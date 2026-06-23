@@ -3,8 +3,8 @@ package com.tk.quicksearch.shared.util
 import android.content.Context
 import android.os.Build
 import java.io.File
+import java.io.FileOutputStream
 import java.io.PrintWriter
-import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -14,18 +14,24 @@ object CrashLogManager {
     private const val LOG_FILE = "logs.txt"
     private const val CRASH_FILE = "crashes.txt"
     private const val MAX_CRASH_SIZE_BYTES = 256 * 1024 // 256 KB
+    @Volatile
+    private var isInstalled = false
 
+    @Synchronized
     fun install(context: Context) {
+        if (isInstalled) return
+
         val appContext = context.applicationContext
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
                 writeCrashEntry(appContext, thread, throwable)
-            } catch (_: Exception) {
+            } catch (_: Throwable) {
                 // Never let the crash handler itself crash
             }
             defaultHandler?.uncaughtException(thread, throwable)
         }
+        isInstalled = true
     }
 
     /**
@@ -88,16 +94,16 @@ object CrashLogManager {
         }
 
         val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())
-        val stackTrace = StringWriter().also { throwable.printStackTrace(PrintWriter(it)) }.toString()
-
-        file.appendText(
-            buildString {
-                append("--- Crash $timestamp ---\n")
-                append("Thread: ${thread.name}\n")
-                append("Exception: ${throwable::class.java.name}: ${throwable.message}\n")
-                append(stackTrace)
-                append("\n")
-            }
-        )
+        FileOutputStream(file, true).bufferedWriter().use { out ->
+            out.append("--- Crash ").append(timestamp).append(" ---\n")
+            out.append("Thread: ").append(thread.name).append('\n')
+            out.append("Exception: ")
+                .append(throwable::class.java.name)
+                .append(": ")
+                .append(throwable.message.orEmpty())
+                .append('\n')
+            throwable.printStackTrace(PrintWriter(out))
+            out.append('\n')
+        }
     }
 }

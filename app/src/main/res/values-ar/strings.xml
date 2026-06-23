@@ -100,6 +100,8 @@
     <string name="action_move_down">نقل لأسفل</string>
     <string name="action_undo">تراجع</string>
     <string name="action_uninstall_app">إلغاء تثبيت التطبيق</string>
+    <string name="action_rate">قيّم الآن</string>
+    <string name="action_not_now">ليس الآن</string>
     <string name="action_unpin_app">إلغاء التثبيت</string>
     <string name="alias_trigger_after_space">تفعيل كلمة التشغيل بعد مسافة</string>
     <string name="common_action_add">إضافة</string>
@@ -143,8 +145,6 @@
     <string name="dialog_edit_amazon_domain_hint">أمثلة: amazon.com، amazon.in، amazon.ca، إلخ.</string>
     <string name="dialog_edit_amazon_domain_message">قم بتحديث نطاق Amazon لبلدك.</string>
     <string name="dialog_edit_amazon_domain_title">تعديل نطاق Amazon</string>
-    <string name="dialog_enjoying_app_title">هل تجد هذا التطبيق مفيداً؟</string>
-    <string name="dialog_feedback_hint">أخبرنا بما يمكننا تحسينه</string>
     <string name="dialog_gemini_model_picker_title">اختر النموذج</string>
     <string name="dialog_nickname_message">أدخل لقباً لـ "%1$s". ستتمكن من البحث عنه باستخدام هذا اللقب.</string>
     <string name="dialog_no">لا</string>
@@ -186,9 +186,15 @@
     <string name="app_suggestions_tab_new_updated">جديد/محدث</string>
     <string name="app_suggestions_tab_pinned">مثبت</string>
     <string name="app_suggestions_tab_recent">الأخيرة</string>
+    <string name="app_suggestions_tabs_dialog_message">اختر تبويبات اقتراحات التطبيقات التي تظهر على الشاشة الرئيسية.</string>
+    <string name="app_suggestions_tabs_dialog_title">تبويبات اقتراحات التطبيقات</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">اختر التبويبات</string>
+    <string name="app_suggestions_enabled_tabs_summary">الحالي: %1$s</string>
     <string name="app_suggestions_tab_required_toast">يجب إبقاء تبويب واحد على الأقل مفعل لاقتراحات التطبيقات</string>
     <string name="app_suggestions_toggle_desc">إظهار أو إخفاء التطبيقات المقترحة على الشاشة الرئيسية</string>
     <string name="app_suggestions_toggle_title">اقتراحات التطبيقات</string>
+    <string name="show_all_apps_button_toggle_title">جميع التطبيقات</string>
+    <string name="show_all_apps_button_toggle_desc">إظهار زر \"جميع التطبيقات\" أسفل اقتراحات التطبيقات</string>
     <string name="app_suggestions_usage_access_link">إذن الوصول إلى بيانات الاستخدام</string>
     <string name="app_suggestions_usage_access_tip">امنح إذن الوصول إلى بيانات الاستخدام للحصول على اقتراحات أكثر ملاءمة</string>
     <string name="clear_query_toggle_desc">مسح عبارة البحث السابقة تلقائياً عند تشغيل التطبيق</string>
@@ -221,6 +227,7 @@
     <string name="section_app_shortcuts">اختصارات التطبيقات</string>
     <string name="section_apps">التطبيقات</string>
     <string name="section_calendar">أحداث التقويم</string>
+    <string name="section_contacts">جهات الاتصال</string>
     <string name="section_files">الملفات</string>
     <string name="section_notes">الملاحظات</string>
     <string name="section_settings">إعدادات الجهاز</string>
@@ -233,6 +240,8 @@
     <string name="top_matches_toggle_desc">إظهار أفضل النتائج المطابقة من جميع الأنواع في الأعلى.</string>
     <string name="top_result_indicator_toggle_desc">تمييز أفضل نتيجة يمكن فتحها باستخدام لوحة المفاتيح.</string>
     <string name="top_result_indicator_toggle_title">مؤشر أفضل نتيجة</string>
+    <string name="include_non_launchable_apps_toggle_title">تطبيقات غير قابلة للتشغيل</string>
+    <string name="include_non_launchable_apps_toggle_desc">تضمين التطبيقات التي لا تحتوي على نشاط تشغيل في نتائج البحث.</string>
     <string name="web_search_suggestions_title">اقتراحات الويب</string>
 
     <!-- ============================================================================
@@ -621,6 +630,8 @@
     <string name="settings_launcher_icon_title">أيقونة مشغل التطبيقات</string>
     <string name="settings_layout_option_bottom_desc">عرض العناصر الهامة بالأسفل لسهولة الوصول إليها</string>
     <string name="settings_layout_option_bottom_title">الوضع بيد واحدة</string>
+    <string name="settings_unified_pinned_items_title">العناصر المثبتة الموحدة</string>
+    <string name="settings_unified_pinned_items_desc">عرض العناصر المثبتة كقائمة موحدة واحدة في الشاشة الرئيسية.</string>
     <string name="settings_more_options_desc">خيارات تخصيص إضافية</string>
     <string name="settings_more_options_title">المزيد من الخيارات</string>
     <string name="settings_overlay_assistant_setup_now">الإعداد الآن</string>
@@ -691,6 +702,10 @@
     <string name="settings_configure_api_key_title">إعداد مفتاح API</string>
     <string name="settings_custom_provider_base_url_hint">مثال: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">الرابط الأساسي (Base URL)</string>
+    <string name="settings_custom_provider_advanced_payload_desc">يتم دمجها في كل طلب يتم إرساله عبر هذا الموفر.</string>
+    <string name="settings_custom_provider_advanced_payload_error">أدخل كائن JSON صالحًا.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">حمولة الطلب المتقدمة</string>
     <string name="settings_direct_search_desc">يدعم مفاتيح API لـ Gemini وOpenAI وClaude وGroq</string>
     <string name="settings_direct_search_desc_intro">أضف مفتاح API لتفعيل ميزات البحث والأدوات المدعومة بالذكاء الاصطناعي (AI).</string>
     <string name="settings_direct_search_grounding_label">البحث في الويب</string>

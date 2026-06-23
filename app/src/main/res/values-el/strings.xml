@@ -99,6 +99,8 @@
     <string name="action_move_down">Μετακίνηση προς τα κάτω</string>
     <string name="action_undo">Αναίρεση</string>
     <string name="action_uninstall_app">Απεγκατάσταση</string>
+    <string name="action_rate">Βαθμολογήστε τώρα</string>
+    <string name="action_not_now">Όχι τώρα</string>
     <string name="action_unpin_app">Ξεκαρφίτσωμα</string>
     <string name="alias_trigger_after_space">Ενεργοποίηση μετά από διάστημα</string>
     <string name="common_action_add">Προσθήκη</string>
@@ -142,8 +144,6 @@
     <string name="dialog_edit_amazon_domain_hint">Παραδείγματα: amazon.com, amazon.in, amazon.ca, κ.λπ.</string>
     <string name="dialog_edit_amazon_domain_message">Ενημερώστε το domain της Amazon για τη χώρα σας.</string>
     <string name="dialog_edit_amazon_domain_title">Επεξεργασία Amazon Domain</string>
-    <string name="dialog_enjoying_app_title">Βρίσκετε αυτή την εφαρμογή χρήσιμη;</string>
-    <string name="dialog_feedback_hint">Πείτε μας τι μπορούμε να βελτιώσουμε</string>
     <string name="dialog_gemini_model_picker_title">Επιλογή μοντέλου</string>
     <string name="dialog_nickname_message">Εισαγάγετε ένα ψευδώνυμο για το "%1$s". Μπορείτε να το αναζητήσετε χρησιμοποιώντας αυτό το ψευδώνυμο.</string>
     <string name="dialog_no">Όχι</string>
@@ -185,9 +185,15 @@
     <string name="app_suggestions_tab_new_updated">Νέες/Ενημερωμένες</string>
     <string name="app_suggestions_tab_pinned">Καρφιτσωμένες</string>
     <string name="app_suggestions_tab_recent">Πρόσφατες</string>
+    <string name="app_suggestions_tabs_dialog_message">Επιλέξτε ποιες καρτέλες προτάσεων εφαρμογών θα εμφανίζονται στην αρχική οθόνη.</string>
+    <string name="app_suggestions_tabs_dialog_title">Καρτέλες προτάσεων εφαρμογών</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">Επιλογή καρτελών</string>
+    <string name="app_suggestions_enabled_tabs_summary">Τρέχον: %1$s</string>
     <string name="app_suggestions_tab_required_toast">Διατηρήστε τουλάχιστον μία καρτέλα προτάσεων εφαρμογών ενεργοποιημένη</string>
     <string name="app_suggestions_toggle_desc">Εμφάνιση ή απόκρυψη προτεινόμενων εφαρμογών στην αρχική οθόνη</string>
     <string name="app_suggestions_toggle_title">Προτάσεις εφαρμογών</string>
+    <string name="show_all_apps_button_toggle_title">Όλες οι εφαρμογές</string>
+    <string name="show_all_apps_button_toggle_desc">Εμφάνιση του κουμπιού \"Όλες οι εφαρμογές\" κάτω από τις προτάσεις εφαρμογών</string>
     <string name="app_suggestions_usage_access_link">άδεια πρόσβασης στη χρήση</string>
     <string name="app_suggestions_usage_access_tip">Χορηγήστε την άδεια πρόσβασης στη χρήση για να βλέπετε πιο κατάλληλες προτάσεις</string>
     <string name="clear_query_toggle_desc">Αυτόματος καθαρισμός του παλιού ερωτήματος κατά την εκκίνηση της εφαρμογής</string>
@@ -220,6 +226,7 @@
     <string name="section_app_shortcuts">Συντομεύσεις εφαρμογών</string>
     <string name="section_apps">Εφαρμογές</string>
     <string name="section_calendar">Συμβάντα ημερολογίου</string>
+    <string name="section_contacts">Επαφές</string>
     <string name="section_files">Αρχεία</string>
     <string name="section_notes">Σημειώσεις</string>
     <string name="section_settings">Ρυθμίσεις συσκευής</string>
@@ -232,6 +239,8 @@
     <string name="top_matches_toggle_desc">Εμφάνιση των κορυφαίων αποτελεσμάτων από όλους τους τύπους στο πάνω μέρος.</string>
     <string name="top_result_indicator_toggle_desc">Επισήμανση του κορυφαίου αποτελέσματος που μπορεί να ανοίξει με το πληκτρολόγιο.</string>
     <string name="top_result_indicator_toggle_title">Δείκτης κορυφαίου αποτελέσματος</string>
+    <string name="include_non_launchable_apps_toggle_title">Μη εκκινήσιμες εφαρμογές</string>
+    <string name="include_non_launchable_apps_toggle_desc">Συμπερίληψη εφαρμογών που δεν έχουν δραστηριότητα εκκίνησης στα αποτελέσματα αναζήτησης.</string>
     <string name="web_search_suggestions_title">Προτάσεις ιστού</string>
 
     <!-- ============================================================================
@@ -620,6 +629,8 @@
     <string name="settings_launcher_icon_title">Εικονίδιο εφαρμογής Launcher</string>
     <string name="settings_layout_option_bottom_desc">Τα πιο σχετικά στοιχεία εμφανίζονται στο κάτω μέρος για εύκολη πρόσβαση</string>
     <string name="settings_layout_option_bottom_title">Λειτουργία ενός χεριού</string>
+    <string name="settings_unified_pinned_items_title">Ενοποιημένα καρφιτσωμένα στοιχεία</string>
+    <string name="settings_unified_pinned_items_desc">Εμφάνιση καρφιτσωμένων στοιχείων ως μία ενοποιημένη λίστα στην αρχική οθόνη.</string>
     <string name="settings_more_options_desc">Διάφορες επιλογές προσαρμογής</string>
     <string name="settings_more_options_title">Περισσότερες επιλογές</string>
     <string name="settings_overlay_assistant_setup_now">Ρύθμιση τώρα</string>
@@ -690,6 +701,10 @@
     <string name="settings_configure_api_key_title">Διαμόρφωση κλειδιού API</string>
     <string name="settings_custom_provider_base_url_hint">Παράδειγμα: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Βασικό URL</string>
+    <string name="settings_custom_provider_advanced_payload_desc">Συγχωνεύεται σε κάθε αίτημα που αποστέλλεται μέσω αυτού του παρόχου.</string>
+    <string name="settings_custom_provider_advanced_payload_error">Εισαγάγετε ένα έγκυρο αντικείμενο JSON.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">Προηγμένο Ωφέλιμο Φορτίο Αιτήματος</string>
     <string name="settings_direct_search_desc">Υποστηρίζονται κλειδιά API για Gemini, OpenAI, Claude και Groq</string>
     <string name="settings_direct_search_desc_intro">Προσθέστε ένα κλειδί API για να ενεργοποιήσετε την αναζήτηση και τα εργαλεία με υποστήριξη AI.</string>
     <string name="settings_direct_search_grounding_label">Αναζήτηση στον ιστό</string>

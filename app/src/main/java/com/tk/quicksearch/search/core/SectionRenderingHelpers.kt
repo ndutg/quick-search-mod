@@ -218,8 +218,13 @@ fun rememberSectionRenderContext(
     val shouldRenderContacts: Boolean
     val shouldRenderAppShortcuts: Boolean
     val shouldRenderSettings: Boolean
+    val shouldRenderAppSettings: Boolean
     val shouldRenderCalendar: Boolean
     val shouldRenderNotes: Boolean
+    val hideSectionedPinnedNonAppItems =
+        !isSearching &&
+            state.unifiedPinnedItemsEnabled &&
+            state.detectedAliasSearchSection == null
 
     if (isSearching) {
         shouldRenderApps =
@@ -288,6 +293,8 @@ fun rememberSectionRenderContext(
         shouldRenderSettings =
             when (state.settingsSectionState) {
                 is SettingsSectionVisibility.ShowingResults -> {
+                    (SearchSection.SETTINGS !in state.disabledSections ||
+                        state.detectedAliasSearchSection == SearchSection.SETTINGS) &&
                         !isFilesExpanded &&
                         !isContactsExpanded &&
                         !isAppShortcutsExpanded &&
@@ -299,6 +306,15 @@ fun rememberSectionRenderContext(
                     false
                 }
             }
+        shouldRenderAppSettings =
+            state.appSettingResults.isNotEmpty() &&
+                (SearchSection.APP_SETTINGS !in state.disabledSections ||
+                    state.detectedAliasSearchSection == SearchSection.APP_SETTINGS) &&
+                !isFilesExpanded &&
+                !isContactsExpanded &&
+                !isAppShortcutsExpanded &&
+                !isCalendarExpanded &&
+                !isNotesExpanded
         shouldRenderCalendar =
             when (state.calendarSectionState) {
                 is CalendarSectionVisibility.ShowingResults -> {
@@ -333,8 +349,9 @@ fun rememberSectionRenderContext(
                 else -> false
             }
         shouldRenderFiles =
-            when (state.filesSectionState) {
-                is FilesSectionVisibility.ShowingResults -> {
+            when {
+                hideSectionedPinnedNonAppItems -> false
+                state.filesSectionState is FilesSectionVisibility.ShowingResults -> {
                     renderingState.hasPinnedFiles
                 }
 
@@ -343,8 +360,9 @@ fun rememberSectionRenderContext(
                 }
             }
         shouldRenderContacts =
-            when (state.contactsSectionState) {
-                is ContactsSectionVisibility.ShowingResults -> {
+            when {
+                hideSectionedPinnedNonAppItems -> false
+                state.contactsSectionState is ContactsSectionVisibility.ShowingResults -> {
                     renderingState.hasPinnedContacts
                 }
 
@@ -353,8 +371,9 @@ fun rememberSectionRenderContext(
                 }
             }
         shouldRenderAppShortcuts =
-            when (state.appShortcutsSectionState) {
-                is AppShortcutsSectionVisibility.ShowingResults -> {
+            when {
+                hideSectionedPinnedNonAppItems -> false
+                state.appShortcutsSectionState is AppShortcutsSectionVisibility.ShowingResults -> {
                     renderingState.hasPinnedAppShortcuts
                 }
 
@@ -363,8 +382,9 @@ fun rememberSectionRenderContext(
                 }
             }
         shouldRenderSettings =
-            when (state.settingsSectionState) {
-                is SettingsSectionVisibility.ShowingResults -> {
+            when {
+                hideSectionedPinnedNonAppItems -> false
+                state.settingsSectionState is SettingsSectionVisibility.ShowingResults -> {
                     renderingState.hasPinnedSettings
                 }
 
@@ -372,9 +392,11 @@ fun rememberSectionRenderContext(
                     false
                 }
             }
+        shouldRenderAppSettings = false
         shouldRenderCalendar =
-            when (state.calendarSectionState) {
-                is CalendarSectionVisibility.ShowingResults -> {
+            when {
+                hideSectionedPinnedNonAppItems -> false
+                state.calendarSectionState is CalendarSectionVisibility.ShowingResults -> {
                     renderingState.hasPinnedCalendarEvents ||
                         state.todayCalendarEvents.isNotEmpty() ||
                         state.detectedAliasSearchSection == SearchSection.CALENDAR
@@ -383,8 +405,9 @@ fun rememberSectionRenderContext(
                 else -> false
             }
         shouldRenderNotes =
-            when (state.notesSectionState) {
-                is NotesSectionVisibility.ShowingResults -> {
+            when {
+                hideSectionedPinnedNonAppItems -> false
+                state.notesSectionState is NotesSectionVisibility.ShowingResults -> {
                     renderingState.hasPinnedNotes ||
                         state.detectedAliasSearchSection == SearchSection.NOTES
                 }
@@ -399,6 +422,7 @@ fun rememberSectionRenderContext(
         shouldRenderApps = shouldRenderApps,
         shouldRenderAppShortcuts = shouldRenderAppShortcuts,
         shouldRenderSettings = shouldRenderSettings,
+        shouldRenderAppSettings = shouldRenderAppSettings,
         shouldRenderCalendar = shouldRenderCalendar,
         shouldRenderNotes = shouldRenderNotes,
         isFilesExpanded = isFilesExpanded || !isSearching,
@@ -409,7 +433,9 @@ fun rememberSectionRenderContext(
         isAppShortcutsExpanded = isAppShortcutsExpanded || !isSearching,
         isNotesExpanded = isNotesExpanded || !isSearching,
         filesList =
-            if (isSearching) {
+            if (hideSectionedPinnedNonAppItems) {
+                emptyList()
+            } else if (isSearching) {
                 getFileListForRendering(
                     renderingState,
                     isFilesExpanded,
@@ -419,7 +445,9 @@ fun rememberSectionRenderContext(
                 renderingState.pinnedFiles
             },
         contactsList =
-            if (isSearching) {
+            if (hideSectionedPinnedNonAppItems) {
+                emptyList()
+            } else if (isSearching) {
                 getContactListForRendering(
                     renderingState,
                     isContactsExpanded,
@@ -429,7 +457,9 @@ fun rememberSectionRenderContext(
                 renderingState.pinnedContacts
             },
         settingsList =
-            if (isSearching) {
+            if (hideSectionedPinnedNonAppItems) {
+                emptyList()
+            } else if (isSearching) {
                 getSettingsListForRendering(
                     renderingState,
                     isSettingsExpanded,
@@ -449,7 +479,9 @@ fun rememberSectionRenderContext(
                 emptyList()
             },
         appShortcutsList =
-            if (isSearching) {
+            if (hideSectionedPinnedNonAppItems) {
+                emptyList()
+            } else if (isSearching) {
                 getAppShortcutListForRendering(
                     renderingState,
                     isAppShortcutsExpanded,
@@ -459,15 +491,25 @@ fun rememberSectionRenderContext(
                 renderingState.pinnedAppShortcuts
             },
         calendarEventsList =
-            if (isSearching || state.detectedAliasSearchSection == SearchSection.CALENDAR) {
+            if (hideSectionedPinnedNonAppItems) {
+                emptyList()
+            } else if (isSearching || state.detectedAliasSearchSection == SearchSection.CALENDAR) {
                 renderingState.calendarEvents
             } else {
+                val todayEventIds = state.todayCalendarEvents.map { it.eventId }.toSet()
+                renderingState.pinnedCalendarEvents.filterNot { it.eventId in todayEventIds }
+            },
+        todayCalendarEventsList =
+            if (isSearching || state.detectedAliasSearchSection == SearchSection.CALENDAR) {
+                emptyList()
+            } else {
                 val pinnedIds = renderingState.pinnedCalendarEvents.map { it.eventId }.toSet()
-                renderingState.pinnedCalendarEvents +
-                    state.todayCalendarEvents.filterNot { it.eventId in pinnedIds }
+                state.todayCalendarEvents.filterNot { it.eventId in pinnedIds }
             },
         notesList =
-            if (isSearching || state.detectedAliasSearchSection == SearchSection.NOTES) {
+            if (hideSectionedPinnedNonAppItems) {
+                emptyList()
+            } else if (isSearching || state.detectedAliasSearchSection == SearchSection.NOTES) {
                 renderingState.noteResults
             } else {
                 renderingState.pinnedNotes
@@ -528,6 +570,7 @@ data class SectionRenderContext(
     val contactsList: List<ContactInfo> = emptyList(),
     val appShortcutsList: List<StaticShortcut> = emptyList(),
     val calendarEventsList: List<CalendarEventInfo> = emptyList(),
+    val todayCalendarEventsList: List<CalendarEventInfo> = emptyList(),
     val notesList: List<NoteInfo> = emptyList(),
     val showAllFilesResults: Boolean = false,
     val showAllContactsResults: Boolean = false,
@@ -545,6 +588,7 @@ data class SectionRenderContext(
     val calendarExpandClick: () -> Unit = {},
     val notesExpandClick: () -> Unit = {},
     val shouldRenderSettings: Boolean = false,
+    val shouldRenderAppSettings: Boolean = false,
     val isDeviceSettingsExpanded: Boolean = false,
     val isAppSettingsExpanded: Boolean = false,
     val settingsList: List<DeviceSetting> = emptyList(),

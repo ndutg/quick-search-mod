@@ -221,7 +221,7 @@ internal class SearchQueryCoordinator(
     private fun applyFeatureAliasMode(featureId: String) {
         // Handle custom tool aliases
         if (featureId.startsWith("custom_tool:")) {
-            if (!userPreferences.hasAnyLlmApiKey()) {
+            if (!handlers.aiSearchHandler.hasAnyLlmApiKeyCached()) {
                 clearDetectedAliasMode()
                 return
             }
@@ -246,7 +246,7 @@ internal class SearchQueryCoordinator(
             return
         }
 
-        if (definition.requiresGeminiApiKey && !userPreferences.hasAnyLlmApiKey()) {
+        if (definition.requiresGeminiApiKey && !handlers.aiSearchHandler.hasAnyLlmApiKeyCached()) {
             clearDetectedAliasMode()
             return
         }
@@ -366,6 +366,7 @@ internal class SearchQueryCoordinator(
                 aiSearchState.activeQuery != trimmedQuery)
         ) {
             handlers.aiSearchHandler.clearAiSearchState()
+            updateResultsState { it.copy(AiSearchState = AiSearchState()) }
         }
 
         val currencyState = currentResultsStateProvider().currencyConverterState

@@ -1,7 +1,9 @@
 package com.tk.quicksearch.overlay
 
 import android.content.ComponentCallbacks2
+import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -18,6 +20,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.app.startup.StartupCoordinator
@@ -29,6 +32,7 @@ import com.tk.quicksearch.search.apps.invalidateAppIconCache
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
+import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.searchWidget.VoiceSearchHandler
@@ -44,7 +48,12 @@ class OverlayActivity : ComponentActivity() {
             voiceSearchHandler.processVoiceInputResult(result, searchViewModel::onQueryChange)
         }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(AppLanguageManager.wrapContext(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppLanguageManager.applySavedAppLanguage(this)
         // Set transparent background for seamless overlay appearance
         window.setBackgroundDrawableResource(android.R.color.transparent)
 
@@ -113,6 +122,14 @@ class OverlayActivity : ComponentActivity() {
         WallpaperUtils.clearMemoryCaches()
         invalidateAppIconCache()
         IconPackManager.clearAllCaches()
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_ESCAPE && event.action == KeyEvent.ACTION_UP) {
+            finish()
+            return true
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     override fun finish() {
@@ -185,6 +202,12 @@ class OverlayActivity : ComponentActivity() {
                         viewModel = searchViewModel,
                         animationToken = animationToken,
                         onCloseRequested = { finish() },
+                        reservedKeyboardHeightProvider = { landscape ->
+                            userPreferences.getReservedKeyboardHeightDp(landscape).dp
+                        },
+                        onKeyboardHeightMeasured = { landscape, height ->
+                            userPreferences.setReservedKeyboardHeightDp(landscape, height.value)
+                        },
                     )
                 }
             }

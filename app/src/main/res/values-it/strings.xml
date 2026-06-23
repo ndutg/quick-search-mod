@@ -98,6 +98,8 @@
     <string name="action_move_down">Sposta giù</string>
     <string name="action_undo">Annulla</string>
     <string name="action_uninstall_app">Disinstalla</string>
+    <string name="action_rate">Valuta ora</string>
+    <string name="action_not_now">Non ora</string>
     <string name="action_unpin_app">Rimuovi dai fissati</string>
     <string name="alias_trigger_after_space">Trigger dopo lo spazio</string>
     <string name="common_action_add">Aggiungi</string>
@@ -141,8 +143,6 @@
     <string name="dialog_edit_amazon_domain_hint">Esempi: amazon.com, amazon.it, amazon.ca, ecc.</string>
     <string name="dialog_edit_amazon_domain_message">Aggiorna il dominio Amazon per il tuo Paese.</string>
     <string name="dialog_edit_amazon_domain_title">Modifica dominio Amazon</string>
-    <string name="dialog_enjoying_app_title">Trovi utile questa app?</string>
-    <string name="dialog_feedback_hint">Dicci cosa possiamo migliorare</string>
     <string name="dialog_gemini_model_picker_title">Seleziona modello</string>
     <string name="dialog_nickname_message">Inserisci un soprannome per "%1$s". Potrai cercarlo usando questo soprannome.</string>
     <string name="dialog_no">No</string>
@@ -184,9 +184,15 @@
     <string name="app_suggestions_tab_new_updated">Nuove/Aggiornate</string>
     <string name="app_suggestions_tab_pinned">Fissate</string>
     <string name="app_suggestions_tab_recent">Recenti</string>
+    <string name="app_suggestions_tabs_dialog_message">Scegli quali schede di suggerimenti app visualizzare nella schermata iniziale.</string>
+    <string name="app_suggestions_tabs_dialog_title">Schede di suggerimenti app</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">Scegli schede</string>
+    <string name="app_suggestions_enabled_tabs_summary">Corrente: %1$s</string>
     <string name="app_suggestions_tab_required_toast">Mantieni abilitata almeno una scheda dei suggerimenti app</string>
     <string name="app_suggestions_toggle_desc">Mostra o nascondi le app consigliate nella schermata iniziale</string>
     <string name="app_suggestions_toggle_title">Suggerimenti app</string>
+    <string name="show_all_apps_button_toggle_title">Tutte le app</string>
+    <string name="show_all_apps_button_toggle_desc">Mostra il pulsante \"Tutte le app\" sotto i suggerimenti di app</string>
     <string name="app_suggestions_usage_access_link">autorizzazione di accesso ai dati di utilizzo</string>
     <string name="app_suggestions_usage_access_tip">Concedi l\u2019autorizzazione di accesso ai dati di utilizzo per vedere suggerimenti più pertinenti</string>
     <string name="clear_query_toggle_desc">Cancella automaticamente la query precedente all\u2019avvio dell\u2019app</string>
@@ -219,6 +225,7 @@
     <string name="section_app_shortcuts">Scorciatoie app</string>
     <string name="section_apps">App</string>
     <string name="section_calendar">Eventi calendario</string>
+    <string name="section_contacts">Contatti</string>
     <string name="section_files">File</string>
     <string name="section_notes">Note</string>
     <string name="section_settings">Impostazioni dispositivo</string>
@@ -231,6 +238,8 @@
     <string name="top_matches_toggle_desc">Mostra in alto i risultati con la migliore corrispondenza tra tutte le categorie.</string>
     <string name="top_result_indicator_toggle_desc">Evidenzia il primo risultato che può essere aperto direttamente con la tastiera.</string>
     <string name="top_result_indicator_toggle_title">Indicatore miglior risultato</string>
+    <string name="include_non_launchable_apps_toggle_title">App non avviabili</string>
+    <string name="include_non_launchable_apps_toggle_desc">Includi le app che non hanno un\'attività di avvio nei risultati di ricerca.</string>
     <string name="web_search_suggestions_title">Suggerimenti web</string>
 
     <!-- ============================================================================
@@ -619,6 +628,8 @@
     <string name="settings_launcher_icon_title">Icona dell\u2019applicazione launcher</string>
     <string name="settings_layout_option_bottom_desc">Gli elementi più rilevanti appaiono in basso per un facile accesso</string>
     <string name="settings_layout_option_bottom_title">Modalità a una mano</string>
+    <string name="settings_unified_pinned_items_title">Elementi fissati unificati</string>
+    <string name="settings_unified_pinned_items_desc">Mostra gli elementi fissati como un unico elenco unificato nella schermata iniziale.</string>
     <string name="settings_more_options_desc">Opzioni di personalizzazione varie</string>
     <string name="settings_more_options_title">Altre opzioni</string>
     <string name="settings_overlay_assistant_setup_now">Configura ora</string>
@@ -689,6 +700,10 @@
     <string name="settings_configure_api_key_title">Configura chiave API</string>
     <string name="settings_custom_provider_base_url_hint">Esempio: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">URL di base</string>
+    <string name="settings_custom_provider_advanced_payload_desc">Unito in ogni richiesta inviata tramite questo provider.</string>
+    <string name="settings_custom_provider_advanced_payload_error">Inserisci un oggetto JSON valido.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">Payload di richiesta avanzato</string>
     <string name="settings_direct_search_desc">Sono supportate le chiavi API di Gemini, OpenAI, Claude e Groq</string>
     <string name="settings_direct_search_desc_intro">Aggiungi una chiave API per abilitare la ricerca e gli strumenti basati sull\u2019AI.</string>
     <string name="settings_direct_search_grounding_label">Ricerca Web</string>

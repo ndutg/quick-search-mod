@@ -113,12 +113,14 @@ fun SearchContentArea(
     notesParams: NotesSectionParams,
     appsParams: AppsSectionParams,
     predictedTarget: PredictedSubmitTarget? = null,
+    isPhysicalKeyboardConnected: Boolean,
     onRequestUsagePermission: () -> Unit,
     scrollState: androidx.compose.foundation.ScrollState,
     onPhoneNumberClick: (String) -> Unit = {},
     onEmailClick: (String) -> Unit = {},
     onOpenPersonalContextDialog: () -> Unit = {},
     onWebSuggestionClick: (String) -> Unit = {},
+    onRecentQueryClick: (RecentSearchEntry.Query) -> Unit = {},
     onSearchTargetClick: (String, SearchTarget) -> Unit = { _, _ -> },
     onSearchEngineLongPress: () -> Unit = {},
     onCustomizeSearchEnginesClick: () -> Unit = {},
@@ -146,6 +148,7 @@ fun SearchContentArea(
     isDefaultLauncher: Boolean = false,
     onBottomOneHandedOverscrollUp: () -> Unit = {},
     onLauncherOverscrollDown: () -> Unit = {},
+    selectedTopMatchIndex: Int? = null,
 ) {
     val useOneHandedMode =
         state.oneHandedMode &&
@@ -494,6 +497,7 @@ fun SearchContentArea(
                                 notesParams = notesParams,
                                 appsParams = appsParams,
                                 predictedTarget = predictedTarget,
+                                isPhysicalKeyboardConnected = isPhysicalKeyboardConnected,
                                 onRequestUsagePermission = onRequestUsagePermission,
                                 minContentHeight =
                                     if (isOverlayPresentation) {
@@ -530,6 +534,7 @@ fun SearchContentArea(
                                 onEmailClick = onEmailClick,
                                 onOpenPersonalContextDialog = onOpenPersonalContextDialog,
                                 onWebSuggestionClick = onWebSuggestionClick,
+                                onRecentQueryClick = onRecentQueryClick,
                                 onSearchEngineLongPress = onSearchEngineLongPress,
                                 onCustomizeSearchEnginesClick =
                                 onCustomizeSearchEnginesClick,
@@ -545,6 +550,7 @@ fun SearchContentArea(
                                 searchHistorySelectedTab = searchHistorySelectedTab,
                                 onSearchHistorySelectedTabChange = { searchHistorySelectedTab = it },
                                 onOpenPermissionsSettings = onOpenPermissionsSettings,
+                                selectedTopMatchIndex = selectedTopMatchIndex,
                             )
                         }
                     }

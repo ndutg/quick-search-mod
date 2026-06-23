@@ -14,6 +14,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var excludedFileExtensions: Set<String> = emptySet()
     var oneHandedMode: Boolean = false
     var bottomSearchBarEnabled: Boolean = false
+    var unifiedPinnedItemsEnabled: Boolean = false
     var searchHintsEnabled: Boolean = true
     var settingsIconEnabled: Boolean = true
     var topResultIndicatorEnabled: Boolean = true
@@ -25,6 +26,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var assistantLaunchVoiceModeEnabled: Boolean = false
     var hasSeenDirectDialChoice: Boolean = false
     var appSuggestionsEnabled: Boolean = true
+    var showAllAppsButton: Boolean = false
     var showAppLabels: Boolean = true
     var phoneAppGridColumns: Int = UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS
     var appIconSizeStep: Int = UiPreferences.DEFAULT_APP_ICON_SIZE_STEP
@@ -60,6 +62,7 @@ internal class SearchViewModelLegacyPreferenceState(
         excludedFileExtensions = prefCache.excludedFileExtensions
         oneHandedMode = prefCache.oneHandedMode
         bottomSearchBarEnabled = prefCache.bottomSearchBarEnabled
+        unifiedPinnedItemsEnabled = prefCache.unifiedPinnedItemsEnabled
         searchHintsEnabled = prefCache.searchHintsEnabled
         settingsIconEnabled = prefCache.settingsIconEnabled
         topResultIndicatorEnabled = prefCache.topResultIndicatorEnabled
@@ -71,6 +74,7 @@ internal class SearchViewModelLegacyPreferenceState(
         assistantLaunchVoiceModeEnabled = prefCache.assistantLaunchVoiceModeEnabled
         hasSeenDirectDialChoice = prefCache.hasSeenDirectDialChoice
         appSuggestionsEnabled = prefCache.appSuggestionsEnabled
+        showAllAppsButton = prefCache.showAllAppsButton
         showAppLabels = prefCache.showAppLabels
         phoneAppGridColumns = prefCache.phoneAppGridColumns
         appIconSizeStep = prefCache.appIconSizeStep

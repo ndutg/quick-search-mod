@@ -22,7 +22,9 @@ internal class SearchVisibilityStateResolver {
             state.isLoading -> ScreenVisibilityState.Loading
             state.errorMessage != null -> ScreenVisibilityState.Error(state.errorMessage, canRetry = true)
             !state.hasUsagePermission -> ScreenVisibilityState.NoPermissions
-            state.query.isBlank() && state.recentApps.isEmpty() && state.pinnedApps.isEmpty() ->
+            state.query.isBlank() &&
+                state.recentApps.isEmpty() &&
+                state.pinnedApps.isEmpty() ->
                 ScreenVisibilityState.Empty
             else -> ScreenVisibilityState.Content
         }
@@ -34,7 +36,10 @@ internal class SearchVisibilityStateResolver {
             !sectionEnabled -> AppsSectionVisibility.Hidden
             state.isInitializing || state.isLoading -> AppsSectionVisibility.Loading
             state.query.isBlank() -> {
-                val hasContent = state.recentApps.isNotEmpty() || state.pinnedApps.isNotEmpty()
+                val hasContent =
+                    state.recentApps.isNotEmpty() ||
+                        state.pinnedApps.isNotEmpty() ||
+                        (state.showAllAppsButton && state.allApps.any { it.hasLaunchIntent })
                 if (hasContent) {
                     AppsSectionVisibility.ShowingResults(hasPinned = state.pinnedApps.isNotEmpty())
                 } else {
@@ -179,7 +184,7 @@ internal class SearchVisibilityStateResolver {
         section: SearchSection,
     ): Boolean {
         if (state.detectedAliasSearchSection == section) return true
-        if (section == SearchSection.APPS && state.query.isBlank()) return true
+        if (state.query.isBlank()) return true
         return section !in state.disabledSections
     }
 }

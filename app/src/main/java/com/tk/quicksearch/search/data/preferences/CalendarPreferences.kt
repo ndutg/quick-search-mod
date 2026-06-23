@@ -1,6 +1,8 @@
 package com.tk.quicksearch.search.data.preferences
 
 import android.content.Context
+import java.time.LocalDate
+import java.time.ZoneId
 
 /** Preferences for calendar event pin/exclude management. */
 class CalendarPreferences(
@@ -44,9 +46,16 @@ class CalendarPreferences(
 
     fun setShowTodayEvents(value: Boolean) = setBooleanPref(BasePreferences.KEY_CALENDAR_SHOW_TODAY_EVENTS, value)
 
-    fun getArchivedTodayEventIds(): Set<Long> = getPinnedLongItems(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS)
+    fun getArchivedTodayEventIds(): Set<Long> {
+        clearArchivedTodayEventsIfStale()
+        return getPinnedLongItems(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS)
+    }
 
-    fun archiveTodayEvent(eventId: Long): Set<Long> = pinLongItem(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS, eventId)
+    fun archiveTodayEvent(eventId: Long): Set<Long> {
+        clearArchivedTodayEventsIfStale()
+        prefs.edit().putString(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_DATE, todayDateKey()).apply()
+        return pinLongItem(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS, eventId)
+    }
 
     fun getCustomEventsJson(): String = prefs.getString(BasePreferences.KEY_CUSTOM_CALENDAR_EVENTS_DATA, null).orEmpty()
 
@@ -59,4 +68,17 @@ class CalendarPreferences(
         prefs.edit().putLong(BasePreferences.KEY_CUSTOM_CALENDAR_EVENT_ID_COUNTER, counter + 1L).apply()
         return -counter
     }
+
+    private fun clearArchivedTodayEventsIfStale() {
+        val today = todayDateKey()
+        val storedDate = prefs.getString(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_DATE, null)
+        if (storedDate == today) return
+
+        prefs.edit()
+            .remove(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_DATE)
+            .putStringSet(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS, emptySet())
+            .apply()
+    }
+
+    private fun todayDateKey(): String = LocalDate.now(ZoneId.systemDefault()).toString()
 }

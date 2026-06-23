@@ -485,6 +485,7 @@ abstract class BasePreferences(
         const val KEY_CUSTOM_CALENDAR_EVENTS_DATA = "custom_calendar_events_data"
         const val KEY_CUSTOM_CALENDAR_EVENT_ID_COUNTER = "custom_calendar_event_id_counter"
         const val KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS = "archived_today_calendar_event_ids"
+        const val KEY_ARCHIVED_TODAY_CALENDAR_EVENT_DATE = "archived_today_calendar_event_date"
 
         // Notes preferences keys
         const val KEY_PINNED_NOTE_IDS = "pinned_note_ids"
@@ -512,6 +513,9 @@ abstract class BasePreferences(
         const val KEY_CUSTOM_SEARCH_ENGINES = "custom_search_engines"
         const val KEY_CUSTOM_TOOLS = "custom_tools"
         const val KEY_DISABLED_CUSTOM_TOOLS = "disabled_custom_tools"
+
+        // App language preference keys
+        const val KEY_APP_LANGUAGE_TAG = "app_language_tag"
 
         // Alias preferences keys
         const val KEY_ALIASES_ENABLED = "aliases_enabled"
@@ -601,12 +605,12 @@ abstract class BasePreferences(
         const val KEY_CALCULATOR_ENABLED = "calculator_enabled"
         const val KEY_UNIT_CONVERTER_ENABLED = "unit_converter_enabled"
 
-        // In-app review preferences keys
+        // Rate Quick Search prompt tracking
         const val KEY_FIRST_APP_OPEN_TIME = "first_app_open_time"
-        const val KEY_LAST_REVIEW_PROMPT_TIME = "last_review_prompt_time"
-        const val KEY_REVIEW_PROMPTED_COUNT = "review_prompted_count"
         const val KEY_APP_OPEN_COUNT = "app_open_count"
-        const val KEY_APP_OPEN_COUNT_AT_LAST_PROMPT = "app_open_count_at_last_prompt"
+        const val KEY_RATE_QUICK_SEARCH_LAST_DISMISSED_AT = "rate_quick_search_last_dismissed_at"
+        const val KEY_RATE_QUICK_SEARCH_DISMISS_COUNT = "rate_quick_search_dismiss_count"
+        const val KEY_RATE_QUICK_SEARCH_COMPLETED = "rate_quick_search_completed"
 
         // In-app update session tracking keys
         const val KEY_UPDATE_CHECK_SHOWN_THIS_SESSION = "update_check_shown_this_session"

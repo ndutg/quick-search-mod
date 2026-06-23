@@ -99,6 +99,8 @@
     <string name="action_move_down">नीचे ले जाएं</string>
     <string name="action_undo">पूर्ववत करें</string>
     <string name="action_uninstall_app">अनइंस्टॉल करें</string>
+    <string name="action_rate">अभी रेट करें</string>
+    <string name="action_not_now">अभी नहीं</string>
     <string name="action_unpin_app">अनपिन करें</string>
     <string name="alias_trigger_after_space">स्पेस के बाद ट्रिगर</string>
     <string name="common_action_add">जोड़ें</string>
@@ -142,8 +144,6 @@
     <string name="dialog_edit_amazon_domain_hint">उदाहरण: amazon.com, amazon.in, amazon.ca, आदि।</string>
     <string name="dialog_edit_amazon_domain_message">अपने देश के लिए Amazon डोमेन अपडेट करें।</string>
     <string name="dialog_edit_amazon_domain_title">Amazon डोमेन संपादित करें</string>
-    <string name="dialog_enjoying_app_title">क्या आपको यह ऐप उपयोगी लगता है?</string>
-    <string name="dialog_feedback_hint">बताएं हम क्या बेहतर कर सकते हैं</string>
     <string name="dialog_gemini_model_picker_title">मॉडल चुनें</string>
     <string name="dialog_nickname_message">\"%1$s\" के लिए एक निकनेम दर्ज करें। आप इस निकनेम से इसे खोज सकेंगे।</string>
     <string name="dialog_no">नहीं</string>
@@ -185,9 +185,15 @@
     <string name="app_suggestions_tab_new_updated">नए/अपडेटेड</string>
     <string name="app_suggestions_tab_pinned">पिन किए गए</string>
     <string name="app_suggestions_tab_recent">हाल के</string>
+    <string name="app_suggestions_tabs_dialog_message">चुनें कि होम स्क्रीन पर कौन से ऐप सुझाव टैब दिखाई दें।</string>
+    <string name="app_suggestions_tabs_dialog_title">ऐप सुझाव टैब</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">टैब चुनें</string>
+    <string name="app_suggestions_enabled_tabs_summary">वर्तमान: %1$s</string>
     <string name="app_suggestions_tab_required_toast">कम से कम एक ऐप सुझाव टैब सक्षम रखें</string>
     <string name="app_suggestions_toggle_desc">होम स्क्रीन पर सुझाए गए ऐप दिखाएं या छिपाएं</string>
     <string name="app_suggestions_toggle_title">ऐप सुझाव</string>
+    <string name="show_all_apps_button_toggle_title">सभी ऐप्स</string>
+    <string name="show_all_apps_button_toggle_desc">ऐप सुझावों के नीचे \"सभी ऐप्स\" बटन दिखाएं</string>
     <string name="app_suggestions_usage_access_link">उपयोग पहुंच अनुमति</string>
     <string name="app_suggestions_usage_access_tip">अधिक उपयुक्त सुझाव देखने के लिए उपयोग पहुंच अनुमति दें</string>
     <string name="clear_query_toggle_desc">ऐप खुलने पर पुरानी क्वेरी अपने आप साफ करें</string>
@@ -220,6 +226,7 @@
     <string name="section_app_shortcuts">ऐप शॉर्टकट्स</string>
     <string name="section_apps">ऐप्स</string>
     <string name="section_calendar">कैलेंडर इवेंट्स</string>
+    <string name="section_contacts">कॉन्टैक्ट</string>
     <string name="section_files">फाइलें</string>
     <string name="section_notes">नोट्स</string>
     <string name="section_settings">डिवाइस सेटिंग्स</string>
@@ -232,6 +239,8 @@
     <string name="top_matches_toggle_desc">सभी प्रकार के शीर्ष मिलान वाले परिणाम सबसे ऊपर दिखाएं।</string>
     <string name="top_result_indicator_toggle_desc">कीबोर्ड से खोले जा सकने वाले शीर्ष परिणाम को हाइलाइट करें।</string>
     <string name="top_result_indicator_toggle_title">टॉप परिणाम संकेतक</string>
+    <string name="include_non_launchable_apps_toggle_title">लॉन्च न होने वाले ऐप्स</string>
+    <string name="include_non_launchable_apps_toggle_desc">खोज परिणामों में उन ऐप्स को शामिल करें जिनमें कोई लॉन्च गतिविधि नहीं है।</string>
     <string name="web_search_suggestions_title">वेब सुझाव</string>
 
     <!-- ============================================================================
@@ -620,6 +629,8 @@
     <string name="settings_launcher_icon_title">लॉन्चर ऐप आइकन</string>
     <string name="settings_layout_option_bottom_desc">आसान पहुंच के लिए सबसे प्रासंगिक आइटम नीचे दिखते हैं</string>
     <string name="settings_layout_option_bottom_title">एक-हाथ मोड</string>
+    <string name="settings_unified_pinned_items_title">एकीकृत पिन किए गए आइटम</string>
+    <string name="settings_unified_pinned_items_desc">पिन किए गए आइटम को होम स्क्रीन पर एक एकीकृत सूची के रूप में दिखाएं।</string>
     <string name="settings_more_options_desc">विविध कस्टमाइज़ेशन विकल्प</string>
     <string name="settings_more_options_title">और विकल्प</string>
     <string name="settings_overlay_assistant_setup_now">अभी सेटअप करें</string>
@@ -690,6 +701,10 @@
     <string name="settings_configure_api_key_title">API key कॉन्फ़िगर करें</string>
     <string name="settings_custom_provider_base_url_hint">उदाहरण: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">बेस URL</string>
+    <string name="settings_custom_provider_advanced_payload_desc">इस प्रदाता के माध्यम से भेजे गए प्रत्येक अनुरोध में विलय कर दिया गया।</string>
+    <string name="settings_custom_provider_advanced_payload_error">एक मान्य JSON ऑब्जेक्ट दर्ज करें।</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">उन्नत अनुरोध पेलोड</string>
     <string name="settings_direct_search_desc">Gemini, OpenAI, Claude और Groq API keys समर्थित हैं</string>
     <string name="settings_direct_search_desc_intro">AI-आधारित खोज और टूल्स सक्षम करने के लिए API key जोड़ें।</string>
     <string name="settings_direct_search_grounding_label">वेब खोज</string>

@@ -4,9 +4,14 @@ import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,23 +34,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -71,6 +71,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -80,11 +81,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
+import androidx.core.os.bundleOf
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import android.util.SizeF
 import kotlin.math.roundToInt
 
 private const val WIDGET_PANEL_HOST_ID = 8291
@@ -126,7 +129,10 @@ fun WidgetsPanelScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val activity = remember(context) { context.findActivity() }
     val appContext = context.applicationContext
+    val packageManager = context.packageManager
+    val configuration = LocalConfiguration.current
     val density = LocalDensity.current
     val appWidgetManager = remember(appContext) { AppWidgetManager.getInstance(appContext) }
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, WIDGET_PANEL_HOST_ID) }
@@ -139,6 +145,14 @@ fun WidgetsPanelScreen(
     var showPicker by rememberSaveable { mutableStateOf(false) }
     var pendingRequest by remember { mutableStateOf<PendingWidgetRequest?>(null) }
     val panelScrollState = rememberScrollState()
+    val widgetOptionsFactory =
+        remember(configuration) {
+            WidgetOptionsFactory(
+                screenWidthDp = configuration.screenWidthDp,
+                density = context.resources.displayMetrics.density,
+                orientation = configuration.orientation,
+            )
+        }
 
     fun persistWidgets(next: List<PanelWidgetInfo>) {
         if (next == widgets) return
@@ -163,6 +177,8 @@ fun WidgetsPanelScreen(
     fun finalizeAddWidget(request: PendingWidgetRequest) {
         val provider = request.provider
         val (columnSpan, rowSpan) = initialSpanFor(provider)
+        val options = widgetOptionsFactory.create(columnSpan, rowSpan)
+        appWidgetManager.updateAppWidgetOptions(request.appWidgetId, options)
         widgets =
             preferences.addWidget(
                 appWidgetId = request.appWidgetId,
@@ -194,10 +210,19 @@ fun WidgetsPanelScreen(
             finalizeAddWidget(request)
             return
         }
+        val initialOptions =
+            widgetOptionsFactory.create(
+                initialSpanFor(request.provider).first,
+                initialSpanFor(request.provider).second,
+            )
         val intent =
             Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
                 .setComponent(configure)
                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, request.appWidgetId)
+                .putExtra(
+                    AppWidgetManager.EXTRA_APPWIDGET_OPTIONS,
+                    initialOptions,
+                )
         pendingRequest = request
         val launchFailed =
             runCatching { configureLauncher.launch(intent) }
@@ -232,9 +257,20 @@ fun WidgetsPanelScreen(
     fun requestAddWidget(provider: AppWidgetProviderInfo) {
         val appWidgetId = appWidgetHost.allocateAppWidgetId()
         val request = PendingWidgetRequest(appWidgetId, provider)
+        val (columnSpan, rowSpan) = initialSpanFor(provider)
+        val widgetOptions = widgetOptionsFactory.create(columnSpan, rowSpan)
         val canBind =
             runCatching {
-                appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider.provider)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    appWidgetManager.bindAppWidgetIdIfAllowed(
+                        appWidgetId,
+                        provider.provider,
+                        widgetOptions,
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider.provider)
+                }
             }.getOrDefault(false)
 
         if (canBind) {
@@ -245,6 +281,7 @@ fun WidgetsPanelScreen(
                 Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider.provider)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_OPTIONS, widgetOptions)
             val launchFailed =
                 runCatching { bindLauncher.launch(intent) }
                     .exceptionOrNull()
@@ -271,6 +308,21 @@ fun WidgetsPanelScreen(
             .collect { inProgress ->
                 if (inProgress) appWidgetHost.cancelAllPendingLongPresses()
             }
+    }
+
+    DisposableEffect(activity, showPicker) {
+        val window = activity?.window
+        val originalSoftInputMode = window?.attributes?.softInputMode
+
+        if (showPicker && window != null) {
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        }
+
+        onDispose {
+            if (showPicker && window != null && originalSoftInputMode != null) {
+                window.setSoftInputMode(originalSoftInputMode)
+            }
+        }
     }
 
     BackHandler {
@@ -318,8 +370,7 @@ fun WidgetsPanelScreen(
                     .fillMaxSize()
                     .then(swipeBackModifier)
                     .then(editModeDismissModifier)
-                    .navigationBarsPadding()
-                    .imePadding(),
+                    .navigationBarsPadding(),
         ) {
             Column(
                 modifier =
@@ -365,9 +416,10 @@ fun WidgetsPanelScreen(
                                 editingWidgetId = null
                             },
                             onConfigureWidget = { _, configureIntent ->
-                                configureExistingLauncher.launch(configureIntent)
+                                runCatching { configureExistingLauncher.launch(configureIntent) }
                                 editingWidgetId = null
                             },
+                            packageManager = packageManager,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     } else {
@@ -388,6 +440,13 @@ fun WidgetsPanelScreen(
         }
     }
 }
+
+private tailrec fun Context.findActivity(): Activity? =
+    when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.findActivity()
+        else -> null
+    }
 
 @Composable
 private fun WidgetsPanelHeader(
@@ -410,33 +469,8 @@ private fun WidgetsPanelHeader(
                 Text(text = stringResource(R.string.dialog_done))
             }
         } else {
-            Button(
-                onClick = onAddWidget,
-                shape = DesignTokens.ShapeXXLarge,
-                modifier = Modifier.height(34.dp),
-                contentPadding =
-                    PaddingValues(
-                        start = DesignTokens.SpacingSmall,
-                        top = 0.dp,
-                        end = DesignTokens.SpacingMedium,
-                        bottom = 0.dp,
-                    ),
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                )
-                Spacer(modifier = Modifier.width(DesignTokens.SpacingXSmall))
-                Text(
-                    text = stringResource(R.string.common_action_add),
-                    style = MaterialTheme.typography.labelMedium,
-                )
+            TextButton(onClick = onAddWidget) {
+                Text(text = stringResource(R.string.common_action_add))
             }
         }
     }
@@ -453,6 +487,7 @@ private fun WidgetPanelGrid(
     onSetEditingWidgetId: (Int?) -> Unit,
     onRemoveWidget: (PanelWidgetInfo) -> Unit,
     onConfigureWidget: (PanelWidgetInfo, Intent) -> Unit,
+    packageManager: PackageManager,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier = modifier) {
@@ -597,6 +632,7 @@ private fun WidgetPanelGrid(
                         },
                         onRemove = { onRemoveWidget(widget) },
                         onConfigure = { intent -> onConfigureWidget(widget, intent) },
+                        packageManager = packageManager,
                     )
                 }
             }
@@ -621,6 +657,7 @@ private fun BoxScope.WidgetPanelGridItem(
     onInteractionEnd: () -> Unit,
     onRemove: () -> Unit,
     onConfigure: (Intent) -> Unit,
+    packageManager: PackageManager,
 ) {
     val density = LocalDensity.current
     val column = widget.column ?: 0
@@ -647,12 +684,14 @@ private fun BoxScope.WidgetPanelGridItem(
     if (providerInfo == null) return
 
     val configureIntent =
-        remember(providerInfo, widget.appWidgetId) {
-            providerInfo.configure?.let { configure ->
+        remember(providerInfo, widget.appWidgetId, packageManager) {
+            providerInfo.configure
+                ?.takeIf { isWidgetConfigureActivityAccessible(packageManager, it) }
+                ?.let { configure ->
                 Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
                     .setComponent(configure)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.appWidgetId)
-            }
+                }
         }
 
     Box(
@@ -674,9 +713,12 @@ private fun BoxScope.WidgetPanelGridItem(
         HostedWidget(
             widget = widget,
             providerInfo = providerInfo,
+            appWidgetManager = appWidgetManager,
             appWidgetHost = appWidgetHost,
             width = width,
             height = height,
+            columnSpan = columnSpan,
+            rowSpan = rowSpan,
             modifier = Modifier.fillMaxSize(),
         )
 
@@ -705,28 +747,48 @@ private fun BoxScope.WidgetPanelGridItem(
 private fun HostedWidget(
     widget: PanelWidgetInfo,
     providerInfo: AppWidgetProviderInfo,
+    appWidgetManager: AppWidgetManager,
     appWidgetHost: WidgetPanelHost,
     width: Dp,
     height: Dp,
+    columnSpan: Int,
+    rowSpan: Int,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+    val context = LocalContext.current
     val widthPx = with(density) { width.roundToPx() }
     val heightPx = with(density) { height.roundToPx() }
     val widthDp = width.value.toInt()
     val heightDp = height.value.toInt()
+    val displayDensity = context.resources.displayMetrics.density
+    val orientation = configuration.orientation
+    val displayOptions =
+        remember(widthDp, heightDp, columnSpan, rowSpan, displayDensity, orientation) {
+            createDisplayedWidgetOptions(
+                widthDp = widthDp,
+                heightDp = heightDp,
+                columnSpan = columnSpan,
+                rowSpan = rowSpan,
+                density = displayDensity,
+                orientation = orientation,
+            )
+        }
 
     AndroidView(
         factory = { ctx ->
             appWidgetHost.createView(ctx, widget.appWidgetId, providerInfo).apply {
                 setAppWidget(widget.appWidgetId, providerInfo)
                 layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
-                updateAppWidgetSize(Bundle(), widthDp, heightDp, widthDp, heightDp)
+                appWidgetManager.updateAppWidgetOptions(widget.appWidgetId, displayOptions)
+                updateAppWidgetSize(displayOptions, widthDp, heightDp, widthDp, heightDp)
             }
         },
         update = { hostView ->
             hostView.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
-            hostView.updateAppWidgetSize(Bundle(), widthDp, heightDp, widthDp, heightDp)
+            appWidgetManager.updateAppWidgetOptions(widget.appWidgetId, displayOptions)
+            hostView.updateAppWidgetSize(displayOptions, widthDp, heightDp, widthDp, heightDp)
         },
         modifier = modifier,
     )
@@ -980,4 +1042,131 @@ private fun initialSpanFor(provider: AppWidgetProviderInfo): Pair<Int, Int> {
         if (targetH > 0) targetH.coerceIn(1, WIDGET_PANEL_MAX_ROW_SPAN)
         else WIDGET_PANEL_DEFAULT_ROW_SPAN
     return columnSpan to rowSpan
+}
+
+private class WidgetOptionsFactory(
+    private val screenWidthDp: Int,
+    private val density: Float,
+    private val orientation: Int,
+) {
+    fun create(
+        columnSpan: Int,
+        rowSpan: Int,
+    ): Bundle {
+        val cellWidthDp = estimateGridCellWidthDp()
+        val minWidthDp = spanToSizeDp(columnSpan, cellWidthDp, WidgetPanelGridGap.value)
+        val minHeightDp =
+            spanToSizeDp(rowSpan, WidgetPanelGridRowHeight.value, WidgetPanelGridGap.value)
+        val maxWidthDp = minWidthDp
+        val maxHeightDp = minHeightDp
+
+        return bundleOf(
+            AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH to minWidthDp.roundToInt(),
+            AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT to minHeightDp.roundToInt(),
+            AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH to maxWidthDp.roundToInt(),
+            AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT to maxHeightDp.roundToInt(),
+            AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY to
+                AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
+        ).applySamsungHostCompatExtras(
+            columnSpan = columnSpan,
+            rowSpan = rowSpan,
+            density = density,
+            orientation = orientation,
+        ).apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                putParcelableArrayList(
+                    AppWidgetManager.OPTION_APPWIDGET_SIZES,
+                    arrayListOf(
+                        SizeF(minWidthDp, minHeightDp),
+                        SizeF(maxWidthDp, maxHeightDp),
+                    ),
+                )
+            }
+        }
+    }
+
+    private fun estimateGridCellWidthDp(): Float {
+        val horizontalPaddingDp = DesignTokens.ContentHorizontalPadding.value
+        val gapTotalDp = WidgetPanelGridGap.value * (WIDGET_PANEL_GRID_COLUMNS - 1)
+        return (
+            screenWidthDp - (horizontalPaddingDp * 2) - gapTotalDp
+        ) / WIDGET_PANEL_GRID_COLUMNS.toFloat()
+    }
+}
+
+private fun spanToSizeDp(
+    span: Int,
+    cellSizeDp: Float,
+    gapDp: Float,
+): Float = (cellSizeDp * span) + (gapDp * (span - 1).coerceAtLeast(0))
+
+private fun createDisplayedWidgetOptions(
+    widthDp: Int,
+    heightDp: Int,
+    columnSpan: Int,
+    rowSpan: Int,
+    density: Float,
+    orientation: Int,
+): Bundle =
+    bundleOf(
+        AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH to widthDp,
+        AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT to heightDp,
+        AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH to widthDp,
+        AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT to heightDp,
+        AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY to
+            AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
+    ).applySamsungHostCompatExtras(
+        columnSpan = columnSpan,
+        rowSpan = rowSpan,
+        density = density,
+        orientation = orientation,
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            putParcelableArrayList(
+                AppWidgetManager.OPTION_APPWIDGET_SIZES,
+                arrayListOf(SizeF(widthDp.toFloat(), heightDp.toFloat())),
+            )
+        }
+    }
+
+private fun Bundle.applySamsungHostCompatExtras(
+    columnSpan: Int,
+    rowSpan: Int,
+    density: Float,
+    orientation: Int,
+): Bundle {
+    if (!Build.MANUFACTURER.equals("samsung", ignoreCase = true)) return this
+
+    putInt("semAppWidgetColumnSpan", columnSpan)
+    putInt("semAppWidgetRowSpan", rowSpan)
+    putInt("semHostType", 1)
+    putString("hsMode", "OneUI")
+    putInt("hsWidgetDisplayId", 0)
+    putFloat("hsResizeRatio", 1f)
+    putFloat("semDisplayDensity", density)
+    putInt("semWidgetStyle", 1)
+    putInt("semWidgetSize", columnSpan * rowSpan)
+    putInt("hsCurrentOrientation", if (orientation == Configuration.ORIENTATION_LANDSCAPE) 2 else 1)
+    putInt("hsForcedOrientation", 0)
+    return this
+}
+
+private fun isWidgetConfigureActivityAccessible(
+    packageManager: PackageManager,
+    componentName: android.content.ComponentName,
+): Boolean {
+    val activityInfo =
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageManager.getActivityInfo(
+                    componentName,
+                    PackageManager.ComponentInfoFlags.of(0),
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.getActivityInfo(componentName, 0)
+            }
+        }.getOrNull() ?: return false
+
+    return activityInfo.enabled && activityInfo.exported
 }

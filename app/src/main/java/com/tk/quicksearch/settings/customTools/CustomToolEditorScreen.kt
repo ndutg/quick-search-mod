@@ -88,7 +88,8 @@ fun CustomToolEditorScreen(
         availableModelsByProvider[selectedProviderInput].orEmpty().ifEmpty { availableModels }
     }
 
-    LaunchedEffect(selectedProviderModels, selectedModelId) {
+    LaunchedEffect(existingTool?.id, selectedProviderModels, selectedModelId) {
+        if (existingTool != null) return@LaunchedEffect
         val firstAvailableModelId = selectedProviderModels.firstOrNull()?.id ?: return@LaunchedEffect
         val hasSelectedModel = selectedProviderModels.any { it.id == selectedModelId }
         if (!hasSelectedModel) {

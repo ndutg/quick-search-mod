@@ -148,6 +148,8 @@ internal fun PersistentSearchBar(
     triggerWords: Collection<String> = emptyList(),
     isSearchEngineAliasSuffixEnabled: Boolean = true,
     onSearchAction: () -> Boolean,
+    onMoveTopResultSelectionUp: (() -> Boolean)? = null,
+    onMoveTopResultSelectionDown: (() -> Boolean)? = null,
     shouldUseNumberKeyboard: Boolean,
     detectedShortcutTarget: SearchTarget? = null,
     detectedAliasSearchSection: SearchSection? = null,
@@ -235,8 +237,6 @@ internal fun PersistentSearchBar(
     var aliasMorphText by remember { mutableStateOf<String?>(null) }
     var previousLeadingIconState by remember { mutableStateOf(leadingIconState) }
     var hasCompletedStartupAutoFocus by remember { mutableStateOf(!autoFocusOnStart) }
-    var pendingHardwareEnterSubmit by remember { mutableStateOf(false) }
-
     fun submitSearchAction() {
         val keepKeyboardFromAction = onSearchAction()
         if (!keepKeyboardFromAction && query.isNotBlank()) {
@@ -545,14 +545,16 @@ internal fun PersistentSearchBar(
                                 true
                             }
                             keyEvent.type == KeyEventType.KeyDown &&
-                                (keyEvent.key == Key.Enter || keyEvent.key == Key.NumPadEnter) -> {
-                                pendingHardwareEnterSubmit = !keyEvent.isShiftPressed
-                                pendingHardwareEnterSubmit
+                                keyEvent.key == Key.DirectionUp -> {
+                                onMoveTopResultSelectionUp?.invoke() == true
                             }
-                            keyEvent.type == KeyEventType.KeyUp &&
+                            keyEvent.type == KeyEventType.KeyDown &&
+                                keyEvent.key == Key.DirectionDown -> {
+                                onMoveTopResultSelectionDown?.invoke() == true
+                            }
+                            keyEvent.type == KeyEventType.KeyDown &&
                                 (keyEvent.key == Key.Enter || keyEvent.key == Key.NumPadEnter) -> {
-                                if (pendingHardwareEnterSubmit) {
-                                    pendingHardwareEnterSubmit = false
+                                if (!keyEvent.isShiftPressed) {
                                     submitSearchAction()
                                     true
                                 } else {

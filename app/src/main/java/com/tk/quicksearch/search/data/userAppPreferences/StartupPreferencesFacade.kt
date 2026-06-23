@@ -31,6 +31,7 @@ class StartupPreferencesFacade(
             val excludedFileExtensions: Set<String>,
             val oneHandedMode: Boolean,
             val bottomSearchBarEnabled: Boolean,
+            val unifiedPinnedItemsEnabled: Boolean,
             val searchHintsEnabled: Boolean,
             val settingsIconEnabled: Boolean,
             val topResultIndicatorEnabled: Boolean,
@@ -55,6 +56,8 @@ class StartupPreferencesFacade(
             val resultHiddenPackages: Set<String>,
             val searchHistoryEnabled: Boolean,
             val appSuggestionsEnabled: Boolean,
+            val showAllAppsButton: Boolean,
+            val includeNonLaunchableAppsInSearch: Boolean,
             val selectedAppSuggestionTab: AppSuggestionTabType,
             val enabledAppSuggestionTabs: Set<AppSuggestionTabType>,
             val showAppLabels: Boolean,
@@ -186,6 +189,13 @@ class StartupPreferencesFacade(
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences
                                         .KEY_BOTTOM_SEARCH_BAR_ENABLED,
+                        ] as?
+                                Boolean
+                                ?: false,
+                unifiedPinnedItemsEnabled =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_UNIFIED_PINNED_ITEMS_ENABLED,
                         ] as?
                                 Boolean
                                 ?: false,
@@ -402,6 +412,20 @@ class StartupPreferencesFacade(
                         ] as?
                                 Boolean
                                 ?: true,
+                showAllAppsButton =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_SHOW_ALL_APPS_BUTTON,
+                        ] as?
+                                Boolean
+                                ?: false,
+                includeNonLaunchableAppsInSearch =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH,
+                        ] as?
+                                Boolean
+                                ?: false,
                 selectedAppSuggestionTab =
                         (
                                 allPrefs[
@@ -597,6 +621,13 @@ class StartupPreferencesFacade(
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences
                                                 .KEY_BOTTOM_SEARCH_BAR_ENABLED,
+                                ] as?
+                                        Boolean
+                                        ?: false,
+                        unifiedPinnedItemsEnabled =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_UNIFIED_PINNED_ITEMS_ENABLED,
                                 ] as?
                                         Boolean
                                         ?: false,
@@ -816,6 +847,20 @@ class StartupPreferencesFacade(
                                 ] as?
                                         Boolean
                                 ?: true,
+                        showAllAppsButton =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_SHOW_ALL_APPS_BUTTON,
+                                ] as?
+                                        Boolean
+                                ?: false,
+                        includeNonLaunchableAppsInSearch =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH,
+                                ] as?
+                                        Boolean
+                                ?: false,
                         selectedAppSuggestionTab =
                                 (
                                         allPrefs[

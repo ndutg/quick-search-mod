@@ -166,6 +166,7 @@ data class SearchFeatureState(
         val geminiApiKeyLast4: String? = null,
         val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
         val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
+        val customLlmAdvancedPayloadByProvider: Map<AiSearchLlmProviderId, Pair<Boolean, String>> = emptyMap(),
         val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val isSavingGeminiApiKey: Boolean = false,
         val personalContext: String = "",
@@ -203,6 +204,8 @@ data class SearchFeatureState(
         val assistantLaunchVoiceModeEnabled: Boolean = false,
         // Usage permission banner
         val shouldShowUsagePermissionBanner: Boolean = false,
+        // Home screen prompt card
+        val showRateQuickSearchCard: Boolean = false,
 )
 
 // ---------------------------------------------------------------------------
@@ -230,6 +233,7 @@ data class SearchUiConfigState(
         val overlayModeEnabled: Boolean = false,
         val oneHandedMode: Boolean = false,
         val bottomSearchBarEnabled: Boolean = false,
+        val unifiedPinnedItemsEnabled: Boolean = false,
         val searchHintsEnabled: Boolean = true,
         val settingsIconEnabled: Boolean = true,
         val topResultIndicatorEnabled: Boolean = true,
@@ -249,6 +253,8 @@ data class SearchUiConfigState(
         val deviceThemeEnabled: Boolean = false,
         val wallpaperAccentEnabled: Boolean = true,
         val appSuggestionsEnabled: Boolean = true,
+        val showAllAppsButton: Boolean = false,
+        val includeNonLaunchableAppsInSearch: Boolean = false,
         val selectedAppSuggestionTab: AppSuggestionTabType = AppSuggestionTabType.RECENTS,
         val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         val selectedIconPackPackage: String? = null,

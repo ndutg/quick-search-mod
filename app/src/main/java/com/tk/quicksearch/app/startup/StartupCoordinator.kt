@@ -26,7 +26,7 @@ class StartupCoordinator(
     private val viewModel: SearchViewModel,
     private val userPreferences: UserAppPreferences,
     private val mode: StartupMode,
-    private val onReviewPromptEligible: (() -> Unit)? = null,
+    private val onUsageTrackingUpdated: (() -> Unit)? = null,
 ) {
     companion object {
         private const val TRACE_FIRST_FRAME_GATE = "QS.Startup.FirstFrameGate"
@@ -73,16 +73,11 @@ class StartupCoordinator(
             try {
                 userPreferences.recordFirstAppOpenTime()
                 userPreferences.incrementAppOpenCount()
+                onUsageTrackingUpdated?.invoke()
                 userPreferences.resetUpdateCheckSession()
 
                 val targetActivity = activity ?: return@launch
                 UpdateHelper.checkForUpdates(targetActivity, userPreferences)
-
-                if (!userPreferences.hasShownUpdateCheckThisSession() &&
-                    userPreferences.shouldShowReviewPrompt()
-                ) {
-                    onReviewPromptEligible?.invoke()
-                }
             } finally {
                 Trace.endSection()
             }

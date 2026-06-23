@@ -1,11 +1,23 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
-import androidx.compose.foundation.layout.Arrangement
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,14 +25,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.core.isLikelyWebUrl
+import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
 import com.tk.quicksearch.search.searchHistory.SearchHistorySection
@@ -49,8 +64,8 @@ import com.tk.quicksearch.search.searchScreen.NotesSectionParams
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.PinnedNonAppItemsSection
 import com.tk.quicksearch.search.searchScreen.components.SectionPermissionResultCard
+import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.R
-import androidx.compose.ui.res.stringResource
 
 /** Unified content layout that handles both one-handed mode and top-aligned layouts. */
 @Composable
@@ -66,6 +81,7 @@ fun ContentLayout(
     notesParams: NotesSectionParams,
     appsParams: AppsSectionParams,
     predictedTarget: PredictedSubmitTarget? = null,
+    isPhysicalKeyboardConnected: Boolean,
     onRequestUsagePermission: () -> Unit,
     minContentHeight: Dp,
     expandedCardMaxHeight: Dp,
@@ -82,6 +98,7 @@ fun ContentLayout(
     onEmailClick: (String) -> Unit = {},
     onOpenPersonalContextDialog: () -> Unit = {},
     onWebSuggestionClick: (String) -> Unit = {},
+    onRecentQueryClick: (RecentSearchEntry.Query) -> Unit = {},
     onSearchEngineLongPress: () -> Unit = {},
     onCustomizeSearchEnginesClick: () -> Unit = {},
     onOpenAiSearchConfigure: () -> Unit = {},
@@ -96,8 +113,10 @@ fun ContentLayout(
     searchHistorySelectedTab: SearchHistoryTab = SearchHistoryTab.SEARCHES,
     onSearchHistorySelectedTabChange: (SearchHistoryTab) -> Unit = {},
     onOpenPermissionsSettings: () -> Unit = {},
+    selectedTopMatchIndex: Int? = null,
 ) {
     val context = LocalContext.current
+    val userPreferences = remember(context) { UserAppPreferences(context) }
     val effectiveContactsParams =
         contactsParams.copy(
             predictedTarget = predictedTarget,
@@ -249,6 +268,7 @@ fun ContentLayout(
                 shouldRenderAppShortcuts = false,
                 shouldRenderSettings = false,
                 shouldRenderCalendar = false,
+                todayCalendarEventsList = emptyList(),
                 shouldRenderNotes = false,
             )
         } else {
@@ -323,20 +343,259 @@ fun ContentLayout(
         }
     }
 
+    val standaloneTodayEventIds =
+        sectionContextForRecentHistoryExpansion.todayCalendarEventsList
+            .map { it.eventId }
+            .toSet()
+    val hasStandaloneTodayCalendarSection = standaloneTodayEventIds.isNotEmpty()
+    val pinnedCalendarEventsForPinnedBlock =
+        if (!hasQuery && standaloneTodayEventIds.isNotEmpty()) {
+            renderingState.pinnedCalendarEvents.filterNot { it.eventId in standaloneTodayEventIds }
+        } else {
+            renderingState.pinnedCalendarEvents
+        }
     val showPinnedNonAppItems =
         !hasQuery &&
+            state.unifiedPinnedItemsEnabled &&
             !hideResults &&
             !isSectionAliasMode &&
             !hidePinnedAndAppsWhenSearchHistoryExpanded &&
             (
-                sectionContext.shouldRenderAppShortcuts ||
-                    sectionContext.shouldRenderContacts ||
-                    sectionContext.shouldRenderFiles ||
-                    sectionContext.shouldRenderSettings ||
-                    sectionContext.shouldRenderCalendar ||
-                    sectionContext.shouldRenderNotes
+                renderingState.hasPinnedAppShortcuts ||
+                    renderingState.hasPinnedContacts ||
+                    renderingState.hasPinnedFiles ||
+                    renderingState.hasPinnedSettings ||
+                    pinnedCalendarEventsForPinnedBlock.isNotEmpty() ||
+                    renderingState.hasPinnedNotes
             )
     var pinnedNonAppItemsRendered = false
+    var standaloneTodayCalendarRendered = false
+    var deferredSearchHistoryRendered = false
+    val shouldDeferSearchHistoryUntilTodayEvents =
+        showRecentItems && hasStandaloneTodayCalendarSection
+    val showSectionedPinnedHeaders =
+        !hasQuery &&
+            !state.unifiedPinnedItemsEnabled &&
+            !hideResults &&
+            !isSectionAliasMode
+
+    @Composable
+    fun renderHomePinnedSection(
+        section: SearchSection,
+        content: @Composable () -> Unit,
+    ) {
+        if (!showSectionedPinnedHeaders || !section.supportsPinnedHomeCollapse()) {
+            content()
+            return
+        }
+
+        var isExpanded by rememberSaveable(section.name) { mutableStateOf(true) }
+        LaunchedEffect(section) {
+            isExpanded = userPreferences.isHomePinnedSectionExpanded(section)
+        }
+        val interactionSource = remember { MutableInteractionSource() }
+        val metadata = SearchSectionUiMetadataRegistry.metadataFor(section)
+        val sectionIcon = metadata.settingsIcon
+        val toggleExpanded = {
+            val newExpanded = !isExpanded
+            isExpanded = newExpanded
+            userPreferences.setHomePinnedSectionExpanded(section, newExpanded)
+        }
+        val headerContent: @Composable (Modifier) -> Unit = { modifier ->
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = toggleExpanded,
+                    )
+                    .padding(
+                        horizontal = DesignTokens.SpacingLarge,
+                        vertical = DesignTokens.SpacingXXSmall,
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (!isExpanded) {
+                        Icon(
+                            imageVector = sectionIcon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(DesignTokens.IconSizeSmall),
+                        )
+                    }
+                    Text(
+                        text = stringResource(metadata.sectionLabelRes),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+                Icon(
+                    imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                    contentDescription = stringResource(
+                        if (isExpanded) R.string.desc_collapse else R.string.desc_expand,
+                    ),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(DesignTokens.IconSizeSmall),
+                )
+            }
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
+        ) {
+            if (isExpanded) {
+                headerContent(Modifier)
+            } else {
+                SearchResultCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 60.dp),
+                    showWallpaperBackground = effectiveShowWallpaperBackground,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 60.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        headerContent(
+                            Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                        )
+                    }
+                }
+            }
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+            ) {
+                content()
+            }
+        }
+    }
+
+    fun homePinnedSectionHasItems(
+        section: SearchSection,
+        sectionContext: SectionRenderContext,
+    ): Boolean =
+        when (section) {
+            SearchSection.APP_SHORTCUTS -> sectionContext.appShortcutsList.isNotEmpty()
+            SearchSection.CONTACTS -> sectionContext.contactsList.isNotEmpty()
+            SearchSection.FILES -> sectionContext.filesList.isNotEmpty()
+            SearchSection.SETTINGS ->
+                sectionContext.settingsList.isNotEmpty() || sectionContext.appSettingsList.isNotEmpty()
+            SearchSection.CALENDAR ->
+                sectionContext.calendarEventsList.isNotEmpty() || sectionContext.todayCalendarEventsList.isNotEmpty()
+            SearchSection.NOTES -> sectionContext.notesList.isNotEmpty()
+            SearchSection.APPS, SearchSection.APP_SETTINGS -> true
+        }
+
+    @Composable
+    fun renderSearchHistoryBlock() {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+        ) {
+            SearchHistorySection(
+                items = state.recentItems,
+                callingApp =
+                    effectiveContactsParams.callingApp
+                        ?: CallingApp.CALL,
+                messagingApp =
+                    effectiveContactsParams.messagingApp
+                        ?: MessagingApp
+                            .MESSAGES,
+                onRecentQueryClick =
+                onRecentQueryClick,
+                onContactClick =
+                    effectiveContactsParams
+                        .onContactClick,
+                onShowContactMethods =
+                    effectiveContactsParams
+                        .onShowContactMethods,
+                onCallContact =
+                    effectiveContactsParams
+                        .onCallContact,
+                onSmsContact =
+                    effectiveContactsParams.onSmsContact,
+                onContactMethodClick =
+                    effectiveContactsParams
+                        .onContactMethodClick,
+                getPrimaryContactCardAction =
+                    effectiveContactsParams
+                        .getPrimaryContactCardAction,
+                getSecondaryContactCardAction =
+                    effectiveContactsParams
+                        .getSecondaryContactCardAction,
+                onPrimaryActionLongPress =
+                    effectiveContactsParams
+                        .onPrimaryActionLongPress,
+                onSecondaryActionLongPress =
+                    effectiveContactsParams
+                        .onSecondaryActionLongPress,
+                onCustomAction =
+                    effectiveContactsParams
+                        .onCustomAction,
+                onFileClick =
+                    effectiveFilesParams.onFileClick,
+                onSettingClick =
+                    effectiveSettingsParams
+                        .onSettingClick,
+                onAppShortcutClick =
+                    effectiveAppShortcutsParams
+                        .onShortcutClick,
+                onNoteClick = notesParams.onNoteClick,
+                onDeleteRecentItem =
+                onDeleteRecentItem,
+                onClearRecentItems = onClearRecentItems,
+                showSearchHistoryTip = !state.hasDismissedSearchHistoryTip,
+                onOpenSearchHistorySettings = onOpenSearchHistorySettings,
+                onDismissSearchHistoryTip = onDismissSearchHistoryTip,
+                isExpanded = searchHistoryExpanded,
+                onExpandedChange = { searchHistoryExpanded = it },
+                collapseRequestKey = searchHistoryCollapseRequestKey,
+                expandedCardMaxHeight = expandedCardMaxHeight,
+                showWallpaperBackground =
+                    effectiveShowWallpaperBackground,
+                isOverlayPresentation = isOverlayPresentation,
+                showInlineCollapseButton = false,
+                selectedTab = searchHistorySelectedTab,
+                onSelectedTabChange = onSearchHistorySelectedTabChange,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (showPinnedNonAppItems && !pinnedNonAppItemsRendered) {
+                UnifiedPinnedItemsBlock(
+                    userPreferences = userPreferences,
+                    showWallpaperBackground = effectiveShowWallpaperBackground,
+                ) {
+                    PinnedNonAppItemsSection(
+                        pinnedItemOrder = state.pinnedNonAppItemOrder,
+                        contacts = renderingState.pinnedContacts,
+                        files = renderingState.pinnedFiles,
+                        appShortcuts = renderingState.pinnedAppShortcuts,
+                        settings = renderingState.pinnedSettings,
+                        calendarEvents = pinnedCalendarEventsForPinnedBlock,
+                        notes = renderingState.pinnedNotes,
+                        contactsParams = effectiveContactsParams,
+                        filesParams = effectiveFilesParams,
+                        appShortcutsParams = effectiveAppShortcutsParams,
+                        settingsParams = effectiveSettingsParams,
+                        calendarParams = effectiveCalendarParams,
+                        notesParams = effectiveNotesParams,
+                        showWallpaperBackground = effectiveShowWallpaperBackground,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                pinnedNonAppItemsRendered = true
+            }
+        }
+    }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         if (showTopMatches && !isReversed) {
@@ -344,7 +603,8 @@ fun ContentLayout(
                 matches = topMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator = state.topResultIndicatorEnabled,
+                showTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+                selectedMatchIndex = selectedTopMatchIndex,
                 reverseOrder = false,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -372,26 +632,41 @@ fun ContentLayout(
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
                 if (deferNonAppContentUntilAppsReady && section != SearchSection.APPS) return@forEach
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
+                if (
+                    section == SearchSection.CALENDAR &&
+                        !hasQuery &&
+                        showPinnedNonAppItems &&
+                        hasStandaloneTodayCalendarSection
+                ) {
+                    // The home-screen "today" calendar block is injected next to pinned/history
+                    // content. Skip the normal calendar slot here to avoid rendering it twice.
+                    return@forEach
+                }
 
-                if (!hasQuery && section != SearchSection.APPS && showPinnedNonAppItems) {
+                if (!hasQuery && section != SearchSection.APPS && showPinnedNonAppItems && !showRecentItems) {
                     if (!pinnedNonAppItemsRendered) {
-                        PinnedNonAppItemsSection(
-                            pinnedItemOrder = state.pinnedNonAppItemOrder,
-                            contacts = renderingState.pinnedContacts,
-                            files = renderingState.pinnedFiles,
-                            appShortcuts = renderingState.pinnedAppShortcuts,
-                            settings = renderingState.pinnedSettings,
-                            calendarEvents = renderingState.pinnedCalendarEvents,
-                            notes = renderingState.pinnedNotes,
-                            contactsParams = effectiveContactsParams,
-                            filesParams = effectiveFilesParams,
-                            appShortcutsParams = effectiveAppShortcutsParams,
-                            settingsParams = effectiveSettingsParams,
-                            calendarParams = effectiveCalendarParams,
-                            notesParams = effectiveNotesParams,
+                        UnifiedPinnedItemsBlock(
+                            userPreferences = userPreferences,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                        ) {
+                            PinnedNonAppItemsSection(
+                                pinnedItemOrder = state.pinnedNonAppItemOrder,
+                                contacts = renderingState.pinnedContacts,
+                                files = renderingState.pinnedFiles,
+                                appShortcuts = renderingState.pinnedAppShortcuts,
+                                settings = renderingState.pinnedSettings,
+                                calendarEvents = pinnedCalendarEventsForPinnedBlock,
+                                notes = renderingState.pinnedNotes,
+                                contactsParams = effectiveContactsParams,
+                                filesParams = effectiveFilesParams,
+                                appShortcutsParams = effectiveAppShortcutsParams,
+                                settingsParams = effectiveSettingsParams,
+                                calendarParams = effectiveCalendarParams,
+                                notesParams = effectiveNotesParams,
+                                showWallpaperBackground = effectiveShowWallpaperBackground,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
                         pinnedNonAppItemsRendered = true
                     }
                     return@forEach
@@ -408,7 +683,7 @@ fun ContentLayout(
                         settingsParams = effectiveSettingsParams,
                         appShortcutsParams = effectiveAppShortcutsParams,
                         notesParams = notesParams,
-                        onWebSuggestionClick = onWebSuggestionClick,
+                        onRecentQueryClick = onRecentQueryClick,
                         onDeleteRecentItem = onDeleteRecentItem,
                         expandedCardMaxHeight = expandedCardMaxHeight,
                         showWallpaperBackground = effectiveShowWallpaperBackground,
@@ -433,7 +708,50 @@ fun ContentLayout(
                     return@forEach
                 }
 
-                renderSection(section, regularSectionParams, sectionContextForRecentHistoryExpansion)
+                val sectionContext =
+                    if (
+                        section == SearchSection.CALENDAR &&
+                        !hasQuery &&
+                        !state.unifiedPinnedItemsEnabled &&
+                        hasStandaloneTodayCalendarSection
+                    ) {
+                        sectionContextForRecentHistoryExpansion.copy(
+                            todayCalendarEventsList = emptyList(),
+                        )
+                    } else {
+                        sectionContextForRecentHistoryExpansion
+                    }
+                if (
+                    !hasQuery &&
+                    showSectionedPinnedHeaders &&
+                    section.supportsPinnedHomeCollapse() &&
+                    !homePinnedSectionHasItems(section, sectionContext)
+                ) {
+                    return@forEach
+                }
+                renderHomePinnedSection(section) {
+                    renderSection(section, regularSectionParams, sectionContext)
+                }
+                if (
+                    section == SearchSection.APPS &&
+                        hasStandaloneTodayCalendarSection &&
+                        !standaloneTodayCalendarRendered
+                ) {
+                    renderSection(
+                        section = SearchSection.CALENDAR,
+                        params = regularSectionParams,
+                        sectionContext =
+                            sectionContextForRecentHistoryExpansion.copy(
+                                shouldRenderCalendar = false,
+                                calendarEventsList = emptyList(),
+                            ),
+                    )
+                    standaloneTodayCalendarRendered = true
+                    if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
+                    }
+                }
                 return@forEach
             }
 
@@ -536,78 +854,14 @@ fun ContentLayout(
                 ItemPriorityConfig.ItemType.RECENT_QUERIES -> {
                     val isVisible = !hideResults && showRecentItems
                     if (isVisible) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                        ) {
-                            SearchHistorySection(
-                                items = state.recentItems,
-                                callingApp =
-                                    effectiveContactsParams.callingApp
-                                        ?: CallingApp.CALL,
-                                messagingApp =
-                                    effectiveContactsParams.messagingApp
-                                        ?: MessagingApp
-                                            .MESSAGES,
-                                onRecentQueryClick =
-                                onWebSuggestionClick,
-                                onContactClick =
-                                    effectiveContactsParams
-                                        .onContactClick,
-                                onShowContactMethods =
-                                    effectiveContactsParams
-                                        .onShowContactMethods,
-                                onCallContact =
-                                    effectiveContactsParams
-                                        .onCallContact,
-                                onSmsContact =
-                                    effectiveContactsParams.onSmsContact,
-                                onContactMethodClick =
-                                    effectiveContactsParams
-                                        .onContactMethodClick,
-                                getPrimaryContactCardAction =
-                                    effectiveContactsParams
-                                        .getPrimaryContactCardAction,
-                                getSecondaryContactCardAction =
-                                    effectiveContactsParams
-                                        .getSecondaryContactCardAction,
-                                onPrimaryActionLongPress =
-                                    effectiveContactsParams
-                                        .onPrimaryActionLongPress,
-                                onSecondaryActionLongPress =
-                                    effectiveContactsParams
-                                        .onSecondaryActionLongPress,
-                                onCustomAction =
-                                    effectiveContactsParams
-                                        .onCustomAction,
-                                onFileClick =
-                                    effectiveFilesParams.onFileClick,
-                                onSettingClick =
-                                    effectiveSettingsParams
-                                        .onSettingClick,
-                                onAppShortcutClick =
-                                    effectiveAppShortcutsParams
-                                        .onShortcutClick,
-                                onNoteClick = notesParams.onNoteClick,
-                                onDeleteRecentItem =
-                                onDeleteRecentItem,
-                                onClearRecentItems = onClearRecentItems,
-                                showSearchHistoryTip = !state.hasDismissedSearchHistoryTip,
-                                onOpenSearchHistorySettings = onOpenSearchHistorySettings,
-                                onDismissSearchHistoryTip = onDismissSearchHistoryTip,
-                                isExpanded = searchHistoryExpanded,
-                                onExpandedChange = { searchHistoryExpanded = it },
-                                collapseRequestKey = searchHistoryCollapseRequestKey,
-                                expandedCardMaxHeight = expandedCardMaxHeight,
-                                showWallpaperBackground =
-                                    effectiveShowWallpaperBackground,
-                                isOverlayPresentation = isOverlayPresentation,
-                                showInlineCollapseButton = false,
-                                selectedTab = searchHistorySelectedTab,
-                                onSelectedTabChange = onSearchHistorySelectedTabChange,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                        if (deferredSearchHistoryRendered) {
+                            return@forEach
                         }
+                        if (shouldDeferSearchHistoryUntilTodayEvents && !standaloneTodayCalendarRendered) {
+                            return@forEach
+                        }
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
                     }
                 }
 
@@ -671,15 +925,118 @@ fun ContentLayout(
             }
         }
 
+        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered && showRecentItems) {
+            renderSearchHistoryBlock()
+            deferredSearchHistoryRendered = true
+        }
+
         if (showTopMatches && isReversed) {
             TopMatchesSection(
                 matches = topMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator = state.topResultIndicatorEnabled,
+                showTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+                selectedMatchIndex = selectedTopMatchIndex,
                 reverseOrder = true,
                 modifier = Modifier.fillMaxWidth(),
             )
+        }
+    }
+}
+
+private fun SearchSection.supportsPinnedHomeCollapse(): Boolean =
+    when (this) {
+        SearchSection.APPS, SearchSection.APP_SETTINGS -> false
+        SearchSection.APP_SHORTCUTS,
+        SearchSection.CONTACTS,
+        SearchSection.FILES,
+        SearchSection.SETTINGS,
+        SearchSection.CALENDAR,
+        SearchSection.NOTES,
+        -> true
+    }
+
+@Composable
+private fun UnifiedPinnedItemsBlock(
+    userPreferences: UserAppPreferences,
+    showWallpaperBackground: Boolean,
+    content: @Composable () -> Unit,
+) {
+    var isExpanded by rememberSaveable { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        isExpanded = userPreferences.isUnifiedPinnedItemsExpanded()
+    }
+    val interactionSource = remember { MutableInteractionSource() }
+    val toggleExpanded = {
+        val newExpanded = !isExpanded
+        isExpanded = newExpanded
+        userPreferences.setUnifiedPinnedItemsExpanded(newExpanded)
+    }
+
+    val headerContent: @Composable (Modifier) -> Unit = { modifier ->
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = toggleExpanded,
+                )
+                .padding(
+                    horizontal = DesignTokens.SpacingLarge,
+                    vertical = DesignTokens.SpacingXXSmall,
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.app_suggestions_tab_pinned),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                contentDescription = stringResource(
+                    if (isExpanded) R.string.desc_collapse else R.string.desc_expand,
+                ),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(DesignTokens.IconSizeSmall),
+            )
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
+    ) {
+        if (isExpanded) {
+            headerContent(Modifier)
+        } else {
+            SearchResultCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 60.dp),
+                showWallpaperBackground = showWallpaperBackground,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 60.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    headerContent(
+                        Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
+            content()
         }
     }
 }
@@ -734,7 +1091,7 @@ private fun AliasRecentItemsSection(
     settingsParams: SettingsSectionParams,
     appShortcutsParams: AppShortcutsSectionParams,
     notesParams: NotesSectionParams,
-    onWebSuggestionClick: (String) -> Unit,
+    onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
     onDeleteRecentItem: (RecentSearchEntry) -> Unit,
     expandedCardMaxHeight: Dp,
     showWallpaperBackground: Boolean,
@@ -744,7 +1101,7 @@ private fun AliasRecentItemsSection(
         items = items,
         callingApp = contactsParams.callingApp ?: CallingApp.CALL,
         messagingApp = contactsParams.messagingApp ?: MessagingApp.MESSAGES,
-        onRecentQueryClick = onWebSuggestionClick,
+        onRecentQueryClick = onRecentQueryClick,
         onContactClick = contactsParams.onContactClick,
         onShowContactMethods = contactsParams.onShowContactMethods,
         onCallContact = contactsParams.onCallContact,

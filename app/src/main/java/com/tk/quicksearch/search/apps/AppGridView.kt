@@ -16,9 +16,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
@@ -31,6 +37,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -41,10 +48,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -76,6 +86,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.common.AddToHomeHandler
@@ -89,6 +100,8 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
+import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
@@ -98,6 +111,7 @@ import com.tk.quicksearch.shared.ui.theme.LocalWallpaperDynamicAccentActive
 import com.tk.quicksearch.shared.util.getAppGridColumns
 import com.tk.quicksearch.shared.util.hapticConfirm
 import kotlin.math.min
+import java.util.Locale
 
 private const val ROW_COUNT = 2
 private const val TabSlideOffsetPx = 64
@@ -122,6 +136,8 @@ private const val UnsupportedThemedIconGlyphScale = 0.62f
 private const val UnsupportedThemedIconGlyphAlpha = 0.72f
 private const val DraggedPinnedAppScale = 1.08f
 private const val DraggedPinnedAppAlpha = 0.92f
+private val AllAppsDialogIconSurfaceSize = DesignTokens.AppIconSize
+private val AllAppsDialogRowSpacing = DesignTokens.SpacingXXSmall
 
 private enum class AppIconDisplayMode {
     OVERLAY,
@@ -167,6 +183,7 @@ private data class AppState(
 @Composable
 fun AppGridView(
         apps: List<AppInfo>,
+        allApps: List<AppInfo>,
         pinnedAndRecentApps: List<AppInfo>,
         pinnedApps: List<AppInfo>,
         newOrUpdatedApps: List<AppInfo>,
@@ -178,6 +195,7 @@ fun AppGridView(
         enabledSuggestionTabs: Set<AppSuggestionTabType>,
         onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
         hasAppResults: Boolean,
+        showAllAppsButton: Boolean,
         onAppClick: (AppInfo) -> Unit,
         onAppInfoClick: (AppInfo) -> Unit,
         onUninstallClick: (AppInfo) -> Unit,
@@ -213,6 +231,15 @@ fun AppGridView(
     val recentsTitle = stringResource(R.string.app_suggestions_tab_recent)
     val newUpdatedTitle = stringResource(R.string.app_suggestions_tab_new_updated)
     val mostUsedTitle = stringResource(R.string.common_most_used)
+    val allAppsTitle = stringResource(R.string.settings_app_shortcuts_filter_all_apps)
+    val alphabeticalApps =
+            remember(allApps) {
+                allApps.sortedWith(
+                        compareBy<AppInfo> { it.appName.lowercase(Locale.getDefault()) }
+                                .thenBy { it.packageName.lowercase(Locale.getDefault()) }
+                                .thenBy { it.userHandleId ?: Int.MIN_VALUE },
+                )
+            }
     val suggestionTabs =
             remember(
                     hasUsagePermission,
@@ -272,17 +299,18 @@ fun AppGridView(
     }
     val minSuggestionGridItems = (rowCount * getAppGridColumns(phoneColumnOverride)).coerceAtLeast(1)
     val suggestionFallbackApps = remember(pinnedAndRecentApps, apps) { pinnedAndRecentApps + apps }
+    val selectedSuggestionTabType = suggestionTabs.getOrNull(selectedSuggestionTabIndex)?.type
     val activeApps =
             if (suggestionTabs.isNotEmpty()) {
                 val selectedTab = suggestionTabs[selectedSuggestionTabIndex]
                 if (selectedTab.type == AppSuggestionTabType.PINNED) {
                     selectedTab.apps
                 } else {
-                fillSuggestionGridApps(
-                        primaryApps = selectedTab.apps,
-                        fallbackApps = suggestionFallbackApps,
-                        minItems = minSuggestionGridItems,
-                )
+                    fillSuggestionGridApps(
+                            primaryApps = selectedTab.apps,
+                            fallbackApps = suggestionFallbackApps,
+                            minItems = minSuggestionGridItems,
+                    )
                 }
             } else {
                 if (isSearching) apps else emptyList()
@@ -298,7 +326,9 @@ fun AppGridView(
             }
     // Search results should not wait for the cold-start icon pipeline. If they do,
     // secondary sections can render first even when app results are already in state.
-    val waitForAppIcons = activeApps.isNotEmpty() && !isSearching
+    val waitForAppIcons =
+            activeApps.isNotEmpty() &&
+                    !isSearching
     val areAppIconsLoaded =
             if (waitForAppIcons) {
                 activeApps.all { app ->
@@ -352,6 +382,8 @@ fun AppGridView(
             } else {
                 Modifier
             }
+    var showAllAppsDialog by remember { mutableStateOf(false) }
+    val shouldShowAllAppsButton = showAllAppsButton && !isSearching && allApps.isNotEmpty()
 
     Column(
             modifier = modifier.fillMaxWidth().then(tabSwipeModifier),
@@ -394,7 +426,7 @@ fun AppGridView(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(AppGridRowSpacing),
             ) {
-                if (suggestionTabs.isNotEmpty()) {
+                if (suggestionTabs.size > 1) {
                     AppSuggestionTabStrip(
                             tabs = suggestionTabs,
                             selectedIndex = selectedSuggestionTabIndex,
@@ -432,7 +464,9 @@ fun AppGridView(
                         val selectedTab = suggestionTabs[selectedIndex]
                         AppGrid(
                                 apps =
-                                        if (selectedTab.type == AppSuggestionTabType.PINNED) {
+                                        if (
+                                                selectedTab.type == AppSuggestionTabType.PINNED
+                                        ) {
                                             selectedTab.apps
                                         } else {
                                             fillSuggestionGridApps(
@@ -500,12 +534,178 @@ fun AppGridView(
                             themedIconsEnabled = themedIconsEnabled,
                             showWallpaperBackground = showWallpaperBackground,
                             reorderPinnedApps =
-                                    suggestionTabs.getOrNull(selectedSuggestionTabIndex)?.type ==
-                                            AppSuggestionTabType.PINNED,
+                                    selectedSuggestionTabType == AppSuggestionTabType.PINNED,
+                    )
+                }
+                if (shouldShowAllAppsButton) {
+                    ExpandButton(
+                            onClick = { showAllAppsDialog = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            textResId = R.string.settings_app_shortcuts_filter_all_apps,
+                            usePillBackground = true,
+                            showWallpaperBackground = showWallpaperBackground,
+                            icon = Icons.Rounded.ChevronRight,
                     )
                 }
             }
+        } else if (shouldShowAllAppsButton) {
+            ExpandButton(
+                    onClick = { showAllAppsDialog = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    textResId = R.string.settings_app_shortcuts_filter_all_apps,
+                    usePillBackground = true,
+                    showWallpaperBackground = showWallpaperBackground,
+                    icon = Icons.Rounded.ChevronRight,
+            )
         }
+    }
+
+    if (showAllAppsDialog) {
+        AllAppsDialog(
+                title = allAppsTitle,
+                apps = alphabeticalApps,
+                onDismiss = { showAllAppsDialog = false },
+                onAppClick = { app ->
+                    showAllAppsDialog = false
+                    onAppClick(app)
+                },
+                onAppInfoClick = onAppInfoClick,
+                phoneColumnOverride = phoneColumnOverride,
+                appIconSizeStep = appIconSizeStep,
+                iconPackPackage = iconPackPackage,
+                appIconShape = appIconShape,
+        )
+    }
+}
+
+@Composable
+private fun AllAppsDialog(
+        title: String,
+        apps: List<AppInfo>,
+        onDismiss: () -> Unit,
+        onAppClick: (AppInfo) -> Unit,
+        onAppInfoClick: (AppInfo) -> Unit,
+        phoneColumnOverride: Int,
+        appIconSizeStep: Int,
+        iconPackPackage: String?,
+        appIconShape: AppIconShape,
+) {
+    val dialogColumns = getAppGridColumns(phoneColumnOverride)
+    AppAlertDialog(
+            modifier = Modifier.fillMaxWidth(0.94f),
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                )
+            },
+            text = {
+                Column(
+                        modifier =
+                                Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(max = 520.dp),
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                ) {
+                    LazyVerticalGrid(
+                            columns = GridCells.Fixed(dialogColumns),
+                            modifier = Modifier.fillMaxWidth().heightIn(max = 520.dp),
+                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                            verticalArrangement = Arrangement.spacedBy(AllAppsDialogRowSpacing),
+                    ) {
+                        items(
+                                items = apps,
+                                key = { app -> app.launchCountKey() },
+                        ) { app ->
+                            AllAppsDialogGridItem(
+                                    app = app,
+                                    appIconSizeStep = appIconSizeStep,
+                                    iconPackPackage = iconPackPackage,
+                                    appIconShape = appIconShape,
+                                    onClick = { onAppClick(app) },
+                                    onLongClick = { onAppInfoClick(app) },
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(text = stringResource(R.string.common_close))
+                }
+            },
+        )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun AllAppsDialogGridItem(
+        app: AppInfo,
+        appIconSizeStep: Int,
+        iconPackPackage: String?,
+        appIconShape: AppIconShape,
+        onClick: () -> Unit,
+        onLongClick: () -> Unit,
+) {
+    val view = LocalView.current
+    val sizeScale = remember(appIconSizeStep) { UiPreferences.appIconSizeScale(appIconSizeStep) }
+    val iconSize = remember(sizeScale) { RegularAppIconSize * sizeScale }
+    val iconSurfaceSize = remember(sizeScale) { AllAppsDialogIconSurfaceSize * sizeScale }
+    val iconResult =
+            rememberAppIcon(
+                    packageName = app.packageName,
+                    iconPackPackage = iconPackPackage,
+                    userHandleId = app.userHandleId,
+                    forceCircularMask = appIconShape == AppIconShape.CIRCLE,
+            )
+
+    Column(
+            modifier =
+                    Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .combinedClickable(
+                                    onClick = {
+                                        hapticConfirm(view)()
+                                        onClick()
+                                    },
+                                    onLongClick = onLongClick,
+                            )
+                            .padding(
+                                    horizontal = DesignTokens.SpacingXSmall,
+                                    vertical = DesignTokens.SpacingXSmall,
+                            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
+    ) {
+        Box(
+                modifier = Modifier.size(iconSurfaceSize),
+                contentAlignment = Alignment.Center,
+        ) {
+            iconResult.bitmap?.let { icon ->
+                Image(
+                        bitmap = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(iconSize),
+                )
+            } ?: Icon(
+                    imageVector = Icons.Rounded.Android,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(iconSize),
+            )
+        }
+        Text(
+                text = app.appName,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+        )
     }
 }
 
@@ -599,6 +799,7 @@ private fun fillSuggestionGridApps(
     return result
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AppGrid(
         apps: List<AppInfo>,
@@ -630,6 +831,7 @@ private fun AppGrid(
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
         reorderPinnedApps: Boolean = false,
+        scrollableRowCount: Int? = null,
 ) {
     var displayedApps by remember(apps, reorderPinnedApps) { mutableStateOf(apps) }
     var dragState by remember { mutableStateOf<PinnedAppDragState?>(null) }
@@ -676,6 +878,7 @@ private fun AppGrid(
             }
         }
     }
+    val density = LocalDensity.current
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val horizontalSpacing = DesignTokens.SpacingMedium
@@ -692,6 +895,42 @@ private fun AppGrid(
                 }
         val spacingPx = with(LocalDensity.current) { horizontalSpacing.toPx() }
         val rowItemWidthPx = with(LocalDensity.current) { rowItemWidth.toPx() }
+        val scrollContainerHeight =
+                scrollableRowCount?.takeIf { it > 0 }?.let { visibleRows ->
+                    val sizeScale = UiPreferences.appIconSizeScale(appIconSizeStep)
+                    val estimatedIconSurfaceHeight =
+                            if (isOverlayPresentation) {
+                                OverlayAppIconSurfaceSize * sizeScale
+                            } else {
+                                DesignTokens.AppIconSize * sizeScale
+                            }
+                    val estimatedLabelHeight =
+                            if (showAppLabels) {
+                                val labelTextHeight =
+                                        with(density) {
+                                            MaterialTheme.typography.labelSmall.fontSize.toDp()
+                                        }
+                                val labelSpacing =
+                                        if (isOverlayPresentation) {
+                                            4.dp
+                                        } else {
+                                            DesignTokens.SpacingXSmall
+                                        }
+                                labelSpacing + labelTextHeight
+                            } else {
+                                0.dp
+                            }
+                    val estimatedItemHeight =
+                            estimatedIconSurfaceHeight +
+                                    TopResultIndicatorTopPadding +
+                                    TopResultIndicatorBottomPadding +
+                                    estimatedLabelHeight
+                    val measuredItemHeight =
+                            with(density) { measuredItemHeightPx.takeIf { it > 0f }?.toDp() }
+                                    ?: estimatedItemHeight
+                    (measuredItemHeight * visibleRows) +
+                            (AppGridRowSpacing * (visibleRows - 1).coerceAtLeast(0))
+                }
 
         fun movePinnedApp(fromIndex: Int, toIndex: Int) {
             if (!reorderPinnedApps || fromIndex == toIndex) return
@@ -757,7 +996,10 @@ private fun AppGrid(
                                 hasNickname = !getAppNickname(app.packageName).isNullOrBlank(),
                                 hasTrigger = getAppTrigger(app.packageName)?.word?.isNotBlank() == true,
                                 isPinned = pinnedPackageNames.contains(app.launchCountKey()),
-                                showUninstall = !app.isSystemApp && app.userHandleId == null,
+                                showUninstall =
+                                        !app.isSystemApp &&
+                                                app.userHandleId == null &&
+                                                app.packageName != context.packageName,
                                 showAppLabel = showAppLabels,
                                 isOverlayPresentation = isOverlayPresentation,
                         )
@@ -808,19 +1050,30 @@ private fun AppGrid(
             onReorderPinnedApps(displayedApps)
         }
 
-        @OptIn(ExperimentalLayoutApi::class)
-        FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-                verticalArrangement = Arrangement.spacedBy(AppGridRowSpacing),
-                maxItemsInEachRow = columns,
-        ) {
-            orderedApps.forEach { app ->
-                key(app.launchCountKey()) {
+        val gridModifier =
+                Modifier
+                        .fillMaxWidth()
+                        .let { base ->
+                            if (scrollContainerHeight != null) {
+                                base.height(scrollContainerHeight)
+                            } else {
+                                base
+                            }
+                        }
+        if (scrollContainerHeight != null && !reorderPinnedApps) {
+            LazyVerticalGrid(
+                    columns = GridCells.Fixed(columns),
+                    modifier = gridModifier,
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                    verticalArrangement = Arrangement.spacedBy(AppGridRowSpacing),
+            ) {
+                items(
+                        items = orderedApps,
+                        key = { app -> app.launchCountKey() },
+                ) { app ->
                     val appShortcuts = shortcutsByPackage[app.packageName].orEmpty()
-                    val isThisDragging = app.launchCountKey() == dragState?.key
                     AppGridItem(
-                            modifier = Modifier.width(rowItemWidth),
+                            modifier = Modifier.fillMaxWidth(),
                             appInfo = app,
                             shortcuts = appShortcuts,
                             appActions = createAppActions(app),
@@ -832,27 +1085,58 @@ private fun AppGrid(
                             appIconShape = appIconShape,
                             themedIconsEnabled = themedIconsEnabled,
                             showWallpaperBackground = showWallpaperBackground,
-                            isDragging = isThisDragging,
-                            dragOffset =
-                                    if (isThisDragging) {
-                                        dragState?.let {
-                                            IntOffset(it.offsetX.toInt(), it.offsetY.toInt())
-                                        }
-                                    } else {
-                                        null
-                                    },
                             onItemMeasured = { height ->
                                 measuredItemHeightPx = height.toFloat()
                             },
-                            onPinnedDragStart =
-                                    if (reorderPinnedApps) {
-                                        { handleDragStart(app) }
-                                    } else {
-                                        null
-                                    },
-                            onPinnedDrag = if (reorderPinnedApps) handleDrag else null,
-                            onPinnedDragEnd = if (reorderPinnedApps) handleDragEnd else null,
                     )
+                }
+            }
+        } else {
+            FlowRow(
+                    modifier = gridModifier,
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                    verticalArrangement = Arrangement.spacedBy(AppGridRowSpacing),
+                    maxItemsInEachRow = columns,
+            ) {
+                orderedApps.forEach { app ->
+                    key(app.launchCountKey()) {
+                        val appShortcuts = shortcutsByPackage[app.packageName].orEmpty()
+                        val isThisDragging = app.launchCountKey() == dragState?.key
+                        AppGridItem(
+                                modifier = Modifier.width(rowItemWidth),
+                                appInfo = app,
+                                shortcuts = appShortcuts,
+                                appActions = createAppActions(app),
+                                appState = createAppState(app),
+                                iconPackPackage = iconPackPackage,
+                                isPredicted = app.launchCountKey() == predictedAppKey,
+                                oneHandedMode = oneHandedMode,
+                                appIconSizeStep = appIconSizeStep,
+                                appIconShape = appIconShape,
+                                themedIconsEnabled = themedIconsEnabled,
+                                showWallpaperBackground = showWallpaperBackground,
+                                isDragging = isThisDragging,
+                                dragOffset =
+                                        if (isThisDragging) {
+                                            dragState?.let {
+                                                IntOffset(it.offsetX.toInt(), it.offsetY.toInt())
+                                            }
+                                        } else {
+                                            null
+                                        },
+                                onItemMeasured = { height ->
+                                    measuredItemHeightPx = height.toFloat()
+                                },
+                                onPinnedDragStart =
+                                        if (reorderPinnedApps) {
+                                            { handleDragStart(app) }
+                                        } else {
+                                            null
+                                        },
+                                onPinnedDrag = if (reorderPinnedApps) handleDrag else null,
+                                onPinnedDragEnd = if (reorderPinnedApps) handleDragEnd else null,
+                        )
+                    }
                 }
             }
         }

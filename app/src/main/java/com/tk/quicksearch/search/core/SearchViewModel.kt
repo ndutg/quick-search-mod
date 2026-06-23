@@ -360,6 +360,8 @@ class SearchViewModel(
     private var oneHandedMode by legacyPreferenceState::oneHandedMode
     @set:JvmName("setBottomSearchBarEnabledLegacy")
     private var bottomSearchBarEnabled by legacyPreferenceState::bottomSearchBarEnabled
+    @set:JvmName("setUnifiedPinnedItemsEnabledLegacy")
+    private var unifiedPinnedItemsEnabled by legacyPreferenceState::unifiedPinnedItemsEnabled
     @set:JvmName("setSearchHintsEnabledLegacy")
     private var searchHintsEnabled by legacyPreferenceState::searchHintsEnabled
     @set:JvmName("setSettingsIconEnabledLegacy")
@@ -433,8 +435,8 @@ class SearchViewModel(
     private fun applyPreferenceCacheToLegacyVars() {
         legacyPreferenceState.applyPreferenceCacheToLegacyVars(prefCache)
     }
-    private fun startupPreferencesSnapshot() = SearchStartupPreferencesSnapshot(oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, topResultIndicatorEnabled = topResultIndicatorEnabled, wallpaperAccentEnabled = wallpaperAccentEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, useSystemFont = useSystemFont, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, customImageUri = customImageUri)
-    private fun loadedPreferencesSnapshot() = SearchLoadedPreferencesSnapshot(enabledFileTypes = enabledFileTypes, oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, searchHintsEnabled = userPreferences.isSearchHintsEnabled(), settingsIconEnabled = userPreferences.isSettingsIconEnabled(), topResultIndicatorEnabled = topResultIndicatorEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, overlayModeEnabled = overlayModeEnabled, appSuggestionsEnabled = appSuggestionsEnabled, selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(), enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(), showAppLabels = showAppLabels, phoneAppGridColumns = phoneAppGridColumns, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, fontScaleMultiplier = fontScaleMultiplier, useSystemFont = useSystemFont, customImageUri = customImageUri, showFolders = showFolders, showSystemFiles = showSystemFiles, folderWhitelistPatterns = folderWhitelistPatterns, folderBlacklistPatterns = folderBlacklistPatterns, excludedFileExtensions = excludedFileExtensions, amazonDomain = amazonDomain, directDialEnabled = directDialEnabled, assistantLaunchVoiceModeEnabled = assistantLaunchVoiceModeEnabled)
+    private fun startupPreferencesSnapshot() = SearchStartupPreferencesSnapshot(oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, unifiedPinnedItemsEnabled = unifiedPinnedItemsEnabled, topResultIndicatorEnabled = topResultIndicatorEnabled, wallpaperAccentEnabled = wallpaperAccentEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, useSystemFont = useSystemFont, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, customImageUri = customImageUri)
+    private fun loadedPreferencesSnapshot() = SearchLoadedPreferencesSnapshot(enabledFileTypes = enabledFileTypes, oneHandedMode = oneHandedMode, bottomSearchBarEnabled = bottomSearchBarEnabled, unifiedPinnedItemsEnabled = unifiedPinnedItemsEnabled, searchHintsEnabled = userPreferences.isSearchHintsEnabled(), settingsIconEnabled = userPreferences.isSettingsIconEnabled(), topResultIndicatorEnabled = topResultIndicatorEnabled, openKeyboardOnLaunch = openKeyboardOnLaunch, clearQueryOnLaunch = clearQueryOnLaunch, autoCloseOverlay = autoCloseOverlay, overlayModeEnabled = overlayModeEnabled, appSuggestionsEnabled = appSuggestionsEnabled, showAllAppsButton = userPreferences.shouldShowAllAppsButton(), includeNonLaunchableAppsInSearch = userPreferences.shouldIncludeNonLaunchableAppsInSearch(), selectedAppSuggestionTab = userPreferences.getSelectedAppSuggestionTab(), enabledAppSuggestionTabs = userPreferences.getEnabledAppSuggestionTabs(), showAppLabels = showAppLabels, phoneAppGridColumns = phoneAppGridColumns, appIconSizeStep = appIconSizeStep, appIconShape = appIconShape, launcherAppIcon = launcherAppIcon, themedIconsEnabled = themedIconsEnabled, deviceThemeEnabled = deviceThemeEnabled, maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons, backgroundSource = backgroundSource, wallpaperBackgroundAlpha = wallpaperBackgroundAlpha, wallpaperBlurRadius = wallpaperBlurRadius, appTheme = appTheme, overlayThemeIntensity = overlayThemeIntensity, fontScaleMultiplier = fontScaleMultiplier, useSystemFont = useSystemFont, customImageUri = customImageUri, showFolders = showFolders, showSystemFiles = showSystemFiles, folderWhitelistPatterns = folderWhitelistPatterns, folderBlacklistPatterns = folderBlacklistPatterns, excludedFileExtensions = excludedFileExtensions, amazonDomain = amazonDomain, directDialEnabled = directDialEnabled, assistantLaunchVoiceModeEnabled = assistantLaunchVoiceModeEnabled)
     private fun onNavigationTriggered() {
         pendingNavigationClear = true
         _externalNavigationEvent.tryEmit(Unit)
@@ -600,6 +602,19 @@ class SearchViewModel(
     }
     fun handleOnResume() {
         startupLifecycleDelegate.handleOnResume()
+    }
+    fun refreshRateQuickSearchCardState() {
+        updateFeatureState {
+            it.copy(showRateQuickSearchCard = userPreferences.shouldShowRateQuickSearchCard())
+        }
+    }
+    fun markRateQuickSearchCompleted() {
+        userPreferences.markRateQuickSearchCompleted()
+        refreshRateQuickSearchCardState()
+    }
+    fun dismissRateQuickSearchForNow() {
+        userPreferences.recordRateQuickSearchDismissed()
+        refreshRateQuickSearchCardState()
     }
     private fun computeEffectiveIsDarkMode(): Boolean {
         return when (_configState.value.appThemeMode) {

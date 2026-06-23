@@ -23,6 +23,7 @@ internal interface SearchPreferencesStateAccess {
     var folderBlacklistPatterns: Set<String>
     var oneHandedMode: Boolean
     var bottomSearchBarEnabled: Boolean
+    var unifiedPinnedItemsEnabled: Boolean
     var settingsIconEnabled: Boolean
     var topResultIndicatorEnabled: Boolean
     var wallpaperAccentEnabled: Boolean
@@ -30,6 +31,7 @@ internal interface SearchPreferencesStateAccess {
     var overlayModeEnabled: Boolean
     var autoCloseOverlay: Boolean
     var appSuggestionsEnabled: Boolean
+    var showAllAppsButton: Boolean
     var showAppLabels: Boolean
     var phoneAppGridColumns: Int
     var appIconSizeStep: Int
@@ -143,6 +145,29 @@ internal class SearchPreferencesDelegate(
                 stateAccess.appSuggestionsEnabled = it
                 updateUiState { state -> state.copy(appSuggestionsEnabled = it) }
                 refreshAppSuggestions()
+                stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+            },
+        )
+    }
+
+    fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) {
+        updateBooleanPreference(
+            value = enabled,
+            preferenceSetter = userPreferences::setIncludeNonLaunchableAppsInSearch,
+            stateUpdater = {
+                updateConfigState { state -> state.copy(includeNonLaunchableAppsInSearch = it) }
+                refreshAppSuggestions()
+            },
+        )
+    }
+
+    fun setShowAllAppsButton(enabled: Boolean) {
+        updateBooleanPreference(
+            value = enabled,
+            preferenceSetter = userPreferences::setShowAllAppsButton,
+            stateUpdater = {
+                stateAccess.showAllAppsButton = it
+                updateUiState { state -> state.copy(showAllAppsButton = it) }
                 stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
             },
         )
@@ -634,6 +659,17 @@ internal class SearchPreferencesDelegate(
         )
     }
 
+    fun setUnifiedPinnedItemsEnabled(enabled: Boolean) {
+        updateBooleanPreference(
+            value = enabled,
+            preferenceSetter = userPreferences::setUnifiedPinnedItemsEnabled,
+            stateUpdater = {
+                stateAccess.unifiedPinnedItemsEnabled = it
+                updateUiState { state -> state.copy(unifiedPinnedItemsEnabled = it) }
+            },
+        )
+    }
+
     fun setSearchHintsEnabled(enabled: Boolean) {
         updateBooleanPreference(
             value = enabled,
@@ -668,6 +704,9 @@ internal class SearchPreferencesDelegate(
     }
 
     fun setTopResultIndicatorEnabled(enabled: Boolean) {
+        if (!enabled && userPreferences.isPhysicalKeyboardConnected()) {
+            return
+        }
         updateBooleanPreference(
             value = enabled,
             preferenceSetter = userPreferences::setTopResultIndicatorEnabled,
@@ -785,6 +824,7 @@ internal class SearchPreferencesDelegate(
                         geminiApiKeyLast4 = aiSearchHandler.getLlmApiKey()?.trim()?.takeLast(4),
                         llmApiKeyLast4ByProvider = userPreferences.getLlmApiKeyLast4ByProvider(),
                         customLlmBaseUrlByProvider = userPreferences.getCustomLlmBaseUrlByProvider(),
+                        customLlmAdvancedPayloadByProvider = userPreferences.getCustomLlmAdvancedPayloadByProvider(),
                         aiSearchLlmProviderId = aiSearchHandler.getAiSearchProviderId(),
                         personalContext = aiSearchHandler.getPersonalContext(),
                         geminiModel = aiSearchHandler.getGeminiModel(),
@@ -831,6 +871,7 @@ internal class SearchPreferencesDelegate(
                         geminiApiKeyLast4 = aiSearchHandler.getLlmApiKey()?.trim()?.takeLast(4),
                         llmApiKeyLast4ByProvider = userPreferences.getLlmApiKeyLast4ByProvider(),
                         customLlmBaseUrlByProvider = userPreferences.getCustomLlmBaseUrlByProvider(),
+                        customLlmAdvancedPayloadByProvider = userPreferences.getCustomLlmAdvancedPayloadByProvider(),
                         aiSearchLlmProviderId = aiSearchHandler.getAiSearchProviderId(),
                         personalContext = aiSearchHandler.getPersonalContext(),
                         geminiModel = aiSearchHandler.getGeminiModel(),
@@ -883,6 +924,23 @@ internal class SearchPreferencesDelegate(
                     availableGeminiModels = models,
                     availableLlmModelsByProvider =
                         it.availableLlmModelsByProvider + (providerId to models),
+                )
+            }
+        }
+    }
+
+    fun setCustomLlmAdvancedPayload(
+        providerId: AiSearchLlmProviderId,
+        payload: String?,
+        enabled: Boolean,
+    ) {
+        if (!providerId.isCustom) return
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setCustomLlmAdvancedPayload(providerId, payload, enabled)
+            updateFeatureState {
+                it.copy(
+                    customLlmAdvancedPayloadByProvider =
+                        userPreferences.getCustomLlmAdvancedPayloadByProvider(),
                 )
             }
         }
@@ -1004,7 +1062,7 @@ internal class SearchPreferencesDelegate(
         scope.launch(Dispatchers.IO) {
             val trimmedName = name.trim()
             if (trimmedName.isBlank()) return@launch
-            val resolvedModelId = resolveCustomToolModelId(modelId)
+            val resolvedModelId = resolveCustomToolModelId(providerId, modelId)
             val id = "custom_tool:${java.util.UUID.randomUUID()}"
             val newTool = CustomTool(
                 id = id,
@@ -1047,7 +1105,7 @@ internal class SearchPreferencesDelegate(
         scope.launch(Dispatchers.IO) {
             val trimmedName = name.trim()
             if (trimmedName.isBlank()) return@launch
-            val resolvedModelId = resolveCustomToolModelId(modelId)
+            val resolvedModelId = resolveCustomToolModelId(providerId, modelId)
             val existing = userPreferences.getCustomTools()
             val updated =
                 existing.map { tool ->
@@ -1103,10 +1161,15 @@ internal class SearchPreferencesDelegate(
         }
     }
 
-    private fun resolveCustomToolModelId(modelId: String): String {
-        val availableModelIds = aiSearchHandler.getAvailableGeminiModels().map { it.id }
-        val firstAvailableModelId = availableModelIds.firstOrNull() ?: GeminiModelCatalog.DEFAULT_MODEL_ID
+    private fun resolveCustomToolModelId(
+        providerId: AiSearchLlmProviderId,
+        modelId: String,
+    ): String {
         val normalizedModelId = modelId.trim()
-        return normalizedModelId.takeIf { it.isNotBlank() && it in availableModelIds } ?: firstAvailableModelId
+        if (normalizedModelId.isNotBlank()) return normalizedModelId
+
+        return AiSearchLlmProviderRegistry
+            .get(providerId, applicationProvider())
+            .defaultModelId
     }
 }

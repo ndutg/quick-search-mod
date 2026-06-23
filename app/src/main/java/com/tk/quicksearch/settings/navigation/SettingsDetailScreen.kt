@@ -270,6 +270,15 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
+                            unifiedPinnedItemsEnabled = state.unifiedPinnedItemsEnabled,
+                            onToggleUnifiedPinnedItems = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.UNIFIED_PINNED_ITEMS,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
                             searchHintsEnabled = state.searchHintsEnabled,
                             onToggleSearchHints = { enabled ->
                                 callbacks.onApplySettingsCommand(

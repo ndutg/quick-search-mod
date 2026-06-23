@@ -22,6 +22,7 @@ internal data class SearchRuntimeState(
     var excludedFileExtensions: Set<String> = emptySet(),
     var oneHandedMode: Boolean = false,
     var bottomSearchBarEnabled: Boolean = false,
+    var unifiedPinnedItemsEnabled: Boolean = false,
     var searchHintsEnabled: Boolean = true,
     var settingsIconEnabled: Boolean = true,
     var topResultIndicatorEnabled: Boolean = true,
