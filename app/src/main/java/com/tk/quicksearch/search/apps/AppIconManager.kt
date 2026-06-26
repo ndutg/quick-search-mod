@@ -54,8 +54,9 @@ private object AppIconCache {
                 key: String,
                 value: AppIconEntry,
             ): Int {
-                val b = value.bitmap
-                val bytes = b.width.toLong() * b.height.toLong() * BYTES_PER_PIXEL
+                val bytes =
+                    imageBitmapByteCount(value.bitmap) +
+                        (value.monochromeData?.let(::imageBitmapByteCount) ?: 0L)
                 return bytes.coerceIn(1, Int.MAX_VALUE.toLong()).toInt()
             }
         }
@@ -72,6 +73,9 @@ private object AppIconCache {
     fun clear() {
         cache.evictAll()
     }
+
+    private fun imageBitmapByteCount(bitmap: ImageBitmap): Long =
+        bitmap.width.toLong() * bitmap.height.toLong() * BYTES_PER_PIXEL
 }
 
 fun invalidateAppIconCache() {

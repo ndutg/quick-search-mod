@@ -46,6 +46,12 @@ object PreferenceUtils {
         prefs.edit().putBoolean(key, value).apply()
     }
 
+    fun commitBooleanPref(
+        prefs: SharedPreferences,
+        key: String,
+        value: Boolean,
+    ): Boolean = prefs.edit().putBoolean(key, value).commit()
+
     fun getStringListPref(
         prefs: SharedPreferences,
         key: String,
@@ -264,6 +270,11 @@ abstract class BasePreferences(
         key: String,
         value: Boolean,
     ) = PreferenceUtils.setBooleanPref(prefs, key, value)
+
+    protected fun commitBooleanPref(
+        key: String,
+        value: Boolean,
+    ): Boolean = PreferenceUtils.commitBooleanPref(prefs, key, value)
 
     protected fun getStringListPref(key: String): List<String> = PreferenceUtils.getStringListPref(prefs, key)
 

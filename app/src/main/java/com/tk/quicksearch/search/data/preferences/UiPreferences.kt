@@ -745,7 +745,7 @@ class UiPreferences(
             getBooleanPref(UiPreferences.KEY_SHOW_ALL_APPS_BUTTON, false)
 
     fun setShowAllAppsButton(enabled: Boolean) {
-        setBooleanPref(UiPreferences.KEY_SHOW_ALL_APPS_BUTTON, enabled)
+        commitBooleanPref(UiPreferences.KEY_SHOW_ALL_APPS_BUTTON, enabled)
     }
 
     fun shouldIncludeNonLaunchableAppsInSearch(): Boolean =
