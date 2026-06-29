@@ -298,8 +298,7 @@ fun WidgetsPanelScreen(
         appWidgetHost.isScrollInProgressProvider = { panelScrollState.isScrollInProgress }
         appWidgetHost.startListening()
         onDispose {
-            appWidgetHost.stopListening()
-            appWidgetHost.isScrollInProgressProvider = { false }
+            appWidgetHost.release()
         }
     }
 
