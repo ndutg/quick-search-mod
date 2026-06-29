@@ -40,6 +40,8 @@ import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.apps.invalidateAppIconCache
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.AppShortcutRepository.clearShortcutIconMemoryCache
+import com.tk.quicksearch.search.files.clearFileThumbnailMemoryCache
 import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
@@ -177,16 +179,20 @@ open class MainActivity : ComponentActivity() {
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
-            WallpaperUtils.clearMemoryCaches()
-            invalidateAppIconCache()
-            IconPackManager.clearAllCaches()
+            clearBitmapMemoryCaches()
         }
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
+        clearBitmapMemoryCaches()
+    }
+
+    private fun clearBitmapMemoryCaches() {
         WallpaperUtils.clearMemoryCaches()
         invalidateAppIconCache()
+        clearShortcutIconMemoryCache()
+        clearFileThumbnailMemoryCache()
         IconPackManager.clearAllCaches()
     }
 

@@ -232,11 +232,28 @@ private fun loadLauncherAppsShortcutIcon(
 }
 
 private object ShortcutIconMemoryCache {
-    private val cache = LruCache<String, ImageBitmap>(128)
+    private const val MAX_CACHE_SIZE_BYTES = 4 * 1024 * 1024
+    private const val BYTES_PER_PIXEL = 4
+
+    private val cache =
+        object : LruCache<String, ImageBitmap>(MAX_CACHE_SIZE_BYTES) {
+            override fun sizeOf(key: String, value: ImageBitmap): Int =
+                (value.width.toLong() * value.height.toLong() * BYTES_PER_PIXEL)
+                    .coerceIn(1, Int.MAX_VALUE.toLong())
+                    .toInt()
+        }
 
     fun get(key: String): ImageBitmap? = synchronized(cache) { cache.get(key) }
 
     fun put(key: String, icon: ImageBitmap) {
         synchronized(cache) { cache.put(key, icon) }
     }
+
+    fun clear() {
+        synchronized(cache) { cache.evictAll() }
+    }
+}
+
+fun clearShortcutIconMemoryCache() {
+    ShortcutIconMemoryCache.clear()
 }

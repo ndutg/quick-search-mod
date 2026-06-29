@@ -2,6 +2,7 @@ package com.tk.quicksearch.shared.util
 
 import android.content.Context
 import android.os.Build
+import com.tk.quicksearch.BuildConfig
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
@@ -27,6 +28,7 @@ object CrashLogManager {
         if (isInstalled) return
 
         val appContext = context.applicationContext
+        MemoryDiagnostics.install(appContext)
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             if (isHandlingCrash.compareAndSet(false, true)) {
@@ -65,7 +67,13 @@ object CrashLogManager {
             out.write("=== Quick Search Logs ===\n")
             out.write("Captured: $timestamp\n")
             out.write("Android: $androidVersion  Device: $deviceModel\n")
-            out.write("PID: $pid\n\n")
+            out.write(
+                "Build: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) " +
+                    "${BuildConfig.BUILD_TYPE} ${BuildConfig.APPLICATION_ID}\n",
+            )
+            out.write("PID: $pid\n")
+            MemoryDiagnostics.appendTo(out, context)
+            out.write("\n")
 
             // Dump logcat for this process only
             try {

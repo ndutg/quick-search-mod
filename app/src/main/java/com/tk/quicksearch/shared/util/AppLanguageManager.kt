@@ -38,7 +38,15 @@ object AppLanguageManager {
 
     fun applySavedAppLanguage(context: Context) {
         val savedLanguageTag = UserAppPreferences(context).getAppLanguageTag()
-        AppCompatDelegate.setApplicationLocales(savedLanguageTag.toLocaleListCompat())
+        val targetLocales = savedLanguageTag.toLocaleListCompat()
+        if (AppCompatDelegate.getApplicationLocales() == targetLocales) return
+
+        val activeResourceLanguage =
+            context.resources.configuration.locales.get(0)?.language.orEmpty()
+        val savedLanguage = savedLanguageTag?.let(Locale::forLanguageTag)?.language.orEmpty()
+        if (savedLanguage.isNotEmpty() && activeResourceLanguage == savedLanguage) return
+
+        AppCompatDelegate.setApplicationLocales(targetLocales)
     }
 
     fun wrapContext(context: Context): Context {

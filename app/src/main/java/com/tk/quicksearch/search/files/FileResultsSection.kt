@@ -109,12 +109,46 @@ private data class CustomFileIconSpec(
 )
 
 private object FileThumbnailCache {
+    private const val MAX_CACHE_SIZE_BYTES = 6 * 1024 * 1024
+    private const val BYTES_PER_PIXEL = 4L
     private val loadScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val cache =
             object : LinkedHashMap<String, ImageBitmap>(THUMBNAIL_CACHE_MAX_SIZE, 0.75f, true) {
+                private var sizeBytes = 0L
+
+                override fun put(key: String, value: ImageBitmap): ImageBitmap? {
+                    val previous = super.put(key, value)
+                    sizeBytes += value.byteCount() - (previous?.byteCount() ?: 0L)
+                    trimToSize()
+                    return previous
+                }
+
+                override fun remove(key: String): ImageBitmap? =
+                    super.remove(key)?.also { sizeBytes -= it.byteCount() }
+
+                override fun clear() {
+                    super.clear()
+                    sizeBytes = 0L
+                }
+
                 override fun removeEldestEntry(
                         eldest: MutableMap.MutableEntry<String, ImageBitmap>
-                ) = size > THUMBNAIL_CACHE_MAX_SIZE
+                ) = false
+
+                private fun trimToSize() {
+                    val iterator = entries.iterator()
+                    while (
+                        iterator.hasNext() &&
+                            (size > THUMBNAIL_CACHE_MAX_SIZE || sizeBytes > MAX_CACHE_SIZE_BYTES)
+                    ) {
+                        val entry = iterator.next()
+                        sizeBytes -= entry.value.byteCount()
+                        iterator.remove()
+                    }
+                }
+
+                private fun ImageBitmap.byteCount(): Long =
+                    width.toLong() * height.toLong() * BYTES_PER_PIXEL
             }
     private val inFlightLoads = mutableMapOf<String, Deferred<ImageBitmap?>>()
     private val failureTimestamps = mutableMapOf<String, Long>()
@@ -125,6 +159,12 @@ private object FileThumbnailCache {
     fun put(uri: String, bitmap: ImageBitmap) {
         cache[uri] = bitmap
         failureTimestamps.remove(uri)
+    }
+
+    @Synchronized
+    fun clear() {
+        cache.clear()
+        failureTimestamps.clear()
     }
 
     suspend fun getOrLoad(uri: String, loader: suspend () -> ImageBitmap?): ImageBitmap? {
@@ -182,6 +222,10 @@ private object FileThumbnailCache {
             null
         }
     }
+}
+
+fun clearFileThumbnailMemoryCache() {
+    FileThumbnailCache.clear()
 }
 
 // ============================================================================
