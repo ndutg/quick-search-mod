@@ -15,6 +15,7 @@ import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
+import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
 // =============================================================================
 // The four focused sub-state data classes that replace the monolithic
@@ -109,6 +110,7 @@ data class SearchResultsState(
         val isWordClockAliasMode: Boolean = false,
         val isDictionaryAliasMode: Boolean = false,
         val detectedCustomToolId: String? = null,
+        val detectedTaskerIntentId: String? = null,
         // Recent items (shown when query is blank)
         val recentItems: List<RecentSearchItem> = emptyList(),
         // Recently opened items filtered to the active alias section (shown when alias detected + query blank)
@@ -188,6 +190,7 @@ data class SearchFeatureState(
         // Custom tools
         val customTools: List<CustomTool> = emptyList(),
         val disabledCustomToolIds: Set<String> = emptySet(),
+        val taskerIntentTools: List<TaskerIntentTool> = emptyList(),
         // Search history
         val recentQueriesEnabled: Boolean = true,
         val hasDismissedSearchHistoryTip: Boolean = false,
@@ -200,6 +203,7 @@ data class SearchFeatureState(
         val showTodayEvents: Boolean = true,
         // Direct dial
         val directDialEnabled: Boolean = false,
+        val numberSearchEnabled: Boolean = false,
         // Assistant launch voice mode
         val assistantLaunchVoiceModeEnabled: Boolean = false,
         // Usage permission banner
@@ -263,6 +267,7 @@ data class SearchUiConfigState(
         // File display preferences
         val enabledFileTypes: Set<FileType> = FileType.values().toSet(),
         val showFolders: Boolean = false,
+        val filePreviewsEnabled: Boolean = true,
         val showSystemFiles: Boolean = false,
         val folderWhitelistPatterns: Set<String> = emptySet(),
         val folderBlacklistPatterns: Set<String> = emptySet(),

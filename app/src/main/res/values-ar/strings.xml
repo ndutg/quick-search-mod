@@ -90,6 +90,23 @@
     <string name="action_open_folder">فتح المجلد</string>
     <string name="action_open_keyboard">فتح لوحة المفاتيح</string>
     <string name="action_open_settings">فتح الإعدادات</string>
+    <string name="settings_gestures_title">الإيماءات</string>
+    <string name="settings_gestures_desc">تخصيص إجراءات السحب</string>
+    <string name="settings_gesture_swipe_right">السحب لليمين</string>
+    <string name="settings_gesture_swipe_left">السحب لليسار</string>
+    <string name="settings_gesture_swipe_up">السحب للأعلى</string>
+    <string name="settings_gesture_swipe_down">السحب للأسفل</string>
+    <string name="settings_gesture_swipe_up_home">السحب للأعلى (الرئيسية)</string>
+    <string name="settings_gesture_swipe_down_home">السحب للأسفل (الرئيسية)</string>
+    <string name="settings_gesture_quick_note">ملاحظة سريعة</string>
+    <string name="settings_gesture_settings">الإعدادات</string>
+    <string name="settings_gesture_open_keyboard">فتح لوحة المفاتيح</string>
+    <string name="settings_gesture_close_keyboard_notifications">إغلاق لوحة المفاتيح / فتح الإشعارات</string>
+    <string name="settings_gesture_close_keyboard">إغلاق لوحة المفاتيح</string>
+    <string name="settings_gesture_notification_panel">لوحة الإشعارات</string>
+    <string name="settings_gesture_none">بلا</string>
+    <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
+    <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح (الرئيسية)</string>
     <string name="action_pin_app">تثبيت</string>
     <string name="action_remove">إزالة</string>
     <string name="action_remove_from_history">إزالة من السجل</string>
@@ -389,6 +406,8 @@
     <string name="error_whatsapp_video_call_missing_data">تعذر إجراء مكالمة فيديو WhatsApp - بيانات جهة الاتصال مفقودة</string>
     <string name="error_whatsapp_video_call_unavailable">مكالمات فيديو WhatsApp غير متاحة</string>
     <string name="settings_call_permission_title">الهاتف</string>
+    <string name="permissions_background_usage_title">السماح بالاستخدام في الخلفية</string>
+    <string name="permissions_background_usage_desc">إذا كان فتح Quick Search بطيئًا، فجرّب إيقاف تحسين البطارية.</string>
     <string name="settings_calling_card_title">تطبيق الاتصال الافتراضي</string>
     <string name="settings_calls_texts_title">المكالمات والرسائل النصية</string>
     <string name="settings_direct_dial_desc">إجراء المكالمات مباشرة دون فتح لوحة الاتصال.</string>
@@ -429,6 +448,8 @@
     <string name="settings_folder_whitelist_helper">سيتم البحث في هذه المجلدات فقط أثناء البحث عن الملفات والمجلدات</string>
     <string name="settings_folder_whitelist_title">القائمة البيضاء</string>
     <string name="settings_folders_toggle">المجلدات</string>
+    <string name="settings_file_previews_toggle">معاينة الملفات</string>
+    <string name="settings_file_previews_description">معاينة الصور وملفات PDF قبل فتحها.</string>
     <string name="settings_refresh_files_disabled">البحث عن الملفات معطل، لا يمكن تحديث بيانات الملفات</string>
     <string name="settings_refresh_files_title">إعادة تحميل الملفات</string>
     <string name="settings_system_files_toggle">ملفات النظام</string>
@@ -616,6 +637,7 @@
     <string name="settings_home_screen_widget_desc">إضافة عنصر واجهة مستخدم Quick Search إلى الشاشة الرئيسية.</string>
     <string name="settings_home_screen_widget_title">عنصر واجهة مستخدم للشاشة الرئيسية</string>
     <string name="settings_icon_desc">إظهار أو إخفاء أيقونة الإعدادات (الترس) في شريط البحث. يمكنك دائماً الوصول للإعدادات بالسحب يساراً أو عبر البحث عنها.</string>
+    <string name="settings_icon_required_by_gesture_desc">اضبط إيماءة السحب لليسار لفتح الإعدادات لإيقاف تشغيل هذا الرمز.</string>
     <string name="settings_icon_pack_empty">لم يتم العثور على أي حزم أيقونات.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">تطبيق قناع على الأيقونات غير المدعومة</string>
     <string name="settings_icon_pack_option_system">أيقونات النظام</string>
@@ -709,6 +731,9 @@
     <string name="settings_custom_provider_advanced_payload_title">حمولة الطلب المتقدمة</string>
     <string name="settings_direct_search_desc">يدعم مفاتيح API لـ Gemini وOpenAI وClaude وGroq</string>
     <string name="settings_direct_search_desc_intro">أضف مفتاح API لتفعيل ميزات البحث والأدوات المدعومة بالذكاء الاصطناعي (AI).</string>
+    <string name="settings_free_api_key_tip_title">احصل على مفتاح API مجاناً</string>
+    <string name="settings_free_api_key_tip_description">خطوات الحصول على مفتاح Gemini API مجانًا.</string>
+    <string name="settings_open_free_api_key_guide">فتح دليل مفتاح API المجاني</string>
     <string name="settings_direct_search_grounding_label">البحث في الويب</string>
     <string name="settings_direct_search_how_to">احصل على مفتاح API مجاناً</string>
     <string name="settings_direct_search_model_label">النموذج</string>
@@ -984,4 +1009,23 @@
     <string name="settings_triggers_empty">ليس لديك أي كلمات تشغيل محددة.</string>
     <string name="settings_triggers_title">كلمات التشغيل</string>
 
+
+    <string name="settings_number_search_title">البحث برقم الهاتف</string>
+    <string name="settings_number_search_desc">البحث في جهات الاتصال باستخدام أرقام هواتفهم.</string>
+    <string name="widget_custom_button_change_colour">تغيير اللون</string>
+    <string name="widget_custom_button_choose_colour">اختيار لون المجلد</string>
+    <string name="search_engine_google_translate">ترجمة Google</string>
+    <string name="tasker_integration_title">إجراءات Tasker</string>
+    <string name="tasker_integration_description">إنشاء إجراءات Tasker باستخدام نوايا البث (broadcast intents).</string>
+    <string name="tasker_add_intent_title">إضافة نية بث لـ Tasker</string>
+    <string name="tasker_add_intent_description">في تطبيق Tasker، أنشئ ملفًا شخصيًا من نوع Intent Received بنفس الإجراء. يرسل Quick Search الاستعلام في حقل الملحق \"query\".</string>
+    <string name="tasker_alias_conflict">هذا الاسم المستعار مستخدم بالفعل</string>
+    <string name="tasker_intent_name_label">اسم نية البث</string>
+    <string name="tasker_broadcast_action_label">إجراء البث</string>
+    <string name="tasker_add_intent_button">إضافة نية</string>
+    <string name="tasker_saved_alias">الاسم المستعار: %1$s</string>
+    <string name="tasker_delete_intent">حذف نية Tasker</string>
+    <string name="tasker_intent_action">نية Tasker (%1$s)</string>
+    <string name="tasker_not_installed">Tasker غير مثبت</string>
+    <string name="tasker_broadcast_failed">تعذر إرسال بث Tasker</string>
 </resources>

@@ -89,6 +89,23 @@
 <string name="action_open_folder">Ouvrir le dossier</string>
 <string name="action_open_keyboard">Ouvrir le clavier</string>
 <string name="action_open_settings">Ouvrir les paramètres</string>
+<string name="settings_gestures_title">Gestes</string>
+<string name="settings_gestures_desc">Personnaliser les actions de balayage</string>
+<string name="settings_gesture_swipe_right">Balayer vers la droite</string>
+<string name="settings_gesture_swipe_left">Balayer vers la gauche</string>
+<string name="settings_gesture_swipe_up">Balayer vers le haut</string>
+<string name="settings_gesture_swipe_down">Balayer vers le bas</string>
+<string name="settings_gesture_swipe_up_home">Balayer vers le haut (Accueil)</string>
+<string name="settings_gesture_swipe_down_home">Balayer vers le bas (Accueil)</string>
+<string name="settings_gesture_quick_note">Note rapide</string>
+<string name="settings_gesture_settings">Paramètres</string>
+<string name="settings_gesture_open_keyboard">Ouvrir le clavier</string>
+<string name="settings_gesture_close_keyboard_notifications">Fermer le clavier / Ouvrir les notifications</string>
+<string name="settings_gesture_close_keyboard">Fermer le clavier</string>
+<string name="settings_gesture_notification_panel">Panneau de notifications</string>
+<string name="settings_gesture_none">Aucun</string>
+<string name="settings_gesture_custom">Personnalisé (Applications, fichiers, etc.)</string>
+<string name="settings_keyboard_gestures_title">Gestes du clavier (Accueil)</string>
 <string name="action_pin_app">Épingler</string>
 <string name="action_remove">Supprimer</string>
 <string name="action_remove_from_history">Supprimer de l\'historique</string>
@@ -388,6 +405,8 @@
 <string name="error_whatsapp_video_call_missing_data">Impossible de passer l\'appel vidéo WhatsApp - données de contact manquantes</string>
 <string name="error_whatsapp_video_call_unavailable">WhatsApp n\'est pas disponible pour les appels vidéo</string>
 <string name="settings_call_permission_title">Téléphone</string>
+<string name="permissions_background_usage_title">Autoriser l\'utilisation en arrière-plan</string>
+<string name="permissions_background_usage_desc">Si l\'ouverture de Quick Search est lente, essayez de désactiver l\'optimisation de la batterie.</string>
 <string name="settings_calling_card_title">Application d\'appel par défaut</string>
 <string name="settings_calls_texts_title">Appels &amp; SMS</string>
 <string name="settings_direct_dial_desc">Passez des appels directement sans ouvrir le clavier numérique.</string>
@@ -428,6 +447,8 @@
 <string name="settings_folder_whitelist_helper">Seuls ces dossiers seront explorés pour les recherches de fichiers &amp; dossiers</string>
 <string name="settings_folder_whitelist_title">Liste blanche</string>
 <string name="settings_folders_toggle">Dossiers</string>
+<string name="settings_file_previews_toggle">Aperçu des fichiers</string>
+<string name="settings_file_previews_description">Afficher un aperçu des images et des fichiers PDF avant de les ouvrir.</string>
 <string name="settings_refresh_files_disabled">La recherche de fichiers est désactivée, impossible d\'actualiser les données</string>
 <string name="settings_refresh_files_title">Recharger les fichiers</string>
 <string name="settings_system_files_toggle">Fichiers système</string>
@@ -615,6 +636,7 @@
 <string name="settings_home_screen_widget_desc">Ajouter le widget Quick Search à votre écran d\'accueil.</string>
 <string name="settings_home_screen_widget_title">Widget d\'écran d\'accueil</string>
 <string name="settings_icon_desc">Afficher/masquer l\'icône d\'engrenage dans la barre de recherche. Accédez aux paramètres à tout moment en glissant vers la gauche ou en effectuant une recherche.</string>
+<string name="settings_icon_required_by_gesture_desc">Définissez le geste \"Balayer vers la gauche\" sur \"Ouvrir les paramètres\" pour masquer cette icône.</string>
 <string name="settings_icon_pack_empty">Aucun pack d\'icônes trouvé.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Masquer les icônes non prises en charge</string>
 <string name="settings_icon_pack_option_system">Icônes système</string>
@@ -708,6 +730,9 @@
 <string name="settings_custom_provider_advanced_payload_title">Charge utile de requête avancée</string>
 <string name="settings_direct_search_desc">Les clés API Gemini, OpenAI, Claude et Groq sont prises en charge</string>
 <string name="settings_direct_search_desc_intro">Ajoutez une clé API pour activer la recherche et les outils propulsés par l\'AI.</string>
+<string name="settings_free_api_key_tip_title">Obtenir une clé API gratuite</string>
+<string name="settings_free_api_key_tip_description">Étapes pour obtenir gratuitement une clé API Gemini.</string>
+<string name="settings_open_free_api_key_guide">Ouvrir le guide de la clé API gratuite</string>
 <string name="settings_direct_search_grounding_label">Recherche Web</string>
 <string name="settings_direct_search_how_to">Obtenir une clé API gratuite</string>
 <string name="settings_direct_search_model_label">Modèle</string>
@@ -982,4 +1007,23 @@
 <string name="settings_triggers_desc">Afficher et gérer les mots déclencheurs que vous avez définis</string>
 <string name="settings_triggers_empty">Vous n\'avez défini aucun déclencheur.</string>
 <string name="settings_triggers_title">Déclencheurs</string>
+
+    <string name="settings_number_search_title">Recherche par numéro</string>
+    <string name="settings_number_search_desc">Rechercher des contacts à l\'aide de leurs numéros de téléphone.</string>
+    <string name="widget_custom_button_change_colour">Changer la couleur</string>
+    <string name="widget_custom_button_choose_colour">Choisir la couleur du dossier</string>
+    <string name="search_engine_google_translate">Google Traduction</string>
+    <string name="tasker_integration_title">Actions Tasker</string>
+    <string name="tasker_integration_description">Créez des actions Tasker en utilisant des intents de diffusion (broadcast).</string>
+    <string name="tasker_add_intent_title">Ajouter un intent de diffusion Tasker</string>
+    <string name="tasker_add_intent_description">Dans l\'application Tasker, créez un profil Intent Received avec la même action. Quick Search envoie la requête dans l\'extra \"query\".</string>
+    <string name="tasker_alias_conflict">Cet alias est déjà utilisé</string>
+    <string name="tasker_intent_name_label">Nom de l\'intent de diffusion</string>
+    <string name="tasker_broadcast_action_label">Action de diffusion</string>
+    <string name="tasker_add_intent_button">Ajouter l\'intent</string>
+    <string name="tasker_saved_alias">Alias : %1$s</string>
+    <string name="tasker_delete_intent">Supprimer l\'intent Tasker</string>
+    <string name="tasker_intent_action">Intent Tasker (%1$s)</string>
+    <string name="tasker_not_installed">Tasker n\'est pas installé</string>
+    <string name="tasker_broadcast_failed">Impossible d\'envoyer la diffusion Tasker</string>
 </resources>

@@ -89,6 +89,23 @@
     <string name="action_open_folder">Άνοιγμα φακέλου</string>
     <string name="action_open_keyboard">Άνοιγμα πληκτρολογίου</string>
     <string name="action_open_settings">Άνοιγμα ρυθμίσεων</string>
+    <string name="settings_gestures_title">Χειρονομίες</string>
+    <string name="settings_gestures_desc">Προσαρμογή ενεργειών σάρωσης</string>
+    <string name="settings_gesture_swipe_right">Σάρωση δεξιά</string>
+    <string name="settings_gesture_swipe_left">Σάρωση αριστερά</string>
+    <string name="settings_gesture_swipe_up">Σάρωση προς τα πάνω</string>
+    <string name="settings_gesture_swipe_down">Σάρωση προς τα κάτω</string>
+    <string name="settings_gesture_swipe_up_home">Σάρωση προς τα πάνω (Αρχική)</string>
+    <string name="settings_gesture_swipe_down_home">Σάρωση προς τα κάτω (Αρχική)</string>
+    <string name="settings_gesture_quick_note">Γρήγορη σημείωση</string>
+    <string name="settings_gesture_settings">Ρυθμίσεις</string>
+    <string name="settings_gesture_open_keyboard">Άνοιγμα πληκτρολογίου</string>
+    <string name="settings_gesture_close_keyboard_notifications">Κλείσιμο πληκτρολογίου / Άνοιγμα ειδοποιήσεων</string>
+    <string name="settings_gesture_close_keyboard">Κλείσιμο πληκτρολογίου</string>
+    <string name="settings_gesture_notification_panel">Πίνακας ειδοποιήσεων</string>
+    <string name="settings_gesture_none">Κανένα</string>
+    <string name="settings_gesture_custom">Προσαρμοσμένο (Εφαρμογές, Αρχεία κ.λπ.)</string>
+    <string name="settings_keyboard_gestures_title">Χειρονομίες πληκτρολογίου (Αρχική)</string>
     <string name="action_pin_app">Καρφίτσωμα</string>
     <string name="action_remove">Κατάργηση</string>
     <string name="action_remove_from_history">Κατάργηση από το ιστορικό</string>
@@ -388,6 +405,8 @@
     <string name="error_whatsapp_video_call_missing_data">Αδυναμία κλήσης βίντεο WhatsApp - λείπουν δεδομένα επαφής</string>
     <string name="error_whatsapp_video_call_unavailable">Το WhatsApp δεν είναι διαθέσιμο για βιντεοκλήσεις</string>
     <string name="settings_call_permission_title">Τηλέφωνο</string>
+    <string name="permissions_background_usage_title">Να επιτρέπεται η χρήση στο παρασκήνιο</string>
+    <string name="permissions_background_usage_desc">Εάν το Quick Search αργεί να ανοίξει, δοκιμάστε να απενεργοποιήσετε τη βελτιστοποίηση μπαταρίας.</string>
     <string name="settings_calling_card_title">Προεπιλεγμένη εφαρμογή κλήσεων</string>
     <string name="settings_calls_texts_title">Κλήσεις &amp; Μηνύματα</string>
     <string name="settings_direct_dial_desc">Πραγματοποίηση κλήσεων απευθείας χωρίς το άνοιγμα της εφαρμογής κλήσεων.</string>
@@ -428,6 +447,8 @@
     <string name="settings_folder_whitelist_helper">Η αναζήτηση αρχείων και φακέλων θα πραγματοποιείται μόνο σε αυτούς τους φακέλους</string>
     <string name="settings_folder_whitelist_title">Λίστα επιτρεπόμενων</string>
     <string name="settings_folders_toggle">Φάκελοι</string>
+    <string name="settings_file_previews_toggle">Προεπισκοπήσεις αρχείων</string>
+    <string name="settings_file_previews_description">Προεπισκόπηση εικόνων και αρχείων PDF πριν από το άνοιγμά τους.</string>
     <string name="settings_refresh_files_disabled">Η αναζήτηση αρχείων είναι απενεργοποιημένη, αδυναμία ανανέωσης δεδομένων</string>
     <string name="settings_refresh_files_title">Επαναφόρτωση αρχείων</string>
     <string name="settings_system_files_toggle">Αρχεία συστήματος</string>
@@ -615,6 +636,7 @@
     <string name="settings_home_screen_widget_desc">Προσθήκη του widget Quick Search στην αρχική σας οθόνη.</string>
     <string name="settings_home_screen_widget_title">Widget αρχικής οθόνης</string>
     <string name="settings_icon_desc">Εμφάνιση/απόκρυψη του εικονιδίου γραναζιού στη γραμμή αναζήτησης. Αποκτήστε πρόσβαση στις ρυθμίσεις ανά πάσα στιγμή κάνοντας σάρωση προς τα αριστερά ή μέσω αναζήτησης.</string>
+    <string name="settings_icon_required_by_gesture_desc">Ορίστε τη χειρονομία \"Σάρωση αριστερά\" σε \"Άνοιγμα ρυθμίσεων\" για να απενεργοποιήσετε αυτό το εικονίδιο.</string>
     <string name="settings_icon_pack_empty">Δεν βρέθηκαν πακέτα εικονιδίων.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Μάσκα μη υποστηριζόμενων εικονιδίων</string>
     <string name="settings_icon_pack_option_system">Εικονίδια συστήματος</string>
@@ -708,6 +730,9 @@
     <string name="settings_custom_provider_advanced_payload_title">Προηγμένο Ωφέλιμο Φορτίο Αιτήματος</string>
     <string name="settings_direct_search_desc">Υποστηρίζονται κλειδιά API για Gemini, OpenAI, Claude και Groq</string>
     <string name="settings_direct_search_desc_intro">Προσθέστε ένα κλειδί API για να ενεργοποιήσετε την αναζήτηση και τα εργαλεία με υποστήριξη AI.</string>
+    <string name="settings_free_api_key_tip_title">Λάβετε δωρεάν κλειδί API</string>
+    <string name="settings_free_api_key_tip_description">Βήματα για να αποκτήσετε ένα κλειδί Gemini API δωρεάν.</string>
+    <string name="settings_open_free_api_key_guide">Άνοιγμα οδηγού δωρεάν κλειδιού API</string>
     <string name="settings_direct_search_grounding_label">Αναζήτηση στον ιστό</string>
     <string name="settings_direct_search_how_to">Λάβετε δωρεάν κλειδί API</string>
     <string name="settings_direct_search_model_label">Μοντέλο</string>
@@ -982,4 +1007,23 @@
     <string name="settings_triggers_desc">Δείτε και διαχειριστείτε τις λέξεις ενεργοποίησης που έχετε ορίσει</string>
     <string name="settings_triggers_empty">Δεν έχετε ορίσει ενεργοποιήσεις.</string>
     <string name="settings_triggers_title">Ενεργοποιήσεις</string>
+
+    <string name="settings_number_search_title">Αναζήτηση αριθμού</string>
+    <string name="settings_number_search_desc">Αναζήτηση επαφών με χρήση των τηλεφωνικών τους αριθμών.</string>
+    <string name="widget_custom_button_change_colour">Αλλαγή χρώματος</string>
+    <string name="widget_custom_button_choose_colour">Επιλογή χρώματος φακέλου</string>
+    <string name="search_engine_google_translate">Μετάφραση Google</string>
+    <string name="tasker_integration_title">Ενέργειες Tasker</string>
+    <string name="tasker_integration_description">Δημιουργήστε ενέργειες Tasker χρησιμοποιώντας broadcast intents.</string>
+    <string name="tasker_add_intent_title">Προσθήκη Intent Εκπομπής Tasker</string>
+    <string name="tasker_add_intent_description">Στην εφαρμογή Tasker, δημιουργήστε ένα προφίλ Intent Received με την ίδια ενέργεια. Το Quick Search στέλνει το ερώτημα στο extra \"query\".</string>
+    <string name="tasker_alias_conflict">Αυτό το ψευδώνυμο χρησιμοποιείται ήδη</string>
+    <string name="tasker_intent_name_label">Όνομα Intent Εκπομπής</string>
+    <string name="tasker_broadcast_action_label">Ενέργεια Εκπομπής</string>
+    <string name="tasker_add_intent_button">Προσθήκη Intent</string>
+    <string name="tasker_saved_alias">Ψευδώνυμο: %1$s</string>
+    <string name="tasker_delete_intent">Διαγραφή intent Tasker</string>
+    <string name="tasker_intent_action">Intent Tasker (%1$s)</string>
+    <string name="tasker_not_installed">Το Tasker δεν είναι εγκατεστημένο</string>
+    <string name="tasker_broadcast_failed">Αδυναμία αποστολής της εκπομπής Tasker</string>
 </resources>

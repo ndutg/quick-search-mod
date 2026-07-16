@@ -38,7 +38,7 @@ import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderin
 import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.OneHandedModeScrollBehavior
 import com.tk.quicksearch.search.searchScreen.ScrollBasedKeyboardBehavior
-import com.tk.quicksearch.shared.util.isDefaultHomeApp
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -180,7 +180,7 @@ internal fun SearchScreenStateManagement(
 ): SearchScreenStateResult {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val isDefaultLauncher = context.isDefaultHomeApp()
+    val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
 
     val derivedState = rememberDerivedState(state)
 
@@ -350,7 +350,9 @@ internal fun SearchScreenStateManagement(
         overlayModeEnabled = state.overlayModeEnabled,
         oneHandedMode = state.oneHandedMode,
         reverseScrolling = alignResultsToBottom,
-        showKeyboardOnBoundaryReached = !(isDefaultLauncher && state.query.isBlank()),
+        // This is the established result-scroll behavior and remains independent from the
+        // configurable Home Gesture actions.
+        showKeyboardOnBoundaryReached = true,
         searchFocusRequester = searchFocusRequester,
     )
 

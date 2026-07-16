@@ -308,11 +308,12 @@ class UiPreferences(
 
     fun isFirstLaunch(): Boolean {
         syncInstallTimeWithBackup()
-        return getFirstLaunchFlag()
+        return getFirstLaunchFlag().also { BootstrapPreferences.setFirstLaunch(context, it) }
     }
 
     fun setFirstLaunchCompleted() {
         setFirstLaunchFlag(false)
+        BootstrapPreferences.setFirstLaunch(context, false)
         recordCurrentInstallTime()
     }
 
@@ -887,6 +888,12 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_THINKING_ENABLED, enabled)
     }
 
+    fun getCurrencyConverterAdvancedPayload(): Pair<Boolean, String> =
+        getAdvancedPayload(UiPreferences.KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD, UiPreferences.KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD_ENABLED)
+
+    fun setCurrencyConverterAdvancedPayload(payload: String?, enabled: Boolean) =
+        setAdvancedPayload(UiPreferences.KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD, UiPreferences.KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD_ENABLED, payload, enabled)
+
     fun getWordClockModel(): String =
         prefs.getString(UiPreferences.KEY_WORD_CLOCK_MODEL, null).orEmpty().ifBlank {
             getCurrencyConverterModel()
@@ -921,6 +928,12 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_WORD_CLOCK_THINKING_ENABLED, enabled)
     }
 
+    fun getWordClockAdvancedPayload(): Pair<Boolean, String> =
+        getAdvancedPayload(UiPreferences.KEY_WORD_CLOCK_ADVANCED_PAYLOAD, UiPreferences.KEY_WORD_CLOCK_ADVANCED_PAYLOAD_ENABLED)
+
+    fun setWordClockAdvancedPayload(payload: String?, enabled: Boolean) =
+        setAdvancedPayload(UiPreferences.KEY_WORD_CLOCK_ADVANCED_PAYLOAD, UiPreferences.KEY_WORD_CLOCK_ADVANCED_PAYLOAD_ENABLED, payload, enabled)
+
     fun getDictionaryModel(): String =
         prefs.getString(UiPreferences.KEY_DICTIONARY_MODEL, null).orEmpty().ifBlank {
             getCurrencyConverterModel()
@@ -946,6 +959,20 @@ class UiPreferences(
 
     fun setDictionaryGroundingEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_DICTIONARY_GROUNDING_ENABLED, enabled)
+    }
+
+    fun getDictionaryAdvancedPayload(): Pair<Boolean, String> =
+        getAdvancedPayload(UiPreferences.KEY_DICTIONARY_ADVANCED_PAYLOAD, UiPreferences.KEY_DICTIONARY_ADVANCED_PAYLOAD_ENABLED)
+
+    fun setDictionaryAdvancedPayload(payload: String?, enabled: Boolean) =
+        setAdvancedPayload(UiPreferences.KEY_DICTIONARY_ADVANCED_PAYLOAD, UiPreferences.KEY_DICTIONARY_ADVANCED_PAYLOAD_ENABLED, payload, enabled)
+
+    private fun getAdvancedPayload(payloadKey: String, enabledKey: String): Pair<Boolean, String> =
+        getBooleanPref(enabledKey, false) to prefs.getString(payloadKey, "").orEmpty()
+
+    private fun setAdvancedPayload(payloadKey: String, enabledKey: String, payload: String?, enabled: Boolean) {
+        val normalized = payload?.trim().orEmpty()
+        prefs.edit().putString(payloadKey, normalized).putBoolean(enabledKey, enabled && normalized.isNotEmpty()).apply()
     }
 
     fun isDictionaryThinkingEnabled(): Boolean =
@@ -1127,10 +1154,12 @@ class UiPreferences(
         const val KEY_APP_ICON_SIZE_STEP = "app_icon_size_step"
         const val DEFAULT_PHONE_APP_GRID_COLUMNS = 4
         const val MIN_APP_ICON_SIZE_STEP = 0
-        const val MAX_APP_ICON_SIZE_STEP = 6
-        const val DEFAULT_APP_ICON_SIZE_STEP = MAX_APP_ICON_SIZE_STEP
+        const val MAX_APP_ICON_SIZE_STEP = 10
+        // Keep the existing default icon rendering while expressing it as 80%.
+        const val DEFAULT_APP_ICON_SIZE_STEP = 6
         private const val APP_ICON_SIZE_PERCENT_DELTA = 5
-        private const val MIN_APP_ICON_SIZE_PERCENT = 70
+        private const val MIN_APP_ICON_SIZE_PERCENT = 50
+        private const val DEFAULT_APP_ICON_SIZE_PERCENT = 80
         private const val MAX_APP_ICON_SIZE_PERCENT = 100
         const val DEFAULT_TOP_MATCHES_LIMIT = 3
         val TOP_MATCHES_LIMIT_OPTIONS = listOf(1, 3, 5, 7, 10)
@@ -1210,6 +1239,12 @@ class UiPreferences(
         const val KEY_CURRENCY_CONVERTER_MODEL = "currency_converter_model"
         const val KEY_WORD_CLOCK_MODEL = "word_clock_model"
         const val KEY_DICTIONARY_MODEL = "dictionary_model"
+        const val KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD = "currency_converter_advanced_payload"
+        const val KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD_ENABLED = "currency_converter_advanced_payload_enabled"
+        const val KEY_WORD_CLOCK_ADVANCED_PAYLOAD = "word_clock_advanced_payload"
+        const val KEY_WORD_CLOCK_ADVANCED_PAYLOAD_ENABLED = "word_clock_advanced_payload_enabled"
+        const val KEY_DICTIONARY_ADVANCED_PAYLOAD = "dictionary_advanced_payload"
+        const val KEY_DICTIONARY_ADVANCED_PAYLOAD_ENABLED = "dictionary_advanced_payload_enabled"
         const val KEY_CURRENCY_CONVERTER_PROVIDER_ID = "currency_converter_provider_id"
         const val KEY_WORD_CLOCK_PROVIDER_ID = "word_clock_provider_id"
         const val KEY_DICTIONARY_PROVIDER_ID = "dictionary_provider_id"
@@ -1243,9 +1278,12 @@ class UiPreferences(
             val normalized = step.coerceIn(MIN_APP_ICON_SIZE_STEP, MAX_APP_ICON_SIZE_STEP)
             val percent =
                     MIN_APP_ICON_SIZE_PERCENT + (normalized * APP_ICON_SIZE_PERCENT_DELTA)
-            return percent / MAX_APP_ICON_SIZE_PERCENT.toFloat()
+            return percent / DEFAULT_APP_ICON_SIZE_PERCENT.toFloat()
         }
 
-        fun appIconSizePercent(step: Int): Int = (appIconSizeScale(step) * 100).toInt()
+        fun appIconSizePercent(step: Int): Int =
+                MIN_APP_ICON_SIZE_PERCENT +
+                        (step.coerceIn(MIN_APP_ICON_SIZE_STEP, MAX_APP_ICON_SIZE_STEP) *
+                                APP_ICON_SIZE_PERCENT_DELTA)
     }
 }

@@ -29,7 +29,9 @@ internal interface SearchViewModelPreferencesApi {
         groundingEnabled: Boolean = false,
         aliasCode: String = "",
         thinkingEnabled: Boolean = false,
-    ) = preferencesApiDelegate.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled)
+        advancedPayload: String? = null,
+        advancedPayloadEnabled: Boolean = false,
+    ) = preferencesApiDelegate.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
 
     fun updateCustomTool(
         id: String,
@@ -39,7 +41,9 @@ internal interface SearchViewModelPreferencesApi {
         modelId: String,
         groundingEnabled: Boolean = false,
         thinkingEnabled: Boolean = false,
-    ) = preferencesApiDelegate.updateCustomTool(id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled)
+        advancedPayload: String? = null,
+        advancedPayloadEnabled: Boolean = false,
+    ) = preferencesApiDelegate.updateCustomTool(id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
 
     fun deleteCustomTool(id: String) = preferencesApiDelegate.deleteCustomTool(id)
 
@@ -150,6 +154,8 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setShowFolders(show: Boolean) = preferencesApiDelegate.setShowFolders(show)
 
+    fun setFilePreviewsEnabled(enabled: Boolean) = preferencesApiDelegate.setFilePreviewsEnabled(enabled)
+
     fun setShowSystemFiles(show: Boolean) = preferencesApiDelegate.setShowSystemFiles(show)
 
     fun setFolderWhitelistPatterns(patterns: Set<String>) =
@@ -224,12 +230,16 @@ internal interface SearchViewModelPreferencesApi {
         modelId: String,
         groundingEnabled: Boolean,
         thinkingEnabled: Boolean,
+        advancedPayload: String?,
+        advancedPayloadEnabled: Boolean,
     ) = preferencesApiDelegate.setAiBackedToolSettings(
         toolId,
         providerId,
         modelId,
         groundingEnabled,
         thinkingEnabled,
+        advancedPayload,
+        advancedPayloadEnabled,
     )
 
     fun setGeminiGroundingEnabled(enabled: Boolean) =
@@ -270,7 +280,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         groundingEnabled: Boolean = false,
         aliasCode: String = "",
         thinkingEnabled: Boolean = false,
-    ) = preferencesDelegate.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled)
+        advancedPayload: String? = null,
+        advancedPayloadEnabled: Boolean = false,
+    ) = preferencesDelegate.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
 
     fun updateCustomTool(
         id: String,
@@ -280,7 +292,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         modelId: String,
         groundingEnabled: Boolean = false,
         thinkingEnabled: Boolean = false,
-    ) = preferencesDelegate.updateCustomTool(id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled)
+        advancedPayload: String? = null,
+        advancedPayloadEnabled: Boolean = false,
+    ) = preferencesDelegate.updateCustomTool(id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
 
     fun deleteCustomTool(id: String) = preferencesDelegate.deleteCustomTool(id)
 
@@ -379,6 +393,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setShowFolders(show: Boolean) = preferencesDelegate.setShowFolders(show)
 
+    fun setFilePreviewsEnabled(enabled: Boolean) = preferencesDelegate.setFilePreviewsEnabled(enabled)
+
     fun setShowSystemFiles(show: Boolean) = preferencesDelegate.setShowSystemFiles(show)
 
     fun setFolderWhitelistPatterns(patterns: Set<String>) =
@@ -463,12 +479,16 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         modelId: String,
         groundingEnabled: Boolean,
         thinkingEnabled: Boolean,
+        advancedPayload: String?,
+        advancedPayloadEnabled: Boolean,
     ) = preferencesDelegate.setAiBackedToolSettings(
         toolId,
         providerId,
         modelId,
         groundingEnabled,
         thinkingEnabled,
+        advancedPayload,
+        advancedPayloadEnabled,
     )
 
     fun setGeminiGroundingEnabled(enabled: Boolean) =

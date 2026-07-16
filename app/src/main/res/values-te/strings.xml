@@ -89,6 +89,23 @@
     <string name="action_open_folder">ఫోల్డర్ తెరువు</string>
     <string name="action_open_keyboard">కీబోర్డ్ తెరువు</string>
     <string name="action_open_settings">సెట్టింగ్‌లను తెరువు</string>
+    <string name="settings_gestures_title">హావాభావాలు</string>
+    <string name="settings_gestures_desc">స్వైప్ చర్యలను అనుకూలీకరించండి</string>
+    <string name="settings_gesture_swipe_right">కుడికి స్వైప్ చేయండి</string>
+    <string name="settings_gesture_swipe_left">ఎడమకు స్వైప్ చేయండి</string>
+    <string name="settings_gesture_swipe_up">పైకి స్వైప్ చేయండి</string>
+    <string name="settings_gesture_swipe_down">క్రిందికి స్వైప్ చేయండి</string>
+    <string name="settings_gesture_swipe_up_home">పైకి స్వైప్ చేయండి (హోమ్)</string>
+    <string name="settings_gesture_swipe_down_home">క్రిందికి స్వైప్ చేయండి (హోమ్)</string>
+    <string name="settings_gesture_quick_note">త్వరిత గమనిక</string>
+    <string name="settings_gesture_settings">సెట్టింగులు</string>
+    <string name="settings_gesture_open_keyboard">కీబోర్డ్ తెరవండి</string>
+    <string name="settings_gesture_close_keyboard_notifications">కీబోర్డ్ మూసివేయి / నోటిఫికేషన్‌లను తెరవండి</string>
+    <string name="settings_gesture_close_keyboard">కీబోర్డ్ మూసివేయి</string>
+    <string name="settings_gesture_notification_panel">నోటిఫికేషన్ ప్యానెల్</string>
+    <string name="settings_gesture_none">ఏదీ లేదు</string>
+    <string name="settings_gesture_custom">అనుకూలమైనవి (యాప్‌లు, ఫైల్‌లు మొదలైనవి)</string>
+    <string name="settings_keyboard_gestures_title">కీబోర్డ్ హావభావాలు (హోమ్)</string>
     <string name="action_pin_app">పిన్ చేయి</string>
     <string name="action_remove">తొలగించు</string>
     <string name="action_remove_from_history">చరిత్ర నుండి తొలగించు</string>
@@ -388,6 +405,8 @@
     <string name="error_whatsapp_video_call_missing_data">WhatsApp వీడియో కాల్ చేయలేము - పరిచయాల డేటా లేదు</string>
     <string name="error_whatsapp_video_call_unavailable">వీడియో కాల్స్ కోసం WhatsApp అందుబాటులో లేదు</string>
     <string name="settings_call_permission_title">ఫోన్</string>
+    <string name="permissions_background_usage_title">బ్యాక్‌గ్రౌండ్ వినియోగాన్ని అనుమతించు</string>
+    <string name="permissions_background_usage_desc">Quick Search తెరవడానికి సమయం పడుతుంటే, బ్యాటరీ ఆప్టిమైజేషన్‌ని నిలిపివేసి చూడండి.</string>
     <string name="settings_calling_card_title">డిఫాల్ట్ కాలింగ్ యాప్</string>
     <string name="settings_calls_texts_title">కాల్స్ &amp; టెక్స్ట్‌లు</string>
     <string name="settings_direct_dial_desc">డయలర్ తెరవకుండానే నేరుగా కాల్స్ చేయండి. </string>
@@ -428,6 +447,8 @@
     <string name="settings_folder_whitelist_helper">ఫైల్ &amp; ఫోల్డర్ శోధనల కోసం ఈ ఫోల్డర్‌లలో మాత్రమే శోధించబడుతుంది</string>
     <string name="settings_folder_whitelist_title">వైట్‌లిస్ట్</string>
     <string name="settings_folders_toggle">ఫోల్డర్‌లు</string>
+    <string name="settings_file_previews_toggle">ఫైల్ ప్రివ్యూలు</string>
+    <string name="settings_file_previews_description">చిత్రాలు మరియు PDFలను తెరవడానికి ముందు వాటిని ప్రివ్యూ చేయండి.</string>
     <string name="settings_refresh_files_disabled">ఫైళ్ల శోధన నిలిపివేయబడింది, ఫైళ్ల డేటాను రీఫ్రెష్ చేయడం సాధ్యపడదు</string>
     <string name="settings_refresh_files_title">ఫైళ్లను రీలోడ్ చేయి</string>
     <string name="settings_system_files_toggle">సిస్టమ్ ఫైళ్లు</string>
@@ -615,6 +636,7 @@
     <string name="settings_home_screen_widget_desc">మీ హోమ్ స్క్రీన్‌కు Quick Search విడ్జెట్‌ను జోడించండి.</string>
     <string name="settings_home_screen_widget_title">హోమ్ స్క్రీన్ విడ్జెట్</string>
     <string name="settings_icon_desc">శోధన పట్టీలో గేర్ ఐకాన్‌ను చూపించు/దాచు. ఎడమవైపుకు స్వైప్ చేయడం ద్వారా లేదా శోధించడం ద్వారా ఎప్పుడైనా సెట్టింగ్‌లను యాక్సెస్ చేయండి.</string>
+    <string name="settings_icon_required_by_gesture_desc">ఈ చిహ్నాన్ని నిలిపివేయడానికి \"సెట్టింగులను తెరవండి\" కి ఎడమకు స్వైప్ హావాభావాన్ని సెట్ చేయండి.</string>
     <string name="settings_icon_pack_empty">ఐకాన్ ప్యాక్‌లు ఏవీ కనుగొనబడలేదు.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">మద్దతు లేని ఐకాన్‌లను మాస్క్ చేయి</string>
     <string name="settings_icon_pack_option_system">సిస్టమ్ ఐకాన్‌లు</string>
@@ -708,6 +730,9 @@
     <string name="settings_custom_provider_advanced_payload_title">అధునాతన అభ్యర్థన పేలోడ్</string>
     <string name="settings_direct_search_desc">Gemini, OpenAI, Claude మరియు Groq API కీలు మద్దతు ఇవ్వబడతాయి</string>
     <string name="settings_direct_search_desc_intro">AI-ఆధారిత శోధన మరియు సాధనాలను (Tools) ప్రారంభించడానికి API కీని జోడించండి.</string>
+    <string name="settings_free_api_key_tip_title">ఉచిత API కీని పొందండి</string>
+    <string name="settings_free_api_key_tip_description">Gemini API కీని ఉచితంగా పొందడానికి దశలు.</string>
+    <string name="settings_open_free_api_key_guide">ఉచిత API కీ మార్గదర్శిని తెరువు</string>
     <string name="settings_direct_search_grounding_label">వెబ్ శోధన</string>
     <string name="settings_direct_search_how_to">ఉచిత API కీని పొందండి</string>
     <string name="settings_direct_search_model_label">మోడల్</string>
@@ -982,4 +1007,23 @@
     <string name="settings_triggers_desc">మీరు సెట్ చేసిన ట్రిగ్గర్ పదాలను వీక్షించండి మరియు నిర్వహించండి</string>
     <string name="settings_triggers_empty">ట్రిగ్గర్‌లు ఏవీ సెట్ చేయబడలేదు.</string>
     <string name="settings_triggers_title">ట్రిగ్గర్‌లు</string>
+
+    <string name="settings_number_search_title">నెంబర్ శోధన</string>
+    <string name="settings_number_search_desc">ఫోన్ నెంబర్లను ఉపయోగించి కాంటాక్ట్‌లను శోధించండి.</string>
+    <string name="widget_custom_button_change_colour">రంగు మార్చండి</string>
+    <string name="widget_custom_button_choose_colour">ఫోల్డర్ రంగును ఎంచుకోండి</string>
+    <string name="search_engine_google_translate">గూగుల్ అనువాదం</string>
+    <string name="tasker_integration_title">Tasker చర్యలు</string>
+    <string name="tasker_integration_description">బ్రాడ్‌కాస్ట్ ఇంటెంట్‌లను ఉపయోగించి Tasker చర్యలను సృష్టించండి.</string>
+    <string name="tasker_add_intent_title">Tasker బ్రాడ్‌కాస్ట్ ఇంటెంట్‌ను జోడించండి</string>
+    <string name="tasker_add_intent_description">Tasker యాప్‌లో, అదే చర్యతో Intent Received ప్రొఫైల్‌ను సృష్టించండి. క్విక్ సెర్చ్ క్వెరీని \"query\" ఎక్స్‌ట్రాలో పంపుతుంది.</string>
+    <string name="tasker_alias_conflict">ఈ మారుపేరు (alias) ఇప్పటికే ఉపయోగంలో ఉంది</string>
+    <string name="tasker_intent_name_label">బ్రాడ్‌కాస్ట్ ఇంటెంట్ పేరు</string>
+    <string name="tasker_broadcast_action_label">బ్రాడ్‌కాస్ట్ చర్య</string>
+    <string name="tasker_add_intent_button">ఇంటెంట్‌ను జోడించండి</string>
+    <string name="tasker_saved_alias">మారుపేరు: %1$s</string>
+    <string name="tasker_delete_intent">Tasker ఇంటెంట్‌ను తొలగించండి</string>
+    <string name="tasker_intent_action">Tasker ఇంటెంట్ (%1$s)</string>
+    <string name="tasker_not_installed">Tasker ఇన్‌స్టాల్ చేయబడలేదు</string>
+    <string name="tasker_broadcast_failed">Tasker బ్రాడ్‌కాస్ట్‌ను పంపలేకపోయాము</string>
 </resources>

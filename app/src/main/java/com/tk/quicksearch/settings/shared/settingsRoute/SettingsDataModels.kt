@@ -23,6 +23,7 @@ import com.tk.quicksearch.settings.AppShortcutsSettings.AppShortcutSource
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
+import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
 /**
  * Data class to hold all settings screen state and callbacks. Reduces parameter count and improves
@@ -39,6 +40,7 @@ data class SettingsScreenState(
     val disabledSearchEngines: Set<String>,
     val enabledFileTypes: Set<FileType>,
     val showFolders: Boolean,
+    val filePreviewsEnabled: Boolean,
     val showSystemFiles: Boolean,
     val folderWhitelistPatterns: Set<String>,
     val folderBlacklistPatterns: Set<String>,
@@ -84,6 +86,7 @@ data class SettingsScreenState(
     val themedIconsEnabled: Boolean = true,
     val deviceThemeEnabled: Boolean = false,
     val directDialEnabled: Boolean,
+    val numberSearchEnabled: Boolean,
     val disabledSections: Set<SearchSection>,
     val isSearchEngineCompactMode: Boolean,
     val searchEngineCompactRowCount: Int,
@@ -98,6 +101,7 @@ data class SettingsScreenState(
     val dictionaryEnabled: Boolean,
     val customTools: List<CustomTool> = emptyList(),
     val disabledCustomToolIds: Set<String> = emptySet(),
+    val taskerIntentTools: List<TaskerIntentTool> = emptyList(),
     val appSuggestionsEnabled: Boolean,
     val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
     val webSuggestionsEnabled: Boolean,
@@ -180,6 +184,7 @@ data class SettingsScreenState(
             FileSearchSettingsState(
                 enabledFileTypes = enabledFileTypes,
                 showFolders = showFolders,
+                filePreviewsEnabled = filePreviewsEnabled,
                 showSystemFiles = showSystemFiles,
                 folderWhitelistPatterns = folderWhitelistPatterns,
                 folderBlacklistPatterns = folderBlacklistPatterns,
@@ -234,6 +239,7 @@ data class SettingsScreenState(
                 dictionaryEnabled = dictionaryEnabled,
                 customTools = customTools,
                 disabledCustomToolIds = disabledCustomToolIds,
+                taskerIntentTools = taskerIntentTools,
             )
 
     val appShortcuts: AppShortcutsSettingsState
@@ -250,6 +256,7 @@ data class SettingsScreenState(
                 isSignalInstalled = isSignalInstalled,
                 isGoogleMeetInstalled = isGoogleMeetInstalled,
                 directDialEnabled = directDialEnabled,
+                numberSearchEnabled = numberSearchEnabled,
             )
 }
 
@@ -270,6 +277,7 @@ data class SettingsScreenCallbacks(
     val onDeleteCustomSearchEngine: (String) -> Unit,
     val onToggleFileType: (FileType, Boolean) -> Unit,
     val onToggleFolders: (Boolean) -> Unit,
+    val onToggleFilePreviews: (Boolean) -> Unit,
     val onToggleSystemFiles: (Boolean) -> Unit,
     val onSetFolderWhitelistPatterns: (Set<String>) -> Unit,
     val onSetFolderBlacklistPatterns: (Set<String>) -> Unit,
@@ -305,6 +313,7 @@ data class SettingsScreenCallbacks(
     val onToggleThemedIcons: (Boolean) -> Unit,
     val onToggleDeviceTheme: (Boolean) -> Unit,
     val onToggleDirectDial: (Boolean) -> Unit,
+    val onToggleNumberSearch: (Boolean) -> Unit,
     val onToggleSection: (SearchSection, Boolean) -> Unit,
     val onToggleSearchEngineCompactMode: (Boolean) -> Unit,
     val onSetSearchEngineCompactRowCount: (Int) -> Unit,
@@ -324,9 +333,11 @@ data class SettingsScreenCallbacks(
     val onToggleCurrencyConverter: (Boolean) -> Unit,
     val onToggleWordClock: (Boolean) -> Unit,
     val onToggleDictionary: (Boolean) -> Unit,
-    val onAddCustomTool: (name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean) -> Unit,
-    val onUpdateCustomTool: (id: String, name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, thinkingEnabled: Boolean) -> Unit,
+    val onAddCustomTool: (name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean) -> Unit,
+    val onUpdateCustomTool: (id: String, name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean) -> Unit,
     val onDeleteCustomTool: (String) -> Unit,
+    val onAddTaskerIntentTool: (String, String, String) -> Unit,
+    val onDeleteTaskerIntentTool: (String) -> Unit,
     val onToggleCustomTool: (String, Boolean) -> Unit,
     val onToggleAppSuggestions: (Boolean) -> Unit,
     val onToggleWebSuggestions: (Boolean) -> Unit,
@@ -344,7 +355,7 @@ data class SettingsScreenCallbacks(
     val onSetGeminiModel: (String?) -> Unit,
     val onSetLlmModel: (AiSearchLlmProviderId, String?) -> Unit,
     val onSetCustomLlmAdvancedPayload: (AiSearchLlmProviderId, String?, Boolean) -> Unit,
-    val onSetAiToolSettings: (AiBackedToolConfigId, AiSearchLlmProviderId, String, Boolean, Boolean) -> Unit,
+    val onSetAiToolSettings: (AiBackedToolConfigId, AiSearchLlmProviderId, String, Boolean, Boolean, String?, Boolean) -> Unit,
     val onSetGeminiGroundingEnabled: (Boolean) -> Unit,
     val onSetGeminiThinkingEnabled: (Boolean) -> Unit,
     val onRefreshAvailableGeminiModels: () -> Unit,
@@ -521,6 +532,7 @@ data class SearchEngineSettingsState(
 data class FileSearchSettingsState(
     val enabledFileTypes: Set<FileType>,
     val showFolders: Boolean,
+    val filePreviewsEnabled: Boolean,
     val showSystemFiles: Boolean,
     val folderWhitelistPatterns: Set<String>,
     val folderBlacklistPatterns: Set<String>,
@@ -571,6 +583,7 @@ data class ToolsSettingsState(
     val dictionaryEnabled: Boolean,
     val customTools: List<CustomTool> = emptyList(),
     val disabledCustomToolIds: Set<String> = emptySet(),
+    val taskerIntentTools: List<TaskerIntentTool> = emptyList(),
 )
 
 data class AppShortcutsSettingsState(
@@ -585,6 +598,7 @@ data class AppShortcutsSettingsState(
     val isSignalInstalled: Boolean,
     val isGoogleMeetInstalled: Boolean,
     val directDialEnabled: Boolean,
+    val numberSearchEnabled: Boolean,
 )
 
 data class SearchResultsSettingsCallbacks(

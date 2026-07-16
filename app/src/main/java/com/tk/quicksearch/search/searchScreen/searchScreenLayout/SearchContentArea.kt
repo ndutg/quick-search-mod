@@ -167,6 +167,7 @@ fun SearchContentArea(
                 state.isWordClockAliasMode ||
                 state.isDictionaryAliasMode ||
                 state.detectedCustomToolId != null
+                || state.detectedTaskerIntentId != null
     val hasQuery = state.query.isNotBlank()
     val isUrlQuery = remember(state.query) { isLikelyWebUrl(state.query) }
     val hasAnySearchContent =
@@ -313,7 +314,7 @@ fun SearchContentArea(
                 isDefaultLauncher &&
                     hasQuery.not() &&
                     renderingState.expandedSection == ExpandedSection.NONE
-            val launcherOverscrollDownEnabled = isDefaultLauncher
+            val launcherOverscrollDownEnabled = isDefaultLauncher && hasQuery.not()
             val bottomOneHandedOverscrollConnection =
                 remember(
                     bottomOneHandedOverscrollEnabled,

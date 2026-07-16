@@ -88,6 +88,23 @@
 <string name="action_open_folder">Klasörü aç</string>
 <string name="action_open_keyboard">Klavyeyi aç</string>
 <string name="action_open_settings">Ayarları aç</string>
+<string name="settings_gestures_title">Hareketler</string>
+<string name="settings_gestures_desc">Kaydırma işlemlerini özelleştir</string>
+<string name="settings_gesture_swipe_right">Sağa Kaydır</string>
+<string name="settings_gesture_swipe_left">Sola Kaydır</string>
+<string name="settings_gesture_swipe_up">Yukarı Kaydır</string>
+<string name="settings_gesture_swipe_down">Aşağı Kaydır</string>
+<string name="settings_gesture_swipe_up_home">Yukarı Kaydır (Ana Ekran)</string>
+<string name="settings_gesture_swipe_down_home">Aşağı Kaydır (Ana Ekran)</string>
+<string name="settings_gesture_quick_note">Hızlı Not</string>
+<string name="settings_gesture_settings">Ayarlar</string>
+<string name="settings_gesture_open_keyboard">Klavyeyi Aç</string>
+<string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
+<string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
+<string name="settings_gesture_notification_panel">Bildirim Paneli</string>
+<string name="settings_gesture_none">Hiçbiri</string>
+<string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
+<string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
 <string name="action_pin_app">Sabitle</string>
 <string name="action_remove">Kaldır</string>
 <string name="action_remove_from_history">Geçmişten kaldır</string>
@@ -387,6 +404,8 @@
 <string name="error_whatsapp_video_call_missing_data">WhatsApp görüntülü araması yapılamıyor - kişi verisi eksik</string>
 <string name="error_whatsapp_video_call_unavailable">WhatsApp görüntülü aramalar için kullanılamıyor</string>
 <string name="settings_call_permission_title">Telefon</string>
+<string name="permissions_background_usage_title">Arka Planda Kullanıma İzin Ver</string>
+<string name="permissions_background_usage_desc">Quick Search geç açılıyorsa pil optimizasyonunu devre dışı bırakmayı deneyin.</string>
 <string name="settings_calling_card_title">Varsayılan arama uygulaması</string>
 <string name="settings_calls_texts_title">Aramalar &amp; Mesajlar</string>
 <string name="settings_direct_dial_desc">Arama ekranını açmadan doğrudan arama yap.</string>
@@ -427,6 +446,8 @@
 <string name="settings_folder_whitelist_helper">Dosya ve klasör aramalarında yalnızca bu klasörler taranacaktır</string>
 <string name="settings_folder_whitelist_title">Beyaz liste</string>
 <string name="settings_folders_toggle">Klasörler</string>
+<string name="settings_file_previews_toggle">Dosya önizlemeleri</string>
+<string name="settings_file_previews_description">Açmadan önce görselleri ve PDF\'leri önizleyin.</string>
 <string name="settings_refresh_files_disabled">Dosya araması devre dışı, dosya verileri yenilenemiyor</string>
 <string name="settings_refresh_files_title">Dosyaları yeniden yükle</string>
 <string name="settings_system_files_toggle">Sistem dosyaları</string>
@@ -614,6 +635,7 @@
 <string name="settings_home_screen_widget_desc">Ana ekranına Quick Search widget\'ı ekle.</string>
 <string name="settings_home_screen_widget_title">Ana ekran widget\'ı</string>
 <string name="settings_icon_desc">Arama çubuğundaki ayarlar (dişli) simgesini göster/gizle. Sola kaydırarak veya arama yaparak ayarlara istediğin zaman erişebilirsin.</string>
+<string name="settings_icon_required_by_gesture_desc">Bu simgeyi kapatmak için Sola Kaydırma Hareketini \"Ayarları Aç\" olarak ayarlayın.</string>
 <string name="settings_icon_pack_empty">Simge paketi bulunamadı.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Desteklenmeyen simgeleri maskele</string>
 <string name="settings_icon_pack_option_system">Sistem simgeleri</string>
@@ -707,6 +729,9 @@
 <string name="settings_custom_provider_advanced_payload_title">Gelişmiş İstek Yükü</string>
 <string name="settings_direct_search_desc">Gemini, OpenAI, Claude ve Groq API anahtarları desteklenir</string>
 <string name="settings_direct_search_desc_intro">AI destekli aramayı ve araçları etkinleştirmek için bir API anahtarı ek.</string>
+<string name="settings_free_api_key_tip_title">Ücretsiz API anahtarı al</string>
+<string name="settings_free_api_key_tip_description">Ücretsiz bir Gemini API Anahtarı alma adımları.</string>
+<string name="settings_open_free_api_key_guide">Ücretsiz API anahtarı kılavuzunu aç</string>
 <string name="settings_direct_search_grounding_label">Web araması</string>
 <string name="settings_direct_search_how_to">Ücretsiz API anahtarı al</string>
 <string name="settings_direct_search_model_label">Model</string>
@@ -981,4 +1006,23 @@
 <string name="settings_triggers_desc">Belirlediğin tetikleyici kelimeleri görüntüle ve yönet</string>
 <string name="settings_triggers_empty">Belirlenmiş bir tetikleyicin yok.</string>
 <string name="settings_triggers_title">Tetikleyiciler</string>
+
+    <string name="settings_number_search_title">Numara arama</string>
+    <string name="settings_number_search_desc">Telefon numaralarını kullanarak kişileri arayın.</string>
+    <string name="widget_custom_button_change_colour">Rengi değiştir</string>
+    <string name="widget_custom_button_choose_colour">Klasör rengini seç</string>
+    <string name="search_engine_google_translate">Google Çeviri</string>
+    <string name="tasker_integration_title">Tasker Eylemleri</string>
+    <string name="tasker_integration_description">Yayın intent\'leri (broadcast intents) kullanarak Tasker eylemleri oluşturun.</string>
+    <string name="tasker_add_intent_title">Tasker Yayın Intent\'i Ekle</string>
+    <string name="tasker_add_intent_description">Tasker uygulamasında, aynı eyleme sahip bir Intent Received profili oluşturun. Quick Search, sorguyu \"query\" ekinde (extra) gönderir.</string>
+    <string name="tasker_alias_conflict">Bu takma ad zaten kullanımda</string>
+    <string name="tasker_intent_name_label">Yayın Intent Adı</string>
+    <string name="tasker_broadcast_action_label">Yayın Eylemi</string>
+    <string name="tasker_add_intent_button">Intent Ekle</string>
+    <string name="tasker_saved_alias">Takma Ad: %1$s</string>
+    <string name="tasker_delete_intent">Tasker intent\'ini sil</string>
+    <string name="tasker_intent_action">Tasker Intent\'i (%1$s)</string>
+    <string name="tasker_not_installed">Tasker yüklü değil</string>
+    <string name="tasker_broadcast_failed">Tasker yayını gönderilemedi</string>
 </resources>
