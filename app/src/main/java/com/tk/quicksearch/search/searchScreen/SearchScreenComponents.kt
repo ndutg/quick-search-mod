@@ -80,6 +80,7 @@ internal fun PersistentSearchBar(
     isWordClockAliasMode: Boolean = false,
     isDictionaryAliasMode: Boolean = false,
     detectedCustomToolId: String? = null,
+    detectedTaskerIntentId: String? = null,
     activeToolType: SearchToolType? = null,
     isCalculatorMode: Boolean = false,
     placeholderText: String,
@@ -119,6 +120,7 @@ internal fun PersistentSearchBar(
     isWordClockAliasMode = isWordClockAliasMode,
     isDictionaryAliasMode = isDictionaryAliasMode,
     detectedCustomToolId = detectedCustomToolId,
+    detectedTaskerIntentId = detectedTaskerIntentId,
     activeToolType = activeToolType,
     isCalculatorMode = isCalculatorMode,
     placeholderText = placeholderText,
@@ -144,6 +146,15 @@ internal fun KeyboardSwitchPill(
     modifier: Modifier = Modifier,
 ) = com.tk.quicksearch.search.searchScreen.components.KeyboardSwitchPill(
     text = text,
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+internal fun PhoneCallPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = com.tk.quicksearch.search.searchScreen.components.PhoneCallPill(
     onClick = onClick,
     modifier = modifier,
 )

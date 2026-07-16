@@ -89,6 +89,23 @@
     <string name="action_open_folder">打开文件夹</string>
     <string name="action_open_keyboard">打开键盘</string>
     <string name="action_open_settings">打开设置</string>
+    <string name="settings_gestures_title">手势</string>
+    <string name="settings_gestures_desc">自定义滑动手势</string>
+    <string name="settings_gesture_swipe_right">向右滑动</string>
+    <string name="settings_gesture_swipe_left">向左滑动</string>
+    <string name="settings_gesture_swipe_up">向上滑动</string>
+    <string name="settings_gesture_swipe_down">向下滑动</string>
+    <string name="settings_gesture_swipe_up_home">向上滑动 (主屏幕)</string>
+    <string name="settings_gesture_swipe_down_home">向下滑动 (主屏幕)</string>
+    <string name="settings_gesture_quick_note">随手记</string>
+    <string name="settings_gesture_settings">设置</string>
+    <string name="settings_gesture_open_keyboard">打开键盘</string>
+    <string name="settings_gesture_close_keyboard_notifications">关闭键盘 / 打开通知</string>
+    <string name="settings_gesture_close_keyboard">关闭键盘</string>
+    <string name="settings_gesture_notification_panel">通知面板</string>
+    <string name="settings_gesture_none">无</string>
+    <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
+    <string name="settings_keyboard_gestures_title">键盘手势 (主屏幕)</string>
     <string name="action_pin_app">固定</string>
     <string name="action_remove">移除</string>
     <string name="action_remove_from_history">从历史记录中移除</string>
@@ -388,6 +405,8 @@
     <string name="error_whatsapp_video_call_missing_data">无法进行 WhatsApp 视频通话 - 缺少联系人数据</string>
     <string name="error_whatsapp_video_call_unavailable">WhatsApp 目前不支持视频通话</string>
     <string name="settings_call_permission_title">电话</string>
+    <string name="permissions_background_usage_title">允许后台运行</string>
+    <string name="permissions_background_usage_desc">如果 Quick Search 启动缓慢，请尝试停用电池优化。</string>
     <string name="settings_calling_card_title">默认通话应用</string>
     <string name="settings_calls_texts_title">通话与短信</string>
     <string name="settings_direct_dial_desc">直接拨打电话，无需先打开拨号盘。</string>
@@ -428,6 +447,8 @@
     <string name="settings_folder_whitelist_helper">执行文件与文件夹搜索时，将仅在这些文件夹中检索</string>
     <string name="settings_folder_whitelist_title">白名单</string>
     <string name="settings_folders_toggle">文件夹</string>
+    <string name="settings_file_previews_toggle">文件预览</string>
+    <string name="settings_file_previews_description">打开图片和 PDF 文件前进行预览。</string>
     <string name="settings_refresh_files_disabled">文件搜索功能已被停用，无法刷新文件数据</string>
     <string name="settings_refresh_files_title">重新加载文件</string>
     <string name="settings_system_files_toggle">系统文件</string>
@@ -615,6 +636,7 @@
     <string name="settings_home_screen_widget_desc">将 Quick Search 小部件添加到主屏幕。</string>
     <string name="settings_home_screen_widget_title">主屏幕小部件</string>
     <string name="settings_icon_desc">在搜索栏中显示/隐藏齿轮设置图标。您随时可以通过向左滑动或进行搜索来访问设置。</string>
+    <string name="settings_icon_required_by_gesture_desc">将“向左滑动手势”设置为“打开设置”即可关闭此图标。</string>
     <string name="settings_icon_pack_empty">未找到任何图标包。</string>
     <string name="settings_icon_pack_mask_unsupported_icons">为不支持的图标添加蒙版</string>
     <string name="settings_icon_pack_option_system">系统默认图标</string>
@@ -708,6 +730,9 @@
     <string name="settings_custom_provider_advanced_payload_title">高级请求负载</string>
     <string name="settings_direct_search_desc">支持 Gemini、OpenAI、Claude 和 Groq 的 API 密钥</string>
     <string name="settings_direct_search_desc_intro">添加 API 密钥以启用 AI 驱动的搜索和相关实用工具。</string>
+    <string name="settings_free_api_key_tip_title">获取免费 API 密钥</string>
+    <string name="settings_free_api_key_tip_description">免费获取 Gemini API 密钥的步骤。</string>
+    <string name="settings_open_free_api_key_guide">打开免费 API 密钥指南</string>
     <string name="settings_direct_search_grounding_label">联网搜索</string>
     <string name="settings_direct_search_how_to">获取免费 API 密钥</string>
     <string name="settings_direct_search_model_label">模型</string>
@@ -982,4 +1007,23 @@
     <string name="settings_triggers_desc">查看并管理您设置的触发词</string>
     <string name="settings_triggers_empty">您当前未绑定设置过任何触发词。</string>
     <string name="settings_triggers_title">别名触发词</string>
+
+    <string name="settings_number_search_title">号码搜索</string>
+    <string name="settings_number_search_desc">使用电话号码搜索联系人。</string>
+    <string name="widget_custom_button_change_colour">更改颜色</string>
+    <string name="widget_custom_button_choose_colour">选择文件夹颜色</string>
+    <string name="search_engine_google_translate">谷歌翻译</string>
+    <string name="tasker_integration_title">Tasker 操作</string>
+    <string name="tasker_integration_description">使用广播 Intent 创建 Tasker 操作。</string>
+    <string name="tasker_add_intent_title">添加 Tasker 广播 Intent</string>
+    <string name="tasker_add_intent_description">在 Tasker 应用中，创建一个具有相同 Action 的 Intent Received 配置文件。Quick Search 会在 \"query\" extra 中发送查询。</string>
+    <string name="tasker_alias_conflict">此别名已在使用中</string>
+    <string name="tasker_intent_name_label">广播 Intent 名称</string>
+    <string name="tasker_broadcast_action_label">广播 Action</string>
+    <string name="tasker_add_intent_button">添加 Intent</string>
+    <string name="tasker_saved_alias">别名：%1$s</string>
+    <string name="tasker_delete_intent">删除 Tasker Intent</string>
+    <string name="tasker_intent_action">Tasker Intent (%1$s)</string>
+    <string name="tasker_not_installed">未安装 Tasker</string>
+    <string name="tasker_broadcast_failed">无法发送 Tasker 广播</string>
 </resources>

@@ -9,6 +9,7 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.SEARCH_RESULTS -> SettingsDetailType.SEARCH_RESULTS
         AppSettingsDestination.SEARCH_ENGINES -> SettingsDetailType.SEARCH_ENGINES
         AppSettingsDestination.TOOLS -> SettingsDetailType.TOOLS
+        AppSettingsDestination.TASKER_INTEGRATION -> SettingsDetailType.TASKER_INTEGRATION
         AppSettingsDestination.LAUNCH_OPTIONS -> SettingsDetailType.LAUNCH_OPTIONS
         AppSettingsDestination.MORE_OPTIONS -> SettingsDetailType.MORE_OPTIONS
         AppSettingsDestination.PERMISSIONS -> SettingsDetailType.PERMISSIONS
@@ -24,6 +25,7 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.CALENDAR_EVENTS -> SettingsDetailType.CALENDAR_EVENTS
         AppSettingsDestination.NICKNAMES -> SettingsDetailType.NICKNAMES
         AppSettingsDestination.TRIGGERS -> SettingsDetailType.TRIGGERS
+        AppSettingsDestination.GESTURES -> SettingsDetailType.GESTURES
         AppSettingsDestination.FEATURES_LIST -> SettingsDetailType.FEATURES_LIST
         AppSettingsDestination.OPEN_SOURCE_LICENSES -> SettingsDetailType.OPEN_SOURCE_LICENSES
         AppSettingsDestination.UNIT_CONVERTER_INFO -> SettingsDetailType.UNIT_CONVERTER_INFO

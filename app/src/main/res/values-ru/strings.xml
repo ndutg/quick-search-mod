@@ -89,6 +89,23 @@
 <string name="action_open_folder">Открыть папку</string>
 <string name="action_open_keyboard">Открыть клавиатуру</string>
 <string name="action_open_settings">Открыть настройки</string>
+<string name="settings_gestures_title">Жесты</string>
+<string name="settings_gestures_desc">Настройка жестов смахивания</string>
+<string name="settings_gesture_swipe_right">Смахивание вправо</string>
+<string name="settings_gesture_swipe_left">Смахивание влево</string>
+<string name="settings_gesture_swipe_up">Смахивание вверх</string>
+<string name="settings_gesture_swipe_down">Смахивание вниз</string>
+<string name="settings_gesture_swipe_up_home">Смахивание вверх (Главный экран)</string>
+<string name="settings_gesture_swipe_down_home">Смахивание вниз (Главный экран)</string>
+<string name="settings_gesture_quick_note">Быстрая заметка</string>
+<string name="settings_gesture_settings">Настройки</string>
+<string name="settings_gesture_open_keyboard">Открыть клавиатуру</string>
+<string name="settings_gesture_close_keyboard_notifications">Закрыть клавиатуру / Открыть уведомления</string>
+<string name="settings_gesture_close_keyboard">Закрыть клавиатуру</string>
+<string name="settings_gesture_notification_panel">Панель уведомлений</string>
+<string name="settings_gesture_none">Нет</string>
+<string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
+<string name="settings_keyboard_gestures_title">Жесты клавиатуры (Главный экран)</string>
 <string name="action_pin_app">Закрепить</string>
 <string name="action_remove">Удалить</string>
 <string name="action_remove_from_history">Удалить из истории</string>
@@ -390,6 +407,8 @@
 <string name="error_whatsapp_video_call_missing_data">Не удалось совершить видеозвонок в WhatsApp — отсутствуют данные контакта</string>
 <string name="error_whatsapp_video_call_unavailable">WhatsApp недоступен для видеозвонков</string>
 <string name="settings_call_permission_title">Телефон</string>
+<string name="permissions_background_usage_title">Разрешить работу в фоновом режиме</string>
+<string name="permissions_background_usage_desc">Если Quick Search открывается медленно, попробуйте отключить оптимизацию батареи.</string>
 <string name="settings_calling_card_title">Приложение для звонков по умолчанию</string>
 <string name="settings_calls_texts_title">Звонки и сообщения</string>
 <string name="settings_direct_dial_desc">Совершайте вызовы напрямую без открытия номеронабирателя.</string>
@@ -430,6 +449,8 @@
 <string name="settings_folder_whitelist_helper">Поиск файлов и папок будет производиться только внутри этих директорий</string>
 <string name="settings_folder_whitelist_title">Белый список</string>
 <string name="settings_folders_toggle">Папки</string>
+<string name="settings_file_previews_toggle">Предпросмотр файлов</string>
+<string name="settings_file_previews_description">Предпросмотр изображений и PDF-файлов перед их открытием.</string>
 <string name="settings_refresh_files_disabled">Поиск файлов отключен, невозможно обновить данные файлов</string>
     <string name="settings_refresh_files_title">Обновить файлы</string>
 <string name="settings_system_files_toggle">Системные файлы</string>
@@ -631,6 +652,7 @@
 <string name="settings_home_screen_widget_desc">Добавить виджет Quick Search на главный экран.</string>
 <string name="settings_home_screen_widget_title">Виджет на главный экран</string>
     <string name="settings_icon_desc">Показывать/скрывать значок шестерёнки в поисковой строке. Вы всегда можете перейти в настройки свайпом влево или через поиск.</string>
+    <string name="settings_icon_required_by_gesture_desc">Установите жест \"Смахивание влево\" на \"Открыть настройки\", чтобы скрыть этот значок.</string>
 <string name="settings_icon_pack_empty">Пакеты значков не найдены.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Маскировать неподдерживаемые значки</string>
 <string name="settings_icon_pack_option_system">Системные значки</string>
@@ -724,6 +746,9 @@
     <string name="settings_custom_provider_advanced_payload_title">Расширенная полезная нагрузка запроса</string>
 <string name="settings_direct_search_desc">Поддерживаются API-ключи Gemini, OpenAI, Claude и Groq</string>
 <string name="settings_direct_search_desc_intro">Добавьте API-ключ, чтобы включить поиск и инструменты на базе искусственного интеллекта.</string>
+<string name="settings_free_api_key_tip_title">Получить бесплатный API-ключ</string>
+<string name="settings_free_api_key_tip_description">Инструкция по бесплатному получению API-ключа Gemini.</string>
+<string name="settings_open_free_api_key_guide">Открыть руководство по бесплатному API-ключу</string>
 <string name="settings_direct_search_grounding_label">Поиск в Интернете</string>
 <string name="settings_direct_search_how_to">Получить бесплатный API-ключ</string>
 <string name="settings_direct_search_model_label">Модель</string>
@@ -998,4 +1023,23 @@
 <string name="settings_triggers_desc">Просмотр и управление установленными вами словами-триггерами</string>
 <string name="settings_triggers_empty">У вас нет установленных триггеров.</string>
     <string name="settings_triggers_title">Триггеры</string>
+
+    <string name="settings_number_search_title">Поиск по номеру</string>
+    <string name="settings_number_search_desc">Поиск контактов по их телефонным номерам.</string>
+    <string name="widget_custom_button_change_colour">Изменить цвет</string>
+    <string name="widget_custom_button_choose_colour">Выбрать цвет папки</string>
+    <string name="search_engine_google_translate">Google Переводчик</string>
+    <string name="tasker_integration_title">Действия Tasker</string>
+    <string name="tasker_integration_description">Создавайте действия Tasker с помощью широковещательных интентов (broadcast intents).</string>
+    <string name="tasker_add_intent_title">Добавить интент Tasker</string>
+    <string name="tasker_add_intent_description">В приложении Tasker создайте профиль Intent Received с таким же действием. Quick Search отправляет запрос в параметре \"query\".</string>
+    <string name="tasker_alias_conflict">Этот псевдоним уже используется</string>
+    <string name="tasker_intent_name_label">Имя интента</string>
+    <string name="tasker_broadcast_action_label">Действие трансляции (Broadcast Action)</string>
+    <string name="tasker_add_intent_button">Добавить интент</string>
+    <string name="tasker_saved_alias">Псевдоним: %1$s</string>
+    <string name="tasker_delete_intent">Удалить интент Tasker</string>
+    <string name="tasker_intent_action">Интент Tasker (%1$s)</string>
+    <string name="tasker_not_installed">Приложение Tasker не установлено</string>
+    <string name="tasker_broadcast_failed">Не удалось отправить трансляцию Tasker</string>
 </resources>

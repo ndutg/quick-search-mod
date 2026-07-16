@@ -43,7 +43,10 @@ import com.tk.quicksearch.search.data.CustomCalendarEventRepository
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.settings.settingsDetailScreen.GesturesSettingsSection
 import com.tk.quicksearch.searchEngines.AliasHandler
+import com.tk.quicksearch.settings.tasker.TaskerIntegrationScreen
+import com.tk.quicksearch.tools.tasker.TaskerIntegration
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.settings.AppShortcutsSettings.AppShortcutSource
@@ -409,6 +412,14 @@ internal fun SettingsDetailLevel2Screen(
                                     },
                                 )
                             },
+                            showTaskerIntegration = remember(context) {
+                                runCatching {
+                                    context.packageManager.getPackageInfo(TaskerIntegration.PACKAGE_NAME, 0)
+                                }.isSuccess
+                            },
+                            onNavigateToTaskerIntegration = {
+                                onNavigateToDetail(SettingsDetailType.TASKER_INTEGRATION)
+                            },
                             customTools = state.customTools,
                             disabledCustomToolIds = state.disabledCustomToolIds,
                             customToolAliases = state.shortcutCodes,
@@ -429,6 +440,22 @@ internal fun SettingsDetailLevel2Screen(
                             modifier = Modifier.fillMaxWidth().weight(1f),
                     )
                 }
+            } else if (detailType == SettingsDetailType.TASKER_INTEGRATION) {
+                TaskerIntegrationScreen(
+                    tools = state.taskerIntentTools,
+                    existingAliases = state.shortcutCodes,
+                    onAdd = callbacks.onAddTaskerIntentTool,
+                    onDelete = callbacks.onDeleteTaskerIntentTool,
+                    modifier = Modifier
+                        .settingsContentWidth()
+                        .fillMaxHeight()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(
+                            start = DesignTokens.ContentHorizontalPadding,
+                            end = DesignTokens.ContentHorizontalPadding,
+                            bottom = DesignTokens.SectionTopPadding,
+                        ),
+                )
             } else if (detailType == SettingsDetailType.CUSTOM_TOOL_EDITOR) {
                 val pendingToolId = remember { CustomToolNavigationMemory.consumePendingToolId() }
                 val pendingAiBackedTool = remember { CustomToolNavigationMemory.consumePendingAiBackedTool() }
@@ -446,6 +473,7 @@ internal fun SettingsDetailLevel2Screen(
                                 providerId = preferences.getCurrencyConverterProviderId(),
                                 groundingEnabled = preferences.isCurrencyConverterGroundingEnabled(),
                                 thinkingEnabled = preferences.isCurrencyConverterThinkingEnabled(),
+                                advancedPayload = preferences.getCurrencyConverterAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.CURRENCY_CONVERTER_ALIAS_FEATURE_ID,
                             )
                             AiBackedToolConfigId.WORD_CLOCK -> BuiltInToolConfig(
@@ -455,6 +483,7 @@ internal fun SettingsDetailLevel2Screen(
                                 providerId = preferences.getWordClockProviderId(),
                                 groundingEnabled = preferences.isWordClockGroundingEnabled(),
                                 thinkingEnabled = preferences.isWordClockThinkingEnabled(),
+                                advancedPayload = preferences.getWordClockAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.WORD_CLOCK_ALIAS_FEATURE_ID,
                             )
                             AiBackedToolConfigId.DICTIONARY -> BuiltInToolConfig(
@@ -464,6 +493,7 @@ internal fun SettingsDetailLevel2Screen(
                                 providerId = preferences.getDictionaryProviderId(),
                                 groundingEnabled = preferences.isDictionaryGroundingEnabled(),
                                 thinkingEnabled = preferences.isDictionaryThinkingEnabled(),
+                                advancedPayload = preferences.getDictionaryAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
                             )
                         }
@@ -495,7 +525,7 @@ internal fun SettingsDetailLevel2Screen(
                     showPromptInput = builtInToolConfig == null,
                     showAliasInput = builtInToolConfig == null,
                     shouldAutoFocusTitle = builtInToolConfig == null && shouldAutoFocusTitle,
-                    onSave = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled ->
+                    onSave = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled ->
                         if (builtInToolConfig != null) {
                             callbacks.onSetAiToolSettings(
                                 builtInToolConfig.toolId,
@@ -503,12 +533,14 @@ internal fun SettingsDetailLevel2Screen(
                                 modelId,
                                 groundingEnabled,
                                 thinkingEnabled,
+                                advancedPayload,
+                                advancedPayloadEnabled,
                             )
                         } else if (existingTool != null) {
-                            callbacks.onUpdateCustomTool(existingTool.id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled)
+                            callbacks.onUpdateCustomTool(existingTool.id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
                             callbacks.onSetSearchSectionAlias(existingTool.id, aliasCode)
                         } else {
-                            callbacks.onAddCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled)
+                            callbacks.onAddCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
                         }
                         callbacks.onBack()
                     },
@@ -647,6 +679,8 @@ internal fun SettingsDetailLevel2Screen(
                                 onSetCallingApp = callbacks.onSetCallingApp,
                                 directDialEnabled = state.directDialEnabled,
                                 onToggleDirectDial = callbacks.onToggleDirectDial,
+                                numberSearchEnabled = state.numberSearchEnabled,
+                                onToggleNumberSearch = callbacks.onToggleNumberSearch,
                                 hasCallPermission = PermissionHelper.checkCallPermission(context),
                                 contactsSectionEnabled = true,
                                 isWhatsAppInstalled = state.isWhatsAppInstalled,
@@ -670,6 +704,8 @@ internal fun SettingsDetailLevel2Screen(
                                         ),
                                     )
                                 },
+                                filePreviewsEnabled = state.filePreviewsEnabled,
+                                onToggleFilePreviews = callbacks.onToggleFilePreviews,
                                 showSystemFiles = state.showSystemFiles,
                                 onToggleSystemFiles = { enabled ->
                                     callbacks.onApplySettingsCommand(
@@ -773,6 +809,10 @@ internal fun SettingsDetailLevel2Screen(
 
                         SettingsDetailType.TRIGGERS -> {
                             TriggerItemsScreen(modifier = Modifier.fillMaxWidth())
+                        }
+
+                        SettingsDetailType.GESTURES -> {
+                            GesturesSettingsSection(modifier = Modifier.fillMaxWidth())
                         }
 
                         SettingsDetailType.UNIT_CONVERTER_INFO -> {
@@ -936,6 +976,7 @@ private data class BuiltInToolConfig(
     val providerId: AiSearchLlmProviderId,
     val groundingEnabled: Boolean,
     val thinkingEnabled: Boolean,
+    val advancedPayload: Pair<Boolean, String>,
     val aliasFeatureId: String,
 ) {
     fun toCustomTool(): CustomTool =
@@ -947,5 +988,7 @@ private data class BuiltInToolConfig(
             providerId = providerId,
             groundingEnabled = groundingEnabled,
             thinkingEnabled = thinkingEnabled,
+            advancedPayload = advancedPayload.second,
+            advancedPayloadEnabled = advancedPayload.first,
         )
 }

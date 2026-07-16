@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.core
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.search.apps.IconPackService
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 internal interface SearchPreferencesStateAccess {
     var enabledFileTypes: Set<FileType>
     var showFolders: Boolean
+    var filePreviewsEnabled: Boolean
     var showSystemFiles: Boolean
     var folderWhitelistPatterns: Set<String>
     var folderBlacklistPatterns: Set<String>
@@ -610,6 +612,14 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setFilePreviewsEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setFilePreviewsEnabled(enabled)
+            stateAccess.filePreviewsEnabled = enabled
+            updateUiState { it.copy(filePreviewsEnabled = enabled) }
+        }
+    }
+
     fun setShowSystemFiles(show: Boolean) {
         scope.launch(Dispatchers.IO) {
             userPreferences.setShowSystemFiles(show)
@@ -683,6 +693,9 @@ internal class SearchPreferencesDelegate(
     }
 
     fun setSettingsIconEnabled(enabled: Boolean) {
+        if (!enabled && userPreferences.getSwipeLeftAction() != SwipeGestureAction.SETTINGS) {
+            return
+        }
         updateBooleanPreference(
             value = enabled,
             preferenceSetter = userPreferences::setSettingsIconEnabled,
@@ -954,6 +967,8 @@ internal class SearchPreferencesDelegate(
         modelId: String,
         groundingEnabled: Boolean,
         thinkingEnabled: Boolean,
+        advancedPayload: String?,
+        advancedPayloadEnabled: Boolean,
     ) {
         scope.launch(Dispatchers.IO) {
             val normalizedModelId = modelId.trim()
@@ -964,18 +979,21 @@ internal class SearchPreferencesDelegate(
                     userPreferences.setCurrencyConverterModel(normalizedModelId)
                     userPreferences.setCurrencyConverterGroundingEnabled(groundingEnabled)
                     userPreferences.setCurrencyConverterThinkingEnabled(thinkingEnabled)
+                    userPreferences.setCurrencyConverterAdvancedPayload(advancedPayload, advancedPayloadEnabled)
                 }
                 AiBackedToolConfigId.WORD_CLOCK -> {
                     userPreferences.setWordClockProviderId(providerId)
                     userPreferences.setWordClockModel(normalizedModelId)
                     userPreferences.setWordClockGroundingEnabled(groundingEnabled)
                     userPreferences.setWordClockThinkingEnabled(thinkingEnabled)
+                    userPreferences.setWordClockAdvancedPayload(advancedPayload, advancedPayloadEnabled)
                 }
                 AiBackedToolConfigId.DICTIONARY -> {
                     userPreferences.setDictionaryProviderId(providerId)
                     userPreferences.setDictionaryModel(normalizedModelId)
                     userPreferences.setDictionaryGroundingEnabled(groundingEnabled)
                     userPreferences.setDictionaryThinkingEnabled(thinkingEnabled)
+                    userPreferences.setDictionaryAdvancedPayload(advancedPayload, advancedPayloadEnabled)
                 }
             }
         }
@@ -1060,6 +1078,8 @@ internal class SearchPreferencesDelegate(
         groundingEnabled: Boolean = false,
         aliasCode: String = "",
         thinkingEnabled: Boolean = false,
+        advancedPayload: String? = null,
+        advancedPayloadEnabled: Boolean = false,
     ) {
         scope.launch(Dispatchers.IO) {
             val trimmedName = name.trim()
@@ -1074,6 +1094,8 @@ internal class SearchPreferencesDelegate(
                 providerId = providerId,
                 groundingEnabled = groundingEnabled,
                 thinkingEnabled = thinkingEnabled,
+                advancedPayload = advancedPayload?.trim()?.takeIf { it.isNotEmpty() },
+                advancedPayloadEnabled = advancedPayloadEnabled,
             )
             val existing = userPreferences.getCustomTools()
             val updated = existing + newTool
@@ -1103,6 +1125,8 @@ internal class SearchPreferencesDelegate(
         modelId: String,
         groundingEnabled: Boolean = false,
         thinkingEnabled: Boolean = false,
+        advancedPayload: String? = null,
+        advancedPayloadEnabled: Boolean = false,
     ) {
         scope.launch(Dispatchers.IO) {
             val trimmedName = name.trim()
@@ -1119,6 +1143,8 @@ internal class SearchPreferencesDelegate(
                             providerId = providerId,
                             groundingEnabled = groundingEnabled,
                             thinkingEnabled = thinkingEnabled,
+                            advancedPayload = advancedPayload?.trim()?.takeIf { it.isNotEmpty() },
+                            advancedPayloadEnabled = advancedPayloadEnabled,
                         )
                     } else {
                         tool

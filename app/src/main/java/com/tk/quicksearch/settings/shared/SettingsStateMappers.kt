@@ -54,6 +54,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         availableLlmModelsByProvider = searchEngines.availableLlmModelsByProvider,
         enabledFileTypes = fileSearch.enabledFileTypes,
         showFolders = fileSearch.showFolders,
+        filePreviewsEnabled = fileSearch.filePreviewsEnabled,
         showSystemFiles = fileSearch.showSystemFiles,
         folderWhitelistPatterns = fileSearch.folderWhitelistPatterns,
         folderBlacklistPatterns = fileSearch.folderBlacklistPatterns,
@@ -98,6 +99,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         dictionaryEnabled = tools.dictionaryEnabled,
         customTools = tools.customTools,
         disabledCustomToolIds = tools.disabledCustomToolIds,
+        taskerIntentTools = tools.taskerIntentTools,
         allAppShortcuts = appShortcuts.allAppShortcuts,
         allDeviceSettings = appShortcuts.allDeviceSettings,
         allApps = appShortcuts.allApps,
@@ -109,6 +111,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         isSignalInstalled = appShortcuts.isSignalInstalled,
         isGoogleMeetInstalled = appShortcuts.isGoogleMeetInstalled,
         directDialEnabled = appShortcuts.directDialEnabled,
+        numberSearchEnabled = appShortcuts.numberSearchEnabled,
     )
 }
 
@@ -207,6 +210,7 @@ private fun SearchUiState.toSearchEngineSettingsState() =
 private data class FileSearchMapperState(
     val enabledFileTypes: Set<com.tk.quicksearch.search.models.FileType>,
     val showFolders: Boolean,
+    val filePreviewsEnabled: Boolean,
     val showSystemFiles: Boolean,
     val folderWhitelistPatterns: Set<String>,
     val folderBlacklistPatterns: Set<String>,
@@ -217,6 +221,7 @@ private fun SearchUiState.toFileSearchSettingsState() =
     FileSearchMapperState(
         enabledFileTypes = enabledFileTypes,
         showFolders = showFolders,
+        filePreviewsEnabled = filePreviewsEnabled,
         showSystemFiles = showSystemFiles,
         folderWhitelistPatterns = folderWhitelistPatterns,
         folderBlacklistPatterns = folderBlacklistPatterns,
@@ -303,6 +308,7 @@ private data class ToolsMapperState(
     val dictionaryEnabled: Boolean,
     val customTools: List<CustomTool>,
     val disabledCustomToolIds: Set<String>,
+    val taskerIntentTools: List<com.tk.quicksearch.tools.tasker.TaskerIntentTool>,
 )
 
 private fun SearchUiState.toToolsSettingsState() =
@@ -315,6 +321,7 @@ private fun SearchUiState.toToolsSettingsState() =
         dictionaryEnabled = dictionaryEnabled,
         customTools = customTools,
         disabledCustomToolIds = disabledCustomToolIds,
+        taskerIntentTools = taskerIntentTools,
     )
 
 private data class AppShortcutsMapperState(
@@ -329,6 +336,7 @@ private data class AppShortcutsMapperState(
     val isSignalInstalled: Boolean,
     val isGoogleMeetInstalled: Boolean,
     val directDialEnabled: Boolean,
+    val numberSearchEnabled: Boolean,
 )
 
 private fun SearchUiState.toAppShortcutsSettingsState() =
@@ -344,4 +352,5 @@ private fun SearchUiState.toAppShortcutsSettingsState() =
         isSignalInstalled = isSignalInstalled,
         isGoogleMeetInstalled = isGoogleMeetInstalled,
         directDialEnabled = directDialEnabled,
+        numberSearchEnabled = numberSearchEnabled,
     )

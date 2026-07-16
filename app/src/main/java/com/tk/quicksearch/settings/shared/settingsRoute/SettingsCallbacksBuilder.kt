@@ -55,6 +55,7 @@ internal fun buildSettingsScreenCallbacks(
         onDeleteCustomSearchEngine = viewModel::deleteCustomSearchEngine,
         onToggleFileType = viewModel::setFileTypeEnabled,
         onToggleFolders = viewModel::setShowFolders,
+        onToggleFilePreviews = viewModel::setFilePreviewsEnabled,
         onToggleSystemFiles = viewModel::setShowSystemFiles,
         onSetFolderWhitelistPatterns = viewModel::setFolderWhitelistPatterns,
         onSetFolderBlacklistPatterns = viewModel::setFolderBlacklistPatterns,
@@ -90,6 +91,7 @@ internal fun buildSettingsScreenCallbacks(
         onToggleThemedIcons = viewModel::setThemedIconsEnabled,
         onToggleDeviceTheme = viewModel::setDeviceThemeEnabled,
         onToggleDirectDial = handlers.onToggleDirectDial,
+        onToggleNumberSearch = viewModel::setNumberSearchEnabled,
         onToggleSection = handlers.onToggleSection,
         onToggleSearchEngineCompactMode = viewModel::setSearchEngineCompactMode,
         onSetSearchEngineCompactRowCount = viewModel::setSearchEngineCompactRowCount,
@@ -123,13 +125,15 @@ internal fun buildSettingsScreenCallbacks(
         onToggleCurrencyConverter = viewModel::setCurrencyConverterEnabled,
         onToggleWordClock = viewModel::setWordClockEnabled,
         onToggleDictionary = viewModel::setDictionaryEnabled,
-        onAddCustomTool = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled ->
-            viewModel.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled)
+        onAddCustomTool = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled ->
+            viewModel.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
         },
-        onUpdateCustomTool = { id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled ->
-            viewModel.updateCustomTool(id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled)
+        onUpdateCustomTool = { id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled, advancedPayload, advancedPayloadEnabled ->
+            viewModel.updateCustomTool(id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
         },
         onDeleteCustomTool = viewModel::deleteCustomTool,
+        onAddTaskerIntentTool = viewModel::addTaskerIntentTool,
+        onDeleteTaskerIntentTool = viewModel::deleteTaskerIntentTool,
         onToggleCustomTool = viewModel::setCustomToolEnabled,
         onToggleAppSuggestions = viewModel::setAppSuggestionsEnabled,
         onToggleWebSuggestions = viewModel::setWebSuggestionsEnabled,

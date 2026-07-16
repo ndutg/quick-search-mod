@@ -29,8 +29,10 @@ enum class SettingsDetailType {
     UNIT_CONVERTER_INFO,
     DATE_CALCULATOR_INFO,
     CUSTOM_TOOL_EDITOR,
+    TASKER_INTEGRATION,
     NICKNAMES,
     TRIGGERS,
+    GESTURES,
 }
 
 internal data class SettingsDestinationSpec(
@@ -173,6 +175,12 @@ internal object SettingsDestinationRegistry {
                     fallbackBackDestination = SettingsDetailType.TOOLS,
                     preferSourceBackDestination = true,
                 ),
+            SettingsDetailType.TASKER_INTEGRATION to
+                SettingsDestinationSpec(
+                    titleResId = R.string.tasker_integration_title,
+                    level = 3,
+                    fallbackBackDestination = SettingsDetailType.TOOLS,
+                ),
             SettingsDetailType.NICKNAMES to
                 SettingsDestinationSpec(
                     titleResId = R.string.settings_nicknames_title,
@@ -184,6 +192,11 @@ internal object SettingsDestinationRegistry {
                     titleResId = R.string.settings_triggers_title,
                     level = 2,
                     fallbackBackDestination = SettingsDetailType.SEARCH_RESULTS,
+                ),
+            SettingsDetailType.GESTURES to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_gestures_title,
+                    level = 2,
                 ),
         )
 

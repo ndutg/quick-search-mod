@@ -8,6 +8,7 @@ internal class SearchViewModelLegacyPreferenceState(
 ) {
     var enabledFileTypes: Set<FileType> = emptySet()
     var showFolders: Boolean = false
+    var filePreviewsEnabled: Boolean = true
     var showSystemFiles: Boolean = false
     var folderWhitelistPatterns: Set<String> = emptySet()
     var folderBlacklistPatterns: Set<String> = emptySet()
@@ -50,12 +51,14 @@ internal class SearchViewModelLegacyPreferenceState(
     var lockedWordClockAlias: Boolean = false
     var lockedDictionaryAlias: Boolean = false
     var lockedCustomToolId: String? = null
+    var lockedTaskerIntentId: String? = null
     var clearQueryOnLaunch: Boolean = clearQueryOnLaunch
     var amazonDomain: String? = null
 
     fun applyPreferenceCacheToLegacyVars(prefCache: SearchPreferenceCache) {
         enabledFileTypes = prefCache.enabledFileTypes
         showFolders = prefCache.showFolders
+        filePreviewsEnabled = prefCache.filePreviewsEnabled
         showSystemFiles = prefCache.showSystemFiles
         folderWhitelistPatterns = prefCache.folderWhitelistPatterns
         folderBlacklistPatterns = prefCache.folderBlacklistPatterns

@@ -14,6 +14,7 @@ enum class AppSettingsDestination {
     SEARCH_RESULTS,
     SEARCH_ENGINES,
     TOOLS,
+    TASKER_INTEGRATION,
     LAUNCH_OPTIONS,
     MORE_OPTIONS,
     PERMISSIONS,
@@ -46,6 +47,7 @@ enum class AppSettingsDestination {
     CREATE_CALENDAR_EVENT,
     NICKNAMES,
     TRIGGERS,
+    GESTURES,
 }
 
 enum class AppSettingsToggleKey {
@@ -74,6 +76,7 @@ enum class AppSettingsToggleKey {
     AUTO_CLOSE_OVERLAY,
     CIRCULAR_APP_ICONS,
     SHOW_FOLDERS,
+    FILE_PREVIEWS,
     SHOW_SYSTEM_FILES,
     DIRECT_DIAL,
     SEARCH_APPS,

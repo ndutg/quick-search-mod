@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.shared
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,8 +36,10 @@ data class SettingsCardItem(
     val tagLabel: String? = null,
     val icon: ImageVector? = null,
     val iconResId: Int? = null,
+    val iconBitmap: ImageBitmap? = null,
     val iconTint: Color? = null,
     val actionIcon: ImageVector = Icons.Rounded.ChevronRight,
+    val isEnabled: Boolean = true,
     val actionOnPress: () -> Unit,
 )
 
@@ -50,7 +55,7 @@ fun SettingsNavigationRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = item.actionOnPress)
+                .clickable(enabled = item.isEnabled, onClick = item.actionOnPress)
                 .padding(contentPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -62,6 +67,15 @@ fun SettingsNavigationRow(
         ) {
             // Icon (either ImageVector or painter resource)
             when {
+                item.iconBitmap != null -> {
+                    Image(
+                        bitmap = item.iconBitmap,
+                        contentDescription = null,
+                        modifier = Modifier.size(DesignTokens.IconSizeSmall),
+                        contentScale = ContentScale.Fit,
+                    )
+                }
+
                 item.icon != null -> {
                     Icon(
                         imageVector = item.icon,
@@ -107,11 +121,13 @@ fun SettingsNavigationRow(
         }
 
         // Action icon
-        Icon(
-            imageVector = item.actionIcon,
-            contentDescription = stringResource(R.string.desc_navigate_forward),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
-        )
+        if (item.isEnabled) {
+            Icon(
+                imageVector = item.actionIcon,
+                contentDescription = stringResource(R.string.desc_navigate_forward),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
+            )
+        }
     }
 }

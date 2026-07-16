@@ -16,6 +16,7 @@ import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
+import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
 // IconPackInfo moved here to avoid circular imports
 data class IconPackInfo(
@@ -50,6 +51,7 @@ enum class SearchEngine {
         WIKIPEDIA,
         BING,
         STARTPAGE,
+        GOOGLE_TRANSLATE,
 }
 
 data class BrowserApp(
@@ -73,6 +75,8 @@ data class CustomTool(
         val providerId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val groundingEnabled: Boolean = false,
         val thinkingEnabled: Boolean = false,
+        val advancedPayload: String? = null,
+        val advancedPayloadEnabled: Boolean = false,
 )
 
 sealed class SearchTarget {
@@ -480,11 +484,13 @@ data class SearchUiState(
         val pendingDirectCallNumber: String? = null,
         val pendingThirdPartyCall: PendingThirdPartyCall? = null,
         val directDialEnabled: Boolean = false,
+        val numberSearchEnabled: Boolean = false,
         val assistantLaunchVoiceModeEnabled: Boolean = false,
         // File display preferences
         val enabledFileTypes: Set<com.tk.quicksearch.search.models.FileType> =
                 com.tk.quicksearch.search.models.FileType.values().toSet(),
         val showFolders: Boolean = false,
+        val filePreviewsEnabled: Boolean = true,
         val showSystemFiles: Boolean = false,
         val folderWhitelistPatterns: Set<String> = emptySet(),
         val folderBlacklistPatterns: Set<String> = emptySet(),
@@ -557,6 +563,7 @@ data class SearchUiState(
         val dictionaryEnabled: Boolean = true,
         val customTools: List<CustomTool> = emptyList(),
         val disabledCustomToolIds: Set<String> = emptySet(),
+        val taskerIntentTools: List<TaskerIntentTool> = emptyList(),
         val AiSearchState: AiSearchState = AiSearchState(),
         // Gemini
         val hasApiKey: Boolean = false,
@@ -590,6 +597,7 @@ data class SearchUiState(
         val isWordClockAliasMode: Boolean = false,
         val isDictionaryAliasMode: Boolean = false,
         val detectedCustomToolId: String? = null,
+        val detectedTaskerIntentId: String? = null,
         val webSuggestionWasSelected: Boolean = false,
         // Onboarding / hints
         val showSearchEngineOnboarding: Boolean = false,
@@ -691,6 +699,7 @@ fun SearchUiState(
                 isWordClockAliasMode = results.isWordClockAliasMode,
                 isDictionaryAliasMode = results.isDictionaryAliasMode,
                 detectedCustomToolId = results.detectedCustomToolId,
+                detectedTaskerIntentId = results.detectedTaskerIntentId,
                 recentItems = results.recentItems,
                 aliasRecentItems = results.aliasRecentItems,
                 recentResultRecencyIndex = results.recentResultRecencyIndex,
@@ -746,6 +755,7 @@ fun SearchUiState(
                 dictionaryEnabled = features.dictionaryEnabled,
                 customTools = features.customTools,
                 disabledCustomToolIds = features.disabledCustomToolIds,
+                taskerIntentTools = features.taskerIntentTools,
                 recentQueriesEnabled = features.recentQueriesEnabled,
                 topMatchesEnabled = features.topMatchesEnabled,
                 topMatchesLimit = features.topMatchesLimit,
@@ -754,6 +764,7 @@ fun SearchUiState(
                 showTodayEvents = features.showTodayEvents,
                 hasDismissedSearchHistoryTip = features.hasDismissedSearchHistoryTip,
                 directDialEnabled = features.directDialEnabled,
+                numberSearchEnabled = features.numberSearchEnabled,
                 assistantLaunchVoiceModeEnabled = features.assistantLaunchVoiceModeEnabled,
                 shouldShowUsagePermissionBanner = features.shouldShowUsagePermissionBanner,
                 showRateQuickSearchCard = features.showRateQuickSearchCard,
@@ -803,6 +814,7 @@ fun SearchUiState(
                 maskUnsupportedIconPackIcons = config.maskUnsupportedIconPackIcons,
                 enabledFileTypes = config.enabledFileTypes,
                 showFolders = config.showFolders,
+                filePreviewsEnabled = config.filePreviewsEnabled,
                 showSystemFiles = config.showSystemFiles,
                 folderWhitelistPatterns = config.folderWhitelistPatterns,
                 folderBlacklistPatterns = config.folderBlacklistPatterns,

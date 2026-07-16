@@ -467,6 +467,7 @@ abstract class BasePreferences(
         const val KEY_DIRECT_DIAL_ENABLED = "direct_dial_enabled"
         const val KEY_DIRECT_DIAL_CHOICE_SHOWN = "direct_dial_choice_shown"
         const val KEY_DIRECT_DIAL_MANUALLY_DISABLED = "direct_dial_manually_disabled"
+        const val KEY_NUMBER_SEARCH_ENABLED = "number_search_enabled"
 
         // File preferences keys
         const val KEY_PINNED_FILE_URIS = "pinned_file_uris"
@@ -475,6 +476,7 @@ abstract class BasePreferences(
         const val KEY_EXCLUDED_FILE_EXTENSIONS = "excluded_file_extensions"
         const val KEY_ENABLED_FILE_TYPES = "enabled_file_types"
         const val KEY_SHOW_FOLDERS_IN_RESULTS = "show_folders_in_results"
+        const val KEY_FILE_PREVIEWS_ENABLED = "file_previews_enabled"
         const val KEY_SHOW_SYSTEM_FILES = "show_system_files"
         // Legacy key kept only to migrate old "Hidden Files" toggle state into System Files.
         const val KEY_SHOW_HIDDEN_FILES = "show_hidden_files"
@@ -505,6 +507,20 @@ abstract class BasePreferences(
         const val KEY_NOTE_ID_COUNTER = "note_id_counter"
         const val KEY_QUICK_NOTE_ID = "quick_note_id"
         const val KEY_QUICK_NOTE_ENABLED = "quick_note_enabled"
+        const val KEY_SWIPE_RIGHT_ACTION = "swipe_right_action"
+        const val KEY_SWIPE_LEFT_ACTION = "swipe_left_action"
+        const val KEY_SWIPE_UP_ACTION = "swipe_up_action"
+        const val KEY_SWIPE_DOWN_ACTION = "swipe_down_action"
+        const val KEY_SWIPE_RIGHT_CUSTOM_ACTION = "swipe_right_custom_action"
+        const val KEY_SWIPE_LEFT_CUSTOM_ACTION = "swipe_left_custom_action"
+        const val KEY_SWIPE_UP_CUSTOM_ACTION = "swipe_up_custom_action"
+        const val KEY_SWIPE_DOWN_CUSTOM_ACTION = "swipe_down_custom_action"
+        const val KEY_HOME_SWIPE_UP_NOTIFICATION_ENABLED = "home_swipe_up_notification_enabled"
+        const val KEY_HOME_SWIPE_DOWN_NOTIFICATION_ENABLED = "home_swipe_down_notification_enabled"
+        const val KEY_HOME_SWIPE_UP_ACTION = "home_swipe_up_action"
+        const val KEY_HOME_SWIPE_DOWN_ACTION = "home_swipe_down_action"
+        const val KEY_HOME_SWIPE_UP_CUSTOM_ACTION = "home_swipe_up_custom_action"
+        const val KEY_HOME_SWIPE_DOWN_CUSTOM_ACTION = "home_swipe_down_custom_action"
 
         // App shortcut preferences keys
         const val KEY_PINNED_APP_SHORTCUTS = "pinned_app_shortcuts"

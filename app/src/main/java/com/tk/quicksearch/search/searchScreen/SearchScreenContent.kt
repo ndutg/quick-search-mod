@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.searchScreen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -33,6 +36,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -80,19 +84,38 @@ import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
-import com.tk.quicksearch.shared.util.isDefaultHomeApp
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.openNotificationShade
+import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
+import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
+import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 import com.tk.quicksearch.tools.aiTools.WordClockIntentParser
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val OPEN_KEYBOARD_ACTION_APPEAR_DELAY_MS = 200L
 private const val OPEN_KEYBOARD_COLD_START_SUPPRESS_MS = 1000L
 private const val SEARCH_HINT_ROTATION_INTERVAL_MS = 5000L
 
+private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, context: android.content.Context) {
+    when (this) {
+        HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
+        HomeSwipeGestureAction.CUSTOM -> {
+            CustomWidgetButtonAction.fromJson(actionJson)?.let { action ->
+                context.startActivity(WidgetActionActivity.createIntent(context, action))
+            }
+        }
+        HomeSwipeGestureAction.NONE -> Unit
+    }
+}
+
 private data class ToolCardConfig(
         val label: String,
-        val icon: ImageVector,
+        val icon: ImageVector? = null,
+        val appIconPackage: String? = null,
         val onClick: () -> Unit,
 )
 
@@ -131,6 +154,7 @@ internal fun SearchScreenContent(
         onDictionarySearchClick: () -> Unit = {},
         onWordClockSearchClick: () -> Unit = {},
         onCustomToolSearchClick: () -> Unit = {},
+        onTaskerIntentClick: () -> Unit = {},
         onKeyboardSwitchToggle: () -> Unit,
         onOverlayNumberKeyboardUiChanged: ((Boolean, Boolean) -> Unit)? = null,
         onOverlayExpandRequest: () -> Unit = {},
@@ -147,6 +171,14 @@ internal fun SearchScreenContent(
         showSearchField: Boolean = true,
         onOpenPermissionsSettings: () -> Unit = {},
         onChangeWallpaperClick: () -> Unit = {},
+        swipeUpAction: SwipeGestureAction = SwipeGestureAction.OPEN_KEYBOARD,
+        swipeDownAction: SwipeGestureAction = SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS,
+        swipeUpCustomActionJson: String? = null,
+        swipeDownCustomActionJson: String? = null,
+        homeSwipeUpAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NONE,
+        homeSwipeDownAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NOTIFICATION_PANEL,
+        homeSwipeUpCustomActionJson: String? = null,
+        homeSwipeDownCustomActionJson: String? = null,
         getAllTriggerWordsById: () -> Map<String, String> = { emptyMap() },
         getAllContactActionTriggers: () -> Map<com.tk.quicksearch.search.data.preferences.ContactActionTriggerKey, com.tk.quicksearch.search.data.preferences.ResultTrigger> = { emptyMap() },
         onContactActionTrigger: (Long, com.tk.quicksearch.search.contacts.models.ContactCardAction) -> Unit = { _, _ -> },
@@ -203,7 +235,7 @@ internal fun SearchScreenContent(
         }
     }
     val isCalculatorMode = state.calculatorState.isCalculatorMode
-    val isDefaultLauncher = context.isDefaultHomeApp()
+    val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
     val isToolMode = state.calculatorState.isToolMode
     val isUnitConverterMode = state.calculatorState.isUnitConverterMode
     val activeToolType = if (isToolMode) state.calculatorState.toolType else null
@@ -211,7 +243,15 @@ internal fun SearchScreenContent(
     val isWordClockAliasMode = state.isWordClockAliasMode
     val isDictionaryAliasMode = state.isDictionaryAliasMode
     val activeCustomTool = state.detectedCustomToolId?.let { id -> state.customTools.find { it.id == id } }
-    val triggerWords = remember(getAllTriggerWordsById, state.nicknameUpdateVersion) { getAllTriggerWordsById().values }
+    val activeTaskerIntent = state.detectedTaskerIntentId?.let { id -> state.taskerIntentTools.find { it.id == id } }
+    val triggerWords by
+            produceState<Collection<String>>(
+                    initialValue = emptyList(),
+                    getAllTriggerWordsById,
+                    state.nicknameUpdateVersion,
+            ) {
+                value = withContext(Dispatchers.IO) { getAllTriggerWordsById().values.toList() }
+            }
 
     val hintSearchAnything = stringResource(R.string.search_hint)
     val staticSearchHint =
@@ -356,11 +396,13 @@ internal fun SearchScreenContent(
                     state.hasApiKey &&
                     !showCalculatorResult &&
                     state.AiSearchState.status == AiSearchStatus.Idle
+    val showTaskerIntentCard = activeTaskerIntent != null
     val isToolAliasMode =
             isCurrencyConverterAliasMode ||
                     isWordClockAliasMode ||
                     isDictionaryAliasMode ||
                     activeCustomTool != null
+                    || activeTaskerIntent != null
     val shouldShowNumberKeyboardOperators =
             isImeVisible && (manuallySwitchedToNumberKeyboard || isCalculatorMode)
     val showBottomSearchBar = showSearchField && state.bottomSearchBarEnabled
@@ -448,6 +490,8 @@ internal fun SearchScreenContent(
             } else {
                 null
             }
+    val shouldShowPhoneCallAction =
+            keyboardSwitchText != null && state.query.isPhoneNumberQuery()
     val shouldShowPredictedHighlight = isImeVisible
     val predictedTarget =
             remember(
@@ -523,6 +567,7 @@ internal fun SearchScreenContent(
                     state.isWordClockAliasMode ||
                     state.isDictionaryAliasMode ||
                     state.detectedCustomToolId != null
+                    || state.detectedTaskerIntentId != null
     val deferTopMatchSubmitUntilAppsReady =
             state.query.isNotBlank() &&
                     state.isAppSearchInProgress &&
@@ -637,6 +682,15 @@ internal fun SearchScreenContent(
                                     label = activeCustomTool?.name.orEmpty(),
                                     icon = Icons.Rounded.Construction,
                                     onClick = onCustomToolSearchClick,
+                            )
+                    showTaskerIntentCard ->
+                            ToolCardConfig(
+                                    label = stringResource(
+                                            R.string.tasker_intent_action,
+                                            activeTaskerIntent?.name.orEmpty(),
+                                    ),
+                                    appIconPackage = com.tk.quicksearch.tools.tasker.TaskerIntegration.PACKAGE_NAME,
+                                    onClick = onTaskerIntentClick,
                             )
                     showWordClockSearchCard ->
                             ToolCardConfig(
@@ -843,6 +897,7 @@ internal fun SearchScreenContent(
                 isWordClockAliasMode = isWordClockAliasMode,
                 isDictionaryAliasMode = isDictionaryAliasMode,
                 detectedCustomToolId = state.detectedCustomToolId,
+                detectedTaskerIntentId = state.detectedTaskerIntentId,
                 activeToolType = activeToolType,
                 isCalculatorMode = isCalculatorMode,
                 placeholderText = searchHintText,
@@ -878,6 +933,10 @@ internal fun SearchScreenContent(
                     if (showCustomToolSearchCard) {
                         onCustomToolSearchClick()
                         return@PersistentSearchBar true // keep keyboard open
+                    }
+                    if (showTaskerIntentCard) {
+                        onTaskerIntentClick()
+                        return@PersistentSearchBar true
                     }
                     if (showWordClockSearchCard) {
                         onWordClockSearchClick()
@@ -1087,14 +1146,27 @@ internal fun SearchScreenContent(
                     keyboardController?.show()
                 },
                 onLauncherOverscrollUp = {
-                    searchFocusRequester.requestFocus()
-                    keyboardController?.show()
+                    when {
+                        swipeUpAction == SwipeGestureAction.OPEN_KEYBOARD && !isImeVisible -> {
+                            searchFocusRequester.requestFocus()
+                            keyboardController?.show()
+                        }
+                        swipeUpAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
+                            keyboardController?.hide()
+                        }
+                        else -> homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, context)
+                    }
                 },
                 onLauncherOverscrollDown = {
-                    if (isImeVisible) {
-                        keyboardController?.hide()
-                    } else {
-                        context.openNotificationShade()
+                    when {
+                        swipeDownAction == SwipeGestureAction.OPEN_KEYBOARD && !isImeVisible -> {
+                            searchFocusRequester.requestFocus()
+                            keyboardController?.show()
+                        }
+                        swipeDownAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
+                            keyboardController?.hide()
+                        }
+                        else -> homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, context)
                     }
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
@@ -1107,7 +1179,7 @@ internal fun SearchScreenContent(
         // Hide when files or contacts are expanded
         if (expandedSection == ExpandedSection.NONE) {
             AnimatedVisibility(
-                    visible = keyboardSwitchText != null,
+                    visible = keyboardSwitchText != null || shouldShowPhoneCallAction,
                     enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
                     exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
             ) {
@@ -1125,6 +1197,18 @@ internal fun SearchScreenContent(
                         KeyboardSwitchPill(
                                 text = keyboardSwitchText,
                                 onClick = onKeyboardSwitchToggle,
+                        )
+                    }
+                    if (shouldShowPhoneCallAction) {
+                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        PhoneCallPill(
+                                onClick = {
+                                    context.startActivity(
+                                            Intent(Intent.ACTION_DIAL).apply {
+                                                data = Uri.parse("tel:${Uri.encode(state.query)}")
+                                            },
+                                    )
+                                },
                         )
                     }
                 }
@@ -1156,6 +1240,7 @@ internal fun SearchScreenContent(
                                         iconPackPackage = state.selectedIconPackPackage,
                                         toolActionLabel = activeToolCardConfig?.label,
                                         toolActionIcon = activeToolCardConfig?.icon,
+                                        toolActionAppIconPackage = activeToolCardConfig?.appIconPackage,
                                         onToolActionClick = activeToolCardConfig?.onClick,
                                         showOnlyToolAction = showOnlyToolActionInCompactSection,
                                 )
@@ -1213,6 +1298,7 @@ internal fun SearchScreenContent(
                                             iconPackPackage = state.selectedIconPackPackage,
                                             toolActionLabel = activeToolCardConfig.label,
                                             toolActionIcon = activeToolCardConfig.icon,
+                                            toolActionAppIconPackage = activeToolCardConfig.appIconPackage,
                                             onToolActionClick = activeToolCardConfig.onClick,
                                             showOnlyToolAction = true,
                                     )
@@ -1364,6 +1450,7 @@ internal fun SearchScreenContent(
                         onClick = {
                             hideOpenKeyboardActionInstantly = true
                             delayedOpenKeyboardActionVisible = false
+                            searchFocusRequester.requestFocus()
                             openKeyboardActionScope.launch {
                                 withFrameNanos { }
                                 keyboardController?.show()
@@ -1375,3 +1462,11 @@ internal fun SearchScreenContent(
     }
     } 
 }
+
+private fun String.isPhoneNumberQuery(): Boolean =
+        isNotEmpty() &&
+                if (first() == '+') {
+                    length > 1 && drop(1).all(Char::isDigit)
+                } else {
+                    all(Char::isDigit)
+                }
