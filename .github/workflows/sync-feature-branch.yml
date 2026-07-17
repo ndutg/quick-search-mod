@@ -33,11 +33,10 @@ jobs:
         run: |
           echo "=== Attempting merge ==="
           if git merge origin/main --no-edit; then
-            echo "✅ Merge completed cleanly"
+            echo "Merge completed cleanly"
           else
-            echo "⚠️ Conflicts detected — resolving..."
+            echo "Conflicts detected - resolving..."
 
-            # List conflicted files
             CONFLICTED=$(git diff --name-only --diff-filter=U)
             echo "Conflicted files:"
             echo "$CONFLICTED"
@@ -47,83 +46,142 @@ jobs:
               echo "=== Resolving: $f ==="
 
               if [[ "$f" == *"WallpaperUtils.kt"* ]]; then
-                # For WallpaperUtils: accept upstream version, then re-add our cache invalidation lines
-                echo "Strategy: accept upstream + re-add contrast cache invalidation"
+                echo "Strategy: accept upstream + re-add contrast cache invalidation (safe anchors)"
                 git checkout --theirs "$f"
-                
-                # Re-add our WallpaperContrastUtils invalidation calls
+
                 python3 << 'PYEOF'
           file_path = "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
           with open(file_path, "r") as f:
               content = f.read()
 
-          # Add contrast invalidation in invalidateWallpaperCache if not present
+          # Anchor uses "\n    }" to match ONLY the function's closing brace
           if "WallpaperContrastUtils.invalidateWallpaperLightnessCache()" not in content:
               content = content.replace(
-                  "cachedWallpaperAppearance = null",
-                  "cachedWallpaperAppearance = null\n        WallpaperContrastUtils.invalidateWallpaperLightnessCache()"
+                  "cachedWallpaperAppearance = null\n    }",
+                  "cachedWallpaperAppearance = null\n        WallpaperContrastUtils.invalidateWallpaperLightnessCache()\n    }"
               )
-              print("✅ Re-added contrast invalidation in invalidateWallpaperCache")
+              print("Re-added contrast invalidation in invalidateWallpaperCache")
 
-          # Add contrast clearAll in clearMemoryCaches if not present
           if "WallpaperContrastUtils.clearAll()" not in content:
               content = content.replace(
-                  "cachedOverlayCustomAppearance = null",
-                  "cachedOverlayCustomAppearance = null\n        WallpaperContrastUtils.clearAll()"
+                  "cachedOverlayCustomAppearance = null\n    }",
+                  "cachedOverlayCustomAppearance = null\n        WallpaperContrastUtils.clearAll()\n    }"
               )
-              print("✅ Re-added contrast clearAll in clearMemoryCaches")
+              print("Re-added contrast clearAll in clearMemoryCaches")
 
           with open(file_path, "w") as f:
               f.write(content)
           PYEOF
 
               elif [[ "$f" == *"SettingsDetailRoute.kt"* ]]; then
-                # For SettingsDetailRoute: accept upstream version
-                # Our wallpaper revert added a route entry here, but upstream restructured it
-                # Accept upstream and check if wallpaper settings still work
                 echo "Strategy: accept upstream version"
                 git checkout --theirs "$f"
 
+              elif [[ "$f" == *"AppThemeSettings.kt"* ]]; then
+                echo "Strategy: accept upstream version (avoid stale wallpaper-revert leftover)"
+                git checkout --theirs "$f"
+
               else
-                # For any other file: accept upstream
                 echo "Strategy: accept upstream version (default)"
                 git checkout --theirs "$f"
               fi
 
               git add "$f"
-              echo "✅ Resolved: $f"
+              echo "Resolved: $f"
             done
 
-            # Complete the merge
             git commit --no-edit
-            echo "✅ Merge completed with conflict resolution"
+            echo "Merge completed with conflict resolution"
+          fi
+
+      - name: Force AppThemeSettings.kt to upstream (even if not conflicted)
+        run: |
+          # This file has historically drifted from upstream in confusing ways.
+          # Always take upstream's version to prevent icon pack issues.
+          echo "=== Force syncing AppThemeSettings.kt to upstream ==="
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt
+
+          if git diff --cached --quiet -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt; then
+            echo "AppThemeSettings.kt already matches upstream"
+          else
+            git add app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt
+            git commit -m "chore: force AppThemeSettings.kt to upstream to prevent icon pack drift"
+            echo "AppThemeSettings.kt forced to upstream"
+          fi
+
+      - name: Remove any spurious clearAll calls that may have crept in
+        run: |
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
+
+          with open(file_path, "r") as f:
+              lines = f.readlines()
+
+          before_count = sum(1 for l in lines if "WallpaperContrastUtils.clearAll()" in l)
+          print(f"Before: {before_count} clearAll() calls")
+
+          new_lines = []
+          in_clear_memory_caches = False
+          brace_depth = 0
+
+          for line in lines:
+              if "fun clearMemoryCaches" in line:
+                  in_clear_memory_caches = True
+                  brace_depth = 0
+
+              if in_clear_memory_caches:
+                  brace_depth += line.count("{") - line.count("}")
+
+              if "WallpaperContrastUtils.clearAll()" in line:
+                  if in_clear_memory_caches and brace_depth >= 1:
+                      new_lines.append(line)
+                  else:
+                      pass
+              else:
+                  new_lines.append(line)
+
+              if in_clear_memory_caches and brace_depth <= 0 and "}" in line:
+                  in_clear_memory_caches = False
+
+          after_count = sum(1 for l in new_lines if "WallpaperContrastUtils.clearAll()" in l)
+          print(f"After: {after_count} clearAll() calls (should be 1)")
+
+          if after_count != before_count:
+              with open(file_path, "w") as f:
+                  f.writelines(new_lines)
+              print("Removed spurious clearAll calls")
+          else:
+              print("No spurious calls to remove")
+          PYEOF
+
+          if ! git diff --quiet -- app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt; then
+            git add app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+            git commit -m "fix: remove spurious clearAll calls after sync"
           fi
 
       - name: Verify custom patches
         run: |
           echo "=== Custom patches check ==="
-
           echo -n "WallpaperContrastUtils.kt: "
-          [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "✅" || echo "❌"
-
+          [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "OK" || echo "MISSING"
           echo -n "Dark scrim in SearchScreenBackground.kt: "
-          grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "✅" || echo "❌"
-
+          grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "MISSING"
           echo -n "White label fix in AppGridView.kt: "
-          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "✅" || echo "❌"
-
+          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
           echo -n "READ_MEDIA_IMAGES in manifest: "
-          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "✅" || echo "❌"
-
+          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
           echo -n "LocalWallpaperIsLight in Theme.kt: "
-          grep -q "LocalWallpaperIsLight" app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "✅" || echo "❌"
-
+          grep -q "LocalWallpaperIsLight" app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "OK" || echo "MISSING"
           echo -n "Contrast invalidation in WallpaperUtils.kt: "
-          grep -q "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt && echo "✅" || echo "⚠️ (optional)"
+          grep -q "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt && echo "OK" || echo "MISSING"
+          echo -n "clearAll count in WallpaperUtils.kt (should be 1): "
+          grep -c "WallpaperContrastUtils.clearAll()" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+          echo -n "AppThemeSettings.kt matches upstream: "
+          git diff --quiet origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt && echo "OK" || echo "DIFFERS"
 
       - name: Push
         run: |
           git push origin restore-wallpaper-feature
           echo ""
-          echo "✅ restore-wallpaper-feature synced and pushed"
+          echo "restore-wallpaper-feature synced and pushed"
           echo "APK build will auto-trigger"
