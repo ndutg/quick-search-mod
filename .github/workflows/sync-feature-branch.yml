@@ -108,6 +108,21 @@ jobs:
             git commit -m "chore: force AppThemeSettings.kt to upstream to prevent icon pack drift"
             echo "AppThemeSettings.kt forced to upstream"
           fi
+          
+      - name: Force Theme.kt to upstream (even if not conflicted)
+        run: |
+          # Theme.kt no longer contains our custom code.
+          # Always take upstream's version to prevent stale patches from returning.
+          echo "=== Force syncing Theme.kt to upstream ==="
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
+
+          if git diff --cached --quiet -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt; then
+            echo "Theme.kt already matches upstream"
+          else
+            git add app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
+            git commit -m "chore: force Theme.kt to upstream (no custom code needed)"
+            echo "Theme.kt forced to upstream"
+          fi
 
       - name: Remove any spurious clearAll calls that may have crept in
         run: |
@@ -170,8 +185,6 @@ jobs:
           grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
           echo -n "READ_MEDIA_IMAGES in manifest: "
           grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
-          echo -n "LocalWallpaperIsLight in Theme.kt: "
-          grep -q "LocalWallpaperIsLight" app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "OK" || echo "MISSING"
           echo -n "Contrast invalidation in WallpaperUtils.kt: "
           grep -q "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt && echo "OK" || echo "MISSING"
           echo -n "clearAll count in WallpaperUtils.kt (should be 1): "
