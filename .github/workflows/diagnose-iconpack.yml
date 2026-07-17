@@ -1,0 +1,97 @@
+name: Diagnose Icon Pack Issue
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature with full history
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+
+      - name: Fetch upstream main for comparison
+        run: git fetch origin main
+
+      - name: Verify WallpaperUtils.kt clearAll count
+        run: |
+          echo "=== WallpaperUtils.kt clearAll count ==="
+          COUNT=$(grep -c "WallpaperContrastUtils.clearAll()" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt)
+          echo "clearAll() calls: $COUNT (should be 1)"
+
+      - name: Show current AppGridView.kt AppLabelText function
+        run: |
+          echo "=========================================="
+          echo "=== AppGridView.kt AppLabelText function ==="
+          echo "=========================================="
+          grep -n -B 2 -A 30 "private fun AppLabelText" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt
+
+      - name: Show our white label patch context
+        run: |
+          echo "=========================================="
+          echo "=== White label patch line and context ==="
+          echo "=========================================="
+          grep -n -B 8 -A 8 "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt
+
+      - name: Diff AppGridView.kt vs upstream main
+        run: |
+          echo "=========================================="
+          echo "=== AppGridView.kt diff vs upstream main ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt
+
+      - name: Show all files that differ from upstream main
+        run: |
+          echo "=========================================="
+          echo "=== Files different from upstream main ==="
+          echo "=========================================="
+          git diff --name-only origin/main
+
+      - name: Show icon pack files
+        run: |
+          echo "=========================================="
+          echo "=== Icon pack manager and related files ==="
+          echo "=========================================="
+          find app/src/main/java -name "*IconPack*" -type f
+          echo ""
+          echo "=== Icon pack preferences code ==="
+          grep -rn "iconPack\|iconPackPackage" app/src/main/java/com/tk/quicksearch/search/data/preferences/ --include="*.kt" | head -20
+          echo ""
+          echo "=== Icon pack in AppGridView.kt ==="
+          grep -n "iconPack\|IconPack" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt | head -20
+
+      - name: Show bootstrap preferences file
+        run: |
+          echo "=========================================="
+          echo "=== BootstrapPreferences.kt full content ==="
+          echo "=========================================="
+          if [ -f "app/src/main/java/com/tk/quicksearch/search/data/preferences/BootstrapPreferences.kt" ]; then
+            cat app/src/main/java/com/tk/quicksearch/search/data/preferences/BootstrapPreferences.kt
+          else
+            echo "File not found"
+          fi
+
+      - name: Check StartupPreferencesFacade for iconPack handling
+        run: |
+          echo "=========================================="
+          echo "=== StartupPreferencesFacade iconPack refs ==="
+          echo "=========================================="
+          grep -n -B 2 -A 5 "iconPack\|IconPack" app/src/main/java/com/tk/quicksearch/search/data/userAppPreferences/StartupPreferencesFacade.kt | head -60
+
+      - name: Show diff of Theme.kt vs upstream
+        run: |
+          echo "=========================================="
+          echo "=== Theme.kt diff vs upstream main ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
+
+      - name: Show diff of SearchScreenBackground.kt vs upstream
+        run: |
+          echo "=========================================="
+          echo "=== SearchScreenBackground.kt diff vs upstream ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt
