@@ -41,7 +41,7 @@
     <string name="search_hint_notes">नोट्स खोजें…</string>
     <string name="search_hint_settings">डिवाइस सेटिंग्स खोजें…</string>
     <string name="search_hint_static">कुछ भी खोजें</string>
-    <string name="search_hint_word_clock">स्थानीय समय पाने के लिए कोई भी जगह दर्ज करें</string>
+    <string name="search_hint_world_clock">स्थानीय समय पाने के लिए कोई भी जगह दर्ज करें</string>
     <string-array name="search_hints_cycle">
         <item >कॉन्टैक्ट्स खोजें</item>
         <item >फाइलें खोजें</item>
@@ -767,6 +767,8 @@
          ============================================================================ -->
     <string name="release_notes_action_all_features">सभी फ़ीचर्स</string>
     <string name="release_notes_action_got_it">समझ गया</string>
+    <string name="update_card_title">क्विक सर्च के लिए नया अपडेट उपलब्ध है!</string>
+    <string name="action_update">अपडेट करें</string>
     <string name="release_notes_title">Quick Search v%1$s रिलीज़ नोट्स</string>
     <string name="release_notes_title_no_version">Quick Search रिलीज़ नोट्स</string>
     <string name="settings_backup_export_api_key_warning_message">अपने जोखिम पर आगे बढ़ें। एक्सपोर्ट की गई API key एन्क्रिप्टेड नहीं होती और आपकी बैकअप फाइल तक पहुंच रखने वाला कोई भी इसे देख सकता है।</string>
@@ -843,9 +845,9 @@
     <string name="unit_converter_info_title">यूनिट कन्वर्टर</string>
     <string name="unit_converter_invalid_or_unsupported_query">अमान्य या असमर्थित रूपांतरण</string>
     <string name="unit_converter_toggle_action_desc">यूनिट कन्वर्टर चालू या बंद करें</string>
-    <string name="word_clock_error_not_recognized">समय से जुड़े इस अनुरोध को हल नहीं किया जा सका। शहर, देश, टाइमज़ोन या स्पष्ट समय आज़माएं।</string>
-    <string name="word_clock_toggle_desc">उदाहरण: Time in Tokyo</string>
-    <string name="word_clock_toggle_title">वर्ड क्लॉक</string>
+    <string name="world_clock_error_not_recognized">समय से जुड़े इस अनुरोध को हल नहीं किया जा सका। शहर, देश, टाइमज़ोन या स्पष्ट समय आज़माएं।</string>
+    <string name="world_clock_toggle_desc">उदाहरण: Time in Tokyo</string>
+    <string name="world_clock_toggle_title">वर्ल्ड क्लॉक</string>
 
     <!-- ============================================================================
          Widgets &amp; Shortcuts

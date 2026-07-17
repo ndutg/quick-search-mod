@@ -41,7 +41,7 @@
     <string name="search_hint_notes">గమనికలను శోధించండి…</string>
     <string name="search_hint_settings">పరికర సెట్టింగ్‌లను శోధించండి…</string>
     <string name="search_hint_static">ఏదైనా శోధించండి</string>
-    <string name="search_hint_word_clock">స్థానిక సమయాన్ని తెలుసుకోవడానికి ఏదైనా స్థలాన్ని నమోదు చేయండి</string>
+    <string name="search_hint_world_clock">స్థానిక సమయాన్ని తెలుసుకోవడానికి ఏదైనా స్థలాన్ని నమోదు చేయండి</string>
     <string-array name="search_hints_cycle">
         <item >పరిచయాలను శోధించండి</item>
         <item >ఫైళ్లను శోధించండి</item>
@@ -767,6 +767,8 @@
          ============================================================================ -->
     <string name="release_notes_action_all_features">అన్ని ఫీచర్లు</string>
     <string name="release_notes_action_got_it">అర్థమైంది</string>
+    <string name="update_card_title">క్విక్ సెర్చ్ కోసం కొత్త అప్‌డేట్ అందుబాటులో ఉంది!</string>
+    <string name="action_update">అప్‌డేట్ చేయండి</string>
     <string name="release_notes_title">Quick Search v%1$s రిలీజ్ నోట్స్</string>
     <string name="release_notes_title_no_version">Quick Search రిలీజ్ నోట్స్</string>
     <string name="settings_backup_export_api_key_warning_message">మీ స్వంత రిస్క్‌తోనే కొనసాగండి. ఎగుమతి చేసిన API కీ ఎన్‌క్రిప్ట్ చేయబడదు మరియు మీ బ్యాకప్ ఫైల్‌కు యాక్సెస్ ఉన్న ఎవరైనా దీనిని యాక్సెస్ చేయవచ్చు.</string>
@@ -843,9 +845,9 @@
     <string name="unit_converter_info_title">యూనిట్ కన్వర్టర్</string>
     <string name="unit_converter_invalid_or_unsupported_query">చెల్లని లేదా మద్దతు లేని మార్పిడి</string>
     <string name="unit_converter_toggle_action_desc">యూనిట్ కన్వర్టర్‌ను ఆన్ లేదా ఆఫ్ చేయండి</string>
-    <string name="word_clock_error_not_recognized">ఆ సమయ అభ్యర్థనను కనుగొనలేకపోయాము. నగరం, దేశం, సమయ మండలి లేదా నిర్దిష్ట సమయాన్ని ప్రయత్నించండి.</string>
-    <string name="word_clock_toggle_desc">ఉదాహరణ: Time in Tokyo</string>
-    <string name="word_clock_toggle_title">వరల్డ్ క్లాక్</string>
+    <string name="world_clock_error_not_recognized">ఆ సమయ అభ్యర్థనను కనుగొనలేకపోయాము. నగరం, దేశం, సమయ మండలి లేదా నిర్దిష్ట సమయాన్ని ప్రయత్నించండి.</string>
+    <string name="world_clock_toggle_desc">ఉదాహరణ: Time in Tokyo</string>
+    <string name="world_clock_toggle_title">వరల్డ్ క్లాక్</string>
 
     <!-- ============================================================================
          Widgets &amp; Shortcuts

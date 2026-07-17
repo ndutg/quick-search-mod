@@ -41,7 +41,7 @@
 <string name="search_hint_notes">Rechercher des notes…</string>
 <string name="search_hint_settings">Rechercher dans les paramètres de l\'appareil…</string>
 <string name="search_hint_static">Tout rechercher</string>
-<string name="search_hint_word_clock">Saisissez un lieu pour obtenir l\'heure locale</string>
+<string name="search_hint_world_clock">Saisissez un lieu pour obtenir l\'heure locale</string>
 <string-array name="search_hints_cycle">
     <item >Rechercher des contacts</item>
     <item >Rechercher des fichiers</item>
@@ -767,6 +767,8 @@
      ============================================================================ -->
 <string name="release_notes_action_all_features">Toutes les fonctions</string>
 <string name="release_notes_action_got_it">J\'ai compris</string>
+<string name="update_card_title">Une nouvelle mise à jour est disponible pour Quick Search !</string>
+<string name="action_update">Mettre à jour</string>
 <string name="release_notes_title">Notes de version de Quick Search v%1$s</string>
 <string name="release_notes_title_no_version">Notes de version de Quick Search</string>
 <string name="settings_backup_export_api_key_warning_message">À utiliser à vos risques et périls. La clé API exportée n\'est pas chiffrée et peut être consultée par toute personne ayant accès à votre fichier de sauvegarde.</string>
@@ -843,9 +845,9 @@
 <string name="unit_converter_info_title">Convertisseur d\'unités</string>
 <string name="unit_converter_invalid_or_unsupported_query">Conversion non valide ou non prise en charge</string>
 <string name="unit_converter_toggle_action_desc">Activer ou désactiver le convertisseur d\'unités</string>
-<string name="word_clock_error_not_recognized">Impossible de récupérer l\'heure demandée. Essayez avec une ville, un pays, un fuseau horaire ou une heure précise.</string>
-<string name="word_clock_toggle_desc">Exemple : Time in Tokyo</string>
-<string name="word_clock_toggle_title">Horloge mondiale</string>
+<string name="world_clock_error_not_recognized">Impossible de récupérer l\'heure demandée. Essayez avec une ville, un pays, un fuseau horaire ou une heure précise.</string>
+<string name="world_clock_toggle_desc">Exemple : Time in Tokyo</string>
+<string name="world_clock_toggle_title">Horloge mondiale</string>
 
 <!-- ============================================================================
      Widgets &amp; Shortcuts
