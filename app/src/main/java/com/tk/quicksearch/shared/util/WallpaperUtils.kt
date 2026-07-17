@@ -396,7 +396,6 @@ object WallpaperUtils {
                         if (cachedOverlayCustomUri != normalizedUri) {
                             cachedOverlayCustomAppearanceUri = null
                             cachedOverlayCustomAppearance = null
-        WallpaperContrastUtils.clearAll()
                         }
                         cachedOverlayCustomUri = normalizedUri
                         cachedOverlayCustomBitmap = decoded
