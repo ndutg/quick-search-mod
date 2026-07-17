@@ -274,7 +274,6 @@ object WallpaperUtils {
         if (cachedOverlayCustomUri != normalized) {
             cachedOverlayCustomAppearanceUri = null
             cachedOverlayCustomAppearance = null
-        WallpaperContrastUtils.clearAll()
         }
         cachedOverlayCustomUri = normalized
         cachedOverlayCustomBitmap = bitmap
