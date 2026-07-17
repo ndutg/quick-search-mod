@@ -1,0 +1,123 @@
+name: Fix Icon Pack Issue
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature with full history
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch upstream main
+        run: git fetch origin main
+
+      - name: Show AppThemeSettings.kt diff summary
+        run: |
+          echo "=== AppThemeSettings.kt diff stats ==="
+          git diff --stat origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt
+
+      - name: Fix 1 - Accept upstream AppThemeSettings.kt
+        run: |
+          echo "Reverting AppThemeSettings.kt to upstream version..."
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt
+          echo "AppThemeSettings.kt now matches upstream"
+
+      - name: Fix 2 - Remove all spurious clearAll calls
+        run: |
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
+
+          with open(file_path, "r") as f:
+              lines = f.readlines()
+
+          before_count = sum(1 for l in lines if "WallpaperContrastUtils.clearAll()" in l)
+          print(f"Before: {before_count} clearAll() calls")
+
+          new_lines = []
+          in_clear_memory_caches = False
+          brace_depth = 0
+
+          for line in lines:
+              stripped = line.strip()
+
+              # Detect entering clearMemoryCaches function
+              if "fun clearMemoryCaches" in line:
+                  in_clear_memory_caches = True
+                  brace_depth = 0
+
+              # Track brace depth inside the function
+              if in_clear_memory_caches:
+                  brace_depth += line.count("{") - line.count("}")
+
+              # Detect a clearAll() call
+              if "WallpaperContrastUtils.clearAll()" in line:
+                  if in_clear_memory_caches and brace_depth >= 1:
+                      # Correct call inside clearMemoryCaches, keep it
+                      new_lines.append(line)
+                  else:
+                      # Spurious call, drop it
+                      pass
+              else:
+                  new_lines.append(line)
+
+              # Exit clearMemoryCaches when brace depth returns to 0
+              if in_clear_memory_caches and brace_depth <= 0 and "}" in line:
+                  in_clear_memory_caches = False
+
+          with open(file_path, "w") as f:
+              f.writelines(new_lines)
+
+          after_count = sum(1 for l in new_lines if "WallpaperContrastUtils.clearAll()" in l)
+          print(f"After: {after_count} clearAll() calls")
+
+          if after_count == 1:
+              print("Exactly 1 clearAll() call remains - correct")
+          else:
+              print(f"WARNING: Expected 1 but got {after_count}")
+          PYEOF
+
+      - name: Verify final state
+        run: |
+          echo "=== Final WallpaperContrastUtils calls ==="
+          grep -n -B 2 -A 2 "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+
+          echo ""
+          echo "=== Our custom patches ==="
+          echo -n "READ_MEDIA_IMAGES: "
+          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
+          echo -n "WallpaperContrastUtils.kt: "
+          [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "OK" || echo "MISSING"
+          echo -n "Dark scrim: "
+          grep -q "Dark scrim" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "MISSING"
+          echo -n "White label: "
+          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
+          echo -n "LocalWallpaperIsLight: "
+          grep -q "LocalWallpaperIsLight" app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "OK" || echo "MISSING"
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --cached --stat
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "fix: accept upstream AppThemeSettings.kt and remove all spurious clearAll calls"
+            git push origin restore-wallpaper-feature
+            echo "Fix pushed - build will auto-trigger"
+          fi
