@@ -1,0 +1,161 @@
+name: Reduce to Minimal Mod
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch upstream main
+        run: git fetch origin main
+
+      - name: Show current diff summary
+        run: |
+          echo "=== BEFORE: All files different from upstream ==="
+          git diff --name-only origin/main | grep -v "^\.github/"
+
+      - name: Reset WallpaperUtils.kt to upstream
+        run: |
+          echo "Resetting WallpaperUtils.kt to upstream..."
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+
+      - name: Delete unused WallpaperContrastUtils.kt
+        run: |
+          if [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ]; then
+            rm app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt
+            echo "Deleted WallpaperContrastUtils.kt"
+          else
+            echo "Already deleted"
+          fi
+
+      - name: Reset SearchScreenWallpaper.kt to upstream
+        run: |
+          echo "Resetting SearchScreenWallpaper.kt to upstream..."
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt
+
+      - name: Reset Theme.kt to upstream (already done, safety check)
+        run: |
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
+
+      - name: Reset AppThemeSettings.kt to upstream (already done, safety check)
+        run: |
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt
+
+      - name: Clean up SearchScreenBackground.kt indent issue
+        run: |
+          # The diagnostic showed weird indentation from an old auto-merge
+          # Reset it to upstream and re-apply just the scrim cleanly
+          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
+          echo "Resetting $FILE to upstream first..."
+          git checkout origin/main -- "$FILE"
+
+          echo "Re-applying scrim cleanly..."
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
+
+          with open(file_path, "r") as f:
+              content = f.read()
+
+          # Add Color import if missing
+          if "import androidx.compose.ui.graphics.Color" not in content:
+              # Add after the DesignTokens import
+              content = content.replace(
+                  "import com.tk.quicksearch.shared.ui.theme.DesignTokens",
+                  "import com.tk.quicksearch.shared.ui.theme.DesignTokens\nimport androidx.compose.ui.graphics.Color"
+              )
+              print("Added Color import")
+
+          # Add scrim before the tint overlay
+          if "Dark scrim for text readability" not in content:
+              # Find the tint overlay line and add scrim before it
+              old = "                // Tint overlay (dark mode: darken, light mode: lighten)"
+              new = """                // Dark scrim for text readability over any wallpaper
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f))
+                            .graphicsLayer(alpha = wallpaperLayerAlpha),
+                )
+
+                // Tint overlay (dark mode: darken, light mode: lighten)"""
+
+              if old in content:
+                  content = content.replace(old, new)
+                  print("Added scrim before tint overlay")
+              else:
+                  print("WARNING: Could not find tint overlay anchor")
+
+          with open(file_path, "w") as f:
+              f.write(content)
+          PYEOF
+
+      - name: Re-apply white label patch to AppGridView.kt cleanly
+        run: |
+          # Reset to upstream first, then re-apply just the color change
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          echo "Resetting $FILE to upstream first..."
+          git checkout origin/main -- "$FILE"
+
+          echo "Re-applying white label patch cleanly..."
+          # Simple sed: change Color.Black to Color.White in the false branch
+          sed -i 's|false -> Color.Black|false -> Color.White  // scrim makes background dark|' "$FILE"
+
+          echo "=== Verification ==="
+          grep -A 2 "when (imageBackgroundIsDark)" "$FILE" | head -6
+
+      - name: Verify final state
+        run: |
+          echo "=== AFTER: Files different from upstream ==="
+          git diff --name-only origin/main | grep -v "^\.github/" || echo "Only workflow files differ"
+
+          echo ""
+          echo "=== Custom patches check ==="
+          echo -n "READ_MEDIA_IMAGES: "
+          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
+          echo -n "Dark scrim: "
+          grep -q "Dark scrim" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "MISSING"
+          echo -n "White label: "
+          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
+          echo -n "WallpaperContrastUtils.kt deleted: "
+          [ ! -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "OK" || echo "STILL EXISTS"
+          echo -n "WallpaperUtils.kt matches upstream: "
+          git diff --quiet origin/main -- app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt && echo "OK" || echo "DIFFERS"
+          echo -n "Theme.kt matches upstream: "
+          git diff --quiet origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt && echo "OK" || echo "DIFFERS"
+          echo -n "SearchScreenWallpaper.kt matches upstream: "
+          git diff --quiet origin/main -- app/src/main/java/com/tk/quicksearch/search/searchScreen/searchScreen/SearchScreenWallpaper.kt && echo "OK" || echo "DIFFERS"
+
+      - name: Show final diff summary
+        run: |
+          echo ""
+          echo "=== Final diff stat vs upstream ==="
+          git diff --stat origin/main -- "app/**/*.kt" "app/**/*.xml"
+
+      - name: Commit and push
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "refactor: reduce mod to minimal patches (manifest + scrim + white label) to fix icon pack lifecycle issue"
+            git push origin restore-wallpaper-feature
+            echo "Pushed - build will auto-trigger"
+          fi
