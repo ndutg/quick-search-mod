@@ -31,16 +31,6 @@ import com.google.android.material.color.utilities.CorePalette
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.shared.util.ImageAppearance
 import com.tk.quicksearch.shared.util.WallpaperUtils
-import com.tk.quicksearch.shared.util.WallpaperContrastUtils
-
-/**
- * CompositionLocal indicating whether the current wallpaper/image background is light.
- * UI components can read this to pick readable text/icon colors.
- * - true  = light wallpaper → use dark text
- * - false = dark wallpaper → use light text
- * - null  = no image background active (use normal theme colors)
- */
-val LocalWallpaperIsLight = androidx.compose.runtime.compositionLocalOf<Boolean?> { null }
 
 // ============================================================================
 // Base Color Schemes
@@ -249,7 +239,6 @@ fun QuickSearchTheme(
                     ) {
                         if (intent?.action != wallpaperChangedAction) return
                         WallpaperUtils.invalidateWallpaperCache()
-                        WallpaperContrastUtils.invalidateWallpaperLightnessCache()
                         wallpaperChangeVersion++
                     }
                 }
@@ -294,26 +283,6 @@ fun QuickSearchTheme(
             value =
                 if (useImageDerivedAccent) {
                     WallpaperUtils.getBackgroundAppearance(
-                        context = context,
-                        backgroundSource = backgroundSource,
-                        customImageUri = customImageUri,
-                    )
-                } else {
-                    null
-                }
-        }
-
-
-    val isWallpaperLight by
-        produceState<Boolean?>(
-            null,
-            backgroundSource,
-            customImageUri,
-            wallpaperChangeVersion,
-        ) {
-            value =
-                if (backgroundSource != BackgroundSource.THEME) {
-                    WallpaperContrastUtils.isBackgroundLight(
                         context = context,
                         backgroundSource = backgroundSource,
                         customImageUri = customImageUri,
@@ -388,7 +357,6 @@ fun QuickSearchTheme(
         LocalDeviceDynamicColorsActive provides useDeviceDynamicColors,
         LocalWallpaperDynamicAccentActive provides (imageAccentSlots != null),
         LocalIsSystemWallpaperActive provides (backgroundSource == BackgroundSource.SYSTEM_WALLPAPER),
-        LocalWallpaperIsLight provides isWallpaperLight,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
