@@ -1,0 +1,84 @@
+name: Fix Icon Pack Lifecycle Reset
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch upstream main
+        run: git fetch origin main
+
+      - name: Show current Theme.kt diff vs upstream
+        run: |
+          echo "=== BEFORE: Theme.kt diff vs upstream ==="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
+
+      - name: Verify our LocalWallpaperIsLight is unused
+        run: |
+          echo ""
+          echo "=== Checking who reads LocalWallpaperIsLight ==="
+          echo "(Excluding Theme.kt where we define it)"
+          grep -rn "LocalWallpaperIsLight" app/src/main/java/ --include="*.kt" | grep -v "shared/ui/theme/Theme.kt" || echo "Nobody reads it - safe to remove"
+
+      - name: Reset Theme.kt to upstream version
+        run: |
+          echo "=== Resetting Theme.kt to upstream version ==="
+          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
+          echo "Theme.kt now matches upstream"
+
+      - name: Verify Theme.kt matches upstream
+        run: |
+          echo ""
+          echo "=== AFTER: Theme.kt diff vs upstream (should be empty) ==="
+          if git diff --quiet origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt; then
+            echo "Theme.kt matches upstream perfectly"
+          else
+            echo "Still differs from upstream:"
+            git diff origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
+          fi
+
+      - name: Verify wallpaper feature still works
+        run: |
+          echo ""
+          echo "=== Custom patches check ==="
+          echo -n "READ_MEDIA_IMAGES: "
+          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
+          echo -n "WallpaperContrastUtils.kt exists: "
+          [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "OK" || echo "MISSING"
+          echo -n "Dark scrim (SearchScreenBackground.kt): "
+          grep -q "Dark scrim" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "MISSING"
+          echo -n "White label fix (AppGridView.kt): "
+          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
+          echo -n "Contrast invalidation (WallpaperUtils.kt): "
+          grep -q "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt && echo "OK" || echo "MISSING"
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --cached --stat
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "fix: remove unused LocalWallpaperIsLight that caused icon pack reset on unlock"
+            git push origin restore-wallpaper-feature
+            echo "Fix pushed - build will auto-trigger"
+          fi

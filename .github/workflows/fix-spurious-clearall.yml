@@ -1,0 +1,92 @@
+name: Fix Spurious ClearAll Calls
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Show before state
+        run: |
+          echo "=== BEFORE — all WallpaperContrastUtils calls ==="
+          grep -n "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+
+      - name: Remove spurious clearAll() calls
+        run: |
+          python3 << 'PYEOF'
+          import re
+
+          file_path = "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
+
+          with open(file_path, "r") as f:
+              content = f.read()
+
+          before_count = content.count("WallpaperContrastUtils.clearAll()")
+
+          # Pattern: clearAll() at 8-space indent followed by 8-space indent closing brace
+          # This matches ONLY the spurious calls inside nested blocks.
+          # The CORRECT call in clearMemoryCaches() is followed by a 4-space closing brace.
+          pattern = r'        WallpaperContrastUtils\.clearAll\(\)\n(        \})'
+          new_content = re.sub(pattern, r'\1', content)
+
+          after_count = new_content.count("WallpaperContrastUtils.clearAll()")
+          removed = before_count - after_count
+
+          with open(file_path, "w") as f:
+              f.write(new_content)
+
+          print(f"Before: {before_count} clearAll() calls")
+          print(f"After:  {after_count} clearAll() calls")
+          print(f"Removed: {removed} spurious calls")
+
+          if after_count == 1:
+              print("✅ Exactly 1 clearAll() call remains — this is correct (inside clearMemoryCaches)")
+          else:
+              print(f"⚠️ Expected 1 clearAll() but found {after_count}")
+          PYEOF
+
+      - name: Show after state
+        run: |
+          echo "=== AFTER — all WallpaperContrastUtils calls ==="
+          grep -n -B 3 -A 2 "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+
+      - name: Verify correct locations remain intact
+        run: |
+          echo ""
+          echo "=== invalidateWallpaperCache should still have contrast call ==="
+          grep -A 5 "fun invalidateWallpaperCache" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+
+          echo ""
+          echo "=== clearMemoryCaches should still have clearAll ==="
+          grep -A 8 "fun clearMemoryCaches" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --cached --stat
+
+          if git diff --cached --quiet; then
+            echo "⚠️ No changes to commit"
+          else
+            git commit -m "fix: remove spurious WallpaperContrastUtils.clearAll() calls that ran during startup preference bootstrap"
+            git push origin restore-wallpaper-feature
+            echo ""
+            echo "✅ Fix pushed — build will auto-trigger"
+          fi
