@@ -41,7 +41,7 @@
     <string name="search_hint_notes">Αναζήτηση στις σημειώσεις…</string>
     <string name="search_hint_settings">Αναζήτηση στις ρυθμίσεις συσκευής…</string>
     <string name="search_hint_static">Αναζήτηση για οτιδήποτε</string>
-    <string name="search_hint_word_clock">Εισαγάγετε μια τοποθεσία για να δείτε την τοπική ώρα</string>
+    <string name="search_hint_world_clock">Εισαγάγετε μια τοποθεσία για να δείτε την τοπική ώρα</string>
     <string-array name="search_hints_cycle">
         <item >Αναζήτηση επαφών</item>
         <item >Αναζήτηση αρχείων</item>
@@ -767,6 +767,8 @@
          ============================================================================ -->
     <string name="release_notes_action_all_features">Όλες οι δυνατότητες</string>
     <string name="release_notes_action_got_it">Κατανόησα</string>
+    <string name="update_card_title">Μια νέα ενημέρωση είναι διαθέσιμη για το Quick Search!</string>
+    <string name="action_update">Ενημέρωση</string>
     <string name="release_notes_title">Σημειώσεις έκδοσης Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Σημειώσεις έκδοσης Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Προχωρήστε με δική σας ευθύνη. Το εξαγόμενο κλειδί API δεν είναι κρυπτογραφημένο και μπορεί να προσπελαστεί από οποιονδήποτε έχει πρόσβαση στο αρχείο αντιγράφου ασφαλείας.</string>
@@ -843,9 +845,9 @@
     <string name="unit_converter_info_title">Μετατροπέας μονάδων</string>
     <string name="unit_converter_invalid_or_unsupported_query">Μη έγκυρη ή μη υποστηριζόμενη μετατροπή</string>
     <string name="unit_converter_toggle_action_desc">Ενεργοποίηση ή απενεργοποίηση μετατροπέα μονάδων</string>
-    <string name="word_clock_error_not_recognized">Δεν ήταν δυνατή η επίλυση αυτού του αιτήματος ώρας. Δοκιμάστε μια πόλη, χώρα, ζώνη ώρας ή συγκεκριμένη ώρα.</string>
-    <string name="word_clock_toggle_desc">Παράδειγμα: Time in Tokyo</string>
-    <string name="word_clock_toggle_title">Παγκόσμιο ρολόι</string>
+    <string name="world_clock_error_not_recognized">Δεν ήταν δυνατή η επίλυση αυτού του αιτήματος ώρας. Δοκιμάστε μια πόλη, χώρα, ζώνη ώρας ή συγκεκριμένη ώρα.</string>
+    <string name="world_clock_toggle_desc">Παράδειγμα: Time in Tokyo</string>
+    <string name="world_clock_toggle_title">Παγκόσμιο ρολόι</string>
 
     <!-- ============================================================================
          Widgets &amp; Shortcuts

@@ -41,7 +41,7 @@
     <string name="search_hint_notes">Pesquisar notas…</string>
     <string name="search_hint_settings">Pesquisar configurações do dispositivo…</string>
     <string name="search_hint_static">Pesquise qualquer coisa</string>
-    <string name="search_hint_word_clock">Digite qualquer lugar para ver a hora local</string>
+    <string name="search_hint_world_clock">Digite qualquer lugar para ver a hora local</string>
     <string-array name="search_hints_cycle">
         <item >Pesquisar contatos</item>
         <item >Pesquisar arquivos</item>
@@ -767,6 +767,8 @@
          ============================================================================ -->
     <string name="release_notes_action_all_features">Todos os recursos</string>
     <string name="release_notes_action_got_it">Entendi</string>
+    <string name="update_card_title">Uma nova atualização está disponível para o Quick Search!</string>
+    <string name="action_update">Atualizar</string>
     <string name="release_notes_title">Notas de versão do Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Notas de versão do Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Proceda por sua conta e risco. A chave de API exportada não é criptografada e pode ser acessada por qualquer pessoa que tenha acesso ao seu arquivo de backup.</string>
@@ -843,9 +845,9 @@
     <string name="unit_converter_info_title">Conversor de unidades</string>
     <string name="unit_converter_invalid_or_unsupported_query">Conversão inválida ou não suportada</string>
     <string name="unit_converter_toggle_action_desc">Ativar ou desativar o conversor de unidades</string>
-    <string name="word_clock_error_not_recognized">Não foi possível resolver essa solicitação de hora. Tente uma cidade, país, fuso horário ou hora explícita.</string>
-    <string name="word_clock_toggle_desc">Exemplo: Time in Tokyo</string>
-    <string name="word_clock_toggle_title">Relógio mundial</string>
+    <string name="world_clock_error_not_recognized">Não foi possível resolver essa solicitação de hora. Tente uma cidade, país, fuso horário ou hora explícita.</string>
+    <string name="world_clock_toggle_desc">Exemplo: Time in Tokyo</string>
+    <string name="world_clock_toggle_title">Relógio mundial</string>
 
     <!-- ============================================================================
          Widgets &amp; Shortcuts
