@@ -157,7 +157,6 @@ object WallpaperUtils {
         cachedBitmap = null
         cachedSystemWallpaperId = null
         cachedWallpaperAppearance = null
-        WallpaperContrastUtils.invalidateWallpaperLightnessCache()
     }
 
     fun clearMemoryCaches() {
@@ -166,7 +165,6 @@ object WallpaperUtils {
         cachedOverlayCustomBitmap = null
         cachedOverlayCustomAppearanceUri = null
         cachedOverlayCustomAppearance = null
-        WallpaperContrastUtils.clearAll()
     }
 
     /**

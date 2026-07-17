@@ -21,10 +21,6 @@ import androidx.core.content.ContextCompat
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.shared.util.WallpaperUtils
-import androidx.compose.foundation.background
-import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 
 @Composable
 internal fun SearchScreenWallpaperLogic(
