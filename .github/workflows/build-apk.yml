@@ -56,7 +56,7 @@ jobs:
 
       - name: Build fdroid release APK
         run: |
-          ./gradlew assembleFdroidRelease \
+          ./gradlew assembleStandardRelease \
             -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/release.keystore \
             -Pandroid.injected.signing.store.password=quicksearch123 \
             -Pandroid.injected.signing.key.alias=quicksearch \
