@@ -1,0 +1,83 @@
+name: Build Vanilla Upstream (Control Test)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout upstream teja2495/quick-search main
+        uses: actions/checkout@v4
+        with:
+          repository: teja2495/quick-search
+          ref: main
+
+      - name: Show what commit we're building
+        run: |
+          echo "=== Building from upstream commit ==="
+          git log -1 --format="%H %s"
+          echo ""
+          echo "=== Version being built ==="
+          grep -n "versionCode\|versionName" app/build.gradle.kts
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Add memory config for Codespaces-like env
+        run: |
+          if ! grep -q "org.gradle.jvmargs" gradle.properties; then
+            echo "" >> gradle.properties
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m" >> gradle.properties
+          fi
+
+      - name: Generate signing keystore (same as our modded build)
+        run: |
+          keytool -genkeypair \
+            -alias quicksearch \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -keystore $GITHUB_WORKSPACE/release.keystore \
+            -storepass quicksearch123 \
+            -keypass quicksearch123 \
+            -dname "CN=Quick Search Mod, OU=Personal, O=Personal, L=Christchurch, ST=Canterbury, C=NZ"
+          echo "Keystore generated"
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Build standard release APK from pure upstream
+        run: |
+          ./gradlew assembleStandardRelease \
+            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/release.keystore \
+            -Pandroid.injected.signing.store.password=quicksearch123 \
+            -Pandroid.injected.signing.key.alias=quicksearch \
+            -Pandroid.injected.signing.key.password=quicksearch123
+        env:
+          GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=512m"
+
+      - name: Verify APK is signed
+        run: |
+          RELEASE_APK=$(find app/build/outputs/apk -name "*.apk" | head -1)
+          echo "Found APK: $RELEASE_APK"
+          ls -lh "$RELEASE_APK"
+
+          BUILD_TOOLS=$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | sort -V | tail -1)
+          if $BUILD_TOOLS/apksigner verify --print-certs "$RELEASE_APK"; then
+            echo "APK is properly signed"
+          else
+            echo "APK signature verification failed"
+            exit 1
+          fi
+
+      - name: Upload vanilla APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: quick-search-vanilla-control
+          path: app/build/outputs/apk/**/*.apk
