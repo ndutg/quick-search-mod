@@ -36,7 +36,6 @@ jobs:
             echo "Merge completed cleanly"
           else
             echo "Conflicts detected - resolving..."
-
             CONFLICTED=$(git diff --name-only --diff-filter=U)
             echo "Conflicted files:"
             echo "$CONFLICTED"
@@ -44,48 +43,20 @@ jobs:
             for f in $CONFLICTED; do
               echo ""
               echo "=== Resolving: $f ==="
-
-              if [[ "$f" == *"WallpaperUtils.kt"* ]]; then
-                echo "Strategy: accept upstream + re-add contrast cache invalidation (safe anchors)"
-                git checkout --theirs "$f"
-
-                python3 << 'PYEOF'
-          file_path = "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
-          with open(file_path, "r") as f:
-              content = f.read()
-
-          # Anchor uses "\n    }" to match ONLY the function's closing brace
-          if "WallpaperContrastUtils.invalidateWallpaperLightnessCache()" not in content:
-              content = content.replace(
-                  "cachedWallpaperAppearance = null\n    }",
-                  "cachedWallpaperAppearance = null\n        WallpaperContrastUtils.invalidateWallpaperLightnessCache()\n    }"
-              )
-              print("Re-added contrast invalidation in invalidateWallpaperCache")
-
-          if "WallpaperContrastUtils.clearAll()" not in content:
-              content = content.replace(
-                  "cachedOverlayCustomAppearance = null\n    }",
-                  "cachedOverlayCustomAppearance = null\n        WallpaperContrastUtils.clearAll()\n    }"
-              )
-              print("Re-added contrast clearAll in clearMemoryCaches")
-
-          with open(file_path, "w") as f:
-              f.write(content)
-          PYEOF
-
-              elif [[ "$f" == *"SettingsDetailRoute.kt"* ]]; then
-                echo "Strategy: accept upstream version"
-                git checkout --theirs "$f"
-
-              elif [[ "$f" == *"AppThemeSettings.kt"* ]]; then
-                echo "Strategy: accept upstream version (avoid stale wallpaper-revert leftover)"
-                git checkout --theirs "$f"
-
+              # Our 3 mod files: use "ours" to preserve our patches
+              if [[ "$f" == *"AndroidManifest.xml"* ]]; then
+                echo "Strategy: keep OUR version (has READ_MEDIA_IMAGES)"
+                git checkout --ours "$f"
+              elif [[ "$f" == *"SearchScreenBackground.kt"* ]]; then
+                echo "Strategy: keep OUR version (has dark scrim)"
+                git checkout --ours "$f"
+              elif [[ "$f" == *"AppGridView.kt"* ]]; then
+                echo "Strategy: keep OUR version (has white label)"
+                git checkout --ours "$f"
               else
                 echo "Strategy: accept upstream version (default)"
                 git checkout --theirs "$f"
               fi
-
               git add "$f"
               echo "Resolved: $f"
             done
@@ -94,103 +65,43 @@ jobs:
             echo "Merge completed with conflict resolution"
           fi
 
-      - name: Force AppThemeSettings.kt to upstream (even if not conflicted)
-        run: |
-          # This file has historically drifted from upstream in confusing ways.
-          # Always take upstream's version to prevent icon pack issues.
-          echo "=== Force syncing AppThemeSettings.kt to upstream ==="
-          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt
-
-          if git diff --cached --quiet -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt; then
-            echo "AppThemeSettings.kt already matches upstream"
-          else
-            git add app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt
-            git commit -m "chore: force AppThemeSettings.kt to upstream to prevent icon pack drift"
-            echo "AppThemeSettings.kt forced to upstream"
-          fi
-          
-      - name: Force Theme.kt to upstream (even if not conflicted)
-        run: |
-          # Theme.kt no longer contains our custom code.
-          # Always take upstream's version to prevent stale patches from returning.
-          echo "=== Force syncing Theme.kt to upstream ==="
-          git checkout origin/main -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
-
-          if git diff --cached --quiet -- app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt; then
-            echo "Theme.kt already matches upstream"
-          else
-            git add app/src/main/java/com/tk/quicksearch/shared/ui/theme/Theme.kt
-            git commit -m "chore: force Theme.kt to upstream (no custom code needed)"
-            echo "Theme.kt forced to upstream"
-          fi
-
-      - name: Remove any spurious clearAll calls that may have crept in
-        run: |
-          python3 << 'PYEOF'
-          file_path = "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt"
-
-          with open(file_path, "r") as f:
-              lines = f.readlines()
-
-          before_count = sum(1 for l in lines if "WallpaperContrastUtils.clearAll()" in l)
-          print(f"Before: {before_count} clearAll() calls")
-
-          new_lines = []
-          in_clear_memory_caches = False
-          brace_depth = 0
-
-          for line in lines:
-              if "fun clearMemoryCaches" in line:
-                  in_clear_memory_caches = True
-                  brace_depth = 0
-
-              if in_clear_memory_caches:
-                  brace_depth += line.count("{") - line.count("}")
-
-              if "WallpaperContrastUtils.clearAll()" in line:
-                  if in_clear_memory_caches and brace_depth >= 1:
-                      new_lines.append(line)
-                  else:
-                      pass
-              else:
-                  new_lines.append(line)
-
-              if in_clear_memory_caches and brace_depth <= 0 and "}" in line:
-                  in_clear_memory_caches = False
-
-          after_count = sum(1 for l in new_lines if "WallpaperContrastUtils.clearAll()" in l)
-          print(f"After: {after_count} clearAll() calls (should be 1)")
-
-          if after_count != before_count:
-              with open(file_path, "w") as f:
-                  f.writelines(new_lines)
-              print("Removed spurious clearAll calls")
-          else:
-              print("No spurious calls to remove")
-          PYEOF
-
-          if ! git diff --quiet -- app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt; then
-            git add app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
-            git commit -m "fix: remove spurious clearAll calls after sync"
-          fi
-
-      - name: Verify custom patches
+      - name: Verify custom patches survived
         run: |
           echo "=== Custom patches check ==="
-          echo -n "WallpaperContrastUtils.kt: "
-          [ -f "app/src/main/java/com/tk/quicksearch/shared/util/WallpaperContrastUtils.kt" ] && echo "OK" || echo "MISSING"
-          echo -n "Dark scrim in SearchScreenBackground.kt: "
-          grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "MISSING"
-          echo -n "White label fix in AppGridView.kt: "
-          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
+
+          FAIL=0
+
           echo -n "READ_MEDIA_IMAGES in manifest: "
-          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
-          echo -n "Contrast invalidation in WallpaperUtils.kt: "
-          grep -q "WallpaperContrastUtils" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt && echo "OK" || echo "MISSING"
-          echo -n "clearAll count in WallpaperUtils.kt (should be 1): "
-          grep -c "WallpaperContrastUtils.clearAll()" app/src/main/java/com/tk/quicksearch/shared/util/WallpaperUtils.kt
-          echo -n "AppThemeSettings.kt matches upstream: "
-          git diff --quiet origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/AppThemeSettings.kt && echo "OK" || echo "DIFFERS"
+          if grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml; then
+            echo "OK"
+          else
+            echo "MISSING"
+            FAIL=1
+          fi
+
+          echo -n "Dark scrim in SearchScreenBackground.kt: "
+          if grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt; then
+            echo "OK"
+          else
+            echo "MISSING"
+            FAIL=1
+          fi
+
+          echo -n "White label fix in AppGridView.kt: "
+          if grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt; then
+            echo "OK"
+          else
+            echo "MISSING"
+            FAIL=1
+          fi
+
+          echo ""
+          if [ "$FAIL" = "0" ]; then
+            echo "All 3 custom patches survived the sync"
+          else
+            echo "One or more patches were lost — investigate before pushing"
+            exit 1
+          fi
 
       - name: Push
         run: |
