@@ -1,0 +1,203 @@
+name: Full Comparison vs Upstream
+
+on:
+  workflow_dispatch:
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature with full history
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+
+      - name: Fetch upstream main
+        run: git fetch origin main
+
+      - name: Complete file list difference
+        run: |
+          echo "=========================================="
+          echo "=== ALL FILES DIFFERENT FROM UPSTREAM ==="
+          echo "=========================================="
+          git diff --name-status origin/main | sort
+          echo ""
+          echo "=== Files ONLY in our fork (not upstream) ==="
+          git diff --diff-filter=A --name-only origin/main
+          echo ""
+          echo "=== Files DELETED from our fork ==="
+          git diff --diff-filter=D --name-only origin/main
+          echo ""
+          echo "=== Files MODIFIED (not workflow files) ==="
+          git diff --name-only origin/main -- ':(exclude).github/*' | head -30
+
+      - name: Diff stats summary
+        run: |
+          echo "=========================================="
+          echo "=== DIFF STATS (excluding workflows) ==="
+          echo "=========================================="
+          git diff --stat origin/main -- ':(exclude).github/*' ':(exclude)*.yml'
+
+      - name: Build configuration comparison
+        run: |
+          echo "=========================================="
+          echo "=== app/build.gradle.kts differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/build.gradle.kts
+
+          echo ""
+          echo "=========================================="
+          echo "=== gradle.properties differences ==="
+          echo "=========================================="
+          git diff origin/main -- gradle.properties
+
+          echo ""
+          echo "=========================================="
+          echo "=== settings.gradle.kts differences ==="
+          echo "=========================================="
+          git diff origin/main -- settings.gradle.kts
+
+          echo ""
+          echo "=========================================="
+          echo "=== gradle/libs.versions.toml differences ==="
+          echo "=========================================="
+          git diff origin/main -- gradle/libs.versions.toml
+
+          echo ""
+          echo "=========================================="
+          echo "=== build.gradle.kts (root) differences ==="
+          echo "=========================================="
+          git diff origin/main -- build.gradle.kts
+
+      - name: AndroidManifest comparison
+        run: |
+          echo "=========================================="
+          echo "=== AndroidManifest.xml differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/AndroidManifest.xml
+
+      - name: Show version code/name in both
+        run: |
+          echo "=========================================="
+          echo "=== Version info in our build.gradle.kts ==="
+          echo "=========================================="
+          grep -n "versionCode\|versionName\|applicationId" app/build.gradle.kts
+
+          echo ""
+          echo "=========================================="
+          echo "=== Version info in upstream build.gradle.kts ==="
+          echo "=========================================="
+          git show origin/main:app/build.gradle.kts | grep -n "versionCode\|versionName\|applicationId"
+
+      - name: Show product flavors
+        run: |
+          echo "=========================================="
+          echo "=== Product flavors in our build.gradle.kts ==="
+          echo "=========================================="
+          grep -B 2 -A 20 "productFlavors\|flavorDimensions" app/build.gradle.kts
+
+      - name: Icon pack code full diff
+        run: |
+          echo "=========================================="
+          echo "=== IconPackManager.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/apps/IconPackManager.kt || echo "IDENTICAL"
+
+          echo ""
+          echo "=========================================="
+          echo "=== IconPackService.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/apps/IconPackService.kt || echo "IDENTICAL"
+
+          echo ""
+          echo "=========================================="
+          echo "=== IconPackSettings.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/settings/appearanceSettings/IconPackSettings.kt || echo "IDENTICAL"
+
+      - name: Preferences code full diff
+        run: |
+          echo "=========================================="
+          echo "=== StartupPreferencesFacade.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/data/userAppPreferences/StartupPreferencesFacade.kt || echo "IDENTICAL"
+
+          echo ""
+          echo "=========================================="
+          echo "=== UserAppPreferences.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/data/userAppPreferences/UserAppPreferences.kt || echo "IDENTICAL"
+
+          echo ""
+          echo "=========================================="
+          echo "=== BootstrapPreferences.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/data/preferences/BootstrapPreferences.kt || echo "IDENTICAL"
+
+      - name: Lifecycle / startup code diffs
+        run: |
+          echo "=========================================="
+          echo "=== MainActivity.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/app/MainActivity.kt || echo "IDENTICAL"
+
+          echo ""
+          echo "=========================================="
+          echo "=== StartupCoordinator.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/app/startup/StartupCoordinator.kt || echo "IDENTICAL"
+
+          echo ""
+          echo "=========================================="
+          echo "=== SearchStartupLifecycleDelegate.kt differences ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/core/SearchStartupLifecycleDelegate.kt || echo "IDENTICAL"
+
+      - name: All 3 core mod files diff
+        run: |
+          echo "=========================================="
+          echo "=== AndroidManifest.xml diff ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/AndroidManifest.xml
+
+          echo ""
+          echo "=========================================="
+          echo "=== SearchScreenBackground.kt diff ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt
+
+          echo ""
+          echo "=========================================="
+          echo "=== AppGridView.kt diff ==="
+          echo "=========================================="
+          git diff origin/main -- app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt
+
+      - name: Check version code and name
+        run: |
+          echo "=========================================="
+          echo "=== Final version summary ==="
+          echo "=========================================="
+          echo "Our latest commit:"
+          git log -1 --format="%H %s"
+          echo ""
+          echo "Upstream latest commit:"
+          git log -1 origin/main --format="%H %s"
+          echo ""
+          echo "Commits ahead of upstream:"
+          git log --oneline origin/main..restore-wallpaper-feature | wc -l
+          echo ""
+          echo "Commits behind upstream (should be 0 if synced):"
+          git log --oneline restore-wallpaper-feature..origin/main | wc -l
+
+      - name: Total non-workflow file count difference
+        run: |
+          echo "=========================================="
+          echo "=== NON-WORKFLOW MODIFIED FILES ==="
+          echo "=========================================="
+          COUNT=$(git diff --name-only origin/main -- ':(exclude).github/*' ':(exclude)*.yml' ':(exclude)gradle.properties' | wc -l)
+          echo "Total: $COUNT files"
+          echo ""
+          echo "List:"
+          git diff --name-only origin/main -- ':(exclude).github/*' ':(exclude)*.yml' ':(exclude)gradle.properties'
