@@ -356,6 +356,9 @@ internal class SearchStartupLifecycleDelegate(
             searchEngineManager.ensureInitialized()
             val shortcutsState = aliasHandler.getInitialState()
             val customTools = normalizeCustomToolModels(userPreferences.getCustomTools())
+            val hasApiKey = userPreferences.hasAnyLlmApiKey()
+            val activeProviderId = aiSearchHandler.getAiSearchProviderId()
+            val availableAiModels = aiSearchHandler.getAvailableGeminiModels()
 
             updateFeatureState { state ->
                 state.copy(
@@ -374,14 +377,33 @@ internal class SearchStartupLifecycleDelegate(
                     unitConverterEnabled = userPreferences.isUnitConverterEnabled(),
                     dateCalculatorEnabled = userPreferences.isDateCalculatorEnabled(),
                     currencyConverterEnabled = userPreferences.isCurrencyConverterEnabled(),
-                    wordClockEnabled = userPreferences.isWordClockEnabled(),
+                    worldClockEnabled = userPreferences.isWorldClockEnabled(),
                     dictionaryEnabled = userPreferences.isDictionaryEnabled(),
                     customTools = customTools,
                     disabledCustomToolIds = userPreferences.getDisabledCustomTools(),
                     taskerIntentTools = userPreferences.getTaskerIntentTools(),
-                    // Unknown is intentionally optimistic for migrated installs. Encrypted
-                    // preferences are reconciled in the long-idle/on-demand AI tier below.
-                    hasApiKey = userPreferences.getConfiguredAiProviderHint() ?: true,
+                    hasApiKey = hasApiKey,
+                    geminiApiKeyLast4 = aiSearchHandler.getGeminiApiKey()?.takeLast(4),
+                    llmApiKeyLast4ByProvider = userPreferences.getLlmApiKeyLast4ByProvider(),
+                    customLlmBaseUrlByProvider = userPreferences.getCustomLlmBaseUrlByProvider(),
+                    customLlmAdvancedPayloadByProvider =
+                        userPreferences.getCustomLlmAdvancedPayloadByProvider(),
+                    aiSearchLlmProviderId = activeProviderId,
+                    personalContext = aiSearchHandler.getPersonalContext(),
+                    geminiModel = aiSearchHandler.getGeminiModel(),
+                    geminiGroundingEnabled = aiSearchHandler.isGeminiGroundingEnabled(),
+                    geminiThinkingEnabled = aiSearchHandler.isGeminiThinkingEnabled(),
+                    availableGeminiModels = availableAiModels,
+                    availableLlmModelsByProvider =
+                        userPreferences.getConfiguredLlmProviderIds().associateWith { providerId ->
+                            if (providerId == activeProviderId) {
+                                availableAiModels
+                            } else {
+                                AiSearchLlmProviderRegistry
+                                    .get(providerId, applicationProvider())
+                                    .fallbackTextModels
+                            }
+                        },
                 )
             }
             updateConfigState { state ->
@@ -778,7 +800,7 @@ internal class SearchStartupLifecycleDelegate(
                         unitConverterEnabled = userPreferences.isUnitConverterEnabled(),
                         dateCalculatorEnabled = userPreferences.isDateCalculatorEnabled(),
                         currencyConverterEnabled = userPreferences.isCurrencyConverterEnabled(),
-                        wordClockEnabled = userPreferences.isWordClockEnabled(),
+                        worldClockEnabled = userPreferences.isWorldClockEnabled(),
                         dictionaryEnabled = userPreferences.isDictionaryEnabled(),
                         customTools = customTools,
                         disabledCustomToolIds = userPreferences.getDisabledCustomTools(),
@@ -847,7 +869,7 @@ internal class SearchStartupLifecycleDelegate(
         if (state.query.isBlank()) return false
         return state.AiSearchState.status != AiSearchStatus.Idle ||
             state.currencyConverterState.status != CurrencyConverterStatus.Idle ||
-            state.wordClockState.status != WordClockStatus.Idle ||
+            state.worldClockState.status != WorldClockStatus.Idle ||
             state.dictionaryState.status != DictionaryStatus.Idle
     }
 
