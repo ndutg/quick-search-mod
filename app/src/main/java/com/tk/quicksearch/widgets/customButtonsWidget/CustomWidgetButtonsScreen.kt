@@ -964,6 +964,14 @@ private sealed class CustomWidgetSearchResult {
 
     fun toPersistedAction(context: Context): CustomWidgetButtonAction =
         when (this) {
+            is App -> {
+                CustomWidgetButtonAction.App(
+                    packageName = app.packageName,
+                    appName = app.appName,
+                    customIconBase64 = loadAppIconBase64(context, app.packageName),
+                )
+            }
+
             is AppShortcut -> {
                 val iconBase64 =
                     shortcut.iconBase64

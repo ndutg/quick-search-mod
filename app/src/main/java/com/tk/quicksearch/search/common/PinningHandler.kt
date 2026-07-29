@@ -10,6 +10,7 @@ import com.tk.quicksearch.search.models.NoteInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PinningHandler(
     private val scope: CoroutineScope,
@@ -20,6 +21,19 @@ class PinningHandler(
     private val userPreferences: UserAppPreferences,
     private val uiStateUpdater: ((SearchUiState) -> SearchUiState) -> Unit,
 ) {
+    suspend fun loadPinnedContactsForStartup() {
+        withContext(Dispatchers.IO) {
+            val pinnedContacts =
+                runCatching {
+                    loadPinnedContacts(
+                        hasPermission = permissionManager.hasContactPermission(),
+                        hydrateDetails = false,
+                    )
+                }.getOrDefault(emptyList())
+            uiStateUpdater { state -> state.copy(pinnedContacts = pinnedContacts) }
+        }
+    }
+
     fun loadPinnedContactsAndFiles() {
         scope.launch(Dispatchers.IO) {
             val permissions = checkPermissions()
@@ -92,15 +106,23 @@ class PinningHandler(
             files = permissionManager.hasFilePermission(),
         )
 
-    private fun loadPinnedContacts(hasPermission: Boolean): List<com.tk.quicksearch.search.models.ContactInfo> {
+    private fun loadPinnedContacts(
+        hasPermission: Boolean,
+        hydrateDetails: Boolean = true,
+    ): List<com.tk.quicksearch.search.models.ContactInfo> {
         if (!hasPermission) return emptyList()
 
         val pinnedIds = userPreferences.getPinnedContactIds()
         if (pinnedIds.isEmpty()) return emptyList()
 
         val excludedIds = userPreferences.getExcludedContactIds()
-        return contactRepository
-            .getContactsByIds(pinnedIds)
+        val contacts =
+            if (hydrateDetails) {
+                contactRepository.getContactsByIds(pinnedIds)
+            } else {
+                contactRepository.getContactsByIdsMinimal(pinnedIds)
+            }
+        return contacts
             .filterNot { excludedIds.contains(it.contactId) }
             .sortedByPinnedOrder(userPreferences.getPinnedContactOrder()) { it.contactId }
     }

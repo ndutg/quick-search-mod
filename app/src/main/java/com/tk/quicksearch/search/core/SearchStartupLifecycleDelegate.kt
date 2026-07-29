@@ -345,6 +345,18 @@ internal class SearchStartupLifecycleDelegate(
 
     fun launchDeferredInitialization() {
         scope.launch(startupDispatcher) {
+            val pinnedContactsStartupJob =
+                scope.launch(Dispatchers.IO) {
+                    pinningHandler.loadPinnedContactsForStartup()
+                }
+
+            // Pinned shortcuts are part of the empty-query home surface. Restore the bounded
+            // persisted cache as soon as deferred initialization begins so they do not wait for
+            // the long-idle system refresh below.
+            if (appShortcutSearchHandler.loadCachedShortcutsOnly()) {
+                withContext(Dispatchers.Main) { refreshAppShortcutsState() }
+            }
+
             refreshAppsUsageAndPermissions()
             if (shouldReconcileAppsAtStartup()) {
                 loadApps()
@@ -490,6 +502,7 @@ internal class SearchStartupLifecycleDelegate(
                             },
                     )
                 }
+                pinnedContactsStartupJob.join()
                 pinningHandler.loadPinnedContactsAndFiles()
                 pinningHandler.loadExcludedContactsAndFiles()
                 loadPinnedAndExcludedCalendarEvents()

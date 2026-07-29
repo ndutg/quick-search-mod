@@ -192,6 +192,21 @@ class ContactRepository(
     }
 
     /**
+     * Returns the lightweight phone-provider data for the requested contacts without hydrating
+     * photos or app-specific contact methods. Used to restore pinned contacts promptly at startup.
+     */
+    fun getContactsByIdsMinimal(contactIds: Set<Long>): List<ContactInfo> {
+        if (contactIds.isEmpty() || !hasPermission()) {
+            return emptyList()
+        }
+
+        return queryContactsByIds(contactIds)
+            .values
+            .map { it.toMinimalContactInfo() }
+            .sortedBy { it.displayName.lowercase(Locale.getDefault()) }
+    }
+
+    /**
      * @param query Search query string
      * @param limit Maximum number of unique contacts to return
      * @return List of contacts sorted by match priority, then alphabetically
