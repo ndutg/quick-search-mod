@@ -640,13 +640,16 @@ fun ContentLayout(
                 if (deferNonAppContentUntilAppsReady && section != SearchSection.APPS) return@forEach
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
                 if (
-                    section == SearchSection.CALENDAR &&
-                        !hasQuery &&
-                        showPinnedNonAppItems &&
-                        hasStandaloneTodayCalendarSection
+                    !hasQuery &&
+                        shouldSkipRegularCalendarSectionForStandaloneTodayEvents(
+                            section = section,
+                            todayCalendarEventsCount = standaloneTodayEventIds.size,
+                            pinnedCalendarEventsCount =
+                                sectionContextForRecentHistoryExpansion.calendarEventsList.size,
+                        )
                 ) {
-                    // The home-screen "today" calendar block is injected next to pinned/history
-                    // content. Skip the normal calendar slot here to avoid rendering it twice.
+                    // Today's events are injected after the app grid. Rendering this otherwise empty
+                    // calendar slot as well produces a duplicate home-screen calendar card.
                     return@forEach
                 }
 

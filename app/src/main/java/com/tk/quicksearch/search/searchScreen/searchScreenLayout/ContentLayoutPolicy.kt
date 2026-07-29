@@ -6,3 +6,12 @@ internal fun shouldRenderStandaloneTodayCalendarSection(
     section: SearchSection,
     todayCalendarEventsCount: Int,
 ): Boolean = section == SearchSection.CALENDAR && todayCalendarEventsCount > 0
+
+internal fun shouldSkipRegularCalendarSectionForStandaloneTodayEvents(
+    section: SearchSection,
+    todayCalendarEventsCount: Int,
+    pinnedCalendarEventsCount: Int,
+): Boolean =
+    section == SearchSection.CALENDAR &&
+        todayCalendarEventsCount > 0 &&
+        pinnedCalendarEventsCount == 0
