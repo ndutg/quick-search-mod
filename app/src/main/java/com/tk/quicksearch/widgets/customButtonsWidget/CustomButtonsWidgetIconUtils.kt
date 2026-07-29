@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.contacts.contactInitials
 import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.shared.ui.theme.AppColors
 
@@ -193,13 +194,7 @@ private fun loadContactBitmap(
         return createCircularBitmap(scaledBitmap)
     }
 
-    val initials =
-        action.displayName
-            .trim()
-            .split(" ")
-            .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-            .take(2)
-            .joinToString("")
+    val initials = contactInitials(action.displayName)
 
     if (initials.isBlank()) {
         return createVectorBitmap(Icons.Rounded.Person, iconSizePx)
