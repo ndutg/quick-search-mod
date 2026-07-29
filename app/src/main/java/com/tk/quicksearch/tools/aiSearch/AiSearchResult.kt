@@ -8,6 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
@@ -15,6 +20,7 @@ import androidx.compose.ui.text.AnnotatedString
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AiSearchState
 import com.tk.quicksearch.search.core.AiSearchStatus
+import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.ui.graphics.Color
 import com.tk.quicksearch.shared.util.PhoneEmailLinkifiedText
@@ -38,8 +44,28 @@ fun AiSearchResult(
             aiSearchState.status == AiSearchStatus.Success &&
                     !aiSearchState.answer.isNullOrBlank()
     val effectiveProviderId = aiSearchState.llmProviderId ?: aiSearchLlmProviderId
+    var fallbackTipDismissed by remember(aiSearchState.activeQuery) {
+        mutableStateOf(false)
+    }
 
-    GeminiResultCard(
+    LaunchedEffect(aiSearchState.status) {
+        if (aiSearchState.status == AiSearchStatus.Loading) {
+            fallbackTipDismissed = false
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        if (aiSearchState.webSearchDisabledForRequest && !fallbackTipDismissed) {
+            TipBanner(
+                text = stringResource(R.string.gemini_web_search_quota_fallback_tip),
+                onDismiss = { fallbackTipDismissed = true },
+            )
+        }
+
+        GeminiResultCard(
             showWallpaperBackground = showWallpaperBackground,
             showAttribution = showAttribution,
             usedModelId = aiSearchState.usedModelId,
@@ -48,20 +74,20 @@ fun AiSearchResult(
             onGeminiModelInfoClick = onGeminiModelInfoClick,
             onOpenAiSearchConfigure = onOpenAiSearchConfigure,
             copyText = aiSearchState.answer,
-    ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Column(
+        ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Column(
                     modifier = Modifier.fillMaxWidth().padding(DesignTokens.SpacingLarge),
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-            ) {
-                when (aiSearchState.status) {
-                    AiSearchStatus.Loading -> {
-                        GeminiLoadingAnimation()
-                    }
-                    AiSearchStatus.Success -> {
-                        aiSearchState.answer?.let { answer ->
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                ClickableAiSearchText(
+                ) {
+                    when (aiSearchState.status) {
+                        AiSearchStatus.Loading -> {
+                            GeminiLoadingAnimation()
+                        }
+                        AiSearchStatus.Success -> {
+                            aiSearchState.answer?.let { answer ->
+                                Box(modifier = Modifier.fillMaxWidth()) {
+                                    ClickableAiSearchText(
                                         text = answer,
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onSurface,
@@ -70,19 +96,20 @@ fun AiSearchResult(
                                         onLongClick = {
                                             clipboardManager.setText(AnnotatedString(answer))
                                         },
-                                )
+                                    )
+                                }
                             }
                         }
-                    }
-                    AiSearchStatus.Error -> {
-                        Text(
+                        AiSearchStatus.Error -> {
+                            Text(
                                 text = aiSearchState.errorMessage
-                                        ?: stringResource(R.string.direct_search_error_generic),
+                                    ?: stringResource(R.string.direct_search_error_generic),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error,
-                        )
+                            )
+                        }
+                        AiSearchStatus.Idle -> {}
                     }
-                    AiSearchStatus.Idle -> {}
                 }
             }
         }

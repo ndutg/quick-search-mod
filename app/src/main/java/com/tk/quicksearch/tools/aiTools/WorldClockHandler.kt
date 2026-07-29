@@ -102,8 +102,8 @@ class WorldClockHandler(
                                         advancedPayloadJson = advancedPayload.second.takeIf { advancedPayload.first },
                                 ),
                 )
-        return result.mapCatching { text ->
-            val parsed = parseModelResponse(text).getOrElse { throw it }
+        return result.mapCatching { response ->
+            val parsed = parseModelResponse(response.text).getOrElse { throw it }
             val corrected = resolveFixedLocationResult(confirmed.timeExpression) ?: parsed
             corrected to modelId
         }

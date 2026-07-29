@@ -334,11 +334,13 @@ class AiSearchHandler(
                     )
 
                 result
-                    .onSuccess { answer ->
+                    .onSuccess { response ->
                         _aiSearchState.update {
                             AiSearchState(
                                 status = AiSearchStatus.Success,
-                                answer = answer,
+                                answer = response.text,
+                                webSearchDisabledForRequest =
+                                    response.webSearchDisabledForRequest,
                                 activeQuery = trimmedQuery,
                                 usedModelId = selectedModelId,
                                 llmProviderId = activeProviderId,
@@ -451,11 +453,13 @@ class AiSearchHandler(
                     )
 
                 result
-                    .onSuccess { answer ->
+                    .onSuccess { response ->
                         _aiSearchState.update {
                             AiSearchState(
                                 status = AiSearchStatus.Success,
-                                answer = answer,
+                                answer = response.text,
+                                webSearchDisabledForRequest =
+                                    response.webSearchDisabledForRequest,
                                 activeQuery = trimmedQuery,
                                 usedModelId = modelId,
                                 llmProviderId = providerId,

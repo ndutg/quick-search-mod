@@ -172,7 +172,7 @@ class AiSearchClient(
         useSystemInstruction: Boolean = true,
         systemInstruction: String? = null,
         responseMimeType: String = "text/plain",
-    ): Result<String> =
+    ): Result<LlmResponse> =
         withContext(Dispatchers.IO) {
             var attempt = 1
             var delayMs = INITIAL_RETRY_DELAY_MS
@@ -191,7 +191,15 @@ class AiSearchClient(
                         systemInstruction = systemInstruction,
                         responseMimeType = responseMimeType,
                     )
-                if (result.isSuccess) return@withContext result
+                if (result.isSuccess) {
+                    return@withContext Result.success(
+                        LlmResponse(
+                            text = result.getOrThrow(),
+                            webSearchDisabledForRequest =
+                                useGroundingWithGoogleSearch && !groundingEnabledForAttempt,
+                        ),
+                    )
+                }
 
                 lastError = result.exceptionOrNull()
                 if (shouldFallbackToUngrounded(lastError, groundingEnabledForAttempt)) {
