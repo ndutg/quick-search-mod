@@ -444,6 +444,13 @@ class AppSettingsRepository(
                 keywords = listOf("recent"),
             )
             addToggle(
+                id = "app_toggle_fuzzy_search",
+                titleRes = R.string.fuzzy_search_toggle_title,
+                descriptionRes = R.string.fuzzy_search_toggle_desc,
+                toggleKey = AppSettingsToggleKey.FUZZY_SEARCH,
+                keywords = listOf("typo", "approximate", "matching"),
+            )
+            addToggle(
                 id = "app_toggle_top_result_indicator",
                 titleRes = R.string.top_result_indicator_toggle_title,
                 descriptionRes = R.string.top_result_indicator_toggle_desc,

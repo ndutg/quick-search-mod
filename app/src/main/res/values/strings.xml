@@ -210,6 +210,8 @@
     <string name="more_results_title">More Results</string>
     <string name="open_keyboard_toggle_desc">Automatically open keyboard when the app launches</string>
     <string name="recent_queries_toggle_desc">Show your search history in the home screen.</string>
+    <string name="fuzzy_search_toggle_title">Fuzzy search</string>
+    <string name="fuzzy_search_toggle_desc">Find results even when your search contains a typo.</string>
     <string name="recent_queries_toggle_title">Search History</string>
     <string name="search_history_tab_recently_opened">Results</string>
     <string name="search_history_tab_searches">Searches</string>

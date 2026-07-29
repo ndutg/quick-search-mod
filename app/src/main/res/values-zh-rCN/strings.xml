@@ -220,6 +220,8 @@
     <string name="more_results_title">更多结果</string>
     <string name="open_keyboard_toggle_desc">应用启动时自动打开键盘</string>
     <string name="recent_queries_toggle_desc">在主屏幕上显示您的搜索历史记录。</string>
+    <string name="fuzzy_search_toggle_title">模糊搜索</string>
+    <string name="fuzzy_search_toggle_desc">即使搜索内容中有输入错误，也能找到结果。</string>
     <string name="recent_queries_toggle_title">搜索历史</string>
     <string name="search_history_tab_recently_opened">结果</string>
     <string name="search_history_tab_searches">搜索记录</string>

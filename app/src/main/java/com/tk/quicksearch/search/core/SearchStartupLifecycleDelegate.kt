@@ -758,6 +758,11 @@ internal class SearchStartupLifecycleDelegate(
                 assistantLaunchVoiceModeEnabled = snapshot.assistantLaunchVoiceModeEnabled,
                 disabledAppShortcutIds = userPreferences.getDisabledAppShortcutIds(),
                 recentQueriesEnabled = prefs.searchHistoryEnabled,
+                fuzzySearchEnabled =
+                    !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()) &&
+                        userPreferences.isFuzzySearchEnabled(),
+                fuzzySearchAvailable =
+                    !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()),
                 webSuggestionsCount = userPreferences.getWebSuggestionsCount(),
                 topMatchesEnabled = userPreferences.isTopMatchesEnabled(),
                 topMatchesLimit = userPreferences.getTopMatchesLimit(),

@@ -220,6 +220,8 @@
 <string name="more_results_title">Другие результаты</string>
 <string name="open_keyboard_toggle_desc">Автоматически открывать клавиатуру при запуске приложения</string>
     <string name="recent_queries_toggle_desc">Показывать историю поиска на главном экране.</string>
+    <string name="fuzzy_search_toggle_title">Нечёткий поиск</string>
+    <string name="fuzzy_search_toggle_desc">Находить результаты, даже если поисковый запрос содержит опечатку.</string>
 <string name="recent_queries_toggle_title">История поиска</string>
 <string name="search_history_tab_recently_opened">Результаты</string>
 <string name="search_history_tab_searches">Запросы</string>

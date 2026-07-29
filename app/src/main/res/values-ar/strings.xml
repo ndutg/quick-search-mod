@@ -221,6 +221,8 @@
     <string name="more_results_title">المزيد من النتائج</string>
     <string name="open_keyboard_toggle_desc">فتح لوحة المفاتيح تلقائياً عند تشغيل التطبيق</string>
     <string name="recent_queries_toggle_desc">عرض سجل البحث على الشاشة الرئيسية.</string>
+    <string name="fuzzy_search_toggle_title">البحث التقريبي</string>
+    <string name="fuzzy_search_toggle_desc">اعثر على النتائج حتى عندما يحتوي بحثك على خطأ إملائي.</string>
     <string name="recent_queries_toggle_title">سجل البحث</string>
     <string name="search_history_tab_recently_opened">النتائج</string>
     <string name="search_history_tab_searches">عمليات البحث</string>

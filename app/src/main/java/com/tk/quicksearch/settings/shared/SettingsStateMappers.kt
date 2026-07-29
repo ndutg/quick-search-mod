@@ -30,6 +30,8 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         topMatchesSectionOrder = searchResults.topMatchesSectionOrder,
         disabledTopMatchesSections = searchResults.disabledTopMatchesSections,
         recentQueriesEnabled = searchResults.recentQueriesEnabled,
+        fuzzySearchEnabled = searchResults.fuzzySearchEnabled,
+        fuzzySearchAvailable = searchResults.fuzzySearchAvailable,
         searchEngineOrder = searchEngines.searchEngineOrder,
         disabledSearchEngines = searchEngines.disabledSearchEngines,
         shortcutCodes = searchEngines.shortcutCodes,
@@ -133,6 +135,8 @@ private data class SearchResultsMapperState(
     val topMatchesSectionOrder: List<com.tk.quicksearch.search.core.SearchSection>,
     val disabledTopMatchesSections: Set<com.tk.quicksearch.search.core.SearchSection>,
     val recentQueriesEnabled: Boolean,
+    val fuzzySearchEnabled: Boolean,
+    val fuzzySearchAvailable: Boolean,
 )
 
 private fun SearchUiState.toSearchResultsSettingsState() =
@@ -154,6 +158,8 @@ private fun SearchUiState.toSearchResultsSettingsState() =
         topMatchesSectionOrder = topMatchesSectionOrder,
         disabledTopMatchesSections = disabledTopMatchesSections,
         recentQueriesEnabled = recentQueriesEnabled,
+        fuzzySearchEnabled = fuzzySearchEnabled,
+        fuzzySearchAvailable = fuzzySearchAvailable,
     )
 
 private data class SearchEngineMapperState(

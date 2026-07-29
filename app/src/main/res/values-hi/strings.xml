@@ -220,6 +220,8 @@
     <string name="more_results_title">और परिणाम</string>
     <string name="open_keyboard_toggle_desc">ऐप खुलने पर कीबोर्ड अपने आप खोलें</string>
     <string name="recent_queries_toggle_desc">होम स्क्रीन पर अपना खोज इतिहास दिखाएं।</string>
+    <string name="fuzzy_search_toggle_title">अनुमानित खोज</string>
+    <string name="fuzzy_search_toggle_desc">खोज में टाइपिंग की गलती होने पर भी परिणाम ढूंढें।</string>
     <string name="recent_queries_toggle_title">खोज इतिहास</string>
     <string name="search_history_tab_recently_opened">परिणाम</string>
     <string name="search_history_tab_searches">खोजें</string>

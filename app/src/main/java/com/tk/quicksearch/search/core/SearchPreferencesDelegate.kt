@@ -12,6 +12,7 @@ import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
+import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -269,6 +270,22 @@ internal class SearchPreferencesDelegate(
             if (enabled && resultsStateProvider().query.isEmpty()) {
                 refreshRecentItems()
             }
+        }
+    }
+
+    fun setFuzzySearchEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            if (isLowRamDevice(applicationProvider())) return@launch
+            userPreferences.setFuzzySearchEnabled(enabled)
+            updateFeatureState {
+                it.copy(
+                    fuzzySearchEnabled = enabled,
+                    fuzzySearchAvailable = true,
+                )
+            }
+            refreshAppSuggestions()
+            secondarySearchOrchestrator.resetNoResultTracking()
+            rerunSecondarySearchIfNeeded()
         }
     }
 

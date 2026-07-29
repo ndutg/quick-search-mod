@@ -59,6 +59,48 @@ class AppSearchAlgorithmTest {
     }
 
     @Test
+    fun disabledFuzzySearchDoesNotReturnTypoOnlyMatches() {
+        val settings = app("Settings", "settings")
+
+        val matches =
+            AppSearchAlgorithm.findMatches(
+                query = "setings",
+                source = listOf(settings),
+                limit = 10,
+                fuzzySearchStrategy =
+                    FuzzyAppSearchStrategy(
+                        config = FuzzySearchConfig.DEFAULT_APP_CONFIG,
+                        isFuzzySearchEnabled = { false },
+                    ),
+                appNicknames = emptyMap(),
+                sortAppsByUsageEnabled = false,
+            )
+
+        assertTrue(matches.isEmpty())
+    }
+
+    @Test
+    fun lowRamDevicesDoNotReturnTypoOnlyMatches() {
+        val settings = app("Settings", "settings")
+
+        val matches =
+            AppSearchAlgorithm.findMatches(
+                query = "setings",
+                source = listOf(settings),
+                limit = 10,
+                fuzzySearchStrategy =
+                    FuzzyAppSearchStrategy(
+                        config = FuzzySearchConfig.DEFAULT_APP_CONFIG,
+                        isLowRamDevice = true,
+                    ),
+                appNicknames = emptyMap(),
+                sortAppsByUsageEnabled = false,
+            )
+
+        assertTrue(matches.isEmpty())
+    }
+
+    @Test
     fun githubTypoQueriesReturnGithubResult() {
         val github = app("GitHub", "github")
 

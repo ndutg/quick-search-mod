@@ -220,6 +220,8 @@
     <string name="more_results_title">Περισσότερα αποτελέσματα</string>
     <string name="open_keyboard_toggle_desc">Αυτόματο άνοιγμα του πληκτρολογίου κατά την εκκίνηση της εφαρμογής</string>
     <string name="recent_queries_toggle_desc">Εμφάνιση του ιστορικού αναζήτησής σας στην αρχική οθόνη.</string>
+    <string name="fuzzy_search_toggle_title">Αναζήτηση κατά προσέγγιση</string>
+    <string name="fuzzy_search_toggle_desc">Βρείτε αποτελέσματα ακόμα και όταν η αναζήτησή σας περιέχει τυπογραφικό λάθος.</string>
     <string name="recent_queries_toggle_title">Ιστορικό αναζήτησης</string>
     <string name="search_history_tab_recently_opened">Αποτελέσματα</string>
     <string name="search_history_tab_searches">Αναζητήσεις</string>

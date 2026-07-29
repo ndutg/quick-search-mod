@@ -96,6 +96,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                     setIncludeNonLaunchableAppsInSearch(command.enabled)
                 AppSettingsToggleKey.WEB_SUGGESTIONS -> setWebSuggestionsEnabled(command.enabled)
                 AppSettingsToggleKey.RECENT_QUERIES -> setRecentQueriesEnabled(command.enabled)
+                AppSettingsToggleKey.FUZZY_SEARCH -> setFuzzySearchEnabled(command.enabled)
                 AppSettingsToggleKey.TOP_MATCHES -> setTopMatchesEnabled(command.enabled)
                 AppSettingsToggleKey.TOP_RESULT_INDICATOR ->
                     setTopResultIndicatorEnabled(command.enabled)
@@ -188,6 +189,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
             includeNonLaunchableAppsInSearch
         AppSettingsToggleKey.WEB_SUGGESTIONS -> webSuggestionsEnabled
         AppSettingsToggleKey.RECENT_QUERIES -> recentQueriesEnabled
+        AppSettingsToggleKey.FUZZY_SEARCH -> fuzzySearchEnabled
         AppSettingsToggleKey.TOP_MATCHES -> topMatchesEnabled
         AppSettingsToggleKey.TOP_RESULT_INDICATOR -> topResultIndicatorEnabled
         AppSettingsToggleKey.OPEN_KEYBOARD -> openKeyboardOnLaunch

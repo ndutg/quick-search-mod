@@ -1459,6 +1459,10 @@ class UserAppPreferences(
     fun setRecentQueriesEnabled(enabled: Boolean) =
             recentSearchesPreferences.setRecentQueriesEnabled(enabled)
 
+    fun isFuzzySearchEnabled(): Boolean = uiPreferences.isFuzzySearchEnabled()
+
+    fun setFuzzySearchEnabled(enabled: Boolean) = uiPreferences.setFuzzySearchEnabled(enabled)
+
     // ============================================================================
     // Section Preferences
     // ============================================================================

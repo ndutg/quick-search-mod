@@ -125,7 +125,10 @@ class SecondarySearchOrchestrator(
                     !skipNoResultsCache &&
                         shouldSkipSearchForSection(trimmedQuery, section, isBackspacing)
                 val shouldSearch = canSearchSection && !shouldSkipSection
-                val enableFuzzyMatching = shouldSearch && supportsFuzzySecondarySearch(section)
+                val enableFuzzyMatching =
+                    shouldSearch &&
+                        currentState.fuzzySearchEnabled &&
+                        supportsFuzzySecondarySearch(section)
                 section to
                     UnifiedSectionSearchConfig(
                         shouldSearch = shouldSearch,
@@ -337,7 +340,9 @@ class SecondarySearchOrchestrator(
             SearchSectionRegistry.secondarySearchDefinitions.associate { definition ->
                 val shouldSearch = definition.section == section && shouldRunTargetedSearch
                 val enableFuzzyMatching =
-                    shouldSearch && supportsFuzzySecondarySearch(definition.section)
+                    shouldSearch &&
+                        currentState.fuzzySearchEnabled &&
+                        supportsFuzzySecondarySearch(definition.section)
                 definition.section to
                     UnifiedSectionSearchConfig(
                         shouldSearch = shouldSearch,

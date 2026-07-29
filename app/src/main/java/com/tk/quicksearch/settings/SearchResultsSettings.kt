@@ -91,6 +91,9 @@ private fun SearchOptionsCard(
     onWebSuggestionsCountChange: (Int) -> Unit,
     recentQueriesEnabled: Boolean,
     onRecentQueriesToggle: (Boolean) -> Unit,
+    fuzzySearchEnabled: Boolean,
+    fuzzySearchAvailable: Boolean,
+    onFuzzySearchToggle: (Boolean) -> Unit,
     hasExcludedItems: Boolean,
     hasNicknames: Boolean,
     hasTriggers: Boolean,
@@ -154,6 +157,20 @@ private fun SearchOptionsCard(
                 onCheckedChange = onRecentQueriesToggle,
                 leadingIcon = Icons.Rounded.History,
             )
+
+            if (fuzzySearchAvailable) {
+                HorizontalDivider(color = AppColors.SettingsDivider)
+                SettingsToggleRow(
+                    title = stringResource(R.string.fuzzy_search_toggle_title),
+                    subtitle = stringResource(R.string.fuzzy_search_toggle_desc),
+                    checked = fuzzySearchEnabled,
+                    onCheckedChange = onFuzzySearchToggle,
+                    leadingIcon = Icons.Rounded.AutoAwesome,
+                    isFirstItem = false,
+                    isLastItem = false,
+                    showDivider = false,
+                )
+            }
             HorizontalDivider(color = AppColors.SettingsDivider)
 
             SettingsToggleRow(
@@ -963,6 +980,16 @@ fun SearchResultsSettingsSection(
                 callbacks.onApplySettingsCommand(
                     SettingsCommand.Toggle(
                         key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.RECENT_QUERIES,
+                        enabled = enabled,
+                    ),
+                )
+            },
+            fuzzySearchEnabled = state.fuzzySearchEnabled,
+            fuzzySearchAvailable = state.fuzzySearchAvailable,
+            onFuzzySearchToggle = { enabled ->
+                callbacks.onApplySettingsCommand(
+                    SettingsCommand.Toggle(
+                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.FUZZY_SEARCH,
                         enabled = enabled,
                     ),
                 )

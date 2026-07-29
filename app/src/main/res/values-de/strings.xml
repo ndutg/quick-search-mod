@@ -220,6 +220,8 @@
     <string name="more_results_title">Weitere Ergebnisse</string>
     <string name="open_keyboard_toggle_desc">Tastatur beim Start der App automatisch öffnen</string>
     <string name="recent_queries_toggle_desc">Suchverlauf auf dem Startbildschirm anzeigen.</string>
+    <string name="fuzzy_search_toggle_title">Unscharfe Suche</string>
+    <string name="fuzzy_search_toggle_desc">Ergebnisse finden, auch wenn die Suche einen Tippfehler enthält.</string>
     <string name="recent_queries_toggle_title">Suchverlauf</string>
     <string name="search_history_tab_recently_opened">Ergebnisse</string>
     <string name="search_history_tab_searches">Suchen</string>

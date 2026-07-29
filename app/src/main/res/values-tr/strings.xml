@@ -219,6 +219,8 @@
 <string name="more_results_title">Daha fazla sonuç</string>
 <string name="open_keyboard_toggle_desc">Uygulama başlatıldığında klavyeyi otomatik olarak aç</string>
 <string name="recent_queries_toggle_desc">Arama geçmişinizi ana ekranda göster.</string>
+<string name="fuzzy_search_toggle_title">Bulanık arama</string>
+<string name="fuzzy_search_toggle_desc">Aramanızda yazım hatası olsa bile sonuçları bulun.</string>
 <string name="recent_queries_toggle_title">Arama geçmişi</string>
 <string name="search_history_tab_recently_opened">Sonuçlar</string>
 <string name="search_history_tab_searches">Aramalar</string>

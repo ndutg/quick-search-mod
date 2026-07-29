@@ -85,6 +85,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setRecentQueriesEnabled(enabled: Boolean) =
         preferencesApiDelegate.setRecentQueriesEnabled(enabled)
 
+    fun setFuzzySearchEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setFuzzySearchEnabled(enabled)
+
     fun setTopMatchesEnabled(enabled: Boolean) =
         preferencesApiDelegate.setTopMatchesEnabled(enabled)
 
@@ -333,6 +336,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setWebSuggestionsCount(count: Int) = preferencesDelegate.setWebSuggestionsCount(count)
 
     fun setRecentQueriesEnabled(enabled: Boolean) = preferencesDelegate.setRecentQueriesEnabled(enabled)
+
+    fun setFuzzySearchEnabled(enabled: Boolean) = preferencesDelegate.setFuzzySearchEnabled(enabled)
 
     fun setShowTodayEvents(enabled: Boolean) = preferencesDelegate.setShowTodayEvents(enabled)
 

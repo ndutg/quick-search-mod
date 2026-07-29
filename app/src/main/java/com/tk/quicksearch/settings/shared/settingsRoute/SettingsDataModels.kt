@@ -116,6 +116,8 @@ data class SettingsScreenState(
     val clearQueryOnLaunch: Boolean,
     val autoCloseOverlay: Boolean,
     val recentQueriesEnabled: Boolean,
+    val fuzzySearchEnabled: Boolean,
+    val fuzzySearchAvailable: Boolean,
     val hasApiKey: Boolean = false,
     val geminiApiKeyLast4: String? = null,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
@@ -150,6 +152,8 @@ data class SettingsScreenState(
                 topMatchesSectionOrder = topMatchesSectionOrder,
                 disabledTopMatchesSections = disabledTopMatchesSections,
                 recentQueriesEnabled = recentQueriesEnabled,
+                fuzzySearchEnabled = fuzzySearchEnabled,
+                fuzzySearchAvailable = fuzzySearchAvailable,
             )
 
     val searchEngines: SearchEngineSettingsState
@@ -502,6 +506,8 @@ data class SearchResultsSettingsState(
     val topMatchesSectionOrder: List<SearchSection>,
     val disabledTopMatchesSections: Set<SearchSection>,
     val recentQueriesEnabled: Boolean,
+    val fuzzySearchEnabled: Boolean,
+    val fuzzySearchAvailable: Boolean,
 )
 
 data class SearchEngineSettingsState(

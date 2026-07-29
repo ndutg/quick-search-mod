@@ -631,6 +631,13 @@ class UiPreferences(
                 .apply()
     }
 
+    fun isFuzzySearchEnabled(): Boolean =
+            getBooleanPref(BasePreferences.KEY_FUZZY_SEARCH_ENABLED, true)
+
+    fun setFuzzySearchEnabled(enabled: Boolean) {
+        setBooleanPref(BasePreferences.KEY_FUZZY_SEARCH_ENABLED, enabled)
+    }
+
     fun hasSeenOverlayAssistantTip(): Boolean =
             sessionPrefs.getBoolean(UiPreferences.KEY_HAS_SEEN_OVERLAY_ASSISTANT_TIP, false)
 
