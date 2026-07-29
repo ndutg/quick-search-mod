@@ -15,8 +15,9 @@
 <string name="app_name">Quick Search</string>
 <string name="direct_answer_contact_name">AI-ответ</string>
     <string name="direct_search_enter_query">Введите запрос для поиска.</string>
-    <string name="direct_search_error_generic">Не удалось получить AI-ответ. Попробуйте ещё раз.</string>
+<string name="direct_search_error_generic">Не удалось получить AI-ответ. Попробуйте ещё раз.</string>
 <string name="direct_search_error_no_key">Добавьте API-ключ в настройках (AI-провайдер), чтобы получать AI-ответы.</string>
+<string name="gemini_web_search_quota_fallback_tip">Квота Gemini на веб-поиск исчерпана, поэтому этот ответ был создан без веб-поиска.</string>
 <string name="direct_search_powered_by">Работает на базе</string>
 <string name="empty_state_subtitle">Запустите приложение или уточните запрос, чтобы увидеть подсказки.</string>
 <string name="empty_state_title">Пока ничего нет</string>

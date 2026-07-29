@@ -18,6 +18,7 @@
     <string name="direct_search_enter_query">يرجى إدخال عبارة بحث للبدء.</string>
     <string name="direct_search_error_generic">تعذر الحصول على إجابة من AI. يرجى المحاولة مرة أخرى.</string>
     <string name="direct_search_error_no_key">يرجى إضافة مفتاح API في الإعدادات (مزود AI) للحصول على إجابات AI.</string>
+    <string name="gemini_web_search_quota_fallback_tip">تم بلوغ حصة بحث الويب في Gemini، لذلك تم إنشاء هذه الإجابة بدون بحث الويب.</string>
     <string name="direct_search_powered_by">بدعم من</string>
     <string name="empty_state_subtitle">شغّل تطبيقاً أو خصّص بحثك لعرض الاقتراحات.</string>
     <string name="empty_state_title">لا يوجد ما يمكن عرضه (حتى الآن)</string>

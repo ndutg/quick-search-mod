@@ -17,6 +17,7 @@
     <string name="direct_search_enter_query">खोजने के लिए कृपया कोई क्वेरी दर्ज करें।</string>
     <string name="direct_search_error_generic">AI उत्तर प्राप्त नहीं हो सका। फिर से कोशिश करें।</string>
     <string name="direct_search_error_no_key">AI उत्तर पाने के लिए सेटिंग्स (AI Provider) में API key जोड़ें।</string>
+    <string name="gemini_web_search_quota_fallback_tip">Gemini की वेब खोज सीमा पूरी हो गई है, इसलिए यह उत्तर वेब खोज के बिना तैयार किया गया है।</string>
     <string name="direct_search_powered_by">पावर्ड बाय</string>
     <string name="empty_state_subtitle">सुझाव देखने के लिए कोई ऐप खोलें या अपनी खोज को और स्पष्ट करें।</string>
     <string name="empty_state_title">दिखाने के लिए कुछ नहीं (अभी)</string>

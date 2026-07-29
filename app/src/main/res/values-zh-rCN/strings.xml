@@ -17,6 +17,7 @@
     <string name="direct_search_enter_query">请输入要搜索的内容。</string>
     <string name="direct_search_error_generic">无法获取 AI 回答。请重试。</string>
     <string name="direct_search_error_no_key">请在设置（AI 提供商）中添加 API 密钥以获取 AI 回答。</string>
+    <string name="gemini_web_search_quota_fallback_tip">Gemini 的网页搜索配额已用尽，因此此回答未使用网页搜索生成。</string>
     <string name="direct_search_powered_by">技术支持由</string>
     <string name="empty_state_subtitle">启动应用或优化您的搜索以查看建议。</string>
     <string name="empty_state_title">暂无内容显示</string>

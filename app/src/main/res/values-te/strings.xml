@@ -17,6 +17,7 @@
     <string name="direct_search_enter_query">దయచేసి శోధించడానికి ఒక ప్రశ్నను నమోదు చేయండి.</string>
     <string name="direct_search_error_generic">AI సమాధానాన్ని పొందలేకపోయాము. మళ్ళీ ప్రయత్నించండి.</string>
     <string name="direct_search_error_no_key">AI సమాధానాలను పొందడానికి సెట్టింగ్‌లలో (AI ప్రొవైడర్) ఒక API కీని జోడించండి.</string>
+    <string name="gemini_web_search_quota_fallback_tip">Gemini వెబ్ శోధన కోటా పూర్తయింది, కాబట్టి ఈ సమాధానం వెబ్ శోధన లేకుండా రూపొందించబడింది.</string>
     <string name="direct_search_powered_by">ద్వారా అందించబడింది</string>
     <string name="empty_state_subtitle">సూచనలను చూడటానికి యాప్‌ను ప్రారంభించండి లేదా మీ శోధనను సవరించండి.</string>
     <string name="empty_state_title">చూపించడానికి ఏమీ లేదు (ఇంకా)</string>

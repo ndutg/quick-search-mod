@@ -17,6 +17,7 @@
     <string name="direct_search_enter_query">Παρακαλώ εισαγάγετε ένα ερώτημα για αναζήτηση.</string>
     <string name="direct_search_error_generic">Δεν ήταν δυνατή η ανάκτηση της απάντησης AI. Δοκιμάστε ξανά.</string>
     <string name="direct_search_error_no_key">Προσθέστε ένα κλειδί API στις ρυθμίσεις (Πάροχος AI) για να λάβετε απαντήσεις AI.</string>
+    <string name="gemini_web_search_quota_fallback_tip">Συμπληρώθηκε το όριο αναζήτησης στον ιστό του Gemini, επομένως αυτή η απάντηση δημιουργήθηκε χωρίς αναζήτηση στον ιστό.</string>
     <string name="direct_search_powered_by">Με την υποστήριξη του</string>
     <string name="empty_state_subtitle">Ανοίξτε μια εφαρμογή ή βελτιώστε την αναζήτησή σας για να δείτε προτάσεις.</string>
     <string name="empty_state_title">Δεν υπάρχει κάτι για εμφάνιση (ακόμα)</string>

@@ -17,6 +17,7 @@
 <string name="direct_search_enter_query">Veuillez saisir une recherche.</string>
 <string name="direct_search_error_generic">Impossible de récupérer la réponse de l\'AI. Réessayez.</string>
 <string name="direct_search_error_no_key">Ajoutez une clé API dans les paramètres (Fournisseur AI) pour obtenir les réponses de l\'AI.</string>
+<string name="gemini_web_search_quota_fallback_tip">Le quota de recherche Web de Gemini a été atteint. Cette réponse a donc été générée sans recherche Web.</string>
 <string name="direct_search_powered_by">Propulsé par</string>
 <string name="empty_state_subtitle">Lancez une application ou affinez votre recherche pour voir des suggestions.</string>
 <string name="empty_state_title">Rien à afficher (pour le moment)</string>
