@@ -58,7 +58,7 @@ fun AiSearchResult(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
-        if (aiSearchState.webSearchDisabledForRequest && !fallbackTipDismissed) {
+        if (aiSearchState.showWebSearchFallbackTip && !fallbackTipDismissed) {
             TipBanner(
                 text = stringResource(R.string.gemini_web_search_quota_fallback_tip),
                 onDismiss = { fallbackTipDismissed = true },

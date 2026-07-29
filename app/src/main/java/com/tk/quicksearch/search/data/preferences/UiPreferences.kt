@@ -1091,6 +1091,26 @@ class UiPreferences(
     }
 
     // ============================================================================
+    // AI Search Web Search Fallback Tip Preferences
+    // ============================================================================
+
+    fun shouldShowWebSearchFallbackTip(): Boolean {
+        val lastShownAt =
+            timingPrefs.getLong(UiPreferences.KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT, 0L)
+        return lastShownAt == 0L ||
+            System.currentTimeMillis() - lastShownAt >= DAY_IN_MILLIS
+    }
+
+    fun recordWebSearchFallbackTipShown() {
+        timingPrefs
+            .edit()
+            .putLong(
+                UiPreferences.KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT,
+                System.currentTimeMillis(),
+            ).apply()
+    }
+
+    // ============================================================================
     // In-App Update Session Tracking
     // ============================================================================
 
@@ -1290,6 +1310,8 @@ class UiPreferences(
         const val KEY_RATE_QUICK_SEARCH_COMPLETED = "rate_quick_search_completed"
 
         const val KEY_UPDATE_CARD_LAST_DISMISSED_AT = "update_card_last_dismissed_at"
+        const val KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT =
+            "web_search_fallback_tip_last_shown_at"
 
         // In-app update session tracking keys
         const val KEY_UPDATE_CHECK_SHOWN_THIS_SESSION = "update_check_shown_this_session"

@@ -335,12 +335,19 @@ class AiSearchHandler(
 
                 result
                     .onSuccess { response ->
+                        val showWebSearchFallbackTip =
+                            response.webSearchDisabledForRequest &&
+                                userPreferences.shouldShowWebSearchFallbackTip()
+                        if (showWebSearchFallbackTip) {
+                            userPreferences.recordWebSearchFallbackTipShown()
+                        }
                         _aiSearchState.update {
                             AiSearchState(
                                 status = AiSearchStatus.Success,
                                 answer = response.text,
                                 webSearchDisabledForRequest =
                                     response.webSearchDisabledForRequest,
+                                showWebSearchFallbackTip = showWebSearchFallbackTip,
                                 activeQuery = trimmedQuery,
                                 usedModelId = selectedModelId,
                                 llmProviderId = activeProviderId,
@@ -454,12 +461,19 @@ class AiSearchHandler(
 
                 result
                     .onSuccess { response ->
+                        val showWebSearchFallbackTip =
+                            response.webSearchDisabledForRequest &&
+                                userPreferences.shouldShowWebSearchFallbackTip()
+                        if (showWebSearchFallbackTip) {
+                            userPreferences.recordWebSearchFallbackTipShown()
+                        }
                         _aiSearchState.update {
                             AiSearchState(
                                 status = AiSearchStatus.Success,
                                 answer = response.text,
                                 webSearchDisabledForRequest =
                                     response.webSearchDisabledForRequest,
+                                showWebSearchFallbackTip = showWebSearchFallbackTip,
                                 activeQuery = trimmedQuery,
                                 usedModelId = modelId,
                                 llmProviderId = providerId,

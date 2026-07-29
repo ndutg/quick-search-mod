@@ -784,6 +784,12 @@ class UserAppPreferences(
     fun setAiSearchProviderId(providerId: AiSearchLlmProviderId) =
             llmPreferences.setAiSearchProviderId(providerId)
 
+    fun shouldShowWebSearchFallbackTip(): Boolean =
+            uiPreferences.shouldShowWebSearchFallbackTip()
+
+    fun recordWebSearchFallbackTipShown() =
+            uiPreferences.recordWebSearchFallbackTipShown()
+
     /**
      * Generic LLM API key accessor used by provider-aware callers.
      * New providers should extend this when provider-specific credential keys are added.
