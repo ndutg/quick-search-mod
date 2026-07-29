@@ -648,7 +648,10 @@
     <string name="settings_icon_title">Εικονίδιο ρυθμίσεων</string>
     <string name="settings_launch_options_desc">Διαφορετικοί τρόποι εκκίνησης αυτής της εφαρμογής</string>
     <string name="settings_launch_options_title">Επιλογές εκκίνησης</string>
+    <string name="settings_app_language_title">Γλώσσα εφαρμογής</string>
     <string name="settings_app_language_desc">Τρέχον: %1$s</string>
+    <string name="settings_app_language_picker_title">Επιλογή γλώσσας εφαρμογής</string>
+    <string name="settings_app_language_system_default">Προεπιλογή συστήματος</string>
     <string name="settings_launcher_icon_reset_default">Επαναφορά στο προεπιλεγμένο</string>
     <string name="settings_launcher_icon_title">Εικονίδιο εφαρμογής Launcher</string>
     <string name="settings_layout_option_bottom_desc">Τα πιο σχετικά στοιχεία εμφανίζονται στο κάτω μέρος για εύκολη πρόσβαση</string>

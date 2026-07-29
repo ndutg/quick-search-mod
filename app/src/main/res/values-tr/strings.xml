@@ -647,7 +647,10 @@
 <string name="settings_icon_title">Ayarlar simgesi</string>
 <string name="settings_launch_options_desc">Bu uygulamayı başlatmanın farklı yolları</string>
 <string name="settings_launch_options_title">Başlatma seçenekleri</string>
+<string name="settings_app_language_title">Uygulama dili</string>
 <string name="settings_app_language_desc">Mevcut: %1$s</string>
+<string name="settings_app_language_picker_title">Uygulama dilini seçin</string>
+<string name="settings_app_language_system_default">Sistem varsayılanı</string>
 <string name="settings_launcher_icon_reset_default">Varsayılana sıfırla</string>
 <string name="settings_launcher_icon_title">Başlatıcı uygulama simgesi</string>
 <string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>

@@ -648,7 +648,10 @@
     <string name="settings_icon_title">సెట్టింగ్‌ల ఐకాన్</string>
     <string name="settings_launch_options_desc">ఈ యాప్‌ను ప్రారంభించడానికి వివిధ మార్గాలు</string>
     <string name="settings_launch_options_title">లాంచ్ ఎంపికలు</string>
+    <string name="settings_app_language_title">యాప్ భాష</string>
     <string name="settings_app_language_desc">ప్రస్తుత: %1$s</string>
+    <string name="settings_app_language_picker_title">యాప్ భాషను ఎంచుకోండి</string>
+    <string name="settings_app_language_system_default">సిస్టమ్ డిఫాల్ట్</string>
     <string name="settings_launcher_icon_reset_default">డిఫాల్ట్‌కి రీసెట్ చేయి</string>
     <string name="settings_launcher_icon_title">లాంచర్ యాప్ ఐకాన్</string>
     <string name="settings_layout_option_bottom_desc">సులభంగా యాక్సెస్ చేయడానికి అత్యంత సంబంధిత అంశాలు దిగువన కనిపిస్తాయి</string>

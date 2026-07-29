@@ -647,7 +647,10 @@
     <string name="settings_icon_title">Icona impostazioni</string>
     <string name="settings_launch_options_desc">Diversi modi per avviare questa app</string>
     <string name="settings_launch_options_title">Opzioni di avvio</string>
+    <string name="settings_app_language_title">Lingua dell’app</string>
     <string name="settings_app_language_desc">In uso: %1$s</string>
+    <string name="settings_app_language_picker_title">Scegli la lingua dell’app</string>
+    <string name="settings_app_language_system_default">Predefinita di sistema</string>
     <string name="settings_launcher_icon_reset_default">Ripristina predefinita</string>
     <string name="settings_launcher_icon_title">Icona dell\u2019applicazione launcher</string>
     <string name="settings_layout_option_bottom_desc">Gli elementi più rilevanti appaiono in basso per un facile accesso</string>

@@ -644,10 +644,15 @@ fun SearchRoute(
                 onDragCancel = { totalHorizontalDrag = 0f },
             )
         }
-    val shouldAutoCloseApp = uiState.autoCloseOverlay
-    LaunchedEffect(Unit) {
+    val shouldAutoCloseSearchSurface =
+        shouldCloseSearchSurfaceAfterExternalNavigation(
+            autoCloseEnabled = uiState.autoCloseOverlay,
+            isOverlayPresentation = isOverlayPresentation,
+            isDefaultLauncher = isDefaultLauncher,
+        )
+    LaunchedEffect(shouldAutoCloseSearchSurface, isOverlayPresentation) {
         viewModel.externalNavigationEvent.collect {
-            if (!shouldAutoCloseApp) return@collect
+            if (!shouldAutoCloseSearchSurface) return@collect
             if (isOverlayPresentation) {
                 onOverlayDismissRequest?.invoke()
             } else {

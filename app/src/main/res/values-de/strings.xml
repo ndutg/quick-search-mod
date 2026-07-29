@@ -648,7 +648,10 @@
     <string name="settings_icon_title">Einstellungssymbol</string>
     <string name="settings_launch_options_desc">Verschiedene Möglichkeiten, diese App zu starten</string>
     <string name="settings_launch_options_title">Startoptionen</string>
+    <string name="settings_app_language_title">App-Sprache</string>
     <string name="settings_app_language_desc">Aktuell: %1$s</string>
+    <string name="settings_app_language_picker_title">App-Sprache auswählen</string>
+    <string name="settings_app_language_system_default">Systemstandard</string>
     <string name="settings_launcher_icon_reset_default">Standard wiederherstellen</string>
     <string name="settings_launcher_icon_title">Launcher-App-Symbol</string>
     <string name="settings_layout_option_bottom_desc">Relevanteste Elemente erscheinen unten für einfachen Zugriff</string>

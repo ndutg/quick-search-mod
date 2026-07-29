@@ -648,7 +648,10 @@
     <string name="settings_icon_title">सेटिंग्स आइकन</string>
     <string name="settings_launch_options_desc">इस ऐप को लॉन्च करने के अलग-अलग तरीके</string>
     <string name="settings_launch_options_title">लॉन्च विकल्प</string>
+    <string name="settings_app_language_title">ऐप की भाषा</string>
     <string name="settings_app_language_desc">वर्तमान: %1$s</string>
+    <string name="settings_app_language_picker_title">ऐप की भाषा चुनें</string>
+    <string name="settings_app_language_system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="settings_launcher_icon_reset_default">डिफ़ॉल्ट पर रीसेट करें</string>
     <string name="settings_launcher_icon_title">लॉन्चर ऐप आइकन</string>
     <string name="settings_layout_option_bottom_desc">आसान पहुंच के लिए सबसे प्रासंगिक आइटम नीचे दिखते हैं</string>

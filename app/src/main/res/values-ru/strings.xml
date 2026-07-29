@@ -664,7 +664,10 @@
 <string name="settings_icon_title">Значок настроек</string>
 <string name="settings_launch_options_desc">Различные способы запуска приложения</string>
 <string name="settings_launch_options_title">Варианты запуска</string>
+<string name="settings_app_language_title">Язык приложения</string>
 <string name="settings_app_language_desc">Текущий: %1$s</string>
+<string name="settings_app_language_picker_title">Выберите язык приложения</string>
+<string name="settings_app_language_system_default">Системный язык</string>
 <string name="settings_launcher_icon_reset_default">Сбросить по умолчанию</string>
 <string name="settings_launcher_icon_title">Значок приложения в лаунчере</string>
 <string name="settings_layout_option_bottom_desc">Наиболее важные элементы отображаются внизу для удобного доступа</string>
