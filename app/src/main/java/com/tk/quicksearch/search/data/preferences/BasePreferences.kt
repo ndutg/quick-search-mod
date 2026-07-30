@@ -455,6 +455,7 @@ abstract class BasePreferences(
         const val KEY_HIDDEN_RESULTS = "hidden_packages_results"
         const val KEY_PINNED = "pinned_packages"
         const val KEY_PINNED_APP_ORDER = "pinned_app_order"
+        const val KEY_APP_ICON_OVERRIDE_PREFIX = "app_icon_override_"
         const val KEY_RECENT_APP_LAUNCHES = "recent_app_launches"
         const val KEY_PINNED_NON_APP_ITEM_ORDER = "pinned_non_app_item_order"
 

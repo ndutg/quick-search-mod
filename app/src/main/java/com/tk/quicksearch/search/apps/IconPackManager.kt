@@ -150,6 +150,22 @@ object IconPackManager {
         )
     }
 
+    /** Returns the icon names declared by an icon pack's appfilter. */
+    fun getIconDrawableNames(context: Context, iconPackPackage: String): List<String> {
+        val resources = getIconPackResources(context, iconPackPackage) ?: return emptyList()
+        return loadAppFilterRenderData(iconPackPackage, resources).packageMapping.values.distinct().sorted()
+    }
+
+    /** Loads one explicitly selected drawable from an icon pack. */
+    fun loadDrawableBitmap(
+        context: Context,
+        iconPackPackage: String,
+        drawableName: String,
+    ): ImageBitmap? {
+        val resources = getIconPackResources(context, iconPackPackage) ?: return null
+        return loadDrawable(resources, iconPackPackage, drawableName)?.toBitmapSafely()
+    }
+
     fun clearAllCaches() {
         renderDataCache.clear()
         resourcesCache.clear()

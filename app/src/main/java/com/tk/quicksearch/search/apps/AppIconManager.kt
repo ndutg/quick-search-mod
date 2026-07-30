@@ -15,7 +15,9 @@ import android.util.LruCache
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -25,7 +27,6 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.managers.IconPackManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.concurrent.atomic.AtomicLong
 
 private data class AppIconEntry(
     val bitmap: ImageBitmap,
@@ -33,7 +34,7 @@ private data class AppIconEntry(
     val monochromeData: ImageBitmap? = null,
 )
 
-private val appIconCacheEpoch = AtomicLong(0L)
+private var appIconCacheEpoch by mutableLongStateOf(0L)
 
 /**
  * Zoom factor when rasterizing adaptive icons for a circular mask. Keep this slightly above 1.0
@@ -80,7 +81,7 @@ private object AppIconCache {
 
 fun invalidateAppIconCache() {
     AppIconCache.clear()
-    appIconCacheEpoch.incrementAndGet()
+    appIconCacheEpoch++
 }
 
 data class AppIconResult(
@@ -106,11 +107,13 @@ fun rememberAppIcon(
     val maskUnsupportedIconPackIcons =
         if (iconPackPackage == null) false
         else UserAppPreferences(context).isIconPackUnsupportedIconMaskEnabled()
-    val cacheEpoch = appIconCacheEpoch.get()
+    val iconOverride = UserAppPreferences(context).getAppIconOverride(packageName)
+    val cacheEpoch = appIconCacheEpoch
     val cacheKey =
         buildCacheKey(
             packageName = packageName,
             iconPackPackage = iconPackPackage,
+            iconOverride = iconOverride,
             maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons,
             userHandleId = userHandleId,
             cacheEpoch = cacheEpoch,
@@ -148,7 +151,13 @@ fun rememberAppIcon(
                         )
                     } else {
                         val iconPackBitmap =
-                            iconPackPackage?.let { pack ->
+                            iconOverride?.let { override ->
+                                IconPackManager.loadDrawableBitmap(
+                                    context = context,
+                                    iconPackPackage = override.iconPackPackage,
+                                    drawableName = override.drawableName,
+                                )
+                            } ?: iconPackPackage?.let { pack ->
                                 IconPackManager.loadIconBitmap(
                                     context = context,
                                     iconPackPackage = pack,
@@ -352,14 +361,16 @@ suspend fun prefetchAppIcons(
 private fun buildCacheKey(
     packageName: String,
     iconPackPackage: String?,
+    iconOverride: com.tk.quicksearch.search.data.preferences.AppIconOverride? = null,
     maskUnsupportedIconPackIcons: Boolean = false,
     userHandleId: Int? = null,
-    cacheEpoch: Long = appIconCacheEpoch.get(),
+    cacheEpoch: Long = appIconCacheEpoch,
     forceCircularMask: Boolean = false,
 ): String {
     val prefix = iconPackPackage ?: "system"
     val maskSuffix = if (iconPackPackage != null) ":mask:$maskUnsupportedIconPackIcons" else ""
     val suffix = userHandleId?.let { ":work:$it" } ?: ""
     val shapeSuffix = if (forceCircularMask) ":circle" else ""
-    return "$cacheEpoch:$prefix$maskSuffix:$packageName$suffix$shapeSuffix"
+    val overrideSuffix = iconOverride?.let { ":override:${it.iconPackPackage}:${it.drawableName}" }.orEmpty()
+    return "$cacheEpoch:$prefix$maskSuffix:$packageName$suffix$shapeSuffix$overrideSuffix"
 }

@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -70,9 +72,14 @@ fun AppBottomPopup(
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     leadingContent: (@Composable () -> Unit)? = null,
+    aboveCardContent: (@Composable () -> Unit)? = null,
     fixedTopContent: (@Composable () -> Unit)? = null,
     showFixedTopDivider: Boolean = true,
     maxInnerCardHeight: Dp? = null,
+    innerCardHeight: Dp? = null,
+    drawerHeight: Dp? = null,
+    contentSpacing: Dp = 24.dp,
+    contentScrollable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val defaultMaxCardHeight = LocalConfiguration.current.screenHeightDp.dp * 0.72f
@@ -135,8 +142,12 @@ fun AppBottomPopup(
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {},
                             )
-                            .padding(horizontal = 12.dp, vertical = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                            .padding(horizontal = 12.dp, vertical = 24.dp)
+                            .then(
+                                if (drawerHeight != null) Modifier.height(drawerHeight)
+                                else Modifier,
+                            ),
+                    verticalArrangement = Arrangement.spacedBy(contentSpacing),
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -158,8 +169,17 @@ fun AppBottomPopup(
                         }
                     }
 
+                    aboveCardContent?.invoke()
+
                     Card(
-                        modifier = Modifier.fillMaxWidth().heightIn(max = resolvedMaxCardHeight),
+                        modifier =
+                            Modifier.fillMaxWidth().then(
+                                when {
+                                    drawerHeight != null -> Modifier.weight(1f)
+                                    innerCardHeight != null -> Modifier.height(innerCardHeight)
+                                    else -> Modifier.heightIn(max = resolvedMaxCardHeight)
+                                },
+                            ),
                         colors = CardDefaults.cardColors(containerColor = AppColors.getSettingsCardContainerColor()),
                         shape = MaterialTheme.shapes.large,
                     ) {
@@ -167,9 +187,12 @@ fun AppBottomPopup(
                             val scrollState = rememberScrollState()
                             Column(
                                 modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .verticalScroll(scrollState)
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .then(
+                                                if (contentScrollable) Modifier.verticalScroll(scrollState)
+                                                else Modifier.fillMaxSize(),
+                                            )
                                         .padding(
                                             start = 16.dp,
                                             top = 20.dp,
@@ -181,7 +204,13 @@ fun AppBottomPopup(
                                 content = content,
                             )
                         } else {
-                            Column(modifier = Modifier.fillMaxWidth().heightIn(max = resolvedMaxCardHeight)) {
+                            Column(
+                                modifier =
+                                    Modifier.fillMaxWidth().then(
+                                        if (innerCardHeight != null) Modifier.height(innerCardHeight)
+                                        else Modifier.heightIn(max = resolvedMaxCardHeight),
+                                    ),
+                            ) {
                                 Column(
                                     modifier =
                                         Modifier
@@ -204,8 +233,11 @@ fun AppBottomPopup(
                                     modifier =
                                         Modifier
                                             .fillMaxWidth()
-                                            .weight(1f, fill = false)
-                                            .verticalScroll(scrollState)
+                                            .weight(1f, fill = !contentScrollable)
+                                            .then(
+                                                if (contentScrollable) Modifier.verticalScroll(scrollState)
+                                                else Modifier,
+                                            )
                                             .padding(
                                                 start = 16.dp,
                                                 top = 12.dp,

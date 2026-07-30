@@ -128,6 +128,14 @@ class UserAppPreferences(
 
     fun unpinPackage(packageName: String): Set<String> = appPreferences.unpinPackage(packageName)
 
+    fun getAppIconOverride(packageName: String) = appPreferences.getAppIconOverride(packageName)
+
+    fun setAppIconOverride(
+        packageName: String,
+        iconPackPackage: String,
+        drawableName: String,
+    ) = appPreferences.setAppIconOverride(packageName, iconPackPackage, drawableName)
+
     fun clearAllHiddenAppsInSuggestions(): Set<String> =
             appPreferences.clearAllHiddenAppsInSuggestions()
 
