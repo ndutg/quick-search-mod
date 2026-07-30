@@ -893,6 +893,7 @@
     <string name="widget_search_icon">搜索图标</string>
     <string name="widget_settings_title">搜索小部件样式</string>
     <string name="widget_slider_border">边框粗细</string>
+    <string name="widget_slider_icon_size">图标大小</string>
     <string name="widget_slider_internal_padding">外边距</string>
     <string name="widget_slider_internal_padding_horizontal">水平间距</string>
     <string name="widget_slider_internal_padding_vertical">垂直间距</string>

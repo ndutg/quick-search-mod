@@ -892,6 +892,7 @@
 <string name="widget_search_icon">Arama simgesi</string>
 <string name="widget_settings_title">Arama widget\'ı</string>
 <string name="widget_slider_border">Kenarlık kalınlığı</string>
+<string name="widget_slider_icon_size">Simge boyutu</string>
 <string name="widget_slider_internal_padding">Dış kenar boşluğu</string>
 <string name="widget_slider_internal_padding_horizontal">Yatay</string>
 <string name="widget_slider_internal_padding_vertical">Dikey</string>

@@ -893,6 +893,7 @@
 <string name="widget_search_icon">Icône Recherche</string>
 <string name="widget_settings_title">Widget de recherche</string>
 <string name="widget_slider_border">Épaisseur de la bordure</string>
+<string name="widget_slider_icon_size">Taille de l’icône</string>
 <string name="widget_slider_internal_padding">Marge externe</string>
 <string name="widget_slider_internal_padding_horizontal">Horizontale</string>
 <string name="widget_slider_internal_padding_vertical">Verticale</string>

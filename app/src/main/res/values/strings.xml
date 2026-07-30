@@ -890,6 +890,7 @@
     <string name="widget_search_icon">Search Icon</string>
     <string name="widget_settings_title">Search Widget</string>
     <string name="widget_slider_border">Border Thickness</string>
+    <string name="widget_slider_icon_size">Icon Size</string>
     <string name="widget_slider_internal_padding">Outer Padding</string>
     <string name="widget_slider_internal_padding_horizontal">Horizontal</string>
     <string name="widget_slider_internal_padding_vertical">Vertical</string>

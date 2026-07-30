@@ -893,6 +893,7 @@
     <string name="widget_search_icon">Such-Symbol</string>
     <string name="widget_settings_title">Such-Widget</string>
     <string name="widget_slider_border">Rahmendicke</string>
+    <string name="widget_slider_icon_size">Symbolgröße</string>
     <string name="widget_slider_internal_padding">Außenabstand</string>
     <string name="widget_slider_internal_padding_horizontal">Horizontal</string>
     <string name="widget_slider_internal_padding_vertical">Vertikal</string>

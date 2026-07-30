@@ -909,6 +909,7 @@
 <string name="widget_search_icon">Значок поиска</string>
 <string name="widget_settings_title">Виджет поиска</string>
 <string name="widget_slider_border">Толщина рамки</string>
+<string name="widget_slider_icon_size">Размер значка</string>
 <string name="widget_slider_internal_padding">Внешние отступы</string>
 <string name="widget_slider_internal_padding_horizontal">По горизонтали</string>
 <string name="widget_slider_internal_padding_vertical">По вертикали</string>

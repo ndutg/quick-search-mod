@@ -893,6 +893,7 @@
     <string name="widget_search_icon">Εικονίδιο αναζήτησης</string>
     <string name="widget_settings_title">Widget αναζήτησης</string>
     <string name="widget_slider_border">Πάχος περιγράμματος</string>
+    <string name="widget_slider_icon_size">Μέγεθος εικονιδίου</string>
     <string name="widget_slider_internal_padding">Εξωτερικό περιθώριο (Padding)</string>
     <string name="widget_slider_internal_padding_horizontal">Οριζόντιο</string>
     <string name="widget_slider_internal_padding_vertical">Κάθετο</string>

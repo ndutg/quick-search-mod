@@ -893,6 +893,7 @@
     <string name="widget_search_icon">खोज आइकन</string>
     <string name="widget_settings_title">खोज विजेट</string>
     <string name="widget_slider_border">बॉर्डर मोटाई</string>
+    <string name="widget_slider_icon_size">आइकन का आकार</string>
     <string name="widget_slider_internal_padding">बाहरी पैडिंग</string>
     <string name="widget_slider_internal_padding_horizontal">क्षैतिज</string>
     <string name="widget_slider_internal_padding_vertical">ऊर्ध्वाधर</string>

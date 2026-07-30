@@ -892,6 +892,7 @@
     <string name="widget_search_icon">Icona ricerca</string>
     <string name="widget_settings_title">Widget di ricerca</string>
     <string name="widget_slider_border">Spessore del bordo</string>
+    <string name="widget_slider_icon_size">Dimensione dell\u2019icona</string>
     <string name="widget_slider_internal_padding">Spaziatura esterna</string>
     <string name="widget_slider_internal_padding_horizontal">Orizzontale</string>
     <string name="widget_slider_internal_padding_vertical">Verticale</string>

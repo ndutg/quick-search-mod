@@ -894,6 +894,7 @@
     <string name="widget_search_icon">أيقونة البحث</string>
     <string name="widget_settings_title">إعدادات أداة البحث</string>
     <string name="widget_slider_border">سمك الإطار</string>
+    <string name="widget_slider_icon_size">حجم الأيقونة</string>
     <string name="widget_slider_internal_padding">الهامش الخارجي</string>
     <string name="widget_slider_internal_padding_horizontal">أفقي</string>
     <string name="widget_slider_internal_padding_vertical">رأسي</string>

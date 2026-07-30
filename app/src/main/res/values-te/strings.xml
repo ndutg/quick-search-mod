@@ -893,6 +893,7 @@
     <string name="widget_search_icon">శోధన ఐకాన్</string>
     <string name="widget_settings_title">శోధన విడ్జెట్</string>
     <string name="widget_slider_border">అంచు మందం</string>
+    <string name="widget_slider_icon_size">చిహ్నం పరిమాణం</string>
     <string name="widget_slider_internal_padding">బాహ్య ప్యాడింగ్</string>
     <string name="widget_slider_internal_padding_horizontal">అడ్డంగా</string>
     <string name="widget_slider_internal_padding_vertical">నిలువుగా</string>
