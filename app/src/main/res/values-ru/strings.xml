@@ -219,7 +219,7 @@
 <string name="clear_query_toggle_title">Очищать запрос</string>
 <string name="more_results_title">Другие результаты</string>
 <string name="open_keyboard_toggle_desc">Автоматически открывать клавиатуру при запуске приложения</string>
-    <string name="recent_queries_toggle_desc">Показывать историю поиска на главном экране.</string>
+    <string name="recent_queries_toggle_desc">Кол-во элементов, показываемых до разворачивания</string>
     <string name="fuzzy_search_toggle_title">Нечёткий поиск</string>
     <string name="fuzzy_search_toggle_desc">Находить результаты, даже если поисковый запрос содержит опечатку.</string>
 <string name="recent_queries_toggle_title">История поиска</string>

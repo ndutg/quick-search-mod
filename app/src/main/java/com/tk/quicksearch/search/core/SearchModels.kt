@@ -614,6 +614,7 @@ data class SearchUiState(
         val recentResultRecencyIndex: RecentResultRankingUtils.RecencyIndex =
                 RecentResultRankingUtils.RecencyIndex(),
         val recentQueriesEnabled: Boolean = true,
+        val recentQueriesDisplayCount: Int = UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT,
         val fuzzySearchEnabled: Boolean = true,
         val fuzzySearchAvailable: Boolean = true,
         val topMatchesEnabled: Boolean = false,
@@ -762,6 +763,7 @@ fun SearchUiState(
                 disabledCustomToolIds = features.disabledCustomToolIds,
                 taskerIntentTools = features.taskerIntentTools,
                 recentQueriesEnabled = features.recentQueriesEnabled,
+                recentQueriesDisplayCount = features.recentQueriesDisplayCount,
                 fuzzySearchEnabled = features.fuzzySearchEnabled,
                 fuzzySearchAvailable = features.fuzzySearchAvailable,
                 topMatchesEnabled = features.topMatchesEnabled,

@@ -125,6 +125,7 @@ internal object SearchStateExtractor {
             disabledCustomToolIds = s.disabledCustomToolIds,
             taskerIntentTools = s.taskerIntentTools,
             recentQueriesEnabled = s.recentQueriesEnabled,
+            recentQueriesDisplayCount = s.recentQueriesDisplayCount,
             topMatchesEnabled = s.topMatchesEnabled,
             topMatchesLimit = s.topMatchesLimit,
             topMatchesSectionOrder = s.topMatchesSectionOrder,

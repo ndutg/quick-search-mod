@@ -219,7 +219,7 @@
     <string name="clear_query_toggle_title">Anfrage löschen</string>
     <string name="more_results_title">Weitere Ergebnisse</string>
     <string name="open_keyboard_toggle_desc">Tastatur beim Start der App automatisch öffnen</string>
-    <string name="recent_queries_toggle_desc">Suchverlauf auf dem Startbildschirm anzeigen.</string>
+    <string name="recent_queries_toggle_desc">Anzahl der vor dem Aufklappen angezeigten Elemente</string>
     <string name="fuzzy_search_toggle_title">Unscharfe Suche</string>
     <string name="fuzzy_search_toggle_desc">Ergebnisse finden, auch wenn die Suche einen Tippfehler enthält.</string>
     <string name="recent_queries_toggle_title">Suchverlauf</string>

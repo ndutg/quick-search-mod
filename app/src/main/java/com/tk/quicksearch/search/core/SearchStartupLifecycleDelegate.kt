@@ -758,6 +758,7 @@ internal class SearchStartupLifecycleDelegate(
                 assistantLaunchVoiceModeEnabled = snapshot.assistantLaunchVoiceModeEnabled,
                 disabledAppShortcutIds = userPreferences.getDisabledAppShortcutIds(),
                 recentQueriesEnabled = prefs.searchHistoryEnabled,
+                recentQueriesDisplayCount = userPreferences.getRecentQueriesDisplayCount(),
                 fuzzySearchEnabled =
                     !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()) &&
                         userPreferences.isFuzzySearchEnabled(),

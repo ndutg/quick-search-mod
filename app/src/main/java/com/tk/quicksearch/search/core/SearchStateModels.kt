@@ -193,6 +193,7 @@ data class SearchFeatureState(
         val taskerIntentTools: List<TaskerIntentTool> = emptyList(),
         // Search history
         val recentQueriesEnabled: Boolean = true,
+        val recentQueriesDisplayCount: Int = UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT,
         val fuzzySearchEnabled: Boolean = true,
         val fuzzySearchAvailable: Boolean = true,
         val hasDismissedSearchHistoryTip: Boolean = false,

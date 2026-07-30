@@ -218,7 +218,7 @@
     <string name="clear_query_toggle_title">Cancella query</string>
     <string name="more_results_title">Altri risultati</string>
     <string name="open_keyboard_toggle_desc">Apri automaticamente la tastiera all\u2019avvio dell\u2019app</string>
-    <string name="recent_queries_toggle_desc">Mostra la cronologia delle ricerche nella schermata iniziale.</string>
+    <string name="recent_queries_toggle_desc">N. di elementi mostrati prima dell\u2019espansione</string>
     <string name="fuzzy_search_toggle_title">Ricerca approssimativa</string>
     <string name="fuzzy_search_toggle_desc">Trova risultati anche quando la ricerca contiene un errore di battitura.</string>
     <string name="recent_queries_toggle_title">Cronologia ricerche</string>

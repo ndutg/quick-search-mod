@@ -219,7 +219,7 @@
     <string name="clear_query_toggle_title">清除查询内容</string>
     <string name="more_results_title">更多结果</string>
     <string name="open_keyboard_toggle_desc">应用启动时自动打开键盘</string>
-    <string name="recent_queries_toggle_desc">在主屏幕上显示您的搜索历史记录。</string>
+    <string name="recent_queries_toggle_desc">展开前显示的项目数</string>
     <string name="fuzzy_search_toggle_title">模糊搜索</string>
     <string name="fuzzy_search_toggle_desc">即使搜索内容中有输入错误，也能找到结果。</string>
     <string name="recent_queries_toggle_title">搜索历史</string>

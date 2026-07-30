@@ -219,7 +219,7 @@
     <string name="clear_query_toggle_title">Limpar busca</string>
     <string name="more_results_title">Mais resultados</string>
     <string name="open_keyboard_toggle_desc">Abrir o teclado automaticamente quando o app for iniciado</string>
-    <string name="recent_queries_toggle_desc">Mostrar seu histórico de buscas na tela inicial.</string>
+    <string name="recent_queries_toggle_desc">Nº de itens mostrados antes da expansão</string>
     <string name="fuzzy_search_toggle_title">Pesquisa aproximada</string>
     <string name="fuzzy_search_toggle_desc">Encontre resultados mesmo quando sua busca contém um erro de digitação.</string>
     <string name="recent_queries_toggle_title">Histórico de busca</string>

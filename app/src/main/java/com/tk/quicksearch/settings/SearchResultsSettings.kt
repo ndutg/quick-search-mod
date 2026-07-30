@@ -76,6 +76,14 @@ import com.tk.quicksearch.shared.util.hapticToggle
 import com.tk.quicksearch.shared.util.performHapticFeedbackSafely
 import sh.calvin.reorderable.ReorderableColumn
 
+private val RecentQueriesDisplayCountOptions = listOf(1, 3, 5, 7, 10)
+
+private fun recentQueriesDisplayCountOptionIndex(count: Int): Int =
+    RecentQueriesDisplayCountOptions.indexOf(count).coerceAtLeast(0)
+
+private fun recentQueriesDisplayCountForOptionIndex(index: Int): Int =
+    RecentQueriesDisplayCountOptions[index.coerceIn(RecentQueriesDisplayCountOptions.indices)]
+
 /** Card for app suggestions, web suggestions, recent queries and excluded items. */
 @Composable
 private fun SearchOptionsCard(
@@ -91,6 +99,8 @@ private fun SearchOptionsCard(
     onWebSuggestionsCountChange: (Int) -> Unit,
     recentQueriesEnabled: Boolean,
     onRecentQueriesToggle: (Boolean) -> Unit,
+    recentQueriesDisplayCount: Int,
+    onRecentQueriesDisplayCountChange: (Int) -> Unit,
     fuzzySearchEnabled: Boolean,
     fuzzySearchAvailable: Boolean,
     onFuzzySearchToggle: (Boolean) -> Unit,
@@ -107,6 +117,7 @@ private fun SearchOptionsCard(
     val view = LocalView.current
     var appSuggestionsTipDismissed by rememberSaveable { mutableStateOf(false) }
     var lastWebStep by remember { mutableStateOf(webSuggestionsCount) }
+    var lastRecentQueriesDisplayCount by remember { mutableStateOf(recentQueriesDisplayCount) }
     var showAppSuggestionTabsDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(appSuggestionsEnabled) {
@@ -117,6 +128,11 @@ private fun SearchOptionsCard(
     LaunchedEffect(webSuggestionsEnabled) {
         if (!webSuggestionsEnabled) {
             lastWebStep = webSuggestionsCount
+        }
+    }
+    LaunchedEffect(recentQueriesEnabled) {
+        if (!recentQueriesEnabled) {
+            lastRecentQueriesDisplayCount = recentQueriesDisplayCount
         }
     }
 
@@ -150,12 +166,34 @@ private fun SearchOptionsCard(
                 isLastItem = false,
             )
 
-            SettingsNavigationToggleRow(
+            SettingsToggleRow(
                 title = stringResource(R.string.recent_queries_toggle_title),
                 subtitle = stringResource(R.string.recent_queries_toggle_desc),
                 checked = recentQueriesEnabled,
                 onCheckedChange = onRecentQueriesToggle,
                 leadingIcon = Icons.Rounded.History,
+                sliderDetails =
+                    if (recentQueriesEnabled) {
+                        SettingsToggleSliderDetails(
+                            value = recentQueriesDisplayCountOptionIndex(recentQueriesDisplayCount).toFloat(),
+                            onValueChange = { value ->
+                                val count = recentQueriesDisplayCountForOptionIndex(value.toInt())
+                                if (count != lastRecentQueriesDisplayCount) {
+                                    hapticToggle(view)()
+                                    lastRecentQueriesDisplayCount = count
+                                }
+                                onRecentQueriesDisplayCountChange(count)
+                            },
+                            valueRange = 0f..4f,
+                            steps = 3,
+                            valueLabel = recentQueriesDisplayCount.toString(),
+                            description = stringResource(R.string.recent_queries_toggle_desc),
+                        )
+                    } else {
+                        null
+                    },
+                isFirstItem = false,
+                isLastItem = false,
             )
 
             if (fuzzySearchAvailable) {
@@ -983,6 +1021,10 @@ fun SearchResultsSettingsSection(
                         enabled = enabled,
                     ),
                 )
+            },
+            recentQueriesDisplayCount = state.recentQueriesDisplayCount,
+            onRecentQueriesDisplayCountChange = { count ->
+                callbacks.onApplySettingsCommand(SettingsCommand.RecentQueriesDisplayCount(count))
             },
             fuzzySearchEnabled = state.fuzzySearchEnabled,
             fuzzySearchAvailable = state.fuzzySearchAvailable,

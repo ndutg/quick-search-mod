@@ -116,6 +116,7 @@ data class SettingsScreenState(
     val clearQueryOnLaunch: Boolean,
     val autoCloseOverlay: Boolean,
     val recentQueriesEnabled: Boolean,
+    val recentQueriesDisplayCount: Int,
     val fuzzySearchEnabled: Boolean,
     val fuzzySearchAvailable: Boolean,
     val hasApiKey: Boolean = false,
@@ -152,6 +153,7 @@ data class SettingsScreenState(
                 topMatchesSectionOrder = topMatchesSectionOrder,
                 disabledTopMatchesSections = disabledTopMatchesSections,
                 recentQueriesEnabled = recentQueriesEnabled,
+                recentQueriesDisplayCount = recentQueriesDisplayCount,
                 fuzzySearchEnabled = fuzzySearchEnabled,
                 fuzzySearchAvailable = fuzzySearchAvailable,
             )
@@ -506,6 +508,7 @@ data class SearchResultsSettingsState(
     val topMatchesSectionOrder: List<SearchSection>,
     val disabledTopMatchesSections: Set<SearchSection>,
     val recentQueriesEnabled: Boolean,
+    val recentQueriesDisplayCount: Int,
     val fuzzySearchEnabled: Boolean,
     val fuzzySearchAvailable: Boolean,
 )

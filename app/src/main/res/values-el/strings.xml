@@ -219,7 +219,7 @@
     <string name="clear_query_toggle_title">Καθαρισμός ερωτήματος</string>
     <string name="more_results_title">Περισσότερα αποτελέσματα</string>
     <string name="open_keyboard_toggle_desc">Αυτόματο άνοιγμα του πληκτρολογίου κατά την εκκίνηση της εφαρμογής</string>
-    <string name="recent_queries_toggle_desc">Εμφάνιση του ιστορικού αναζήτησής σας στην αρχική οθόνη.</string>
+    <string name="recent_queries_toggle_desc">Αρ. στοιχείων που εμφανίζονται πριν από την επέκταση</string>
     <string name="fuzzy_search_toggle_title">Αναζήτηση κατά προσέγγιση</string>
     <string name="fuzzy_search_toggle_desc">Βρείτε αποτελέσματα ακόμα και όταν η αναζήτησή σας περιέχει τυπογραφικό λάθος.</string>
     <string name="recent_queries_toggle_title">Ιστορικό αναζήτησης</string>

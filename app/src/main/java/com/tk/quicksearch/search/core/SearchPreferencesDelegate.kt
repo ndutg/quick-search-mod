@@ -273,6 +273,13 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setRecentQueriesDisplayCount(count: Int) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setRecentQueriesDisplayCount(count)
+            updateFeatureState { it.copy(recentQueriesDisplayCount = count) }
+        }
+    }
+
     fun setFuzzySearchEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             if (isLowRamDevice(applicationProvider())) return@launch

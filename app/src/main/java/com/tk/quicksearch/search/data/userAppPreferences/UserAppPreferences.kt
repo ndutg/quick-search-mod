@@ -1361,6 +1361,12 @@ class UserAppPreferences(
         uiPreferences.setWebSuggestionsCount(count)
     }
 
+    fun getRecentQueriesDisplayCount(): Int = uiPreferences.getRecentQueriesDisplayCount()
+
+    fun setRecentQueriesDisplayCount(count: Int) {
+        uiPreferences.setRecentQueriesDisplayCount(count)
+    }
+
     fun setWebSuggestionsEnabled(enabled: Boolean) = uiPreferences.setWebSuggestionsEnabled(enabled)
 
     // ============================================================================

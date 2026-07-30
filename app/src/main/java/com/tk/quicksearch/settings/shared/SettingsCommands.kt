@@ -20,6 +20,8 @@ sealed interface SettingsCommand {
 
     data class WebSuggestionsCount(val count: Int) : SettingsCommand
 
+    data class RecentQueriesDisplayCount(val count: Int) : SettingsCommand
+
     data class AppSuggestionTabEnabled(
         val tab: AppSuggestionTabType,
         val enabled: Boolean,
@@ -139,6 +141,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         }
 
         is SettingsCommand.WebSuggestionsCount -> setWebSuggestionsCount(command.count)
+        is SettingsCommand.RecentQueriesDisplayCount -> setRecentQueriesDisplayCount(command.count)
         is SettingsCommand.AppSuggestionTabEnabled ->
             setAppSuggestionTabEnabled(command.tab, command.enabled)
         is SettingsCommand.TopMatchesLimit -> setTopMatchesLimit(command.limit)

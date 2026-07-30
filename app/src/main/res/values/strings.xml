@@ -212,7 +212,7 @@
     <string name="clear_query_toggle_title">Clear Query</string>
     <string name="more_results_title">More Results</string>
     <string name="open_keyboard_toggle_desc">Automatically open keyboard when the app launches</string>
-    <string name="recent_queries_toggle_desc">Show your search history in the home screen.</string>
+    <string name="recent_queries_toggle_desc">No. of items shown before expansion</string>
     <string name="fuzzy_search_toggle_title">Fuzzy search</string>
     <string name="fuzzy_search_toggle_desc">Find results even when your search contains a typo.</string>
     <string name="recent_queries_toggle_title">Search History</string>

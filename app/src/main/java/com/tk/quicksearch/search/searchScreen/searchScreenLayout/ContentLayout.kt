@@ -563,6 +563,8 @@ fun ContentLayout(
                 onOpenSearchHistorySettings = onOpenSearchHistorySettings,
                 onDismissSearchHistoryTip = onDismissSearchHistoryTip,
                 isExpanded = searchHistoryExpanded,
+                collapsedItemCount = state.recentQueriesDisplayCount,
+                reverseCollapsedItems = state.oneHandedMode,
                 onExpandedChange = { searchHistoryExpanded = it },
                 collapseRequestKey = searchHistoryCollapseRequestKey,
                 expandedCardMaxHeight = expandedCardMaxHeight,

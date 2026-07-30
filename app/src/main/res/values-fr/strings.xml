@@ -219,7 +219,7 @@
 <string name="clear_query_toggle_title">Effacer la recherche</string>
 <string name="more_results_title">Plus de résultats</string>
 <string name="open_keyboard_toggle_desc">Ouvrir automatiquement le clavier au lancement de l\'application</string>
-<string name="recent_queries_toggle_desc">Afficher votre historique de recherche sur l\'écran d\'accueil.</string>
+<string name="recent_queries_toggle_desc">Nbre d\'éléments affichés avant le développement</string>
 <string name="fuzzy_search_toggle_title">Recherche approximative</string>
 <string name="fuzzy_search_toggle_desc">Trouvez des résultats même si votre recherche contient une faute de frappe.</string>
 <string name="recent_queries_toggle_title">Historique de recherche</string>

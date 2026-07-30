@@ -219,7 +219,7 @@
     <string name="clear_query_toggle_title">శోధనను క్లియర్ చేయి</string>
     <string name="more_results_title">మరిన్ని ఫలితాలు</string>
     <string name="open_keyboard_toggle_desc">యాప్ ప్రారంభమైనప్పుడు కీబోర్డ్‌ను స్వయంచాలకంగా తెరువు</string>
-    <string name="recent_queries_toggle_desc">హోమ్ స్క్రీన్‌లో మీ శోధన చరిత్రను చూపించు.</string>
+    <string name="recent_queries_toggle_desc">విస్తరించడానికి ముందు చూపే అంశాల సంఖ్య</string>
     <string name="fuzzy_search_toggle_title">ఫజీ శోధన</string>
     <string name="fuzzy_search_toggle_desc">మీ శోధనలో టైపింగ్ పొరపాటు ఉన్నా ఫలితాలను కనుగొనండి.</string>
     <string name="recent_queries_toggle_title">శోధన చరిత్ర</string>

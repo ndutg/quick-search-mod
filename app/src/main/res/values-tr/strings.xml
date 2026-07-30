@@ -218,7 +218,7 @@
 <string name="clear_query_toggle_title">Sorguyu temizle</string>
 <string name="more_results_title">Daha fazla sonuç</string>
 <string name="open_keyboard_toggle_desc">Uygulama başlatıldığında klavyeyi otomatik olarak aç</string>
-<string name="recent_queries_toggle_desc">Arama geçmişinizi ana ekranda göster.</string>
+<string name="recent_queries_toggle_desc">Genişletmeden önce gösterilen öğe sayısı</string>
 <string name="fuzzy_search_toggle_title">Bulanık arama</string>
 <string name="fuzzy_search_toggle_desc">Aramanızda yazım hatası olsa bile sonuçları bulun.</string>
 <string name="recent_queries_toggle_title">Arama geçmişi</string>

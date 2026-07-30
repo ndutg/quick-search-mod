@@ -803,6 +803,20 @@ class UiPreferences(
         prefs.edit().putInt(UiPreferences.KEY_WEB_SUGGESTIONS_COUNT, count).apply()
     }
 
+    fun getRecentQueriesDisplayCount(): Int =
+        prefs.getInt(
+            UiPreferences.KEY_RECENT_QUERIES_DISPLAY_COUNT,
+            UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT,
+        ).takeIf { it in UiPreferences.RECENT_QUERIES_DISPLAY_COUNT_OPTIONS }
+            ?: UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT
+
+    fun setRecentQueriesDisplayCount(count: Int) {
+        val normalized =
+            count.takeIf { it in UiPreferences.RECENT_QUERIES_DISPLAY_COUNT_OPTIONS }
+                ?: UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT
+        prefs.edit().putInt(UiPreferences.KEY_RECENT_QUERIES_DISPLAY_COUNT, normalized).apply()
+    }
+
     // ============================================================================
     // Calculator Preferences
     // ============================================================================
@@ -1240,6 +1254,9 @@ class UiPreferences(
         // Web search suggestions preferences keys
         const val KEY_WEB_SUGGESTIONS_ENABLED = "web_suggestions_enabled"
         const val KEY_WEB_SUGGESTIONS_COUNT = "web_suggestions_count"
+        const val KEY_RECENT_QUERIES_DISPLAY_COUNT = "recent_queries_display_count"
+        const val DEFAULT_RECENT_QUERIES_DISPLAY_COUNT = 1
+        val RECENT_QUERIES_DISPLAY_COUNT_OPTIONS = setOf(1, 3, 5, 7, 10)
 
         // App suggestions preferences keys
         const val KEY_APP_SUGGESTIONS_ENABLED = "app_suggestions_enabled"
