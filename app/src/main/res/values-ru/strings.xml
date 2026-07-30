@@ -1015,7 +1015,7 @@
 <string name="settings_custom_tool_delete_button">Удалить инструмент</string>
 <string name="settings_custom_tool_editor_title">Кастомный инструмент</string>
 <string name="settings_custom_tool_name_label">Название инструмента</string>
-<string name="settings_custom_tool_prompt_hint">Опишите, что делает этот инструмент. Этот промпт направляет действия ИИ при активации инструмента.</string>
+<string name="settings_custom_tool_prompt_hint">Опишите, что делает этот инструмент. Этот промпт направляет действия ИИ при активации инструмента.\n\nИспользуйте {time}, чтобы добавить в промпт текущие дату и время.</string>
 <string name="settings_custom_tool_prompt_label">Системный промпт (System Prompt)</string>
 <string name="settings_excluded_items_clear_all">Сбросить все исключения</string>
 <string name="settings_excluded_items_clear_all_confirmation">Вы уверены, что хотите удалить все исключенные элементы? Это действие нельзя отменить.</string>

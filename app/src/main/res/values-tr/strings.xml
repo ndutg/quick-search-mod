@@ -998,7 +998,7 @@
 <string name="settings_custom_tool_delete_button">Aracı sil</string>
 <string name="settings_custom_tool_editor_title">Özel araç</string>
 <string name="settings_custom_tool_name_label">Araç adı</string>
-<string name="settings_custom_tool_prompt_hint">Bu aracın ne işe yaradığını açıkla. Bu yönlendirme, araç tetiklendiğinde AI\'a rehberlik eder.</string>
+<string name="settings_custom_tool_prompt_hint">Bu aracın ne işe yaradığını açıkla. Bu yönlendirme, araç tetiklendiğinde AI\'a rehberlik eder.\n\nİstemine geçerli tarih ve saati eklemek için {time} kullanın.</string>
 <string name="settings_custom_tool_prompt_label">Sistem yönlendirmesi</string>
 <string name="settings_excluded_items_clear_all">Tüm hariç tutulanları temizle</string>
 <string name="settings_excluded_items_clear_all_confirmation">Hariç tutulan tüm öğeleri temizlemek istediğinden emin misin? Bu işlem geri alınamaz.</string>

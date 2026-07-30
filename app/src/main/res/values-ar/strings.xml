@@ -1000,7 +1000,7 @@
     <string name="settings_custom_tool_delete_button">حذف الأداة</string>
     <string name="settings_custom_tool_editor_title">أداة مخصصة</string>
     <string name="settings_custom_tool_name_label">اسم الأداة</string>
-    <string name="settings_custom_tool_prompt_hint">وصف وظيفة هذه الأداة. ستقوم هذه التوجيهات بإرشاد AI عند تفعيل الأداة.</string>
+    <string name="settings_custom_tool_prompt_hint">وصف وظيفة هذه الأداة. ستقوم هذه التوجيهات بإرشاد AI عند تفعيل الأداة.\n\nاستخدم {time} لتضمين التاريخ والوقت الحاليين في التوجيه.</string>
     <string name="settings_custom_tool_prompt_label">توجيه النظام (System Prompt)</string>
     <string name="settings_excluded_items_clear_all">مسح كافة العناصر المستبعدة</string>
     <string name="settings_excluded_items_clear_all_confirmation">هل أنت متأكد من رغبتك في مسح كافة العناصر المستبعدة؟ لا يمكن التراجع عن هذا الإجراء.</string>

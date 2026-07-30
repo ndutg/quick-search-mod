@@ -401,6 +401,7 @@ class AiSearchHandler(
         ensureInitialized()
         val trimmedQuery = query.trim()
         if (trimmedQuery.isBlank()) return
+        val resolvedSystemInstruction = expandCustomToolPrompt(systemInstruction)
 
         val provider = AiSearchLlmProviderRegistry.get(providerId, context)
         val apiKey = userPreferences.getLlmApiKey(providerId)?.trim()
@@ -454,7 +455,7 @@ class AiSearchHandler(
                                         providerId != AiSearchLlmProviderId.OPENAI &&
                                         !providerId.isCustom,
                                 useSystemInstruction = useSystemInstruction,
-                                systemInstruction = systemInstruction,
+                                systemInstruction = resolvedSystemInstruction,
                                 advancedPayloadJson = advancedPayloadJson,
                             ),
                     )

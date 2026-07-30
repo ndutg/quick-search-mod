@@ -999,7 +999,7 @@
 <string name="settings_custom_tool_delete_button">Supprimer l\'outil</string>
 <string name="settings_custom_tool_editor_title">Outil personnalisé</string>
 <string name="settings_custom_tool_name_label">Nom de l\'outil</string>
-<string name="settings_custom_tool_prompt_hint">Décrivez ce que fait cet outil. Cette consigne guidera l\'AI lorsque l\'outil sera déclenché.</string>
+<string name="settings_custom_tool_prompt_hint">Décrivez ce que fait cet outil. Cette consigne guidera l\'AI lorsque l\'outil sera déclenché.\n\nUtilisez {time} pour inclure la date et l\'heure actuelles dans la consigne.</string>
 <string name="settings_custom_tool_prompt_label">Prompt système</string>
 <string name="settings_excluded_items_clear_all">Effacer toutes les exclusions</string>
 <string name="settings_excluded_items_clear_all_confirmation">Voulez-vous vraiment supprimer toutes les exclusions ? Cette action est irréversible.</string>

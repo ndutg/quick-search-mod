@@ -999,7 +999,7 @@
     <string name="settings_custom_tool_delete_button">Διαγραφή εργαλείου</string>
     <string name="settings_custom_tool_editor_title">Προσαρμοσμένο εργαλείο</string>
     <string name="settings_custom_tool_name_label">Όνομα εργαλείου</string>
-    <string name="settings_custom_tool_prompt_hint">Περιγράψτε τι κάνει αυτό το εργαλείο. Αυτή η προτροπή (prompt) καθοδηγεί την AI όταν ενεργοποιείται το εργαλείο.</string>
+    <string name="settings_custom_tool_prompt_hint">Περιγράψτε τι κάνει αυτό το εργαλείο. Αυτή η προτροπή (prompt) καθοδηγεί την AI όταν ενεργοποιείται το εργαλείο.\n\nΧρησιμοποιήστε το {time} για να συμπεριλάβετε την τρέχουσα ημερομηνία και ώρα στην προτροπή.</string>
     <string name="settings_custom_tool_prompt_label">Προτροπή συστήματος</string>
     <string name="settings_excluded_items_clear_all">Εκκαθάριση όλων των εξαιρέσεων</string>
     <string name="settings_excluded_items_clear_all_confirmation">Είστε βέβαιοι ότι θέλετε να εκκαθαρίσετε όλα τα εξαιρούμενα στοιχεία; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</string>

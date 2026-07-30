@@ -999,7 +999,7 @@
     <string name="settings_custom_tool_delete_button">Eliminar herramienta</string>
     <string name="settings_custom_tool_editor_title">Herramienta personalizada</string>
     <string name="settings_custom_tool_name_label">Nombre de la herramienta</string>
-    <string name="settings_custom_tool_prompt_hint">Describe lo que hace esta herramienta. Este prompt servirá de guía para la AI cuando se active.</string>
+    <string name="settings_custom_tool_prompt_hint">Describe lo que hace esta herramienta. Este prompt servirá de guía para la AI cuando se active.\n\nUsa {time} para incluir la fecha y hora actuales en el prompt.</string>
     <string name="settings_custom_tool_prompt_label">System Prompt</string>
     <string name="settings_excluded_items_clear_all">Borrar todas las exclusiones</string>
     <string name="settings_excluded_items_clear_all_confirmation">¿Seguro que quieres borrar todos los elementos excluidos? Esta acción no se puede deshacer.</string>

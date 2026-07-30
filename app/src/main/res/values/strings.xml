@@ -997,7 +997,7 @@
     <string name="settings_custom_tool_delete_button">Delete Tool</string>
     <string name="settings_custom_tool_editor_title">Custom Tool</string>
     <string name="settings_custom_tool_name_label">Tool Name</string>
-    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.</string>
+    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.\n\n Use {time} to include current date and time in the prompt.</string>
     <string name="settings_custom_tool_prompt_label">System Prompt</string>
     <string name="settings_excluded_items_clear_all">Clear all exclusions</string>
     <string name="settings_excluded_items_clear_all_confirmation">Are you sure you want to clear all excluded items? This action cannot be undone.</string>

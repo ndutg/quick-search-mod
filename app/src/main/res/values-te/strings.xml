@@ -999,7 +999,7 @@
     <string name="settings_custom_tool_delete_button">సాధనాన్ని తొలగించు</string>
     <string name="settings_custom_tool_editor_title">కస్టమ్ సాధనం</string>
     <string name="settings_custom_tool_name_label">సాధనం పేరు</string>
-    <string name="settings_custom_tool_prompt_hint">ఈ సాధనం ఏమి చేస్తుందో వివరించండి. సాధనం ట్రిగ్గర్ అయినప్పుడు ఈ ప్రాంప్ట్ AI కి మార్గనిర్దేశం చేస్తుంది.</string>
+    <string name="settings_custom_tool_prompt_hint">ఈ సాధనం ఏమి చేస్తుందో వివరించండి. సాధనం ట్రిగ్గర్ అయినప్పుడు ఈ ప్రాంప్ట్ AI కి మార్గనిర్దేశం చేస్తుంది.\n\nప్రాంప్ట్‌లో ప్రస్తుత తేదీ మరియు సమయాన్ని చేర్చడానికి {time} ఉపయోగించండి.</string>
     <string name="settings_custom_tool_prompt_label">సిస్టమ్ ప్రాంప్ట్</string>
     <string name="settings_excluded_items_clear_all">మినహాయింపులన్నింటినీ క్లియర్ చేయి</string>
     <string name="settings_excluded_items_clear_all_confirmation">మీరు ఖచ్చితంగా మినహాయించిన అంశాలన్నింటినీ క్లియర్ చేయాలనుకుంటున్నారా? ఈ చర్యను మళ్లీ వెనక్కి తీసుకోలేరు.</string>

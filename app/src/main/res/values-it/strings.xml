@@ -998,7 +998,7 @@
     <string name="settings_custom_tool_delete_button">Elimina strumento</string>
     <string name="settings_custom_tool_editor_title">Strumento personalizzato</string>
     <string name="settings_custom_tool_name_label">Nome strumento</string>
-    <string name="settings_custom_tool_prompt_hint">Descrivi cosa fa questo strumento. Questo prompt guiderà l\u2019AI quando lo strumento viene attivato.</string>
+    <string name="settings_custom_tool_prompt_hint">Descrivi cosa fa questo strumento. Questo prompt guiderà l\u2019AI quando lo strumento viene attivato.\n\nUsa {time} per includere la data e l\u2019ora correnti nel prompt.</string>
     <string name="settings_custom_tool_prompt_label">Prompt di sistema</string>
     <string name="settings_excluded_items_clear_all">Cancella tutte le esclusioni</string>
     <string name="settings_excluded_items_clear_all_confirmation">Sei sicuro di voler cancellare tutti gli elementi esclusi? Questa azione non può essere annullata.</string>

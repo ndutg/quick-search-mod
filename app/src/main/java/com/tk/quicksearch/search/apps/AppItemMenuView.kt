@@ -105,14 +105,14 @@ fun AppItemDropdownMenu(
         }
         if (!isCurrentApp) {
             add(AppMenuItem(
-                textResId = R.string.action_change_icon,
-                icon = { Icon(imageVector = Icons.Rounded.IconImage, contentDescription = null) },
-                onClick = { onDismiss(); showIconPicker.value = true },
-            ))
-            add(AppMenuItem(
                 textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
                 icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
                 onClick = { onDismiss(); onNicknameClick() },
+            ))
+            add(AppMenuItem(
+                textResId = R.string.action_change_icon,
+                icon = { Icon(imageVector = Icons.Rounded.IconImage, contentDescription = null) },
+                onClick = { onDismiss(); showIconPicker.value = true },
             ))
             add(AppMenuItem(
                 textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,

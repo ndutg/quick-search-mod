@@ -999,7 +999,7 @@
     <string name="settings_custom_tool_delete_button">Tool löschen</string>
     <string name="settings_custom_tool_editor_title">Benutzerdefiniertes Tool</string>
     <string name="settings_custom_tool_name_label">Tool-Name</string>
-    <string name="settings_custom_tool_prompt_hint">Beschreibe, was dieses Tool tut. Dieser Prompt leitet die KI, wenn das Tool ausgelöst wird.</string>
+    <string name="settings_custom_tool_prompt_hint">Beschreibe, was dieses Tool tut. Dieser Prompt leitet die KI, wenn das Tool ausgelöst wird.\n\nVerwende {time}, um das aktuelle Datum und die aktuelle Uhrzeit in den Prompt einzufügen.</string>
     <string name="settings_custom_tool_prompt_label">System-Prompt</string>
     <string name="settings_excluded_items_clear_all">Alle Ausschlüsse löschen</string>
     <string name="settings_excluded_items_clear_all_confirmation">Möchtest du wirklich alle ausgeschlossenen Elemente löschen? Diese Aktion kann nicht rückgängig gemacht werden.</string>

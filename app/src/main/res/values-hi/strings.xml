@@ -999,7 +999,7 @@
     <string name="settings_custom_tool_delete_button">टूल हटाएं</string>
     <string name="settings_custom_tool_editor_title">कस्टम टूल</string>
     <string name="settings_custom_tool_name_label">टूल नाम</string>
-    <string name="settings_custom_tool_prompt_hint">बताएं कि यह टूल क्या करता है। टूल ट्रिगर होने पर यह प्रॉम्प्ट AI को मार्गदर्शन देता है।</string>
+    <string name="settings_custom_tool_prompt_hint">बताएं कि यह टूल क्या करता है। टूल ट्रिगर होने पर यह प्रॉम्प्ट AI को मार्गदर्शन देता है।\n\nप्रॉम्प्ट में वर्तमान तारीख और समय शामिल करने के लिए {time} का उपयोग करें।</string>
     <string name="settings_custom_tool_prompt_label">सिस्टम प्रॉम्प्ट</string>
     <string name="settings_excluded_items_clear_all">सभी बहिष्करण साफ करें</string>
     <string name="settings_excluded_items_clear_all_confirmation">क्या आप वाकई सभी बहिष्कृत आइटम साफ करना चाहते हैं? यह क्रिया वापस नहीं ली जा सकती।</string>
