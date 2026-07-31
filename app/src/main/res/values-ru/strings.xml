@@ -858,8 +858,8 @@
 <string name="dictionary_toggle_desc">Пример: define serendipity</string>
 <string name="dictionary_toggle_title">Словарь</string>
 <string name="weather_toggle_title">Погода</string>
-<string name="weather_toggle_desc">Погода на сегодня для места по умолчанию или введённого места</string>
-<string name="weather_location_label">Местоположение (необязательно)</string>
+<string name="weather_toggle_desc">Погода на сегодня для указанного места</string>
+<string name="weather_location_label">Место по умолчанию</string>
 <string name="weather_location_hint">Пример: Москва</string>
 <string name="weather_error_location_required">Введите место или настройте место по умолчанию</string>
 <string name="get_weather">Узнать погоду</string>
@@ -867,11 +867,6 @@
 <string name="weather_temperature_unit_label">Единица температуры</string>
 <string name="weather_temperature_unit_celsius">Цельсий (°C)</string>
 <string name="weather_temperature_unit_fahrenheit">Фаренгейт (°F)</string>
-<string name="weather_wind_speed_unit_label">Единица скорости ветра</string>
-<string name="weather_wind_speed_unit_kmph">Километры в час (km/h)</string>
-<string name="weather_wind_speed_unit_mph">Мили в час (mph)</string>
-<string name="weather_wind_speed_unit_mps">Метры в секунду (m/s)</string>
-<string name="weather_wind_speed_unit_knots">Узлы (kn)</string>
 <string name="get_currency_value">Получить курс валюты</string>
 <string name="get_time">Узнать время</string>
 <string name="search_in_dictionary">Искать в словаре</string>

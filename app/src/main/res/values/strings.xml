@@ -847,11 +847,6 @@
     <string name="weather_temperature_unit_label">Temperature Unit</string>
     <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
     <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
-    <string name="weather_wind_speed_unit_label">Wind speed unit</string>
-    <string name="weather_wind_speed_unit_kmph">Kilometers per hour (km/h)</string>
-    <string name="weather_wind_speed_unit_mph">Miles per hour (mph)</string>
-    <string name="weather_wind_speed_unit_mps">Meters per second (m/s)</string>
-    <string name="weather_wind_speed_unit_knots">Knots (kn)</string>
     <string name="get_currency_value">Get Currency Value</string>
     <string name="get_time">Get Time</string>
     <string name="search_in_dictionary">Search in Dictionary</string>

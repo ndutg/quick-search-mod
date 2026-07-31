@@ -842,8 +842,8 @@
     <string name="dictionary_toggle_desc">उदाहरण: define serendipity</string>
     <string name="dictionary_toggle_title">शब्दकोश</string>
     <string name="weather_toggle_title">मौसम</string>
-    <string name="weather_toggle_desc">आपके डिफ़ॉल्ट या दर्ज किए गए स्थान का आज का मौसम</string>
-    <string name="weather_location_label">स्थान (वैकल्पिक)</string>
+    <string name="weather_toggle_desc">निर्दिष्ट स्थान का आज का मौसम</string>
+    <string name="weather_location_label">डिफ़ॉल्ट स्थान</string>
     <string name="weather_location_hint">उदाहरण: नई दिल्ली</string>
     <string name="weather_error_location_required">स्थान दर्ज करें या सेटिंग में डिफ़ॉल्ट स्थान सेट करें</string>
     <string name="get_weather">मौसम देखें</string>
@@ -851,11 +851,6 @@
     <string name="weather_temperature_unit_label">तापमान इकाई</string>
     <string name="weather_temperature_unit_celsius">सेल्सियस (°C)</string>
     <string name="weather_temperature_unit_fahrenheit">फ़ारेनहाइट (°F)</string>
-    <string name="weather_wind_speed_unit_label">हवा की गति की इकाई</string>
-    <string name="weather_wind_speed_unit_kmph">किलोमीटर प्रति घंटा (km/h)</string>
-    <string name="weather_wind_speed_unit_mph">मील प्रति घंटा (mph)</string>
-    <string name="weather_wind_speed_unit_mps">मीटर प्रति सेकंड (m/s)</string>
-    <string name="weather_wind_speed_unit_knots">नॉट (kn)</string>
     <string name="get_currency_value">मुद्रा का मूल्य प्राप्त करें</string>
     <string name="get_time">समय जानें</string>
     <string name="search_in_dictionary">शब्दकोश में खोजें</string>

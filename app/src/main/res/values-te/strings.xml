@@ -842,8 +842,8 @@
     <string name="dictionary_toggle_desc">ఉదాహరణ: define serendipity</string>
     <string name="dictionary_toggle_title">డిక్షనరీ</string>
     <string name="weather_toggle_title">వాతావరణం</string>
-    <string name="weather_toggle_desc">మీ డిఫాల్ట్ లేదా నమోదు చేసిన స్థానానికి నేటి వాతావరణం</string>
-    <string name="weather_location_label">స్థానం (ఐచ్ఛికం)</string>
+    <string name="weather_toggle_desc">పేర్కొన్న స్థానానికి నేటి వాతావరణం</string>
+    <string name="weather_location_label">డిఫాల్ట్ స్థానం</string>
     <string name="weather_location_hint">ఉదాహరణ: హైదరాబాద్</string>
     <string name="weather_error_location_required">స్థానాన్ని నమోదు చేయండి లేదా సెట్టింగ్‌లలో డిఫాల్ట్ స్థానాన్ని సెట్ చేయండి</string>
     <string name="get_weather">వాతావరణం చూడండి</string>
@@ -851,11 +851,6 @@
     <string name="weather_temperature_unit_label">ఉష్ణోగ్రత యూనిట్</string>
     <string name="weather_temperature_unit_celsius">సెల్సియస్ (°C)</string>
     <string name="weather_temperature_unit_fahrenheit">ఫారెన్‌హీట్ (°F)</string>
-    <string name="weather_wind_speed_unit_label">గాలి వేగం యూనిట్</string>
-    <string name="weather_wind_speed_unit_kmph">గంటకు కిలోమీటర్లు (km/h)</string>
-    <string name="weather_wind_speed_unit_mph">గంటకు మైళ్లు (mph)</string>
-    <string name="weather_wind_speed_unit_mps">సెకనుకు మీటర్లు (m/s)</string>
-    <string name="weather_wind_speed_unit_knots">నాట్స్ (kn)</string>
     <string name="get_currency_value">కరెన్సీ విలువను పొందండి</string>
     <string name="get_time">సమయాన్ని తెలుసుకోండి</string>
     <string name="search_in_dictionary">డిక్షనరీలో శోధించండి</string>

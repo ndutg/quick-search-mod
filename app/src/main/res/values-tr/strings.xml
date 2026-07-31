@@ -841,8 +841,8 @@
 <string name="dictionary_toggle_desc">Örnek: define serendipity</string>
 <string name="dictionary_toggle_title">Sözlük</string>
 <string name="weather_toggle_title">Hava Durumu</string>
-<string name="weather_toggle_desc">Varsayılan veya girdiğiniz konum için bugünün hava durumu</string>
-<string name="weather_location_label">Konum (isteğe bağlı)</string>
+<string name="weather_toggle_desc">Belirtilen konum için bugünün hava durumu</string>
+<string name="weather_location_label">Varsayılan konum</string>
 <string name="weather_location_hint">Örnek: İstanbul</string>
 <string name="weather_error_location_required">Bir konum girin veya Ayarlar’da varsayılan konum belirleyin</string>
 <string name="get_weather">Hava durumunu getir</string>
@@ -850,11 +850,6 @@
 <string name="weather_temperature_unit_label">Sıcaklık birimi</string>
 <string name="weather_temperature_unit_celsius">Santigrat (°C)</string>
 <string name="weather_temperature_unit_fahrenheit">Fahrenhayt (°F)</string>
-<string name="weather_wind_speed_unit_label">Rüzgâr hızı birimi</string>
-<string name="weather_wind_speed_unit_kmph">Saatte kilometre (km/h)</string>
-<string name="weather_wind_speed_unit_mph">Saatte mil (mph)</string>
-<string name="weather_wind_speed_unit_mps">Saniyede metre (m/s)</string>
-<string name="weather_wind_speed_unit_knots">Deniz mili (kn)</string>
 <string name="get_currency_value">Döviz değerini al</string>
 <string name="get_time">Saati al</string>
 <string name="search_in_dictionary">Sözlükte ara</string>

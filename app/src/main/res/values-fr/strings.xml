@@ -842,8 +842,8 @@
 <string name="dictionary_toggle_desc">Exemple : define serendipity</string>
 <string name="dictionary_toggle_title">Dictionnaire</string>
 <string name="weather_toggle_title">Météo</string>
-<string name="weather_toggle_desc">La météo du jour pour votre lieu par défaut ou saisi</string>
-<string name="weather_location_label">Lieu (facultatif)</string>
+<string name="weather_toggle_desc">La météo du jour pour le lieu indiqué</string>
+<string name="weather_location_label">Lieu par défaut</string>
 <string name="weather_location_hint">Exemple : Paris</string>
 <string name="weather_error_location_required">Saisissez un lieu ou configurez un lieu par défaut dans les paramètres</string>
 <string name="get_weather">Obtenir la météo</string>
@@ -851,11 +851,6 @@
 <string name="weather_temperature_unit_label">Unité de température</string>
 <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
 <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
-<string name="weather_wind_speed_unit_label">Unité de vitesse du vent</string>
-<string name="weather_wind_speed_unit_kmph">Kilomètres par heure (km/h)</string>
-<string name="weather_wind_speed_unit_mph">Miles par heure (mph)</string>
-<string name="weather_wind_speed_unit_mps">Mètres par seconde (m/s)</string>
-<string name="weather_wind_speed_unit_knots">Nœuds (kn)</string>
 <string name="get_currency_value">Obtenir la valeur de la devise</string>
 <string name="get_time">Obtenir l\'heure</string>
 <string name="search_in_dictionary">Rechercher dans le dictionnaire</string>
