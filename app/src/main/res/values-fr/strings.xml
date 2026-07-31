@@ -1055,4 +1055,6 @@
     <string name="tasker_not_installed">Tasker n\'est pas installé</string>
     <string name="tasker_broadcast_failed">Impossible d\'envoyer la diffusion Tasker</string>
     <string name="settings_more_apps_from_developer_title">Plus d’applications du développeur</string>
+<string name="icon_picker_no_icon_packs">Aucun pack d\'icônes n\'est installé pour modifier l\'icône de l\'application.</string>
+<string name="icon_picker_download_icon_packs">Télécharger des packs d\'icônes</string>
 </resources>

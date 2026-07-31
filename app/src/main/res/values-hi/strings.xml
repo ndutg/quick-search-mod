@@ -1055,4 +1055,6 @@
     <string name="tasker_not_installed">Tasker इंस्टॉल नहीं है</string>
     <string name="tasker_broadcast_failed">Tasker ब्रॉडकास्ट नहीं भेजा जा सका</string>
     <string name="settings_more_apps_from_developer_title">डेवलपर के और ऐप्स</string>
+    <string name="icon_picker_no_icon_packs">ऐप आइकन बदलने के लिए कोई आइकन पैक इंस्टॉल नहीं है।</string>
+    <string name="icon_picker_download_icon_packs">आइकन पैक डाउनलोड करें</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.apps
 
+import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Icon
@@ -36,8 +38,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.core.IntentHelpers
+import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
@@ -89,59 +94,90 @@ fun AppIconOverrideDrawer(
         contentSpacing = DesignTokens.SpacingMedium,
         contentScrollable = false,
         aboveCardContent = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-            ) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
+            if (iconPacks.isNotEmpty()) {
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
-                    placeholder = { Text(stringResource(R.string.icon_picker_search)) },
-                    shape = RoundedCornerShape(32.dp),
-                    colors =
-                        TextFieldDefaults.colors(
-                            focusedContainerColor = iconContainerColor,
-                            unfocusedContainerColor = iconContainerColor,
-                            disabledContainerColor = iconContainerColor,
-                            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                            disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                        ),
-                )
-                androidx.compose.foundation.layout.Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 ) {
-                    iconPacks.forEach { iconPack ->
-                        val selected = iconPack.packageName == selectedPackPackage
-                        Text(
-                            text = iconPack.label,
-                            modifier =
-                                Modifier
-                                    .clickable { selectedPackPackage = iconPack.packageName }
-                                    .padding(
-                                        horizontal = DesignTokens.SpacingMedium,
-                                        vertical = DesignTokens.SpacingXSmall,
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
+                        placeholder = { Text(stringResource(R.string.icon_picker_search)) },
+                        shape = RoundedCornerShape(32.dp),
+                        colors =
+                            TextFieldDefaults.colors(
+                                focusedContainerColor = iconContainerColor,
+                                unfocusedContainerColor = iconContainerColor,
+                                disabledContainerColor = iconContainerColor,
+                                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                                disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                            ),
+                    )
+                    androidx.compose.foundation.layout.Row(
+                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        iconPacks.forEach { iconPack ->
+                            val selected = iconPack.packageName == selectedPackPackage
+                            Text(
+                                text = iconPack.label,
+                                modifier =
+                                    Modifier
+                                        .clickable { selectedPackPackage = iconPack.packageName }
+                                        .padding(
+                                            horizontal = DesignTokens.SpacingMedium,
+                                            vertical = DesignTokens.SpacingXSmall,
+                                        ),
+                                color =
+                                    MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = if (selected) 1f else 0.34f,
                                     ),
-                            color =
-                                MaterialTheme.colorScheme.onSurface.copy(
-                                    alpha = if (selected) 1f else 0.34f,
-                                ),
-                            style =
-                                if (selected) MaterialTheme.typography.labelMedium
-                                else MaterialTheme.typography.labelSmall,
-                            maxLines = 1,
-                        )
+                                style =
+                                    if (selected) MaterialTheme.typography.labelMedium
+                                    else MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
+                            )
+                        }
                     }
                 }
             }
         },
     ) {
         if (selectedPack == null) {
-            Text(stringResource(R.string.icon_picker_no_icon_packs))
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXLarge),
+                ) {
+                    Text(
+                        text = stringResource(R.string.icon_picker_no_icon_packs),
+                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center,
+                    )
+                    Button(
+                        onClick = {
+                            onDismiss()
+                            IntentHelpers.openSearchUrl(
+                                context = context.applicationContext as Application,
+                                query = context.getString(R.string.settings_icon_pack_search_query),
+                                searchEngine = SearchEngine.GOOGLE_PLAY,
+                            )
+                        },
+                    ) {
+                        Text(stringResource(R.string.icon_picker_download_icon_packs))
+                    }
+                }
+            }
         } else {
             val pack = selectedPack
             val iconNames by produceState(emptyList(), pack.packageName) {

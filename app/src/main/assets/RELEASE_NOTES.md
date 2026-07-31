@@ -1,6 +1,6 @@
-- Change individual app icons (requires icon pack)
-- New Weather tool (requires API key)
+- Change individual app icons by long-pressing
 - Ask follow-up questions in AI Search
+- New Weather tool
 - Configure how many search history items appear before expanding
 - Increase widget icon size
 - Send the system time to custom tools

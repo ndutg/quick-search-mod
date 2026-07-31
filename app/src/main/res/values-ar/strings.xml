@@ -1057,4 +1057,6 @@
     <string name="tasker_not_installed">Tasker غير مثبت</string>
     <string name="tasker_broadcast_failed">تعذر إرسال بث Tasker</string>
     <string name="settings_more_apps_from_developer_title">المزيد من التطبيقات من المطور</string>
+    <string name="icon_picker_no_icon_packs">لا توجد حزم أيقونات مثبتة لتغيير أيقونة التطبيق.</string>
+    <string name="icon_picker_download_icon_packs">تنزيل حزم الأيقونات</string>
 </resources>

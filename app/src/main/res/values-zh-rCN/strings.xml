@@ -1055,4 +1055,6 @@
     <string name="tasker_not_installed">未安装 Tasker</string>
     <string name="tasker_broadcast_failed">无法发送 Tasker 广播</string>
     <string name="settings_more_apps_from_developer_title">开发者的更多应用</string>
+    <string name="icon_picker_no_icon_packs">未安装可用于更改应用图标的图标包。</string>
+    <string name="icon_picker_download_icon_packs">下载图标包</string>
 </resources>

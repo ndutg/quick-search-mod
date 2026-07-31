@@ -1054,4 +1054,6 @@
     <string name="tasker_not_installed">Tasker yüklü değil</string>
     <string name="tasker_broadcast_failed">Tasker yayını gönderilemedi</string>
     <string name="settings_more_apps_from_developer_title">Geliştiricinin diğer uygulamaları</string>
+<string name="icon_picker_no_icon_packs">Uygulama simgesini değiştirmek için yüklü simge paketi yok.</string>
+<string name="icon_picker_download_icon_packs">Simge paketlerini indir</string>
 </resources>
