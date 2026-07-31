@@ -1040,4 +1040,5 @@
     <string name="tasker_intent_action">Intent Tasker (%1$s)</string>
     <string name="tasker_not_installed">Το Tasker δεν είναι εγκατεστημένο</string>
     <string name="tasker_broadcast_failed">Αδυναμία αποστολής της εκπομπής Tasker</string>
+    <string name="settings_more_apps_from_developer_title">Περισσότερες εφαρμογές από τον προγραμματιστή</string>
 </resources>

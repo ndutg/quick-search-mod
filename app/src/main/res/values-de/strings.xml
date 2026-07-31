@@ -1040,4 +1040,5 @@
     <string name="tasker_intent_action">Tasker-Intent (%1$s)</string>
     <string name="tasker_not_installed">Tasker ist nicht installiert</string>
     <string name="tasker_broadcast_failed">Der Tasker-Broadcast konnte nicht gesendet werden</string>
+    <string name="settings_more_apps_from_developer_title">Weitere Apps vom Entwickler</string>
 </resources>

@@ -1042,4 +1042,5 @@
     <string name="tasker_intent_action">نية Tasker (%1$s)</string>
     <string name="tasker_not_installed">Tasker غير مثبت</string>
     <string name="tasker_broadcast_failed">تعذر إرسال بث Tasker</string>
+    <string name="settings_more_apps_from_developer_title">المزيد من التطبيقات من المطور</string>
 </resources>

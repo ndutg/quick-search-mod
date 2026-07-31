@@ -1040,4 +1040,5 @@
     <string name="tasker_intent_action">Tasker Intent (%1$s)</string>
     <string name="tasker_not_installed">未安装 Tasker</string>
     <string name="tasker_broadcast_failed">无法发送 Tasker 广播</string>
+    <string name="settings_more_apps_from_developer_title">开发者的更多应用</string>
 </resources>

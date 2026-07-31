@@ -69,6 +69,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -735,6 +736,25 @@ fun SettingsMoreOptions(
         onOpenFeaturesList()
     }
 
+    val onOpenDeveloperGooglePlay: () -> Unit = {
+        runCatching {
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/developer?id=Teja+Karlapudi"),
+                ),
+            )
+        }
+        Unit
+    }
+
+    val onOpenDeveloperGitHub: () -> Unit = {
+        runCatching {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/teja2495/")))
+        }
+        Unit
+    }
+
     val feedbackItems =
         listOf(
             SettingsCardItem(
@@ -795,6 +815,15 @@ fun SettingsMoreOptions(
                 color = AppColors.SettingsDivider,
             )
 
+            MoreAppsFromDeveloperRow(
+                onGooglePlayClick = onOpenDeveloperGooglePlay,
+                onGitHubClick = onOpenDeveloperGitHub,
+            )
+
+            HorizontalDivider(
+                color = AppColors.SettingsDivider,
+            )
+
             Box(
                 modifier =
                     Modifier
@@ -813,6 +842,46 @@ fun SettingsMoreOptions(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun MoreAppsFromDeveloperRow(
+    onGooglePlayClick: () -> Unit,
+    onGitHubClick: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = DesignTokens.SpacingXXLarge,
+                    vertical = DesignTokens.SpacingLarge,
+                ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.settings_more_apps_from_developer_title),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f),
+        )
+
+        IconButton(onClick = onGooglePlayClick) {
+            Icon(
+                painter = painterResource(R.drawable.google_play),
+                contentDescription = "Google Play",
+                tint = androidx.compose.ui.graphics.Color.Unspecified,
+            )
+        }
+
+        IconButton(onClick = onGitHubClick) {
+            Icon(
+                painter = painterResource(R.drawable.ic_github),
+                contentDescription = "GitHub",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

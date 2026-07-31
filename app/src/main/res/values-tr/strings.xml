@@ -1039,4 +1039,5 @@
     <string name="tasker_intent_action">Tasker Intent\'i (%1$s)</string>
     <string name="tasker_not_installed">Tasker yüklü değil</string>
     <string name="tasker_broadcast_failed">Tasker yayını gönderilemedi</string>
+    <string name="settings_more_apps_from_developer_title">Geliştiricinin diğer uygulamaları</string>
 </resources>
