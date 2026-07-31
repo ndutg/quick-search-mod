@@ -1,2 +1,7 @@
-- Option to change individual app icons
-- Option to send system time in custom tools
+- Change individual app icons (requires icon pack)
+- New Weather tool (requires API key)
+- Ask follow-up questions in AI Search
+- Configure how many search history items appear before expanding
+- Increase widget icon size
+- Send the system time to custom tools
+- Performance improvements and bug fixes
