@@ -189,6 +189,7 @@ enum class SearchToolType {
 data class AiSearchState(
         val status: AiSearchStatus = AiSearchStatus.Idle,
         val answer: String? = null,
+        val isFollowUp: Boolean = false,
         val webSearchDisabledForRequest: Boolean = false,
         val showWebSearchFallbackTip: Boolean = false,
         val errorMessage: String? = null,

@@ -16,6 +16,8 @@
     <string name="app_name">Quick Search</string>
     <string name="direct_answer_contact_name">AI Answer</string>
     <string name="direct_search_enter_query">يرجى إدخال عبارة بحث للبدء.</string>
+    <string name="direct_search_ask_follow_up">اطرح سؤالاً تابعًا</string>
+    <string name="direct_search_follow_up_hint">اكتب سؤالاً تابعًا</string>
     <string name="direct_search_error_generic">تعذر الحصول على إجابة من AI. يرجى المحاولة مرة أخرى.</string>
     <string name="direct_search_error_no_key">يرجى إضافة مفتاح API في الإعدادات (مزود AI) للحصول على إجابات AI.</string>
     <string name="gemini_web_search_quota_fallback_tip">تم بلوغ حصة بحث الويب في Gemini، لذلك تم إنشاء هذه الإجابة بدون بحث الويب.</string>

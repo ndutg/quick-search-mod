@@ -15,6 +15,8 @@
 <string name="app_name">Quick Search</string>
 <string name="direct_answer_contact_name">AI Answer</string>
 <string name="direct_search_enter_query">Veuillez saisir une recherche.</string>
+<string name="direct_search_ask_follow_up">Poser une question complémentaire</string>
+<string name="direct_search_follow_up_hint">Saisissez une question complémentaire</string>
 <string name="direct_search_error_generic">Impossible de récupérer la réponse de l\'AI. Réessayez.</string>
 <string name="direct_search_error_no_key">Ajoutez une clé API dans les paramètres (Fournisseur AI) pour obtenir les réponses de l\'AI.</string>
 <string name="gemini_web_search_quota_fallback_tip">Le quota de recherche Web de Gemini a été atteint. Cette réponse a donc été générée sans recherche Web.</string>

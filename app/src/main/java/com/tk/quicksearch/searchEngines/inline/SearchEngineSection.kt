@@ -25,26 +25,36 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items as rowItems
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
@@ -371,6 +381,76 @@ private fun CompactToolActionContent(
                     fontWeight = FontWeight.Medium,
                 )
             }
+        }
+    }
+}
+
+@Composable
+internal fun AiFollowUpInputSection(
+    value: String,
+    onValueChange: (String) -> Unit,
+    onSend: () -> Unit,
+    showWallpaperBackground: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val submit = {
+        if (value.isNotBlank()) {
+            onSend()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
+    val dividerColor =
+        if (showWallpaperBackground) {
+            AppColors.WallpaperDivider
+        } else {
+            AppColors.Accent.copy(alpha = 0.22f)
+        }
+    Surface(
+        modifier = modifier.extendToScreenEdges(),
+        color = AppColors.getSearchEngineSectionBackground(showWallpaperBackground),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            HorizontalDivider(
+                color = dividerColor,
+                thickness = SearchEngineSectionConstants.COMPACT_TOP_DIVIDER_THICKNESS,
+            )
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = SearchEngineSectionConstants.HORIZONTAL_PADDING,
+                            vertical = SearchEngineSectionConstants.VERTICAL_PADDING,
+                        )
+                        .focusRequester(focusRequester),
+                placeholder = { Text(stringResource(R.string.direct_search_follow_up_hint)) },
+                trailingIcon = {
+                    IconButton(
+                        onClick = submit,
+                        enabled = value.isNotBlank(),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Send,
+                            contentDescription = stringResource(R.string.dialog_send),
+                        )
+                    }
+                },
+                singleLine = true,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(
+                    SearchEngineSectionConstants.TOOL_BUTTON_CORNER_RADIUS,
+                ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions(onSend = { submit() }),
+            )
         }
     }
 }

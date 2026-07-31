@@ -30,6 +30,7 @@ import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.CurrencyExchange
 import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.QuestionAnswer
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -72,6 +73,7 @@ import com.tk.quicksearch.searchEngines.extendToScreenEdges
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.searchEngines.resolveDefaultBrowserPackage
 import com.tk.quicksearch.searchEngines.inline.SearchEngineIconsSection
+import com.tk.quicksearch.searchEngines.inline.AiFollowUpInputSection
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
@@ -149,6 +151,7 @@ internal fun SearchScreenContent(
         onOpenPersonalContextDialog: () -> Unit,
         onCustomizeSearchEnginesClick: () -> Unit = {},
         onOpenAiSearchConfigure: () -> Unit = {},
+        onAiFollowUpSubmit: (String) -> Unit = {},
         onDeleteRecentItem: (RecentSearchEntry) -> Unit = {},
         onClearRecentItems: () -> Unit = {},
         onOpenSearchHistorySettings: () -> Unit = {},
@@ -202,6 +205,8 @@ internal fun SearchScreenContent(
     var hasClosedStartupKeyboardAfterLaunch by
             remember(isOverlayPresentation) { mutableStateOf(!openKeyboardOnLaunchOnStartup) }
     var isSearchHistoryExpanded by remember { mutableStateOf(false) }
+    var isAiFollowUpInputVisible by remember { mutableStateOf(false) }
+    var aiFollowUpText by remember { mutableStateOf("") }
     var searchHistoryCollapseRequestKey by remember { mutableStateOf(0) }
     val openKeyboardActionScope = rememberCoroutineScope()
 
@@ -439,6 +444,17 @@ internal fun SearchScreenContent(
                     state.hasApiKey &&
                     !showCalculatorResult &&
                     state.AiSearchState.status == AiSearchStatus.Idle
+    val showAiFollowUpAction =
+            state.AiSearchState.status == AiSearchStatus.Success &&
+                    !state.AiSearchState.answer.isNullOrBlank() &&
+                    state.detectedCustomToolId == null
+
+    LaunchedEffect(showAiFollowUpAction) {
+        if (!showAiFollowUpAction) {
+            isAiFollowUpInputVisible = false
+            aiFollowUpText = ""
+        }
+    }
     val showTaskerIntentCard = activeTaskerIntent != null
     val isToolAliasMode =
             isCurrencyConverterAliasMode ||
@@ -713,6 +729,12 @@ internal fun SearchScreenContent(
                 null
             } else {
                 when {
+                    showAiFollowUpAction ->
+                            ToolCardConfig(
+                                    label = stringResource(R.string.direct_search_ask_follow_up),
+                                    icon = Icons.Rounded.QuestionAnswer,
+                                    onClick = { isAiFollowUpInputVisible = true },
+                            )
                     showCurrencyConverterSearchCard ->
                             ToolCardConfig(
                                     label = stringResource(R.string.get_currency_value),
@@ -1288,7 +1310,23 @@ internal fun SearchScreenContent(
                         LocalOverlayDividerColor provides overlayDividerTint,
                         LocalOverlayActionColor provides overlayActionTint,
                 ) {
-                    SearchEnginesVisibility(
+                    if (isAiFollowUpInputVisible) {
+                        AiFollowUpInputSection(
+                                value = aiFollowUpText,
+                                onValueChange = { aiFollowUpText = it },
+                                onSend = {
+                                    val followUp = aiFollowUpText.trim()
+                                    if (followUp.isNotEmpty()) {
+                                        isAiFollowUpInputVisible = false
+                                        aiFollowUpText = ""
+                                        onAiFollowUpSubmit(followUp)
+                                    }
+                                },
+                                showWallpaperBackground = state.showWallpaperBackground,
+                                modifier = searchEnginesModifier,
+                        )
+                    } else {
+                        SearchEnginesVisibility(
                             enginesState = state.searchEnginesState,
                             modifier = searchEnginesModifier,
                             compactContent = {
@@ -1376,7 +1414,8 @@ internal fun SearchScreenContent(
                                     Spacer(modifier = searchEnginesModifier)
                                 }
                             },
-                    )
+                        )
+                    }
                 }
             }
 

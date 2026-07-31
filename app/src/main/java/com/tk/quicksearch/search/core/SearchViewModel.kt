@@ -559,6 +559,45 @@ class SearchViewModel(
         inMemoryRetainedQuery = newQuery
         queryCoordinator.onQueryChange(newQuery)
     }
+    fun submitAiFollowUp(followUpQuestion: String) {
+        val trimmedQuestion = followUpQuestion.trim()
+        val currentAiState = _resultsState.value.AiSearchState
+        val previousQuestion = currentAiState.activeQuery?.trim().orEmpty()
+        val previousAnswer = currentAiState.answer?.trim().orEmpty()
+        if (
+            trimmedQuestion.isEmpty() ||
+                currentAiState.status != AiSearchStatus.Success ||
+                previousQuestion.isEmpty() ||
+                previousAnswer.isEmpty()
+        ) {
+            return
+        }
+
+        inMemoryRetainedQuery = trimmedQuestion
+        updateResultsState { state ->
+            state.copy(
+                query = trimmedQuestion,
+                searchResults = emptyList(),
+                appShortcutResults = emptyList(),
+                contactResults = emptyList(),
+                fileResults = emptyList(),
+                settingResults = emptyList(),
+                appSettingResults = emptyList(),
+                calendarEvents = emptyList(),
+                noteResults = emptyList(),
+                webSuggestions = emptyList(),
+                webSuggestionsLoading = false,
+                webSuggestionWasSelected = false,
+                isAppSearchInProgress = false,
+                isSecondarySearchInProgress = false,
+            )
+        }
+        handlers.aiSearchHandler.requestAiFollowUp(
+            query = trimmedQuestion,
+            previousQuestion = previousQuestion,
+            previousAnswer = previousAnswer,
+        )
+    }
     fun executeCurrencyConversion() = toolCoordinator.executeCurrencyConversion()
     fun executeWorldClockLookup() = toolCoordinator.executeWorldClockLookup()
     fun executeDictionaryLookup() = toolCoordinator.executeDictionaryLookup()

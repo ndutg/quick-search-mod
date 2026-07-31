@@ -14,6 +14,28 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+internal data class AiConversationTurn(
+    val question: String,
+    val answer: String,
+)
+
+internal fun buildAiFollowUpPrompt(
+    previousTurns: List<AiConversationTurn>,
+    followUpQuestion: String,
+): String =
+    buildString {
+        append("Use the complete conversation below as context for the final follow-up question.\n\n")
+        previousTurns.forEach { turn ->
+            append("User: ")
+            append(turn.question)
+            append("\nAssistant: ")
+            append(turn.answer)
+            append("\n\n")
+        }
+        append("User follow-up: ")
+        append(followUpQuestion)
+    }
+
 class AiSearchHandler(
     private val context: Context,
     private val userPreferences: UserAppPreferences,
@@ -38,6 +60,7 @@ class AiSearchHandler(
     @Volatile private var hasLoadedApiKeyCache: Boolean = false
     @Volatile private var isInitialized = false
     private var aiSearchJob: Job? = null
+    private val conversationTurns = mutableListOf<AiConversationTurn>()
 
     private fun ensureInitialized() {
         if (!isInitialized) {
@@ -272,6 +295,28 @@ class AiSearchHandler(
     }
 
     fun requestAiSearch(query: String) {
+        requestAiSearchInternal(query = query, isFollowUp = false)
+    }
+
+    fun requestAiFollowUp(
+        query: String,
+        previousQuestion: String,
+        previousAnswer: String,
+    ) {
+        if (conversationTurns.isEmpty()) {
+            val seedQuestion = previousQuestion.trim()
+            val seedAnswer = previousAnswer.trim()
+            if (seedQuestion.isNotEmpty() && seedAnswer.isNotEmpty()) {
+                conversationTurns.add(AiConversationTurn(seedQuestion, seedAnswer))
+            }
+        }
+        requestAiSearchInternal(query = query, isFollowUp = true)
+    }
+
+    private fun requestAiSearchInternal(
+        query: String,
+        isFollowUp: Boolean,
+    ) {
         ensureInitialized()
         val trimmedQuery = query.trim()
         if (trimmedQuery.isBlank()) {
@@ -280,11 +325,16 @@ class AiSearchHandler(
             return
         }
 
+        if (!isFollowUp) {
+            conversationTurns.clear()
+        }
+
         val apiKey = llmApiKey
         if (apiKey.isNullOrBlank()) {
             _aiSearchState.update {
                 AiSearchState(
                     status = AiSearchStatus.Error,
+                    isFollowUp = isFollowUp,
                     errorMessage = context.getString(R.string.direct_search_error_no_key),
                     activeQuery = trimmedQuery,
                     llmProviderId = activeProviderId,
@@ -294,11 +344,13 @@ class AiSearchHandler(
         }
 
         aiSearchJob?.cancel()
+        val previousTurns = conversationTurns.toList()
         aiSearchJob =
             scope.launch {
                 _aiSearchState.update {
                     AiSearchState(
                         status = AiSearchStatus.Loading,
+                        isFollowUp = isFollowUp,
                         activeQuery = trimmedQuery,
                         llmProviderId = activeProviderId,
                     )
@@ -311,7 +363,12 @@ class AiSearchHandler(
                         context = context,
                         request =
                             LlmRequest(
-                                query = trimmedQuery,
+                                query =
+                                    if (isFollowUp) {
+                                        buildAiFollowUpPrompt(previousTurns, trimmedQuery)
+                                    } else {
+                                        trimmedQuery
+                                    },
                                 personalContext =
                                     if (selectedModel?.supportsSystemInstructions == false) {
                                         null
@@ -335,6 +392,12 @@ class AiSearchHandler(
 
                 result
                     .onSuccess { response ->
+                        if (isFollowUp) {
+                            conversationTurns.add(AiConversationTurn(trimmedQuery, response.text))
+                        } else {
+                            conversationTurns.clear()
+                            conversationTurns.add(AiConversationTurn(trimmedQuery, response.text))
+                        }
                         val showWebSearchFallbackTip =
                             response.webSearchDisabledForRequest &&
                                 userPreferences.shouldShowWebSearchFallbackTip()
@@ -345,6 +408,7 @@ class AiSearchHandler(
                             AiSearchState(
                                 status = AiSearchStatus.Success,
                                 answer = response.text,
+                                isFollowUp = isFollowUp,
                                 webSearchDisabledForRequest =
                                     response.webSearchDisabledForRequest,
                                 showWebSearchFallbackTip = showWebSearchFallbackTip,
@@ -380,6 +444,7 @@ class AiSearchHandler(
                         _aiSearchState.update {
                             AiSearchState(
                                 status = AiSearchStatus.Error,
+                                isFollowUp = isFollowUp,
                                 errorMessage = message,
                                 activeQuery = trimmedQuery,
                                 llmProviderId = activeProviderId,
@@ -519,6 +584,7 @@ class AiSearchHandler(
     fun clearAiSearchState() {
         aiSearchJob?.cancel()
         aiSearchJob = null
+        conversationTurns.clear()
         _aiSearchState.update { AiSearchState() }
     }
 

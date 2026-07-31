@@ -895,6 +895,7 @@ fun SearchRoute(
             onContactActionHintDismissed = viewModel::onContactActionHintDismissed,
             onCustomizeSearchEnginesClick = onCustomizeSearchEnginesClick,
             onOpenAiSearchConfigure = onOpenAiSearchConfigure,
+            onAiFollowUpSubmit = viewModel::submitAiFollowUp,
             onDeleteRecentItem = viewModel::deleteRecentItem,
             onClearRecentItems = viewModel::clearRecentItems,
             onOpenSearchHistorySettings = onOpenSearchHistorySettings,

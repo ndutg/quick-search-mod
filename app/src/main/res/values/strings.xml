@@ -6,6 +6,8 @@
     <string name="app_name">Quick Search</string>
     <string name="direct_answer_contact_name">AI Answer</string>
     <string name="direct_search_enter_query">Please enter a query to search.</string>
+    <string name="direct_search_ask_follow_up">Ask follow up</string>
+    <string name="direct_search_follow_up_hint">Ask a follow-up question</string>
     <string name="direct_search_error_generic">Couldn\u2019t fetch AI answer. Try again.</string>
     <string name="direct_search_error_no_key">Add an API key in settings (AI Provider) to fetch AI answers.</string>
     <string name="gemini_web_search_quota_fallback_tip">Gemini\u2019s web search quota was reached, so this answer was generated without web search.</string>

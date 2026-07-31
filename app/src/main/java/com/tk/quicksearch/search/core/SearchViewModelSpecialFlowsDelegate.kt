@@ -73,14 +73,14 @@ internal class SearchViewModelSpecialFlowsDelegate(
     fun setupAiSearchStateListener() {
         scope.launch {
             aiSearchStateFlow.collect { aiState ->
-                if (aiState.status == AiSearchStatus.Loading) {
+                if (aiState.status == AiSearchStatus.Loading && !aiState.isFollowUp) {
                     val activeQuery = aiState.activeQuery?.trim().orEmpty()
                     if (shouldRecordPendingAiSearchQueryInHistory() && activeQuery.isNotEmpty()) {
                         userPreferences.addRecentItem(RecentSearchEntry.Query(activeQuery))
                     }
                     setShouldRecordPendingAiSearchQueryInHistory(true)
                 }
-                if (aiState.status == AiSearchStatus.Success) {
+                if (aiState.status == AiSearchStatus.Success && !aiState.isFollowUp) {
                     val activeQuery = aiState.activeQuery?.trim().orEmpty()
                     val answer = aiState.answer?.trim().orEmpty()
                     if (activeQuery.isNotEmpty() && answer.isNotEmpty()) {
