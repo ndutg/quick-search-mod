@@ -14,8 +14,11 @@
 <string name="app_name">Quick Search</string>
 <string name="direct_answer_contact_name">AI Yanıtı</string>
 <string name="direct_search_enter_query">Lütfen aramak için bir sorgu girin.</string>
+<string name="direct_search_ask_follow_up">Takip sorusu sor</string>
+<string name="direct_search_follow_up_hint">Bir takip sorusu yazın</string>
 <string name="direct_search_error_generic">AI yanıtı alınamadı. Tekrar deneyin.</string>
 <string name="direct_search_error_no_key">AI yanıtlarını almak için ayarlardan (AI Sağlayıcısı) bir API anahtarı ekleyin.</string>
+<string name="gemini_web_search_quota_fallback_tip">Gemini web arama kotasına ulaşıldığı için bu yanıt web araması kullanılmadan oluşturuldu.</string>
 <string name="direct_search_powered_by">Destekleyen:</string>
 <string name="empty_state_subtitle">Önerileri görmek için bir uygulama başlatın veya aramanızı detaylandırın.</string>
 <string name="empty_state_title">Henüz gösterilecek bir şey yok</string>
@@ -36,6 +39,7 @@
 <string name="search_hint_contacts">Kişilerde ara…</string>
 <string name="search_hint_currency_converter">Para birimi dönüştür, örn: 100 USD to INR</string>
 <string name="search_hint_dictionary">Bir kelime girin</string>
+<string name="search_hint_weather">Bir konum girin veya varsayılanı kullanın</string>
 <string name="search_hint_files">Dosyalarda ara…</string>
 <string name="search_hint_notes">Notlarda ara…</string>
 <string name="search_hint_settings">Cihaz ayarlarında ara…</string>
@@ -55,6 +59,7 @@
     <item>225 + 456</item>
     <item>Time in UK</item>
     <item>Define Serendipity</item>
+    <item>New York hava durumu</item>
 </string-array>
 <string name="search_provider_description">Quick Search ile uygulamaları, kişileri, dosyaları, ayarları ve daha fazlasını arayın.</string>
 
@@ -217,7 +222,9 @@
 <string name="clear_query_toggle_title">Sorguyu temizle</string>
 <string name="more_results_title">Daha fazla sonuç</string>
 <string name="open_keyboard_toggle_desc">Uygulama başlatıldığında klavyeyi otomatik olarak aç</string>
-<string name="recent_queries_toggle_desc">Arama geçmişinizi ana ekranda göster.</string>
+<string name="recent_queries_toggle_desc">Genişletmeden önce gösterilen öğe sayısı</string>
+<string name="fuzzy_search_toggle_title">Bulanık arama</string>
+<string name="fuzzy_search_toggle_desc">Aramanızda yazım hatası olsa bile sonuçları bulun.</string>
 <string name="recent_queries_toggle_title">Arama geçmişi</string>
 <string name="search_history_tab_recently_opened">Sonuçlar</string>
 <string name="search_history_tab_searches">Aramalar</string>
@@ -647,7 +654,10 @@
 <string name="settings_icon_title">Ayarlar simgesi</string>
 <string name="settings_launch_options_desc">Bu uygulamayı başlatmanın farklı yolları</string>
 <string name="settings_launch_options_title">Başlatma seçenekleri</string>
+<string name="settings_app_language_title">Uygulama dili</string>
 <string name="settings_app_language_desc">Mevcut: %1$s</string>
+<string name="settings_app_language_picker_title">Uygulama dilini seçin</string>
+<string name="settings_app_language_system_default">Sistem varsayılanı</string>
 <string name="settings_launcher_icon_reset_default">Varsayılana sıfırla</string>
 <string name="settings_launcher_icon_title">Başlatıcı uygulama simgesi</string>
 <string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>
@@ -766,7 +776,11 @@
      Settings - Backup, Feedback &amp; About
      ============================================================================ -->
 <string name="release_notes_action_all_features">Tüm özellikler</string>
+<string name="release_notes_previous_versions">Önceki sürümler</string>
+<string name="release_notes_previous_versions_unavailable">Önceki sürümler yüklenemedi</string>
 <string name="release_notes_action_got_it">Anladım</string>
+<string name="settings_release_notes_title">Sürüm notları</string>
+<string name="settings_release_notes_desc">Bu sürümün notlarını görüntüle</string>
 <string name="update_card_title">Quick Search için yeni bir güncelleme mevcut!</string>
 <string name="action_update">Güncelle</string>
 <string name="release_notes_title">Quick Search v%1$s sürüm notları</string>
@@ -826,6 +840,16 @@
 <string name="dictionary_synonyms_label">Eş anlamlılar: %1$s</string>
 <string name="dictionary_toggle_desc">Örnek: define serendipity</string>
 <string name="dictionary_toggle_title">Sözlük</string>
+<string name="weather_toggle_title">Hava Durumu</string>
+<string name="weather_toggle_desc">Belirtilen konum için bugünün hava durumu</string>
+<string name="weather_location_label">Varsayılan konum</string>
+<string name="weather_location_hint">Örnek: İstanbul</string>
+<string name="weather_error_location_required">Bir konum girin veya Ayarlar’da varsayılan konum belirleyin</string>
+<string name="get_weather">Hava durumunu getir</string>
+<string name="weather_in_location">%1$s için hava durumu</string>
+<string name="weather_temperature_unit_label">Sıcaklık birimi</string>
+<string name="weather_temperature_unit_celsius">Santigrat (°C)</string>
+<string name="weather_temperature_unit_fahrenheit">Fahrenhayt (°F)</string>
 <string name="get_currency_value">Döviz değerini al</string>
 <string name="get_time">Saati al</string>
 <string name="search_in_dictionary">Sözlükte ara</string>
@@ -886,6 +910,7 @@
 <string name="widget_search_icon">Arama simgesi</string>
 <string name="widget_settings_title">Arama widget\'ı</string>
 <string name="widget_slider_border">Kenarlık kalınlığı</string>
+<string name="widget_slider_icon_size">Simge boyutu</string>
 <string name="widget_slider_internal_padding">Dış kenar boşluğu</string>
 <string name="widget_slider_internal_padding_horizontal">Yatay</string>
 <string name="widget_slider_internal_padding_vertical">Dikey</string>
@@ -992,7 +1017,7 @@
 <string name="settings_custom_tool_delete_button">Aracı sil</string>
 <string name="settings_custom_tool_editor_title">Özel araç</string>
 <string name="settings_custom_tool_name_label">Araç adı</string>
-<string name="settings_custom_tool_prompt_hint">Bu aracın ne işe yaradığını açıkla. Bu yönlendirme, araç tetiklendiğinde AI\'a rehberlik eder.</string>
+<string name="settings_custom_tool_prompt_hint">Bu aracın ne işe yaradığını açıkla. Bu yönlendirme, araç tetiklendiğinde AI\'a rehberlik eder.\n\nİstemine geçerli tarih ve saati eklemek için {time} kullanın.</string>
 <string name="settings_custom_tool_prompt_label">Sistem yönlendirmesi</string>
 <string name="settings_excluded_items_clear_all">Tüm hariç tutulanları temizle</string>
 <string name="settings_excluded_items_clear_all_confirmation">Hariç tutulan tüm öğeleri temizlemek istediğinden emin misin? Bu işlem geri alınamaz.</string>
@@ -1028,4 +1053,7 @@
     <string name="tasker_intent_action">Tasker Intent\'i (%1$s)</string>
     <string name="tasker_not_installed">Tasker yüklü değil</string>
     <string name="tasker_broadcast_failed">Tasker yayını gönderilemedi</string>
+    <string name="settings_more_apps_from_developer_title">Geliştiricinin diğer uygulamaları</string>
+<string name="icon_picker_no_icon_packs">Uygulama simgesini değiştirmek için yüklü simge paketi yok.</string>
+<string name="icon_picker_download_icon_packs">Simge paketlerini indir</string>
 </resources>

@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.contacts.contactInitials
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.models.ContactInfo
@@ -262,11 +263,7 @@ internal fun ContactAvatar(
 
         val placeholderInitials =
                 remember(displayName) {
-                        displayName
-                                .split(" ")
-                                .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-                                .take(2)
-                                .joinToString("")
+                        contactInitials(displayName)
                 }
 
         Surface(

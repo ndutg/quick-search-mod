@@ -80,8 +80,8 @@ class CurrencyConverterHandler(
                                         advancedPayloadJson = advancedPayload.second.takeIf { advancedPayload.first },
                                 ),
                 )
-        return result.mapCatching { text ->
-            val parsed = parseModelResponse(text).getOrElse { throw it }
+        return result.mapCatching { response ->
+            val parsed = parseModelResponse(response.text).getOrElse { throw it }
             parsed to modelId
         }
     }
@@ -118,8 +118,8 @@ class CurrencyConverterHandler(
                                         advancedPayloadJson = advancedPayload.second.takeIf { advancedPayload.first },
                                 ),
                 )
-        return result.mapCatching { text ->
-            val parsed = parseModelResponse(text).getOrElse { throw it }
+        return result.mapCatching { response ->
+            val parsed = parseModelResponse(response.text).getOrElse { throw it }
             parsed to modelId
         }
     }

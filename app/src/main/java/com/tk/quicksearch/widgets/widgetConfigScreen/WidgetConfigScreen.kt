@@ -37,6 +37,7 @@ import com.tk.quicksearch.widgets.utils.WidgetVariant
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetLoadingState
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetMicIconSection
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetInternalPaddingSection
+import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetIconSizeSection
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetSearchIconSection
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetSlidersSection
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetTextIconColorSection
@@ -211,6 +212,10 @@ fun WidgetConfigScreen(
                         onStateChange = onConstrainedStateChange,
                     )
                     WidgetTextIconColorSection(
+                        state = constrainedState,
+                        onStateChange = onConstrainedStateChange,
+                    )
+                    WidgetIconSizeSection(
                         state = constrainedState,
                         onStateChange = onConstrainedStateChange,
                     )

@@ -91,6 +91,7 @@ open class AliasPreferences(
                 aliasValue = customizationStore.getString(aliasKey),
                 legacyShortcutValue = customizationStore.getString(legacyKey),
             ) ?: return null
+        if (storedCode.isEmpty()) return ""
         val normalizedCode = normalizeShortcutCodeInput(storedCode)
         if (customizationStore.getString(aliasKey).isNullOrEmpty() && isValidGeneralAliasCode(normalizedCode)) {
             customizationStore.putString(aliasKey, normalizedCode)
@@ -130,6 +131,11 @@ open class AliasPreferences(
         val aliasKey = "${BasePreferences.KEY_ALIAS_CODE_PREFIX}$targetId"
         val legacyKey = "${BasePreferences.KEY_SHORTCUT_CODE_PREFIX_LEGACY}$targetId"
         val normalizedCode = normalizeShortcutCodeInput(code)
+        if (normalizedCode.isEmpty()) {
+            customizationStore.putString(aliasKey, "")
+            customizationStore.putString(legacyKey, "")
+            return
+        }
         if (!isValidGeneralAliasCode(normalizedCode)) {
             return
         }

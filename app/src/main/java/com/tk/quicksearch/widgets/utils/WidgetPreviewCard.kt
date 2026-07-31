@@ -57,6 +57,7 @@ fun WidgetPreviewCard(
     val innerHorizontalPadding = WidgetConfigConstants.PREVIEW_INNER_PADDING
     val previewBarHeight = (WidgetConfigConstants.PREVIEW_HEIGHT - (verticalInset * 2)).coerceAtLeast(1.dp)
     val customButtons = previewState.customButtons.filterNotNull()
+    val iconSize = WidgetConfigConstants.PREVIEW_ICON_SIZE * previewState.iconSizeScale
 
     Box(
         modifier =
@@ -111,7 +112,7 @@ fun WidgetPreviewCard(
                                 painter = painterResource(id = R.drawable.ic_widget_search),
                                 contentDescription = stringResource(R.string.common_search),
                                 tint = colors.textIcon,
-                                modifier = Modifier.size(WidgetConfigConstants.PREVIEW_ICON_SIZE),
+                                modifier = Modifier.size(iconSize),
                             )
                         }
                     }
@@ -130,7 +131,7 @@ fun WidgetPreviewCard(
                             painter = painterResource(id = R.drawable.ic_widget_search),
                             contentDescription = stringResource(R.string.common_search),
                             tint = colors.textIcon,
-                            modifier = Modifier.size(WidgetConfigConstants.PREVIEW_ICON_SIZE),
+                            modifier = Modifier.size(iconSize),
                         )
                     }
                     if (widgetVariant == WidgetVariant.STANDARD && previewState.showLabel) {
@@ -173,7 +174,7 @@ fun WidgetPreviewCard(
                                     ) {
                                         CustomWidgetButtonIcon(
                                             action = action,
-                                            iconSize = WidgetConfigConstants.PREVIEW_ICON_SIZE,
+                                            iconSize = iconSize,
                                             iconPackPackage = iconPackPackage,
                                             tintColor = colors.textIcon,
                                         )
@@ -188,7 +189,7 @@ fun WidgetPreviewCard(
                                             painter = painterResource(id = R.drawable.ic_widget_mic),
                                             contentDescription = stringResource(R.string.desc_voice_search_icon),
                                             tint = colors.textIcon,
-                                            modifier = Modifier.size(WidgetConfigConstants.PREVIEW_ICON_SIZE),
+                                            modifier = Modifier.size(iconSize),
                                         )
                                     }
                                 }
@@ -241,7 +242,7 @@ fun WidgetPreviewCard(
                                     ) {
                                         CustomWidgetButtonIcon(
                                             action = action,
-                                            iconSize = WidgetConfigConstants.PREVIEW_ICON_SIZE,
+                                            iconSize = iconSize,
                                             iconPackPackage = iconPackPackage,
                                             tintColor = colors.textIcon,
                                         )
@@ -257,7 +258,7 @@ fun WidgetPreviewCard(
                                             painter = painterResource(id = iconRes),
                                             contentDescription = null,
                                             tint = colors.textIcon,
-                                            modifier = Modifier.size(WidgetConfigConstants.PREVIEW_ICON_SIZE),
+                                            modifier = Modifier.size(iconSize),
                                         )
                                     }
                                 }

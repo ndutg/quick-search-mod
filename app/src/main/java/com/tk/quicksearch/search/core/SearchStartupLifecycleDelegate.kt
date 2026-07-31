@@ -345,6 +345,22 @@ internal class SearchStartupLifecycleDelegate(
 
     fun launchDeferredInitialization() {
         scope.launch(startupDispatcher) {
+            withContext(Dispatchers.Main.immediate) {
+                releaseNotesHandler.checkForReleaseNotes()
+            }
+
+            val pinnedContactsStartupJob =
+                scope.launch(Dispatchers.IO) {
+                    pinningHandler.loadPinnedContactsForStartup()
+                }
+
+            // Pinned shortcuts are part of the empty-query home surface. Restore the bounded
+            // persisted cache as soon as deferred initialization begins so they do not wait for
+            // the long-idle system refresh below.
+            if (appShortcutSearchHandler.loadCachedShortcutsOnly()) {
+                withContext(Dispatchers.Main) { refreshAppShortcutsState() }
+            }
+
             refreshAppsUsageAndPermissions()
             if (shouldReconcileAppsAtStartup()) {
                 loadApps()
@@ -379,6 +395,9 @@ internal class SearchStartupLifecycleDelegate(
                     currencyConverterEnabled = userPreferences.isCurrencyConverterEnabled(),
                     worldClockEnabled = userPreferences.isWorldClockEnabled(),
                     dictionaryEnabled = userPreferences.isDictionaryEnabled(),
+                    weatherEnabled = userPreferences.isWeatherEnabled(),
+                    weatherLocationConfigured = userPreferences.getWeatherLocation().isNotBlank(),
+                    weatherLocation = userPreferences.getWeatherLocation(),
                     customTools = customTools,
                     disabledCustomToolIds = userPreferences.getDisabledCustomTools(),
                     taskerIntentTools = userPreferences.getTaskerIntentTools(),
@@ -490,6 +509,7 @@ internal class SearchStartupLifecycleDelegate(
                             },
                     )
                 }
+                pinnedContactsStartupJob.join()
                 pinningHandler.loadPinnedContactsAndFiles()
                 pinningHandler.loadExcludedContactsAndFiles()
                 loadPinnedAndExcludedCalendarEvents()
@@ -527,12 +547,6 @@ internal class SearchStartupLifecycleDelegate(
                 // PackageManager scan out of the critical path and only validate/discover packs
                 // after the optional-startup idle window.
                 iconPackHandler.refreshIconPacks()
-            }
-
-            launch(Dispatchers.IO) {
-                delay(DEFERRED_RELEASE_NOTES_DELAY_MS)
-                while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
-                releaseNotesHandler.checkForReleaseNotes()
             }
 
             withContext(Dispatchers.Main) {
@@ -745,6 +759,12 @@ internal class SearchStartupLifecycleDelegate(
                 assistantLaunchVoiceModeEnabled = snapshot.assistantLaunchVoiceModeEnabled,
                 disabledAppShortcutIds = userPreferences.getDisabledAppShortcutIds(),
                 recentQueriesEnabled = prefs.searchHistoryEnabled,
+                recentQueriesDisplayCount = userPreferences.getRecentQueriesDisplayCount(),
+                fuzzySearchEnabled =
+                    !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()) &&
+                        userPreferences.isFuzzySearchEnabled(),
+                fuzzySearchAvailable =
+                    !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()),
                 webSuggestionsCount = userPreferences.getWebSuggestionsCount(),
                 topMatchesEnabled = userPreferences.isTopMatchesEnabled(),
                 topMatchesLimit = userPreferences.getTopMatchesLimit(),
@@ -807,6 +827,9 @@ internal class SearchStartupLifecycleDelegate(
                         currencyConverterEnabled = userPreferences.isCurrencyConverterEnabled(),
                         worldClockEnabled = userPreferences.isWorldClockEnabled(),
                         dictionaryEnabled = userPreferences.isDictionaryEnabled(),
+                        weatherEnabled = userPreferences.isWeatherEnabled(),
+                        weatherLocationConfigured = userPreferences.getWeatherLocation().isNotBlank(),
+                        weatherLocation = userPreferences.getWeatherLocation(),
                         customTools = customTools,
                         disabledCustomToolIds = userPreferences.getDisabledCustomTools(),
                         taskerIntentTools = userPreferences.getTaskerIntentTools(),
@@ -1046,7 +1069,6 @@ internal class SearchStartupLifecycleDelegate(
     companion object {
         private const val BROWSER_REFRESH_INTERVAL_MS = 5 * 60 * 1_000L
         private const val DEFERRED_AI_SEARCH_MODELS_DELAY_MS = 15_000L
-        private const val DEFERRED_RELEASE_NOTES_DELAY_MS = 15_000L
         private const val OPTIONAL_STARTUP_DELAY_MS = 10_000L
         private const val OPTIONAL_STARTUP_QUERY_RECHECK_MS = 1_000L
         private const val APP_RECONCILIATION_FRESHNESS_MS = 24L * 60L * 60L * 1_000L

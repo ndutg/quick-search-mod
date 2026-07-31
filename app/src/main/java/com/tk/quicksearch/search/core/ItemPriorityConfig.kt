@@ -38,6 +38,7 @@ object ItemPriorityConfig {
         CURRENCY_CONVERTER_RESULT,
         WORD_CLOCK_RESULT,
         DICTIONARY_RESULT,
+        WEATHER_RESULT,
         AI_SEARCH_RESULT,
 
         // Section groups (contain multiple search results)
@@ -86,6 +87,7 @@ object ItemPriorityConfig {
             add(ItemType.CURRENCY_CONVERTER_RESULT)
             add(ItemType.WORD_CLOCK_RESULT)
             add(ItemType.DICTIONARY_RESULT)
+            add(ItemType.WEATHER_RESULT)
             add(ItemType.AI_SEARCH_RESULT)
             addAll(sectionItemTypes)
             add(ItemType.WEB_SUGGESTIONS)

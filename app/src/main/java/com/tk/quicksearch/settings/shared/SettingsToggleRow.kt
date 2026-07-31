@@ -41,6 +41,7 @@ data class SettingsToggleSliderDetails(
     val onValueChange: (Float) -> Unit,
     val valueRange: ClosedFloatingPointRange<Float>,
     val valueLabel: String,
+    val description: String? = null,
     val steps: Int = 0,
     val valueLabelWidth: Dp = DesignTokens.SpacingXXLarge,
 )
@@ -158,6 +159,18 @@ fun SettingsToggleRow(
                 }
 
                 if (sliderDetails != null) {
+                    sliderDetails.description?.let { description ->
+                        Text(
+                            text = description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color =
+                                if (enabled) {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                },
+                        )
+                    }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,

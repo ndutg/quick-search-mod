@@ -18,7 +18,7 @@ object AnthropicAiSearchLlmProvider : AiSearchLlmProvider {
         apiKey: String,
         context: Context,
         request: LlmRequest,
-    ): Result<String> {
+    ): Result<LlmResponse> {
         val client = AnthropicClient(apiKey = apiKey, context = context)
         return client.fetchAnswer(
             query = request.query,
@@ -28,6 +28,6 @@ object AnthropicAiSearchLlmProvider : AiSearchLlmProvider {
             thinkingEnabled = request.thinkingEnabled,
             useSystemInstruction = request.useSystemInstruction,
             systemInstruction = request.systemInstruction,
-        )
+        ).map(::LlmResponse)
     }
 }

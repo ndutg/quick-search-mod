@@ -51,6 +51,7 @@ internal data class SearchPreferenceCache(
     val lockedCurrencyConverterAlias: Boolean = false,
     val lockedWorldClockAlias: Boolean = false,
     val lockedDictionaryAlias: Boolean = false,
+    val lockedWeatherAlias: Boolean = false,
     val clearQueryOnLaunch: Boolean = false,
     val amazonDomain: String? = null,
 ) {

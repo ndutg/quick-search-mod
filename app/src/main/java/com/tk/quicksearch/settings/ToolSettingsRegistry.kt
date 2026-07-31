@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.CurrencyExchange
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.tk.quicksearch.R
@@ -19,6 +20,7 @@ enum class ToolSettingId {
     CURRENCY_CONVERTER,
     WORD_CLOCK,
     DICTIONARY,
+    WEATHER,
 }
 
 data class ToolSettingDefinition(
@@ -97,6 +99,17 @@ object ToolSettingsRegistry {
                 requiresGeminiDescriptionResId = R.string.currency_converter_requires_gemini_key,
                 icon = Icons.AutoMirrored.Rounded.MenuBook,
                 toggleKey = AppSettingsToggleKey.DICTIONARY,
+                aiBackedModelConfigurable = true,
+            ),
+            ToolSettingDefinition(
+                id = ToolSettingId.WEATHER,
+                aliasFeatureId = AliasHandler.WEATHER_ALIAS_FEATURE_ID,
+                titleResId = R.string.weather_toggle_title,
+                defaultDescriptionResId = R.string.weather_toggle_desc,
+                requiresGeminiApiKey = true,
+                requiresGeminiDescriptionResId = R.string.currency_converter_requires_gemini_key,
+                icon = Icons.Rounded.Cloud,
+                toggleKey = AppSettingsToggleKey.WEATHER,
                 aiBackedModelConfigurable = true,
             ),
         )

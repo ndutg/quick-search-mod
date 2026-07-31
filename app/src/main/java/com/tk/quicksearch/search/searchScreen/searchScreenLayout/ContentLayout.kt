@@ -48,6 +48,7 @@ import com.tk.quicksearch.tools.aiSearch.CalculatorResult
 import com.tk.quicksearch.tools.aiSearch.DictionaryResult
 import com.tk.quicksearch.tools.aiSearch.AiSearchResult
 import com.tk.quicksearch.tools.aiSearch.WorldClockResult
+import com.tk.quicksearch.tools.aiSearch.WeatherResult
 import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.InfoBanner
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
@@ -91,6 +92,7 @@ fun ContentLayout(
     showCurrencyConverter: Boolean = false,
     showWorldClock: Boolean = false,
     showDictionary: Boolean = false,
+    showWeather: Boolean = false,
     showAiSearch: Boolean = false,
     aiSearchState: AiSearchState? = null,
     isOverlayPresentation: Boolean = false,
@@ -234,6 +236,7 @@ fun ContentLayout(
                 !showCurrencyConverter &&
                 !showWorldClock &&
                 !showDictionary &&
+                !showWeather &&
                 suggestionsNotEmpty &&
                 suggestionsEnabled &&
                 !suggestionWasSelected
@@ -246,6 +249,7 @@ fun ContentLayout(
             !state.isCurrencyConverterAliasMode &&
             !state.isWorldClockAliasMode &&
             !state.isDictionaryAliasMode &&
+            !state.isWeatherAliasMode &&
             state.recentQueriesEnabled &&
             state.recentItems.isNotEmpty()
 
@@ -316,6 +320,11 @@ fun ContentLayout(
             !isSectionAliasMode &&
             !deferNonAppContentUntilAppsReady &&
             topMatches.isNotEmpty()
+    val hasMoreResults =
+        hasMoreResults(
+            renderingState = renderingState,
+            sectionContext = sectionContextForRecentHistoryExpansion,
+        )
     val regularSectionParams =
         if (showTopMatches) {
             sectionParams.copy(
@@ -558,6 +567,8 @@ fun ContentLayout(
                 onOpenSearchHistorySettings = onOpenSearchHistorySettings,
                 onDismissSearchHistoryTip = onDismissSearchHistoryTip,
                 isExpanded = searchHistoryExpanded,
+                collapsedItemCount = state.recentQueriesDisplayCount,
+                reverseCollapsedItems = state.oneHandedMode,
                 onExpandedChange = { searchHistoryExpanded = it },
                 collapseRequestKey = searchHistoryCollapseRequestKey,
                 expandedCardMaxHeight = expandedCardMaxHeight,
@@ -608,16 +619,18 @@ fun ContentLayout(
                 reverseOrder = false,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Text(
-                text = stringResource(R.string.more_results_title),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier =
-                    Modifier.padding(
-                        horizontal = DesignTokens.SpacingLarge,
-                        vertical = DesignTokens.SpacingXSmall,
-                ),
-            )
+            if (hasMoreResults) {
+                Text(
+                    text = stringResource(R.string.more_results_title),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier =
+                        Modifier.padding(
+                            horizontal = DesignTokens.SpacingLarge,
+                            vertical = DesignTokens.SpacingXSmall,
+                        ),
+                )
+            }
         }
 
         finalLayoutOrder.forEach { itemType ->
@@ -633,13 +646,16 @@ fun ContentLayout(
                 if (deferNonAppContentUntilAppsReady && section != SearchSection.APPS) return@forEach
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
                 if (
-                    section == SearchSection.CALENDAR &&
-                        !hasQuery &&
-                        showPinnedNonAppItems &&
-                        hasStandaloneTodayCalendarSection
+                    !hasQuery &&
+                        shouldSkipRegularCalendarSectionForStandaloneTodayEvents(
+                            section = section,
+                            todayCalendarEventsCount = standaloneTodayEventIds.size,
+                            pinnedCalendarEventsCount =
+                                sectionContextForRecentHistoryExpansion.calendarEventsList.size,
+                        )
                 ) {
-                    // The home-screen "today" calendar block is injected next to pinned/history
-                    // content. Skip the normal calendar slot here to avoid rendering it twice.
+                    // Today's events are injected after the app grid. Rendering this otherwise empty
+                    // calendar slot as well produces a duplicate home-screen calendar card.
                     return@forEach
                 }
 
@@ -819,6 +835,18 @@ fun ContentLayout(
                     }
                 }
 
+                ItemPriorityConfig.ItemType.WEATHER_RESULT -> {
+                    if (showWeather) {
+                        WeatherResult(
+                            weatherState = state.weatherState,
+                            llmProviderId = state.weatherState.llmProviderId
+                                ?: state.aiSearchLlmProviderId,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            onGeminiModelInfoClick = onGeminiModelInfoClick,
+                        )
+                    }
+                }
+
                 ItemPriorityConfig.ItemType.AI_SEARCH_RESULT -> {
                     if (showAiSearch && aiSearchState != null) {
                         AiSearchResult(
@@ -943,6 +971,19 @@ fun ContentLayout(
         }
     }
 }
+
+private fun hasMoreResults(
+    renderingState: SectionRenderingState,
+    sectionContext: SectionRenderContext,
+): Boolean =
+    (sectionContext.shouldRenderApps && renderingState.displayApps.isNotEmpty()) ||
+        (sectionContext.shouldRenderAppShortcuts && sectionContext.appShortcutsList.isNotEmpty()) ||
+        (sectionContext.shouldRenderContacts && sectionContext.contactsList.isNotEmpty()) ||
+        (sectionContext.shouldRenderFiles && sectionContext.filesList.isNotEmpty()) ||
+        (sectionContext.shouldRenderSettings && sectionContext.settingsList.isNotEmpty()) ||
+        (sectionContext.shouldRenderAppSettings && sectionContext.appSettingsList.isNotEmpty()) ||
+        (sectionContext.shouldRenderCalendar && sectionContext.calendarEventsList.isNotEmpty()) ||
+        (sectionContext.shouldRenderNotes && sectionContext.notesList.isNotEmpty())
 
 private fun SearchSection.supportsPinnedHomeCollapse(): Boolean =
     when (this) {

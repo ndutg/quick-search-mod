@@ -18,7 +18,7 @@ object OpenAiAiSearchLlmProvider : AiSearchLlmProvider {
         apiKey: String,
         context: Context,
         request: LlmRequest,
-    ): Result<String> {
+    ): Result<LlmResponse> {
         val client = OpenAiClient(apiKey = apiKey, context = context)
         return client.fetchAnswer(
             query = request.query,
@@ -28,6 +28,6 @@ object OpenAiAiSearchLlmProvider : AiSearchLlmProvider {
             useSystemInstruction = request.useSystemInstruction,
             systemInstruction = request.systemInstruction,
             advancedPayloadJson = request.advancedPayloadJson,
-        )
+        ).map(::LlmResponse)
     }
 }

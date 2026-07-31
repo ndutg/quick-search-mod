@@ -18,7 +18,7 @@ object GeminiAiSearchLlmProvider : AiSearchLlmProvider {
         apiKey: String,
         context: Context,
         request: LlmRequest,
-    ): Result<String> {
+    ): Result<LlmResponse> {
         val client = AiSearchClient(apiKey = apiKey, context = context)
         return client.fetchAnswer(
             query = request.query,

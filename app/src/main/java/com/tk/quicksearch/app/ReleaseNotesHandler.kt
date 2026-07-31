@@ -66,10 +66,18 @@ class ReleaseNotesHandler(
             return
         }
 
+        showReleaseNotes(currentVersion)
+    }
+
+    fun showReleaseNotes() {
+        getCurrentVersionName()?.let(::showReleaseNotes)
+    }
+
+    private fun showReleaseNotes(versionName: String) {
         uiStateUpdater {
             it.copy(
                 showReleaseNotesDialog = true,
-                releaseNotesVersionName = currentVersion,
+                releaseNotesVersionName = versionName,
             )
         }
     }

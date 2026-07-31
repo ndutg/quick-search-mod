@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -69,10 +72,17 @@ fun AppBottomPopup(
     onDismiss: () -> Unit,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    containerColor: Color = AppColors.getDrawerContainerColor(),
+    contentCardColor: Color = AppColors.getSettingsCardContainerColor(),
     leadingContent: (@Composable () -> Unit)? = null,
+    aboveCardContent: (@Composable () -> Unit)? = null,
     fixedTopContent: (@Composable () -> Unit)? = null,
     showFixedTopDivider: Boolean = true,
     maxInnerCardHeight: Dp? = null,
+    innerCardHeight: Dp? = null,
+    drawerHeight: Dp? = null,
+    contentSpacing: Dp = 24.dp,
+    contentScrollable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val defaultMaxCardHeight = LocalConfiguration.current.screenHeightDp.dp * 0.72f
@@ -124,7 +134,8 @@ fun AppBottomPopup(
                         )
                         .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 24.dp),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = AppColors.getDrawerContainerColor(),
+                color = containerColor,
+                contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
                 Column(
                     modifier =
@@ -135,8 +146,12 @@ fun AppBottomPopup(
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {},
                             )
-                            .padding(horizontal = 12.dp, vertical = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                            .padding(horizontal = 12.dp, vertical = 24.dp)
+                            .then(
+                                if (drawerHeight != null) Modifier.height(drawerHeight)
+                                else Modifier,
+                            ),
+                    verticalArrangement = Arrangement.spacedBy(contentSpacing),
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -158,18 +173,30 @@ fun AppBottomPopup(
                         }
                     }
 
+                    aboveCardContent?.invoke()
+
                     Card(
-                        modifier = Modifier.fillMaxWidth().heightIn(max = resolvedMaxCardHeight),
-                        colors = CardDefaults.cardColors(containerColor = AppColors.getSettingsCardContainerColor()),
+                        modifier =
+                            Modifier.fillMaxWidth().then(
+                                when {
+                                    drawerHeight != null -> Modifier.weight(1f)
+                                    innerCardHeight != null -> Modifier.height(innerCardHeight)
+                                    else -> Modifier.heightIn(max = resolvedMaxCardHeight)
+                                },
+                            ),
+                        colors = CardDefaults.cardColors(containerColor = contentCardColor),
                         shape = MaterialTheme.shapes.large,
                     ) {
                         if (fixedTopContent == null) {
                             val scrollState = rememberScrollState()
                             Column(
                                 modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .verticalScroll(scrollState)
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .then(
+                                                if (contentScrollable) Modifier.verticalScroll(scrollState)
+                                                else Modifier.fillMaxSize(),
+                                            )
                                         .padding(
                                             start = 16.dp,
                                             top = 20.dp,
@@ -181,7 +208,13 @@ fun AppBottomPopup(
                                 content = content,
                             )
                         } else {
-                            Column(modifier = Modifier.fillMaxWidth().heightIn(max = resolvedMaxCardHeight)) {
+                            Column(
+                                modifier =
+                                    Modifier.fillMaxWidth().then(
+                                        if (innerCardHeight != null) Modifier.height(innerCardHeight)
+                                        else Modifier.heightIn(max = resolvedMaxCardHeight),
+                                    ),
+                            ) {
                                 Column(
                                     modifier =
                                         Modifier
@@ -204,8 +237,11 @@ fun AppBottomPopup(
                                     modifier =
                                         Modifier
                                             .fillMaxWidth()
-                                            .weight(1f, fill = false)
-                                            .verticalScroll(scrollState)
+                                            .weight(1f, fill = !contentScrollable)
+                                            .then(
+                                                if (contentScrollable) Modifier.verticalScroll(scrollState)
+                                                else Modifier,
+                                            )
                                             .padding(
                                                 start = 16.dp,
                                                 top = 12.dp,

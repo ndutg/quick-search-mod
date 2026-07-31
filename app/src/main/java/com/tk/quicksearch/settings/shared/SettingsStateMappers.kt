@@ -30,6 +30,9 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         topMatchesSectionOrder = searchResults.topMatchesSectionOrder,
         disabledTopMatchesSections = searchResults.disabledTopMatchesSections,
         recentQueriesEnabled = searchResults.recentQueriesEnabled,
+        recentQueriesDisplayCount = searchResults.recentQueriesDisplayCount,
+        fuzzySearchEnabled = searchResults.fuzzySearchEnabled,
+        fuzzySearchAvailable = searchResults.fuzzySearchAvailable,
         searchEngineOrder = searchEngines.searchEngineOrder,
         disabledSearchEngines = searchEngines.disabledSearchEngines,
         shortcutCodes = searchEngines.shortcutCodes,
@@ -97,6 +100,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         currencyConverterEnabled = tools.currencyConverterEnabled,
         worldClockEnabled = tools.worldClockEnabled,
         dictionaryEnabled = tools.dictionaryEnabled,
+        weatherEnabled = tools.weatherEnabled,
         customTools = tools.customTools,
         disabledCustomToolIds = tools.disabledCustomToolIds,
         taskerIntentTools = tools.taskerIntentTools,
@@ -133,6 +137,9 @@ private data class SearchResultsMapperState(
     val topMatchesSectionOrder: List<com.tk.quicksearch.search.core.SearchSection>,
     val disabledTopMatchesSections: Set<com.tk.quicksearch.search.core.SearchSection>,
     val recentQueriesEnabled: Boolean,
+    val recentQueriesDisplayCount: Int,
+    val fuzzySearchEnabled: Boolean,
+    val fuzzySearchAvailable: Boolean,
 )
 
 private fun SearchUiState.toSearchResultsSettingsState() =
@@ -154,6 +161,9 @@ private fun SearchUiState.toSearchResultsSettingsState() =
         topMatchesSectionOrder = topMatchesSectionOrder,
         disabledTopMatchesSections = disabledTopMatchesSections,
         recentQueriesEnabled = recentQueriesEnabled,
+        recentQueriesDisplayCount = recentQueriesDisplayCount,
+        fuzzySearchEnabled = fuzzySearchEnabled,
+        fuzzySearchAvailable = fuzzySearchAvailable,
     )
 
 private data class SearchEngineMapperState(
@@ -306,6 +316,7 @@ private data class ToolsMapperState(
     val currencyConverterEnabled: Boolean,
     val worldClockEnabled: Boolean,
     val dictionaryEnabled: Boolean,
+    val weatherEnabled: Boolean,
     val customTools: List<CustomTool>,
     val disabledCustomToolIds: Set<String>,
     val taskerIntentTools: List<com.tk.quicksearch.tools.tasker.TaskerIntentTool>,
@@ -319,6 +330,7 @@ private fun SearchUiState.toToolsSettingsState() =
         currencyConverterEnabled = currencyConverterEnabled,
         worldClockEnabled = worldClockEnabled,
         dictionaryEnabled = dictionaryEnabled,
+        weatherEnabled = weatherEnabled,
         customTools = customTools,
         disabledCustomToolIds = disabledCustomToolIds,
         taskerIntentTools = taskerIntentTools,

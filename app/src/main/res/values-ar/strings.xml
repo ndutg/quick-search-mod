@@ -16,8 +16,11 @@
     <string name="app_name">Quick Search</string>
     <string name="direct_answer_contact_name">AI Answer</string>
     <string name="direct_search_enter_query">يرجى إدخال عبارة بحث للبدء.</string>
+    <string name="direct_search_ask_follow_up">اطرح سؤالاً تابعًا</string>
+    <string name="direct_search_follow_up_hint">اكتب سؤالاً تابعًا</string>
     <string name="direct_search_error_generic">تعذر الحصول على إجابة من AI. يرجى المحاولة مرة أخرى.</string>
     <string name="direct_search_error_no_key">يرجى إضافة مفتاح API في الإعدادات (مزود AI) للحصول على إجابات AI.</string>
+    <string name="gemini_web_search_quota_fallback_tip">تم بلوغ حصة بحث الويب في Gemini، لذلك تم إنشاء هذه الإجابة بدون بحث الويب.</string>
     <string name="direct_search_powered_by">بدعم من</string>
     <string name="empty_state_subtitle">شغّل تطبيقاً أو خصّص بحثك لعرض الاقتراحات.</string>
     <string name="empty_state_title">لا يوجد ما يمكن عرضه (حتى الآن)</string>
@@ -38,6 +41,7 @@
     <string name="search_hint_contacts">ابحث في جهات الاتصال…</string>
     <string name="search_hint_currency_converter">تحويل العملات، مثل: 100 USD إلى INR</string>
     <string name="search_hint_dictionary">أدخل أي كلمة للبحث في القاموس</string>
+    <string name="search_hint_weather">أدخل موقعًا أو استخدم موقعك الافتراضي</string>
     <string name="search_hint_files">ابحث عن الملفات…</string>
     <string name="search_hint_notes">ابحث عن الملاحظات…</string>
     <string name="search_hint_settings">ابحث في إعدادات الجهاز…</string>
@@ -57,6 +61,7 @@
         <item>225 + 456</item>
         <item>Time in UK</item>
         <item>Define Serendipity</item>
+        <item>الطقس في نيويورك</item>
     </string-array>
     <string name="search_provider_description">ابحث في التطبيقات وجهات الاتصال والملفات والإعدادات والمزيد باستخدام Quick Search.</string>
 
@@ -219,7 +224,9 @@
     <string name="clear_query_toggle_title">مسح عبارة البحث</string>
     <string name="more_results_title">المزيد من النتائج</string>
     <string name="open_keyboard_toggle_desc">فتح لوحة المفاتيح تلقائياً عند تشغيل التطبيق</string>
-    <string name="recent_queries_toggle_desc">عرض سجل البحث على الشاشة الرئيسية.</string>
+    <string name="recent_queries_toggle_desc">عدد العناصر المعروضة قبل التوسيع</string>
+    <string name="fuzzy_search_toggle_title">البحث التقريبي</string>
+    <string name="fuzzy_search_toggle_desc">اعثر على النتائج حتى عندما يحتوي بحثك على خطأ إملائي.</string>
     <string name="recent_queries_toggle_title">سجل البحث</string>
     <string name="search_history_tab_recently_opened">النتائج</string>
     <string name="search_history_tab_searches">عمليات البحث</string>
@@ -649,7 +656,10 @@
     <string name="settings_icon_title">أيقونة الإعدادات</string>
     <string name="settings_launch_options_desc">طرق تشغيل التطبيق المختلفة</string>
     <string name="settings_launch_options_title">خيارات التشغيل</string>
+    <string name="settings_app_language_title">لغة التطبيق</string>
     <string name="settings_app_language_desc">الحالي: %1$s</string>
+    <string name="settings_app_language_picker_title">اختيار لغة التطبيق</string>
+    <string name="settings_app_language_system_default">الإعداد الافتراضي للنظام</string>
     <string name="settings_launcher_icon_reset_default">إعادة تعيين للأيقونة الافتراضية</string>
     <string name="settings_launcher_icon_title">أيقونة مشغل التطبيقات</string>
     <string name="settings_layout_option_bottom_desc">عرض العناصر الهامة بالأسفل لسهولة الوصول إليها</string>
@@ -768,7 +778,11 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">كل الميزات</string>
+    <string name="release_notes_previous_versions">الإصدارات السابقة</string>
+    <string name="release_notes_previous_versions_unavailable">تعذّر تحميل الإصدارات السابقة</string>
     <string name="release_notes_action_got_it">حسناً</string>
+    <string name="settings_release_notes_title">ملاحظات الإصدار</string>
+    <string name="settings_release_notes_desc">عرض ملاحظات إصدار هذا الإصدار</string>
     <string name="update_card_title">يتوفر تحديث جديد لـ Quick Search!</string>
     <string name="action_update">تحديث</string>
     <string name="release_notes_title">ملاحظات إصدار Quick Search v%1$s</string>
@@ -828,6 +842,16 @@
     <string name="dictionary_synonyms_label">المرادفات: %1$s</string>
     <string name="dictionary_toggle_desc">مثال: تعريف Serendipity</string>
     <string name="dictionary_toggle_title">القاموس</string>
+    <string name="weather_toggle_title">الطقس</string>
+    <string name="weather_toggle_desc">طقس اليوم للموقع المحدد</string>
+    <string name="weather_location_label">الموقع الافتراضي</string>
+    <string name="weather_location_hint">مثال: نيويورك، نيويورك</string>
+    <string name="weather_error_location_required">أدخل موقعًا أو عيّن موقعًا افتراضيًا في الإعدادات</string>
+    <string name="get_weather">عرض الطقس</string>
+    <string name="weather_in_location">الطقس في %1$s</string>
+    <string name="weather_temperature_unit_label">وحدة درجة الحرارة</string>
+    <string name="weather_temperature_unit_celsius">مئوية (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">فهرنهايت (°F)</string>
     <string name="get_currency_value">الحصول على قيمة العملة</string>
     <string name="get_time">الحصول على الوقت</string>
     <string name="search_in_dictionary">البحث في القاموس</string>
@@ -888,6 +912,7 @@
     <string name="widget_search_icon">أيقونة البحث</string>
     <string name="widget_settings_title">إعدادات أداة البحث</string>
     <string name="widget_slider_border">سمك الإطار</string>
+    <string name="widget_slider_icon_size">حجم الأيقونة</string>
     <string name="widget_slider_internal_padding">الهامش الخارجي</string>
     <string name="widget_slider_internal_padding_horizontal">أفقي</string>
     <string name="widget_slider_internal_padding_vertical">رأسي</string>
@@ -994,7 +1019,7 @@
     <string name="settings_custom_tool_delete_button">حذف الأداة</string>
     <string name="settings_custom_tool_editor_title">أداة مخصصة</string>
     <string name="settings_custom_tool_name_label">اسم الأداة</string>
-    <string name="settings_custom_tool_prompt_hint">وصف وظيفة هذه الأداة. ستقوم هذه التوجيهات بإرشاد AI عند تفعيل الأداة.</string>
+    <string name="settings_custom_tool_prompt_hint">وصف وظيفة هذه الأداة. ستقوم هذه التوجيهات بإرشاد AI عند تفعيل الأداة.\n\nاستخدم {time} لتضمين التاريخ والوقت الحاليين في التوجيه.</string>
     <string name="settings_custom_tool_prompt_label">توجيه النظام (System Prompt)</string>
     <string name="settings_excluded_items_clear_all">مسح كافة العناصر المستبعدة</string>
     <string name="settings_excluded_items_clear_all_confirmation">هل أنت متأكد من رغبتك في مسح كافة العناصر المستبعدة؟ لا يمكن التراجع عن هذا الإجراء.</string>
@@ -1031,4 +1056,7 @@
     <string name="tasker_intent_action">نية Tasker (%1$s)</string>
     <string name="tasker_not_installed">Tasker غير مثبت</string>
     <string name="tasker_broadcast_failed">تعذر إرسال بث Tasker</string>
+    <string name="settings_more_apps_from_developer_title">المزيد من التطبيقات من المطور</string>
+    <string name="icon_picker_no_icon_packs">لا توجد حزم أيقونات مثبتة لتغيير أيقونة التطبيق.</string>
+    <string name="icon_picker_download_icon_packs">تنزيل حزم الأيقونات</string>
 </resources>

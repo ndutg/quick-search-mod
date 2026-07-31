@@ -56,6 +56,7 @@ internal data class SearchRuntimeState(
     var lockedCurrencyConverterAlias: Boolean = false,
     var lockedWorldClockAlias: Boolean = false,
     var lockedDictionaryAlias: Boolean = false,
+    var lockedWeatherAlias: Boolean = false,
     var lockedCustomToolId: String? = null,
     var clearQueryOnLaunch: Boolean = false,
     var amazonDomain: String? = null,

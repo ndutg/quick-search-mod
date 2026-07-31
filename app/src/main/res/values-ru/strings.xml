@@ -15,8 +15,11 @@
 <string name="app_name">Quick Search</string>
 <string name="direct_answer_contact_name">AI-ответ</string>
     <string name="direct_search_enter_query">Введите запрос для поиска.</string>
-    <string name="direct_search_error_generic">Не удалось получить AI-ответ. Попробуйте ещё раз.</string>
+    <string name="direct_search_ask_follow_up">Задать уточняющий вопрос</string>
+    <string name="direct_search_follow_up_hint">Введите уточняющий вопрос</string>
+<string name="direct_search_error_generic">Не удалось получить AI-ответ. Попробуйте ещё раз.</string>
 <string name="direct_search_error_no_key">Добавьте API-ключ в настройках (AI-провайдер), чтобы получать AI-ответы.</string>
+<string name="gemini_web_search_quota_fallback_tip">Квота Gemini на веб-поиск исчерпана, поэтому этот ответ был создан без веб-поиска.</string>
 <string name="direct_search_powered_by">Работает на базе</string>
 <string name="empty_state_subtitle">Запустите приложение или уточните запрос, чтобы увидеть подсказки.</string>
 <string name="empty_state_title">Пока ничего нет</string>
@@ -37,6 +40,7 @@
 <string name="search_hint_contacts">Искать в контактах…</string>
 <string name="search_hint_currency_converter">Конвертировать валюту, например: 100 USD в INR</string>
 <string name="search_hint_dictionary">Введите любое слово</string>
+<string name="search_hint_weather">Введите место или используйте место по умолчанию</string>
 <string name="search_hint_files">Искать в файлах…</string>
 <string name="search_hint_notes">Искать в заметках…</string>
 <string name="search_hint_settings">Искать в настройках устройства…</string>
@@ -56,6 +60,7 @@
     <item>225 + 456</item>
     <item>Time in UK</item>
     <item>Define Serendipity</item>
+    <item>Погода в Нью-Йорке</item>
 </string-array>
 <string name="search_provider_description">Поиск приложений, контактов, файлов, настроек и многого другого с помощью Quick Search.</string>
 
@@ -218,7 +223,9 @@
 <string name="clear_query_toggle_title">Очищать запрос</string>
 <string name="more_results_title">Другие результаты</string>
 <string name="open_keyboard_toggle_desc">Автоматически открывать клавиатуру при запуске приложения</string>
-    <string name="recent_queries_toggle_desc">Показывать историю поиска на главном экране.</string>
+    <string name="recent_queries_toggle_desc">Кол-во элементов, показываемых до разворачивания</string>
+    <string name="fuzzy_search_toggle_title">Нечёткий поиск</string>
+    <string name="fuzzy_search_toggle_desc">Находить результаты, даже если поисковый запрос содержит опечатку.</string>
 <string name="recent_queries_toggle_title">История поиска</string>
 <string name="search_history_tab_recently_opened">Результаты</string>
 <string name="search_history_tab_searches">Запросы</string>
@@ -664,7 +671,10 @@
 <string name="settings_icon_title">Значок настроек</string>
 <string name="settings_launch_options_desc">Различные способы запуска приложения</string>
 <string name="settings_launch_options_title">Варианты запуска</string>
+<string name="settings_app_language_title">Язык приложения</string>
 <string name="settings_app_language_desc">Текущий: %1$s</string>
+<string name="settings_app_language_picker_title">Выберите язык приложения</string>
+<string name="settings_app_language_system_default">Системный язык</string>
 <string name="settings_launcher_icon_reset_default">Сбросить по умолчанию</string>
 <string name="settings_launcher_icon_title">Значок приложения в лаунчере</string>
 <string name="settings_layout_option_bottom_desc">Наиболее важные элементы отображаются внизу для удобного доступа</string>
@@ -783,7 +793,11 @@
      Settings - Backup, Feedback &amp; About
      ============================================================================ -->
 <string name="release_notes_action_all_features">Все функции</string>
+<string name="release_notes_previous_versions">Предыдущие версии</string>
+<string name="release_notes_previous_versions_unavailable">Не удалось загрузить предыдущие версии</string>
 <string name="release_notes_action_got_it">Понятно</string>
+<string name="settings_release_notes_title">Примечания к выпуску</string>
+<string name="settings_release_notes_desc">Посмотреть примечания к этому выпуску</string>
 <string name="update_card_title">Доступно новое обновление для Quick Search!</string>
 <string name="action_update">Обновить</string>
 <string name="release_notes_title">Примечания к релизу Quick Search v%1$s</string>
@@ -843,6 +857,16 @@
 <string name="dictionary_synonyms_label">Синонимы: %1$s</string>
 <string name="dictionary_toggle_desc">Пример: define serendipity</string>
 <string name="dictionary_toggle_title">Словарь</string>
+<string name="weather_toggle_title">Погода</string>
+<string name="weather_toggle_desc">Погода на сегодня для указанного места</string>
+<string name="weather_location_label">Место по умолчанию</string>
+<string name="weather_location_hint">Пример: Москва</string>
+<string name="weather_error_location_required">Введите место или настройте место по умолчанию</string>
+<string name="get_weather">Узнать погоду</string>
+<string name="weather_in_location">Погода в %1$s</string>
+<string name="weather_temperature_unit_label">Единица температуры</string>
+<string name="weather_temperature_unit_celsius">Цельсий (°C)</string>
+<string name="weather_temperature_unit_fahrenheit">Фаренгейт (°F)</string>
 <string name="get_currency_value">Получить курс валюты</string>
 <string name="get_time">Узнать время</string>
 <string name="search_in_dictionary">Искать в словаре</string>
@@ -903,6 +927,7 @@
 <string name="widget_search_icon">Значок поиска</string>
 <string name="widget_settings_title">Виджет поиска</string>
 <string name="widget_slider_border">Толщина рамки</string>
+<string name="widget_slider_icon_size">Размер значка</string>
 <string name="widget_slider_internal_padding">Внешние отступы</string>
 <string name="widget_slider_internal_padding_horizontal">По горизонтали</string>
 <string name="widget_slider_internal_padding_vertical">По вертикали</string>
@@ -1009,7 +1034,7 @@
 <string name="settings_custom_tool_delete_button">Удалить инструмент</string>
 <string name="settings_custom_tool_editor_title">Кастомный инструмент</string>
 <string name="settings_custom_tool_name_label">Название инструмента</string>
-<string name="settings_custom_tool_prompt_hint">Опишите, что делает этот инструмент. Этот промпт направляет действия ИИ при активации инструмента.</string>
+<string name="settings_custom_tool_prompt_hint">Опишите, что делает этот инструмент. Этот промпт направляет действия ИИ при активации инструмента.\n\nИспользуйте {time}, чтобы добавить в промпт текущие дату и время.</string>
 <string name="settings_custom_tool_prompt_label">Системный промпт (System Prompt)</string>
 <string name="settings_excluded_items_clear_all">Сбросить все исключения</string>
 <string name="settings_excluded_items_clear_all_confirmation">Вы уверены, что хотите удалить все исключенные элементы? Это действие нельзя отменить.</string>
@@ -1045,4 +1070,7 @@
     <string name="tasker_intent_action">Интент Tasker (%1$s)</string>
     <string name="tasker_not_installed">Приложение Tasker не установлено</string>
     <string name="tasker_broadcast_failed">Не удалось отправить трансляцию Tasker</string>
+    <string name="settings_more_apps_from_developer_title">Другие приложения разработчика</string>
+<string name="icon_picker_no_icon_packs">Для изменения значка приложения не установлены пакеты значков.</string>
+<string name="icon_picker_download_icon_packs">Скачать пакеты значков</string>
 </resources>

@@ -75,6 +75,21 @@ fun WidgetSlidersSection(
     }
 }
 
+@Composable
+fun WidgetIconSizeSection(
+    state: WidgetPreferences,
+    onStateChange: (WidgetPreferences) -> Unit,
+) {
+    SliderRow(
+        label = stringResource(R.string.widget_slider_icon_size),
+        value = state.iconSizeScale,
+        valueRange = 1f..1.4f,
+        steps = 8,
+        valueFormatter = { "${(it * 100).roundToInt()}%" },
+        onValueChange = { onStateChange(state.copy(iconSizeScale = it)) },
+    )
+}
+
 private fun formatBorderWidth(value: Float): String =
     if (value == 0f) {
         "0 dp"

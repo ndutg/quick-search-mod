@@ -23,6 +23,12 @@ data class LlmRequest(
     val advancedPayloadJson: String? = null,
 )
 
+/** Provider response plus request-level delivery details needed by the result UI. */
+data class LlmResponse(
+    val text: String,
+    val webSearchDisabledForRequest: Boolean = false,
+)
+
 /** Current AI search LLM providers. */
 data class AiSearchLlmProviderId(
     val storageValue: String,
@@ -89,7 +95,7 @@ interface AiSearchLlmProvider {
         apiKey: String,
         context: Context,
         request: LlmRequest,
-    ): Result<String>
+    ): Result<LlmResponse>
 }
 
 /** Central lookup to keep provider wiring in one place. */

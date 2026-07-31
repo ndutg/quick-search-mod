@@ -18,6 +18,7 @@ import com.tk.quicksearch.search.utils.SearchTextNormalizer
 class FuzzyAppSearchStrategy(
     override val config: FuzzySearchConfig,
     private val isLowRamDevice: Boolean = false,
+    private val isFuzzySearchEnabled: () -> Boolean = { true },
 ) : BaseFuzzySearchStrategy<AppInfo>() {
     /**
      * Finds fuzzy matches for apps based on the query.
@@ -165,5 +166,7 @@ class FuzzyAppSearchStrategy(
             section = SearchSection.APPS,
             query = query,
             isLowRamDevice = isLowRamDevice,
-        )
+        ).let { policy ->
+            policy.copy(enabled = policy.enabled && !isLowRamDevice && isFuzzySearchEnabled())
+        }
 }
