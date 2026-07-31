@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.CurrencyExchange
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CurrencyConverterStatus
 import com.tk.quicksearch.search.core.DictionaryStatus
+import com.tk.quicksearch.search.core.WeatherStatus
 import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
@@ -84,6 +86,8 @@ import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
+import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
+import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.openNotificationShade
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
@@ -152,6 +156,7 @@ internal fun SearchScreenContent(
         onGeminiModelInfoClick: () -> Unit = {},
         onCurrencyConversionClick: () -> Unit = {},
         onDictionarySearchClick: () -> Unit = {},
+        onWeatherSearchClick: () -> Unit = {},
         onWorldClockSearchClick: () -> Unit = {},
         onCustomToolSearchClick: () -> Unit = {},
         onTaskerIntentClick: () -> Unit = {},
@@ -242,6 +247,7 @@ internal fun SearchScreenContent(
     val isCurrencyConverterAliasMode = state.isCurrencyConverterAliasMode
     val isWorldClockAliasMode = state.isWorldClockAliasMode
     val isDictionaryAliasMode = state.isDictionaryAliasMode
+    val isWeatherAliasMode = state.isWeatherAliasMode
     val activeCustomTool = state.detectedCustomToolId?.let { id -> state.customTools.find { it.id == id } }
     val activeTaskerIntent = state.detectedTaskerIntentId?.let { id -> state.taskerIntentTools.find { it.id == id } }
     val triggerWords by
@@ -278,6 +284,8 @@ internal fun SearchScreenContent(
         state.currencyConverterEnabled,
         state.worldClockEnabled,
         state.dictionaryEnabled,
+        state.weatherEnabled,
+        state.weatherLocationConfigured,
     ) {
         val gated = listOf(
             cycleHints[0] to (SearchSection.CONTACTS !in state.disabledSections && state.hasContactPermission),
@@ -292,6 +300,7 @@ internal fun SearchScreenContent(
             cycleHints[9] to state.calculatorEnabled,
             cycleHints[10] to (state.worldClockEnabled && state.hasApiKey),
             cycleHints[11] to (state.dictionaryEnabled && state.hasApiKey),
+            cycleHints[12] to (state.weatherEnabled && state.hasApiKey),
         )
         listOf(hintSearchAnything) + gated.filter { it.second }.map { it.first }.shuffled()
     }
@@ -302,6 +311,7 @@ internal fun SearchScreenContent(
                     !isCurrencyConverterAliasMode &&
                     !isWorldClockAliasMode &&
                     !isDictionaryAliasMode &&
+                    !isWeatherAliasMode &&
                     activeCustomTool == null &&
                     state.detectedAliasSearchSection == null
 
@@ -326,6 +336,7 @@ internal fun SearchScreenContent(
                         stringResource(R.string.search_hint_currency_converter)
                 isWorldClockAliasMode -> stringResource(R.string.search_hint_world_clock)
                 isDictionaryAliasMode -> stringResource(R.string.search_hint_dictionary)
+                isWeatherAliasMode -> stringResource(R.string.search_hint_weather)
                 activeCustomTool != null -> activeCustomTool.name
                 state.detectedAliasSearchSection != null ->
                     stringResource(
@@ -345,6 +356,9 @@ internal fun SearchScreenContent(
     val showDictionary =
             (state.dictionaryEnabled || isDictionaryAliasMode) &&
                     state.dictionaryState.status != DictionaryStatus.Idle
+    val showWeather =
+            (state.weatherEnabled || isWeatherAliasMode) &&
+                    state.weatherState.status != WeatherStatus.Idle
     val showCalculatorResult =
             state.calculatorState.isToolMode ||
                     state.calculatorState.result != null ||
@@ -359,6 +373,7 @@ internal fun SearchScreenContent(
                     !showCurrencyConverter &&
                     !showWorldClock &&
                     !showDictionary &&
+                    !showWeather &&
                     if (isCurrencyConverterAliasMode) {
                         true // always show when alias mode is active
                     } else {
@@ -372,6 +387,7 @@ internal fun SearchScreenContent(
                     !showCurrencyConverter &&
                     !showWorldClock &&
                     !showDictionary &&
+                    !showWeather &&
                     if (isDictionaryAliasMode) {
                         true
                     } else {
@@ -385,11 +401,38 @@ internal fun SearchScreenContent(
                     !showCurrencyConverter &&
                     !showWorldClock &&
                     !showDictionary &&
+                    !showWeather &&
                     if (isWorldClockAliasMode) {
                         true
                     } else {
                         trimmedQuery.isNotBlank() &&
                                 WorldClockIntentParser.parseConfirmed(trimmedQuery) != null
+                    }
+    val confirmedWeatherQuery =
+            if (isWeatherAliasMode) {
+                ConfirmedWeatherQuery(
+                    requestedLocation = trimmedQuery.takeIf { it.isNotBlank() },
+                    originalQuery = trimmedQuery,
+                )
+            } else {
+                WeatherIntentParser.parseConfirmed(trimmedQuery)
+            }
+    val weatherLocationAvailable =
+            state.weatherLocationConfigured ||
+                    confirmedWeatherQuery?.requestedLocation?.isNotBlank() == true
+    val showWeatherSearchCard =
+            (state.weatherEnabled || isWeatherAliasMode) &&
+                    state.hasApiKey &&
+                    weatherLocationAvailable &&
+                    !showCalculatorResult &&
+                    !showCurrencyConverter &&
+                    !showWorldClock &&
+                    !showDictionary &&
+                    !showWeather &&
+                    if (isWeatherAliasMode) {
+                        true
+                    } else {
+                        confirmedWeatherQuery != null
                     }
     val showCustomToolSearchCard =
             activeCustomTool != null &&
@@ -401,6 +444,7 @@ internal fun SearchScreenContent(
             isCurrencyConverterAliasMode ||
                     isWorldClockAliasMode ||
                     isDictionaryAliasMode ||
+                    isWeatherAliasMode ||
                     activeCustomTool != null
                     || activeTaskerIntent != null
     val shouldShowNumberKeyboardOperators =
@@ -484,6 +528,7 @@ internal fun SearchScreenContent(
                             !isCurrencyConverterAliasMode &&
                             !isWorldClockAliasMode &&
                             !isDictionaryAliasMode &&
+                            !isWeatherAliasMode &&
                             activeCustomTool == null
             ) {
                 stringResource(R.string.keyboard_switch_to_number)
@@ -547,6 +592,7 @@ internal fun SearchScreenContent(
             if (shouldShowTopResultIndicator &&
                     !showCurrencyConverterSearchCard &&
                     !showDictionarySearchCard &&
+                    !showWeatherSearchCard &&
                     !showWorldClockSearchCard &&
                     !hasSuffixAliasKeywordAtQueryEnd) {
                 predictedTarget
@@ -561,11 +607,13 @@ internal fun SearchScreenContent(
                     showCurrencyConverter ||
                     showWorldClock ||
                     showDictionary ||
+                    showWeather ||
                     state.detectedShortcutTarget != null ||
                     state.detectedAliasSearchSection != null ||
                     state.isCurrencyConverterAliasMode ||
                     state.isWorldClockAliasMode ||
                     state.isDictionaryAliasMode ||
+                    state.isWeatherAliasMode ||
                     state.detectedCustomToolId != null
                     || state.detectedTaskerIntentId != null
     val deferTopMatchSubmitUntilAppsReady =
@@ -676,6 +724,20 @@ internal fun SearchScreenContent(
                                     label = stringResource(R.string.search_in_dictionary),
                                     icon = Icons.Rounded.Search,
                                     onClick = onDictionarySearchClick,
+                            )
+                    showWeatherSearchCard ->
+                            ToolCardConfig(
+                                    label =
+                                        if (isWeatherAliasMode && trimmedQuery.isBlank()) {
+                                            stringResource(
+                                                R.string.weather_in_location,
+                                                state.weatherLocation,
+                                            )
+                                        } else {
+                                            stringResource(R.string.get_weather)
+                                        },
+                                    icon = Icons.Rounded.Cloud,
+                                    onClick = onWeatherSearchClick,
                             )
                     showCustomToolSearchCard ->
                             ToolCardConfig(
@@ -896,6 +958,7 @@ internal fun SearchScreenContent(
                 isCurrencyConverterAliasMode = isCurrencyConverterAliasMode,
                 isWorldClockAliasMode = isWorldClockAliasMode,
                 isDictionaryAliasMode = isDictionaryAliasMode,
+                isWeatherAliasMode = isWeatherAliasMode,
                 detectedCustomToolId = state.detectedCustomToolId,
                 detectedTaskerIntentId = state.detectedTaskerIntentId,
                 activeToolType = activeToolType,
@@ -929,6 +992,10 @@ internal fun SearchScreenContent(
                     if (showDictionarySearchCard) {
                         onDictionarySearchClick()
                         return@PersistentSearchBar true // keep keyboard open
+                    }
+                    if (showWeatherSearchCard) {
+                        onWeatherSearchClick()
+                        return@PersistentSearchBar true
                     }
                     if (showCustomToolSearchCard) {
                         onCustomToolSearchClick()
@@ -1137,6 +1204,7 @@ internal fun SearchScreenContent(
                 showCurrencyConverter = showCurrencyConverter,
                 showWorldClock = showWorldClock,
                 showDictionary = showDictionary,
+                showWeather = showWeather,
                 showAiSearch = state.AiSearchState.status != AiSearchStatus.Idle,
                 aiSearchState = state.AiSearchState,
                 isOverlayPresentation = isOverlayPresentation,

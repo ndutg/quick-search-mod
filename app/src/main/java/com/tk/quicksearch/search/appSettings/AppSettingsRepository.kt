@@ -404,6 +404,13 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.DICTIONARY,
             )
             addToggle(
+                id = "app_toggle_weather",
+                titleRes = R.string.weather_toggle_title,
+                descriptionRes = R.string.weather_toggle_desc,
+                toggleKey = AppSettingsToggleKey.WEATHER,
+                keywords = listOf("forecast", "temperature", "location"),
+            )
+            addToggle(
                 id = "app_toggle_app_suggestions",
                 titleRes = R.string.app_suggestions_toggle_title,
                 descriptionRes = R.string.app_suggestions_toggle_desc,

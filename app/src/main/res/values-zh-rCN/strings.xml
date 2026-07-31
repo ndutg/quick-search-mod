@@ -38,6 +38,7 @@
     <string name="search_hint_contacts">搜索联系人…</string>
     <string name="search_hint_currency_converter">转换货币，例如 100 USD to INR</string>
     <string name="search_hint_dictionary">输入任意单词</string>
+    <string name="search_hint_weather">输入地点或使用默认地点</string>
     <string name="search_hint_files">搜索文件…</string>
     <string name="search_hint_notes">搜索笔记…</string>
     <string name="search_hint_settings">搜索设备设置…</string>
@@ -57,6 +58,7 @@
         <item >225 + 456</item>
         <item >Time in UK</item>
         <item >Define Serendipity</item>
+        <item >纽约天气</item>
     </string-array>
     <string name="search_provider_description">使用 Quick Search 搜索应用、联系人、文件、设置等更多内容。</string>
 
@@ -837,6 +839,21 @@
     <string name="dictionary_synonyms_label">同义词：%1$s</string>
     <string name="dictionary_toggle_desc">例如：define serendipity</string>
     <string name="dictionary_toggle_title">词典</string>
+    <string name="weather_toggle_title">天气</string>
+    <string name="weather_toggle_desc">默认地点或输入地点的今日天气</string>
+    <string name="weather_location_label">地点（可选）</string>
+    <string name="weather_location_hint">示例：北京</string>
+    <string name="weather_error_location_required">请输入地点或在设置中配置默认地点</string>
+    <string name="get_weather">获取天气</string>
+    <string name="weather_in_location">%1$s天气</string>
+    <string name="weather_temperature_unit_label">温度单位</string>
+    <string name="weather_temperature_unit_celsius">摄氏度 (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">华氏度 (°F)</string>
+    <string name="weather_wind_speed_unit_label">风速单位</string>
+    <string name="weather_wind_speed_unit_kmph">千米/小时 (km/h)</string>
+    <string name="weather_wind_speed_unit_mph">英里/小时 (mph)</string>
+    <string name="weather_wind_speed_unit_mps">米/秒 (m/s)</string>
+    <string name="weather_wind_speed_unit_knots">节 (kn)</string>
     <string name="get_currency_value">获取货币汇率</string>
     <string name="get_time">获取时间</string>
     <string name="search_in_dictionary">在词典中查询</string>

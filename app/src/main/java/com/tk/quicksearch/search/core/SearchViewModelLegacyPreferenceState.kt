@@ -50,6 +50,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var lockedCurrencyConverterAlias: Boolean = false
     var lockedWorldClockAlias: Boolean = false
     var lockedDictionaryAlias: Boolean = false
+    var lockedWeatherAlias: Boolean = false
     var lockedCustomToolId: String? = null
     var lockedTaskerIntentId: String? = null
     var clearQueryOnLaunch: Boolean = clearQueryOnLaunch
@@ -100,6 +101,7 @@ internal class SearchViewModelLegacyPreferenceState(
         lockedCurrencyConverterAlias = prefCache.lockedCurrencyConverterAlias
         lockedWorldClockAlias = prefCache.lockedWorldClockAlias
         lockedDictionaryAlias = prefCache.lockedDictionaryAlias
+        lockedWeatherAlias = prefCache.lockedWeatherAlias
         clearQueryOnLaunch = prefCache.clearQueryOnLaunch
         amazonDomain = prefCache.amazonDomain
     }

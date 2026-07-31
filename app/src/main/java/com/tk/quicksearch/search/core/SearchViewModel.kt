@@ -205,6 +205,7 @@ class SearchViewModel(
         CURRENCY_CONVERTER,
         WORD_CLOCK,
         DICTIONARY,
+        WEATHER,
     }
     private val startupDispatcher = Dispatchers.IO.limitedParallelism(1)
     private val runtimeState =
@@ -314,8 +315,8 @@ class SearchViewModel(
     }
     private val handlers: SearchHandlerContainer by lazy { SearchHandlerContainer(application = application, appContext = appContext, userPreferences = userPreferences, scope = viewModelScope, repository = repository, contactRepository = contactRepository, fileRepository = fileRepository, calendarRepository = calendarRepository, customCalendarEventRepository = customCalendarEventRepository, notesRepository = notesRepository, appShortcutRepository = appShortcutRepository, settingsShortcutRepository = settingsShortcutRepository, appSettingsRepository = appSettingsRepository, permissionManager = permissionManager, searchOperations = searchOperations, startupDispatcher = startupDispatcher, updateUiState = this::updateUiState, updateConfigState = this::updateConfigState, refreshSecondarySearches = this::refreshSecondarySearches, refreshAppShortcutsState = this::refreshAppShortcutsState, refreshAppSuggestions = this::refreshAppSuggestions, refreshDerivedState = this::refreshDerivedState, showToast = this::showToast, currentStateProvider = { uiState.value }, isLowRamDevice = isLowRamDevice(appContext)) }
     private val startupCoordinator by lazy { SearchStartupCoordinator(scope = viewModelScope, hasStartedStartupPhases = hasStartedStartupPhases, updateStartupPhase = { phase -> updateConfigState { it.copy(startupPhase = phase) } }, shouldReserveKeyboardStartupWindow = { openKeyboardOnLaunch }, loadCacheAndMinimalPrefsBlock = this::loadCacheAndMinimalPrefs, loadRemainingStartupPreferencesBlock = this::loadRemainingStartupPreferences, launchDeferredInitializationBlock = this::launchDeferredInitialization) }
-    private val toolCoordinator by lazy { SearchToolCoordinator(appContext = appContext, scope = viewModelScope, workerDispatcher = Dispatchers.Default, userPreferences = userPreferences, calculatorHandler = handlers.calculatorHandler, unitConverterHandler = handlers.unitConverterHandler, dateCalculatorHandler = handlers.dateCalculatorHandler, currencyConverterHandler = handlers.currencyConverterHandler, worldClockHandler = handlers.worldClockHandler, dictionaryHandler = handlers.dictionaryHandler, toolAliasStateProvider = { ToolAliasState(lockedToolMode = lockedToolMode, lockedCurrencyConverterAlias = lockedCurrencyConverterAlias, lockedWorldClockAlias = lockedWorldClockAlias, lockedDictionaryAlias = lockedDictionaryAlias, lockedCustomToolId = lockedCustomToolId) }, hasApiKeyProvider = { _featureState.value.hasApiKey }, currentQueryProvider = { _resultsState.value.query }, clearInformationCardsExcept = this::clearInformationCardsExcept, updateResultsState = this::updateResultsState, showToast = this::showToast) }
-    private val queryCoordinator by lazy { SearchQueryCoordinator(scope = viewModelScope, workerDispatcher = Dispatchers.Default, handlers = handlers, toolCoordinator = toolCoordinator, userPreferences = userPreferences, appSearchDebounceMs = APP_SEARCH_DEBOUNCE_MS, aliasStateProvider = { SearchQueryAliasState(lockedShortcutTarget = lockedShortcutTarget, lockedAliasSearchSection = lockedAliasSearchSection, lockedToolMode = lockedToolMode, lockedCurrencyConverterAlias = lockedCurrencyConverterAlias, lockedWorldClockAlias = lockedWorldClockAlias, lockedDictionaryAlias = lockedDictionaryAlias, lockedCustomToolId = lockedCustomToolId, lockedTaskerIntentId = lockedTaskerIntentId) }, updateAliasState = { state -> lockedShortcutTarget = state.lockedShortcutTarget; lockedAliasSearchSection = state.lockedAliasSearchSection; lockedToolMode = state.lockedToolMode; lockedCurrencyConverterAlias = state.lockedCurrencyConverterAlias; lockedWorldClockAlias = state.lockedWorldClockAlias; lockedDictionaryAlias = state.lockedDictionaryAlias; lockedCustomToolId = state.lockedCustomToolId; lockedTaskerIntentId = state.lockedTaskerIntentId }, currentResultsStateProvider = { _resultsState.value }, updateUiState = this::updateUiState, updateResultsState = this::updateResultsState, clearInformationCardsExcept = this::clearInformationCardsExcept, getSearchableAppsSnapshot = this::getSearchableAppsSnapshot, getGridItemCount = this::getGridItemCount, loadAppShortcuts = this::loadAppShortcuts, refreshRecentItems = this::refreshRecentItems, refreshAliasRecentItems = this::refreshAliasRecentItems) }
+    private val toolCoordinator by lazy { SearchToolCoordinator(appContext = appContext, scope = viewModelScope, workerDispatcher = Dispatchers.Default, userPreferences = userPreferences, calculatorHandler = handlers.calculatorHandler, unitConverterHandler = handlers.unitConverterHandler, dateCalculatorHandler = handlers.dateCalculatorHandler, currencyConverterHandler = handlers.currencyConverterHandler, worldClockHandler = handlers.worldClockHandler, dictionaryHandler = handlers.dictionaryHandler, weatherHandler = handlers.weatherHandler, toolAliasStateProvider = { ToolAliasState(lockedToolMode = lockedToolMode, lockedCurrencyConverterAlias = lockedCurrencyConverterAlias, lockedWorldClockAlias = lockedWorldClockAlias, lockedDictionaryAlias = lockedDictionaryAlias, lockedWeatherAlias = lockedWeatherAlias, lockedCustomToolId = lockedCustomToolId) }, hasApiKeyProvider = { _featureState.value.hasApiKey }, currentQueryProvider = { _resultsState.value.query }, clearInformationCardsExcept = this::clearInformationCardsExcept, updateResultsState = this::updateResultsState, showToast = this::showToast) }
+    private val queryCoordinator by lazy { SearchQueryCoordinator(scope = viewModelScope, workerDispatcher = Dispatchers.Default, handlers = handlers, toolCoordinator = toolCoordinator, userPreferences = userPreferences, appSearchDebounceMs = APP_SEARCH_DEBOUNCE_MS, aliasStateProvider = { SearchQueryAliasState(lockedShortcutTarget = lockedShortcutTarget, lockedAliasSearchSection = lockedAliasSearchSection, lockedToolMode = lockedToolMode, lockedCurrencyConverterAlias = lockedCurrencyConverterAlias, lockedWorldClockAlias = lockedWorldClockAlias, lockedDictionaryAlias = lockedDictionaryAlias, lockedWeatherAlias = lockedWeatherAlias, lockedCustomToolId = lockedCustomToolId, lockedTaskerIntentId = lockedTaskerIntentId) }, updateAliasState = { state -> lockedShortcutTarget = state.lockedShortcutTarget; lockedAliasSearchSection = state.lockedAliasSearchSection; lockedToolMode = state.lockedToolMode; lockedCurrencyConverterAlias = state.lockedCurrencyConverterAlias; lockedWorldClockAlias = state.lockedWorldClockAlias; lockedDictionaryAlias = state.lockedDictionaryAlias; lockedWeatherAlias = state.lockedWeatherAlias; lockedCustomToolId = state.lockedCustomToolId; lockedTaskerIntentId = state.lockedTaskerIntentId }, currentResultsStateProvider = { _resultsState.value }, updateUiState = this::updateUiState, updateResultsState = this::updateResultsState, clearInformationCardsExcept = this::clearInformationCardsExcept, getSearchableAppsSnapshot = this::getSearchableAppsSnapshot, getGridItemCount = this::getGridItemCount, loadAppShortcuts = this::loadAppShortcuts, refreshRecentItems = this::refreshRecentItems, refreshAliasRecentItems = this::refreshAliasRecentItems) }
     private val visibilityStateResolver by lazy { SearchVisibilityStateResolver() }
     private val appSuggestionSelector by lazy { AppSuggestionSelector(repository, userPreferences) }
     private val historyDelegate by lazy { SearchHistoryDelegate(scope = viewModelScope, userPreferences = userPreferences, contactRepository = contactRepository, fileRepository = fileRepository, settingsSearchHandler = handlers.settingsSearchHandler, appShortcutSearchHandler = handlers.appShortcutSearchHandler, appSettingsSearchHandler = handlers.appSettingsSearchHandler, calendarRepository = calendarRepository, notesRepository = notesRepository, featureStateProvider = { _featureState.value }, currentQueryProvider = { uiState.value.query }, updateResultsState = this::updateResultsState, updateUiState = this::updateUiState) }
@@ -426,6 +427,7 @@ class SearchViewModel(
     private var lockedCurrencyConverterAlias by legacyPreferenceState::lockedCurrencyConverterAlias
     private var lockedWorldClockAlias by legacyPreferenceState::lockedWorldClockAlias
     private var lockedDictionaryAlias by legacyPreferenceState::lockedDictionaryAlias
+    private var lockedWeatherAlias by legacyPreferenceState::lockedWeatherAlias
     private var lockedCustomToolId by legacyPreferenceState::lockedCustomToolId
     private var lockedTaskerIntentId by legacyPreferenceState::lockedTaskerIntentId
     private var clearQueryOnLaunch by legacyPreferenceState::clearQueryOnLaunch
@@ -538,31 +540,18 @@ class SearchViewModel(
     fun onSearchBarWelcomeAnimationCompleted() {
         specialFlowsDelegate.onSearchBarWelcomeAnimationCompleted()
     }
-    private fun refreshRecentItems() {
-        historyDelegate.refreshRecentItems()
-    }
-    private fun refreshAliasRecentItems(section: SearchSection?) {
+    private fun refreshRecentItems() = historyDelegate.refreshRecentItems()
+    private fun refreshAliasRecentItems(section: SearchSection?) =
         historyDelegate.refreshAliasRecentItems(section)
-    }
-    private fun loadApps() {
-        staticDataDelegate.loadApps()
-    }
-    private fun loadSettingsShortcuts() {
-        staticDataDelegate.loadSettingsShortcuts()
-    }
-    private fun loadAppShortcuts() {
-        staticDataDelegate.loadAppShortcuts()
-    }
-    private fun refreshSettingsState(updateResults: Boolean = true) {
+    private fun loadApps() = staticDataDelegate.loadApps()
+    private fun loadSettingsShortcuts() = staticDataDelegate.loadSettingsShortcuts()
+    private fun loadAppShortcuts() = staticDataDelegate.loadAppShortcuts()
+    private fun refreshSettingsState(updateResults: Boolean = true) =
         staticDataDelegate.refreshSettingsState(updateResults)
-    }
-    private fun refreshAppShortcutsState(updateResults: Boolean = true) {
+    private fun refreshAppShortcutsState(updateResults: Boolean = true) =
         staticDataDelegate.refreshAppShortcutsState(updateResults)
-    }
-    private fun loadPinnedAndExcludedCalendarEvents() {
+    private fun loadPinnedAndExcludedCalendarEvents() =
         staticDataDelegate.loadPinnedAndExcludedCalendarEvents()
-    }
-
     fun refreshCalendarEvents() {
         loadPinnedAndExcludedCalendarEvents()
     }
@@ -573,6 +562,16 @@ class SearchViewModel(
     fun executeCurrencyConversion() = toolCoordinator.executeCurrencyConversion()
     fun executeWorldClockLookup() = toolCoordinator.executeWorldClockLookup()
     fun executeDictionaryLookup() = toolCoordinator.executeDictionaryLookup()
+    fun executeWeatherLookup() {
+        val currentState = _resultsState.value
+        if (currentState.isWeatherAliasMode && currentState.query.isBlank()) {
+            val configuredLocation = _featureState.value.weatherLocation.trim()
+            if (configuredLocation.isNotEmpty()) {
+                onQueryChange(configuredLocation)
+            }
+        }
+        toolCoordinator.executeWeatherLookup()
+    }
     fun executeCustomToolSearch() {
         val toolId = lockedCustomToolId ?: return
         val tool = _featureState.value.customTools.find { it.id == toolId } ?: return

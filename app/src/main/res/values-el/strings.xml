@@ -38,6 +38,7 @@
     <string name="search_hint_contacts">Αναζήτηση στις επαφές…</string>
     <string name="search_hint_currency_converter">Μετατροπή νομισμάτων π.χ. 100 USD to INR</string>
     <string name="search_hint_dictionary">Εισαγάγετε μια λέξη</string>
+    <string name="search_hint_weather">Εισαγάγετε τοποθεσία ή χρησιμοποιήστε την προεπιλεγμένη</string>
     <string name="search_hint_files">Αναζήτηση στα αρχεία…</string>
     <string name="search_hint_notes">Αναζήτηση στις σημειώσεις…</string>
     <string name="search_hint_settings">Αναζήτηση στις ρυθμίσεις συσκευής…</string>
@@ -57,6 +58,7 @@
         <item >225 + 456</item>
         <item >Time in UK</item>
         <item >Define Serendipity</item>
+        <item >Καιρός στη Νέα Υόρκη</item>
     </string-array>
     <string name="search_provider_description">Αναζητήστε εφαρμογές, επαφές, αρχεία, ρυθμίσεις και πολλά άλλα με το Quick Search.</string>
 
@@ -837,6 +839,21 @@
     <string name="dictionary_synonyms_label">Συνώνυμα: %1$s</string>
     <string name="dictionary_toggle_desc">Παράδειγμα: define serendipity</string>
     <string name="dictionary_toggle_title">Λεξικό</string>
+    <string name="weather_toggle_title">Καιρός</string>
+    <string name="weather_toggle_desc">Ο σημερινός καιρός για την προεπιλεγμένη ή καταχωρισμένη τοποθεσία</string>
+    <string name="weather_location_label">Τοποθεσία (προαιρετικά)</string>
+    <string name="weather_location_hint">Παράδειγμα: Αθήνα</string>
+    <string name="weather_error_location_required">Εισαγάγετε μια τοποθεσία ή ορίστε μια προεπιλεγμένη στις Ρυθμίσεις</string>
+    <string name="get_weather">Λήψη καιρού</string>
+    <string name="weather_in_location">Καιρός στην τοποθεσία %1$s</string>
+    <string name="weather_temperature_unit_label">Μονάδα θερμοκρασίας</string>
+    <string name="weather_temperature_unit_celsius">Κελσίου (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">Φαρενάιτ (°F)</string>
+    <string name="weather_wind_speed_unit_label">Μονάδα ταχύτητας ανέμου</string>
+    <string name="weather_wind_speed_unit_kmph">Χιλιόμετρα ανά ώρα (km/h)</string>
+    <string name="weather_wind_speed_unit_mph">Μίλια ανά ώρα (mph)</string>
+    <string name="weather_wind_speed_unit_mps">Μέτρα ανά δευτερόλεπτο (m/s)</string>
+    <string name="weather_wind_speed_unit_knots">Κόμβοι (kn)</string>
     <string name="get_currency_value">Λήψη τιμής νομίσματος</string>
     <string name="get_time">Λήψη ώρας</string>
     <string name="search_in_dictionary">Αναζήτηση στο λεξικό</string>

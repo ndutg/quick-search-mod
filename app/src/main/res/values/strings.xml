@@ -29,6 +29,7 @@
     <string name="search_hint_contacts">Search Contacts…</string>
     <string name="search_hint_currency_converter">Convert Currencies e.g. 100 USD to INR</string>
     <string name="search_hint_dictionary">Enter any word</string>
+    <string name="search_hint_weather">Enter a location or use your default</string>
     <string name="search_hint_files">Search Files…</string>
     <string name="search_hint_notes">Search Notes…</string>
     <string name="search_hint_settings">Search Device Settings…</string>
@@ -47,6 +48,7 @@
         <item >225 + 456</item>
         <item >Time in UK</item>
         <item >Define Serendipity</item>
+        <item >Weather in New York</item>
     </string-array>
     <string name="search_provider_description">Search apps, contacts, files, settings, and more with Quick Search.</string>
 
@@ -833,6 +835,21 @@
     <string name="dictionary_synonyms_label">Synonyms: %1$s</string>
     <string name="dictionary_toggle_desc">Example: define serendipity</string>
     <string name="dictionary_toggle_title">Dictionary</string>
+    <string name="weather_toggle_title">Weather</string>
+    <string name="weather_toggle_desc">Today’s weather for your default or entered location</string>
+    <string name="weather_location_label">Location (optional)</string>
+    <string name="weather_location_hint">Example: New York, NY</string>
+    <string name="weather_error_location_required">Enter a location or configure a default location in Settings</string>
+    <string name="get_weather">Get weather</string>
+    <string name="weather_in_location">Weather in %1$s</string>
+    <string name="weather_temperature_unit_label">Temperature unit</string>
+    <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
+    <string name="weather_wind_speed_unit_label">Wind speed unit</string>
+    <string name="weather_wind_speed_unit_kmph">Kilometers per hour (km/h)</string>
+    <string name="weather_wind_speed_unit_mph">Miles per hour (mph)</string>
+    <string name="weather_wind_speed_unit_mps">Meters per second (m/s)</string>
+    <string name="weather_wind_speed_unit_knots">Knots (kn)</string>
     <string name="get_currency_value">Get Currency Value</string>
     <string name="get_time">Get Time</string>
     <string name="search_in_dictionary">Search in Dictionary</string>

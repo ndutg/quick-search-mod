@@ -134,6 +134,14 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setWeatherEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setWeatherEnabled(enabled)
+            updateFeatureState { it.copy(weatherEnabled = enabled) }
+            if (!enabled) updateResultsState { it.copy(weatherState = WeatherState()) }
+        }
+    }
+
     fun dismissOverlayAssistantTip() {
         scope.launch(Dispatchers.IO) {
             userPreferences.setHasSeenOverlayAssistantTip(true)
@@ -993,6 +1001,12 @@ internal class SearchPreferencesDelegate(
         thinkingEnabled: Boolean,
         advancedPayload: String?,
         advancedPayloadEnabled: Boolean,
+        systemPrompt: String = "",
+        location: String = "",
+        temperatureUnit: com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit.CELSIUS,
+        windSpeedUnit: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
     ) {
         scope.launch(Dispatchers.IO) {
             val normalizedModelId = modelId.trim()
@@ -1018,6 +1032,24 @@ internal class SearchPreferencesDelegate(
                     userPreferences.setDictionaryGroundingEnabled(groundingEnabled)
                     userPreferences.setDictionaryThinkingEnabled(thinkingEnabled)
                     userPreferences.setDictionaryAdvancedPayload(advancedPayload, advancedPayloadEnabled)
+                }
+                AiBackedToolConfigId.WEATHER -> {
+                    userPreferences.setWeatherProviderId(providerId)
+                    userPreferences.setWeatherModel(normalizedModelId)
+                    userPreferences.setWeatherGroundingEnabled(groundingEnabled)
+                    userPreferences.setWeatherThinkingEnabled(thinkingEnabled)
+                    userPreferences.setWeatherAdvancedPayload(advancedPayload, advancedPayloadEnabled)
+                    userPreferences.setWeatherSystemPrompt(systemPrompt)
+                    userPreferences.setWeatherLocation(location)
+                    userPreferences.setWeatherTemperatureUnit(temperatureUnit)
+                    userPreferences.setWeatherWindSpeedUnit(windSpeedUnit)
+                    updateFeatureState {
+                        val normalizedLocation = location.trim()
+                        it.copy(
+                            weatherLocationConfigured = normalizedLocation.isNotBlank(),
+                            weatherLocation = normalizedLocation,
+                        )
+                    }
                 }
             }
         }

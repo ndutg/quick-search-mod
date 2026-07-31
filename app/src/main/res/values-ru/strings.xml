@@ -38,6 +38,7 @@
 <string name="search_hint_contacts">Искать в контактах…</string>
 <string name="search_hint_currency_converter">Конвертировать валюту, например: 100 USD в INR</string>
 <string name="search_hint_dictionary">Введите любое слово</string>
+<string name="search_hint_weather">Введите место или используйте место по умолчанию</string>
 <string name="search_hint_files">Искать в файлах…</string>
 <string name="search_hint_notes">Искать в заметках…</string>
 <string name="search_hint_settings">Искать в настройках устройства…</string>
@@ -57,6 +58,7 @@
     <item>225 + 456</item>
     <item>Time in UK</item>
     <item>Define Serendipity</item>
+    <item>Погода в Нью-Йорке</item>
 </string-array>
 <string name="search_provider_description">Поиск приложений, контактов, файлов, настроек и многого другого с помощью Quick Search.</string>
 
@@ -853,6 +855,21 @@
 <string name="dictionary_synonyms_label">Синонимы: %1$s</string>
 <string name="dictionary_toggle_desc">Пример: define serendipity</string>
 <string name="dictionary_toggle_title">Словарь</string>
+<string name="weather_toggle_title">Погода</string>
+<string name="weather_toggle_desc">Погода на сегодня для места по умолчанию или введённого места</string>
+<string name="weather_location_label">Местоположение (необязательно)</string>
+<string name="weather_location_hint">Пример: Москва</string>
+<string name="weather_error_location_required">Введите место или настройте место по умолчанию</string>
+<string name="get_weather">Узнать погоду</string>
+<string name="weather_in_location">Погода в %1$s</string>
+<string name="weather_temperature_unit_label">Единица температуры</string>
+<string name="weather_temperature_unit_celsius">Цельсий (°C)</string>
+<string name="weather_temperature_unit_fahrenheit">Фаренгейт (°F)</string>
+<string name="weather_wind_speed_unit_label">Единица скорости ветра</string>
+<string name="weather_wind_speed_unit_kmph">Километры в час (km/h)</string>
+<string name="weather_wind_speed_unit_mph">Мили в час (mph)</string>
+<string name="weather_wind_speed_unit_mps">Метры в секунду (m/s)</string>
+<string name="weather_wind_speed_unit_knots">Узлы (kn)</string>
 <string name="get_currency_value">Получить курс валюты</string>
 <string name="get_time">Узнать время</string>
 <string name="search_in_dictionary">Искать в словаре</string>

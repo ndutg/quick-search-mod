@@ -21,6 +21,8 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setDictionaryEnabled(enabled: Boolean) = preferencesApiDelegate.setDictionaryEnabled(enabled)
 
+    fun setWeatherEnabled(enabled: Boolean) = preferencesApiDelegate.setWeatherEnabled(enabled)
+
     fun addCustomTool(
         name: String,
         prompt: String,
@@ -238,6 +240,12 @@ internal interface SearchViewModelPreferencesApi {
         thinkingEnabled: Boolean,
         advancedPayload: String?,
         advancedPayloadEnabled: Boolean,
+        systemPrompt: String = "",
+        location: String = "",
+        temperatureUnit: com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit.CELSIUS,
+        windSpeedUnit: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
     ) = preferencesApiDelegate.setAiBackedToolSettings(
         toolId,
         providerId,
@@ -246,6 +254,10 @@ internal interface SearchViewModelPreferencesApi {
         thinkingEnabled,
         advancedPayload,
         advancedPayloadEnabled,
+        systemPrompt,
+        location,
+        temperatureUnit,
+        windSpeedUnit,
     )
 
     fun setGeminiGroundingEnabled(enabled: Boolean) =
@@ -277,6 +289,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setWorldClockEnabled(enabled: Boolean) = preferencesDelegate.setWorldClockEnabled(enabled)
 
     fun setDictionaryEnabled(enabled: Boolean) = preferencesDelegate.setDictionaryEnabled(enabled)
+
+    fun setWeatherEnabled(enabled: Boolean) = preferencesDelegate.setWeatherEnabled(enabled)
 
     fun addCustomTool(
         name: String,
@@ -492,6 +506,12 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         thinkingEnabled: Boolean,
         advancedPayload: String?,
         advancedPayloadEnabled: Boolean,
+        systemPrompt: String = "",
+        location: String = "",
+        temperatureUnit: com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit.CELSIUS,
+        windSpeedUnit: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
     ) = preferencesDelegate.setAiBackedToolSettings(
         toolId,
         providerId,
@@ -500,6 +520,10 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         thinkingEnabled,
         advancedPayload,
         advancedPayloadEnabled,
+        systemPrompt,
+        location,
+        temperatureUnit,
+        windSpeedUnit,
     )
 
     fun setGeminiGroundingEnabled(enabled: Boolean) =

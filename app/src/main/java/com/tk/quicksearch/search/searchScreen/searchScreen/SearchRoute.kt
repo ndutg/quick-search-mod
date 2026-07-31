@@ -63,6 +63,7 @@ import com.tk.quicksearch.search.utils.FileUtils
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
+import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.shared.permissions.PermissionSettingsDialog
 import com.tk.quicksearch.shared.permissions.PermissionHelper
@@ -798,6 +799,12 @@ fun SearchRoute(
                         uiState.dictionaryEnabled &&
                                 DictionaryIntentParser.parseConfirmed(trimmedQuery) != null ->
                             viewModel.executeDictionaryLookup()
+                        uiState.weatherEnabled &&
+                                WeatherIntentParser.parseConfirmed(trimmedQuery)?.let { weatherQuery ->
+                                    uiState.weatherLocationConfigured ||
+                                        weatherQuery.requestedLocation?.isNotBlank() == true
+                                } == true ->
+                            viewModel.executeWeatherLookup()
                         else -> viewModel.openSearchTarget(query, target)
                     }
                 } else {
@@ -894,6 +901,7 @@ fun SearchRoute(
             onDismissSearchHistoryTip = viewModel::dismissSearchHistoryTip,
             onCurrencyConversionClick = viewModel::executeCurrencyConversion,
             onDictionarySearchClick = viewModel::executeDictionaryLookup,
+            onWeatherSearchClick = viewModel::executeWeatherLookup,
             onWorldClockSearchClick = viewModel::executeWorldClockLookup,
             onCustomToolSearchClick = viewModel::executeCustomToolSearch,
             onTaskerIntentClick = viewModel::executeTaskerIntent,

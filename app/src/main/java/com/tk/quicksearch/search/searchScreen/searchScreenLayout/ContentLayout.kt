@@ -48,6 +48,7 @@ import com.tk.quicksearch.tools.aiSearch.CalculatorResult
 import com.tk.quicksearch.tools.aiSearch.DictionaryResult
 import com.tk.quicksearch.tools.aiSearch.AiSearchResult
 import com.tk.quicksearch.tools.aiSearch.WorldClockResult
+import com.tk.quicksearch.tools.aiSearch.WeatherResult
 import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.InfoBanner
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
@@ -91,6 +92,7 @@ fun ContentLayout(
     showCurrencyConverter: Boolean = false,
     showWorldClock: Boolean = false,
     showDictionary: Boolean = false,
+    showWeather: Boolean = false,
     showAiSearch: Boolean = false,
     aiSearchState: AiSearchState? = null,
     isOverlayPresentation: Boolean = false,
@@ -234,6 +236,7 @@ fun ContentLayout(
                 !showCurrencyConverter &&
                 !showWorldClock &&
                 !showDictionary &&
+                !showWeather &&
                 suggestionsNotEmpty &&
                 suggestionsEnabled &&
                 !suggestionWasSelected
@@ -246,6 +249,7 @@ fun ContentLayout(
             !state.isCurrencyConverterAliasMode &&
             !state.isWorldClockAliasMode &&
             !state.isDictionaryAliasMode &&
+            !state.isWeatherAliasMode &&
             state.recentQueriesEnabled &&
             state.recentItems.isNotEmpty()
 
@@ -827,6 +831,18 @@ fun ContentLayout(
                                 llmProviderId = state.aiSearchLlmProviderId,
                                 showWallpaperBackground = effectiveShowWallpaperBackground,
                                 onGeminiModelInfoClick = onGeminiModelInfoClick,
+                        )
+                    }
+                }
+
+                ItemPriorityConfig.ItemType.WEATHER_RESULT -> {
+                    if (showWeather) {
+                        WeatherResult(
+                            weatherState = state.weatherState,
+                            llmProviderId = state.weatherState.llmProviderId
+                                ?: state.aiSearchLlmProviderId,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            onGeminiModelInfoClick = onGeminiModelInfoClick,
                         )
                     }
                 }

@@ -38,6 +38,7 @@
     <string name="search_hint_contacts">పరిచయాలను శోధించండి…</string>
     <string name="search_hint_currency_converter">కరెన్సీలను మార్చుకోండి ఉదా. 100 USD to INR</string>
     <string name="search_hint_dictionary">ఏదైనా పదాన్ని నమోదు చేయండి</string>
+    <string name="search_hint_weather">స్థానాన్ని నమోదు చేయండి లేదా డిఫాల్ట్ స్థానాన్ని ఉపయోగించండి</string>
     <string name="search_hint_files">ఫైళ్లను శోధించండి…</string>
     <string name="search_hint_notes">గమనికలను శోధించండి…</string>
     <string name="search_hint_settings">పరికర సెట్టింగ్‌లను శోధించండి…</string>
@@ -57,6 +58,7 @@
         <item >225 + 456</item>
         <item >Time in UK</item>
         <item >Define Serendipity</item>
+        <item >న్యూయార్క్ వాతావరణం</item>
     </string-array>
     <string name="search_provider_description">Quick Search ద్వారా యాప్‌లు, పరిచయాలు, ఫైళ్లు, సెట్టింగ్‌లు మరియు మరిన్నింటిని శోధించండి.</string>
 
@@ -837,6 +839,21 @@
     <string name="dictionary_synonyms_label">పర్యాయపదాలు: %1$s</string>
     <string name="dictionary_toggle_desc">ఉదాహరణ: define serendipity</string>
     <string name="dictionary_toggle_title">డిక్షనరీ</string>
+    <string name="weather_toggle_title">వాతావరణం</string>
+    <string name="weather_toggle_desc">మీ డిఫాల్ట్ లేదా నమోదు చేసిన స్థానానికి నేటి వాతావరణం</string>
+    <string name="weather_location_label">స్థానం (ఐచ్ఛికం)</string>
+    <string name="weather_location_hint">ఉదాహరణ: హైదరాబాద్</string>
+    <string name="weather_error_location_required">స్థానాన్ని నమోదు చేయండి లేదా సెట్టింగ్‌లలో డిఫాల్ట్ స్థానాన్ని సెట్ చేయండి</string>
+    <string name="get_weather">వాతావరణం చూడండి</string>
+    <string name="weather_in_location">%1$sలో వాతావరణం</string>
+    <string name="weather_temperature_unit_label">ఉష్ణోగ్రత యూనిట్</string>
+    <string name="weather_temperature_unit_celsius">సెల్సియస్ (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">ఫారెన్‌హీట్ (°F)</string>
+    <string name="weather_wind_speed_unit_label">గాలి వేగం యూనిట్</string>
+    <string name="weather_wind_speed_unit_kmph">గంటకు కిలోమీటర్లు (km/h)</string>
+    <string name="weather_wind_speed_unit_mph">గంటకు మైళ్లు (mph)</string>
+    <string name="weather_wind_speed_unit_mps">సెకనుకు మీటర్లు (m/s)</string>
+    <string name="weather_wind_speed_unit_knots">నాట్స్ (kn)</string>
     <string name="get_currency_value">కరెన్సీ విలువను పొందండి</string>
     <string name="get_time">సమయాన్ని తెలుసుకోండి</string>
     <string name="search_in_dictionary">డిక్షనరీలో శోధించండి</string>

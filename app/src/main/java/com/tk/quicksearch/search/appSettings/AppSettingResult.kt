@@ -96,6 +96,7 @@ enum class AppSettingsToggleKey {
     USE_SYSTEM_FONT,
     APPS_PER_ROW,
     DICTIONARY,
+    WEATHER,
 }
 
 data class AppSettingResult(

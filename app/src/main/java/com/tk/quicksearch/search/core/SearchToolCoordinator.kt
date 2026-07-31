@@ -13,6 +13,9 @@ import com.tk.quicksearch.tools.aiTools.DictionaryNotRecognizedException
 import com.tk.quicksearch.tools.aiTools.WorldClockHandler
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import com.tk.quicksearch.tools.aiTools.WorldClockNotRecognizedException
+import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
+import com.tk.quicksearch.tools.aiTools.WeatherHandler
+import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
 import com.tk.quicksearch.tools.calculator.CalculatorHandler
 import com.tk.quicksearch.tools.dateCalculator.DateCalculatorHandler
 import com.tk.quicksearch.tools.unitConverter.UnitConverterHandler
@@ -26,6 +29,7 @@ internal data class ToolAliasState(
     val lockedCurrencyConverterAlias: Boolean,
     val lockedWorldClockAlias: Boolean,
     val lockedDictionaryAlias: Boolean,
+    val lockedWeatherAlias: Boolean,
     val lockedCustomToolId: String? = null,
 )
 
@@ -40,6 +44,7 @@ internal class SearchToolCoordinator(
     private val currencyConverterHandler: CurrencyConverterHandler,
     private val worldClockHandler: WorldClockHandler,
     private val dictionaryHandler: DictionaryHandler,
+    private val weatherHandler: WeatherHandler,
     private val toolAliasStateProvider: () -> ToolAliasState,
     private val hasApiKeyProvider: () -> Boolean,
     private val currentQueryProvider: () -> String,
@@ -53,11 +58,14 @@ internal class SearchToolCoordinator(
     private var worldClockQueryVersion: Long = 0L
     private var dictionaryJob: Job? = null
     private var dictionaryQueryVersion: Long = 0L
+    private var weatherJob: Job? = null
+    private var weatherQueryVersion: Long = 0L
 
     fun cancelAll() {
         currencyConversionJob?.cancel()
         worldClockJob?.cancel()
         dictionaryJob?.cancel()
+        weatherJob?.cancel()
     }
 
     fun cancelInactive(activeCard: SearchViewModel.ActiveInformationCard) {
@@ -69,6 +77,9 @@ internal class SearchToolCoordinator(
         }
         if (activeCard != SearchViewModel.ActiveInformationCard.DICTIONARY) {
             dictionaryJob?.cancel()
+        }
+        if (activeCard != SearchViewModel.ActiveInformationCard.WEATHER) {
+            weatherJob?.cancel()
         }
     }
 
@@ -507,6 +518,90 @@ internal class SearchToolCoordinator(
                                         errorMessage = msg,
                                         activeQuery = trimmedQuery,
                                     ),
+                            )
+                        }
+                    },
+                )
+            }
+    }
+
+    fun scheduleWeatherLookup(trimmedQuery: String, showingTool: Boolean) {
+        weatherJob?.cancel()
+        val aliasState = toolAliasStateProvider()
+        val canUseWeather =
+            (userPreferences.isWeatherEnabled() || aliasState.lockedWeatherAlias) &&
+                hasApiKeyProvider()
+        val isCandidate =
+            aliasState.lockedWeatherAlias || WeatherIntentParser.isCandidate(trimmedQuery)
+        if (!canUseWeather || showingTool || !isCandidate) {
+            updateResultsState { state ->
+                if (state.weatherState.status == WeatherStatus.Idle) state
+                else state.copy(weatherState = WeatherState())
+            }
+        }
+    }
+
+    fun executeWeatherLookup() {
+        val trimmedQuery = currentQueryProvider().trim()
+        val aliasState = toolAliasStateProvider()
+        if ((!userPreferences.isWeatherEnabled() && !aliasState.lockedWeatherAlias) ||
+            !hasApiKeyProvider()
+        ) {
+            return
+        }
+        val confirmed =
+            if (aliasState.lockedWeatherAlias) {
+                ConfirmedWeatherQuery(
+                    requestedLocation = trimmedQuery.takeIf { it.isNotBlank() },
+                    originalQuery = trimmedQuery,
+                )
+            } else {
+                WeatherIntentParser.parseConfirmed(trimmedQuery)
+            } ?: run {
+                updateResultsState { it.copy(weatherState = WeatherState()) }
+                return
+            }
+
+        clearInformationCardsExcept(SearchViewModel.ActiveInformationCard.WEATHER)
+        val version = ++weatherQueryVersion
+        weatherJob?.cancel()
+        weatherJob =
+            scope.launch(workerDispatcher) {
+                updateResultsState { state ->
+                    state.copy(
+                        weatherState = WeatherState(
+                            status = WeatherStatus.Loading,
+                            activeQuery = trimmedQuery,
+                        ),
+                    )
+                }
+                val apiResult = weatherHandler.getWeather(confirmed)
+                if (version != weatherQueryVersion) return@launch
+                if (currentQueryProvider().trim() != trimmedQuery) return@launch
+                apiResult.fold(
+                    onSuccess = { (parsed, modelId) ->
+                        updateResultsState { state ->
+                            state.copy(
+                                weatherState = WeatherState(
+                                    status = WeatherStatus.Success,
+                                    location = parsed.location,
+                                    summary = parsed.summary,
+                                    activeQuery = trimmedQuery,
+                                    usedModelId = modelId,
+                                    llmProviderId = userPreferences.getWeatherProviderId(),
+                                ),
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        updateResultsState { state ->
+                            state.copy(
+                                weatherState = WeatherState(
+                                    status = WeatherStatus.Error,
+                                    errorMessage = error.message
+                                        ?: appContext.getString(R.string.direct_search_error_generic),
+                                    activeQuery = trimmedQuery,
+                                ),
                             )
                         }
                     },

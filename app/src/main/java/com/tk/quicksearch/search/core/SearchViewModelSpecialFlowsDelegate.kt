@@ -60,6 +60,12 @@ internal class SearchViewModelSpecialFlowsDelegate(
                     } else {
                         DictionaryState()
                     },
+                weatherState =
+                    if (activeCard == SearchViewModel.ActiveInformationCard.WEATHER) {
+                        state.weatherState
+                    } else {
+                        WeatherState()
+                    },
             )
         }
     }

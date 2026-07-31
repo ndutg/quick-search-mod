@@ -37,6 +37,7 @@
 <string name="search_hint_contacts">Kişilerde ara…</string>
 <string name="search_hint_currency_converter">Para birimi dönüştür, örn: 100 USD to INR</string>
 <string name="search_hint_dictionary">Bir kelime girin</string>
+<string name="search_hint_weather">Bir konum girin veya varsayılanı kullanın</string>
 <string name="search_hint_files">Dosyalarda ara…</string>
 <string name="search_hint_notes">Notlarda ara…</string>
 <string name="search_hint_settings">Cihaz ayarlarında ara…</string>
@@ -56,6 +57,7 @@
     <item>225 + 456</item>
     <item>Time in UK</item>
     <item>Define Serendipity</item>
+    <item>New York hava durumu</item>
 </string-array>
 <string name="search_provider_description">Quick Search ile uygulamaları, kişileri, dosyaları, ayarları ve daha fazlasını arayın.</string>
 
@@ -836,6 +838,21 @@
 <string name="dictionary_synonyms_label">Eş anlamlılar: %1$s</string>
 <string name="dictionary_toggle_desc">Örnek: define serendipity</string>
 <string name="dictionary_toggle_title">Sözlük</string>
+<string name="weather_toggle_title">Hava Durumu</string>
+<string name="weather_toggle_desc">Varsayılan veya girdiğiniz konum için bugünün hava durumu</string>
+<string name="weather_location_label">Konum (isteğe bağlı)</string>
+<string name="weather_location_hint">Örnek: İstanbul</string>
+<string name="weather_error_location_required">Bir konum girin veya Ayarlar’da varsayılan konum belirleyin</string>
+<string name="get_weather">Hava durumunu getir</string>
+<string name="weather_in_location">%1$s için hava durumu</string>
+<string name="weather_temperature_unit_label">Sıcaklık birimi</string>
+<string name="weather_temperature_unit_celsius">Santigrat (°C)</string>
+<string name="weather_temperature_unit_fahrenheit">Fahrenhayt (°F)</string>
+<string name="weather_wind_speed_unit_label">Rüzgâr hızı birimi</string>
+<string name="weather_wind_speed_unit_kmph">Saatte kilometre (km/h)</string>
+<string name="weather_wind_speed_unit_mph">Saatte mil (mph)</string>
+<string name="weather_wind_speed_unit_mps">Saniyede metre (m/s)</string>
+<string name="weather_wind_speed_unit_knots">Deniz mili (kn)</string>
 <string name="get_currency_value">Döviz değerini al</string>
 <string name="get_time">Saati al</string>
 <string name="search_in_dictionary">Sözlükte ara</string>

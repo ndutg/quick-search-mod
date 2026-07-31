@@ -127,6 +127,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.DEVICE_THEME -> setDeviceThemeEnabled(command.enabled)
                 AppSettingsToggleKey.USE_SYSTEM_FONT -> setUseSystemFont(command.enabled)
                 AppSettingsToggleKey.DICTIONARY -> setDictionaryEnabled(command.enabled)
+                AppSettingsToggleKey.WEATHER -> setWeatherEnabled(command.enabled)
                 AppSettingsToggleKey.APPS_PER_ROW -> Unit
                 AppSettingsToggleKey.SEARCH_APPS,
                 AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,
@@ -210,6 +211,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.DEVICE_THEME -> deviceThemeEnabled
         AppSettingsToggleKey.USE_SYSTEM_FONT -> useSystemFont
         AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled
+        AppSettingsToggleKey.WEATHER -> weatherEnabled
         AppSettingsToggleKey.APPS_PER_ROW -> false
         AppSettingsToggleKey.SEARCH_APPS,
         AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,

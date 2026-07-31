@@ -36,6 +36,7 @@ import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CurrencyExchange
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
@@ -156,6 +157,7 @@ internal fun PersistentSearchBar(
     isCurrencyConverterAliasMode: Boolean = false,
     isWorldClockAliasMode: Boolean = false,
     isDictionaryAliasMode: Boolean = false,
+    isWeatherAliasMode: Boolean = false,
     detectedCustomToolId: String? = null,
     detectedTaskerIntentId: String? = null,
     activeToolType: SearchToolType? = null,
@@ -197,6 +199,7 @@ internal fun PersistentSearchBar(
             isCurrencyConverterAliasMode ||
             isWorldClockAliasMode ||
             isDictionaryAliasMode ||
+            isWeatherAliasMode ||
             detectedCustomToolId != null
             || detectedTaskerIntentId != null
     val aliasVisualTransformation =
@@ -215,6 +218,7 @@ internal fun PersistentSearchBar(
             isCurrencyConverterAliasMode -> LeadingIconState.CurrencyConverter
             isWorldClockAliasMode -> LeadingIconState.WorldClock
             isDictionaryAliasMode -> LeadingIconState.Dictionary
+            isWeatherAliasMode -> LeadingIconState.Weather
             detectedShortcutTarget != null -> LeadingIconState.Shortcut(detectedShortcutTarget)
             detectedAliasSearchSection != null -> LeadingIconState.Section(detectedAliasSearchSection)
             else -> LeadingIconState.Search
@@ -546,6 +550,7 @@ internal fun PersistentSearchBar(
                                     isCurrencyConverterAliasMode ||
                                     isWorldClockAliasMode ||
                                     isDictionaryAliasMode ||
+                                    isWeatherAliasMode ||
                                     detectedCustomToolId != null ||
                                     detectedTaskerIntentId != null ||
                                     activeToolType != null ||
@@ -843,6 +848,15 @@ private fun SearchBarLeadingIcon(
             )
         }
 
+        LeadingIconState.Weather -> {
+            Icon(
+                imageVector = Icons.Rounded.Cloud,
+                contentDescription = stringResource(R.string.weather_toggle_title),
+                tint = iconTint,
+                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
+            )
+        }
+
         is LeadingIconState.Shortcut -> {
             SearchTargetIcon(
                 target = iconState.target,
@@ -909,6 +923,8 @@ private sealed interface LeadingIconState {
     data object WorldClock : LeadingIconState
 
     data object Dictionary : LeadingIconState
+
+    data object Weather : LeadingIconState
 
     data class Shortcut(
         val target: SearchTarget,

@@ -200,6 +200,7 @@ internal fun SettingsDetailLevel2Screen(
                                 AiBackedToolConfigId.CURRENCY_CONVERTER -> R.string.currency_converter_toggle_title
                                 AiBackedToolConfigId.WORD_CLOCK -> R.string.world_clock_toggle_title
                                 AiBackedToolConfigId.DICTIONARY -> R.string.dictionary_toggle_title
+                                AiBackedToolConfigId.WEATHER -> R.string.weather_toggle_title
                                 null -> detailType.titleResId()
                             }
                         } else {
@@ -329,6 +330,7 @@ internal fun SettingsDetailLevel2Screen(
                                                             state.currencyConverterEnabled
                                                     ToolSettingId.WORD_CLOCK -> state.worldClockEnabled
                                                     ToolSettingId.DICTIONARY -> state.dictionaryEnabled
+                                                    ToolSettingId.WEATHER -> state.weatherEnabled
                                                 }
                                         definition.id to
                                                 ToolSettingUiState(
@@ -364,6 +366,7 @@ internal fun SettingsDetailLevel2Screen(
                                     ToolSettingId.CURRENCY_CONVERTER ->
                                             callbacks.onToggleCurrencyConverter(enabled)
                                     ToolSettingId.WORD_CLOCK -> callbacks.onToggleWorldClock(enabled)
+                                    ToolSettingId.WEATHER -> callbacks.onToggleWeather(enabled)
                                     else -> {
                                         val definition =
                                                 ToolSettingsRegistry.definitionFor(toolId)
@@ -398,6 +401,10 @@ internal fun SettingsDetailLevel2Screen(
                                     }
                                     ToolSettingId.DICTIONARY -> {
                                         CustomToolNavigationMemory.setPendingAiBackedTool(AiBackedToolConfigId.DICTIONARY)
+                                        onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)
+                                    }
+                                    ToolSettingId.WEATHER -> {
+                                        CustomToolNavigationMemory.setPendingAiBackedTool(AiBackedToolConfigId.WEATHER)
                                         onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)
                                     }
                                     else -> Unit
@@ -496,6 +503,20 @@ internal fun SettingsDetailLevel2Screen(
                                 advancedPayload = preferences.getDictionaryAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
                             )
+                            AiBackedToolConfigId.WEATHER -> BuiltInToolConfig(
+                                toolId = tool,
+                                title = context.getString(R.string.weather_toggle_title),
+                                modelId = preferences.getWeatherModel(),
+                                providerId = preferences.getWeatherProviderId(),
+                                groundingEnabled = preferences.isWeatherGroundingEnabled(),
+                                thinkingEnabled = preferences.isWeatherThinkingEnabled(),
+                                advancedPayload = preferences.getWeatherAdvancedPayload(),
+                                aliasFeatureId = AliasHandler.WEATHER_ALIAS_FEATURE_ID,
+                                prompt = preferences.getWeatherSystemPrompt(),
+                                location = preferences.getWeatherLocation(),
+                                temperatureUnit = preferences.getWeatherTemperatureUnit(),
+                                windSpeedUnit = preferences.getWeatherWindSpeedUnit(),
+                            )
                         }
                     }
                 }
@@ -515,6 +536,13 @@ internal fun SettingsDetailLevel2Screen(
                 com.tk.quicksearch.settings.customTools.CustomToolEditorScreen(
                     existingTool = editorTool,
                     existingAlias = existingAlias,
+                    existingLocation = builtInToolConfig?.location.orEmpty(),
+                    existingTemperatureUnit =
+                        builtInToolConfig?.temperatureUnit
+                            ?: com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit.CELSIUS,
+                    existingWindSpeedUnit =
+                        builtInToolConfig?.windSpeedUnit
+                            ?: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
                     selectedProviderId = state.aiSearchLlmProviderId,
                     availableModels = state.availableGeminiModels,
                     availableModelsByProvider = state.availableLlmModelsByProvider,
@@ -522,10 +550,12 @@ internal fun SettingsDetailLevel2Screen(
                     onRefreshAvailableGeminiModels = callbacks.onRefreshAvailableGeminiModels,
                     onProviderModelSelected = { _, _ -> },
                     showNameInput = builtInToolConfig == null,
-                    showPromptInput = builtInToolConfig == null,
-                    showAliasInput = builtInToolConfig == null,
+                    showPromptInput = builtInToolConfig == null || builtInToolConfig.toolId == AiBackedToolConfigId.WEATHER,
+                    showAliasInput = builtInToolConfig == null || builtInToolConfig.toolId == AiBackedToolConfigId.WEATHER,
+                    showLocationInput = builtInToolConfig?.toolId == AiBackedToolConfigId.WEATHER,
+                    showWeatherUnitInputs = builtInToolConfig?.toolId == AiBackedToolConfigId.WEATHER,
                     shouldAutoFocusTitle = builtInToolConfig == null && shouldAutoFocusTitle,
-                    onSave = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled ->
+                    onSave = { name, prompt, location, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled, temperatureUnit, windSpeedUnit ->
                         if (builtInToolConfig != null) {
                             callbacks.onSetAiToolSettings(
                                 builtInToolConfig.toolId,
@@ -535,7 +565,17 @@ internal fun SettingsDetailLevel2Screen(
                                 thinkingEnabled,
                                 advancedPayload,
                                 advancedPayloadEnabled,
+                                prompt,
+                                location,
+                                temperatureUnit,
+                                windSpeedUnit,
                             )
+                            if (builtInToolConfig.toolId == AiBackedToolConfigId.WEATHER) {
+                                callbacks.onSetSearchSectionAlias(
+                                    builtInToolConfig.aliasFeatureId,
+                                    aliasCode,
+                                )
+                            }
                         } else if (existingTool != null) {
                             callbacks.onUpdateCustomTool(existingTool.id, name, prompt, providerId, modelId, groundingEnabled, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
                             callbacks.onSetSearchSectionAlias(existingTool.id, aliasCode)
@@ -978,12 +1018,18 @@ private data class BuiltInToolConfig(
     val thinkingEnabled: Boolean,
     val advancedPayload: Pair<Boolean, String>,
     val aliasFeatureId: String,
+    val prompt: String = "builtin",
+    val location: String = "",
+    val temperatureUnit: com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =
+        com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit.CELSIUS,
+    val windSpeedUnit: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit =
+        com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
 ) {
     fun toCustomTool(): CustomTool =
         CustomTool(
             id = "builtin:${toolId.name.lowercase()}",
             name = title,
-            prompt = "builtin",
+            prompt = prompt,
             modelId = modelId,
             providerId = providerId,
             groundingEnabled = groundingEnabled,

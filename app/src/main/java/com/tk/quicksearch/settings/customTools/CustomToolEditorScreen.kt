@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.customTools
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +34,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CustomTool
+import com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit
+import com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit
 import com.tk.quicksearch.settings.shared.ModelFeatureSettingsCard
 import com.tk.quicksearch.settings.settingsDetailScreen.AdvancedPayloadSettingsSection
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
@@ -39,16 +48,21 @@ import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
 fun CustomToolEditorScreen(
     existingTool: CustomTool?,
     existingAlias: String,
+    existingLocation: String = "",
+    existingTemperatureUnit: WeatherTemperatureUnit = WeatherTemperatureUnit.CELSIUS,
+    existingWindSpeedUnit: WeatherWindSpeedUnit = WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
     selectedProviderId: AiSearchLlmProviderId,
     availableModels: List<GeminiTextModel>,
     availableModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>>,
     configuredProviderIds: Set<AiSearchLlmProviderId>,
     onRefreshAvailableGeminiModels: () -> Unit,
     onProviderModelSelected: (AiSearchLlmProviderId, String) -> Unit,
-    onSave: (name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean) -> Unit,
+    onSave: (name: String, prompt: String, location: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean, temperatureUnit: WeatherTemperatureUnit, windSpeedUnit: WeatherWindSpeedUnit) -> Unit,
     showNameInput: Boolean = true,
     showPromptInput: Boolean = true,
     showAliasInput: Boolean = true,
+    showLocationInput: Boolean = false,
+    showWeatherUnitInputs: Boolean = false,
     shouldAutoFocusTitle: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
@@ -66,6 +80,15 @@ fun CustomToolEditorScreen(
     }
     var aliasInput by remember(existingTool?.id) {
         mutableStateOf(existingAlias)
+    }
+    var locationInput by remember(existingTool?.id) {
+        mutableStateOf(existingLocation)
+    }
+    var temperatureUnit by remember(existingTool?.id) {
+        mutableStateOf(existingTemperatureUnit)
+    }
+    var windSpeedUnit by remember(existingTool?.id) {
+        mutableStateOf(existingWindSpeedUnit)
     }
     var groundingEnabled by remember(existingTool?.id) {
         mutableStateOf(existingTool?.groundingEnabled ?: false)
@@ -194,6 +217,37 @@ fun CustomToolEditorScreen(
                 }
             }
 
+            if (showLocationInput) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                ) {
+                    Text(
+                        text = stringResource(R.string.weather_location_label),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    OutlinedTextField(
+                        value = locationInput,
+                        onValueChange = { locationInput = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(stringResource(R.string.weather_location_hint)) },
+                        singleLine = true,
+                        maxLines = 1,
+                        colors = dialogTextFieldColors(),
+                    )
+                }
+            }
+
+            if (showWeatherUnitInputs) {
+                WeatherUnitSettingsSection(
+                    temperatureUnit = temperatureUnit,
+                    windSpeedUnit = windSpeedUnit,
+                    onTemperatureUnitSelected = { temperatureUnit = it },
+                    onWindSpeedUnitSelected = { windSpeedUnit = it },
+                )
+            }
+
             if (showAliasInput) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -271,6 +325,7 @@ fun CustomToolEditorScreen(
                         onSave(
                             nameInput.trim(),
                             promptInput.trim(),
+                            locationInput.trim(),
                             selectedProviderInput,
                             selectedModelId,
                             groundingEnabled,
@@ -280,6 +335,8 @@ fun CustomToolEditorScreen(
                                 supportsAdvancedPayload && advancedPayloadEnabled && it.isNotEmpty()
                             },
                             supportsAdvancedPayload && advancedPayloadEnabled,
+                            temperatureUnit,
+                            windSpeedUnit,
                         )
                     }
                 },
@@ -294,3 +351,95 @@ fun CustomToolEditorScreen(
     }
 
 }
+
+@Composable
+private fun WeatherUnitSettingsSection(
+    temperatureUnit: WeatherTemperatureUnit,
+    windSpeedUnit: WeatherWindSpeedUnit,
+    onTemperatureUnitSelected: (WeatherTemperatureUnit) -> Unit,
+    onWindSpeedUnitSelected: (WeatherWindSpeedUnit) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+    ) {
+        WeatherUnitDropdown(
+            label = stringResource(R.string.weather_temperature_unit_label),
+            selectedLabel = stringResource(temperatureUnit.labelRes),
+            options = WeatherTemperatureUnit.entries.map { it to stringResource(it.labelRes) },
+            onSelected = onTemperatureUnitSelected,
+        )
+        WeatherUnitDropdown(
+            label = stringResource(R.string.weather_wind_speed_unit_label),
+            selectedLabel = stringResource(windSpeedUnit.labelRes),
+            options = WeatherWindSpeedUnit.entries.map { it to stringResource(it.labelRes) },
+            onSelected = onWindSpeedUnitSelected,
+        )
+    }
+}
+
+@Composable
+private fun <T> WeatherUnitDropdown(
+    label: String,
+    selectedLabel: String,
+    options: List<Pair<T, String>>,
+    onSelected: (T) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = { expanded = true },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = selectedLabel,
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    imageVector = Icons.Rounded.ExpandMore,
+                    contentDescription = null,
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                options.forEach { (value, optionLabel) ->
+                    DropdownMenuItem(
+                        text = { Text(optionLabel) },
+                        onClick = {
+                            onSelected(value)
+                            expanded = false
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+private val WeatherTemperatureUnit.labelRes: Int
+    get() =
+        when (this) {
+            WeatherTemperatureUnit.CELSIUS -> R.string.weather_temperature_unit_celsius
+            WeatherTemperatureUnit.FAHRENHEIT -> R.string.weather_temperature_unit_fahrenheit
+        }
+
+private val WeatherWindSpeedUnit.labelRes: Int
+    get() =
+        when (this) {
+            WeatherWindSpeedUnit.KILOMETERS_PER_HOUR -> R.string.weather_wind_speed_unit_kmph
+            WeatherWindSpeedUnit.MILES_PER_HOUR -> R.string.weather_wind_speed_unit_mph
+            WeatherWindSpeedUnit.METERS_PER_SECOND -> R.string.weather_wind_speed_unit_mps
+            WeatherWindSpeedUnit.KNOTS -> R.string.weather_wind_speed_unit_knots
+        }

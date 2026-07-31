@@ -34,4 +34,5 @@ enum class AiBackedToolConfigId {
     CURRENCY_CONVERTER,
     WORD_CLOCK,
     DICTIONARY,
+    WEATHER,
 }

@@ -98,6 +98,7 @@ data class SearchResultsState(
         val currencyConverterState: CurrencyConverterState = CurrencyConverterState(),
         val worldClockState: WorldClockState = WorldClockState(),
         val dictionaryState: DictionaryState = DictionaryState(),
+        val weatherState: WeatherState = WeatherState(),
         val AiSearchState: AiSearchState = AiSearchState(),
         val webSuggestions: List<String> = emptyList(),
         val webSuggestionsLoading: Boolean = false,
@@ -109,6 +110,7 @@ data class SearchResultsState(
         val isCurrencyConverterAliasMode: Boolean = false,
         val isWorldClockAliasMode: Boolean = false,
         val isDictionaryAliasMode: Boolean = false,
+        val isWeatherAliasMode: Boolean = false,
         val detectedCustomToolId: String? = null,
         val detectedTaskerIntentId: String? = null,
         // Recent items (shown when query is blank)
@@ -187,6 +189,9 @@ data class SearchFeatureState(
         val currencyConverterEnabled: Boolean = true,
         val worldClockEnabled: Boolean = true,
         val dictionaryEnabled: Boolean = true,
+        val weatherEnabled: Boolean = true,
+        val weatherLocationConfigured: Boolean = false,
+        val weatherLocation: String = "",
         // Custom tools
         val customTools: List<CustomTool> = emptyList(),
         val disabledCustomToolIds: Set<String> = emptySet(),

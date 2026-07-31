@@ -138,6 +138,7 @@ fun SearchContentArea(
     showCurrencyConverter: Boolean = false,
     showWorldClock: Boolean = false,
     showDictionary: Boolean = false,
+    showWeather: Boolean = false,
     showAiSearch: Boolean = false,
     aiSearchState: AiSearchState? = null,
     isOverlayPresentation: Boolean = false,
@@ -161,11 +162,13 @@ fun SearchContentArea(
                 showCurrencyConverter ||
                 showWorldClock ||
                 showDictionary ||
+                showWeather ||
                 (state.detectedShortcutTarget != null) ||
                 (state.detectedAliasSearchSection != null) ||
                 state.isCurrencyConverterAliasMode ||
                 state.isWorldClockAliasMode ||
                 state.isDictionaryAliasMode ||
+                state.isWeatherAliasMode ||
                 state.detectedCustomToolId != null
                 || state.detectedTaskerIntentId != null
     val hasQuery = state.query.isNotBlank()
@@ -185,6 +188,7 @@ fun SearchContentArea(
                     !showCurrencyConverter &&
                     !showWorldClock &&
                     !showDictionary
+                    && !showWeather
     val expandedSectionBottomInset = 80.dp
     val aliasExpandedSectionBottomInset = 12.dp
     val footerBottomPadding = 28.dp
@@ -285,6 +289,7 @@ fun SearchContentArea(
                         !showCurrencyConverter &&
                         !showWorldClock &&
                         !showDictionary &&
+                        !showWeather &&
                         !showAiSearch &&
                         !hasInlineSearchEngines
 
@@ -539,12 +544,14 @@ fun SearchContentArea(
                                                 !showAiSearch &&
                                                 !showCurrencyConverter &&
                                                 !showWorldClock &&
-                                                !showDictionary,
+                                                !showDictionary &&
+                                                !showWeather,
                                 hideResults = hideOtherResults,
                                 showCalculator = showCalculator,
                                 showCurrencyConverter = showCurrencyConverter,
                                 showWorldClock = showWorldClock,
                                 showDictionary = showDictionary,
+                                showWeather = showWeather,
                                 showAiSearch = showAiSearch,
                                 aiSearchState = aiSearchState,
                                 isOverlayPresentation = isOverlayPresentation,
