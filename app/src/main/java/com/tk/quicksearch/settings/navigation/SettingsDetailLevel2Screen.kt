@@ -554,6 +554,7 @@ internal fun SettingsDetailLevel2Screen(
                     showAliasInput = builtInToolConfig == null || builtInToolConfig.toolId == AiBackedToolConfigId.WEATHER,
                     showLocationInput = builtInToolConfig?.toolId == AiBackedToolConfigId.WEATHER,
                     showWeatherUnitInputs = builtInToolConfig?.toolId == AiBackedToolConfigId.WEATHER,
+                    webSearchAlwaysEnabled = builtInToolConfig?.toolId == AiBackedToolConfigId.WEATHER,
                     shouldAutoFocusTitle = builtInToolConfig == null && shouldAutoFocusTitle,
                     onSave = { name, prompt, location, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled, temperatureUnit, windSpeedUnit ->
                         if (builtInToolConfig != null) {

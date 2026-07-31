@@ -17,7 +17,12 @@ class WeatherPreferences(context: Context) : BasePreferences(context) {
     fun getSystemPrompt(): String {
         val storedPrompt = prefs.getString(KEY_SYSTEM_PROMPT, null).orEmpty()
         return storedPrompt
-            .takeUnless { it.isBlank() || it == LEGACY_DEFAULT_SYSTEM_PROMPT }
+            .takeUnless {
+                    it.isBlank() ||
+                    it == LEGACY_DEFAULT_SYSTEM_PROMPT ||
+                    it == PREVIOUS_DEFAULT_SYSTEM_PROMPT ||
+                    it == PREVIOUS_ALERTS_DEFAULT_SYSTEM_PROMPT
+            }
             ?: DEFAULT_SYSTEM_PROMPT
     }
 
@@ -77,8 +82,14 @@ class WeatherPreferences(context: Context) : BasePreferences(context) {
         private const val LEGACY_DEFAULT_SYSTEM_PROMPT =
             "A brief summary of today's weather in a few lines for the specified location."
 
+        private const val PREVIOUS_DEFAULT_SYSTEM_PROMPT =
+            "Provide a concise summary of today's weather for the requested location. Start with today's high and low temperatures and the general conditions, such as sunny, rainy, cloudy, or snowy. Then summarize the rest of the day's forecast, including precipitation chance, wind, humidity, and any important weather alerts. Use the requested temperature units."
+
+        private const val PREVIOUS_ALERTS_DEFAULT_SYSTEM_PROMPT =
+            "Provide a concise summary of today's weather for the requested location. Start with today's high and low temperatures and the general conditions, such as sunny, rainy, cloudy, or snowy. Then summarize the rest of the day's forecast, including precipitation chance, wind, and humidity. Mention weather alerts only when there are active alerts; otherwise do not mention them. Use the requested temperature units."
+
         const val DEFAULT_SYSTEM_PROMPT =
-            "Provide a concise summary of today's weather for the requested location. Start with today's high and low temperatures and the general conditions, such as sunny, rainy, cloudy, or snowy. Then summarize the rest of the day's forecast, including precipitation chance, wind, humidity, and any important weather alerts. Use the requested temperature and wind-speed units."
+            "Provide a concise summary of today's weather for the requested location. Start with today's high and low temperatures and the general conditions, such as sunny, rainy, cloudy, or snowy. Then summarize the rest of the day's forecast, including precipitation chance, wind, and humidity. Mention weather alerts only when there are active alerts; otherwise do not mention them. Use the requested temperature units."
 
         private const val KEY_ENABLED = "weather_enabled"
         private const val KEY_LOCATION = "weather_location"

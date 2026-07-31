@@ -25,6 +25,7 @@ fun SettingsCheckboxPill(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     val containerColor =
         if (checked) {
@@ -43,7 +44,7 @@ fun SettingsCheckboxPill(
         modifier =
             modifier
                 .clip(DesignTokens.ShapeFull)
-                .clickable { onCheckedChange(!checked) },
+                .clickable(enabled = enabled) { onCheckedChange(!checked) },
         shape = DesignTokens.ShapeFull,
         color = containerColor,
         border = BorderStroke(1.dp, borderColor),
@@ -57,6 +58,7 @@ fun SettingsCheckboxPill(
                 checked = checked,
                 onCheckedChange = { value -> onCheckedChange(value) },
                 modifier = Modifier.scale(0.72f),
+                enabled = enabled,
                 colors =
                     CheckboxDefaults.colors(
                         checkedColor = MaterialTheme.colorScheme.primary,

@@ -838,13 +838,13 @@
     <string name="dictionary_toggle_desc">Example: define serendipity</string>
     <string name="dictionary_toggle_title">Dictionary</string>
     <string name="weather_toggle_title">Weather</string>
-    <string name="weather_toggle_desc">Today’s weather for your default or entered location</string>
-    <string name="weather_location_label">Location (optional)</string>
+    <string name="weather_toggle_desc">Today\'s weather for the specified location</string>
+    <string name="weather_location_label">Default Location</string>
     <string name="weather_location_hint">Example: New York, NY</string>
     <string name="weather_error_location_required">Enter a location or configure a default location in Settings</string>
     <string name="get_weather">Get weather</string>
     <string name="weather_in_location">Weather in %1$s</string>
-    <string name="weather_temperature_unit_label">Temperature unit</string>
+    <string name="weather_temperature_unit_label">Temperature Unit</string>
     <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
     <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
     <string name="weather_wind_speed_unit_label">Wind speed unit</string>

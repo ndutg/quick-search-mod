@@ -48,6 +48,7 @@ fun ModelFeatureSettingsCard(
     modifier: Modifier = Modifier,
     showThinkingCheckbox: Boolean = true,
     showGroundingCheckbox: Boolean = true,
+    groundingCheckboxEnabled: Boolean = true,
     includeSelectedModelIfMissing: Boolean = true,
 ) {
     var showModelDialog by remember { mutableStateOf(false) }
@@ -142,6 +143,7 @@ fun ModelFeatureSettingsCard(
                             checked = groundingEnabled,
                             onCheckedChange = onGroundingChange,
                             modifier = Modifier.weight(1.1f),
+                            enabled = groundingCheckboxEnabled,
                         )
                     }
                 }

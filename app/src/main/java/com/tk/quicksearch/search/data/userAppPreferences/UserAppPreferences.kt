@@ -1462,9 +1462,9 @@ class UserAppPreferences(
     fun getWeatherProviderId(): AiSearchLlmProviderId = weatherPreferences.getProviderId()
     fun setWeatherProviderId(providerId: AiSearchLlmProviderId) =
         weatherPreferences.setProviderId(providerId)
-    fun isWeatherGroundingEnabled(): Boolean = weatherPreferences.isGroundingEnabled()
+    fun isWeatherGroundingEnabled(): Boolean = true
     fun setWeatherGroundingEnabled(enabled: Boolean) =
-        weatherPreferences.setGroundingEnabled(enabled)
+        weatherPreferences.setGroundingEnabled(true)
     fun isWeatherThinkingEnabled(): Boolean = weatherPreferences.isThinkingEnabled()
     fun setWeatherThinkingEnabled(enabled: Boolean) = weatherPreferences.setThinkingEnabled(enabled)
     fun getWeatherTemperatureUnit(): com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =

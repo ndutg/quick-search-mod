@@ -1036,7 +1036,7 @@ internal class SearchPreferencesDelegate(
                 AiBackedToolConfigId.WEATHER -> {
                     userPreferences.setWeatherProviderId(providerId)
                     userPreferences.setWeatherModel(normalizedModelId)
-                    userPreferences.setWeatherGroundingEnabled(groundingEnabled)
+                    userPreferences.setWeatherGroundingEnabled(true)
                     userPreferences.setWeatherThinkingEnabled(thinkingEnabled)
                     userPreferences.setWeatherAdvancedPayload(advancedPayload, advancedPayloadEnabled)
                     userPreferences.setWeatherSystemPrompt(systemPrompt)

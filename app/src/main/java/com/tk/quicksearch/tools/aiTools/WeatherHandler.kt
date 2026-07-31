@@ -39,7 +39,7 @@ class WeatherHandler(
                 LlmRequest(
                     query = buildWeatherRequestQuery(location, temperatureUnit.promptValue, windSpeedUnit.promptValue),
                     modelId = modelId,
-                    useGroundingWithGoogleSearch = userPreferences.isWeatherGroundingEnabled(),
+                    useGroundingWithGoogleSearch = true,
                     thinkingEnabled = userPreferences.isWeatherThinkingEnabled(),
                     useSystemInstruction = true,
                     systemInstruction = userPreferences.getWeatherSystemPrompt(),
