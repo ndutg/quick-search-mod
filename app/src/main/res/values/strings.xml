@@ -6,8 +6,11 @@
     <string name="app_name">Quick Search</string>
     <string name="direct_answer_contact_name">AI Answer</string>
     <string name="direct_search_enter_query">Please enter a query to search.</string>
+    <string name="direct_search_ask_follow_up">Ask follow up</string>
+    <string name="direct_search_follow_up_hint">Ask a follow-up question</string>
     <string name="direct_search_error_generic">Couldn\u2019t fetch AI answer. Try again.</string>
     <string name="direct_search_error_no_key">Add an API key in settings (AI Provider) to fetch AI answers.</string>
+    <string name="gemini_web_search_quota_fallback_tip">Gemini\u2019s web search quota was reached, so this answer was generated without web search.</string>
     <string name="direct_search_powered_by">Powered by</string>
     <string name="empty_state_subtitle">Launch an app or refine your search to see suggestions.</string>
     <string name="empty_state_title">Nothing to show (yet)</string>
@@ -28,6 +31,7 @@
     <string name="search_hint_contacts">Search Contacts…</string>
     <string name="search_hint_currency_converter">Convert Currencies e.g. 100 USD to INR</string>
     <string name="search_hint_dictionary">Enter any word</string>
+    <string name="search_hint_weather">Enter a location or use your default</string>
     <string name="search_hint_files">Search Files…</string>
     <string name="search_hint_notes">Search Notes…</string>
     <string name="search_hint_settings">Search Device Settings…</string>
@@ -46,6 +50,7 @@
         <item >225 + 456</item>
         <item >Time in UK</item>
         <item >Define Serendipity</item>
+        <item >Weather in New York</item>
     </string-array>
     <string name="search_provider_description">Search apps, contacts, files, settings, and more with Quick Search.</string>
 
@@ -57,6 +62,10 @@
     <string name="action_app_info">App Info</string>
     <string name="action_archive_today_event">Archive</string>
     <string name="action_change_icon">Change Icon</string>
+    <string name="icon_picker_no_icon_packs">No Icon packs are installed to change the app icon.</string>
+    <string name="icon_picker_download_icon_packs">Download Icon Packs</string>
+    <string name="icon_picker_search">Search icons</string>
+    <string name="icon_picker_title">Change icon for "%1$s"</string>
     <string name="action_change_wallpaper">Change Wallpaper</string>
     <string name="action_clear_all_history">Clear History</string>
     <string name="action_edit_icon">Edit Icon</string>
@@ -208,7 +217,9 @@
     <string name="clear_query_toggle_title">Clear Query</string>
     <string name="more_results_title">More Results</string>
     <string name="open_keyboard_toggle_desc">Automatically open keyboard when the app launches</string>
-    <string name="recent_queries_toggle_desc">Show your search history in the home screen.</string>
+    <string name="recent_queries_toggle_desc">No. of items shown before expansion</string>
+    <string name="fuzzy_search_toggle_title">Fuzzy search</string>
+    <string name="fuzzy_search_toggle_desc">Find results even when your search contains a typo.</string>
     <string name="recent_queries_toggle_title">Search History</string>
     <string name="search_history_tab_recently_opened">Results</string>
     <string name="search_history_tab_searches">Searches</string>
@@ -577,6 +588,7 @@
          ============================================================================ -->
     <string name="settings_all_quick_search_features">Features List</string>
     <string name="settings_all_quick_search_features_desc">View the complete list of features and capabilities</string>
+    <string name="settings_more_apps_from_developer_title">More Apps from the Developer</string>
     <string name="settings_app_settings_desc">Search for Quick Search settings</string>
     <string name="settings_features_load_failed">Unable to load feature documentation.</string>
     <string name="settings_features_sections_title">Contents</string>
@@ -762,7 +774,11 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">All Features</string>
+    <string name="release_notes_previous_versions">Previous versions</string>
+    <string name="release_notes_previous_versions_unavailable">Couldn\'t load previous versions</string>
     <string name="release_notes_action_got_it">Got it</string>
+    <string name="settings_release_notes_title">Release Notes</string>
+    <string name="settings_release_notes_desc">View the release notes for this version</string>
     <string name="update_card_title">New update is available for Quick Search!</string>
     <string name="action_update">Update</string>
     <string name="release_notes_title">Quick Search v%1$s Release Notes</string>
@@ -822,6 +838,16 @@
     <string name="dictionary_synonyms_label">Synonyms: %1$s</string>
     <string name="dictionary_toggle_desc">Example: define serendipity</string>
     <string name="dictionary_toggle_title">Dictionary</string>
+    <string name="weather_toggle_title">Weather</string>
+    <string name="weather_toggle_desc">Today\'s weather for the specified location</string>
+    <string name="weather_location_label">Default Location</string>
+    <string name="weather_location_hint">Example: New York, NY</string>
+    <string name="weather_error_location_required">Enter a location or configure a default location in Settings</string>
+    <string name="get_weather">Get weather</string>
+    <string name="weather_in_location">Weather in %1$s</string>
+    <string name="weather_temperature_unit_label">Temperature Unit</string>
+    <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
     <string name="get_currency_value">Get Currency Value</string>
     <string name="get_time">Get Time</string>
     <string name="search_in_dictionary">Search in Dictionary</string>
@@ -884,6 +910,7 @@
     <string name="widget_search_icon">Search Icon</string>
     <string name="widget_settings_title">Search Widget</string>
     <string name="widget_slider_border">Border Thickness</string>
+    <string name="widget_slider_icon_size">Icon Size</string>
     <string name="widget_slider_internal_padding">Outer Padding</string>
     <string name="widget_slider_internal_padding_horizontal">Horizontal</string>
     <string name="widget_slider_internal_padding_vertical">Vertical</string>
@@ -991,7 +1018,7 @@
     <string name="settings_custom_tool_delete_button">Delete Tool</string>
     <string name="settings_custom_tool_editor_title">Custom Tool</string>
     <string name="settings_custom_tool_name_label">Tool Name</string>
-    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.</string>
+    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.\n\n Use {time} to include current date and time in the prompt.</string>
     <string name="settings_custom_tool_prompt_label">System Prompt</string>
     <string name="settings_excluded_items_clear_all">Clear all exclusions</string>
     <string name="settings_excluded_items_clear_all_confirmation">Are you sure you want to clear all excluded items? This action cannot be undone.</string>

@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 3.8 (Updated July 16 2026)
+**Version**: 3.9 (Updated July 31 2026)
 
 ### Search
 
@@ -25,7 +25,7 @@ This document highlights all the available features. It also includes details ab
 - **Browser Integration** - Installed browsers automatically appear as search engine options
 - **In-App Browser** - Option to open URLs inside the app instead of an external browser
 - **Supported Search Engines** (26 total): AI Search, Google, ChatGPT, Gemini, Perplexity, Grok, Google Maps, Google Drive, Google Photos, Google Play, Google Translate, YouTube, YouTube Music, Spotify, Reddit, Amazon, X (Twitter), Facebook Marketplace, Bing, DuckDuckGo, Brave, Startpage, You.com, AI Mode, Claude, Wikipedia
-- **AI Search** - Configure your Gemini API key to see answers directly within Quick Search. 
+- **AI Search** - Configure your Gemini API key to see answers directly within Quick Search. Ask follow-up questions to continue an AI Search conversation.
 - **Custom Search Engines** - Add your own search engines from the Search Engines settings screen.
 - **Web Search Suggestions** - Web suggestions automatically appear when you type your query; you can disable them or change the count in settings.
 
@@ -60,7 +60,8 @@ This document highlights all the available features. It also includes details ab
 - **Dictionary** - Example usage: "define serendipity" or "serendipity meaning", to see search dictionary card, tapping on which will show dictionary result. This requires Gemini API key configuration.
 - **World Clock** - Check the current time across different time zones. Search for city names to see their current time instantly.
 - **Currency Converter** - Convert between currencies directly from the search bar. Example: "100 USD to EUR" to see the converted amount with the current exchange rate.
-- **Custom AI Tools** - Create your own tools for AI Search. This feature requires an API key to be configured.
+- **Weather** - See current weather information of a particular location directly in search.
+- **Custom AI Tools** - Create your own tools for AI Search. This feature requires an API key to be configured. The current system time can be added in system prompt by using {time} modifier.
 - **Tasker Integration** - Create Tasker actions with broadcast intents and trigger them from Quick Search using aliases. The current query is sent to Tasker as an extra.
 
 ---
@@ -125,6 +126,7 @@ Long-press on most results to open a context menu with quick actions.
 - **App Labels** - You can choose to hide app labels.
 - **Circular App icons** - Option to force circular app icons
 - **Icon Packs** - Select an installed icon pack. If none of them are installed, tapping on the card will open the Play Store and search for icon packs. Once installed, come back to the app and hit the refresh button on the icon packs option to refresh the icon packs list.
+- **Individual App Icons** - Change an individual app's icon by using the change app icon long press menu option. Requires third-party icon packs to be installed.
 
 ---
 
@@ -133,8 +135,9 @@ Long-press on most results to open a context menu with quick actions.
 - **Search Sections Management** - Enable/disable individual result sections (apps, app shortcuts, contacts, files, device settings, history, etc.), and assign alias shortcuts to each section. Tap on the search type options to navigate to their respective screen, which offers additional options.
 - **Top Matches** - Turn on Top Matches to show the best results for your query across enabled categories. You can include or exclude categories and reorder them to control priority.
 - **App Suggestions** - You can choose to disable app suggestions if you want a cleaner home screen. Toggle the suggestion tabs (New & Updated, Pinned, Most Used) to show only the ones you want.
+- **Fuzzy Search** - Turn fuzzy search on or off to find results even when your search contains a typo.
 - **Web Search Suggestions** - Turn web suggestions on or off and control how many suggestions (1–5) appear under the search bar.
-- **Search History** - Enable or disable search history. The expanded list shows up to 15 items; **Clear all** history is available at the bottom of the list. Your search queries, recently opened items (files, contacts, etc.) appear in your search history. AI answers are also saved to history alongside your queries. Swipe left or right on the expanded list to switch between **recent queries** and **recently opened results**.
+- **Search History** - Enable or disable search history and choose how many items appear before the list expands. The expanded list shows up to 15 items; **Clear all** history is available at the bottom of the list. Your search queries, recently opened items (files, contacts, etc.) appear in your search history. AI answers are also saved to history alongside your queries. Swipe left or right on the expanded list to switch between **recent queries** and **recently opened results**.
 - **Excluded Items** - When you exclude any item on the search results page, you can find them here and clear them if you want to.
 - **Refresh Data** - The app automatically refreshes your data from time to time, but if you want to manually refresh the data, you can do it here.
 - **Calendar Options** - Create custom calendar entries and choose to ignore past events in results. Today's events also appear on the home screen.
@@ -269,6 +272,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Border Color** - Customize the widget border color to better match your wallpaper and icon style.
 - **Size & Spacing** - Control corner radius, internal padding, and spacing using intuitive sliders.
 - **Icons & Buttons** - Toggle search and mic icons and configure up to 2 custom buttons on the search widget or a full set of custom buttons on the custom buttons widget.
+- **Icon Size** - Increase the size of icons displayed in the widget.
 - **Custom Button Icons** - Set custom icons for widget buttons to personalize how shortcuts appear on your home screen.
 - The widget mic button can be customized to open other device assistants like Gemini, Perplexity, Bixby, etc.
 

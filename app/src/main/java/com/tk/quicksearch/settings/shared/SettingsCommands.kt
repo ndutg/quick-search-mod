@@ -20,6 +20,8 @@ sealed interface SettingsCommand {
 
     data class WebSuggestionsCount(val count: Int) : SettingsCommand
 
+    data class RecentQueriesDisplayCount(val count: Int) : SettingsCommand
+
     data class AppSuggestionTabEnabled(
         val tab: AppSuggestionTabType,
         val enabled: Boolean,
@@ -96,6 +98,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                     setIncludeNonLaunchableAppsInSearch(command.enabled)
                 AppSettingsToggleKey.WEB_SUGGESTIONS -> setWebSuggestionsEnabled(command.enabled)
                 AppSettingsToggleKey.RECENT_QUERIES -> setRecentQueriesEnabled(command.enabled)
+                AppSettingsToggleKey.FUZZY_SEARCH -> setFuzzySearchEnabled(command.enabled)
                 AppSettingsToggleKey.TOP_MATCHES -> setTopMatchesEnabled(command.enabled)
                 AppSettingsToggleKey.TOP_RESULT_INDICATOR ->
                     setTopResultIndicatorEnabled(command.enabled)
@@ -115,6 +118,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.FILE_PREVIEWS -> setFilePreviewsEnabled(command.enabled)
                 AppSettingsToggleKey.SHOW_SYSTEM_FILES -> setShowSystemFiles(command.enabled)
                 AppSettingsToggleKey.DIRECT_DIAL -> setDirectDialEnabled(command.enabled)
+                AppSettingsToggleKey.NUMBER_SEARCH -> setNumberSearchEnabled(command.enabled)
                 AppSettingsToggleKey.ASSISTANT_LAUNCH_VOICE_MODE ->
                     setAssistantLaunchVoiceModeEnabled(command.enabled)
                 AppSettingsToggleKey.WALLPAPER_ACCENT ->
@@ -123,6 +127,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.DEVICE_THEME -> setDeviceThemeEnabled(command.enabled)
                 AppSettingsToggleKey.USE_SYSTEM_FONT -> setUseSystemFont(command.enabled)
                 AppSettingsToggleKey.DICTIONARY -> setDictionaryEnabled(command.enabled)
+                AppSettingsToggleKey.WEATHER -> setWeatherEnabled(command.enabled)
                 AppSettingsToggleKey.APPS_PER_ROW -> Unit
                 AppSettingsToggleKey.SEARCH_APPS,
                 AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,
@@ -137,6 +142,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         }
 
         is SettingsCommand.WebSuggestionsCount -> setWebSuggestionsCount(command.count)
+        is SettingsCommand.RecentQueriesDisplayCount -> setRecentQueriesDisplayCount(command.count)
         is SettingsCommand.AppSuggestionTabEnabled ->
             setAppSuggestionTabEnabled(command.tab, command.enabled)
         is SettingsCommand.TopMatchesLimit -> setTopMatchesLimit(command.limit)
@@ -187,6 +193,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
             includeNonLaunchableAppsInSearch
         AppSettingsToggleKey.WEB_SUGGESTIONS -> webSuggestionsEnabled
         AppSettingsToggleKey.RECENT_QUERIES -> recentQueriesEnabled
+        AppSettingsToggleKey.FUZZY_SEARCH -> fuzzySearchEnabled
         AppSettingsToggleKey.TOP_MATCHES -> topMatchesEnabled
         AppSettingsToggleKey.TOP_RESULT_INDICATOR -> topResultIndicatorEnabled
         AppSettingsToggleKey.OPEN_KEYBOARD -> openKeyboardOnLaunch
@@ -197,12 +204,14 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.FILE_PREVIEWS -> filePreviewsEnabled
         AppSettingsToggleKey.SHOW_SYSTEM_FILES -> showSystemFiles
         AppSettingsToggleKey.DIRECT_DIAL -> directDialEnabled
+        AppSettingsToggleKey.NUMBER_SEARCH -> numberSearchEnabled
         AppSettingsToggleKey.ASSISTANT_LAUNCH_VOICE_MODE -> assistantLaunchVoiceModeEnabled
         AppSettingsToggleKey.WALLPAPER_ACCENT -> wallpaperAccentEnabled
         AppSettingsToggleKey.THEMED_ICONS -> themedIconsEnabled
         AppSettingsToggleKey.DEVICE_THEME -> deviceThemeEnabled
         AppSettingsToggleKey.USE_SYSTEM_FONT -> useSystemFont
         AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled
+        AppSettingsToggleKey.WEATHER -> weatherEnabled
         AppSettingsToggleKey.APPS_PER_ROW -> false
         AppSettingsToggleKey.SEARCH_APPS,
         AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,

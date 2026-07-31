@@ -125,6 +125,7 @@ internal fun buildSettingsScreenCallbacks(
         onToggleCurrencyConverter = viewModel::setCurrencyConverterEnabled,
         onToggleWorldClock = viewModel::setWorldClockEnabled,
         onToggleDictionary = viewModel::setDictionaryEnabled,
+        onToggleWeather = viewModel::setWeatherEnabled,
         onAddCustomTool = { name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled ->
             viewModel.addCustomTool(name, prompt, providerId, modelId, groundingEnabled, aliasCode, thinkingEnabled, advancedPayload, advancedPayloadEnabled)
         },

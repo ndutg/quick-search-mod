@@ -69,6 +69,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -78,6 +79,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.searchScreen.dialogs.ReleaseNotesDrawer
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.shared.*
@@ -129,6 +131,10 @@ fun SettingsScreen(
     shouldShowSettingsSearchTip: Boolean,
     onDismissSettingsSearchTip: () -> Unit,
     onNavigateToDetail: (SettingsDetailType) -> Unit,
+    showReleaseNotesDialog: Boolean,
+    releaseNotesVersionName: String?,
+    onOpenReleaseNotes: () -> Unit,
+    onReleaseNotesAcknowledged: () -> Unit,
     onSettingsImported: () -> Unit = {},
     pendingImportUri: String? = null,
     onPendingImportUriConsumed: () -> Unit = {},
@@ -545,6 +551,7 @@ fun SettingsScreen(
 
             // More Options Section
             SettingsMoreOptions(
+                onOpenReleaseNotes = onOpenReleaseNotes,
                 onOpenFeaturesList = { onNavigateToDetail(SettingsDetailType.FEATURES_LIST) },
                 onOpenOssLicenses = { onNavigateToDetail(SettingsDetailType.OPEN_SOURCE_LICENSES) },
             )
@@ -556,6 +563,17 @@ fun SettingsScreen(
             )
         }
     }
+    }
+
+    if (showReleaseNotesDialog) {
+        ReleaseNotesDrawer(
+            versionName = releaseNotesVersionName,
+            onAcknowledge = onReleaseNotesAcknowledged,
+            onViewAllFeatures = {
+                onReleaseNotesAcknowledged()
+                onNavigateToDetail(SettingsDetailType.FEATURES_LIST)
+            },
+        )
     }
 
     if (showImportWarningDialog) {
@@ -670,6 +688,7 @@ private fun importSettingsFromUri(
 @Composable
 fun SettingsMoreOptions(
     modifier: Modifier = Modifier,
+    onOpenReleaseNotes: () -> Unit = {},
     onOpenFeaturesList: () -> Unit = {},
     onOpenOssLicenses: () -> Unit = {},
 ) {
@@ -717,6 +736,25 @@ fun SettingsMoreOptions(
         onOpenFeaturesList()
     }
 
+    val onOpenDeveloperGooglePlay: () -> Unit = {
+        runCatching {
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/developer?id=Teja+Karlapudi"),
+                ),
+            )
+        }
+        Unit
+    }
+
+    val onOpenDeveloperGitHub: () -> Unit = {
+        runCatching {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/teja2495/")))
+        }
+        Unit
+    }
+
     val feedbackItems =
         listOf(
             SettingsCardItem(
@@ -737,6 +775,12 @@ fun SettingsMoreOptions(
                 iconResId = R.drawable.ic_github,
                 iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
                 actionOnPress = onOpenGitHub,
+            ),
+            SettingsCardItem(
+                title = stringResource(R.string.settings_release_notes_title),
+                description = stringResource(R.string.settings_release_notes_desc),
+                icon = Icons.Rounded.RocketLaunch,
+                actionOnPress = onOpenReleaseNotes,
             ),
             SettingsCardItem(
                 title = stringResource(R.string.settings_all_quick_search_features),
@@ -771,6 +815,15 @@ fun SettingsMoreOptions(
                 color = AppColors.SettingsDivider,
             )
 
+            MoreAppsFromDeveloperRow(
+                onGooglePlayClick = onOpenDeveloperGooglePlay,
+                onGitHubClick = onOpenDeveloperGitHub,
+            )
+
+            HorizontalDivider(
+                color = AppColors.SettingsDivider,
+            )
+
             Box(
                 modifier =
                     Modifier
@@ -789,6 +842,46 @@ fun SettingsMoreOptions(
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun MoreAppsFromDeveloperRow(
+    onGooglePlayClick: () -> Unit,
+    onGitHubClick: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = DesignTokens.SpacingXXLarge,
+                    vertical = DesignTokens.SpacingLarge,
+                ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.settings_more_apps_from_developer_title),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f),
+        )
+
+        IconButton(onClick = onGooglePlayClick) {
+            Icon(
+                painter = painterResource(R.drawable.google_play),
+                contentDescription = "Google Play",
+                tint = androidx.compose.ui.graphics.Color.Unspecified,
+            )
+        }
+
+        IconButton(onClick = onGitHubClick) {
+            Icon(
+                painter = painterResource(R.drawable.ic_github),
+                contentDescription = "GitHub",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

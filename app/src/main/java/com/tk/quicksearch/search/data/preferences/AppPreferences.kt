@@ -81,6 +81,27 @@ class AppPreferences(
         return updated
     }
 
+    fun getAppIconOverride(packageName: String): AppIconOverride? =
+        prefs.getString("${BasePreferences.KEY_APP_ICON_OVERRIDE_PREFIX}$packageName", null)
+            ?.split('|', limit = 2)
+            ?.takeIf { it.size == 2 && it.all(String::isNotBlank) }
+            ?.let { (iconPackPackage, drawableName) ->
+                AppIconOverride(iconPackPackage = iconPackPackage, drawableName = drawableName)
+            }
+
+    fun setAppIconOverride(
+        packageName: String,
+        iconPackPackage: String,
+        drawableName: String,
+    ) {
+        prefs.edit()
+            .putString(
+                "${BasePreferences.KEY_APP_ICON_OVERRIDE_PREFIX}$packageName",
+                "$iconPackPackage|$drawableName",
+            )
+            .apply()
+    }
+
     fun clearAllHiddenAppsInSuggestions(): Set<String> = clearStringSet(BasePreferences.KEY_HIDDEN_SUGGESTIONS)
 
     fun clearAllHiddenAppsInResults(): Set<String> = clearStringSet(BasePreferences.KEY_HIDDEN_RESULTS)
@@ -152,3 +173,8 @@ class AppPreferences(
     // ============================================================================
 
 }
+
+data class AppIconOverride(
+    val iconPackPackage: String,
+    val drawableName: String,
+)

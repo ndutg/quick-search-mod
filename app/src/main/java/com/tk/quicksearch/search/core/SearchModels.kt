@@ -173,6 +173,13 @@ enum class DictionaryStatus {
         Error,
 }
 
+enum class WeatherStatus {
+        Idle,
+        Loading,
+        Success,
+        Error,
+}
+
 enum class SearchToolType {
         CALCULATOR,
         UNIT_CONVERTER,
@@ -182,6 +189,9 @@ enum class SearchToolType {
 data class AiSearchState(
         val status: AiSearchStatus = AiSearchStatus.Idle,
         val answer: String? = null,
+        val isFollowUp: Boolean = false,
+        val webSearchDisabledForRequest: Boolean = false,
+        val showWebSearchFallbackTip: Boolean = false,
         val errorMessage: String? = null,
         val activeQuery: String? = null,
         val usedModelId: String? = null,
@@ -220,6 +230,16 @@ data class DictionaryState(
         val synonyms: List<String> = emptyList(),
         val activeQuery: String? = null,
         val usedModelId: String? = null,
+        val errorMessage: String? = null,
+)
+
+data class WeatherState(
+        val status: WeatherStatus = WeatherStatus.Idle,
+        val location: String? = null,
+        val summary: String? = null,
+        val activeQuery: String? = null,
+        val usedModelId: String? = null,
+        val llmProviderId: AiSearchLlmProviderId? = null,
         val errorMessage: String? = null,
 )
 
@@ -561,6 +581,9 @@ data class SearchUiState(
         val currencyConverterEnabled: Boolean = true,
         val worldClockEnabled: Boolean = true,
         val dictionaryEnabled: Boolean = true,
+        val weatherEnabled: Boolean = true,
+        val weatherLocationConfigured: Boolean = false,
+        val weatherLocation: String = "",
         val customTools: List<CustomTool> = emptyList(),
         val disabledCustomToolIds: Set<String> = emptySet(),
         val taskerIntentTools: List<TaskerIntentTool> = emptyList(),
@@ -587,6 +610,7 @@ data class SearchUiState(
         val currencyConverterState: CurrencyConverterState = CurrencyConverterState(),
         val worldClockState: WorldClockState = WorldClockState(),
         val dictionaryState: DictionaryState = DictionaryState(),
+        val weatherState: WeatherState = WeatherState(),
         val webSuggestions: List<String> = emptyList(),
         val webSuggestionsLoading: Boolean = false,
         val isAppSearchInProgress: Boolean = false,
@@ -596,6 +620,7 @@ data class SearchUiState(
         val isCurrencyConverterAliasMode: Boolean = false,
         val isWorldClockAliasMode: Boolean = false,
         val isDictionaryAliasMode: Boolean = false,
+        val isWeatherAliasMode: Boolean = false,
         val detectedCustomToolId: String? = null,
         val detectedTaskerIntentId: String? = null,
         val webSuggestionWasSelected: Boolean = false,
@@ -612,6 +637,9 @@ data class SearchUiState(
         val recentResultRecencyIndex: RecentResultRankingUtils.RecencyIndex =
                 RecentResultRankingUtils.RecencyIndex(),
         val recentQueriesEnabled: Boolean = true,
+        val recentQueriesDisplayCount: Int = UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT,
+        val fuzzySearchEnabled: Boolean = true,
+        val fuzzySearchAvailable: Boolean = true,
         val topMatchesEnabled: Boolean = false,
         val topMatchesLimit: Int = UiPreferences.DEFAULT_TOP_MATCHES_LIMIT,
         val topMatchesSectionOrder: List<SearchSection> = UiPreferences.DEFAULT_TOP_MATCHES_SECTION_ORDER,
@@ -688,6 +716,7 @@ fun SearchUiState(
                 currencyConverterState = results.currencyConverterState,
                 worldClockState = results.worldClockState,
                 dictionaryState = results.dictionaryState,
+                weatherState = results.weatherState,
                 AiSearchState = results.AiSearchState,
                 webSuggestions = results.webSuggestions,
                 webSuggestionsLoading = results.webSuggestionsLoading,
@@ -699,6 +728,7 @@ fun SearchUiState(
                 isCurrencyConverterAliasMode = results.isCurrencyConverterAliasMode,
                 isWorldClockAliasMode = results.isWorldClockAliasMode,
                 isDictionaryAliasMode = results.isDictionaryAliasMode,
+                isWeatherAliasMode = results.isWeatherAliasMode,
                 detectedCustomToolId = results.detectedCustomToolId,
                 detectedTaskerIntentId = results.detectedTaskerIntentId,
                 recentItems = results.recentItems,
@@ -754,10 +784,16 @@ fun SearchUiState(
                 currencyConverterEnabled = features.currencyConverterEnabled,
                 worldClockEnabled = features.worldClockEnabled,
                 dictionaryEnabled = features.dictionaryEnabled,
+                weatherEnabled = features.weatherEnabled,
+                weatherLocationConfigured = features.weatherLocationConfigured,
+                weatherLocation = features.weatherLocation,
                 customTools = features.customTools,
                 disabledCustomToolIds = features.disabledCustomToolIds,
                 taskerIntentTools = features.taskerIntentTools,
                 recentQueriesEnabled = features.recentQueriesEnabled,
+                recentQueriesDisplayCount = features.recentQueriesDisplayCount,
+                fuzzySearchEnabled = features.fuzzySearchEnabled,
+                fuzzySearchAvailable = features.fuzzySearchAvailable,
                 topMatchesEnabled = features.topMatchesEnabled,
                 topMatchesLimit = features.topMatchesLimit,
                 topMatchesSectionOrder = features.topMatchesSectionOrder,

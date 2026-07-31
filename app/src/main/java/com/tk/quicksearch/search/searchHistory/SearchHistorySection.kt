@@ -133,6 +133,8 @@ fun SearchHistorySection(
     onOpenSearchHistorySettings: () -> Unit = {},
     onDismissSearchHistoryTip: () -> Unit = {},
     isExpanded: Boolean? = null,
+    collapsedItemCount: Int = SearchScreenConstants.INITIAL_RESULT_COUNT,
+    reverseCollapsedItems: Boolean = false,
     onExpandedChange: (Boolean) -> Unit = {},
     collapseRequestKey: Int = 0,
     expandedCardMaxHeight: Dp = SearchScreenConstants.EXPANDED_CARD_MAX_HEIGHT,
@@ -164,7 +166,7 @@ fun SearchHistorySection(
     val canSwitchTabs = queryItems.isNotEmpty() && openedItems.isNotEmpty()
     val canExpand =
         !alwaysExpanded &&
-            (selectedTabItems.size > SearchScreenConstants.INITIAL_RESULT_COUNT || canSwitchTabs)
+            (selectedTabItems.size > collapsedItemCount || canSwitchTabs)
 
     fun updateExpanded(value: Boolean) {
         if (isExpanded == null) {
@@ -231,7 +233,9 @@ fun SearchHistorySection(
                 if (displayAsExpanded) {
                     activeItems
                 } else {
-                    activeItems.take(SearchScreenConstants.INITIAL_RESULT_COUNT)
+                    activeItems
+                        .take(collapsedItemCount)
+                        .let { items -> if (reverseCollapsedItems) items.reversed() else items }
                 }
             val listModifier =
                 if (displayAsExpanded) {

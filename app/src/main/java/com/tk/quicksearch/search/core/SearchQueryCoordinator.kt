@@ -18,6 +18,7 @@ internal data class SearchQueryAliasState(
     val lockedCurrencyConverterAlias: Boolean,
     val lockedWorldClockAlias: Boolean,
     val lockedDictionaryAlias: Boolean,
+    val lockedWeatherAlias: Boolean,
     val lockedCustomToolId: String? = null,
     val lockedTaskerIntentId: String? = null,
 )
@@ -78,10 +79,12 @@ internal class SearchQueryCoordinator(
                 isCurrencyConverterAliasMode = false,
                 isWorldClockAliasMode = false,
                 isDictionaryAliasMode = false,
+                isWeatherAliasMode = false,
                 calculatorState = CalculatorState(),
                 currencyConverterState = CurrencyConverterState(),
                 worldClockState = WorldClockState(),
                 dictionaryState = DictionaryState(),
+                weatherState = WeatherState(),
                 searchResults = emptyList(),
                 isAppSearchInProgress = false,
                 contactResults = emptyList(),
@@ -111,12 +114,14 @@ internal class SearchQueryCoordinator(
                 isCurrencyConverterAliasMode = false,
                 isWorldClockAliasMode = false,
                 isDictionaryAliasMode = false,
+                isWeatherAliasMode = false,
                 detectedCustomToolId = null,
                 detectedTaskerIntentId = null,
                 calculatorState = CalculatorState(),
                 currencyConverterState = CurrencyConverterState(),
                 worldClockState = WorldClockState(),
                 dictionaryState = DictionaryState(),
+                weatherState = WeatherState(),
             )
         }
     }
@@ -150,6 +155,7 @@ internal class SearchQueryCoordinator(
                 lockedCurrencyConverterAlias = if (isExclusive) false else current.lockedCurrencyConverterAlias,
                 lockedWorldClockAlias = if (isExclusive) false else current.lockedWorldClockAlias,
                 lockedDictionaryAlias = if (isExclusive) false else current.lockedDictionaryAlias,
+                lockedWeatherAlias = if (isExclusive) false else current.lockedWeatherAlias,
                 lockedCustomToolId = if (isExclusive) null else current.lockedCustomToolId,
                 lockedTaskerIntentId = if (isExclusive) null else current.lockedTaskerIntentId,
             ),
@@ -165,6 +171,7 @@ internal class SearchQueryCoordinator(
                 lockedCurrencyConverterAlias = false,
                 lockedWorldClockAlias = false,
                 lockedDictionaryAlias = false,
+                lockedWeatherAlias = false,
                 lockedCustomToolId = null,
                 lockedTaskerIntentId = null,
             ),
@@ -208,6 +215,7 @@ internal class SearchQueryCoordinator(
             aliasState.lockedCurrencyConverterAlias ||
             aliasState.lockedWorldClockAlias ||
             aliasState.lockedDictionaryAlias ||
+            aliasState.lockedWeatherAlias ||
             aliasState.lockedCustomToolId != null ||
             aliasState.lockedTaskerIntentId != null
         ) {
@@ -234,6 +242,7 @@ internal class SearchQueryCoordinator(
                     lockedCurrencyConverterAlias = false,
                     lockedWorldClockAlias = false,
                     lockedDictionaryAlias = false,
+                    lockedWeatherAlias = false,
                     lockedCustomToolId = null,
                     lockedTaskerIntentId = featureId,
                 ),
@@ -255,6 +264,7 @@ internal class SearchQueryCoordinator(
                     lockedCurrencyConverterAlias = false,
                     lockedWorldClockAlias = false,
                     lockedDictionaryAlias = false,
+                    lockedWeatherAlias = false,
                     lockedCustomToolId = featureId,
                     lockedTaskerIntentId = null,
                 ),
@@ -288,6 +298,8 @@ internal class SearchQueryCoordinator(
                         standaloneMode == AliasHandler.StandaloneFeatureAliasMode.WORD_CLOCK,
                     lockedDictionaryAlias =
                         standaloneMode == AliasHandler.StandaloneFeatureAliasMode.DICTIONARY,
+                    lockedWeatherAlias =
+                        standaloneMode == AliasHandler.StandaloneFeatureAliasMode.WEATHER,
                     lockedCustomToolId = null,
                     lockedTaskerIntentId = null,
                 ),
@@ -307,6 +319,7 @@ internal class SearchQueryCoordinator(
                 lockedCurrencyConverterAlias = false,
                 lockedWorldClockAlias = false,
                 lockedDictionaryAlias = false,
+                lockedWeatherAlias = false,
                 lockedCustomToolId = null,
                 lockedTaskerIntentId = null,
             ),
@@ -411,6 +424,12 @@ internal class SearchQueryCoordinator(
         ) {
             updateResultsState { it.copy(dictionaryState = DictionaryState()) }
         }
+        val weatherState = currentResultsStateProvider().weatherState
+        if (weatherState.status != WeatherStatus.Idle &&
+            (weatherState.activeQuery == null || weatherState.activeQuery != trimmedQuery)
+        ) {
+            updateResultsState { it.copy(weatherState = WeatherState()) }
+        }
 
         if (trimmedQuery.isBlank()) {
             val aliasState = aliasStateProvider()
@@ -421,6 +440,7 @@ internal class SearchQueryCoordinator(
                     aliasState.lockedCurrencyConverterAlias ||
                     aliasState.lockedWorldClockAlias ||
                     aliasState.lockedDictionaryAlias ||
+                    aliasState.lockedWeatherAlias ||
                     aliasState.lockedCustomToolId != null
                     || aliasState.lockedTaskerIntentId != null
             if (clearShortcutWhenBlank && hasLockedAliasMode && newQuery.isNotEmpty()) {
@@ -443,6 +463,7 @@ internal class SearchQueryCoordinator(
                         currencyConverterState = CurrencyConverterState(),
                         worldClockState = WorldClockState(),
                         dictionaryState = DictionaryState(),
+                        weatherState = WeatherState(),
                         calculatorState =
                             aliasState.lockedToolMode?.let(::createToolModeState)
                                 ?: CalculatorState(),
@@ -454,6 +475,7 @@ internal class SearchQueryCoordinator(
                         isCurrencyConverterAliasMode = aliasState.lockedCurrencyConverterAlias,
                         isWorldClockAliasMode = aliasState.lockedWorldClockAlias,
                         isDictionaryAliasMode = aliasState.lockedDictionaryAlias,
+                        isWeatherAliasMode = aliasState.lockedWeatherAlias,
                         detectedCustomToolId = aliasState.lockedCustomToolId,
                         detectedTaskerIntentId = aliasState.lockedTaskerIntentId,
                         webSuggestionWasSelected = false,
@@ -485,6 +507,7 @@ internal class SearchQueryCoordinator(
                     currencyConverterState = CurrencyConverterState(),
                     worldClockState = WorldClockState(),
                     dictionaryState = DictionaryState(),
+                    weatherState = WeatherState(),
                     calculatorState =
                         if (clearShortcutWhenBlank || lockedMode == null) {
                             CalculatorState()
@@ -504,6 +527,8 @@ internal class SearchQueryCoordinator(
                         !clearShortcutWhenBlank && updatedAliasState.lockedWorldClockAlias,
                     isDictionaryAliasMode =
                         !clearShortcutWhenBlank && updatedAliasState.lockedDictionaryAlias,
+                    isWeatherAliasMode =
+                        !clearShortcutWhenBlank && updatedAliasState.lockedWeatherAlias,
                     detectedCustomToolId =
                         if (clearShortcutWhenBlank) null else updatedAliasState.lockedCustomToolId,
                     detectedTaskerIntentId =
@@ -554,6 +579,7 @@ internal class SearchQueryCoordinator(
                     aliasState.lockedCurrencyConverterAlias ||
                         aliasState.lockedWorldClockAlias ||
                         aliasState.lockedDictionaryAlias ||
+                        aliasState.lockedWeatherAlias ||
                         aliasState.lockedCustomToolId != null ||
                         aliasState.lockedTaskerIntentId != null,
             )
@@ -580,6 +606,7 @@ internal class SearchQueryCoordinator(
             aliasState.lockedCurrencyConverterAlias ||
                 aliasState.lockedWorldClockAlias ||
                 aliasState.lockedDictionaryAlias ||
+                aliasState.lockedWeatherAlias ||
                 aliasState.lockedCustomToolId != null ||
                 aliasState.lockedTaskerIntentId != null ||
                 (detectedAliasSearchSection != null && !shouldOnlySearchApps)
@@ -589,6 +616,7 @@ internal class SearchQueryCoordinator(
                 !aliasState.lockedCurrencyConverterAlias &&
                 !aliasState.lockedWorldClockAlias &&
                 !aliasState.lockedDictionaryAlias &&
+                !aliasState.lockedWeatherAlias &&
                 aliasState.lockedCustomToolId == null &&
                 aliasState.lockedTaskerIntentId == null &&
                 detectedAliasSearchSection != SearchSection.APPS &&
@@ -627,6 +655,7 @@ internal class SearchQueryCoordinator(
                 isCurrencyConverterAliasMode = aliasState.lockedCurrencyConverterAlias,
                 isWorldClockAliasMode = aliasState.lockedWorldClockAlias,
                 isDictionaryAliasMode = aliasState.lockedDictionaryAlias,
+                isWeatherAliasMode = aliasState.lockedWeatherAlias,
                 detectedCustomToolId = aliasState.lockedCustomToolId,
                 detectedTaskerIntentId = aliasState.lockedTaskerIntentId,
                 // Keep stale secondary results during debounce so cards don't flicker.
@@ -704,7 +733,7 @@ internal class SearchQueryCoordinator(
                         webSuggestionsLoading = false,
                     )
                 }
-            } else if (aliasState.lockedWorldClockAlias || aliasState.lockedDictionaryAlias || aliasState.lockedCustomToolId != null || aliasState.lockedTaskerIntentId != null) {
+            } else if (aliasState.lockedWorldClockAlias || aliasState.lockedDictionaryAlias || aliasState.lockedWeatherAlias || aliasState.lockedCustomToolId != null || aliasState.lockedTaskerIntentId != null) {
                 secondarySearchOrchestrator.cancel()
                 updateResultsState {
                     it.copy(
@@ -758,6 +787,10 @@ internal class SearchQueryCoordinator(
             showingTool = showingTool,
         )
         toolCoordinator.scheduleDictionaryLookup(
+            trimmedQuery = trimmedQuery,
+            showingTool = showingTool,
+        )
+        toolCoordinator.scheduleWeatherLookup(
             trimmedQuery = trimmedQuery,
             showingTool = showingTool,
         )

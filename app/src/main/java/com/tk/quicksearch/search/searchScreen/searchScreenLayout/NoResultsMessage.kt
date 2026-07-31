@@ -38,6 +38,7 @@ internal fun computeShouldShowNoResults(state: SearchUiState): Boolean {
         !state.isCurrencyConverterAliasMode &&
         !state.isWorldClockAliasMode &&
         !state.isDictionaryAliasMode &&
+        !state.isWeatherAliasMode &&
         state.detectedCustomToolId == null &&
         state.detectedTaskerIntentId == null &&
         (

@@ -631,6 +631,13 @@ class UiPreferences(
                 .apply()
     }
 
+    fun isFuzzySearchEnabled(): Boolean =
+            getBooleanPref(BasePreferences.KEY_FUZZY_SEARCH_ENABLED, true)
+
+    fun setFuzzySearchEnabled(enabled: Boolean) {
+        setBooleanPref(BasePreferences.KEY_FUZZY_SEARCH_ENABLED, enabled)
+    }
+
     fun hasSeenOverlayAssistantTip(): Boolean =
             sessionPrefs.getBoolean(UiPreferences.KEY_HAS_SEEN_OVERLAY_ASSISTANT_TIP, false)
 
@@ -794,6 +801,20 @@ class UiPreferences(
     /** Set the maximum number of web suggestions to show. */
     fun setWebSuggestionsCount(count: Int) {
         prefs.edit().putInt(UiPreferences.KEY_WEB_SUGGESTIONS_COUNT, count).apply()
+    }
+
+    fun getRecentQueriesDisplayCount(): Int =
+        prefs.getInt(
+            UiPreferences.KEY_RECENT_QUERIES_DISPLAY_COUNT,
+            UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT,
+        ).takeIf { it in UiPreferences.RECENT_QUERIES_DISPLAY_COUNT_OPTIONS }
+            ?: UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT
+
+    fun setRecentQueriesDisplayCount(count: Int) {
+        val normalized =
+            count.takeIf { it in UiPreferences.RECENT_QUERIES_DISPLAY_COUNT_OPTIONS }
+                ?: UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT
+        prefs.edit().putInt(UiPreferences.KEY_RECENT_QUERIES_DISPLAY_COUNT, normalized).apply()
     }
 
     // ============================================================================
@@ -1084,6 +1105,26 @@ class UiPreferences(
     }
 
     // ============================================================================
+    // AI Search Web Search Fallback Tip Preferences
+    // ============================================================================
+
+    fun shouldShowWebSearchFallbackTip(): Boolean {
+        val lastShownAt =
+            timingPrefs.getLong(UiPreferences.KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT, 0L)
+        return lastShownAt == 0L ||
+            System.currentTimeMillis() - lastShownAt >= DAY_IN_MILLIS
+    }
+
+    fun recordWebSearchFallbackTipShown() {
+        timingPrefs
+            .edit()
+            .putLong(
+                UiPreferences.KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT,
+                System.currentTimeMillis(),
+            ).apply()
+    }
+
+    // ============================================================================
     // In-App Update Session Tracking
     // ============================================================================
 
@@ -1213,6 +1254,9 @@ class UiPreferences(
         // Web search suggestions preferences keys
         const val KEY_WEB_SUGGESTIONS_ENABLED = "web_suggestions_enabled"
         const val KEY_WEB_SUGGESTIONS_COUNT = "web_suggestions_count"
+        const val KEY_RECENT_QUERIES_DISPLAY_COUNT = "recent_queries_display_count"
+        const val DEFAULT_RECENT_QUERIES_DISPLAY_COUNT = 1
+        val RECENT_QUERIES_DISPLAY_COUNT_OPTIONS = setOf(1, 3, 5, 7, 10)
 
         // App suggestions preferences keys
         const val KEY_APP_SUGGESTIONS_ENABLED = "app_suggestions_enabled"
@@ -1283,6 +1327,8 @@ class UiPreferences(
         const val KEY_RATE_QUICK_SEARCH_COMPLETED = "rate_quick_search_completed"
 
         const val KEY_UPDATE_CARD_LAST_DISMISSED_AT = "update_card_last_dismissed_at"
+        const val KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT =
+            "web_search_fallback_tip_last_shown_at"
 
         // In-app update session tracking keys
         const val KEY_UPDATE_CHECK_SHOWN_THIS_SESSION = "update_check_shown_this_session"

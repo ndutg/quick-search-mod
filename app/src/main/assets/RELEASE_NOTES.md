@@ -1,8 +1,7 @@
-- Customizable swipe gestures
-- Tasker integration
-- Option to turn off file previews
-- Option to increase app icon size
-- Search contacts with phone number (enable in settings)
-- Dial phone numbers directly from search
-- Get free API key guide for AI provider setup
+- Change individual app icons by long-pressing
+- Ask follow-up questions in AI Search
+- New Weather tool
+- Configure how many search history items appear before expanding
+- Increase widget icon size
+- Send the system time to custom tools
 - Performance improvements and bug fixes

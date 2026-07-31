@@ -37,6 +37,7 @@ class AliasHandler(
         CURRENCY_CONVERTER,
         WORD_CLOCK,
         DICTIONARY,
+        WEATHER,
     }
 
     companion object {
@@ -46,6 +47,8 @@ class AliasHandler(
         const val CURRENCY_CONVERTER_ALIAS_FEATURE_ID = "currency_converter_mode"
         const val WORD_CLOCK_ALIAS_FEATURE_ID = "word_clock_mode"
         const val DICTIONARY_ALIAS_FEATURE_ID = "dictionary_mode"
+        const val WEATHER_ALIAS_FEATURE_ID = "weather_mode"
+        const val DEFAULT_WEATHER_ALIAS = "wtr"
         const val SEARCH_SECTION_APPS_ALIAS_ID = SearchSectionRegistry.SEARCH_SECTION_APPS_ALIAS_ID
         const val SEARCH_SECTION_APP_SHORTCUTS_ALIAS_ID =
             SearchSectionRegistry.SEARCH_SECTION_APP_SHORTCUTS_ALIAS_ID
@@ -89,6 +92,11 @@ class AliasHandler(
                 FeatureAliasDefinition(
                     featureId = DICTIONARY_ALIAS_FEATURE_ID,
                     standaloneMode = StandaloneFeatureAliasMode.DICTIONARY,
+                    requiresGeminiApiKey = true,
+                ),
+                FeatureAliasDefinition(
+                    featureId = WEATHER_ALIAS_FEATURE_ID,
+                    standaloneMode = StandaloneFeatureAliasMode.WEATHER,
                     requiresGeminiApiKey = true,
                 ),
             )
@@ -176,7 +184,13 @@ class AliasHandler(
     }
 
     private fun loadToolAlias(toolAliasId: String) {
-        val persistedAlias = userPreferences.getAliasCode(toolAliasId).orEmpty()
+        val storedAlias = userPreferences.getAliasCode(toolAliasId)
+        val persistedAlias =
+            storedAlias
+                ?: if (toolAliasId == WEATHER_ALIAS_FEATURE_ID) DEFAULT_WEATHER_ALIAS else ""
+        if (storedAlias == null && persistedAlias.isNotEmpty()) {
+            userPreferences.setAliasCode(toolAliasId, persistedAlias)
+        }
         val normalizedAlias =
             if (isValidGeneralAliasCode(persistedAlias)) {
                 normalizeShortcutCodeInput(persistedAlias)
@@ -255,6 +269,8 @@ class AliasHandler(
             if (normalizedCode.isEmpty()) {
                 if (engineTarget != null) {
                     userPreferences.setAliasCode(engineTarget, "")
+                } else if (targetId == WEATHER_ALIAS_FEATURE_ID) {
+                    userPreferences.setAliasCode(targetId, "")
                 } else {
                     userPreferences.clearAliasCode(targetId)
                 }

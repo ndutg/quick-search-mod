@@ -168,6 +168,7 @@ class SearchWidget(
                     borderColorProvider = colors.borderColorProvider,
                     borderWidthDp = config.borderWidthDp.dp,
                     cornerRadius = config.borderRadiusDp.dp,
+                    iconSize = (20f * config.iconSizeScale).dp,
                     // Hide label only when width is very narrow (≈2 columns) to keep icon visible
                     showLabel = config.showLabel && !isNarrowWidth,
                     showSearchIcon = config.showSearchIcon,
@@ -192,6 +193,7 @@ class SearchWidget(
                     borderColorProvider = colors.borderColorProvider,
                     borderWidthDp = config.borderWidthDp.dp,
                     cornerRadius = config.borderRadiusDp.dp,
+                    iconSize = (20f * config.iconSizeScale).dp,
                     internalHorizontalPaddingDp = config.internalHorizontalPaddingDp,
                     internalVerticalPaddingDp = config.internalVerticalPaddingDp,
                     customButtons = customButtons,
@@ -358,6 +360,7 @@ private fun CustomButtonsOnlyWidgetContent(
     borderColorProvider: ColorProvider?,
     borderWidthDp: Dp,
     cornerRadius: Dp,
+    iconSize: Dp,
     internalHorizontalPaddingDp: Float,
     internalVerticalPaddingDp: Float,
     customButtons: List<CustomWidgetButtonAction>,
@@ -368,7 +371,7 @@ private fun CustomButtonsOnlyWidgetContent(
             UserAppPreferences(context).uiPreferences.getSelectedIconPackPackage()
         }
     val density = context.resources.displayMetrics.density
-    val iconSizePx = (20.dp.value * density).roundToInt().coerceAtLeast(1)
+    val iconSizePx = (iconSize.value * density).roundToInt().coerceAtLeast(1)
     val useCompactSpacing = customButtons.size >= 5 || widthDp <= WidgetLayoutUtils.DEFAULT_WIDTH_DP.dp
     val touchSpace = if (useCompactSpacing) 28.dp else 36.dp
     val outerHorizontalPadding =
@@ -475,7 +478,7 @@ private fun CustomButtonsOnlyWidgetContent(
                                     Image(
                                         provider = imageProvider,
                                         contentDescription = action.contentDescription(),
-                                        modifier = GlanceModifier.size(20.dp),
+                                        modifier = GlanceModifier.size(iconSize),
                                         colorFilter =
                                             if (icon.shouldTint) {
                                                 ColorFilter.tint(textIconColorProvider)
@@ -505,6 +508,7 @@ private fun WidgetContent(
     borderColorProvider: ColorProvider?,
     borderWidthDp: Dp,
     cornerRadius: Dp,
+    iconSize: Dp,
     showLabel: Boolean,
     showSearchIcon: Boolean,
     showMicIcon: Boolean,
@@ -522,7 +526,7 @@ private fun WidgetContent(
             UserAppPreferences(context).uiPreferences.getSelectedIconPackPackage()
         }
     val density = context.resources.displayMetrics.density
-    val iconSizePx = (20.dp.value * density).roundToInt().coerceAtLeast(1)
+    val iconSizePx = (iconSize.value * density).roundToInt().coerceAtLeast(1)
     val outerHorizontalPadding =
         computeSafeOuterHorizontalPadding(
             widthDp = widthDp,
@@ -585,7 +589,7 @@ private fun WidgetContent(
                             Image(
                                 provider = ImageProvider(R.drawable.ic_widget_search),
                                 contentDescription = context.getString(R.string.common_search),
-                                modifier = GlanceModifier.size(20.dp),
+                                modifier = GlanceModifier.size(iconSize),
                                 colorFilter = ColorFilter.tint(textIconColorProvider),
                             )
                         }
@@ -612,7 +616,7 @@ private fun WidgetContent(
                             Image(
                                 provider = ImageProvider(R.drawable.ic_widget_search),
                                 contentDescription = context.getString(R.string.common_search),
-                                modifier = GlanceModifier.size(20.dp),
+                                modifier = GlanceModifier.size(iconSize),
                                 colorFilter = ColorFilter.tint(textIconColorProvider),
                             )
                         }
@@ -682,7 +686,7 @@ private fun WidgetContent(
                                     Image(
                                         provider = imageProvider,
                                         contentDescription = action.contentDescription(),
-                                        modifier = GlanceModifier.size(20.dp),
+                                        modifier = GlanceModifier.size(iconSize),
                                         colorFilter =
                                             if (icon.shouldTint) {
                                                 ColorFilter.tint(textIconColorProvider)
@@ -711,7 +715,7 @@ private fun WidgetContent(
                                 Image(
                                     provider = ImageProvider(R.drawable.ic_widget_mic),
                                     contentDescription = context.getString(R.string.desc_voice_search_icon),
-                                    modifier = GlanceModifier.size(20.dp),
+                                    modifier = GlanceModifier.size(iconSize),
                                     colorFilter = ColorFilter.tint(textIconColorProvider),
                                 )
                             }

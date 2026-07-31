@@ -62,7 +62,7 @@ class CustomOpenAiCompatibleLlmProvider(
         apiKey: String,
         context: Context,
         request: LlmRequest,
-    ): Result<String> {
+    ): Result<LlmResponse> {
         val providerConfig =
             config
                 ?: return Result.failure(IllegalStateException("Custom provider is no longer available"))
@@ -84,6 +84,6 @@ class CustomOpenAiCompatibleLlmProvider(
                     ?: providerConfig
                         .advancedPayload
                         ?.takeIf { providerConfig.advancedPayloadEnabled },
-        )
+        ).map(::LlmResponse)
     }
 }

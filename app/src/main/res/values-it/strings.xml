@@ -14,8 +14,11 @@
     <string name="app_name">Quick Search</string>
     <string name="direct_answer_contact_name">Risposta AI</string>
     <string name="direct_search_enter_query">Inserisci una query per cercare.</string>
+    <string name="direct_search_ask_follow_up">Fai una domanda successiva</string>
+    <string name="direct_search_follow_up_hint">Inserisci una domanda successiva</string>
     <string name="direct_search_error_generic">Impossibile recuperare la risposta dell\u2019AI. Riprova.</string>
     <string name="direct_search_error_no_key">Aggiungi una chiave API nelle impostazioni (Fornitore AI) per ricevere le risposte dell\u2019AI.</string>
+    <string name="gemini_web_search_quota_fallback_tip">La quota di ricerca web di Gemini è stata raggiunta, quindi questa risposta è stata generata senza ricerca web.</string>
     <string name="direct_search_powered_by">Offerto da</string>
     <string name="empty_state_subtitle">Avvia un\u2019app o affina la ricerca per vedere i suggerimenti.</string>
     <string name="empty_state_title">Nulla da mostrare (per ora)</string>
@@ -36,6 +39,7 @@
     <string name="search_hint_contacts">Cerca nei contatti…</string>
     <string name="search_hint_currency_converter">Converti valute, es. 100 USD to INR</string>
     <string name="search_hint_dictionary">Inserisci una parola</string>
+    <string name="search_hint_weather">Inserisci una località o usa quella predefinita</string>
     <string name="search_hint_files">Cerca nei file…</string>
     <string name="search_hint_notes">Cerca nelle note…</string>
     <string name="search_hint_settings">Cerca nelle impostazioni del dispositivo…</string>
@@ -55,6 +59,7 @@
         <item>225 + 456</item>
         <item>Time in UK</item>
         <item>Define Serendipity</item>
+        <item>Meteo a New York</item>
     </string-array>
     <string name="search_provider_description">Cerca app, contatti, file, impostazioni e molto altro con Quick Search.</string>
 
@@ -217,7 +222,9 @@
     <string name="clear_query_toggle_title">Cancella query</string>
     <string name="more_results_title">Altri risultati</string>
     <string name="open_keyboard_toggle_desc">Apri automaticamente la tastiera all\u2019avvio dell\u2019app</string>
-    <string name="recent_queries_toggle_desc">Mostra la cronologia delle ricerche nella schermata iniziale.</string>
+    <string name="recent_queries_toggle_desc">N. di elementi mostrati prima dell\u2019espansione</string>
+    <string name="fuzzy_search_toggle_title">Ricerca approssimativa</string>
+    <string name="fuzzy_search_toggle_desc">Trova risultati anche quando la ricerca contiene un errore di battitura.</string>
     <string name="recent_queries_toggle_title">Cronologia ricerche</string>
     <string name="search_history_tab_recently_opened">Risultati</string>
     <string name="search_history_tab_searches">Ricerche</string>
@@ -647,7 +654,10 @@
     <string name="settings_icon_title">Icona impostazioni</string>
     <string name="settings_launch_options_desc">Diversi modi per avviare questa app</string>
     <string name="settings_launch_options_title">Opzioni di avvio</string>
+    <string name="settings_app_language_title">Lingua dell’app</string>
     <string name="settings_app_language_desc">In uso: %1$s</string>
+    <string name="settings_app_language_picker_title">Scegli la lingua dell’app</string>
+    <string name="settings_app_language_system_default">Predefinita di sistema</string>
     <string name="settings_launcher_icon_reset_default">Ripristina predefinita</string>
     <string name="settings_launcher_icon_title">Icona dell\u2019applicazione launcher</string>
     <string name="settings_layout_option_bottom_desc">Gli elementi più rilevanti appaiono in basso per un facile accesso</string>
@@ -766,7 +776,11 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">Tutte le funzioni</string>
+    <string name="release_notes_previous_versions">Versioni precedenti</string>
+    <string name="release_notes_previous_versions_unavailable">Impossibile caricare le versioni precedenti</string>
     <string name="release_notes_action_got_it">Capito</string>
+    <string name="settings_release_notes_title">Note di rilascio</string>
+    <string name="settings_release_notes_desc">Visualizza le note di rilascio di questa versione</string>
     <string name="update_card_title">È disponibile un nuovo aggiornamento per Quick Search!</string>
     <string name="action_update">Aggiorna</string>
     <string name="release_notes_title">Note di rilascio di Quick Search v%1$s</string>
@@ -826,6 +840,16 @@
     <string name="dictionary_synonyms_label">Sinonimi: %1$s</string>
     <string name="dictionary_toggle_desc">Esempio: define serendipity</string>
     <string name="dictionary_toggle_title">Dizionario</string>
+    <string name="weather_toggle_title">Meteo</string>
+    <string name="weather_toggle_desc">Il meteo di oggi per la località specificata</string>
+    <string name="weather_location_label">Località predefinita</string>
+    <string name="weather_location_hint">Esempio: Roma</string>
+    <string name="weather_error_location_required">Inserisci una località o configurane una predefinita nelle Impostazioni</string>
+    <string name="get_weather">Ottieni meteo</string>
+    <string name="weather_in_location">Meteo a %1$s</string>
+    <string name="weather_temperature_unit_label">Unità di temperatura</string>
+    <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
     <string name="get_currency_value">Ottieni valore valuta</string>
     <string name="get_time">Ottieni ora</string>
     <string name="search_in_dictionary">Cerca nel dizionario</string>
@@ -886,6 +910,7 @@
     <string name="widget_search_icon">Icona ricerca</string>
     <string name="widget_settings_title">Widget di ricerca</string>
     <string name="widget_slider_border">Spessore del bordo</string>
+    <string name="widget_slider_icon_size">Dimensione dell\u2019icona</string>
     <string name="widget_slider_internal_padding">Spaziatura esterna</string>
     <string name="widget_slider_internal_padding_horizontal">Orizzontale</string>
     <string name="widget_slider_internal_padding_vertical">Verticale</string>
@@ -992,7 +1017,7 @@
     <string name="settings_custom_tool_delete_button">Elimina strumento</string>
     <string name="settings_custom_tool_editor_title">Strumento personalizzato</string>
     <string name="settings_custom_tool_name_label">Nome strumento</string>
-    <string name="settings_custom_tool_prompt_hint">Descrivi cosa fa questo strumento. Questo prompt guiderà l\u2019AI quando lo strumento viene attivato.</string>
+    <string name="settings_custom_tool_prompt_hint">Descrivi cosa fa questo strumento. Questo prompt guiderà l\u2019AI quando lo strumento viene attivato.\n\nUsa {time} per includere la data e l\u2019ora correnti nel prompt.</string>
     <string name="settings_custom_tool_prompt_label">Prompt di sistema</string>
     <string name="settings_excluded_items_clear_all">Cancella tutte le esclusioni</string>
     <string name="settings_excluded_items_clear_all_confirmation">Sei sicuro di voler cancellare tutti gli elementi esclusi? Questa azione non può essere annullata.</string>
@@ -1028,4 +1053,7 @@
     <string name="tasker_intent_action">Intent Tasker (%1$s)</string>
     <string name="tasker_not_installed">Tasker non è installato</string>
     <string name="tasker_broadcast_failed">Impossibile inviare il broadcast di Tasker</string>
+    <string name="settings_more_apps_from_developer_title">Altre app dello sviluppatore</string>
+    <string name="icon_picker_no_icon_packs">Non sono installati pacchetti di icone per modificare l\'icona dell\'app.</string>
+    <string name="icon_picker_download_icon_packs">Scarica pacchetti di icone</string>
 </resources>

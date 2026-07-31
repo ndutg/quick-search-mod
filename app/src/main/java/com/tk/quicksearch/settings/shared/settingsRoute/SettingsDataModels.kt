@@ -99,6 +99,7 @@ data class SettingsScreenState(
     val currencyConverterEnabled: Boolean,
     val worldClockEnabled: Boolean,
     val dictionaryEnabled: Boolean,
+    val weatherEnabled: Boolean,
     val customTools: List<CustomTool> = emptyList(),
     val disabledCustomToolIds: Set<String> = emptySet(),
     val taskerIntentTools: List<TaskerIntentTool> = emptyList(),
@@ -116,6 +117,9 @@ data class SettingsScreenState(
     val clearQueryOnLaunch: Boolean,
     val autoCloseOverlay: Boolean,
     val recentQueriesEnabled: Boolean,
+    val recentQueriesDisplayCount: Int,
+    val fuzzySearchEnabled: Boolean,
+    val fuzzySearchAvailable: Boolean,
     val hasApiKey: Boolean = false,
     val geminiApiKeyLast4: String? = null,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
@@ -150,6 +154,9 @@ data class SettingsScreenState(
                 topMatchesSectionOrder = topMatchesSectionOrder,
                 disabledTopMatchesSections = disabledTopMatchesSections,
                 recentQueriesEnabled = recentQueriesEnabled,
+                recentQueriesDisplayCount = recentQueriesDisplayCount,
+                fuzzySearchEnabled = fuzzySearchEnabled,
+                fuzzySearchAvailable = fuzzySearchAvailable,
             )
 
     val searchEngines: SearchEngineSettingsState
@@ -237,6 +244,7 @@ data class SettingsScreenState(
                 currencyConverterEnabled = currencyConverterEnabled,
                 worldClockEnabled = worldClockEnabled,
                 dictionaryEnabled = dictionaryEnabled,
+                weatherEnabled = weatherEnabled,
                 customTools = customTools,
                 disabledCustomToolIds = disabledCustomToolIds,
                 taskerIntentTools = taskerIntentTools,
@@ -333,6 +341,7 @@ data class SettingsScreenCallbacks(
     val onToggleCurrencyConverter: (Boolean) -> Unit,
     val onToggleWorldClock: (Boolean) -> Unit,
     val onToggleDictionary: (Boolean) -> Unit,
+    val onToggleWeather: (Boolean) -> Unit,
     val onAddCustomTool: (name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean) -> Unit,
     val onUpdateCustomTool: (id: String, name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean) -> Unit,
     val onDeleteCustomTool: (String) -> Unit,
@@ -355,7 +364,7 @@ data class SettingsScreenCallbacks(
     val onSetGeminiModel: (String?) -> Unit,
     val onSetLlmModel: (AiSearchLlmProviderId, String?) -> Unit,
     val onSetCustomLlmAdvancedPayload: (AiSearchLlmProviderId, String?, Boolean) -> Unit,
-    val onSetAiToolSettings: (AiBackedToolConfigId, AiSearchLlmProviderId, String, Boolean, Boolean, String?, Boolean) -> Unit,
+    val onSetAiToolSettings: (AiBackedToolConfigId, AiSearchLlmProviderId, String, Boolean, Boolean, String?, Boolean, String, String, com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit, com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit) -> Unit,
     val onSetGeminiGroundingEnabled: (Boolean) -> Unit,
     val onSetGeminiThinkingEnabled: (Boolean) -> Unit,
     val onRefreshAvailableGeminiModels: () -> Unit,
@@ -502,6 +511,9 @@ data class SearchResultsSettingsState(
     val topMatchesSectionOrder: List<SearchSection>,
     val disabledTopMatchesSections: Set<SearchSection>,
     val recentQueriesEnabled: Boolean,
+    val recentQueriesDisplayCount: Int,
+    val fuzzySearchEnabled: Boolean,
+    val fuzzySearchAvailable: Boolean,
 )
 
 data class SearchEngineSettingsState(
@@ -581,6 +593,7 @@ data class ToolsSettingsState(
     val currencyConverterEnabled: Boolean,
     val worldClockEnabled: Boolean,
     val dictionaryEnabled: Boolean,
+    val weatherEnabled: Boolean,
     val customTools: List<CustomTool> = emptyList(),
     val disabledCustomToolIds: Set<String> = emptySet(),
     val taskerIntentTools: List<TaskerIntentTool> = emptyList(),

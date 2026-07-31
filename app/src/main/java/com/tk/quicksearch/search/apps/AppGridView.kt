@@ -303,9 +303,10 @@ fun AppGridView(
     val minSuggestionGridItems = (rowCount * getAppGridColumns(phoneColumnOverride)).coerceAtLeast(1)
     val suggestionFallbackApps = remember(pinnedAndRecentApps, apps) { pinnedAndRecentApps + apps }
     val selectedSuggestionTabType = suggestionTabs.getOrNull(selectedSuggestionTabIndex)?.type
+    val selectedSuggestionTabItem = suggestionTabs.getOrNull(selectedSuggestionTabIndex)
     val activeApps =
-            if (suggestionTabs.isNotEmpty()) {
-                val selectedTab = suggestionTabs[selectedSuggestionTabIndex]
+            if (selectedSuggestionTabItem != null) {
+                val selectedTab = selectedSuggestionTabItem
                 if (selectedTab.type == AppSuggestionTabType.PINNED) {
                     selectedTab.apps
                 } else {
@@ -416,9 +417,10 @@ fun AppGridView(
                 }
                 if (suggestionTabs.size > 1 && !isSearching) {
                     AnimatedContent(
-                            targetState = selectedSuggestionTabIndex,
+                            targetState = requireNotNull(selectedSuggestionTabItem),
+                            contentKey = { it.type },
                             transitionSpec = {
-                                val movingForward = targetState > initialState
+                                val movingForward = targetState.type.ordinal > initialState.type.ordinal
                                 val stiffness = Spring.StiffnessMediumLow
                                 if (movingForward) {
                                     slideInHorizontally(
@@ -441,8 +443,7 @@ fun AppGridView(
                                 }
                             },
                             label = "appSuggestionTabSlide",
-                    ) { selectedIndex ->
-                        val selectedTab = suggestionTabs[selectedIndex]
+                    ) { selectedTab ->
                         AppGrid(
                                 apps =
                                         if (
@@ -840,11 +841,7 @@ private fun AppGrid(
             }
     val orderedApps =
             remember(visibleDisplayedApps, oneHandedMode, columns) {
-                if (oneHandedMode) {
-                    visibleDisplayedApps.chunked(columns).reversed().flatten()
-                } else {
-                    visibleDisplayedApps
-                }
+                appsInVisualGridOrder(visibleDisplayedApps, columns, oneHandedMode)
             }
     val predictedAppKey = remember(predictedTarget, suppressTopResultIndicator) {
         if (suppressTopResultIndicator) {
@@ -913,14 +910,21 @@ private fun AppGrid(
                             (AppGridRowSpacing * (visibleRows - 1).coerceAtLeast(0))
                 }
 
-        fun movePinnedApp(fromIndex: Int, toIndex: Int) {
-            if (!reorderPinnedApps || fromIndex == toIndex) return
-            val current = displayedApps
-            if (fromIndex !in current.indices || toIndex !in current.indices) return
-            displayedApps =
-                    current.toMutableList().apply {
-                        add(toIndex, removeAt(fromIndex))
+        fun movePinnedApp(fromVisualIndex: Int, toVisualIndex: Int) {
+            if (!reorderPinnedApps || fromVisualIndex == toVisualIndex) return
+            val currentVisualOrder =
+                    appsInVisualGridOrder(displayedApps, columns, oneHandedMode)
+            if (fromVisualIndex !in currentVisualOrder.indices ||
+                    toVisualIndex !in currentVisualOrder.indices
+            ) {
+                return
+            }
+            val reorderedVisualApps =
+                    currentVisualOrder.toMutableList().apply {
+                        add(toVisualIndex, removeAt(fromVisualIndex))
                     }
+            displayedApps =
+                    appsInPersistedGridOrder(reorderedVisualApps, columns, oneHandedMode)
         }
 
         fun targetIndexForDrag(state: PinnedAppDragState): Int {
@@ -989,7 +993,10 @@ private fun AppGrid(
 
         val handleDragStart: (AppInfo) -> Unit = handleStart@{ app ->
             if (!reorderPinnedApps) return@handleStart
-            val index = displayedApps.indexOfFirst { it.launchCountKey() == app.launchCountKey() }
+            val index =
+                    appsInVisualGridOrder(displayedApps, columns, oneHandedMode).indexOfFirst {
+                        it.launchCountKey() == app.launchCountKey()
+                    }
             if (index >= 0) {
                 dragState = PinnedAppDragState(app.launchCountKey(), index)
             }
@@ -1003,7 +1010,9 @@ private fun AppGrid(
                             offsetY = currentState.offsetY + dragY,
                     )
             val currentIndex =
-                    displayedApps.indexOfFirst { it.launchCountKey() == updatedState.key }
+                    appsInVisualGridOrder(displayedApps, columns, oneHandedMode).indexOfFirst {
+                        it.launchCountKey() == updatedState.key
+                    }
             val targetIndex = targetIndexForDrag(updatedState)
             if (currentIndex >= 0 && targetIndex != currentIndex) {
                 val itemHeightPx =

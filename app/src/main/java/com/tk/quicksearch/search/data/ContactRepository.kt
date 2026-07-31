@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.data
 
 import android.content.Context
 import android.database.Cursor
+import android.database.sqlite.SQLiteException
 import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
@@ -191,6 +192,21 @@ class ContactRepository(
     }
 
     /**
+     * Returns the lightweight phone-provider data for the requested contacts without hydrating
+     * photos or app-specific contact methods. Used to restore pinned contacts promptly at startup.
+     */
+    fun getContactsByIdsMinimal(contactIds: Set<Long>): List<ContactInfo> {
+        if (contactIds.isEmpty() || !hasPermission()) {
+            return emptyList()
+        }
+
+        return queryContactsByIds(contactIds)
+            .values
+            .map { it.toMinimalContactInfo() }
+            .sortedBy { it.displayName.lowercase(Locale.getDefault()) }
+    }
+
+    /**
      * @param query Search query string
      * @param limit Maximum number of unique contacts to return
      * @return List of contacts sorted by match priority, then alphabetically
@@ -301,13 +317,20 @@ class ContactRepository(
     ): LinkedHashMap<Long, MutableContact> {
         val filterUri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI, Uri.encode(query))
         val cursor =
-            contentResolver.query(
-                filterUri,
-                PHONE_PROJECTION,
-                null,
-                null,
-                SORT_ORDER,
-            ) ?: return LinkedHashMap()
+            try {
+                contentResolver.query(
+                    filterUri,
+                    PHONE_PROJECTION,
+                    null,
+                    null,
+                    SORT_ORDER,
+                )
+            } catch (exception: SQLiteException) {
+                // Some OEM Contacts providers fail while resolving CONTENT_FILTER_URI. Returning no
+                // provider-filtered matches lets searchContacts continue with the name-token fallback.
+                Log.w(TAG, "Contacts filter query failed; using name-token fallback", exception)
+                null
+            } ?: return LinkedHashMap()
 
         return cursor.use { processPhoneCursor(it, limit) }
     }

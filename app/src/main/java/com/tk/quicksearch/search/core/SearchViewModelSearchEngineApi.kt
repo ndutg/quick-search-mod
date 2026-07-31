@@ -34,6 +34,8 @@ internal interface SearchViewModelSearchEngineApi {
 
     fun acknowledgeReleaseNotes() = searchEngineApiDelegate.acknowledgeReleaseNotes()
 
+    fun showReleaseNotes() = searchEngineApiDelegate.showReleaseNotes()
+
     fun requestAiSearch(query: String) = searchEngineApiDelegate.requestAiSearch(query)
 
     fun setShowStartSearchingOnOnboarding(show: Boolean) =
@@ -137,6 +139,10 @@ class SearchViewModelSearchEngineApiDelegate internal constructor(
 
     fun acknowledgeReleaseNotes() {
         releaseNotesHandler().acknowledgeReleaseNotes(configStateProvider().releaseNotesVersionName)
+    }
+
+    fun showReleaseNotes() {
+        releaseNotesHandler().showReleaseNotes()
     }
 
     fun requestAiSearch(query: String) = aiSearchHandler().requestAiSearch(query)

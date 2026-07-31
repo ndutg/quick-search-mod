@@ -69,6 +69,7 @@ enum class AppSettingsToggleKey {
     INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH,
     WEB_SUGGESTIONS,
     RECENT_QUERIES,
+    FUZZY_SEARCH,
     TOP_RESULT_INDICATOR,
     TOP_MATCHES,
     OPEN_KEYBOARD,
@@ -79,6 +80,7 @@ enum class AppSettingsToggleKey {
     FILE_PREVIEWS,
     SHOW_SYSTEM_FILES,
     DIRECT_DIAL,
+    NUMBER_SEARCH,
     SEARCH_APPS,
     SEARCH_APP_SHORTCUTS,
     SEARCH_CONTACTS,
@@ -94,6 +96,7 @@ enum class AppSettingsToggleKey {
     USE_SYSTEM_FONT,
     APPS_PER_ROW,
     DICTIONARY,
+    WEATHER,
 }
 
 data class AppSettingResult(

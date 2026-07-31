@@ -27,7 +27,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CustomTool
+import com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit
+import com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit
 import com.tk.quicksearch.settings.shared.ModelFeatureSettingsCard
+import com.tk.quicksearch.settings.shared.SettingsCheckboxPill
 import com.tk.quicksearch.settings.settingsDetailScreen.AdvancedPayloadSettingsSection
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -39,16 +42,22 @@ import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
 fun CustomToolEditorScreen(
     existingTool: CustomTool?,
     existingAlias: String,
+    existingLocation: String = "",
+    existingTemperatureUnit: WeatherTemperatureUnit = WeatherTemperatureUnit.CELSIUS,
+    existingWindSpeedUnit: WeatherWindSpeedUnit = WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
     selectedProviderId: AiSearchLlmProviderId,
     availableModels: List<GeminiTextModel>,
     availableModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>>,
     configuredProviderIds: Set<AiSearchLlmProviderId>,
     onRefreshAvailableGeminiModels: () -> Unit,
     onProviderModelSelected: (AiSearchLlmProviderId, String) -> Unit,
-    onSave: (name: String, prompt: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean) -> Unit,
+    onSave: (name: String, prompt: String, location: String, providerId: AiSearchLlmProviderId, modelId: String, groundingEnabled: Boolean, aliasCode: String, thinkingEnabled: Boolean, advancedPayload: String?, advancedPayloadEnabled: Boolean, temperatureUnit: WeatherTemperatureUnit, windSpeedUnit: WeatherWindSpeedUnit) -> Unit,
     showNameInput: Boolean = true,
     showPromptInput: Boolean = true,
     showAliasInput: Boolean = true,
+    showLocationInput: Boolean = false,
+    showWeatherUnitInputs: Boolean = false,
+    webSearchAlwaysEnabled: Boolean = false,
     shouldAutoFocusTitle: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
@@ -66,6 +75,15 @@ fun CustomToolEditorScreen(
     }
     var aliasInput by remember(existingTool?.id) {
         mutableStateOf(existingAlias)
+    }
+    var locationInput by remember(existingTool?.id) {
+        mutableStateOf(existingLocation)
+    }
+    var temperatureUnit by remember(existingTool?.id) {
+        mutableStateOf(existingTemperatureUnit)
+    }
+    var windSpeedUnit by remember(existingTool?.id) {
+        mutableStateOf(existingWindSpeedUnit)
     }
     var groundingEnabled by remember(existingTool?.id) {
         mutableStateOf(existingTool?.groundingEnabled ?: false)
@@ -194,6 +212,35 @@ fun CustomToolEditorScreen(
                 }
             }
 
+            if (showLocationInput) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                ) {
+                    Text(
+                        text = stringResource(R.string.weather_location_label),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    OutlinedTextField(
+                        value = locationInput,
+                        onValueChange = { locationInput = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(stringResource(R.string.weather_location_hint)) },
+                        singleLine = true,
+                        maxLines = 1,
+                        colors = dialogTextFieldColors(),
+                    )
+                }
+            }
+
+            if (showWeatherUnitInputs) {
+                WeatherUnitSettingsSection(
+                    temperatureUnit = temperatureUnit,
+                    onTemperatureUnitSelected = { temperatureUnit = it },
+                )
+            }
+
             if (showAliasInput) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -232,7 +279,7 @@ fun CustomToolEditorScreen(
                 thinkingLabel = stringResource(R.string.settings_direct_search_thinking_label),
                 webSearchLabel = stringResource(R.string.settings_direct_search_grounding_label),
                 thinkingEnabled = thinkingEnabled,
-                groundingEnabled = groundingEnabled,
+                groundingEnabled = if (webSearchAlwaysEnabled) true else groundingEnabled,
                 onModelSelected = { selectedModelId = it },
                 onProviderModelSelected = { providerId, modelId ->
                     selectedProviderInput = providerId
@@ -240,9 +287,12 @@ fun CustomToolEditorScreen(
                     onProviderModelSelected(providerId, modelId)
                 },
                 onThinkingChange = { thinkingEnabled = it },
-                onGroundingChange = { groundingEnabled = it },
+                onGroundingChange = { enabled ->
+                    if (!webSearchAlwaysEnabled) groundingEnabled = enabled
+                },
                 showThinkingCheckbox = showThinkingToggle,
                 showGroundingCheckbox = showGroundingCheckbox,
+                groundingCheckboxEnabled = !webSearchAlwaysEnabled,
             )
 
             if (supportsAdvancedPayload) {
@@ -271,15 +321,18 @@ fun CustomToolEditorScreen(
                         onSave(
                             nameInput.trim(),
                             promptInput.trim(),
+                            locationInput.trim(),
                             selectedProviderInput,
                             selectedModelId,
-                            groundingEnabled,
+                            if (webSearchAlwaysEnabled) true else groundingEnabled,
                             aliasInput.trim(),
                             if (showThinkingToggle) thinkingEnabled else false,
                             advancedPayloadInput.trim().takeIf {
                                 supportsAdvancedPayload && advancedPayloadEnabled && it.isNotEmpty()
                             },
                             supportsAdvancedPayload && advancedPayloadEnabled,
+                            temperatureUnit,
+                            windSpeedUnit,
                         )
                     }
                 },
@@ -294,3 +347,40 @@ fun CustomToolEditorScreen(
     }
 
 }
+
+@Composable
+private fun WeatherUnitSettingsSection(
+    temperatureUnit: WeatherTemperatureUnit,
+    onTemperatureUnitSelected: (WeatherTemperatureUnit) -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+    ) {
+        Text(
+            text = stringResource(R.string.weather_temperature_unit_label),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+        ) {
+            WeatherTemperatureUnit.entries.forEach { unit ->
+                SettingsCheckboxPill(
+                    label = stringResource(unit.labelRes),
+                    checked = temperatureUnit == unit,
+                    onCheckedChange = { onTemperatureUnitSelected(unit) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
+private val WeatherTemperatureUnit.labelRes: Int
+    get() =
+        when (this) {
+            WeatherTemperatureUnit.CELSIUS -> R.string.weather_temperature_unit_celsius
+            WeatherTemperatureUnit.FAHRENHEIT -> R.string.weather_temperature_unit_fahrenheit
+        }

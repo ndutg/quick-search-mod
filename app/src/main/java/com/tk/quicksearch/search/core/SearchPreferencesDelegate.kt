@@ -12,6 +12,7 @@ import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
+import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -130,6 +131,14 @@ internal class SearchPreferencesDelegate(
             if (!enabled) {
                 updateResultsState { it.copy(dictionaryState = DictionaryState()) }
             }
+        }
+    }
+
+    fun setWeatherEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setWeatherEnabled(enabled)
+            updateFeatureState { it.copy(weatherEnabled = enabled) }
+            if (!enabled) updateResultsState { it.copy(weatherState = WeatherState()) }
         }
     }
 
@@ -269,6 +278,29 @@ internal class SearchPreferencesDelegate(
             if (enabled && resultsStateProvider().query.isEmpty()) {
                 refreshRecentItems()
             }
+        }
+    }
+
+    fun setRecentQueriesDisplayCount(count: Int) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setRecentQueriesDisplayCount(count)
+            updateFeatureState { it.copy(recentQueriesDisplayCount = count) }
+        }
+    }
+
+    fun setFuzzySearchEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            if (isLowRamDevice(applicationProvider())) return@launch
+            userPreferences.setFuzzySearchEnabled(enabled)
+            updateFeatureState {
+                it.copy(
+                    fuzzySearchEnabled = enabled,
+                    fuzzySearchAvailable = true,
+                )
+            }
+            refreshAppSuggestions()
+            secondarySearchOrchestrator.resetNoResultTracking()
+            rerunSecondarySearchIfNeeded()
         }
     }
 
@@ -969,6 +1001,12 @@ internal class SearchPreferencesDelegate(
         thinkingEnabled: Boolean,
         advancedPayload: String?,
         advancedPayloadEnabled: Boolean,
+        systemPrompt: String = "",
+        location: String = "",
+        temperatureUnit: com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit.CELSIUS,
+        windSpeedUnit: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit =
+            com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
     ) {
         scope.launch(Dispatchers.IO) {
             val normalizedModelId = modelId.trim()
@@ -994,6 +1032,24 @@ internal class SearchPreferencesDelegate(
                     userPreferences.setDictionaryGroundingEnabled(groundingEnabled)
                     userPreferences.setDictionaryThinkingEnabled(thinkingEnabled)
                     userPreferences.setDictionaryAdvancedPayload(advancedPayload, advancedPayloadEnabled)
+                }
+                AiBackedToolConfigId.WEATHER -> {
+                    userPreferences.setWeatherProviderId(providerId)
+                    userPreferences.setWeatherModel(normalizedModelId)
+                    userPreferences.setWeatherGroundingEnabled(true)
+                    userPreferences.setWeatherThinkingEnabled(thinkingEnabled)
+                    userPreferences.setWeatherAdvancedPayload(advancedPayload, advancedPayloadEnabled)
+                    userPreferences.setWeatherSystemPrompt(systemPrompt)
+                    userPreferences.setWeatherLocation(location)
+                    userPreferences.setWeatherTemperatureUnit(temperatureUnit)
+                    userPreferences.setWeatherWindSpeedUnit(windSpeedUnit)
+                    updateFeatureState {
+                        val normalizedLocation = location.trim()
+                        it.copy(
+                            weatherLocationConfigured = normalizedLocation.isNotBlank(),
+                            weatherLocation = normalizedLocation,
+                        )
+                    }
                 }
             }
         }

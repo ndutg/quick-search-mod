@@ -542,7 +542,8 @@ internal fun SearchScreenStateManagement(
                     state.detectedAliasSearchSection != null ||
                     state.isCurrencyConverterAliasMode ||
                     state.isWorldClockAliasMode ||
-                    state.isDictionaryAliasMode,
+                    state.isDictionaryAliasMode ||
+                    state.isWeatherAliasMode,
         )
 
     return SearchScreenStateResult(

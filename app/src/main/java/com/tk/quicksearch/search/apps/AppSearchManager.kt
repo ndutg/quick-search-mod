@@ -34,7 +34,12 @@ class AppSearchManager(
     var sortAppsByUsageEnabled: Boolean = false
         private set
 
-    private var fuzzySearchStrategy = FuzzyAppSearchStrategy(initialFuzzyConfig, isLowRamDevice)
+    private var fuzzySearchStrategy =
+        FuzzyAppSearchStrategy(
+            config = initialFuzzyConfig,
+            isLowRamDevice = isLowRamDevice,
+            isFuzzySearchEnabled = userPreferences::isFuzzySearchEnabled,
+        )
 
     fun initCache(initialApps: List<AppInfo>) {
         cachedApps = initialApps

@@ -18,6 +18,7 @@ import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInpu
 import com.tk.quicksearch.shared.util.isPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
+import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.OpenAiModelCatalog
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
@@ -48,6 +49,7 @@ class UserAppPreferences(
     private val nicknamePreferences by lazy { NicknamePreferences(context) }
     private val triggerPreferences by lazy { TriggerPreferences(context) }
     private val taskerIntentPreferences by lazy { TaskerIntentPreferences(context) }
+    private val weatherPreferences by lazy { WeatherPreferences(context) }
     private val searchEnginePreferences by lazy { SearchEnginePreferences(context) }
     private val aliasPreferences by lazy { AliasPreferences(context) }
     private val geminiPreferences by lazy { GeminiPreferences(context) }
@@ -127,6 +129,14 @@ class UserAppPreferences(
     fun pinPackage(packageName: String): Set<String> = appPreferences.pinPackage(packageName)
 
     fun unpinPackage(packageName: String): Set<String> = appPreferences.unpinPackage(packageName)
+
+    fun getAppIconOverride(packageName: String) = appPreferences.getAppIconOverride(packageName)
+
+    fun setAppIconOverride(
+        packageName: String,
+        iconPackPackage: String,
+        drawableName: String,
+    ) = appPreferences.setAppIconOverride(packageName, iconPackPackage, drawableName)
 
     fun clearAllHiddenAppsInSuggestions(): Set<String> =
             appPreferences.clearAllHiddenAppsInSuggestions()
@@ -784,6 +794,12 @@ class UserAppPreferences(
     fun setAiSearchProviderId(providerId: AiSearchLlmProviderId) =
             llmPreferences.setAiSearchProviderId(providerId)
 
+    fun shouldShowWebSearchFallbackTip(): Boolean =
+            uiPreferences.shouldShowWebSearchFallbackTip()
+
+    fun recordWebSearchFallbackTipShown() =
+            uiPreferences.recordWebSearchFallbackTipShown()
+
     /**
      * Generic LLM API key accessor used by provider-aware callers.
      * New providers should extend this when provider-specific credential keys are added.
@@ -1347,6 +1363,12 @@ class UserAppPreferences(
         uiPreferences.setWebSuggestionsCount(count)
     }
 
+    fun getRecentQueriesDisplayCount(): Int = uiPreferences.getRecentQueriesDisplayCount()
+
+    fun setRecentQueriesDisplayCount(count: Int) {
+        uiPreferences.setRecentQueriesDisplayCount(count)
+    }
+
     fun setWebSuggestionsEnabled(enabled: Boolean) = uiPreferences.setWebSuggestionsEnabled(enabled)
 
     // ============================================================================
@@ -1426,6 +1448,39 @@ class UserAppPreferences(
     fun setDictionaryThinkingEnabled(enabled: Boolean) =
         uiPreferences.setDictionaryThinkingEnabled(enabled)
 
+    fun isWeatherEnabled(): Boolean = weatherPreferences.isEnabled()
+    fun setWeatherEnabled(enabled: Boolean) = weatherPreferences.setEnabled(enabled)
+    fun getWeatherLocation(): String = weatherPreferences.getLocation()
+    fun setWeatherLocation(location: String) = weatherPreferences.setLocation(location)
+    fun getWeatherSystemPrompt(): String = weatherPreferences.getSystemPrompt()
+    fun setWeatherSystemPrompt(prompt: String) = weatherPreferences.setSystemPrompt(prompt)
+    fun getWeatherModel(): String =
+        weatherPreferences.getModel().ifBlank {
+            getCurrencyConverterModel().ifBlank { GeminiModelCatalog.DEFAULT_MODEL_ID }
+        }
+    fun setWeatherModel(modelId: String) = weatherPreferences.setModel(modelId)
+    fun getWeatherProviderId(): AiSearchLlmProviderId = weatherPreferences.getProviderId()
+    fun setWeatherProviderId(providerId: AiSearchLlmProviderId) =
+        weatherPreferences.setProviderId(providerId)
+    fun isWeatherGroundingEnabled(): Boolean = true
+    fun setWeatherGroundingEnabled(enabled: Boolean) =
+        weatherPreferences.setGroundingEnabled(true)
+    fun isWeatherThinkingEnabled(): Boolean = weatherPreferences.isThinkingEnabled()
+    fun setWeatherThinkingEnabled(enabled: Boolean) = weatherPreferences.setThinkingEnabled(enabled)
+    fun getWeatherTemperatureUnit(): com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =
+        weatherPreferences.getTemperatureUnit()
+    fun setWeatherTemperatureUnit(
+        unit: com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit,
+    ) = weatherPreferences.setTemperatureUnit(unit)
+    fun getWeatherWindSpeedUnit(): com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit =
+        weatherPreferences.getWindSpeedUnit()
+    fun setWeatherWindSpeedUnit(
+        unit: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit,
+    ) = weatherPreferences.setWindSpeedUnit(unit)
+    fun getWeatherAdvancedPayload(): Pair<Boolean, String> = weatherPreferences.getAdvancedPayload()
+    fun setWeatherAdvancedPayload(payload: String?, enabled: Boolean) =
+        weatherPreferences.setAdvancedPayload(payload, enabled)
+
     // ============================================================================
     // Recent Queries Preferences
     // ============================================================================
@@ -1458,6 +1513,10 @@ class UserAppPreferences(
 
     fun setRecentQueriesEnabled(enabled: Boolean) =
             recentSearchesPreferences.setRecentQueriesEnabled(enabled)
+
+    fun isFuzzySearchEnabled(): Boolean = uiPreferences.isFuzzySearchEnabled()
+
+    fun setFuzzySearchEnabled(enabled: Boolean) = uiPreferences.setFuzzySearchEnabled(enabled)
 
     // ============================================================================
     // Section Preferences

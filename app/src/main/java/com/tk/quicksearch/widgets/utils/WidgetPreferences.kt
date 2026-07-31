@@ -72,6 +72,7 @@ internal object WidgetDefaults {
     const val BORDER_RADIUS_DP = 29f
     const val BORDER_WIDTH_DP = 1.5f
     const val SHOW_LABEL = true
+    const val ICON_SIZE_SCALE = 1f
 
     // Default to left-aligned search icon (previously was showSearchIcon=true, iconAlignLeft=true)
     val SEARCH_ICON_DISPLAY = SearchIconDisplay.LEFT
@@ -101,6 +102,8 @@ private object WidgetRanges {
     const val INTERNAL_HORIZONTAL_PADDING_MAX = 16f
     const val INTERNAL_VERTICAL_PADDING_MIN = -12f
     const val INTERNAL_VERTICAL_PADDING_MAX = 12f
+    const val ICON_SIZE_SCALE_MIN = 1f
+    const val ICON_SIZE_SCALE_MAX = 1.4f
 }
 
 private object WidgetKeys {
@@ -109,6 +112,7 @@ private object WidgetKeys {
     val BORDER_RADIUS = floatPreferencesKey("quick_search_widget_border_radius")
     val BORDER_WIDTH = floatPreferencesKey("quick_search_widget_border_width")
     val SHOW_LABEL = booleanPreferencesKey("quick_search_widget_show_label")
+    val ICON_SIZE_SCALE = floatPreferencesKey("quick_search_widget_icon_size_scale")
     val SEARCH_ICON_DISPLAY = stringPreferencesKey("quick_search_widget_search_icon_display")
     val SHOW_MIC_ICON = booleanPreferencesKey("quick_search_widget_show_mic_icon")
     val THEME = stringPreferencesKey("quick_search_widget_theme")
@@ -148,6 +152,7 @@ data class WidgetPreferences(
     val borderRadiusDp: Float = WidgetDefaults.BORDER_RADIUS_DP,
     val borderWidthDp: Float = WidgetDefaults.BORDER_WIDTH_DP,
     val showLabel: Boolean = WidgetDefaults.SHOW_LABEL,
+    val iconSizeScale: Float = WidgetDefaults.ICON_SIZE_SCALE,
     val searchIconDisplay: SearchIconDisplay = WidgetDefaults.SEARCH_ICON_DISPLAY,
     val showMicIcon: Boolean = WidgetDefaults.SHOW_MIC_ICON,
     val theme: WidgetTheme = WidgetDefaults.THEME,
@@ -199,6 +204,11 @@ data class WidgetPreferences(
                 borderAlpha.coerceFiniteIn(
                     WidgetRanges.BACKGROUND_ALPHA_MIN,
                     WidgetRanges.BACKGROUND_ALPHA_MAX,
+                ),
+            iconSizeScale =
+                iconSizeScale.coerceFiniteIn(
+                    WidgetRanges.ICON_SIZE_SCALE_MIN,
+                    WidgetRanges.ICON_SIZE_SCALE_MAX,
                 ),
             internalHorizontalPaddingDp =
                 internalHorizontalPaddingDp.coerceFiniteIn(
@@ -280,6 +290,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
                 ?: WidgetDefaults.BORDER_RADIUS_DP,
         borderWidthDp = this[WidgetKeys.BORDER_WIDTH] ?: WidgetDefaults.BORDER_WIDTH_DP,
         showLabel = this[WidgetKeys.SHOW_LABEL] ?: WidgetDefaults.SHOW_LABEL,
+        iconSizeScale = this[WidgetKeys.ICON_SIZE_SCALE] ?: WidgetDefaults.ICON_SIZE_SCALE,
         searchIconDisplay =
             this[WidgetKeys.SEARCH_ICON_DISPLAY]?.let { displayString ->
                 SearchIconDisplay.entries.find { it.value == displayString }
@@ -356,6 +367,7 @@ fun MutablePreferences.applyWidgetPreferences(
     this[WidgetKeys.BORDER_RADIUS] = validated.borderRadiusDp
     this[WidgetKeys.BORDER_WIDTH] = validated.borderWidthDp
     this[WidgetKeys.SHOW_LABEL] = validated.showLabel
+    this[WidgetKeys.ICON_SIZE_SCALE] = validated.iconSizeScale
     this[WidgetKeys.SEARCH_ICON_DISPLAY] = validated.searchIconDisplay.value
     this[WidgetKeys.SHOW_MIC_ICON] = validated.showMicIcon
     this[WidgetKeys.THEME] = validated.theme.value

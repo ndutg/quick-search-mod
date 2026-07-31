@@ -165,6 +165,13 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.CALLS_TEXTS,
                 keywords = listOf("texting"),
             )
+            addToggle(
+                id = "app_toggle_number_search",
+                titleRes = R.string.settings_number_search_title,
+                descriptionRes = R.string.settings_number_search_desc,
+                toggleKey = AppSettingsToggleKey.NUMBER_SEARCH,
+                keywords = listOf("phone", "phone number", "contacts"),
+            )
             addNavigation(
                 id = "app_settings_files",
                 titleRes = R.string.settings_file_types_title,
@@ -397,6 +404,13 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.DICTIONARY,
             )
             addToggle(
+                id = "app_toggle_weather",
+                titleRes = R.string.weather_toggle_title,
+                descriptionRes = R.string.weather_toggle_desc,
+                toggleKey = AppSettingsToggleKey.WEATHER,
+                keywords = listOf("forecast", "temperature", "location"),
+            )
+            addToggle(
                 id = "app_toggle_app_suggestions",
                 titleRes = R.string.app_suggestions_toggle_title,
                 descriptionRes = R.string.app_suggestions_toggle_desc,
@@ -435,6 +449,13 @@ class AppSettingsRepository(
                 descriptionRes = R.string.recent_queries_toggle_desc,
                 toggleKey = AppSettingsToggleKey.RECENT_QUERIES,
                 keywords = listOf("recent"),
+            )
+            addToggle(
+                id = "app_toggle_fuzzy_search",
+                titleRes = R.string.fuzzy_search_toggle_title,
+                descriptionRes = R.string.fuzzy_search_toggle_desc,
+                toggleKey = AppSettingsToggleKey.FUZZY_SEARCH,
+                keywords = listOf("typo", "approximate", "matching"),
             )
             addToggle(
                 id = "app_toggle_top_result_indicator",
