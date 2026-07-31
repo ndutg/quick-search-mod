@@ -773,7 +773,11 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">అన్ని ఫీచర్లు</string>
+    <string name="release_notes_previous_versions">మునుపటి వెర్షన్‌లు</string>
+    <string name="release_notes_previous_versions_unavailable">మునుపటి వెర్షన్‌లను లోడ్ చేయలేకపోయాము</string>
     <string name="release_notes_action_got_it">అర్థమైంది</string>
+    <string name="settings_release_notes_title">రిలీజ్ నోట్స్</string>
+    <string name="settings_release_notes_desc">ఈ వెర్షన్ రిలీజ్ నోట్స్ చూడండి</string>
     <string name="update_card_title">క్విక్ సెర్చ్ కోసం కొత్త అప్‌డేట్ అందుబాటులో ఉంది!</string>
     <string name="action_update">అప్‌డేట్ చేయండి</string>
     <string name="release_notes_title">Quick Search v%1$s రిలీజ్ నోట్స్</string>

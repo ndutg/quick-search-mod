@@ -78,6 +78,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.searchScreen.dialogs.ReleaseNotesDrawer
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.shared.*
@@ -129,6 +130,10 @@ fun SettingsScreen(
     shouldShowSettingsSearchTip: Boolean,
     onDismissSettingsSearchTip: () -> Unit,
     onNavigateToDetail: (SettingsDetailType) -> Unit,
+    showReleaseNotesDialog: Boolean,
+    releaseNotesVersionName: String?,
+    onOpenReleaseNotes: () -> Unit,
+    onReleaseNotesAcknowledged: () -> Unit,
     onSettingsImported: () -> Unit = {},
     pendingImportUri: String? = null,
     onPendingImportUriConsumed: () -> Unit = {},
@@ -545,6 +550,7 @@ fun SettingsScreen(
 
             // More Options Section
             SettingsMoreOptions(
+                onOpenReleaseNotes = onOpenReleaseNotes,
                 onOpenFeaturesList = { onNavigateToDetail(SettingsDetailType.FEATURES_LIST) },
                 onOpenOssLicenses = { onNavigateToDetail(SettingsDetailType.OPEN_SOURCE_LICENSES) },
             )
@@ -556,6 +562,17 @@ fun SettingsScreen(
             )
         }
     }
+    }
+
+    if (showReleaseNotesDialog) {
+        ReleaseNotesDrawer(
+            versionName = releaseNotesVersionName,
+            onAcknowledge = onReleaseNotesAcknowledged,
+            onViewAllFeatures = {
+                onReleaseNotesAcknowledged()
+                onNavigateToDetail(SettingsDetailType.FEATURES_LIST)
+            },
+        )
     }
 
     if (showImportWarningDialog) {
@@ -670,6 +687,7 @@ private fun importSettingsFromUri(
 @Composable
 fun SettingsMoreOptions(
     modifier: Modifier = Modifier,
+    onOpenReleaseNotes: () -> Unit = {},
     onOpenFeaturesList: () -> Unit = {},
     onOpenOssLicenses: () -> Unit = {},
 ) {
@@ -737,6 +755,12 @@ fun SettingsMoreOptions(
                 iconResId = R.drawable.ic_github,
                 iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
                 actionOnPress = onOpenGitHub,
+            ),
+            SettingsCardItem(
+                title = stringResource(R.string.settings_release_notes_title),
+                description = stringResource(R.string.settings_release_notes_desc),
+                icon = Icons.Rounded.RocketLaunch,
+                actionOnPress = onOpenReleaseNotes,
             ),
             SettingsCardItem(
                 title = stringResource(R.string.settings_all_quick_search_features),

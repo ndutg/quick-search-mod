@@ -100,7 +100,7 @@ internal fun SearchScreenDialogs(
     }
 
     if (state.showReleaseNotesDialog) {
-        ReleaseNotesDialog(
+        ReleaseNotesDrawer(
             versionName = state.releaseNotesVersionName,
             onAcknowledge = onReleaseNotesAcknowledged,
             onViewAllFeatures = onReleaseNotesViewAllFeatures,

@@ -1,35 +1,44 @@
 package com.tk.quicksearch.search.searchScreen.dialogs
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ExpandMore
+import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.PastReleaseNotes
+import com.tk.quicksearch.app.ReleaseNotesRepository
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
@@ -38,54 +47,48 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import androidx.compose.runtime.snapshotFlow
 
 @Composable
-internal fun ReleaseNotesDialog(
+internal fun ReleaseNotesDrawer(
     versionName: String?,
     onAcknowledge: () -> Unit,
     onViewAllFeatures: () -> Unit,
 ) {
-    val scrollState = rememberScrollState()
+    val context = LocalContext.current
+    val releaseNotesMarkdown = remember {
+        context.assets.open("RELEASE_NOTES.md").bufferedReader().use { it.readText() }
+    }
+    val bulletPoints = remember(releaseNotesMarkdown) {
+        parseReleaseNotesBulletPoints(releaseNotesMarkdown)
+    }
     val title =
         if (versionName != null) {
             stringResource(R.string.release_notes_title, versionName)
         } else {
             stringResource(R.string.release_notes_title_no_version)
         }
-    val context = LocalContext.current
-    val releaseNotesMarkdown = remember {
-        context.assets.open("RELEASE_NOTES.md").bufferedReader().use { it.readText() }
-    }
-    val scrollBarAlpha = remember { Animatable(1f) }
-    LaunchedEffect(scrollState) {
-        val scope = this
-        var hideJob: Job? = null
-        snapshotFlow { scrollState.value }.collect {
-            hideJob?.cancel()
-            scrollBarAlpha.snapTo(1f)
-            hideJob = scope.launch {
-                delay(1500)
-                scrollBarAlpha.animateTo(0f, animationSpec = tween(300))
-            }
-        }
+
+    // Past releases are fetched lazily, the first time the history section is expanded.
+    var isHistoryExpanded by remember(versionName) { mutableStateOf(false) }
+    var pastReleaseNotes by remember(versionName) { mutableStateOf<List<PastReleaseNotes>>(emptyList()) }
+    var isLoadingHistory by remember(versionName) { mutableStateOf(false) }
+    var hasLoadedHistory by remember(versionName) { mutableStateOf(false) }
+    var expandedPastVersion by remember(versionName) { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(isHistoryExpanded) {
+        if (!isHistoryExpanded || hasLoadedHistory) return@LaunchedEffect
+        isLoadingHistory = true
+        pastReleaseNotes = ReleaseNotesRepository().getPastReleaseNotes(versionName)
+        isLoadingHistory = false
+        hasLoadedHistory = true
     }
 
-    val bulletPoints = remember(releaseNotesMarkdown) {
-        parseReleaseNotesBulletPoints(releaseNotesMarkdown)
-    }
-
-    AppAlertDialog(
-        onDismissRequest = onAcknowledge,
+    AppBottomPopup(
+        onDismiss = onAcknowledge,
+        containerColor = AppColors.DialogBackground,
+        contentCardColor = AppColors.DialogBackground,
+        contentSpacing = 8.dp,
         title = {
             Text(
                 text = title,
@@ -93,61 +96,152 @@ internal fun ReleaseNotesDialog(
                 fontWeight = FontWeight.SemiBold,
             )
         },
-        text = {
-            Box(
-                modifier = Modifier
-                    .heightIn(max = 400.dp)
-                    .fillMaxWidth(),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(scrollState)
-                        .padding(end = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    bulletPoints.forEach { point ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.Top,
-                        ) {
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            ReleaseNotesBulletList(bulletPoints = bulletPoints)
+
+            HorizontalDivider(
+                modifier = Modifier.padding(top = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            )
+
+            ReleaseNotesExpanderRow(
+                label = stringResource(R.string.release_notes_previous_versions),
+                isExpanded = isHistoryExpanded,
+                style = MaterialTheme.typography.bodyMedium,
+                onClick = { isHistoryExpanded = !isHistoryExpanded },
+            )
+
+            AnimatedVisibility(visible = isHistoryExpanded) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    when {
+                        isLoadingHistory ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                )
+                            }
+
+                        pastReleaseNotes.isEmpty() ->
                             Text(
-                                text = "•",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                text = stringResource(R.string.release_notes_previous_versions_unavailable),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(vertical = 12.dp),
                             )
-                            Text(
-                                text = point,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
+
+                        else ->
+                            pastReleaseNotes.forEach { release ->
+                                val isExpanded = expandedPastVersion == release.versionName
+                                ReleaseNotesExpanderRow(
+                                    label = "v${release.versionName}",
+                                    isExpanded = isExpanded,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    onClick = {
+                                        expandedPastVersion =
+                                            if (isExpanded) null else release.versionName
+                                    },
+                                )
+                                AnimatedVisibility(visible = isExpanded) {
+                                    ReleaseNotesBulletList(
+                                        bulletPoints = parseReleaseNotesBulletPoints(release.markdown),
+                                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                                    )
+                                }
+                            }
                     }
                 }
+            }
 
-                if (scrollState.maxValue > 0) {
-                    PersistentScrollIndicator(
-                        scrollState = scrollState,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .fillMaxHeight()
-                            .graphicsLayer { alpha = scrollBarAlpha.value },
-                        thumbColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.55f),
-                        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.16f),
-                    )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextButton(onClick = onViewAllFeatures) {
+                    Text(text = stringResource(R.string.release_notes_action_all_features))
+                }
+                Button(onClick = onAcknowledge) {
+                    Text(text = stringResource(R.string.release_notes_action_got_it))
                 }
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onViewAllFeatures) {
-                Text(text = stringResource(R.string.release_notes_action_all_features))
+        }
+    }
+}
+
+@Composable
+private fun ReleaseNotesBulletList(
+    bulletPoints: List<String>,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        bulletPoints.forEach { point ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Text(
+                    text = "•",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = point,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
-        },
-        confirmButton = {
-            Button(onClick = onAcknowledge) {
-                Text(text = stringResource(R.string.release_notes_action_got_it))
-            }
-        },
+        }
+    }
+}
+
+@Composable
+private fun ReleaseNotesExpanderRow(
+    label: String,
+    isExpanded: Boolean,
+    style: TextStyle,
+    onClick: () -> Unit,
+) {
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "releaseNotesChevronRotation",
     )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick,
+            )
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = style,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Icon(
+            imageVector = Icons.Rounded.ExpandMore,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp).rotate(chevronRotation),
+        )
+    }
 }
 
 private fun parseReleaseNotesBulletPoints(markdown: String): List<String> {
@@ -168,44 +262,6 @@ private fun parseReleaseNotesBulletPoints(markdown: String): List<String> {
         }.map { it.trim() }
         .filter { it.isNotEmpty() }
         .toList()
-}
-
-@Composable
-private fun PersistentScrollIndicator(
-    scrollState: androidx.compose.foundation.ScrollState,
-    modifier: Modifier = Modifier,
-    thumbColor: Color,
-    trackColor: Color,
-) {
-    Canvas(
-        modifier =
-            modifier
-                .width(4.dp)
-                .padding(vertical = 2.dp),
-    ) {
-        val trackWidth = size.width
-        val cornerRadius = CornerRadius(x = trackWidth / 2f, y = trackWidth / 2f)
-
-        drawRoundRect(
-            color = trackColor,
-            cornerRadius = cornerRadius,
-        )
-
-        if (scrollState.maxValue <= 0) return@Canvas
-
-        val totalContentHeight = size.height + scrollState.maxValue
-        val thumbHeight = (size.height * (size.height / totalContentHeight) * 0.85f).coerceAtLeast(20.dp.toPx())
-        val maxThumbOffset = (size.height - thumbHeight).coerceAtLeast(0f)
-        val progress = (scrollState.value.toFloat() / scrollState.maxValue.toFloat()).coerceIn(0f, 1f)
-        val thumbTop = maxThumbOffset * progress
-
-        drawRoundRect(
-            color = thumbColor,
-            topLeft = Offset(x = 0f, y = thumbTop),
-            size = Size(width = trackWidth, height = thumbHeight),
-            cornerRadius = cornerRadius,
-        )
-    }
 }
 
 sealed class NicknameDialogState {

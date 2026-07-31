@@ -774,7 +774,11 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">كل الميزات</string>
+    <string name="release_notes_previous_versions">الإصدارات السابقة</string>
+    <string name="release_notes_previous_versions_unavailable">تعذّر تحميل الإصدارات السابقة</string>
     <string name="release_notes_action_got_it">حسناً</string>
+    <string name="settings_release_notes_title">ملاحظات الإصدار</string>
+    <string name="settings_release_notes_desc">عرض ملاحظات إصدار هذا الإصدار</string>
     <string name="update_card_title">يتوفر تحديث جديد لـ Quick Search!</string>
     <string name="action_update">تحديث</string>
     <string name="release_notes_title">ملاحظات إصدار Quick Search v%1$s</string>

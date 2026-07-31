@@ -772,7 +772,11 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">Tutte le funzioni</string>
+    <string name="release_notes_previous_versions">Versioni precedenti</string>
+    <string name="release_notes_previous_versions_unavailable">Impossibile caricare le versioni precedenti</string>
     <string name="release_notes_action_got_it">Capito</string>
+    <string name="settings_release_notes_title">Note di rilascio</string>
+    <string name="settings_release_notes_desc">Visualizza le note di rilascio di questa versione</string>
     <string name="update_card_title">È disponibile un nuovo aggiornamento per Quick Search!</string>
     <string name="action_update">Aggiorna</string>
     <string name="release_notes_title">Note di rilascio di Quick Search v%1$s</string>

@@ -75,11 +75,13 @@ fun AppIconOverrideDrawer(
 
     AppBottomPopup(
         onDismiss = onDismiss,
+        containerColor = AppColors.DialogBackground,
+        contentCardColor = AppColors.DialogBackground,
         title = {
             Text(
                 text = stringResource(R.string.icon_picker_title, appName),
                 style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
         },

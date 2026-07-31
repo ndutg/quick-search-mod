@@ -772,7 +772,11 @@
      Settings - Backup, Feedback &amp; About
      ============================================================================ -->
 <string name="release_notes_action_all_features">Tüm özellikler</string>
+<string name="release_notes_previous_versions">Önceki sürümler</string>
+<string name="release_notes_previous_versions_unavailable">Önceki sürümler yüklenemedi</string>
 <string name="release_notes_action_got_it">Anladım</string>
+<string name="settings_release_notes_title">Sürüm notları</string>
+<string name="settings_release_notes_desc">Bu sürümün notlarını görüntüle</string>
 <string name="update_card_title">Quick Search için yeni bir güncelleme mevcut!</string>
 <string name="action_update">Güncelle</string>
 <string name="release_notes_title">Quick Search v%1$s sürüm notları</string>

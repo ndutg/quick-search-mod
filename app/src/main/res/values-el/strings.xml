@@ -773,7 +773,11 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">Όλες οι δυνατότητες</string>
+    <string name="release_notes_previous_versions">Προηγούμενες εκδόσεις</string>
+    <string name="release_notes_previous_versions_unavailable">Δεν ήταν δυνατή η φόρτωση προηγούμενων εκδόσεων</string>
     <string name="release_notes_action_got_it">Κατανόησα</string>
+    <string name="settings_release_notes_title">Σημειώσεις έκδοσης</string>
+    <string name="settings_release_notes_desc">Δείτε τις σημειώσεις έκδοσης για αυτήν την έκδοση</string>
     <string name="update_card_title">Μια νέα ενημέρωση είναι διαθέσιμη για το Quick Search!</string>
     <string name="action_update">Ενημέρωση</string>
     <string name="release_notes_title">Σημειώσεις έκδοσης Quick Search v%1$s</string>

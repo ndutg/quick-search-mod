@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -71,6 +72,8 @@ fun AppBottomPopup(
     onDismiss: () -> Unit,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    containerColor: Color = AppColors.getDrawerContainerColor(),
+    contentCardColor: Color = AppColors.getSettingsCardContainerColor(),
     leadingContent: (@Composable () -> Unit)? = null,
     aboveCardContent: (@Composable () -> Unit)? = null,
     fixedTopContent: (@Composable () -> Unit)? = null,
@@ -131,7 +134,8 @@ fun AppBottomPopup(
                         )
                         .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 24.dp),
                 shape = MaterialTheme.shapes.extraLarge,
-                color = AppColors.getDrawerContainerColor(),
+                color = containerColor,
+                contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
                 Column(
                     modifier =
@@ -180,7 +184,7 @@ fun AppBottomPopup(
                                     else -> Modifier.heightIn(max = resolvedMaxCardHeight)
                                 },
                             ),
-                        colors = CardDefaults.cardColors(containerColor = AppColors.getSettingsCardContainerColor()),
+                        colors = CardDefaults.cardColors(containerColor = contentCardColor),
                         shape = MaterialTheme.shapes.large,
                     ) {
                         if (fixedTopContent == null) {

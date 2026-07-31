@@ -345,6 +345,10 @@ internal class SearchStartupLifecycleDelegate(
 
     fun launchDeferredInitialization() {
         scope.launch(startupDispatcher) {
+            withContext(Dispatchers.Main.immediate) {
+                releaseNotesHandler.checkForReleaseNotes()
+            }
+
             val pinnedContactsStartupJob =
                 scope.launch(Dispatchers.IO) {
                     pinningHandler.loadPinnedContactsForStartup()
@@ -540,12 +544,6 @@ internal class SearchStartupLifecycleDelegate(
                 // PackageManager scan out of the critical path and only validate/discover packs
                 // after the optional-startup idle window.
                 iconPackHandler.refreshIconPacks()
-            }
-
-            launch(Dispatchers.IO) {
-                delay(DEFERRED_RELEASE_NOTES_DELAY_MS)
-                while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
-                releaseNotesHandler.checkForReleaseNotes()
             }
 
             withContext(Dispatchers.Main) {
@@ -1065,7 +1063,6 @@ internal class SearchStartupLifecycleDelegate(
     companion object {
         private const val BROWSER_REFRESH_INTERVAL_MS = 5 * 60 * 1_000L
         private const val DEFERRED_AI_SEARCH_MODELS_DELAY_MS = 15_000L
-        private const val DEFERRED_RELEASE_NOTES_DELAY_MS = 15_000L
         private const val OPTIONAL_STARTUP_DELAY_MS = 10_000L
         private const val OPTIONAL_STARTUP_QUERY_RECHECK_MS = 1_000L
         private const val APP_RECONCILIATION_FRESHNESS_MS = 24L * 60L * 60L * 1_000L
