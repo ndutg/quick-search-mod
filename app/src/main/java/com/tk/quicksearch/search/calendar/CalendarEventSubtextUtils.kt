@@ -1,7 +1,9 @@
 package com.tk.quicksearch.search.calendar
 
+import android.text.format.DateFormat
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
@@ -64,10 +66,15 @@ fun formatAbsoluteDate(millis: Long): String {
 
 @Composable
 fun formatCalendarEventDate(event: CalendarEventInfo): String {
+    val context = LocalContext.current
     val locale = Locale.getDefault()
     val date = Date(event.startMillis)
-    val pattern = if (event.allDay) "EEE, MMM d" else "EEE, MMM d • h:mm a"
-    return SimpleDateFormat(pattern, locale).format(date)
+    val dateText = SimpleDateFormat("EEE, MMM d", locale).format(date)
+    return if (event.allDay) {
+        dateText
+    } else {
+        "$dateText • ${DateFormat.getTimeFormat(context).format(date)}"
+    }
 }
 
 @Composable
