@@ -66,6 +66,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickSearch">
 
+        <receiver
+            android:name=".search.data.AppCatalogChangeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_CHANGED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
         <!-- Enable profiling for Android Profiler -->
         <profileable
             android:shell="true"

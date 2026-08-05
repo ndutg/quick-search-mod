@@ -115,7 +115,9 @@ class AppCache(
         private const val PREFS_NAME = "app_cache"
         private const val KEY_APP_LIST = "app_list"
         private const val KEY_LAST_UPDATE = "last_update"
-        private const val CACHE_FILE_NAME = "app_cache_v1.bin"
+        // Revision 2 drops catalogs created before package-change invalidation existed. Once
+        // rebuilt, this file remains the normal cache-first startup path.
+        private const val CACHE_FILE_NAME = "app_cache_v2.bin"
         private const val CACHE_FILE_VERSION = 3
 
         // JSON field names
