@@ -288,6 +288,13 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setAppResultRowCount(rowCount: Int) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setAppResultRowCount(rowCount)
+            updateFeatureState { it.copy(appResultRowCount = rowCount) }
+        }
+    }
+
     fun setFuzzySearchEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             if (isLowRamDevice(applicationProvider())) return@launch

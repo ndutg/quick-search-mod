@@ -510,6 +510,8 @@ private fun TopMatchRow(
                 webSuggestionsCount = settingsParams.appSettingWebSuggestionsCount,
                 appSettingPhoneAppGridColumns = settingsParams.appSettingPhoneAppGridColumns,
                 onAppSettingPhoneAppGridColumnsChange = settingsParams.onAppSettingPhoneAppGridColumnsChange,
+                appSettingAppResultRowCount = settingsParams.appSettingAppResultRowCount,
+                onAppSettingAppResultRowCountChange = settingsParams.onAppSettingAppResultRowCountChange,
                 isPredicted = isPredicted,
             )
         }

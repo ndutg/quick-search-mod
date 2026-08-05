@@ -281,6 +281,7 @@
     <string name="settings_app_columns_4">4</string>
     <string name="settings_app_columns_5">5</string>
     <string name="settings_app_columns_title">App per riga</string>
+    <string name="settings_app_result_rows_title">Righe dei risultati delle app</string>
     <string name="settings_app_icon_size_percent">%1$d%%</string>
     <string name="settings_app_icon_size_title">Dimensione icone app</string>
     <string name="settings_app_info_install_date">Data di installazione</string>

@@ -283,6 +283,7 @@
     <string name="settings_app_columns_4">4</string>
     <string name="settings_app_columns_5">5</string>
     <string name="settings_app_columns_title">عدد التطبيقات في كل صف</string>
+    <string name="settings_app_result_rows_title">صفوف نتائج التطبيقات</string>
     <string name="settings_app_icon_size_percent">%1$d%%</string>
     <string name="settings_app_icon_size_title">حجم أيقونات التطبيقات</string>
     <string name="settings_app_info_install_date">تاريخ التثبيت</string>

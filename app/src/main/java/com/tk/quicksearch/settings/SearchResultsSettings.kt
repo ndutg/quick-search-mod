@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import com.tk.quicksearch.settings.shared.SectionSettingsSection
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.border
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Bolt
@@ -33,6 +33,8 @@ import androidx.compose.material.icons.rounded.Reorder
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.HorizontalDivider
@@ -101,6 +103,8 @@ private fun SearchOptionsCard(
     onRecentQueriesToggle: (Boolean) -> Unit,
     recentQueriesDisplayCount: Int,
     onRecentQueriesDisplayCountChange: (Int) -> Unit,
+    appResultRowCount: Int,
+    onAppResultRowCountChange: (Int) -> Unit,
     fuzzySearchEnabled: Boolean,
     fuzzySearchAvailable: Boolean,
     onFuzzySearchToggle: (Boolean) -> Unit,
@@ -211,6 +215,12 @@ private fun SearchOptionsCard(
             }
             HorizontalDivider(color = AppColors.SettingsDivider)
 
+            AppResultRowsSelector(
+                selectedRowCount = appResultRowCount,
+                onSelectRowCount = onAppResultRowCountChange,
+            )
+            HorizontalDivider(color = AppColors.SettingsDivider)
+
             SettingsToggleRow(
                 title = stringResource(R.string.app_suggestions_toggle_title),
                 subtitle = stringResource(R.string.app_suggestions_toggle_desc),
@@ -235,7 +245,6 @@ private fun SearchOptionsCard(
 
             val hasAnyNavigationRows = hasNicknames || hasTriggers || hasExcludedItems
             var hasRenderedNavigationRow = false
-
             if (hasAnyNavigationRows) {
                 HorizontalDivider(color = AppColors.SettingsDivider)
             }
@@ -307,6 +316,64 @@ private fun SearchOptionsCard(
             onTabEnabledChange = onAppSuggestionTabEnabledChange,
             onDismiss = { showAppSuggestionTabsDialog = false },
         )
+    }
+}
+
+@Composable
+private fun AppResultRowsSelector(
+    selectedRowCount: Int,
+    onSelectRowCount: (Int) -> Unit,
+) {
+    val view = LocalView.current
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = DesignTokens.SpacingXXLarge,
+                    vertical = DesignTokens.SpacingMedium,
+                ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Apps,
+                contentDescription = null,
+                modifier = Modifier.size(DesignTokens.IconSizeSmall),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = stringResource(R.string.settings_app_result_rows_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall)) {
+            listOf(1, 2).forEach { rowCount ->
+                val selected = selectedRowCount == rowCount
+                AssistChip(
+                    onClick = {
+                        hapticToggle(view)()
+                        onSelectRowCount(rowCount)
+                    },
+                    label = { Text(rowCount.toString()) },
+                    shape = DesignTokens.ShapeFull,
+                    border = if (selected) null else BorderStroke(1.dp, AppColors.SettingsDivider),
+                    colors =
+                        AssistChipDefaults.assistChipColors(
+                            containerColor =
+                                if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            labelColor =
+                                if (selected) MaterialTheme.colorScheme.onPrimary
+                                else MaterialTheme.colorScheme.primary,
+                        ),
+                )
+            }
+        }
     }
 }
 
@@ -1025,6 +1092,10 @@ fun SearchResultsSettingsSection(
             recentQueriesDisplayCount = state.recentQueriesDisplayCount,
             onRecentQueriesDisplayCountChange = { count ->
                 callbacks.onApplySettingsCommand(SettingsCommand.RecentQueriesDisplayCount(count))
+            },
+            appResultRowCount = state.appResultRowCount,
+            onAppResultRowCountChange = { rowCount ->
+                callbacks.onApplySettingsCommand(SettingsCommand.AppResultRowCount(rowCount))
             },
             fuzzySearchEnabled = state.fuzzySearchEnabled,
             fuzzySearchAvailable = state.fuzzySearchAvailable,

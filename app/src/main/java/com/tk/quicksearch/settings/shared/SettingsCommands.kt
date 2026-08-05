@@ -22,6 +22,8 @@ sealed interface SettingsCommand {
 
     data class RecentQueriesDisplayCount(val count: Int) : SettingsCommand
 
+    data class AppResultRowCount(val rowCount: Int) : SettingsCommand
+
     data class AppSuggestionTabEnabled(
         val tab: AppSuggestionTabType,
         val enabled: Boolean,
@@ -128,7 +130,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.USE_SYSTEM_FONT -> setUseSystemFont(command.enabled)
                 AppSettingsToggleKey.DICTIONARY -> setDictionaryEnabled(command.enabled)
                 AppSettingsToggleKey.WEATHER -> setWeatherEnabled(command.enabled)
-                AppSettingsToggleKey.APPS_PER_ROW -> Unit
+                AppSettingsToggleKey.APPS_PER_ROW,
+                AppSettingsToggleKey.APP_RESULT_ROWS -> Unit
                 AppSettingsToggleKey.SEARCH_APPS,
                 AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,
                 AppSettingsToggleKey.SEARCH_CONTACTS,
@@ -143,6 +146,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
 
         is SettingsCommand.WebSuggestionsCount -> setWebSuggestionsCount(command.count)
         is SettingsCommand.RecentQueriesDisplayCount -> setRecentQueriesDisplayCount(command.count)
+        is SettingsCommand.AppResultRowCount -> setAppResultRowCount(command.rowCount)
         is SettingsCommand.AppSuggestionTabEnabled ->
             setAppSuggestionTabEnabled(command.tab, command.enabled)
         is SettingsCommand.TopMatchesLimit -> setTopMatchesLimit(command.limit)
@@ -212,7 +216,8 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.USE_SYSTEM_FONT -> useSystemFont
         AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled
         AppSettingsToggleKey.WEATHER -> weatherEnabled
-        AppSettingsToggleKey.APPS_PER_ROW -> false
+        AppSettingsToggleKey.APPS_PER_ROW,
+        AppSettingsToggleKey.APP_RESULT_ROWS -> false
         AppSettingsToggleKey.SEARCH_APPS,
         AppSettingsToggleKey.SEARCH_APP_SHORTCUTS,
         AppSettingsToggleKey.SEARCH_CONTACTS,

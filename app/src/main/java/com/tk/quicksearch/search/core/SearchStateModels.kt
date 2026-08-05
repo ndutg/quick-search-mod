@@ -199,6 +199,7 @@ data class SearchFeatureState(
         // Search history
         val recentQueriesEnabled: Boolean = true,
         val recentQueriesDisplayCount: Int = UiPreferences.DEFAULT_RECENT_QUERIES_DISPLAY_COUNT,
+        val appResultRowCount: Int = UiPreferences.DEFAULT_APP_RESULT_ROW_COUNT,
         val fuzzySearchEnabled: Boolean = true,
         val fuzzySearchAvailable: Boolean = true,
         val hasDismissedSearchHistoryTip: Boolean = false,

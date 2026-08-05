@@ -817,6 +817,20 @@ class UiPreferences(
         prefs.edit().putInt(UiPreferences.KEY_RECENT_QUERIES_DISPLAY_COUNT, normalized).apply()
     }
 
+    fun getAppResultRowCount(): Int =
+        prefs.getInt(
+            UiPreferences.KEY_APP_RESULT_ROW_COUNT,
+            UiPreferences.DEFAULT_APP_RESULT_ROW_COUNT,
+        ).takeIf { it in UiPreferences.APP_RESULT_ROW_COUNT_OPTIONS }
+            ?: UiPreferences.DEFAULT_APP_RESULT_ROW_COUNT
+
+    fun setAppResultRowCount(rowCount: Int) {
+        val normalized =
+            rowCount.takeIf { it in UiPreferences.APP_RESULT_ROW_COUNT_OPTIONS }
+                ?: UiPreferences.DEFAULT_APP_RESULT_ROW_COUNT
+        prefs.edit().putInt(UiPreferences.KEY_APP_RESULT_ROW_COUNT, normalized).apply()
+    }
+
     // ============================================================================
     // Calculator Preferences
     // ============================================================================
@@ -1257,6 +1271,9 @@ class UiPreferences(
         const val KEY_RECENT_QUERIES_DISPLAY_COUNT = "recent_queries_display_count"
         const val DEFAULT_RECENT_QUERIES_DISPLAY_COUNT = 1
         val RECENT_QUERIES_DISPLAY_COUNT_OPTIONS = setOf(1, 3, 5, 7, 10)
+        const val KEY_APP_RESULT_ROW_COUNT = "app_result_row_count"
+        const val DEFAULT_APP_RESULT_ROW_COUNT = 1
+        val APP_RESULT_ROW_COUNT_OPTIONS = setOf(1, 2)
 
         // App suggestions preferences keys
         const val KEY_APP_SUGGESTIONS_ENABLED = "app_suggestions_enabled"

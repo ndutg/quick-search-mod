@@ -282,6 +282,7 @@
     <string name="settings_app_columns_4">4</string>
     <string name="settings_app_columns_5">5</string>
     <string name="settings_app_columns_title">Apps pro Reihe</string>
+    <string name="settings_app_result_rows_title">App-Ergebniszeilen</string>
     <string name="settings_app_icon_size_percent">%1$d%%</string>
     <string name="settings_app_icon_size_title">App-Symbolgröße</string>
     <string name="settings_app_info_install_date">Installationsdatum</string>

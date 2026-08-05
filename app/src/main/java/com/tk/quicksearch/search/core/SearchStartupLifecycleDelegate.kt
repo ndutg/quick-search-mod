@@ -760,6 +760,7 @@ internal class SearchStartupLifecycleDelegate(
                 disabledAppShortcutIds = userPreferences.getDisabledAppShortcutIds(),
                 recentQueriesEnabled = prefs.searchHistoryEnabled,
                 recentQueriesDisplayCount = userPreferences.getRecentQueriesDisplayCount(),
+                appResultRowCount = userPreferences.getAppResultRowCount(),
                 fuzzySearchEnabled =
                     !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()) &&
                         userPreferences.isFuzzySearchEnabled(),

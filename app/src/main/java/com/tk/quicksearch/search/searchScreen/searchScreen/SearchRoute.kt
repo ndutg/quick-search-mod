@@ -767,6 +767,8 @@ fun SearchRoute(
             appSettingWebSuggestionsCount = uiState.webSuggestionsCount,
             appSettingPhoneAppGridColumns = uiState.phoneAppGridColumns,
             onAppSettingPhoneAppGridColumnsChange = viewModel::setPhoneAppGridColumns,
+            appSettingAppResultRowCount = uiState.appResultRowCount,
+            onAppSettingAppResultRowCountChange = viewModel::setAppResultRowCount,
             onPinSetting = viewModel::pinSetting,
             onUnpinSetting = viewModel::unpinSetting,
             onMovePinnedSetting = viewModel::movePinnedSetting,

@@ -282,6 +282,7 @@
     <string name="settings_app_columns_4">4</string>
     <string name="settings_app_columns_5">5</string>
     <string name="settings_app_columns_title">వరుసకు యాప్‌ల సంఖ్య</string>
+    <string name="settings_app_result_rows_title">యాప్ ఫలితాల వరుసలు</string>
     <string name="settings_app_icon_size_percent">%1$d%%</string>
     <string name="settings_app_icon_size_title">యాప్ ఐకాన్ పరిమాణం</string>
     <string name="settings_app_info_install_date">ఇన్‌స్టాల్ చేసిన తేదీ</string>

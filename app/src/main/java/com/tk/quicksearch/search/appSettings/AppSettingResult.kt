@@ -95,6 +95,7 @@ enum class AppSettingsToggleKey {
     DEVICE_THEME,
     USE_SYSTEM_FONT,
     APPS_PER_ROW,
+    APP_RESULT_ROWS,
     DICTIONARY,
     WEATHER,
 }

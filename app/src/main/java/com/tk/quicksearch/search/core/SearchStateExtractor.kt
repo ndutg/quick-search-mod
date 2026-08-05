@@ -131,6 +131,7 @@ internal object SearchStateExtractor {
             taskerIntentTools = s.taskerIntentTools,
             recentQueriesEnabled = s.recentQueriesEnabled,
             recentQueriesDisplayCount = s.recentQueriesDisplayCount,
+            appResultRowCount = s.appResultRowCount,
             topMatchesEnabled = s.topMatchesEnabled,
             topMatchesLimit = s.topMatchesLimit,
             topMatchesSectionOrder = s.topMatchesSectionOrder,
