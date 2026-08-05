@@ -229,13 +229,38 @@ internal object SearchEngineIntents {
         context: Application,
         query: String,
     ) {
-        openWebBackedEngine(
-            context = context,
-            query = query,
-            searchEngine = SearchEngine.WIKIPEDIA,
-            packageName = PackageConstants.WIKIPEDIA_PACKAGE_NAME,
-            logTag = "WikipediaLaunch",
-        )
+        val trimmedQuery = query.trim()
+        if (trimmedQuery.isBlank()) {
+            openWebBackedEngine(
+                context = context,
+                query = trimmedQuery,
+                searchEngine = SearchEngine.WIKIPEDIA,
+                packageName = PackageConstants.WIKIPEDIA_PACKAGE_NAME,
+                logTag = "WikipediaLaunch",
+            )
+            return
+        }
+
+        val appSearchIntent =
+            Intent(Intent.ACTION_SEND).apply {
+                setPackage(PackageConstants.WIKIPEDIA_PACKAGE_NAME)
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, trimmedQuery)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+        if (IntentUtils.canResolveIntent(context, appSearchIntent)) {
+            try {
+                context.startActivity(appSearchIntent)
+                return
+            } catch (e: ActivityNotFoundException) {
+                Log.w("WikipediaLaunch", "Search intent failed: ${e.message}")
+            } catch (e: SecurityException) {
+                Log.w("WikipediaLaunch", "Search security exception: ${e.message}")
+            }
+        }
+
+        openWebUrl(context, buildSearchUrl(trimmedQuery, SearchEngine.WIKIPEDIA))
     }
 
     /** Opens Startpage app if installed, otherwise opens web URL. */

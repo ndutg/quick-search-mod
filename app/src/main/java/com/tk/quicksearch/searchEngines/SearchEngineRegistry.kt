@@ -236,7 +236,7 @@ object SearchEngineRegistry {
                 engine = SearchEngine.WIKIPEDIA,
                 drawableResId = R.drawable.wikipedia,
                 contentDescriptionResId = R.string.search_engine_wikipedia,
-                urlTemplate = "https://en.wikipedia.org/wiki/%s",
+                urlTemplate = "https://en.wikipedia.org/w/index.php?search=%s&fulltext=1",
                 defaultShortcutCode = "wki",
                 homeUrl = "https://en.wikipedia.org/wiki/Main_Page",
                 appPackages = listOf(PackageConstants.WIKIPEDIA_PACKAGE_NAME),
