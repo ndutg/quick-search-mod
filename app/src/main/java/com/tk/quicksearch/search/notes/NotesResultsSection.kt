@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
@@ -53,6 +55,7 @@ import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentP
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.shared.util.hapticConfirm
 
 @Composable
@@ -185,6 +188,9 @@ internal fun NoteRow(
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     val rowView = LocalView.current
+    val context = LocalContext.current
+    val notificationAction = CustomWidgetButtonAction.Note(note.noteId, note.title)
+    val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     val title = note.title.ifBlank { stringResource(R.string.notes_untitled) }
     val preview = NotesTextUtils.firstLinesPreview(note.markdownContent)
     val subtitle =
@@ -325,6 +331,20 @@ internal fun NoteRow(
                         onTriggerClick(note)
                     },
                     leadingIcon = { Icon(Icons.Rounded.Bolt, contentDescription = null) },
+                )
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = { Text(stringResource(if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications)) },
+                    onClick = {
+                        showMenu = false
+                        PinnedNotifications.toggle(context, notificationAction)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin),
+                            contentDescription = null,
+                        )
+                    },
                 )
                 HorizontalDivider()
                 DropdownMenuItem(

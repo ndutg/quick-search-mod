@@ -283,6 +283,7 @@ internal fun SettingResultRow(
                                 onNicknameClick = { onNicknameClick(shortcut) },
                                 onTriggerClick = { onTriggerClick(shortcut) },
                                 onAddToHome = { addToHomeHandler.addDeviceSettingToHome(shortcut) },
+                                setting = shortcut,
                                 showPinnedItemMenu = showPinnedItemMenu,
                         )
                 }

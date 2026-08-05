@@ -16,9 +16,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Bolt
@@ -28,14 +31,17 @@ import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Label
 import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Reorder
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
@@ -57,6 +63,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,6 +75,10 @@ import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.ItemPriorityConfig
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonType
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
@@ -123,6 +134,9 @@ private fun SearchOptionsCard(
     var lastWebStep by remember { mutableStateOf(webSuggestionsCount) }
     var lastRecentQueriesDisplayCount by remember { mutableStateOf(recentQueriesDisplayCount) }
     var showAppSuggestionTabsDialog by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    var pinnedNotificationItems by remember { mutableStateOf(PinnedNotifications.pinnedItems(context)) }
+    var showPinnedNotificationItemsDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(appSuggestionsEnabled) {
         if (!appSuggestionsEnabled) {
@@ -243,6 +257,24 @@ private fun SearchOptionsCard(
                 )
             }
 
+            if (pinnedNotificationItems.isNotEmpty()) {
+                HorizontalDivider(color = AppColors.SettingsDivider)
+                SettingsNavigationRow(
+                    item =
+                        SettingsCardItem(
+                            title = stringResource(R.string.notification_pinned_items_title),
+                            description = stringResource(R.string.notification_pinned_items_description),
+                            icon = Icons.Rounded.Notifications,
+                            actionOnPress = { showPinnedNotificationItemsDialog = true },
+                        ),
+                    contentPadding =
+                        PaddingValues(
+                            horizontal = DesignTokens.SpacingXXLarge,
+                            vertical = DesignTokens.SpacingLarge,
+                        ),
+                )
+            }
+
             val hasAnyNavigationRows = hasNicknames || hasTriggers || hasExcludedItems
             var hasRenderedNavigationRow = false
             if (hasAnyNavigationRows) {
@@ -317,6 +349,18 @@ private fun SearchOptionsCard(
             onDismiss = { showAppSuggestionTabsDialog = false },
         )
     }
+
+    if (showPinnedNotificationItemsDialog) {
+        PinnedNotificationItemsDialog(
+            items = pinnedNotificationItems,
+            onRemove = { action ->
+                PinnedNotifications.remove(context, action)
+                pinnedNotificationItems = pinnedNotificationItems.filterNot { it.toJson() == action.toJson() }
+                if (pinnedNotificationItems.isEmpty()) showPinnedNotificationItemsDialog = false
+            },
+            onDismiss = { showPinnedNotificationItemsDialog = false },
+        )
+    }
 }
 
 @Composable
@@ -375,6 +419,75 @@ private fun AppResultRowsSelector(
             }
         }
     }
+
+}
+
+@Composable
+private fun PinnedNotificationItemsDialog(
+    items: List<CustomWidgetButtonAction>,
+    onRemove: (CustomWidgetButtonAction) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.notification_pinned_items_dialog_title)) },
+        text = {
+            LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
+                itemsIndexed(items, key = { _, action -> action.toJson() }) { index, action ->
+                    if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
+                    val category =
+                        when (action.type) {
+                            CustomWidgetButtonType.APP -> stringResource(R.string.notification_pinned_item_type_app)
+                            CustomWidgetButtonType.APP_SHORTCUT -> stringResource(R.string.notification_pinned_item_type_app_shortcut)
+                            CustomWidgetButtonType.CONTACT -> stringResource(R.string.notification_pinned_item_type_contact)
+                            CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
+                            CustomWidgetButtonType.SETTING -> stringResource(R.string.notification_pinned_item_type_setting)
+                            CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
+                        }
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp)
+                                .padding(vertical = DesignTokens.SpacingSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CustomWidgetButtonIcon(
+                            action = action,
+                            iconSize = 32.dp,
+                            iconPackPackage = null,
+                            modifier = Modifier.padding(end = DesignTokens.SpacingMedium),
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = action.displayLabel(),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Text(
+                                text = category,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        IconButton(onClick = { onRemove(action) }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = stringResource(
+                                    R.string.notification_pinned_items_remove,
+                                    action.displayLabel(),
+                                ),
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.notification_pinned_items_close))
+            }
+        },
+    )
 }
 
 @Composable

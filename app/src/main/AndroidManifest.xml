@@ -15,6 +15,7 @@
     <!-- Haptic Feedback -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Usage Statistics Permissions -->
     <uses-permission
@@ -338,6 +339,17 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@style/Theme.QuickSearch" />
+
+        <activity
+            android:name=".pinnedNotifications.PinnedNotificationPermissionActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.QuickSearch" />
+
+        <receiver
+            android:name=".pinnedNotifications.PinnedNotificationRestoreReceiver"
+            android:exported="false" />
 
         <!-- Widget Receivers -->
         <receiver

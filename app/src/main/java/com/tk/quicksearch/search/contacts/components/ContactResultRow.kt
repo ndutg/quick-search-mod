@@ -47,6 +47,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.search.contacts.contactInitials
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.MessagingApp
@@ -207,6 +209,13 @@ internal fun ContactResultRow(
                 }
 
                 if (enableLongPress && onLongPressOverride == null) {
+                        val notificationAction =
+                                CustomWidgetButtonAction.Contact(
+                                        contactId = contactInfo.contactId,
+                                        lookupKey = contactInfo.lookupKey,
+                                        displayName = contactInfo.displayName,
+                                        photoUri = contactInfo.photoUri,
+                                )
                         ContactDropdownMenu(
                                 expanded = showOptions,
                                 onDismissRequest = { showOptions = false },
@@ -220,6 +229,8 @@ internal fun ContactResultRow(
                                 onNicknameClick = { onNicknameClick(contactInfo) },
                                 onTriggerClick = { onTriggerClick(contactInfo) },
                                 onAddToHome = { addToHomeHandler.addContactToHome(contactInfo) },
+                                onPinToNotifications = { PinnedNotifications.toggle(context, notificationAction) },
+                                isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction),
                                 showPinnedItemMenu = showPinnedItemMenu,
                         )
                 }
