@@ -78,22 +78,7 @@ internal object SearchEngineIntents {
     ) {
         // If query is blank, just open the app
         if (query.isBlank()) {
-            val launchIntent =
-                context.packageManager.getLaunchIntentForPackage(
-                    PackageConstants.GEMINI_PACKAGE_NAME,
-                )
-            if (launchIntent != null) {
-                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                try {
-                    context.startActivity(launchIntent)
-                    return
-                } catch (e: ActivityNotFoundException) {
-                    Log.w("GeminiLaunch", "Failed to launch Gemini app: ${e.message}")
-                } catch (e: SecurityException) {
-                    Log.w("GeminiLaunch", "Security exception launching Gemini: ${e.message}")
-                }
-            }
-            Log.e("GeminiLaunch", "Failed to open Gemini app")
+            launchGeminiApp(context)
             return
         }
 
@@ -115,11 +100,31 @@ internal object SearchEngineIntents {
                 Log.w("GeminiLaunch", "Share intent security exception: ${e.message}")
             }
         } else {
-            Log.w("GeminiLaunch", "Gemini app not resolved - may not be installed")
+            Log.w("GeminiLaunch", "Gemini share intent not resolved; launching the app instead")
         }
 
-        // If share intent fails, just log it (no user-facing error)
-        Log.e("GeminiLaunch", "Failed to open Gemini app with query")
+        if (!launchGeminiApp(context)) {
+            Log.e("GeminiLaunch", "Failed to open Gemini app with query")
+        }
+    }
+
+    private fun launchGeminiApp(context: Application): Boolean {
+        val launchIntent =
+            context.packageManager.getLaunchIntentForPackage(
+                PackageConstants.GEMINI_PACKAGE_NAME,
+            ) ?: return false
+
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        return try {
+            context.startActivity(launchIntent)
+            true
+        } catch (e: ActivityNotFoundException) {
+            Log.w("GeminiLaunch", "Failed to launch Gemini app: ${e.message}")
+            false
+        } catch (e: SecurityException) {
+            Log.w("GeminiLaunch", "Security exception launching Gemini: ${e.message}")
+            false
+        }
     }
 
     /** Opens Google app with search if installed, otherwise opens web URL. */
