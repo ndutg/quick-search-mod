@@ -5,6 +5,7 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceStore
+import com.tk.quicksearch.shared.util.isLowRamDevice
 
 internal data class SearchViewModelInitialState(
     val instantStartupSurfaceEnabled: Boolean,
@@ -62,8 +63,15 @@ internal object SearchViewModelInitialStateFactory {
                 indexedAppCount = startupSnapshot?.suggestedApps?.size ?: 0,
             )
 
+        // Seeded from preferences so fuzzy matching never runs against the enabled-by-default
+        // value during the window before startup phase 2 hydrates the feature state.
+        val isLowRamDevice = isLowRamDevice(appContext)
+
         val initialFeatureState =
             SearchFeatureState(
+                fuzzySearchEnabled =
+                    !isLowRamDevice && startupPreferencesReader.isFuzzySearchEnabled(),
+                fuzzySearchAvailable = !isLowRamDevice,
                 isSearchEngineAliasSuffixEnabled =
                     startupPreferencesReader.isSearchEngineAliasSuffixEnabled(),
                 isAliasTriggerAfterSpaceEnabled =
