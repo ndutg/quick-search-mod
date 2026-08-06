@@ -296,15 +296,18 @@ internal class SearchPreferencesDelegate(
     }
 
     fun setFuzzySearchEnabled(enabled: Boolean) {
+        if (isLowRamDevice(applicationProvider())) return
+
+        // Persist before scheduling result work so leaving Settings cannot cancel the write.
+        userPreferences.setFuzzySearchEnabled(enabled)
+        updateFeatureState {
+            it.copy(
+                fuzzySearchEnabled = enabled,
+                fuzzySearchAvailable = true,
+            )
+        }
+
         scope.launch(Dispatchers.IO) {
-            if (isLowRamDevice(applicationProvider())) return@launch
-            userPreferences.setFuzzySearchEnabled(enabled)
-            updateFeatureState {
-                it.copy(
-                    fuzzySearchEnabled = enabled,
-                    fuzzySearchAvailable = true,
-                )
-            }
             refreshAppSuggestions()
             secondarySearchOrchestrator.resetNoResultTracking()
             rerunSecondarySearchIfNeeded()
