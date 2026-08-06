@@ -69,7 +69,8 @@ class AppsRepository(
         appCatalogInvalidated = true
     }
 
-    fun isAppCatalogInvalidated(): Boolean = appCatalogInvalidated
+    fun isAppCatalogInvalidated(): Boolean =
+        appCatalogInvalidated || appCache.isCatalogInvalidated()
 
     fun startPackageChangeMonitoring(onCatalogInvalidated: () -> Unit) {
         if (packageChangeReceiver != null || launcherAppsCallback != null) return
@@ -172,6 +173,7 @@ class AppsRepository(
             appCache.saveApps(sortedApps)
         }
         appCatalogInvalidated = false
+        appCache.clearCatalogInvalidation()
         return sortedApps
     }
 
