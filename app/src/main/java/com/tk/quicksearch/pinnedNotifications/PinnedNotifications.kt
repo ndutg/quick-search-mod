@@ -49,6 +49,11 @@ object PinnedNotifications {
         show(context)
     }
 
+    fun reorder(context: Context, actions: List<CustomWidgetButtonAction>) {
+        save(context, actions)
+        show(context)
+    }
+
     fun toggle(context: Context, action: CustomWidgetButtonAction) {
         if (isPinned(context, action)) {
             remove(context, action)

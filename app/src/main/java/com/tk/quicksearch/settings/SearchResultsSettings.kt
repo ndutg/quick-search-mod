@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Bolt
@@ -57,16 +58,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.core.view.HapticFeedbackConstantsCompat
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.NicknamePreferences
@@ -77,7 +81,6 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
-import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonType
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
@@ -88,6 +91,8 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
 import com.tk.quicksearch.shared.util.performHapticFeedbackSafely
 import sh.calvin.reorderable.ReorderableColumn
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 private val RecentQueriesDisplayCountOptions = listOf(1, 3, 5, 7, 10)
 
@@ -358,6 +363,10 @@ private fun SearchOptionsCard(
                 pinnedNotificationItems = pinnedNotificationItems.filterNot { it.toJson() == action.toJson() }
                 if (pinnedNotificationItems.isEmpty()) showPinnedNotificationItemsDialog = false
             },
+            onReorder = { reorderedItems ->
+                PinnedNotifications.reorder(context, reorderedItems)
+                pinnedNotificationItems = reorderedItems
+            },
             onDismiss = { showPinnedNotificationItemsDialog = false },
         )
     }
@@ -426,68 +435,145 @@ private fun AppResultRowsSelector(
 private fun PinnedNotificationItemsDialog(
     items: List<CustomWidgetButtonAction>,
     onRemove: (CustomWidgetButtonAction) -> Unit,
+    onReorder: (List<CustomWidgetButtonAction>) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.notification_pinned_items_dialog_title)) },
-        text = {
-            LazyColumn(modifier = Modifier.heightIn(max = 420.dp)) {
-                itemsIndexed(items, key = { _, action -> action.toJson() }) { index, action ->
-                    if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
-                    val category =
-                        when (action.type) {
-                            CustomWidgetButtonType.APP -> stringResource(R.string.notification_pinned_item_type_app)
-                            CustomWidgetButtonType.APP_SHORTCUT -> stringResource(R.string.notification_pinned_item_type_app_shortcut)
-                            CustomWidgetButtonType.CONTACT -> stringResource(R.string.notification_pinned_item_type_contact)
-                            CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
-                            CustomWidgetButtonType.SETTING -> stringResource(R.string.notification_pinned_item_type_setting)
-                            CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
-                        }
-                    Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 48.dp)
-                                .padding(vertical = DesignTokens.SpacingSmall),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        CustomWidgetButtonIcon(
-                            action = action,
-                            iconSize = 32.dp,
-                            iconPackPackage = null,
-                            modifier = Modifier.padding(end = DesignTokens.SpacingMedium),
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = action.displayLabel(),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                            Text(
-                                text = category,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        IconButton(onClick = { onRemove(action) }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Delete,
-                                contentDescription = stringResource(
-                                    R.string.notification_pinned_items_remove,
-                                    action.displayLabel(),
-                                ),
-                            )
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val view = LocalView.current
+    val reorderableItems = remember(items) { items.toMutableStateList() }
+    val listState = rememberLazyListState()
+    var reorderedDuringDrag by remember { mutableStateOf(false) }
+    val reorderableState =
+        rememberReorderableLazyListState(listState) { from, to ->
+            if (from.index != to.index) {
+                reorderableItems.add(to.index, reorderableItems.removeAt(from.index))
+                reorderedDuringDrag = true
+                performHapticFeedbackSafely(
+                    view,
+                    HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK,
+                )
+            }
+        }
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.fillMaxWidth().height(screenHeight * 0.65f),
+            shape = MaterialTheme.shapes.extraLarge,
+            color = AppColors.DialogBackground,
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .padding(
+                            horizontal = DesignTokens.SpacingXXLarge,
+                            vertical = DesignTokens.SpacingXLarge,
+                        ),
+            ) {
+                Text(
+                    text = stringResource(R.string.notification_pinned_items_dialog_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = DesignTokens.SpacingMedium),
+                )
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                ) {
+                    itemsIndexed(
+                        items = reorderableItems,
+                        key = { _, action -> action.toJson() },
+                    ) { index, action ->
+                        ReorderableItem(
+                            state = reorderableState,
+                            key = action.toJson(),
+                        ) { isDragging ->
+                            if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
+                            val category =
+                                when (action.type) {
+                                    CustomWidgetButtonType.APP -> stringResource(R.string.notification_pinned_item_type_app)
+                                    CustomWidgetButtonType.APP_SHORTCUT -> stringResource(R.string.notification_pinned_item_type_app_shortcut)
+                                    CustomWidgetButtonType.CONTACT -> stringResource(R.string.notification_pinned_item_type_contact)
+                                    CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
+                                    CustomWidgetButtonType.SETTING -> stringResource(R.string.notification_pinned_item_type_setting)
+                                    CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
+                                }
+                            Surface(
+                                color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Row(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(min = 48.dp)
+                                            .padding(vertical = DesignTokens.SpacingSmall),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.DragHandle,
+                                        contentDescription = stringResource(R.string.settings_action_reorder),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier =
+                                            Modifier
+                                                .size(DesignTokens.LargeIconSize)
+                                                .padding(end = DesignTokens.SpacingMedium)
+                                                .longPressDraggableHandle(
+                                                    onDragStarted = {
+                                                        reorderedDuringDrag = false
+                                                        performHapticFeedbackSafely(
+                                                            view,
+                                                            HapticFeedbackConstantsCompat.GESTURE_START,
+                                                        )
+                                                    },
+                                                    onDragStopped = {
+                                                        if (reorderedDuringDrag) {
+                                                            onReorder(reorderableItems.toList())
+                                                        }
+                                                        performHapticFeedbackSafely(
+                                                            view,
+                                                            HapticFeedbackConstantsCompat.GESTURE_END,
+                                                        )
+                                                    },
+                                                ),
+                                    )
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = action.displayLabel(),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                        )
+                                        Text(
+                                            text = category,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                    IconButton(onClick = { onRemove(action) }) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Delete,
+                                            contentDescription = stringResource(
+                                                R.string.notification_pinned_items_remove,
+                                                action.displayLabel(),
+                                            ),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(R.string.notification_pinned_items_close))
+                    }
+                }
             }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.notification_pinned_items_close))
-            }
-        },
-    )
+        }
+    }
 }
 
 @Composable
