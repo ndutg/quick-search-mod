@@ -526,6 +526,7 @@ data class SearchUiState(
         val clearQueryOnLaunch: Boolean = true,
         val autoCloseOverlay: Boolean = true,
         val selectRetainedQuery: Boolean = false,
+        val restoreSearchKeyboard: Boolean = false,
         val overlayModeEnabled: Boolean = false,
         // Shortcuts configuration
         val shortcutsEnabled: Boolean = true,
@@ -835,6 +836,7 @@ fun SearchUiState(
                 clearQueryOnLaunch = config.clearQueryOnLaunch,
                 autoCloseOverlay = config.autoCloseOverlay,
                 selectRetainedQuery = config.selectRetainedQuery,
+                restoreSearchKeyboard = config.restoreSearchKeyboard,
                 fontScaleMultiplier = config.fontScaleMultiplier,
                 useSystemFont = config.useSystemFont,
                 showAppLabels = config.showAppLabels,

@@ -168,6 +168,9 @@ internal fun PersistentSearchBar(
     opaqueBackground: Boolean = false,
     forceRestingOutline: Boolean = false,
     autoFocusOnStart: Boolean = false,
+    releaseFocusOnLeave: Boolean = false,
+    restoreKeyboardOnEnter: Boolean = false,
+    onRestoreKeyboardHandled: () -> Unit = {},
     startupSurfaceReady: Boolean = true,
     onClearDetectedShortcut: () -> Unit = {},
     onSectionSelected: (SearchSection) -> Unit = {},
@@ -323,21 +326,43 @@ internal fun PersistentSearchBar(
             hasCompletedStartupAutoFocus = true
         }
     }
-    if (autoFocusOnStart) {
-        DisposableEffect(lifecycleOwner) {
+    if (autoFocusOnStart || releaseFocusOnLeave) {
+        DisposableEffect(lifecycleOwner, autoFocusOnStart, releaseFocusOnLeave) {
             val observer =
                 LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_RESUME) {
-                        if (!hasCompletedStartupAutoFocus) {
-                            return@LifecycleEventObserver
-                        }
-                        focusRequester.requestFocus()
-                        keyboardController?.show()
+                    when (event) {
+                        // Leaving for another app must drop the focus here rather than on the way
+                        // back: the window is declared stateAlwaysVisible, so a field that is still
+                        // focused when the surface becomes visible again re-raises the keyboard
+                        // before a resume-time release could suppress it. Only a full stop counts —
+                        // a transient pause (permission dialog, notification shade) leaves a
+                        // deliberately opened keyboard alone.
+                        Lifecycle.Event.ON_STOP ->
+                            if (releaseFocusOnLeave && !autoFocusOnStart) {
+                                view.clearFocus()
+                                keyboardController?.hide()
+                            }
+
+                        Lifecycle.Event.ON_RESUME ->
+                            if (autoFocusOnStart && hasCompletedStartupAutoFocus) {
+                                focusRequester.requestFocus()
+                                keyboardController?.show()
+                            }
+
+                        else -> Unit
                     }
                 }
             lifecycleOwner.lifecycle.addObserver(observer)
             onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
         }
+    }
+    // Navigating to settings/widgets and back rebuilds this field from scratch, so a keyboard the
+    // user opened by hand is only restored when the ViewModel says it was open on the way out.
+    LaunchedEffect(restoreKeyboardOnEnter, hasLaidOutSearchField) {
+        if (!restoreKeyboardOnEnter || !hasLaidOutSearchField) return@LaunchedEffect
+        focusRequester.requestFocus()
+        keyboardController?.show()
+        onRestoreKeyboardHandled()
     }
 
     // Animation state

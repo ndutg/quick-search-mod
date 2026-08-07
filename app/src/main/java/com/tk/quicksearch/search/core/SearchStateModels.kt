@@ -255,6 +255,7 @@ data class SearchUiConfigState(
         val clearQueryOnLaunch: Boolean = true,
         val autoCloseOverlay: Boolean = true,
         val selectRetainedQuery: Boolean = false,
+        val restoreSearchKeyboard: Boolean = false,
         val fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER,
         val useSystemFont: Boolean = false,
         // App display preferences

@@ -176,6 +176,7 @@ internal object SearchStateExtractor {
             openKeyboardOnLaunch = s.openKeyboardOnLaunch,
             clearQueryOnLaunch = s.clearQueryOnLaunch,
             selectRetainedQuery = s.selectRetainedQuery,
+            restoreSearchKeyboard = s.restoreSearchKeyboard,
             autoCloseOverlay = s.autoCloseOverlay,
             fontScaleMultiplier = s.fontScaleMultiplier,
             useSystemFont = s.useSystemFont,
