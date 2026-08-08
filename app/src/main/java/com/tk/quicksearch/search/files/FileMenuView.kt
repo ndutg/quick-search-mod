@@ -22,6 +22,7 @@ import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.PinEnd
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.VisibilityOff
@@ -239,7 +240,13 @@ fun FileDropdownMenu(
         ))
         add(FileMenuItem(
                 textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
-                icon = { Icon(painter = painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin), contentDescription = null) },
+                icon = {
+                    if (isPinnedToNotifications) {
+                        Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null)
+                    } else {
+                        Icon(imageVector = Icons.Rounded.PinEnd, contentDescription = null)
+                    }
+                },
                 onClick = {
                     onDismissRequest()
                     PinnedNotifications.toggle(
