@@ -552,6 +552,16 @@ fun AppGridView(
                     onAppClick(app)
                 },
                 onAppInfoClick = onAppInfoClick,
+                onUninstallClick = onUninstallClick,
+                onHideApp = onHideApp,
+                onPinApp = onPinApp,
+                onUnpinApp = onUnpinApp,
+                onNicknameClick = onNicknameClick,
+                onTriggerClick = onTriggerClick,
+                getAppNickname = getAppNickname,
+                getAppTrigger = getAppTrigger,
+                pinnedPackageNames = pinnedPackageNames,
+                shortcutsByPackage = shortcutsByPackage,
                 phoneColumnOverride = phoneColumnOverride,
                 appIconSizeStep = appIconSizeStep,
                 iconPackPackage = iconPackPackage,
@@ -567,12 +577,24 @@ private fun AllAppsDialog(
         onDismiss: () -> Unit,
         onAppClick: (AppInfo) -> Unit,
         onAppInfoClick: (AppInfo) -> Unit,
+        onUninstallClick: (AppInfo) -> Unit,
+        onHideApp: (AppInfo) -> Unit,
+        onPinApp: (AppInfo) -> Unit,
+        onUnpinApp: (AppInfo) -> Unit,
+        onNicknameClick: (AppInfo) -> Unit,
+        onTriggerClick: (AppInfo) -> Unit,
+        getAppNickname: (String) -> String?,
+        getAppTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
+        pinnedPackageNames: Set<String>,
+        shortcutsByPackage: Map<String, List<StaticShortcut>>,
         phoneColumnOverride: Int,
         appIconSizeStep: Int,
         iconPackPackage: String?,
         appIconShape: AppIconShape,
 ) {
     val dialogColumns = getAppGridColumns(phoneColumnOverride)
+    val context = LocalContext.current
+    val addToHomeHandler = remember(context) { AddToHomeHandler(context) }
     AppAlertDialog(
             modifier = Modifier.fillMaxWidth(0.94f),
             properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -608,7 +630,39 @@ private fun AllAppsDialog(
                                     iconPackPackage = iconPackPackage,
                                     appIconShape = appIconShape,
                                     onClick = { onAppClick(app) },
-                                    onLongClick = { onAppInfoClick(app) },
+                                    shortcuts = shortcutsByPackage[app.packageName].orEmpty(),
+                                    appActions =
+                                            AppActions(
+                                                    onClick = { onAppClick(app) },
+                                                    onAppInfoClick = { onAppInfoClick(app) },
+                                                    onUninstallClick = { onUninstallClick(app) },
+                                                    onHideApp = { onHideApp(app) },
+                                                    onPinApp = { onPinApp(app) },
+                                                    onUnpinApp = { onUnpinApp(app) },
+                                                    onNicknameClick = { onNicknameClick(app) },
+                                                    onTriggerClick = { onTriggerClick(app) },
+                                                    onAddToHome = { addToHomeHandler.addAppToHome(app) },
+                                            ),
+                                    appState =
+                                            AppState(
+                                                    hasNickname =
+                                                            !getAppNickname(app.packageName)
+                                                                    .isNullOrBlank(),
+                                                    hasTrigger =
+                                                            getAppTrigger(app.packageName)
+                                                                    ?.word
+                                                                    ?.isNotBlank() == true,
+                                                    isPinned =
+                                                            pinnedPackageNames.contains(
+                                                                    app.launchCountKey(),
+                                                            ),
+                                                    showUninstall =
+                                                            !app.isSystemApp &&
+                                                                    app.userHandleId == null &&
+                                                                    app.packageName != context.packageName,
+                                                    showAppLabel = true,
+                                                    isOverlayPresentation = false,
+                                            ),
                             )
                         }
                     }
@@ -630,9 +684,13 @@ private fun AllAppsDialogGridItem(
         iconPackPackage: String?,
         appIconShape: AppIconShape,
         onClick: () -> Unit,
-        onLongClick: () -> Unit,
+        shortcuts: List<StaticShortcut>,
+        appActions: AppActions,
+        appState: AppState,
 ) {
     val view = LocalView.current
+    val context = LocalContext.current
+    var showOptions by remember { mutableStateOf(false) }
     val sizeScale = remember(appIconSizeStep) { UiPreferences.appIconSizeScale(appIconSizeStep) }
     val iconSize = remember(sizeScale) { RegularAppIconSize * sizeScale }
     val iconSurfaceSize = remember(sizeScale) { AllAppsDialogIconSurfaceSize * sizeScale }
@@ -644,49 +702,78 @@ private fun AllAppsDialogGridItem(
                     forceCircularMask = appIconShape == AppIconShape.CIRCLE,
             )
 
-    Column(
+    Box(
             modifier =
                     Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight()
-                            .combinedClickable(
-                                    onClick = {
-                                        hapticConfirm(view)()
-                                        onClick()
-                                    },
-                                    onLongClick = onLongClick,
-                            )
-                            .padding(
-                                    horizontal = DesignTokens.SpacingXSmall,
-                                    vertical = DesignTokens.SpacingXSmall,
-                            ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
+                            .wrapContentHeight(),
+            contentAlignment = Alignment.TopCenter,
     ) {
-        Box(
-                modifier = Modifier.size(iconSurfaceSize),
-                contentAlignment = Alignment.Center,
+        Column(
+                modifier =
+                        Modifier
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                        onClick = {
+                                            hapticConfirm(view)()
+                                            onClick()
+                                        },
+                                        onLongClick = { showOptions = true },
+                                )
+                                .padding(
+                                        horizontal = DesignTokens.SpacingXSmall,
+                                        vertical = DesignTokens.SpacingXSmall,
+                                ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
         ) {
-            iconResult.bitmap?.let { icon ->
-                Image(
-                        bitmap = icon,
+            Box(
+                    modifier = Modifier.size(iconSurfaceSize),
+                    contentAlignment = Alignment.Center,
+            ) {
+                iconResult.bitmap?.let { icon ->
+                    Image(
+                            bitmap = icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(iconSize),
+                    )
+                } ?: Icon(
+                        imageVector = Icons.Rounded.Android,
                         contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(iconSize),
                 )
-            } ?: Icon(
-                    imageVector = Icons.Rounded.Android,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(iconSize),
+            }
+            Text(
+                    text = app.appName,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
             )
         }
-        Text(
-                text = app.appName,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
+
+        AppItemDropdownMenu(
+                expanded = showOptions,
+                onDismiss = { showOptions = false },
+                isPinned = appState.isPinned,
+                showUninstall = appState.showUninstall,
+                hasNickname = appState.hasNickname,
+                hasTrigger = appState.hasTrigger,
+                shortcuts = shortcuts,
+                appInfo = app,
+                iconPackPackage = iconPackPackage,
+                appIconShape = appIconShape,
+                onShortcutClick = { shortcut -> launchStaticShortcut(context, shortcut) },
+                onAppInfoClick = appActions.onAppInfoClick,
+                onHideApp = appActions.onHideApp,
+                onPinApp = appActions.onPinApp,
+                onUnpinApp = appActions.onUnpinApp,
+                onUninstallClick = appActions.onUninstallClick,
+                onNicknameClick = appActions.onNicknameClick,
+                onTriggerClick = appActions.onTriggerClick,
+                onAddToHome = appActions.onAddToHome,
         )
     }
 }
