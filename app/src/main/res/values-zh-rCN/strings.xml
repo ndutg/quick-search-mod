@@ -112,6 +112,7 @@
     <string name="settings_gesture_none">无</string>
     <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
     <string name="settings_keyboard_gestures_title">键盘手势 (主屏幕)</string>
+    <string name="settings_keyboard_gestures_desc">仅在没有可滚动内容时可用</string>
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">固定到通知</string>
     <string name="action_unpin_from_notifications">从通知中取消固定</string>
@@ -483,6 +484,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">创建并添加新日程</string>
     <string name="app_settings_create_calendar_event_title">新日历日程</string>
+    <string name="agenda_title">今日议程</string>
     <string name="calendar_create_event_name_hint">日程名称</string>
     <string name="calendar_create_event_select_date">选择日期</string>
     <string name="calendar_create_event_sync_notice">此日程不会同步到您的设备系统日历</string>
@@ -494,6 +496,8 @@
         <item quantity="other">%d 天</item>
     </plurals>
     <string name="calendar_relative_in_format">%1$s后</string>
+    <string name="calendar_relative_in_minutes">%1$d 分钟后</string>
+    <string name="calendar_relative_now">现在</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d 个月</item>
         <item quantity="other">%d 个月</item>

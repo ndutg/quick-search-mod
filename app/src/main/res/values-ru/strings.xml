@@ -112,6 +112,7 @@
 <string name="settings_gesture_none">Нет</string>
 <string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
 <string name="settings_keyboard_gestures_title">Жесты клавиатуры (Главный экран)</string>
+<string name="settings_keyboard_gestures_desc">Доступно, только когда нет прокручиваемого содержимого</string>
 <string name="action_pin_app">Закрепить</string>
 <string name="action_pin_to_notifications">Закрепить в уведомлениях</string>
 <string name="action_unpin_from_notifications">Открепить от уведомлений</string>
@@ -485,6 +486,7 @@
      ============================================================================ -->
 <string name="app_settings_create_calendar_event_desc">Создать и добавить новое событие</string>
 <string name="app_settings_create_calendar_event_title">Новое событие календаря</string>
+<string name="agenda_title">Расписание на сегодня</string>
 <string name="calendar_create_event_name_hint">Название события</string>
 <string name="calendar_create_event_select_date">Выберите дату</string>
 <string name="calendar_create_event_sync_notice">Это событие не будет синхронизировано с системным календарем вашего устройства</string>
@@ -498,6 +500,8 @@
     <item quantity="other">%d дня</item>
 </plurals>
 <string name="calendar_relative_in_format">через %1$s</string>
+<string name="calendar_relative_in_minutes">через %1$d минут</string>
+<string name="calendar_relative_now">Сейчас</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d месяц</item>
     <item quantity="few">%d месяца</item>

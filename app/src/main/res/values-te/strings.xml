@@ -112,6 +112,7 @@
     <string name="settings_gesture_none">ఏదీ లేదు</string>
     <string name="settings_gesture_custom">అనుకూలమైనవి (యాప్‌లు, ఫైల్‌లు మొదలైనవి)</string>
     <string name="settings_keyboard_gestures_title">కీబోర్డ్ హావభావాలు (హోమ్)</string>
+    <string name="settings_keyboard_gestures_desc">స్క్రోల్ చేయగల కంటెంట్ లేనప్పుడు మాత్రమే అందుబాటులో ఉంటుంది</string>
     <string name="action_pin_app">పిన్ చేయి</string>
     <string name="action_pin_to_notifications">నోటిఫికేషన్‌లకు పిన్ చేయి</string>
     <string name="action_unpin_from_notifications">నోటిఫికేషన్‌ల నుండి అన్‌పిన్ చేయి</string>
@@ -483,6 +484,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">కొత్త ఈవెంట్‌ను సృష్టించి మరియు జోడించండి</string>
     <string name="app_settings_create_calendar_event_title">కొత్త క్యాలెండర్ ఈవెంట్</string>
+    <string name="agenda_title">నేటి అజెండా</string>
     <string name="calendar_create_event_name_hint">ఈవెంట్ పేరు</string>
     <string name="calendar_create_event_select_date">తేదీని ఎంచుకోండి</string>
     <string name="calendar_create_event_sync_notice">ఈ ఈవెంట్ మీ పరికర క్యాలెండర్‌కు సమకాలీకరించబడదు</string>
@@ -494,6 +496,8 @@
         <item quantity="other">%d రోజులు</item>
     </plurals>
     <string name="calendar_relative_in_format">%1$s లో</string>
+    <string name="calendar_relative_in_minutes">%1$d నిమిషాల్లో</string>
+    <string name="calendar_relative_now">ఇప్పుడు</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d నెల</item>
         <item quantity="other">%d నెలలు</item>

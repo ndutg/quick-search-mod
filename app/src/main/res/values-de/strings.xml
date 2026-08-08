@@ -112,6 +112,7 @@
     <string name="settings_gesture_none">Keine</string>
     <string name="settings_gesture_custom">Benutzerdefiniert (Apps, Dateien usw.)</string>
     <string name="settings_keyboard_gestures_title">Tastaturgesten (Startseite)</string>
+    <string name="settings_keyboard_gestures_desc">Nur verfügbar, wenn kein scrollbarer Inhalt vorhanden ist</string>
     <string name="action_pin_app">Anheften</string>
     <string name="action_pin_to_notifications">An Benachrichtigungen anheften</string>
     <string name="action_unpin_from_notifications">Von Benachrichtigungen lösen</string>
@@ -483,6 +484,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Neues Ereignis erstellen und hinzufügen</string>
     <string name="app_settings_create_calendar_event_title">Neuer Kalendertermin</string>
+    <string name="agenda_title">Heutige Agenda</string>
     <string name="calendar_create_event_name_hint">Ereignisname</string>
     <string name="calendar_create_event_select_date">Datum auswählen</string>
     <string name="calendar_create_event_sync_notice">Dieses Ereignis wird nicht mit deinem Gerätekalender synchronisiert</string>
@@ -494,6 +496,8 @@
         <item quantity="other">%d Tage</item>
     </plurals>
     <string name="calendar_relative_in_format">in %1$s</string>
+    <string name="calendar_relative_in_minutes">in %1$d Minuten</string>
+    <string name="calendar_relative_now">Jetzt</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d Monat</item>
         <item quantity="other">%d Monate</item>

@@ -112,6 +112,7 @@
     <string name="settings_gesture_none">Ninguno</string>
     <string name="settings_gesture_custom">Personalizado (Apps, archivos, etc.)</string>
     <string name="settings_keyboard_gestures_title">Gestos del teclado (Inicio)</string>
+    <string name="settings_keyboard_gestures_desc">Disponible solo cuando no hay contenido desplazable</string>
     <string name="action_pin_app">Fijar</string>
     <string name="action_pin_to_notifications">Fijar en las notificaciones</string>
     <string name="action_unpin_from_notifications">Desfijar de las notificaciones</string>
@@ -483,6 +484,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Crea y añade un nuevo evento</string>
     <string name="app_settings_create_calendar_event_title">Nuevo evento de calendario</string>
+    <string name="agenda_title">Agenda de hoy</string>
     <string name="calendar_create_event_name_hint">Nombre del evento</string>
     <string name="calendar_create_event_select_date">Seleccionar fecha</string>
     <string name="calendar_create_event_sync_notice">Este evento no se sincronizará con el calendario de tu dispositivo</string>
@@ -494,6 +496,8 @@
         <item quantity="other">%d días</item>
     </plurals>
     <string name="calendar_relative_in_format">en %1$s</string>
+    <string name="calendar_relative_in_minutes">en %1$d minutos</string>
+    <string name="calendar_relative_now">Ahora</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d mes</item>
         <item quantity="other">%d meses</item>

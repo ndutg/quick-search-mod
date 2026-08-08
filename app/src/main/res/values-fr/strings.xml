@@ -112,6 +112,7 @@
 <string name="settings_gesture_none">Aucun</string>
 <string name="settings_gesture_custom">Personnalisé (Applications, fichiers, etc.)</string>
 <string name="settings_keyboard_gestures_title">Gestes du clavier (Accueil)</string>
+<string name="settings_keyboard_gestures_desc">Disponible uniquement lorsqu’il n’y a pas de contenu défilable</string>
 <string name="action_pin_app">Épingler</string>
     <string name="action_pin_to_notifications">Épingler aux notifications</string>
     <string name="action_unpin_from_notifications">Désépingler des notifications</string>
@@ -483,6 +484,7 @@
      ============================================================================ -->
 <string name="app_settings_create_calendar_event_desc">Créer et ajouter un nouvel événement</string>
 <string name="app_settings_create_calendar_event_title">Nouvel événement d\'agenda</string>
+<string name="agenda_title">Agenda du jour</string>
 <string name="calendar_create_event_name_hint">Nom de l\'événement</string>
 <string name="calendar_create_event_select_date">Sélectionner la date</string>
 <string name="calendar_create_event_sync_notice">Cet événement ne sera pas synchronisé avec l\'agenda de votre appareil</string>
@@ -494,6 +496,8 @@
     <item quantity="other">%d jours</item>
 </plurals>
 <string name="calendar_relative_in_format">dans %1$s</string>
+<string name="calendar_relative_in_minutes">dans %1$d minutes</string>
+<string name="calendar_relative_now">Maintenant</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d mois</item>
     <item quantity="other">%d mois</item>

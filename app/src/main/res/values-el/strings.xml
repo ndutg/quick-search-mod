@@ -112,6 +112,7 @@
     <string name="settings_gesture_none">Κανένα</string>
     <string name="settings_gesture_custom">Προσαρμοσμένο (Εφαρμογές, Αρχεία κ.λπ.)</string>
     <string name="settings_keyboard_gestures_title">Χειρονομίες πληκτρολογίου (Αρχική)</string>
+    <string name="settings_keyboard_gestures_desc">Διαθέσιμο μόνο όταν δεν υπάρχει περιεχόμενο με δυνατότητα κύλισης</string>
     <string name="action_pin_app">Καρφίτσωμα</string>
     <string name="action_pin_to_notifications">Καρφίτσωμα στις ειδοποιήσεις</string>
     <string name="action_unpin_from_notifications">Ξεκαρφίτσωμα από τις ειδοποιήσεις</string>
@@ -483,6 +484,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Δημιουργία και προσθήκη νέου συμβάντος</string>
     <string name="app_settings_create_calendar_event_title">Νέο συμβάν ημερολογίου</string>
+    <string name="agenda_title">Η σημερινή ατζέντα</string>
     <string name="calendar_create_event_name_hint">Όνομα συμβάντος</string>
     <string name="calendar_create_event_select_date">Επιλογή ημερομηνίας</string>
     <string name="calendar_create_event_sync_notice">Αυτό το συμβάν δεν θα συγχρονιστεί με το ημερολόγιο της συσκευής σας</string>
@@ -494,6 +496,8 @@
         <item quantity="other">%d ημέρες</item>
     </plurals>
     <string name="calendar_relative_in_format">σε %1$s</string>
+    <string name="calendar_relative_in_minutes">σε %1$d λεπτά</string>
+    <string name="calendar_relative_now">Τώρα</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d μήνας</item>
         <item quantity="other">%d μήνες</item>

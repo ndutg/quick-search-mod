@@ -111,6 +111,7 @@
     <string name="settings_gesture_none">Nessuno</string>
     <string name="settings_gesture_custom">Personalizzato (App, file ecc.)</string>
     <string name="settings_keyboard_gestures_title">Gesti della tastiera (Home)</string>
+    <string name="settings_keyboard_gestures_desc">Disponibile solo quando non sono presenti contenuti scorrevoli</string>
     <string name="action_pin_app">Fissa</string>
     <string name="action_pin_to_notifications">Fissa nelle notifiche</string>
     <string name="action_unpin_from_notifications">Rimuovi dalle notifiche</string>
@@ -482,6 +483,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Crea e aggiungi un nuovo evento</string>
     <string name="app_settings_create_calendar_event_title">Nuovo evento calendario</string>
+    <string name="agenda_title">Agenda di oggi</string>
     <string name="calendar_create_event_name_hint">Nome dell\u2019evento</string>
     <string name="calendar_create_event_select_date">Seleziona data</string>
     <string name="calendar_create_event_sync_notice">Questo evento non verrà sincronizzato con il calendario del dispositivo</string>
@@ -493,6 +495,8 @@
         <item quantity="other">%d giorni</item>
     </plurals>
     <string name="calendar_relative_in_format">tra %1$s</string>
+    <string name="calendar_relative_in_minutes">tra %1$d minuti</string>
+    <string name="calendar_relative_now">Ora</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d mese</item>
         <item quantity="other">%d mesi</item>

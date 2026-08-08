@@ -111,6 +111,7 @@
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
 <string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
+<string name="settings_keyboard_gestures_desc">Yalnızca kaydırılabilir içerik olmadığında kullanılabilir</string>
 <string name="action_pin_app">Sabitle</string>
     <string name="action_pin_to_notifications">Bildirimlere sabitle</string>
     <string name="action_unpin_from_notifications">Bildirimlerden kaldır</string>
@@ -482,6 +483,7 @@
      ============================================================================ -->
 <string name="app_settings_create_calendar_event_desc">Yeni bir etkinlik oluştur ve ekle</string>
 <string name="app_settings_create_calendar_event_title">Yeni takvim etkinliği</string>
+<string name="agenda_title">Bugünün gündemi</string>
 <string name="calendar_create_event_name_hint">Etkinlik adı</string>
 <string name="calendar_create_event_select_date">Tarih seç</string>
 <string name="calendar_create_event_sync_notice">Bu etkinlik cihaz takviminle senkronize edilmez</string>
@@ -493,6 +495,8 @@
     <item quantity="other">%d gün</item>
 </plurals>
 <string name="calendar_relative_in_format">%1$s içinde</string>
+<string name="calendar_relative_in_minutes">%1$d dakika içinde</string>
+<string name="calendar_relative_now">Şimdi</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d ay</item>
     <item quantity="other">%d ay</item>

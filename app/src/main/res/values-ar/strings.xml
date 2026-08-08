@@ -113,6 +113,7 @@
     <string name="settings_gesture_none">بلا</string>
     <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
     <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح (الرئيسية)</string>
+    <string name="settings_keyboard_gestures_desc">متاح فقط عندما لا يكون هناك محتوى قابل للتمرير</string>
     <string name="action_pin_app">تثبيت</string>
     <string name="action_pin_to_notifications">تثبيت في الإشعارات</string>
     <string name="action_unpin_from_notifications">إلغاء التثبيت من الإشعارات</string>
@@ -484,6 +485,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">إنشاء حدث جديد وإضافته</string>
     <string name="app_settings_create_calendar_event_title">حدث تقويم جديد</string>
+    <string name="agenda_title">جدول أعمال اليوم</string>
     <string name="calendar_create_event_name_hint">اسم الحدث</string>
     <string name="calendar_create_event_select_date">اختر التاريخ</string>
     <string name="calendar_create_event_sync_notice">لن تتم مزامنة this الحدث مع تقويم جهازك</string>
@@ -495,6 +497,8 @@
         <item quantity="other">%d أيام</item>
     </plurals>
     <string name="calendar_relative_in_format">بعد %1$s</string>
+    <string name="calendar_relative_in_minutes">بعد %1$d دقيقة</string>
+    <string name="calendar_relative_now">الآن</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d شهر</item>
         <item quantity="other">%d أشهر</item>
