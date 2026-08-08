@@ -111,7 +111,7 @@
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
 <string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
-<string name="settings_keyboard_gestures_desc">Yalnızca kaydırılabilir içerik olmadığında kullanılabilir</string>
+<string name="settings_keyboard_gestures_desc">Yalnızca ana ekranda kaydırılabilir içerik olmadığında kullanılabilir</string>
 <string name="action_pin_app">Sabitle</string>
     <string name="action_pin_to_notifications">Bildirimlere sabitle</string>
     <string name="action_unpin_from_notifications">Bildirimlerden kaldır</string>

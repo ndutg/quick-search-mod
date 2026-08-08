@@ -112,7 +112,7 @@
     <string name="settings_gesture_none">Κανένα</string>
     <string name="settings_gesture_custom">Προσαρμοσμένο (Εφαρμογές, Αρχεία κ.λπ.)</string>
     <string name="settings_keyboard_gestures_title">Χειρονομίες πληκτρολογίου (Αρχική)</string>
-    <string name="settings_keyboard_gestures_desc">Διαθέσιμο μόνο όταν δεν υπάρχει περιεχόμενο με δυνατότητα κύλισης</string>
+    <string name="settings_keyboard_gestures_desc">Διαθέσιμο μόνο όταν δεν υπάρχει περιεχόμενο με δυνατότητα κύλισης στην αρχική οθόνη</string>
     <string name="action_pin_app">Καρφίτσωμα</string>
     <string name="action_pin_to_notifications">Καρφίτσωμα στις ειδοποιήσεις</string>
     <string name="action_unpin_from_notifications">Ξεκαρφίτσωμα από τις ειδοποιήσεις</string>

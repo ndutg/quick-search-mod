@@ -112,7 +112,7 @@
     <string name="settings_gesture_none">Nenhum</string>
     <string name="settings_gesture_custom">Personalizado (Apps, arquivos etc.)</string>
     <string name="settings_keyboard_gestures_title">Gestos do teclado (Início)</string>
-    <string name="settings_keyboard_gestures_desc">Disponível apenas quando não há conteúdo rolável</string>
+    <string name="settings_keyboard_gestures_desc">Disponível apenas quando não há conteúdo rolável na tela inicial</string>
     <string name="action_pin_app">Fixar</string>
     <string name="action_pin_to_notifications">Fixar nas notificações</string>
     <string name="action_unpin_from_notifications">Desafixar das notificações</string>

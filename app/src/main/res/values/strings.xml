@@ -106,7 +106,7 @@
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
     <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>
-    <string name="settings_keyboard_gestures_desc">Available only when there is no scrollable content</string>
+    <string name="settings_keyboard_gestures_desc">Available only when there is no scrollable content in home</string>
     <string name="action_pin_app">Pin</string>
     <string name="action_pin_to_notifications">Pin to Notifications</string>
     <string name="action_unpin_from_notifications">Unpin from Notifications</string>

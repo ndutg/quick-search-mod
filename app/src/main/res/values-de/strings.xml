@@ -112,7 +112,7 @@
     <string name="settings_gesture_none">Keine</string>
     <string name="settings_gesture_custom">Benutzerdefiniert (Apps, Dateien usw.)</string>
     <string name="settings_keyboard_gestures_title">Tastaturgesten (Startseite)</string>
-    <string name="settings_keyboard_gestures_desc">Nur verfügbar, wenn kein scrollbarer Inhalt vorhanden ist</string>
+    <string name="settings_keyboard_gestures_desc">Nur verfügbar, wenn auf dem Startbildschirm kein scrollbarer Inhalt vorhanden ist</string>
     <string name="action_pin_app">Anheften</string>
     <string name="action_pin_to_notifications">An Benachrichtigungen anheften</string>
     <string name="action_unpin_from_notifications">Von Benachrichtigungen lösen</string>

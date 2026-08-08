@@ -113,7 +113,7 @@
     <string name="settings_gesture_none">بلا</string>
     <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
     <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح (الرئيسية)</string>
-    <string name="settings_keyboard_gestures_desc">متاح فقط عندما لا يكون هناك محتوى قابل للتمرير</string>
+    <string name="settings_keyboard_gestures_desc">متاح فقط عندما لا يوجد محتوى قابل للتمرير على الشاشة الرئيسية</string>
     <string name="action_pin_app">تثبيت</string>
     <string name="action_pin_to_notifications">تثبيت في الإشعارات</string>
     <string name="action_unpin_from_notifications">إلغاء التثبيت من الإشعارات</string>

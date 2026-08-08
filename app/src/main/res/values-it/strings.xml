@@ -111,7 +111,7 @@
     <string name="settings_gesture_none">Nessuno</string>
     <string name="settings_gesture_custom">Personalizzato (App, file ecc.)</string>
     <string name="settings_keyboard_gestures_title">Gesti della tastiera (Home)</string>
-    <string name="settings_keyboard_gestures_desc">Disponibile solo quando non sono presenti contenuti scorrevoli</string>
+    <string name="settings_keyboard_gestures_desc">Disponibile solo quando non sono presenti contenuti scorrevoli nella schermata Home</string>
     <string name="action_pin_app">Fissa</string>
     <string name="action_pin_to_notifications">Fissa nelle notifiche</string>
     <string name="action_unpin_from_notifications">Rimuovi dalle notifiche</string>

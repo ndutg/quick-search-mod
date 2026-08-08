@@ -112,7 +112,7 @@
 <string name="settings_gesture_none">Нет</string>
 <string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
 <string name="settings_keyboard_gestures_title">Жесты клавиатуры (Главный экран)</string>
-<string name="settings_keyboard_gestures_desc">Доступно, только когда нет прокручиваемого содержимого</string>
+<string name="settings_keyboard_gestures_desc">Доступно, только когда на главном экране нет прокручиваемого содержимого</string>
 <string name="action_pin_app">Закрепить</string>
 <string name="action_pin_to_notifications">Закрепить в уведомлениях</string>
 <string name="action_unpin_from_notifications">Открепить от уведомлений</string>

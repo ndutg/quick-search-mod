@@ -112,7 +112,7 @@
     <string name="settings_gesture_none">कोई नहीं</string>
     <string name="settings_gesture_custom">कस्टम (ऐप्स, फ़ाइलें आदि)</string>
     <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर (होम)</string>
-    <string name="settings_keyboard_gestures_desc">केवल तब उपलब्ध जब स्क्रॉल करने योग्य सामग्री न हो</string>
+    <string name="settings_keyboard_gestures_desc">केवल तब उपलब्ध जब होम स्क्रीन पर स्क्रॉल करने योग्य सामग्री न हो</string>
     <string name="action_pin_app">पिन करें</string>
     <string name="action_pin_to_notifications">सूचनाओं में पिन करें</string>
     <string name="action_unpin_from_notifications">सूचनाओं से अनपिन करें</string>

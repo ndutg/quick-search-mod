@@ -112,7 +112,7 @@
 <string name="settings_gesture_none">Aucun</string>
 <string name="settings_gesture_custom">Personnalisé (Applications, fichiers, etc.)</string>
 <string name="settings_keyboard_gestures_title">Gestes du clavier (Accueil)</string>
-<string name="settings_keyboard_gestures_desc">Disponible uniquement lorsqu’il n’y a pas de contenu défilable</string>
+<string name="settings_keyboard_gestures_desc">Disponible uniquement lorsqu’il n’y a pas de contenu défilable sur l’écran d’accueil</string>
 <string name="action_pin_app">Épingler</string>
     <string name="action_pin_to_notifications">Épingler aux notifications</string>
     <string name="action_unpin_from_notifications">Désépingler des notifications</string>

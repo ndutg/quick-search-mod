@@ -112,7 +112,7 @@
     <string name="settings_gesture_none">无</string>
     <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
     <string name="settings_keyboard_gestures_title">键盘手势 (主屏幕)</string>
-    <string name="settings_keyboard_gestures_desc">仅在没有可滚动内容时可用</string>
+    <string name="settings_keyboard_gestures_desc">仅当主屏幕上没有可滚动内容时可用</string>
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">固定到通知</string>
     <string name="action_unpin_from_notifications">从通知中取消固定</string>
