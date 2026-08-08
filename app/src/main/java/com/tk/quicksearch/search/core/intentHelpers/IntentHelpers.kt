@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.core
 
 import android.app.Application
 import android.content.ContentUris
+import android.content.Context
 import android.content.Intent
 import android.provider.CalendarContract
 import com.tk.quicksearch.R
@@ -35,7 +36,7 @@ object IntentHelpers {
 
     /** Launches an app by package name. Uses LauncherApps for work profile apps. */
     fun launchApp(
-        context: Application,
+        context: Context,
         appInfo: AppInfo,
         onShowToast: ((Int, String?) -> Unit)? = null,
     ) {

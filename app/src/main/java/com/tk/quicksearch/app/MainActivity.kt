@@ -32,6 +32,7 @@ import com.tk.quicksearch.app.navigation.NavigationRequest
 import com.tk.quicksearch.app.navigation.RootDestination
 import com.tk.quicksearch.app.navigation.SettingsNavigationMemory
 import com.tk.quicksearch.app.startup.StartupCoordinator
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.app.startup.StartupMode
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
@@ -128,6 +129,7 @@ open class MainActivity : ComponentActivity() {
             enableEdgeToEdge(statusBarStyle, navigationBarStyle)
 
             super.onCreate(savedInstanceState)
+            PinnedNotifications.show(this)
             activeActivityInstances.incrementAndGet()
             isActivityInstanceTracked = true
             window.setBackgroundDrawable(null)

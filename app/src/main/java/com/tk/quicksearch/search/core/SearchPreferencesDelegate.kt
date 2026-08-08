@@ -288,16 +288,26 @@ internal class SearchPreferencesDelegate(
         }
     }
 
-    fun setFuzzySearchEnabled(enabled: Boolean) {
+    fun setAppResultRowCount(rowCount: Int) {
         scope.launch(Dispatchers.IO) {
-            if (isLowRamDevice(applicationProvider())) return@launch
-            userPreferences.setFuzzySearchEnabled(enabled)
-            updateFeatureState {
-                it.copy(
-                    fuzzySearchEnabled = enabled,
-                    fuzzySearchAvailable = true,
-                )
-            }
+            userPreferences.setAppResultRowCount(rowCount)
+            updateFeatureState { it.copy(appResultRowCount = rowCount) }
+        }
+    }
+
+    fun setFuzzySearchEnabled(enabled: Boolean) {
+        if (isLowRamDevice(applicationProvider())) return
+
+        // Persist before scheduling result work so leaving Settings cannot cancel the write.
+        userPreferences.setFuzzySearchEnabled(enabled)
+        updateFeatureState {
+            it.copy(
+                fuzzySearchEnabled = enabled,
+                fuzzySearchAvailable = true,
+            )
+        }
+
+        scope.launch(Dispatchers.IO) {
             refreshAppSuggestions()
             secondarySearchOrchestrator.resetNoResultTracking()
             rerunSecondarySearchIfNeeded()

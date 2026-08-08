@@ -55,6 +55,7 @@ class AppCache(
             prefs
                 .edit()
                 .putLong(KEY_LAST_UPDATE, System.currentTimeMillis())
+                .putBoolean(KEY_CATALOG_INVALIDATED, false)
                 .apply()
             true
         }.onFailure { exception ->
@@ -65,6 +66,16 @@ class AppCache(
      * @return Timestamp in milliseconds, or 0L if cache has never been updated.
      */
     fun getLastUpdateTime(): Long = prefs.getLong(KEY_LAST_UPDATE, 0L)
+
+    fun isCatalogInvalidated(): Boolean = prefs.getBoolean(KEY_CATALOG_INVALIDATED, false)
+
+    fun markCatalogInvalidated() {
+        prefs.edit().putBoolean(KEY_CATALOG_INVALIDATED, true).apply()
+    }
+
+    fun clearCatalogInvalidation() {
+        prefs.edit().putBoolean(KEY_CATALOG_INVALIDATED, false).apply()
+    }
 
     fun clearCache() {
         prefs.edit().clear().apply()
@@ -115,6 +126,7 @@ class AppCache(
         private const val PREFS_NAME = "app_cache"
         private const val KEY_APP_LIST = "app_list"
         private const val KEY_LAST_UPDATE = "last_update"
+        private const val KEY_CATALOG_INVALIDATED = "catalog_invalidated"
         private const val CACHE_FILE_NAME = "app_cache_v1.bin"
         private const val CACHE_FILE_VERSION = 3
 

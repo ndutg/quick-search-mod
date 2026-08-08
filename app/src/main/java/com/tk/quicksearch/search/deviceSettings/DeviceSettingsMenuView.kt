@@ -16,10 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
+import com.tk.quicksearch.widgets.customButtonsWidget.SettingExtra
+import com.tk.quicksearch.widgets.customButtonsWidget.SettingExtraType
 
 /** Menu item data class for settings dropdown menu. */
 private data class DeviceSettingsMenuItem(
@@ -43,8 +48,29 @@ fun DeviceSettingsDropdownMenu(
         onNicknameClick: () -> Unit,
         onTriggerClick: () -> Unit,
         onAddToHome: () -> Unit,
+        setting: DeviceSetting,
         showPinnedItemMenu: Boolean = false,
 ) {
+    val context = LocalContext.current
+    val notificationAction = CustomWidgetButtonAction.Setting(
+            id = setting.id, title = setting.title, description = setting.description,
+            keywords = setting.keywords, action = setting.action, data = setting.data,
+            categories = setting.categories,
+            extras = setting.extras.map { (key, value) ->
+                    SettingExtra(
+                            key,
+                            when (value) {
+                                is Boolean -> SettingExtraType.BOOLEAN
+                                is Int -> SettingExtraType.INT
+                                is Long -> SettingExtraType.LONG
+                                else -> SettingExtraType.STRING
+                            },
+                            value.toString(),
+                    )
+            },
+            minSdk = setting.minSdk, maxSdk = setting.maxSdk,
+    )
+    val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     DropdownMenu(
             expanded = expanded,
             onDismissRequest = onDismissRequest,
@@ -124,6 +150,13 @@ fun DeviceSettingsDropdownMenu(
             )
             add(
                     DeviceSettingsMenuItem(
+                            textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
+                            icon = { Icon(painter = painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin), contentDescription = null) },
+                            onClick = { onDismissRequest(); PinnedNotifications.toggle(context, notificationAction) },
+                    ),
+            )
+            add(
+                    DeviceSettingsMenuItem(
                             textResId = R.string.action_add_to_home,
                             icon = {
                                 Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
@@ -165,7 +198,14 @@ fun DeviceSettingsDropdownMenu(
             )
         }
 
-        menuItems.forEachIndexed { index, item ->
+        val orderedMenuItems = menuItems.toMutableList().apply {
+            val notificationIndex = indexOfFirst { it.textResId == R.string.action_pin_to_notifications || it.textResId == R.string.action_unpin_from_notifications }
+            if (notificationIndex >= 0 && indexOfFirst { it.textResId == R.string.common_nickname || it.textResId == R.string.action_edit_nickname } >= 0) {
+                val notificationItem = removeAt(notificationIndex)
+                add(indexOfFirst { it.textResId == R.string.common_nickname || it.textResId == R.string.action_edit_nickname } + 1, notificationItem)
+            }
+        }
+        orderedMenuItems.forEachIndexed { index, item ->
             if (index > 0) {
                 HorizontalDivider()
             }

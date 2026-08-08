@@ -362,7 +362,12 @@ internal class SearchStartupLifecycleDelegate(
             }
 
             refreshAppsUsageAndPermissions()
-            if (shouldReconcileAppsAtStartup()) {
+            // Cached apps seed the home suggestions in phase 1. Rebuilding the complete catalog
+            // queries LauncherApps and usage stats, so only block here when there is no cache to
+            // show. An invalidated or stale cache is reconciled once startup has been idle.
+            val reconcileAppsAfterStartupIdle =
+                shouldReconcileAppsAtStartup() && appSearchManager.cachedApps.isNotEmpty()
+            if (!reconcileAppsAfterStartupIdle && appSearchManager.cachedApps.isEmpty()) {
                 loadApps()
             }
 
@@ -481,6 +486,9 @@ internal class SearchStartupLifecycleDelegate(
             optionalStartupJob?.cancel()
             optionalStartupJob = launch(startupDispatcher) {
                 awaitOptionalStartupWindow()
+                if (reconcileAppsAfterStartupIdle) {
+                    loadApps()
+                }
                 val hasApiKey = userPreferences.refreshConfiguredAiProviderHint()
                 val activeProviderId = aiSearchHandler.getAiSearchProviderId()
                 val availableGeminiModels = aiSearchHandler.getAvailableGeminiModels()
@@ -760,6 +768,7 @@ internal class SearchStartupLifecycleDelegate(
                 disabledAppShortcutIds = userPreferences.getDisabledAppShortcutIds(),
                 recentQueriesEnabled = prefs.searchHistoryEnabled,
                 recentQueriesDisplayCount = userPreferences.getRecentQueriesDisplayCount(),
+                appResultRowCount = userPreferences.getAppResultRowCount(),
                 fuzzySearchEnabled =
                     !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()) &&
                         userPreferences.isFuzzySearchEnabled(),

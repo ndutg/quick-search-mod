@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.BrowserApp
+import com.tk.quicksearch.searchEngines.IN_APP_BROWSER_PACKAGE
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -50,7 +51,8 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
  * A styled browser picker shown inside Add/Edit custom search engine dialogs.
  *
  * Renders a compact selector row that expands into a list of available browsers.
- * [selectedPackage] == null means "Default browser".
+ * [selectedPackage] == null means "Default browser". Custom search engines select the
+ * in-app browser by default.
  */
 @Composable
 fun BrowserPickerField(
@@ -60,7 +62,17 @@ fun BrowserPickerField(
     modifier: Modifier = Modifier,
     onExpand: () -> Unit = {},
 ) {
-    if (availableBrowsers.isEmpty()) return
+    val inAppBrowser =
+        BrowserApp(
+            packageName = IN_APP_BROWSER_PACKAGE,
+            label = stringResource(R.string.browser_in_app_name),
+        )
+    val browserOptions =
+        if (availableBrowsers.any { it.packageName == IN_APP_BROWSER_PACKAGE }) {
+            availableBrowsers
+        } else {
+            availableBrowsers + inAppBrowser
+        }
 
     var expanded by remember { mutableStateOf(false) }
     val chevronAngle by animateFloatAsState(
@@ -70,7 +82,7 @@ fun BrowserPickerField(
     )
 
     val defaultLabel = stringResource(R.string.settings_search_engine_browser_default)
-    val selectedLabel = availableBrowsers.firstOrNull { it.packageName == selectedPackage }?.label ?: defaultLabel
+    val selectedLabel = browserOptions.firstOrNull { it.packageName == selectedPackage }?.label ?: defaultLabel
 
     val accentColor = AppColors.Accent
     val onSurface = MaterialTheme.colorScheme.onSurface
@@ -165,7 +177,7 @@ fun BrowserPickerField(
                     },
                 )
 
-                availableBrowsers.forEach { browser ->
+                browserOptions.forEach { browser ->
                     HorizontalDivider(
                         color = accentColor.copy(alpha = 0.12f),
                         thickness = DesignTokens.DividerThickness,

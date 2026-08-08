@@ -197,6 +197,8 @@ data class SettingsSectionParams(
     val appSettingWebSuggestionsCount: Int,
     val appSettingPhoneAppGridColumns: Int,
     val onAppSettingPhoneAppGridColumnsChange: (Int) -> Unit,
+    val appSettingAppResultRowCount: Int,
+    val onAppSettingAppResultRowCountChange: (Int) -> Unit,
     val onTogglePin: (DeviceSetting) -> Unit,
     val onMovePinned: (DeviceSetting, Boolean) -> Unit = { _, _ -> },
     val onExclude: (DeviceSetting) -> Unit,
@@ -413,6 +415,8 @@ internal fun buildSectionParams(
     appSettingWebSuggestionsCount: Int,
     appSettingPhoneAppGridColumns: Int,
     onAppSettingPhoneAppGridColumnsChange: (Int) -> Unit,
+    appSettingAppResultRowCount: Int,
+    onAppSettingAppResultRowCountChange: (Int) -> Unit,
     onPinSetting: (DeviceSetting) -> Unit,
     onUnpinSetting: (DeviceSetting) -> Unit,
     onMovePinnedSetting: (DeviceSetting, Boolean) -> Unit,
@@ -715,6 +719,8 @@ internal fun buildSectionParams(
             appSettingWebSuggestionsCount = appSettingWebSuggestionsCount,
             appSettingPhoneAppGridColumns = appSettingPhoneAppGridColumns,
             onAppSettingPhoneAppGridColumnsChange = onAppSettingPhoneAppGridColumnsChange,
+            appSettingAppResultRowCount = appSettingAppResultRowCount,
+            onAppSettingAppResultRowCountChange = onAppSettingAppResultRowCountChange,
             onTogglePin = { setting ->
                 if (derivedState.pinnedSettingIds.contains(setting.id)) {
                     onUnpinSetting(setting)

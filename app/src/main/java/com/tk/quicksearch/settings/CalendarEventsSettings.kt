@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import android.text.format.DateFormat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -469,6 +470,7 @@ private fun CustomEventFormDialog(
     noticeAboveNameResId: Int? = null,
     autoFocusTitle: Boolean = true,
 ) {
+    val context = LocalContext.current
     var eventTitle by remember { mutableStateOf(initialTitle) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
@@ -497,7 +499,7 @@ private fun CustomEventFormDialog(
     val timePickerState = rememberTimePickerState(
         initialHour = initialHour,
         initialMinute = initialMinute,
-        is24Hour = false,
+        is24Hour = DateFormat.is24HourFormat(context),
     )
     // hasTime drives allDay: if user added a time, allDay = false
     var hasTime by remember { mutableStateOf(!initialAllDay) }
@@ -694,13 +696,15 @@ private fun formatPickedDate(utcMillis: Long): String {
     return SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault()).format(Date(localMillis))
 }
 
+@Composable
 private fun formatPickedTime(hour: Int, minute: Int): String {
+    val context = LocalContext.current
     val cal = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, hour)
         set(Calendar.MINUTE, minute)
         set(Calendar.SECOND, 0)
     }
-    return SimpleDateFormat("h:mm a", Locale.getDefault()).format(cal.time)
+    return DateFormat.getTimeFormat(context).format(cal.time)
 }
 
 private fun utcMidnightToLocalMidnight(utcMillis: Long): Long {

@@ -350,7 +350,7 @@ class WidgetActionActivity : ComponentActivity() {
         val app = application as Application
         when (action) {
             is CustomWidgetButtonAction.App -> {
-                IntentHelpers.launchApp(app, action.toAppInfo()) { resId, arg ->
+                IntentHelpers.launchApp(this, action.toAppInfo()) { resId, arg ->
                     showToast(resId, arg)
                 }
             }

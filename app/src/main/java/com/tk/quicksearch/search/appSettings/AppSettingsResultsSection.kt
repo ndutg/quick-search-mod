@@ -73,6 +73,8 @@ fun AppSettingsResultsSection(
     webSuggestionsCount: Int,
     appSettingPhoneAppGridColumns: Int,
     onAppSettingPhoneAppGridColumnsChange: (Int) -> Unit,
+    appSettingAppResultRowCount: Int,
+    onAppSettingAppResultRowCountChange: (Int) -> Unit,
     showAllResults: Boolean,
     showExpandControls: Boolean,
     onExpandClick: () -> Unit,
@@ -153,6 +155,8 @@ fun AppSettingsResultsSection(
                         webSuggestionsCount = webSuggestionsCount,
                         appSettingPhoneAppGridColumns = appSettingPhoneAppGridColumns,
                         onAppSettingPhoneAppGridColumnsChange = onAppSettingPhoneAppGridColumnsChange,
+                        appSettingAppResultRowCount = appSettingAppResultRowCount,
+                        onAppSettingAppResultRowCountChange = onAppSettingAppResultRowCountChange,
                         isPredicted = showPredictedOnRow,
                     )
 
@@ -188,6 +192,8 @@ internal fun AppSettingResultRow(
     webSuggestionsCount: Int,
     appSettingPhoneAppGridColumns: Int = 4,
     onAppSettingPhoneAppGridColumnsChange: (Int) -> Unit = {},
+    appSettingAppResultRowCount: Int = 1,
+    onAppSettingAppResultRowCountChange: (Int) -> Unit = {},
     isPredicted: Boolean = false,
 ) {
     val view = LocalView.current
@@ -198,6 +204,7 @@ internal fun AppSettingResultRow(
         )
     val isWebSuggestionsToggle = setting.toggleKey == AppSettingsToggleKey.WEB_SUGGESTIONS
     val isAppsPerRowSetting = setting.toggleKey == AppSettingsToggleKey.APPS_PER_ROW
+    val isAppResultRowsSetting = setting.toggleKey == AppSettingsToggleKey.APP_RESULT_ROWS
     val context = LocalContext.current
     val isDefaultLauncher = context.isDefaultHomeApp()
     val isOverlayBlockedByLauncher =
@@ -224,12 +231,12 @@ internal fun AppSettingResultRow(
                     if (setting.isNavigateAction) {
                         hapticConfirm(view)()
                         onClick(setting)
-                    } else if (!isAppsPerRowSetting) {
+                    } else if (!isAppsPerRowSetting && !isAppResultRowsSetting) {
                         hapticToggle(view)()
                         onToggle(setting, !checked)
                     }
                 },
-                role = if (setting.isToggleAction && !isAppsPerRowSetting) Role.Switch else null,
+                role = if (setting.isToggleAction && !isAppsPerRowSetting && !isAppResultRowsSetting) Role.Switch else null,
             )
 
     Row(
@@ -335,6 +342,11 @@ internal fun AppSettingResultRow(
                     ),
                 )
             }
+        } else if (isAppResultRowsSetting) {
+            AppResultRowsChips(
+                selectedRowCount = appSettingAppResultRowCount,
+                onSelectRowCount = onAppSettingAppResultRowCountChange,
+            )
         } else if (setting.isToggleAction) {
             Switch(
                 checked = checked,
@@ -357,6 +369,35 @@ internal fun AppSettingResultRow(
                 contentDescription = stringResource(R.string.desc_navigate_forward),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(end = 6.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppResultRowsChips(
+    selectedRowCount: Int,
+    onSelectRowCount: (Int) -> Unit,
+) {
+    val view = LocalView.current
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+        modifier = Modifier.padding(end = 6.dp),
+    ) {
+        listOf(1, 2).forEach { rowCount ->
+            val selected = selectedRowCount == rowCount
+            AssistChip(
+                onClick = {
+                    hapticToggle(view)()
+                    onSelectRowCount(rowCount)
+                },
+                label = { Text(rowCount.toString()) },
+                shape = DesignTokens.ShapeFull,
+                border = if (selected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    labelColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
+                ),
             )
         }
     }

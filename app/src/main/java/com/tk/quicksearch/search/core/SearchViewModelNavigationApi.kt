@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import android.content.Context
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.launchStaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
@@ -25,7 +26,10 @@ internal interface SearchViewModelNavigationApi {
 
     fun openCalendarPermissionSettings() = navigationApiDelegate.openCalendarPermissionSettings()
 
-    fun launchApp(appInfo: AppInfo) = navigationApiDelegate.launchApp(appInfo)
+    fun launchApp(
+        appInfo: AppInfo,
+        launchContext: Context,
+    ) = navigationApiDelegate.launchApp(appInfo, launchContext)
 
     fun openAppInfo(appInfo: AppInfo) = navigationApiDelegate.openAppInfo(appInfo)
 
@@ -93,9 +97,13 @@ class SearchViewModelNavigationApiDelegate internal constructor(
 
     fun openCalendarPermissionSettings() = navigationHandler().openCalendarPermissionSettings()
 
-    fun launchApp(appInfo: AppInfo) {
+    fun launchApp(
+        appInfo: AppInfo,
+        launchContext: Context,
+    ) {
         navigationHandler().launchApp(
             appInfo,
+            launchContext,
             shouldTrackRecentFallback = !permissionStateProvider().hasUsagePermission,
         )
     }
