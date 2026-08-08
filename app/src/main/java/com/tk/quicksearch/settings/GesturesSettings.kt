@@ -68,6 +68,7 @@ fun GesturesSettingsSection(
     var actions by remember { mutableStateOf(SwipeDirection.entries.associateWith(preferences::actionFor)) }
     var customActions by remember { mutableStateOf(SwipeDirection.entries.associateWith(preferences::customActionFor)) }
     var selectedDirection by remember { mutableStateOf<SwipeDirection?>(null) }
+    var isLauncherSwipeRightEnabled by remember { mutableStateOf(preferences.isLauncherSwipeRightEnabled()) }
     var customPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
     var homeCustomPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
     var selectedKeyboardAction by remember { mutableStateOf<SwipeGestureAction?>(null) }
@@ -137,7 +138,17 @@ fun GesturesSettingsSection(
         listOf(SwipeDirection.UP, SwipeDirection.DOWN).firstOrNull { actions[it] == action }
 
     selectedDirection?.let { direction ->
-        GestureActionDialog(
+        if (direction == SwipeDirection.RIGHT && isDefaultLauncher) {
+            LauncherSwipeRightActionDialog(
+                isEnabled = isLauncherSwipeRightEnabled,
+                onEnabledChange = { enabled ->
+                    preferences.setLauncherSwipeRightEnabled(enabled)
+                    isLauncherSwipeRightEnabled = enabled
+                    selectedDirection = null
+                },
+                onDismiss = { selectedDirection = null },
+            )
+        } else GestureActionDialog(
             direction = direction,
             selectedAction = actions.getValue(direction),
             selectedCustomActionJson = customActions[direction],
@@ -255,13 +266,15 @@ fun GesturesSettingsSection(
                                 icon = direction.gestureIcon(),
                                 description =
                                     if (direction == SwipeDirection.RIGHT && isDefaultLauncher) {
-                                        stringResource(R.string.settings_gesture_widget_panel)
+                                        stringResource(
+                                            if (isLauncherSwipeRightEnabled) R.string.settings_gesture_widget_panel
+                                            else R.string.settings_gesture_none,
+                                        )
                                     } else if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
                                         homeGestureDescription(homeActions.getValue(direction), homeCustomActions[direction])
                                     } else {
                                         gestureDescription(actions.getValue(direction), customActions[direction])
                                 },
-                                isEnabled = direction != SwipeDirection.RIGHT || !isDefaultLauncher,
                                 actionOnPress = {
                                     if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
                                         selectedHomeVerticalDirection = direction
@@ -310,6 +323,34 @@ fun GesturesSettingsSection(
             }
         }
     }
+}
+
+@Composable
+private fun LauncherSwipeRightActionDialog(
+    isEnabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_gesture_swipe_right)) },
+        text = {
+            Column {
+                GestureActionRow(
+                    label = stringResource(R.string.settings_gesture_none),
+                    selected = !isEnabled,
+                    onClick = { onEnabledChange(false) },
+                )
+                HorizontalDivider(color = AppColors.SettingsDivider)
+                GestureActionRow(
+                    label = stringResource(R.string.settings_gesture_widget_panel),
+                    selected = isEnabled,
+                    onClick = { onEnabledChange(true) },
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
+    )
 }
 
 private fun SwipeDirection.gestureIcon() =

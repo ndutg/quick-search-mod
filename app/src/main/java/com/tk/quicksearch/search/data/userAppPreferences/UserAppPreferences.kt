@@ -401,6 +401,10 @@ class UserAppPreferences(
 
     fun setSwipeRightCustomAction(actionJson: String?) = gesturesPreferences.setSwipeRightCustomAction(actionJson)
 
+    fun isLauncherSwipeRightEnabled(): Boolean = gesturesPreferences.isLauncherSwipeRightEnabled()
+
+    fun setLauncherSwipeRightEnabled(enabled: Boolean) = gesturesPreferences.setLauncherSwipeRightEnabled(enabled)
+
     fun getSwipeLeftAction(): SwipeGestureAction = gesturesPreferences.getSwipeLeftAction()
 
     fun setSwipeLeftAction(action: SwipeGestureAction) = gesturesPreferences.setSwipeLeftAction(action)

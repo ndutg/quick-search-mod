@@ -545,6 +545,7 @@ fun SearchRoute(
             ),
         )
     }
+    var isLauncherSwipeRightEnabled by remember { mutableStateOf(gesturePreferences.isLauncherSwipeRightEnabled()) }
     DisposableEffect(lifecycleOwner, notesPreferences) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -582,6 +583,7 @@ fun SearchRoute(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
                     gesturePreferences.getHomeSwipeDownCustomAction(),
                 )
+            isLauncherSwipeRightEnabled = gesturePreferences.isLauncherSwipeRightEnabled()
         }
         preferences.registerOnSharedPreferenceChangeListener(listener)
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
@@ -600,7 +602,7 @@ fun SearchRoute(
         when (swipe) {
             HomeHorizontalSwipe.RIGHT -> {
                 if (isDefaultLauncher) {
-                    onOpenWidgetsPanelFromSwipe?.invoke()
+                    if (isLauncherSwipeRightEnabled) onOpenWidgetsPanelFromSwipe?.invoke()
                 } else {
                     when (swipeActions[0]) {
                         SwipeGestureAction.QUICK_NOTE -> if (quickNoteEnabled) openQuickNoteEditor()
@@ -627,7 +629,7 @@ fun SearchRoute(
         }
     }
     val swipeNavigationModifier =
-        Modifier.pointerInput(isDefaultLauncher, quickNoteEnabled, swipeActions, customSwipeActions, uiState.query) {
+        Modifier.pointerInput(isDefaultLauncher, isLauncherSwipeRightEnabled, quickNoteEnabled, swipeActions, customSwipeActions, uiState.query) {
             var totalHorizontalDrag = 0f
             detectHorizontalDragGestures(
                 onDragStart = { totalHorizontalDrag = 0f },

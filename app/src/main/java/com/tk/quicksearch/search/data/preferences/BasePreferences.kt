@@ -513,6 +513,7 @@ abstract class BasePreferences(
         const val KEY_SWIPE_UP_ACTION = "swipe_up_action"
         const val KEY_SWIPE_DOWN_ACTION = "swipe_down_action"
         const val KEY_SWIPE_RIGHT_CUSTOM_ACTION = "swipe_right_custom_action"
+        const val KEY_LAUNCHER_SWIPE_RIGHT_ENABLED = "launcher_swipe_right_enabled"
         const val KEY_SWIPE_LEFT_CUSTOM_ACTION = "swipe_left_custom_action"
         const val KEY_SWIPE_UP_CUSTOM_ACTION = "swipe_up_custom_action"
         const val KEY_SWIPE_DOWN_CUSTOM_ACTION = "swipe_down_custom_action"
