@@ -16,6 +16,29 @@ import java.time.format.TextStyle
 import java.util.Date
 import java.util.Locale
 
+private const val MILLIS_PER_MINUTE = 60_000L
+
+@Composable
+fun calendarHomeScheduleLabel(
+    event: CalendarEventInfo,
+    nowMillis: Long = System.currentTimeMillis(),
+): String {
+    if (event.allDay) return stringResource(R.string.calendar_relative_today)
+    if (nowMillis in event.startMillis..event.endMillis) {
+        return stringResource(R.string.calendar_relative_now)
+    }
+
+    val minutesUntilStart = ((event.startMillis - nowMillis) / MILLIS_PER_MINUTE).coerceAtLeast(1L)
+    return stringResource(R.string.calendar_relative_in_minutes, minutesUntilStart)
+}
+
+fun isCalendarEventCurrentlyRelevant(
+    event: CalendarEventInfo,
+    nowMillis: Long = System.currentTimeMillis(),
+): Boolean =
+    !event.allDay &&
+        nowMillis in (event.startMillis - (15L * MILLIS_PER_MINUTE))..event.endMillis
+
 private enum class CalendarRecurrenceFrequency(
     @StringRes val repeatsSingularResId: Int,
     val repeatsPluralResId: Int,

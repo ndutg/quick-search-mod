@@ -27,11 +27,13 @@ internal data class ExpandableResultsCardState(
 internal fun ExpandableResultsCard(
     modifier: Modifier = Modifier,
     resultCount: Int,
+    hasAdditionalResults: Boolean = resultCount > SearchScreenConstants.INITIAL_RESULT_COUNT,
     isExpanded: Boolean,
     showAllResults: Boolean,
     isTopPredicted: Boolean = false,
     showExpandControls: Boolean,
     expandedCardMaxHeight: Dp,
+    constrainExpandedHeight: Boolean = true,
     hasScrollableContent: Boolean,
     fillExpandedHeight: Boolean,
     showWallpaperBackground: Boolean,
@@ -39,8 +41,7 @@ internal fun ExpandableResultsCard(
     content: @Composable (Modifier, ExpandableResultsCardState) -> Unit,
 ) {
     val displayAsExpanded = isExpanded || showAllResults
-    val canShowExpand =
-        showExpandControls && resultCount > SearchScreenConstants.INITIAL_RESULT_COUNT
+    val canShowExpand = showExpandControls && hasAdditionalResults
     val state =
         ExpandableResultsCardState(
             displayAsExpanded = displayAsExpanded,
@@ -50,7 +51,7 @@ internal fun ExpandableResultsCard(
         )
 
     val contentModifier =
-        if (isExpanded) {
+        if (isExpanded && constrainExpandedHeight) {
             Modifier.fillMaxWidth()
                 .heightIn(
                     min = if (state.shouldFillExpandedHeight) expandedCardMaxHeight else 0.dp,

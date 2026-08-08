@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -183,6 +184,7 @@ internal fun SearchScreenStateManagement(
     onConsumeContactActionRequest: () -> Unit,
 ): SearchScreenStateResult {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
 
@@ -324,8 +326,9 @@ internal fun SearchScreenStateManagement(
         enabled =
             expandedSection != ExpandedSection.NONE && state.detectedAliasSearchSection == null,
     ) {
-        keyboardController?.show()
         expandedSection = ExpandedSection.NONE
+        searchFocusRequester.requestFocus()
+        keyboardController?.show()
     }
 
     // Handle scroll behavior for one-handed mode
@@ -354,10 +357,6 @@ internal fun SearchScreenStateManagement(
         overlayModeEnabled = state.overlayModeEnabled,
         oneHandedMode = state.oneHandedMode,
         reverseScrolling = alignResultsToBottom,
-        // This is the established result-scroll behavior and remains independent from the
-        // configurable Home Gesture actions.
-        showKeyboardOnBoundaryReached = true,
-        searchFocusRequester = searchFocusRequester,
     )
 
     val (imageBitmap, useImageBackground, useMonoThemeFallback) = SearchScreenWallpaperLogic(
@@ -492,8 +491,10 @@ internal fun SearchScreenStateManagement(
             onUpdateExpandedSection = { newSection: ExpandedSection ->
                 expandedSection = newSection
                 if (newSection == ExpandedSection.NONE) {
+                    searchFocusRequester.requestFocus()
                     keyboardController?.show()
                 } else {
+                    focusManager.clearFocus(force = true)
                     keyboardController?.hide()
                 }
             },

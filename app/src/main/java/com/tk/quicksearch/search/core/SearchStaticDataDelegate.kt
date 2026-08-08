@@ -13,6 +13,9 @@ import com.tk.quicksearch.search.data.ContactRepository
 import com.tk.quicksearch.search.data.FileSearchRepository
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.apps.invalidateAppIconCache
+import com.tk.quicksearch.search.models.CalendarEventInfo
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +40,8 @@ internal class SearchStaticDataDelegate(
     private val showToastRes: (Int) -> Unit,
     private val refreshRecentItems: () -> Unit,
 ) {
+    // Temporary UI fixtures for the Home calendar card. Remove once the interaction is signed off.
+    private val showHomeCalendarMockEvents = true
     private val pinningHandler get() = handlersProvider().pinningHandler
     private val appSearchManager get() = handlersProvider().appSearchManager
     private val settingsSearchHandler get() = handlersProvider().settingsSearchHandler
@@ -238,9 +243,11 @@ internal class SearchStaticDataDelegate(
         val showTodayEvents = userPreferences.getShowTodayEvents()
         val archivedIds = userPreferences.getArchivedTodayEventIds()
         val today = if (showTodayEvents) {
-            calendarRepository.getTodayEvents()
+            (calendarRepository.getTodayEvents() + homeCalendarMockEvents())
                 .filterNot { excludedIds.contains(it.eventId) }
                 .filterNot { archivedIds.contains(it.eventId) }
+                .distinctBy { it.eventId }
+                .sortedBy { it.startMillis }
         } else {
             emptyList()
         }
@@ -252,6 +259,38 @@ internal class SearchStaticDataDelegate(
                 todayCalendarEvents = today,
             )
         }
+    }
+
+    private fun homeCalendarMockEvents(): List<CalendarEventInfo> {
+        if (!showHomeCalendarMockEvents) return emptyList()
+
+        val now = System.currentTimeMillis()
+        val zoneId = ZoneId.systemDefault()
+        val startOfDay = LocalDate.now().atStartOfDay(zoneId).toInstant().toEpochMilli()
+        val startOfTomorrow = LocalDate.now().plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
+        fun timedEvent(id: Long, title: String, startOffsetMinutes: Long, durationMinutes: Long) =
+            CalendarEventInfo(
+                eventId = id,
+                title = title,
+                startMillis = now + (startOffsetMinutes * 60_000L),
+                endMillis = now + ((startOffsetMinutes + durationMinutes) * 60_000L),
+                allDay = false,
+            )
+
+        return listOf(
+            CalendarEventInfo(-10_001L, "All-day mock event", startOfDay, startOfTomorrow, allDay = true),
+            timedEvent(-10_002L, "Current mock event", startOffsetMinutes = -5, durationMinutes = 35),
+            timedEvent(-10_003L, "Starting soon mock event", startOffsetMinutes = 10, durationMinutes = 30),
+            timedEvent(-10_004L, "Later mock event", startOffsetMinutes = 60, durationMinutes = 30),
+            timedEvent(-10_005L, "Afternoon mock event", startOffsetMinutes = 120, durationMinutes = 45),
+            timedEvent(-10_006L, "Evening mock event", startOffsetMinutes = 180, durationMinutes = 30),
+            timedEvent(-10_007L, "Design review mock event", startOffsetMinutes = 240, durationMinutes = 45),
+            timedEvent(-10_008L, "Lunch mock event", startOffsetMinutes = 300, durationMinutes = 60),
+            timedEvent(-10_009L, "Focus time mock event", startOffsetMinutes = 420, durationMinutes = 90),
+            timedEvent(-10_010L, "Project sync mock event", startOffsetMinutes = 570, durationMinutes = 30),
+            timedEvent(-10_011L, "Workout mock event", startOffsetMinutes = 690, durationMinutes = 60),
+            timedEvent(-10_012L, "Dinner mock event", startOffsetMinutes = 840, durationMinutes = 60),
+        )
     }
 
     fun setAppShortcutEnabled(

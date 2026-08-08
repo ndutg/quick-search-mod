@@ -314,12 +314,15 @@ fun SearchContentArea(
                 !shouldHideScrollView && scrollState.maxValue > 0
             val bottomOneHandedOverscrollEnabled =
                 state.bottomSearchBarEnabled && useOneHandedMode && alignResultsToBottom
+            val keyboardGesturesEnabled = scrollState.maxValue == 0
             val launcherOverscrollUpEnabled =
-                hasQuery.not() && renderingState.expandedSection == ExpandedSection.NONE
+                keyboardGesturesEnabled &&
+                    hasQuery.not() &&
+                    renderingState.expandedSection == ExpandedSection.NONE
             // A keyboard-open search can already contain text. Keep the downward
             // overscroll active in that state so the configured close-keyboard action
             // still receives the gesture before the notification panel does.
-            val launcherOverscrollDownEnabled = true
+            val launcherOverscrollDownEnabled = keyboardGesturesEnabled
             val bottomOneHandedOverscrollConnection =
                 remember(
                     bottomOneHandedOverscrollEnabled,

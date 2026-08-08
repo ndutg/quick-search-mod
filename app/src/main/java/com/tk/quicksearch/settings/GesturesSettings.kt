@@ -299,6 +299,12 @@ fun GesturesSettingsSection(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = DesignTokens.SectionTitleBottomPadding),
         )
+        Text(
+            text = stringResource(R.string.settings_keyboard_gestures_desc),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = DesignTokens.SectionDescriptionBottomPadding),
+        )
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             Column {
                 SettingsNavigationRow(

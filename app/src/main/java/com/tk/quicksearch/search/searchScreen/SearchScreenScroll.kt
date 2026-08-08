@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -21,7 +20,6 @@ private object ScrollBehaviorConstants {
     const val POLLING_INTERVAL_MS = 20L
     const val MAX_POLLING_ATTEMPTS = 10
     const val STABLE_COUNT_THRESHOLD = 2
-    const val KEYBOARD_HIDE_SHOW_COOLDOWN_MS = 500L
 }
 
 // ============================================================================
@@ -151,11 +149,11 @@ fun OneHandedModeScrollBehavior(
  *
  * When overlay mode is OFF:
  * - Scroll down: hide keyboard
- * - Reach top: show keyboard
+ * - Reaching a scroll boundary leaves the keyboard closed
  *
  * When one-handed mode is ON (reversed behavior):
  * - Scroll up: hide keyboard
- * - Reach bottom: show keyboard
+ * - Reaching a scroll boundary leaves the keyboard closed
  */
 @Composable
 fun ScrollBasedKeyboardBehavior(
@@ -163,8 +161,6 @@ fun ScrollBasedKeyboardBehavior(
     overlayModeEnabled: Boolean,
     oneHandedMode: Boolean,
     reverseScrolling: Boolean,
-    showKeyboardOnBoundaryReached: Boolean = true,
-    searchFocusRequester: FocusRequester? = null,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     
@@ -174,7 +170,6 @@ fun ScrollBasedKeyboardBehavior(
     
     LaunchedEffect(scrollState, oneHandedMode, reverseScrolling) {
         var previousScrollValue = scrollState.value
-        var lastHideTime = 0L
         
         snapshotFlow { scrollState.value }
             .distinctUntilChanged()
@@ -194,20 +189,11 @@ fun ScrollBasedKeyboardBehavior(
                     return@collect
                 }
                 
-                val now = System.currentTimeMillis()
-                val isInCooldown = (now - lastHideTime) < ScrollBehaviorConstants.KEYBOARD_HIDE_SHOW_COOLDOWN_MS
-                
                 if (oneHandedMode) {
                     val isAtBottom = if (reverseScrolling) {
                         currentScrollValue <= threshold
                     } else {
                         currentScrollValue >= maxScroll - threshold
-                    }
-                    
-                    val wasAtBottom = if (reverseScrolling) {
-                        previousScrollValue <= threshold
-                    } else {
-                        previousScrollValue >= maxScroll - threshold
                     }
                     
                     val isScrollingUp = if (reverseScrolling) {
@@ -216,17 +202,8 @@ fun ScrollBasedKeyboardBehavior(
                         scrollDelta < 0
                     }
                     
-                    if (
-                        showKeyboardOnBoundaryReached &&
-                            isAtBottom &&
-                            !wasAtBottom &&
-                            !isInCooldown
-                    ) {
-                        searchFocusRequester?.requestFocus()
-                        keyboardController?.show()
-                    } else if (isScrollingUp && !isAtBottom) {
+                    if (isScrollingUp && !isAtBottom) {
                         keyboardController?.hide()
-                        lastHideTime = now
                     }
                 } else {
                     val isAtTop = if (reverseScrolling) {
@@ -235,29 +212,14 @@ fun ScrollBasedKeyboardBehavior(
                         currentScrollValue <= threshold
                     }
                     
-                    val wasAtTop = if (reverseScrolling) {
-                        previousScrollValue >= maxScroll - threshold
-                    } else {
-                        previousScrollValue <= threshold
-                    }
-                    
                     val isScrollingDown = if (reverseScrolling) {
                         scrollDelta < 0
                     } else {
                         scrollDelta > 0
                     }
                     
-                    if (
-                        showKeyboardOnBoundaryReached &&
-                            isAtTop &&
-                            !wasAtTop &&
-                            !isInCooldown
-                    ) {
-                        searchFocusRequester?.requestFocus()
-                        keyboardController?.show()
-                    } else if (isScrollingDown && !isAtTop) {
+                    if (isScrollingDown && !isAtTop) {
                         keyboardController?.hide()
-                        lastHideTime = now
                     }
                 }
                 

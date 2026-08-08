@@ -261,8 +261,13 @@ fun ContentLayout(
         onSearchHistoryExpandedChange(searchHistoryExpanded)
     }
 
-    val hidePinnedAndAppsWhenSearchHistoryExpanded =
-        showRecentItems && searchHistoryExpanded
+    val hidePinnedAndAppsWhenSearchHistoryExpanded = showRecentItems && searchHistoryExpanded
+    val isHomeCalendarExpanded =
+        !hasQuery &&
+            state.detectedAliasSearchSection == null &&
+            renderingState.expandedSection == ExpandedSection.CALENDAR
+    val hideHomeSectionTitleRows =
+        !hasQuery && (searchHistoryExpanded || renderingState.expandedSection != ExpandedSection.NONE)
     val sectionContextForRecentHistoryExpansion =
         if (hidePinnedAndAppsWhenSearchHistoryExpanded) {
             sectionContext.copy(
@@ -274,7 +279,21 @@ fun ContentLayout(
                 shouldRenderCalendar = false,
                 todayCalendarEventsList = emptyList(),
                 shouldRenderNotes = false,
+                hideHomeSectionTitleRows = true,
             )
+        } else if (isHomeCalendarExpanded) {
+            sectionContext.copy(
+                shouldRenderFiles = false,
+                shouldRenderContacts = false,
+                shouldRenderApps = false,
+                shouldRenderAppShortcuts = false,
+                shouldRenderSettings = false,
+                shouldRenderNotes = false,
+                calendarEventsList = emptyList(),
+                hideHomeSectionTitleRows = true,
+            )
+        } else if (hideHomeSectionTitleRows) {
+            sectionContext.copy(hideHomeSectionTitleRows = true)
         } else {
             sectionContext
         }
@@ -369,6 +388,7 @@ fun ContentLayout(
             !hideResults &&
             !isSectionAliasMode &&
             !hidePinnedAndAppsWhenSearchHistoryExpanded &&
+            !isHomeCalendarExpanded &&
             (
                 renderingState.hasPinnedAppShortcuts ||
                     renderingState.hasPinnedContacts ||
@@ -386,7 +406,8 @@ fun ContentLayout(
         !hasQuery &&
             !state.unifiedPinnedItemsEnabled &&
             !hideResults &&
-            !isSectionAliasMode
+            !isSectionAliasMode &&
+            !hideHomeSectionTitleRows
 
     @Composable
     fun renderHomePinnedSection(
@@ -507,10 +528,19 @@ fun ContentLayout(
 
     @Composable
     fun renderSearchHistoryBlock() {
+        if (isHomeCalendarExpanded) return
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
         ) {
+            if (!hideHomeSectionTitleRows) {
+                Text(
+                    text = stringResource(R.string.recent_queries_toggle_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                )
+            }
             SearchHistorySection(
                 items = state.recentItems,
                 callingApp =
@@ -641,6 +671,8 @@ fun ContentLayout(
             if (isExpanded && !isSectionItem) return@forEach
 
             if (section != null) {
+                if (isHomeCalendarExpanded && section != SearchSection.CALENDAR) return@forEach
+                if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
                 if (!shouldRenderSection(section)) return@forEach
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
                 if (deferNonAppContentUntilAppsReady && section != SearchSection.APPS) return@forEach
@@ -652,7 +684,7 @@ fun ContentLayout(
                             todayCalendarEventsCount = standaloneTodayEventIds.size,
                             pinnedCalendarEventsCount =
                                 sectionContextForRecentHistoryExpansion.calendarEventsList.size,
-                        )
+                        ) && !isHomeCalendarExpanded
                 ) {
                     // Today's events are injected after the app grid. Rendering this otherwise empty
                     // calendar slot as well produces a duplicate home-screen calendar card.
@@ -729,6 +761,7 @@ fun ContentLayout(
                         section == SearchSection.CALENDAR &&
                         !hasQuery &&
                         !state.unifiedPinnedItemsEnabled &&
+                        !isHomeCalendarExpanded &&
                         hasStandaloneTodayCalendarSection
                     ) {
                         sectionContextForRecentHistoryExpansion.copy(
