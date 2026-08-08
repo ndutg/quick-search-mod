@@ -1234,7 +1234,6 @@ internal fun SearchScreenContent(
                 showAiSearch = state.AiSearchState.status != AiSearchStatus.Idle,
                 aiSearchState = state.AiSearchState,
                 isOverlayPresentation = isOverlayPresentation,
-                isDefaultLauncher = isDefaultLauncher,
                 onBottomOneHandedOverscrollUp = {
                     searchFocusRequester.requestFocus()
                     keyboardController?.show()
@@ -1248,7 +1247,8 @@ internal fun SearchScreenContent(
                         swipeUpAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
                             keyboardController?.hide()
                         }
-                        else -> homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, context)
+                        isDefaultLauncher ->
+                            homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, context)
                     }
                 },
                 onLauncherOverscrollDown = {
@@ -1260,7 +1260,8 @@ internal fun SearchScreenContent(
                         swipeDownAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
                             keyboardController?.hide()
                         }
-                        else -> homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, context)
+                        isDefaultLauncher ->
+                            homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, context)
                     }
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
