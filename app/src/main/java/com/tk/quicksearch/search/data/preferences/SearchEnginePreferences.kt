@@ -4,6 +4,7 @@ import android.content.Context
 import com.tk.quicksearch.search.core.CustomSearchEngine
 import com.tk.quicksearch.search.core.CustomTool
 import com.tk.quicksearch.search.data.assets.ManagedAssetStore
+import com.tk.quicksearch.searchEngines.IN_APP_BROWSER_PACKAGE
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -108,7 +109,10 @@ class SearchEnginePreferences(
                                             legacy,
                                         )
                                     },
-                            browserPackage = item.optString("browserPackage").ifBlank { null },
+                            browserPackage =
+                                item.optString("browserPackage").ifBlank {
+                                    IN_APP_BROWSER_PACKAGE
+                                },
                         ),
                     )
                 }

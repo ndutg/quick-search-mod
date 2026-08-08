@@ -50,6 +50,7 @@ import com.tk.quicksearch.searchEngines.CUSTOM_QUERY_PLACEHOLDER
 import com.tk.quicksearch.searchEngines.CustomSearchTemplateValidation
 import com.tk.quicksearch.searchEngines.fetchFaviconAsBase64
 import com.tk.quicksearch.searchEngines.inferCustomSearchEngineName
+import com.tk.quicksearch.searchEngines.IN_APP_BROWSER_PACKAGE
 import com.tk.quicksearch.searchEngines.loadCustomIconAsBase64
 import com.tk.quicksearch.searchEngines.validateCustomSearchTemplate
 import com.tk.quicksearch.shared.ui.components.AppBottomSheet
@@ -120,7 +121,7 @@ private fun AddSearchEngineForm(
         )
     }
     var iconBase64 by remember { mutableStateOf<String?>(null) }
-    var selectedBrowserPackage by remember { mutableStateOf<String?>(null) }
+    var selectedBrowserPackage by remember { mutableStateOf<String?>(IN_APP_BROWSER_PACKAGE) }
     var isEditingName by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val nameFocusRequester = remember { FocusRequester() }
@@ -133,7 +134,7 @@ private fun AddSearchEngineForm(
         urlInput = TextFieldValue(text = "", selection = TextRange(0))
         nameInput = TextFieldValue(text = "", selection = TextRange(0))
         iconBase64 = null
-        selectedBrowserPackage = null
+        selectedBrowserPackage = IN_APP_BROWSER_PACKAGE
         isEditingName = false
     }
 

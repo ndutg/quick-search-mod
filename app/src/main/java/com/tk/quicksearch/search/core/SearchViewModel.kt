@@ -708,6 +708,19 @@ class SearchViewModel(
             updateConfigState { it.copy(selectRetainedQuery = false) }
         }
     }
+
+    /**
+     * Remembers that the keyboard was open while leaving the search surface for another in-app
+     * page, so returning to search can bring it back. The search field is rebuilt from scratch on
+     * every navigation, so this cannot live in the composable itself.
+     */
+    fun setSearchKeyboardRestoreRequest(restore: Boolean) {
+        if (_configState.value.restoreSearchKeyboard != restore) {
+            updateConfigState { it.copy(restoreSearchKeyboard = restore) }
+        }
+    }
+
+    fun consumeSearchKeyboardRestoreRequest() = setSearchKeyboardRestoreRequest(false)
     fun onSettingsImported() {
         startupLifecycleDelegate.onSettingsImported(
                 applyStartupPreferences = this::applyStartupPreferences,

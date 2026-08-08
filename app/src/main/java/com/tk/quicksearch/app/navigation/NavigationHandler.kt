@@ -1,6 +1,7 @@
 package com.tk.quicksearch.app.navigation
 
 import android.app.Application
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.tk.quicksearch.R
@@ -69,6 +70,7 @@ class NavigationHandler(
 
     fun launchApp(
         appInfo: AppInfo,
+        launchContext: Context,
         shouldTrackRecentFallback: Boolean,
     ) {
         if (!appInfo.hasLaunchIntent) {
@@ -78,7 +80,7 @@ class NavigationHandler(
             return
         }
 
-        IntentHelpers.launchApp(application, appInfo) { stringResId, formatArg ->
+        IntentHelpers.launchApp(launchContext, appInfo) { stringResId, formatArg ->
             showToastCallback(stringResId, formatArg)
         }
         userPreferences.incrementAppLaunchCount(appInfo.packageName, appInfo.userHandleId)

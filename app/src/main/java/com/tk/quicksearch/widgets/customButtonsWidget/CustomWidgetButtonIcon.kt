@@ -97,20 +97,32 @@ fun CustomWidgetButtonIcon(
                     modifier = modifier.size(iconSize),
                 )
             } else {
-                // Fallback for when shortcut icon can't be loaded
-                val fallback =
-                    action
-                        .displayLabel()
-                        .trim()
-                        .take(1)
-                        .uppercase(Locale.getDefault())
-                        .ifBlank { "?" }
-                Text(
-                    text = fallback,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = modifier,
-                )
+                val appIconBitmap =
+                    rememberAppIcon(
+                        packageName = action.packageName,
+                        iconPackPackage = iconPackPackage,
+                    ).bitmap
+                if (appIconBitmap != null) {
+                    Image(
+                        bitmap = appIconBitmap,
+                        contentDescription = action.contentDescription(),
+                        modifier = modifier.size(iconSize),
+                    )
+                } else {
+                    val fallback =
+                        action
+                            .displayLabel()
+                            .trim()
+                            .take(1)
+                            .uppercase(Locale.getDefault())
+                            .ifBlank { "?" }
+                    Text(
+                        text = fallback,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = modifier,
+                    )
+                }
             }
         }
 

@@ -50,14 +50,17 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.models.AppInfo
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 
 private data class AppMenuItem(
     val textResId: Int,
     val icon: @Composable () -> Unit,
     val onClick: () -> Unit,
+    val spansTwoColumns: Boolean = false,
 )
 
 private val ShortcutGridIconSize = 32.dp
@@ -89,6 +92,8 @@ fun AppItemDropdownMenu(
     val context = LocalContext.current
     val isCurrentApp = appInfo.packageName == context.packageName
     val isLaunchableApp = appInfo.hasLaunchIntent
+    val notificationAction = CustomWidgetButtonAction.App(appInfo.packageName, appInfo.appName)
+    val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     val showIconPicker = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val menuItems = buildList {
         if (!isCurrentApp && isLaunchableApp) {
@@ -137,6 +142,14 @@ fun AppItemDropdownMenu(
             icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
             onClick = { onDismiss(); onHideApp() },
         ))
+        if (isLaunchableApp) {
+            add(AppMenuItem(
+                textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
+                icon = { Icon(painter = painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin), contentDescription = null) },
+                onClick = { onDismiss(); PinnedNotifications.toggle(context, notificationAction) },
+                spansTwoColumns = true,
+            ))
+        }
         if (showUninstall) {
             add(AppMenuItem(
                 textResId = R.string.action_uninstall_app,
@@ -255,7 +268,12 @@ fun AppItemDropdownMenu(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 val actionItems = if (showUninstall) menuItems.dropLast(1) else menuItems
-                actionItems.chunked(3).forEach { row ->
+                val notificationActionItem = actionItems.singleOrNull { it.spansTwoColumns }
+                val trailingExclude = actionItems.lastOrNull { it.textResId == R.string.action_exclude_generic }
+                val standardActionItems = actionItems.filterNot {
+                    it.spansTwoColumns || (notificationActionItem != null && it == trailingExclude)
+                }
+                standardActionItems.chunked(3).forEach { row ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
@@ -269,6 +287,38 @@ fun AppItemDropdownMenu(
                             )
                         }
                         repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                    }
+                }
+                if (trailingExclude != null && notificationActionItem != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        AppMenuGridButton(
+                            label = stringResource(trailingExclude.textResId),
+                            icon = { trailingExclude.icon() },
+                            onClick = trailingExclude.onClick,
+                            modifier = Modifier.weight(1f),
+                        )
+                        AppMenuGridButton(
+                            label = stringResource(notificationActionItem.textResId),
+                            icon = { notificationActionItem.icon() },
+                            onClick = notificationActionItem.onClick,
+                            modifier = Modifier.weight(2f),
+                        )
+                    }
+                } else actionItems.filter { it.spansTwoColumns }.forEach { item ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        AppMenuGridButton(
+                            label = stringResource(item.textResId),
+                            icon = { item.icon() },
+                            onClick = item.onClick,
+                            modifier = Modifier.weight(2f),
+                        )
+                        Spacer(Modifier.weight(1f))
                     }
                 }
             }

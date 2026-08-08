@@ -48,11 +48,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.apps.AppMenuGridButton
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.utils.FileUtils
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -64,6 +66,7 @@ private data class FileMenuItem(
         val enableMarquee: Boolean = false,
         val icon: @Composable () -> Unit,
         val onClick: () -> Unit,
+        val spansTwoColumns: Boolean = false,
 )
 
 private fun formatFileSize(bytes: Long): String {
@@ -167,7 +170,14 @@ fun FileDropdownMenu(
         onAddToHome: () -> Unit,
         showPinnedItemMenu: Boolean = false,
 ) {
+    val context = LocalContext.current
     val fileExtension = FileUtils.getFileExtension(deviceFile.displayName)
+    val notificationAction = CustomWidgetButtonAction.File(
+            uri = deviceFile.uri.toString(), displayName = deviceFile.displayName, mimeType = deviceFile.mimeType,
+            lastModified = deviceFile.lastModified, isDirectory = deviceFile.isDirectory,
+            relativePath = deviceFile.relativePath, volumeName = deviceFile.volumeName,
+    )
+    val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     val menuItems = buildList {
         if (showPinnedItemMenu && isPinned) {
             add(FileMenuItem(
@@ -226,6 +236,18 @@ fun FileDropdownMenu(
                     )
                 },
                 onClick = { onDismissRequest(); onTogglePin() },
+        ))
+        add(FileMenuItem(
+                textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
+                icon = { Icon(painter = painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin), contentDescription = null) },
+                onClick = {
+                    onDismissRequest()
+                    PinnedNotifications.toggle(
+                        context = context,
+                        action = notificationAction,
+                    )
+                },
+                spansTwoColumns = true,
         ))
         add(FileMenuItem(
                 textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
@@ -323,7 +345,7 @@ fun FileDropdownMenu(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
-                menuItems.chunked(3).forEach { row ->
+                menuItems.filterNot { it.spansTwoColumns }.chunked(3).forEach { row ->
                     Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
@@ -338,6 +360,21 @@ fun FileDropdownMenu(
                             )
                         }
                         repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                    }
+                }
+                menuItems.filter { it.spansTwoColumns }.forEach { item ->
+                    Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        AppMenuGridButton(
+                                label = if (item.textArg != null) stringResource(item.textResId, item.textArg) else stringResource(item.textResId),
+                                icon = { item.icon() },
+                                onClick = item.onClick,
+                                enableMarquee = item.enableMarquee,
+                                modifier = Modifier.weight(2f),
+                        )
+                        Spacer(Modifier.weight(1f))
                     }
                 }
             }

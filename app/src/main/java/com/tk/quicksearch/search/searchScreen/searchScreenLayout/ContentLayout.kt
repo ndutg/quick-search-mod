@@ -1162,6 +1162,8 @@ private fun AliasRecentItemsSection(
         isAppSettingToggleChecked = settingsParams.isAppSettingToggleChecked,
         appSettingPhoneAppGridColumns = settingsParams.appSettingPhoneAppGridColumns,
         onAppSettingPhoneAppGridColumnsChange = settingsParams.onAppSettingPhoneAppGridColumnsChange,
+        appSettingAppResultRowCount = settingsParams.appSettingAppResultRowCount,
+        onAppSettingAppResultRowCountChange = settingsParams.onAppSettingAppResultRowCountChange,
         onDeleteRecentItem = onDeleteRecentItem,
         showInlineCollapseButton = false,
         expandedCardMaxHeight = expandedCardMaxHeight,

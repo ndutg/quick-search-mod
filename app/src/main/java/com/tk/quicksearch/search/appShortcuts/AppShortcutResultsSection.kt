@@ -58,6 +58,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.search.apps.AppMenuGridButton
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
@@ -74,6 +75,7 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
 
@@ -420,6 +422,7 @@ private data class AppShortcutMenuItem(
         val textResId: Int,
         val icon: @Composable () -> Unit,
         val onClick: () -> Unit,
+        val spansTwoColumns: Boolean = false,
 )
 
 @Composable
@@ -453,6 +456,18 @@ private fun AppShortcutDropdownMenu(
         val appIconResult = rememberAppIcon(packageName = shortcut.packageName, iconPackPackage = iconPackPackage)
         val headerIcon = if (!shortcut.iconBase64.isNullOrBlank()) iconBitmap else (iconBitmap ?: appIconResult.bitmap)
         val isUserCreated = isUserCreatedShortcut(shortcut)
+        val notificationAction = CustomWidgetButtonAction.AppShortcut(
+                packageName = shortcut.packageName,
+                appLabel = shortcut.appLabel,
+                id = shortcut.id,
+                shortLabel = shortcut.shortLabel,
+                longLabel = shortcut.longLabel,
+                iconResId = shortcut.iconResId,
+                iconBase64 = shortcut.iconBase64,
+                enabled = shortcut.enabled,
+                intents = shortcut.intents,
+        )
+        val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
 
         val menuItems = buildList {
                 if (showPinnedItemMenu && isPinned) {
@@ -531,6 +546,12 @@ private fun AppShortcutDropdownMenu(
                         icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
                         onClick = { onDismissRequest(); onAppInfoClick() },
                 ))
+                add(AppShortcutMenuItem(
+                        textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
+                        icon = { Icon(painter = painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin), contentDescription = null) },
+                        onClick = { onDismissRequest(); PinnedNotifications.toggle(context, notificationAction) },
+                        spansTwoColumns = true,
+                ))
                 if (!isUserCreated && shortcut.packageName != context.packageName) {
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_uninstall_app,
@@ -608,7 +629,9 @@ private fun AppShortcutDropdownMenu(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                         ) {
-                                menuItems.chunked(3).forEach { row ->
+                                val uninstallItem = menuItems.singleOrNull { it.textResId == R.string.action_uninstall_app }
+                                val appInfoItem = menuItems.singleOrNull { it.textResId == R.string.action_app_info }
+                                menuItems.filterNot { it.spansTwoColumns || it == uninstallItem || it == appInfoItem }.chunked(3).forEach { row ->
                                         Row(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
@@ -622,6 +645,41 @@ private fun AppShortcutDropdownMenu(
                                                         )
                                                 }
                                                 repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                                        }
+                                }
+                                menuItems.filter { it.spansTwoColumns }.forEach { item ->
+                                        Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                                        ) {
+                                                appInfoItem?.let { appInfo ->
+                                                        AppMenuGridButton(
+                                                                label = stringResource(appInfo.textResId),
+                                                                icon = { appInfo.icon() },
+                                                                onClick = appInfo.onClick,
+                                                                modifier = Modifier.weight(1f),
+                                                        )
+                                                } ?: Spacer(Modifier.weight(1f))
+                                                AppMenuGridButton(
+                                                        label = stringResource(item.textResId),
+                                                        icon = { item.icon() },
+                                                        onClick = item.onClick,
+                                                        modifier = Modifier.weight(2f),
+                                                )
+                                        }
+                                }
+                                uninstallItem?.let { item ->
+                                        Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                                        ) {
+                                                AppMenuGridButton(
+                                                        label = stringResource(item.textResId),
+                                                        icon = { item.icon() },
+                                                        onClick = item.onClick,
+                                                        modifier = Modifier.weight(1f),
+                                                )
+                                                Spacer(Modifier.weight(2f))
                                         }
                                 }
                         }

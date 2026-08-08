@@ -43,6 +43,8 @@ fun ContactDropdownMenu(
         onNicknameClick: () -> Unit,
         onTriggerClick: () -> Unit,
         onAddToHome: () -> Unit,
+        onPinToNotifications: () -> Unit,
+        isPinnedToNotifications: Boolean,
         showPinnedItemMenu: Boolean = false,
 ) {
     DropdownMenu(
@@ -124,6 +126,13 @@ fun ContactDropdownMenu(
             )
             add(
                     ContactMenuItem(
+                            textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
+                            icon = { Icon(painter = painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin), contentDescription = null) },
+                            onClick = { onDismissRequest(); onPinToNotifications() },
+                    ),
+            )
+            add(
+                    ContactMenuItem(
                             textResId = R.string.action_add_to_home,
                             icon = {
                                 Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
@@ -165,7 +174,14 @@ fun ContactDropdownMenu(
             )
         }
 
-        menuItems.forEachIndexed { index, item ->
+        val orderedMenuItems = menuItems.toMutableList().apply {
+            val notificationIndex = indexOfFirst { it.textResId == R.string.action_pin_to_notifications || it.textResId == R.string.action_unpin_from_notifications }
+            if (notificationIndex >= 0 && indexOfFirst { it.textResId == R.string.common_nickname || it.textResId == R.string.action_edit_nickname } >= 0) {
+                val notificationItem = removeAt(notificationIndex)
+                add(indexOfFirst { it.textResId == R.string.common_nickname || it.textResId == R.string.action_edit_nickname } + 1, notificationItem)
+            }
+        }
+        orderedMenuItems.forEachIndexed { index, item ->
             if (index > 0) {
                 HorizontalDivider()
             }

@@ -3,7 +3,9 @@ package com.tk.quicksearch.search.data
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.BroadcastReceiver
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager.ApplicationInfoFlags
 import android.content.pm.LauncherActivityInfo
@@ -16,6 +18,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.UserHandle
 import android.os.UserManager
+import androidx.core.content.ContextCompat
 import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.utils.PermissionUtils
@@ -44,6 +47,7 @@ class AppsRepository(
     private val appCache = AppCache(context)
     @Volatile private var appCatalogInvalidated = false
     private var launcherAppsCallback: LauncherApps.Callback? = null
+    private var packageChangeReceiver: BroadcastReceiver? = null
 
     // ==================== Public API ====================
 
@@ -65,18 +69,47 @@ class AppsRepository(
         appCatalogInvalidated = true
     }
 
-    fun isAppCatalogInvalidated(): Boolean = appCatalogInvalidated
+    fun isAppCatalogInvalidated(): Boolean =
+        appCatalogInvalidated || appCache.isCatalogInvalidated()
 
     fun startPackageChangeMonitoring(onCatalogInvalidated: () -> Unit) {
+        if (packageChangeReceiver != null || launcherAppsCallback != null) return
+        fun invalidate() {
+            appCatalogInvalidated = true
+            onCatalogInvalidated()
+        }
+
+        // LauncherApps callbacks are not available on every device/profile combination. A
+        // dynamically registered package receiver is the primary trigger so the in-memory app
+        // list refreshes even when this app is not the default launcher.
+        val receiver =
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    invalidate()
+                }
+            }
+        val packageFilter =
+            IntentFilter().apply {
+                addAction(Intent.ACTION_PACKAGE_ADDED)
+                addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addAction(Intent.ACTION_PACKAGE_CHANGED)
+                addAction(Intent.ACTION_PACKAGE_REPLACED)
+                addDataScheme("package")
+            }
+        runCatching {
+            ContextCompat.registerReceiver(
+                context,
+                receiver,
+                packageFilter,
+                ContextCompat.RECEIVER_NOT_EXPORTED,
+            )
+        }.onSuccess {
+            packageChangeReceiver = receiver
+        }
+
         val service = launcherApps ?: return
-        if (launcherAppsCallback != null) return
         val callback =
             object : LauncherApps.Callback() {
-                private fun invalidate() {
-                    appCatalogInvalidated = true
-                    onCatalogInvalidated()
-                }
-
                 override fun onPackageAdded(packageName: String, user: UserHandle) = invalidate()
                 override fun onPackageRemoved(packageName: String, user: UserHandle) = invalidate()
                 override fun onPackageChanged(packageName: String, user: UserHandle) = invalidate()
@@ -89,9 +122,14 @@ class AppsRepository(
     }
 
     fun stopPackageChangeMonitoring() {
-        val callback = launcherAppsCallback ?: return
-        launcherAppsCallback = null
-        runCatching { launcherApps?.unregisterCallback(callback) }
+        packageChangeReceiver?.let { receiver ->
+            packageChangeReceiver = null
+            runCatching { context.unregisterReceiver(receiver) }
+        }
+        launcherAppsCallback?.let { callback ->
+            launcherAppsCallback = null
+            runCatching { launcherApps?.unregisterCallback(callback) }
+        }
     }
 
     /**
@@ -135,6 +173,7 @@ class AppsRepository(
             appCache.saveApps(sortedApps)
         }
         appCatalogInvalidated = false
+        appCache.clearCatalogInvalidation()
         return sortedApps
     }
 

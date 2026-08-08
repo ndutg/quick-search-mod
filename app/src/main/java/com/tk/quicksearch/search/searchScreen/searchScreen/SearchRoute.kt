@@ -674,11 +674,12 @@ fun SearchRoute(
             state = uiState,
             onQueryChanged = viewModel::onQueryChange,
             onSelectRetainedQueryHandled = viewModel::consumeRetainedQuerySelectionRequest,
+            onRestoreSearchKeyboardHandled = viewModel::consumeSearchKeyboardRestoreRequest,
             onClearQuery = viewModel::clearQuery,
             onRequestUsagePermission = { viewModel.openUsageAccessSettings() },
             onSettingsClick = onSettingsClick,
             onAppClick = { app: com.tk.quicksearch.search.models.AppInfo ->
-                viewModel.launchApp(app)
+                viewModel.launchApp(app, context)
             },
             onAppInfoClick = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.openAppInfo(app)
@@ -767,6 +768,8 @@ fun SearchRoute(
             appSettingWebSuggestionsCount = uiState.webSuggestionsCount,
             appSettingPhoneAppGridColumns = uiState.phoneAppGridColumns,
             onAppSettingPhoneAppGridColumnsChange = viewModel::setPhoneAppGridColumns,
+            appSettingAppResultRowCount = uiState.appResultRowCount,
+            onAppSettingAppResultRowCountChange = viewModel::setAppResultRowCount,
             onPinSetting = viewModel::pinSetting,
             onUnpinSetting = viewModel::unpinSetting,
             onMovePinnedSetting = viewModel::movePinnedSetting,

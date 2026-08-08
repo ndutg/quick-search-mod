@@ -9,6 +9,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -525,22 +527,31 @@ private fun NavigationContent(
                 val keyboardController =
                     androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
                 val lastOpenedSettingsDetail = SettingsNavigationMemory.getLastOpenedSettingsDetail()
+                // The search field is disposed while another page is on screen, so an open keyboard
+                // is recorded here and restored when search comes back.
+                val density = androidx.compose.ui.platform.LocalDensity.current
+                val isImeVisible =
+                    WindowInsets.ime.getBottom(density) > 0
+                val leaveSearchSurface: () -> Unit = {
+                    viewModel.setSearchKeyboardRestoreRequest(isImeVisible)
+                    keyboardController?.hide()
+                }
                 val navigateToSettings: (SettingsDetailType?) -> Unit = { detailType ->
                     onDestinationChange(RootDestination.Settings)
                     onSettingsDetailTypeChange(detailType)
-                    keyboardController?.hide()
+                    leaveSearchSurface()
                 }
                 val navigateToQuickNoteFromSwipeRight: (Long) -> Unit = { _ ->
                     rootAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
                     settingsDetailAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
                     onDestinationChange(RootDestination.Settings)
                     onSettingsDetailTypeChangeFromSearch(SettingsDetailType.NOTE_EDITOR)
-                    keyboardController?.hide()
+                    leaveSearchSurface()
                 }
                 val navigateToWidgetsPanelFromSwipeRight: () -> Unit = {
                     rootAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
                     onDestinationChange(RootDestination.WidgetsPanel)
-                    keyboardController?.hide()
+                    leaveSearchSurface()
                 }
                 SearchRoute(
                     viewModel = viewModel,

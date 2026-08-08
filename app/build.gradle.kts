@@ -1,10 +1,11 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.oss.licenses)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.baselineprofile)
     id("kotlin-parcelize")
 }
 
@@ -72,14 +73,21 @@ android {
     }
 }
 
+android {
+    applicationVariants.all {
+        if (name == "standardRelease") {
+            outputs.all {
+                (this as BaseVariantOutputImpl).outputFileName = "app-release.apk"
+            }
+        }
+    }
+}
+
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
-
-    baselineProfile(project(":benchmark"))
-
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

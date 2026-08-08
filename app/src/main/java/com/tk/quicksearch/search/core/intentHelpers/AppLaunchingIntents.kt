@@ -1,8 +1,7 @@
 package com.tk.quicksearch.search.core
 
-import android.app.Application
-import android.content.ActivityNotFoundException
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
 import android.os.UserManager
@@ -15,17 +14,30 @@ import com.tk.quicksearch.search.models.AppInfo
 internal object AppLaunchingIntents {
     private const val TAG = "AppLaunchingIntents"
 
-    /** Launches an app by package name. Uses LauncherApps for work profile apps. */
+    /** Launches a primary-profile app directly and uses LauncherApps for work profile apps. */
     fun launchApp(
-        context: Application,
+        context: Context,
         appInfo: AppInfo,
         onShowToast: ((Int, String?) -> Unit)? = null,
     ) {
-        if (tryLaunchWithLauncherApps(context, appInfo)) {
+        if (appInfo.userHandleId != null) {
+            if (tryLaunchWithLauncherApps(context, appInfo)) {
+                return
+            }
+
+            onShowToast?.invoke(R.string.common_error_unable_to_open, appInfo.appName)
             return
         }
 
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(appInfo.packageName)
+        // AOSP Launcher3 starts apps in the current profile through Context.startActivity and
+        // reserves LauncherApps.startMainActivity for other profiles. Keeping the primary launch
+        // tied to the HOME activity's launch token is important for OEM split-select
+        // controllers, which can lose their pending second-app state for a LauncherApps binder call.
+        val launchIntent =
+            appInfo.componentName
+                ?.let(ComponentName::unflattenFromString)
+                ?.let(Intent::makeMainActivity)
+                ?: context.packageManager.getLaunchIntentForPackage(appInfo.packageName)
         if (launchIntent == null) {
             onShowToast?.invoke(R.string.common_error_unable_to_open, appInfo.appName)
             return
@@ -41,7 +53,7 @@ internal object AppLaunchingIntents {
     }
 
     private fun tryLaunchWithLauncherApps(
-        context: Application,
+        context: Context,
         appInfo: AppInfo,
     ): Boolean {
         val launcherApps = context.getSystemService(android.content.Context.LAUNCHER_APPS_SERVICE) as? LauncherApps ?: return false

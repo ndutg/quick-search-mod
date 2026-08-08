@@ -27,7 +27,6 @@ enum class ExpandedSection {
 internal object SearchScreenConstants {
     const val INITIAL_RESULT_COUNT = 1
     const val ROW_COUNT = 2
-    const val SEARCH_ROW_COUNT = 1
     const val COLUMNS = 5
     val EXPANDED_CARD_MAX_HEIGHT = 600.dp
 }
@@ -85,7 +84,7 @@ internal fun rememberDerivedState(state: SearchUiState): DerivedState {
     val columns = getAppGridColumns(state.phoneAppGridColumns)
     val visibleRowCount =
         if (isSearching) {
-            SearchScreenConstants.SEARCH_ROW_COUNT
+            state.appResultRowCount
         } else {
             SearchScreenConstants.ROW_COUNT
         }
