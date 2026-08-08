@@ -463,6 +463,13 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.FUZZY_SEARCH,
                 keywords = listOf("typo", "approximate", "matching"),
             )
+            addNavigation(
+                id = "app_settings_search_result_ranking",
+                titleRes = R.string.secondary_ranking_title,
+                descriptionRes = R.string.secondary_ranking_dialog_desc,
+                destination = AppSettingsDestination.SEARCH_RESULT_RANKING,
+                keywords = listOf("ranking", "recency", "most opened", "sort", "order"),
+            )
             addToggle(
                 id = "app_toggle_top_result_indicator",
                 titleRes = R.string.top_result_indicator_toggle_title,

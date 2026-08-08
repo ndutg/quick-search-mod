@@ -672,7 +672,8 @@ internal fun SearchScreenContent(
                     limit = state.topMatchesLimit,
                     topMatchesSectionOrder = state.topMatchesSectionOrder,
                     disabledTopMatchesSections = state.disabledTopMatchesSections,
-            )
+                    secondaryRankingSignal = state.secondaryRankingSignal,
+                )
     val shouldSubmitTopMatch =
             state.topMatchesEnabled &&
                     state.query.isNotBlank() &&

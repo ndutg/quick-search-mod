@@ -243,6 +243,10 @@
     <string name="recent_queries_toggle_desc">Anzahl der vor dem Aufklappen angezeigten Elemente</string>
     <string name="fuzzy_search_toggle_title">Unscharfe Suche</string>
     <string name="fuzzy_search_toggle_desc">Ergebnisse finden, auch wenn die Suche einen Tippfehler enthält.</string>
+    <string name="secondary_ranking_title">Rangfolge der Suchergebnisse</string>
+    <string name="secondary_ranking_dialog_desc">Wähle aus, wie Ergebnisse mit gleicher Übereinstimmungsqualität sortiert werden.</string>
+    <string name="secondary_ranking_recency">Aktualität</string>
+    <string name="secondary_ranking_most_opened">Am häufigsten geöffnet</string>
     <string name="recent_queries_toggle_title">Suchverlauf</string>
     <string name="search_history_tab_recently_opened">Ergebnisse</string>
     <string name="search_history_tab_searches">Suchen</string>

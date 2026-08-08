@@ -76,6 +76,7 @@ import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
 import com.tk.quicksearch.search.data.CustomCalendarEventRepository
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomEventEditDialog
+import com.tk.quicksearch.settings.settingsDetailScreen.SecondaryRankingDialog
 import com.tk.quicksearch.search.searchScreen.SearchScreen as SearchScreenComposable
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
@@ -339,6 +340,7 @@ fun SearchRoute(
         viewModel.dismissContactMethodsBottomSheet()
     }
     var showPermissionSettingsDialog by remember { mutableStateOf(false) }
+    var showSecondaryRankingDialog by remember { mutableStateOf(false) }
     var pendingPermissionSettingsAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     var pendingPermissionSettingsType by remember { mutableStateOf<Int?>(null) }
     var pendingDirectDialToggleFromAppSetting by remember { mutableStateOf(false) }
@@ -459,6 +461,10 @@ fun SearchRoute(
         viewModel.trackRecentAppSettingTap(setting.id)
         if (setting.action != AppSettingResultAction.NAVIGATE) return@appSettingClick
         setting.destination?.let { destination ->
+            if (destination == AppSettingsDestination.SEARCH_RESULT_RANKING) {
+                showSecondaryRankingDialog = true
+                return@appSettingClick
+            }
             if (destination == AppSettingsDestination.RATE_QUICK_SEARCH) {
                 viewModel.markRateQuickSearchCompleted()
             }
@@ -989,6 +995,17 @@ fun SearchRoute(
                     pendingPermissionSettingsAction = null
                     pendingPermissionSettingsType = null
                 },
+            )
+        }
+
+        if (showSecondaryRankingDialog) {
+            SecondaryRankingDialog(
+                selectedSignal = uiState.secondaryRankingSignal,
+                onSignalSelected = { signal ->
+                    viewModel.setSecondaryRankingSignal(signal)
+                    viewModel.onQueryChange(uiState.query)
+                },
+                onDismiss = { showSecondaryRankingDialog = false },
             )
         }
 

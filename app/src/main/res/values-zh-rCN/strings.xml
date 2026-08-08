@@ -243,6 +243,10 @@
     <string name="recent_queries_toggle_desc">展开前显示的项目数</string>
     <string name="fuzzy_search_toggle_title">模糊搜索</string>
     <string name="fuzzy_search_toggle_desc">即使搜索内容中有输入错误，也能找到结果。</string>
+    <string name="secondary_ranking_title">搜索结果排序</string>
+    <string name="secondary_ranking_dialog_desc">选择如何排列匹配质量相同的结果。</string>
+    <string name="secondary_ranking_recency">最近使用</string>
+    <string name="secondary_ranking_most_opened">打开次数最多</string>
     <string name="recent_queries_toggle_title">搜索历史</string>
     <string name="search_history_tab_recently_opened">结果</string>
     <string name="search_history_tab_searches">搜索记录</string>

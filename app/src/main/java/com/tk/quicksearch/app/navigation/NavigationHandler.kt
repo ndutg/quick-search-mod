@@ -244,6 +244,7 @@ class NavigationHandler(
     }
 
     fun openCalendarEvent(event: CalendarEventInfo) {
+        userPreferences.recordCalendarEventOpen(event.eventId)
         mainHandler.post {
             IntentHelpers.openCalendarEvent(application, event.eventId) { stringResId, _ ->
                 showToastCallback(stringResId, null)

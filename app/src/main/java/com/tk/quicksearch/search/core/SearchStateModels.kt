@@ -10,6 +10,7 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.NoteInfo
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
@@ -202,6 +203,7 @@ data class SearchFeatureState(
         val appResultRowCount: Int = UiPreferences.DEFAULT_APP_RESULT_ROW_COUNT,
         val fuzzySearchEnabled: Boolean = true,
         val fuzzySearchAvailable: Boolean = true,
+        val secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
         val hasDismissedSearchHistoryTip: Boolean = false,
         // Top matches
         val topMatchesEnabled: Boolean = false,

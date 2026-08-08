@@ -38,6 +38,9 @@ class AppSettingsSearchHandler(
     fun searchSettings(
         queryContext: SearchQueryContext,
         recentSettingScores: Map<String, Int> = getRecentSettingScores(),
+        settingOpenCounts: Map<String, Int> = getSettingOpenCounts(),
+        secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal =
+            userPreferences.getSecondaryRankingSignal(),
         enableFuzzyMatching: Boolean = false,
     ): List<AppSettingResult> {
         ensureLoaded()
@@ -46,6 +49,8 @@ class AppSettingsSearchHandler(
                 fullList = getVisibleSettings(),
                 queryContext = queryContext,
                 recentSettingScores = recentSettingScores,
+                settingOpenCounts = settingOpenCounts,
+                secondaryRankingSignal = secondaryRankingSignal,
                 resultLimit = RESULT_LIMIT,
                 enableFuzzyMatching = enableFuzzyMatching,
                 isLowRamDevice = isLowRamDevice,
@@ -62,6 +67,11 @@ class AppSettingsSearchHandler(
         RecentResultRankingUtils
             .buildRecencyIndex(userPreferences.getRecentResultOpens())
             .appSettingScores
+
+    private fun getSettingOpenCounts(): Map<String, Int> =
+        RecentResultRankingUtils
+            .buildRecencyIndex(emptyList(), userPreferences.getRecentResultOpenCounts())
+            .appSettingOpenCounts
 
     private fun getVisibleSettings(): List<AppSettingResult> {
         val backgroundSource = userPreferences.getBackgroundSource()

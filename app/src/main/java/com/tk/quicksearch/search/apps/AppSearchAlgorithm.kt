@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.apps
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPerformanceLogger
 import com.tk.quicksearch.search.models.AppInfo
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import java.util.Locale
 
@@ -13,7 +14,7 @@ object AppSearchAlgorithm {
         limit: Int,
         fuzzySearchStrategy: FuzzyAppSearchStrategy,
         appNicknames: Map<String, String>,
-        sortAppsByUsageEnabled: Boolean,
+        secondaryRankingSignal: SecondaryRankingSignal,
     ): List<AppInfo> {
         if (query.isBlank()) return emptyList()
         return findMatches(
@@ -22,7 +23,7 @@ object AppSearchAlgorithm {
             limit = limit,
             fuzzySearchStrategy = fuzzySearchStrategy,
             appNicknames = appNicknames,
-            sortAppsByUsageEnabled = sortAppsByUsageEnabled,
+            secondaryRankingSignal = secondaryRankingSignal,
         )
     }
 
@@ -32,7 +33,7 @@ object AppSearchAlgorithm {
         limit: Int,
         fuzzySearchStrategy: FuzzyAppSearchStrategy,
         appNicknames: Map<String, String>,
-        sortAppsByUsageEnabled: Boolean,
+        secondaryRankingSignal: SecondaryRankingSignal,
     ): List<AppInfo> {
         if (queryContext.normalizedQuery.isBlank()) return emptyList()
 
@@ -63,7 +64,7 @@ object AppSearchAlgorithm {
                             }
                         },
                     )
-                }.sortedWith(createAppComparator(sortAppsByUsageEnabled))
+                }.sortedWith(createAppComparator(secondaryRankingSignal))
                 .map { it.app }
                 .take(limit)
                 .toList()
@@ -148,7 +149,7 @@ object AppSearchAlgorithm {
         }
     }
 
-    private fun createAppComparator(sortAppsByUsageEnabled: Boolean): Comparator<AppMatch> {
+    private fun createAppComparator(secondaryRankingSignal: SecondaryRankingSignal): Comparator<AppMatch> {
         return Comparator { first, second ->
             if (first.isFuzzy != second.isFuzzy) {
                 return@Comparator if (first.isFuzzy) 1 else -1
@@ -159,35 +160,31 @@ object AppSearchAlgorithm {
                 if (priorityCompare != 0) {
                     return@Comparator priorityCompare
                 }
-                return@Comparator compareByUsageOrName(first.app, second.app, sortAppsByUsageEnabled)
+                return@Comparator compareBySecondarySignalOrName(first.app, second.app, secondaryRankingSignal)
             }
 
             val fuzzyCompare = second.fuzzyScore.compareTo(first.fuzzyScore)
             if (fuzzyCompare != 0) {
                 return@Comparator fuzzyCompare
             }
-            compareByUsageOrName(first.app, second.app, sortAppsByUsageEnabled)
+            compareBySecondarySignalOrName(first.app, second.app, secondaryRankingSignal)
         }
     }
 
-    private fun compareByUsageOrName(
+    private fun compareBySecondarySignalOrName(
         first: AppInfo,
         second: AppInfo,
-        sortAppsByUsageEnabled: Boolean,
-    ): Int =
-        if (sortAppsByUsageEnabled) {
-            compareValuesBy(
-                second,
-                first,
-                AppInfo::lastUsedTime,
-                AppInfo::launchCount,
-            ).takeIf { it != 0 }
-                ?: first.appName
-                    .lowercase(Locale.getDefault())
-                    .compareTo(second.appName.lowercase(Locale.getDefault()))
-        } else {
-            first.appName
+        secondaryRankingSignal: SecondaryRankingSignal,
+    ): Int {
+        val secondaryCompare =
+            when (secondaryRankingSignal) {
+                SecondaryRankingSignal.RECENCY -> second.lastUsedTime.compareTo(first.lastUsedTime)
+                SecondaryRankingSignal.MOST_OPENED -> second.launchCount.compareTo(first.launchCount)
+                SecondaryRankingSignal.NONE -> 0
+            }
+        return secondaryCompare.takeIf { it != 0 }
+            ?: first.appName
                 .lowercase(Locale.getDefault())
                 .compareTo(second.appName.lowercase(Locale.getDefault()))
-        }
+    }
 }

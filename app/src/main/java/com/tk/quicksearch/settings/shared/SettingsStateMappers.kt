@@ -34,6 +34,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         appResultRowCount = searchResults.appResultRowCount,
         fuzzySearchEnabled = searchResults.fuzzySearchEnabled,
         fuzzySearchAvailable = searchResults.fuzzySearchAvailable,
+        secondaryRankingSignal = searchResults.secondaryRankingSignal,
         searchEngineOrder = searchEngines.searchEngineOrder,
         disabledSearchEngines = searchEngines.disabledSearchEngines,
         shortcutCodes = searchEngines.shortcutCodes,
@@ -142,6 +143,7 @@ private data class SearchResultsMapperState(
     val appResultRowCount: Int,
     val fuzzySearchEnabled: Boolean,
     val fuzzySearchAvailable: Boolean,
+    val secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal,
 )
 
 private fun SearchUiState.toSearchResultsSettingsState() =
@@ -167,6 +169,7 @@ private fun SearchUiState.toSearchResultsSettingsState() =
         appResultRowCount = appResultRowCount,
         fuzzySearchEnabled = fuzzySearchEnabled,
         fuzzySearchAvailable = fuzzySearchAvailable,
+        secondaryRankingSignal = secondaryRankingSignal,
     )
 
 private data class SearchEngineMapperState(

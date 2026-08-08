@@ -200,8 +200,11 @@ class UnifiedSearchHandler(
                                 else emptySet()
                         val recencyIndex =
                                 RecentResultRankingUtils.buildRecencyIndex(
-                                        userPreferences.getRecentResultOpens()
+                                        userPreferences.getRecentResultOpens(),
+                                        userPreferences.getRecentResultOpenCounts(),
+                                        userPreferences.getRecentResultLastOpenedTimes(),
                                 )
+                        val secondaryRankingSignal = userPreferences.getSecondaryRankingSignal()
 
                         var contactResults: List<ContactInfo> = emptyList()
                         var fileResults: List<DeviceFile> = emptyList()
@@ -257,6 +260,8 @@ class UnifiedSearchHandler(
                                                                                         showFolders,
                                                                                         showSystemFiles,
                                                                                         recencyIndex.fileScores,
+                                                                                        recencyIndex.fileOpenCounts,
+                                                                                        secondaryRankingSignal,
                                                                                         includeFuzzyCandidates =
                                                                                                 canUseFileFuzzySearch,
                                                                                         resultLimit =
@@ -281,7 +286,9 @@ class UnifiedSearchHandler(
                                                                         SectionSearchResultPayload.Settings(
                                                                                 settingsSearchHandler.searchSettings(
                                                                                         queryContext,
-                                                                                        recencyIndex.settingScores,
+                                                                                        recentSettingScores = recencyIndex.settingScores,
+                                                                                        settingOpenCounts = recencyIndex.settingOpenCounts,
+                                                                                        secondaryRankingSignal = secondaryRankingSignal,
                                                                                         enableFuzzyMatching =
                                                                                                 enableFuzzySettingsSearch,
                                                                                 )
@@ -336,6 +343,10 @@ class UnifiedSearchHandler(
                                                                                                 queryContext,
                                                                                         recentSettingScores =
                                                                                                 recencyIndex.appSettingScores,
+                                                                                        settingOpenCounts =
+                                                                                                recencyIndex.appSettingOpenCounts,
+                                                                                        secondaryRankingSignal =
+                                                                                                secondaryRankingSignal,
                                                                                         enableFuzzyMatching =
                                                                                                 enableFuzzyAppSettingsSearch,
                                                                                 )
@@ -356,6 +367,9 @@ class UnifiedSearchHandler(
                                                                         SectionSearchResultPayload.Notes(
                                                                                 notesRepository.searchNotes(
                                                                                         trimmedQuery,
+                                                                                        recencyIndex.noteScores,
+                                                                                        recencyIndex.noteOpenCounts,
+                                                                                        secondaryRankingSignal,
                                                                                 ),
                                                                         )
                                                                 },
@@ -374,7 +388,9 @@ class UnifiedSearchHandler(
                                                                         SectionSearchResultPayload.AppShortcuts(
                                                                                 appShortcutSearchHandler.searchShortcuts(
                                                                                         queryContext,
-                                                                                        recencyIndex.appShortcutScores,
+                                                                                        recentShortcutScores = recencyIndex.appShortcutScores,
+                                                                                        shortcutOpenCounts = recencyIndex.appShortcutOpenCounts,
+                                                                                        secondaryRankingSignal = secondaryRankingSignal,
                                                                                         enableFuzzyMatching =
                                                                                                 enableFuzzyAppShortcutSearch,
                                                                                 )
@@ -444,6 +460,8 @@ class UnifiedSearchHandler(
                                         contactResults + nicknameContacts,
                                         queryContext,
                                         recencyIndex.contactScores,
+                                        recencyIndex.contactOpenCounts,
+                                        secondaryRankingSignal,
                                         useFuzzyContactSearch,
                                         contactFuzzyPolicy.minimumScore,
                                         contactFuzzyPolicy.maximumEditDistance,
@@ -455,6 +473,8 @@ class UnifiedSearchHandler(
                                         fileResults + nicknameFiles,
                                         queryContext,
                                         recencyIndex.fileScores,
+                                        recencyIndex.fileOpenCounts,
+                                        secondaryRankingSignal,
                                         canUseFileFuzzySearch,
                                         fileFuzzyPolicy.minimumScore,
                                         fileFuzzyPolicy.maximumEditDistance,
@@ -464,6 +484,8 @@ class UnifiedSearchHandler(
                                 filterAndRankCalendarEvents(
                                         events = calendarMatches + nicknameCalendarEvents,
                                         queryContext = queryContext,
+                                        recencyIndex = recencyIndex,
+                                        secondaryRankingSignal = secondaryRankingSignal,
                                         resultLimit = calendarResultLimit,
                                 )
 
@@ -652,6 +674,8 @@ class UnifiedSearchHandler(
                 contacts: List<ContactInfo>,
                 queryContext: SearchQueryContext,
                 recentContactScores: Map<Long, Int>,
+                contactOpenCounts: Map<Long, Int>,
+                secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal,
                 enableFuzzyMatching: Boolean,
                 fuzzyMinScore: Int,
                 fuzzyMaxEditDistance: Int,
@@ -690,6 +714,8 @@ class UnifiedSearchHandler(
                         .sortedWith(
                                 RecentResultRankingUtils.matchThenRecencyThenAlphabeticalComparator(
                                         recencyScores = recentContactScores,
+                                        openCounts = contactOpenCounts,
+                                        secondaryRankingSignal = secondaryRankingSignal,
                                         keySelector = { it.contactId },
                                         labelSelector = { it.displayName },
                                 ),
@@ -745,6 +771,15 @@ class UnifiedSearchHandler(
                                 }
                                 .sortedWith(
                                         compareByDescending<Pair<ContactInfo, Int>> { it.second }
+                                                .thenByDescending {
+                                                        when (secondaryRankingSignal) {
+                                                                com.tk.quicksearch.search.models.SecondaryRankingSignal.RECENCY ->
+                                                                        recentContactScores[it.first.contactId] ?: 0
+                                                                com.tk.quicksearch.search.models.SecondaryRankingSignal.MOST_OPENED ->
+                                                                        contactOpenCounts[it.first.contactId] ?: 0
+                                                                com.tk.quicksearch.search.models.SecondaryRankingSignal.NONE -> 0
+                                                        }
+                                                }
                                                 .thenBy { it.first.displayName.lowercase() },
                                 )
                                 .map { it.first }
@@ -757,6 +792,8 @@ class UnifiedSearchHandler(
                 files: List<DeviceFile>,
                 queryContext: SearchQueryContext,
                 recentFileScores: Map<String, Int>,
+                fileOpenCounts: Map<String, Int>,
+                secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal,
                 enableFuzzyMatching: Boolean,
                 fuzzyMinScore: Int,
                 fuzzyMaxEditDistance: Int,
@@ -792,6 +829,8 @@ class UnifiedSearchHandler(
                         .sortedWith(
                                 RecentResultRankingUtils.matchThenRecencyThenAlphabeticalComparator(
                                         recencyScores = recentFileScores,
+                                        openCounts = fileOpenCounts,
+                                        secondaryRankingSignal = secondaryRankingSignal,
                                         keySelector = { it.uri.toString() },
                                         labelSelector = { it.displayName },
                                 ),
@@ -848,6 +887,16 @@ class UnifiedSearchHandler(
                                 }
                                 .sortedWith(
                                         compareByDescending<Pair<DeviceFile, Int>> { it.second }
+                                                .thenByDescending {
+                                                        val key = it.first.uri.toString()
+                                                        when (secondaryRankingSignal) {
+                                                                com.tk.quicksearch.search.models.SecondaryRankingSignal.RECENCY ->
+                                                                        recentFileScores[key] ?: 0
+                                                                com.tk.quicksearch.search.models.SecondaryRankingSignal.MOST_OPENED ->
+                                                                        fileOpenCounts[key] ?: 0
+                                                                com.tk.quicksearch.search.models.SecondaryRankingSignal.NONE -> 0
+                                                        }
+                                                }
                                                 .thenBy { it.first.displayName.lowercase() },
                                 )
                                 .map { it.first }
@@ -859,6 +908,8 @@ class UnifiedSearchHandler(
         private fun filterAndRankCalendarEvents(
                 events: List<CalendarEventInfo>,
                 queryContext: SearchQueryContext,
+                recencyIndex: RecentResultRankingUtils.RecencyIndex,
+                secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal,
                 resultLimit: Int,
         ): List<CalendarEventInfo> {
                 if (events.isEmpty()) return emptyList()
@@ -884,6 +935,15 @@ class UnifiedSearchHandler(
                         }
                         .sortedWith(
                                 compareBy<Pair<CalendarEventInfo, Int>> { it.second }
+                                        .thenByDescending {
+                                                when (secondaryRankingSignal) {
+                                                        com.tk.quicksearch.search.models.SecondaryRankingSignal.RECENCY ->
+                                                                recencyIndex.calendarLastOpenedTimes[it.first.eventId] ?: 0L
+                                                        com.tk.quicksearch.search.models.SecondaryRankingSignal.MOST_OPENED ->
+                                                                (recencyIndex.calendarOpenCounts[it.first.eventId] ?: 0).toLong()
+                                                        com.tk.quicksearch.search.models.SecondaryRankingSignal.NONE -> 0L
+                                                }
+                                        }
                                         .thenBy {
                                                 calendarFutureFirstGroup(
                                                         startMillis = it.first.startMillis,

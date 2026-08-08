@@ -243,6 +243,10 @@
     <string name="recent_queries_toggle_desc">Nº de itens mostrados antes da expansão</string>
     <string name="fuzzy_search_toggle_title">Pesquisa aproximada</string>
     <string name="fuzzy_search_toggle_desc">Encontre resultados mesmo quando sua busca contém um erro de digitação.</string>
+    <string name="secondary_ranking_title">Classificação dos resultados da pesquisa</string>
+    <string name="secondary_ranking_dialog_desc">Escolha como os resultados com a mesma qualidade de correspondência são ordenados.</string>
+    <string name="secondary_ranking_recency">Mais recentes</string>
+    <string name="secondary_ranking_most_opened">Mais abertos</string>
     <string name="recent_queries_toggle_title">Histórico de busca</string>
     <string name="search_history_tab_recently_opened">Resultados</string>
     <string name="search_history_tab_searches">Buscas</string>

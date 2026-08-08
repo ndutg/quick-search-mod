@@ -79,6 +79,7 @@ import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.ItemPriorityConfig
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonType
@@ -124,6 +125,8 @@ private fun SearchOptionsCard(
     fuzzySearchEnabled: Boolean,
     fuzzySearchAvailable: Boolean,
     onFuzzySearchToggle: (Boolean) -> Unit,
+    secondaryRankingSignal: SecondaryRankingSignal,
+    onSecondaryRankingSignalChange: (SecondaryRankingSignal) -> Unit,
     hasExcludedItems: Boolean,
     hasNicknames: Boolean,
     hasTriggers: Boolean,
@@ -139,6 +142,7 @@ private fun SearchOptionsCard(
     var lastWebStep by remember { mutableStateOf(webSuggestionsCount) }
     var lastRecentQueriesDisplayCount by remember { mutableStateOf(recentQueriesDisplayCount) }
     var showAppSuggestionTabsDialog by rememberSaveable { mutableStateOf(false) }
+    var showSecondaryRankingDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     var pinnedNotificationItems by remember { mutableStateOf(PinnedNotifications.pinnedItems(context)) }
     var showPinnedNotificationItemsDialog by rememberSaveable { mutableStateOf(false) }
@@ -232,6 +236,22 @@ private fun SearchOptionsCard(
                     showDivider = false,
                 )
             }
+            HorizontalDivider(color = AppColors.SettingsDivider)
+
+            SettingsNavigationRow(
+                item =
+                    SettingsCardItem(
+                        title = stringResource(R.string.secondary_ranking_title),
+                        description = secondaryRankingDescription(secondaryRankingSignal),
+                        icon = Icons.Rounded.Reorder,
+                        actionOnPress = { showSecondaryRankingDialog = true },
+                    ),
+                contentPadding =
+                    PaddingValues(
+                        horizontal = DesignTokens.SpacingXXLarge,
+                        vertical = DesignTokens.SpacingLarge,
+                    ),
+            )
             HorizontalDivider(color = AppColors.SettingsDivider)
 
             AppResultRowsSelector(
@@ -370,7 +390,47 @@ private fun SearchOptionsCard(
             onDismiss = { showPinnedNotificationItemsDialog = false },
         )
     }
+
+    if (showSecondaryRankingDialog) {
+        SecondaryRankingDialog(
+            selectedSignal = secondaryRankingSignal,
+            onSignalSelected = onSecondaryRankingSignalChange,
+            onDismiss = { showSecondaryRankingDialog = false },
+        )
+    }
 }
+
+@Composable
+private fun secondaryRankingDescription(signal: SecondaryRankingSignal): String {
+    val description = stringResource(R.string.secondary_ranking_dialog_desc)
+    val currentSelection =
+        secondaryRankingCurrentSelectionLabel(
+            signal = signal,
+            recencyLabel = stringResource(R.string.secondary_ranking_recency),
+            mostOpenedLabel = stringResource(R.string.secondary_ranking_most_opened),
+        )
+    val currentLine =
+        currentSelection?.let {
+            stringResource(R.string.app_suggestions_enabled_tabs_summary, it)
+        }
+    return buildSecondaryRankingDescription(description, currentLine)
+}
+
+private fun secondaryRankingCurrentSelectionLabel(
+    signal: SecondaryRankingSignal,
+    recencyLabel: String,
+    mostOpenedLabel: String,
+): String? =
+    when (signal) {
+        SecondaryRankingSignal.RECENCY -> recencyLabel
+        SecondaryRankingSignal.MOST_OPENED -> mostOpenedLabel
+        SecondaryRankingSignal.NONE -> null
+    }
+
+private fun buildSecondaryRankingDescription(
+    description: String,
+    currentSelectionLine: String?,
+): String = currentSelectionLine?.let { "$description\n$it" } ?: description
 
 @Composable
 private fun AppResultRowsSelector(
@@ -1305,6 +1365,10 @@ fun SearchResultsSettingsSection(
                         enabled = enabled,
                     ),
                 )
+            },
+            secondaryRankingSignal = state.secondaryRankingSignal,
+            onSecondaryRankingSignalChange = { signal ->
+                callbacks.onApplySettingsCommand(SettingsCommand.SecondaryRanking(signal))
             },
             hasExcludedItems = hasExcludedItems,
             hasNicknames = hasNicknames,

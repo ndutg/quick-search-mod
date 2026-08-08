@@ -243,6 +243,10 @@
     <string name="recent_queries_toggle_desc">विस्तार से पहले दिखाए गए आइटम की संख्या</string>
     <string name="fuzzy_search_toggle_title">अनुमानित खोज</string>
     <string name="fuzzy_search_toggle_desc">खोज में टाइपिंग की गलती होने पर भी परिणाम ढूंढें।</string>
+    <string name="secondary_ranking_title">खोज परिणाम रैंकिंग</string>
+    <string name="secondary_ranking_dialog_desc">चुनें कि समान मिलान गुणवत्ता वाले परिणामों को कैसे क्रमबद्ध किया जाए।</string>
+    <string name="secondary_ranking_recency">नवीनता</string>
+    <string name="secondary_ranking_most_opened">सबसे अधिक खोले गए</string>
     <string name="recent_queries_toggle_title">खोज इतिहास</string>
     <string name="search_history_tab_recently_opened">परिणाम</string>
     <string name="search_history_tab_searches">खोजें</string>

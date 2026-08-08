@@ -243,6 +243,10 @@
     <string name="recent_queries_toggle_desc">Кол-во элементов, показываемых до разворачивания</string>
     <string name="fuzzy_search_toggle_title">Нечёткий поиск</string>
     <string name="fuzzy_search_toggle_desc">Находить результаты, даже если поисковый запрос содержит опечатку.</string>
+    <string name="secondary_ranking_title">Ранжирование результатов поиска</string>
+    <string name="secondary_ranking_dialog_desc">Выберите, как упорядочивать результаты с одинаковым качеством совпадения.</string>
+    <string name="secondary_ranking_recency">По давности</string>
+    <string name="secondary_ranking_most_opened">Часто открываемые</string>
 <string name="recent_queries_toggle_title">История поиска</string>
 <string name="search_history_tab_recently_opened">Результаты</string>
 <string name="search_history_tab_searches">Запросы</string>

@@ -1509,6 +1509,15 @@ class UserAppPreferences(
     fun getRecentResultOpens(): List<com.tk.quicksearch.search.searchHistory.RecentSearchEntry> =
             recentResultOpensPreferences.getRecentResultOpens()
 
+    fun getRecentResultOpenCounts(): Map<String, Int> =
+        recentResultOpensPreferences.getRecentResultOpenCounts()
+
+    fun getRecentResultLastOpenedTimes(): Map<String, Long> =
+        recentResultOpensPreferences.getRecentResultLastOpenedTimes()
+
+    fun recordCalendarEventOpen(eventId: Long) =
+        recentResultOpensPreferences.recordCalendarEventOpen(eventId)
+
     fun clearRecentQueries() {
         recentSearchesPreferences.clearRecentQueries()
         recentResultOpensPreferences.clearRecentResultOpens()
@@ -1527,6 +1536,12 @@ class UserAppPreferences(
     fun isFuzzySearchEnabled(): Boolean = uiPreferences.isFuzzySearchEnabled()
 
     fun setFuzzySearchEnabled(enabled: Boolean) = uiPreferences.setFuzzySearchEnabled(enabled)
+
+    fun getSecondaryRankingSignal(): com.tk.quicksearch.search.models.SecondaryRankingSignal =
+        uiPreferences.getSecondaryRankingSignal()
+
+    fun setSecondaryRankingSignal(signal: com.tk.quicksearch.search.models.SecondaryRankingSignal) =
+        uiPreferences.setSecondaryRankingSignal(signal)
 
     // ============================================================================
     // Section Preferences

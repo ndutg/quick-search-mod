@@ -243,6 +243,10 @@
     <string name="recent_queries_toggle_desc">Αρ. στοιχείων που εμφανίζονται πριν από την επέκταση</string>
     <string name="fuzzy_search_toggle_title">Αναζήτηση κατά προσέγγιση</string>
     <string name="fuzzy_search_toggle_desc">Βρείτε αποτελέσματα ακόμα και όταν η αναζήτησή σας περιέχει τυπογραφικό λάθος.</string>
+    <string name="secondary_ranking_title">Κατάταξη αποτελεσμάτων αναζήτησης</string>
+    <string name="secondary_ranking_dialog_desc">Επιλέξτε πώς ταξινομούνται τα αποτελέσματα με την ίδια ποιότητα αντιστοίχισης.</string>
+    <string name="secondary_ranking_recency">Πρόσφατα</string>
+    <string name="secondary_ranking_most_opened">Περισσότερο ανοιγμένα</string>
     <string name="recent_queries_toggle_title">Ιστορικό αναζήτησης</string>
     <string name="search_history_tab_recently_opened">Αποτελέσματα</string>
     <string name="search_history_tab_searches">Αναζητήσεις</string>

@@ -330,6 +330,7 @@ fun ContentLayout(
             limit = state.topMatchesLimit,
             topMatchesSectionOrder = state.topMatchesSectionOrder,
             disabledTopMatchesSections = state.disabledTopMatchesSections,
+            secondaryRankingSignal = state.secondaryRankingSignal,
         )
     val showTopMatches =
         state.topMatchesEnabled &&

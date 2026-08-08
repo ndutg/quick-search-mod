@@ -6,6 +6,7 @@ import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.search.data.notes.NotesRoomStore
 import com.tk.quicksearch.search.data.preferences.TriggerPreferences
 import com.tk.quicksearch.search.models.NoteInfo
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.notes.NotesTextUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -37,7 +38,12 @@ class NotesRepository(
         return notesStore.getById(noteId)
     }
 
-    fun searchNotes(query: String): List<NoteInfo> {
+    fun searchNotes(
+        query: String,
+        recentNoteScores: Map<Long, Int> = emptyMap(),
+        noteOpenCounts: Map<Long, Int> = emptyMap(),
+        secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
+    ): List<NoteInfo> {
         val quickNoteId = ensureQuickNoteExists().noteId
         val normalizedQuery = NotesTextUtils.normalize(query)
         if (normalizedQuery.isBlank()) return getAllNotes()
@@ -68,7 +74,13 @@ class NotesRepository(
                 note to score
             }.sortedWith(
                 compareByDescending<Pair<NoteInfo, Int>> { it.second }
-                    .thenByDescending { it.first.updatedAtMillis },
+                    .thenByDescending {
+                        when (secondaryRankingSignal) {
+                            SecondaryRankingSignal.RECENCY -> recentNoteScores[it.first.noteId] ?: 0
+                            SecondaryRankingSignal.MOST_OPENED -> noteOpenCounts[it.first.noteId] ?: 0
+                            SecondaryRankingSignal.NONE -> 0
+                        }
+                    }.thenBy { it.first.title.lowercase(Locale.getDefault()) },
             ).map { it.first }
     }
 

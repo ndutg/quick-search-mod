@@ -31,8 +31,6 @@ class AppSearchManager(
         private set
 
     private var noMatchPrefix: String? = null
-    var sortAppsByUsageEnabled: Boolean = false
-        private set
 
     private var fuzzySearchStrategy =
         FuzzyAppSearchStrategy(
@@ -130,11 +128,6 @@ class AppSearchManager(
         }
     }
 
-    fun setSortAppsByUsage(enabled: Boolean) {
-        sortAppsByUsageEnabled = enabled
-        // VM should update preference
-    }
-
     fun resetNoMatchPrefixIfNeeded(normalizedQuery: String) {
         val prefix = noMatchPrefix ?: return
         if (!normalizedQuery.startsWith(prefix)) {
@@ -216,7 +209,7 @@ class AppSearchManager(
             limit = limit,
             fuzzySearchStrategy = fuzzySearchStrategy,
             appNicknames = cachedAppNicknames,
-            sortAppsByUsageEnabled = sortAppsByUsageEnabled,
+            secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
         )
 
     fun deriveMatches(
@@ -230,7 +223,7 @@ class AppSearchManager(
             limit = limit,
             fuzzySearchStrategy = fuzzySearchStrategy,
             appNicknames = cachedAppNicknames,
-            sortAppsByUsageEnabled = sortAppsByUsageEnabled,
+            secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
         )
 
     internal companion object {

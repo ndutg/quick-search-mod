@@ -629,6 +629,7 @@ abstract class BasePreferences(
         const val KEY_RECENT_QUERIES = "recent_queries"
         const val KEY_RECENT_QUERIES_ENABLED = "recent_queries_enabled"
         const val KEY_FUZZY_SEARCH_ENABLED = "fuzzy_search_enabled"
+        const val KEY_SECONDARY_RANKING_SIGNAL = "secondary_ranking_signal"
         const val KEY_RECENT_RESULT_OPENS = "recent_result_opens"
 
         // Calculator preferences keys

@@ -8,6 +8,17 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 class RecentResultOpensPreferences(
     context: android.content.Context,
 ) : BasePreferences(context) {
+    private val openCountsPrefs =
+        context.applicationContext.getSharedPreferences(
+            OPEN_COUNTS_PREFS_NAME,
+            android.content.Context.MODE_PRIVATE,
+        )
+    private val lastOpenedPrefs =
+        context.applicationContext.getSharedPreferences(
+            LAST_OPENED_PREFS_NAME,
+            android.content.Context.MODE_PRIVATE,
+        )
+
     fun getRecentResultOpens(): List<RecentSearchEntry> {
         val rawItems =
             PreferenceUtils.getStringListPref(
@@ -21,6 +32,8 @@ class RecentResultOpensPreferences(
 
     fun addRecentResultOpen(entry: RecentSearchEntry) {
         if (!isRankableEntry(entry)) return
+
+        recordResultOpen(entry.stableKey)
 
         val currentItems = getRecentResultOpens().toMutableList()
         currentItems.removeAll { it.stableKey == entry.stableKey }
@@ -42,6 +55,18 @@ class RecentResultOpensPreferences(
             BasePreferences.KEY_RECENT_RESULT_OPENS,
             currentItems.map { it.toJsonString() },
         )
+        openCountsPrefs.edit().remove(entry.stableKey).apply()
+        lastOpenedPrefs.edit().remove(entry.stableKey).apply()
+    }
+
+    fun getRecentResultOpenCounts(): Map<String, Int> =
+        openCountsPrefs.all.mapValues { (_, value) -> value as? Int ?: 0 }
+
+    fun getRecentResultLastOpenedTimes(): Map<String, Long> =
+        lastOpenedPrefs.all.mapValues { (_, value) -> value as? Long ?: 0L }
+
+    fun recordCalendarEventOpen(eventId: Long) {
+        recordResultOpen("calendar:$eventId")
     }
 
     fun clearRecentResultOpens() {
@@ -50,6 +75,14 @@ class RecentResultOpensPreferences(
             BasePreferences.KEY_RECENT_RESULT_OPENS,
             emptyList<String>(),
         )
+        openCountsPrefs.edit().clear().apply()
+        lastOpenedPrefs.edit().clear().apply()
+    }
+
+    private fun recordResultOpen(stableKey: String) {
+        val currentCount = openCountsPrefs.getInt(stableKey, 0)
+        openCountsPrefs.edit().putInt(stableKey, currentCount + 1).apply()
+        lastOpenedPrefs.edit().putLong(stableKey, System.currentTimeMillis()).apply()
     }
 
     private fun isRankableEntry(entry: RecentSearchEntry): Boolean =
@@ -62,5 +95,7 @@ class RecentResultOpensPreferences(
 
     companion object {
         private const val MAX_RECENT_RESULT_OPENS = 100
+        private const val OPEN_COUNTS_PREFS_NAME = "recent_result_open_counts"
+        private const val LAST_OPENED_PREFS_NAME = "recent_result_last_opened"
     }
 }

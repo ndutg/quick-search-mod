@@ -695,7 +695,6 @@ internal class SearchStartupLifecycleDelegate(
 
         withContext(Dispatchers.Main) {
             applyStartupPreferences(startupPrefs)
-            appSearchManager.setSortAppsByUsage(true)
         }
 
         val lastUpdated =
@@ -774,6 +773,7 @@ internal class SearchStartupLifecycleDelegate(
                         userPreferences.isFuzzySearchEnabled(),
                 fuzzySearchAvailable =
                     !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()),
+                secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
                 webSuggestionsCount = userPreferences.getWebSuggestionsCount(),
                 topMatchesEnabled = userPreferences.isTopMatchesEnabled(),
                 topMatchesLimit = userPreferences.getTopMatchesLimit(),

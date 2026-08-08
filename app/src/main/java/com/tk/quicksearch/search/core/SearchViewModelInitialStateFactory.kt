@@ -72,6 +72,7 @@ internal object SearchViewModelInitialStateFactory {
                 fuzzySearchEnabled =
                     !isLowRamDevice && startupPreferencesReader.isFuzzySearchEnabled(),
                 fuzzySearchAvailable = !isLowRamDevice,
+                secondaryRankingSignal = startupPreferencesReader.getSecondaryRankingSignal(),
                 isSearchEngineAliasSuffixEnabled =
                     startupPreferencesReader.isSearchEngineAliasSuffixEnabled(),
                 isAliasTriggerAfterSpaceEnabled =

@@ -11,6 +11,7 @@ import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 sealed interface SettingsCommand {
     data class Toggle(
@@ -23,6 +24,8 @@ sealed interface SettingsCommand {
     data class RecentQueriesDisplayCount(val count: Int) : SettingsCommand
 
     data class AppResultRowCount(val rowCount: Int) : SettingsCommand
+
+    data class SecondaryRanking(val signal: SecondaryRankingSignal) : SettingsCommand
 
     data class AppSuggestionTabEnabled(
         val tab: AppSuggestionTabType,
@@ -147,6 +150,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         is SettingsCommand.WebSuggestionsCount -> setWebSuggestionsCount(command.count)
         is SettingsCommand.RecentQueriesDisplayCount -> setRecentQueriesDisplayCount(command.count)
         is SettingsCommand.AppResultRowCount -> setAppResultRowCount(command.rowCount)
+        is SettingsCommand.SecondaryRanking -> setSecondaryRankingSignal(command.signal)
         is SettingsCommand.AppSuggestionTabEnabled ->
             setAppSuggestionTabEnabled(command.tab, command.enabled)
         is SettingsCommand.TopMatchesLimit -> setTopMatchesLimit(command.limit)

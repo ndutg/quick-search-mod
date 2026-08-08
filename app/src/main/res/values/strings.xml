@@ -237,6 +237,10 @@
     <string name="recent_queries_toggle_desc">No. of items shown before expansion</string>
     <string name="fuzzy_search_toggle_title">Fuzzy search</string>
     <string name="fuzzy_search_toggle_desc">Find results even when your search contains a typo.</string>
+    <string name="secondary_ranking_title">Search Result Ranking</string>
+    <string name="secondary_ranking_dialog_desc">Choose how results with the same match quality are ordered.</string>
+    <string name="secondary_ranking_recency">Recency</string>
+    <string name="secondary_ranking_most_opened">Most Opened</string>
     <string name="recent_queries_toggle_title">Search History</string>
     <string name="search_history_tab_recently_opened">Results</string>
     <string name="search_history_tab_searches">Searches</string>

@@ -244,6 +244,10 @@
     <string name="recent_queries_toggle_desc">عدد العناصر المعروضة قبل التوسيع</string>
     <string name="fuzzy_search_toggle_title">البحث التقريبي</string>
     <string name="fuzzy_search_toggle_desc">اعثر على النتائج حتى عندما يحتوي بحثك على خطأ إملائي.</string>
+    <string name="secondary_ranking_title">ترتيب نتائج البحث</string>
+    <string name="secondary_ranking_dialog_desc">اختر كيفية ترتيب النتائج ذات جودة المطابقة نفسها.</string>
+    <string name="secondary_ranking_recency">الأحدث</string>
+    <string name="secondary_ranking_most_opened">الأكثر فتحًا</string>
     <string name="recent_queries_toggle_title">سجل البحث</string>
     <string name="search_history_tab_recently_opened">النتائج</string>
     <string name="search_history_tab_searches">عمليات البحث</string>

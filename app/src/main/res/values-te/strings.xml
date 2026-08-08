@@ -243,6 +243,10 @@
     <string name="recent_queries_toggle_desc">విస్తరించడానికి ముందు చూపే అంశాల సంఖ్య</string>
     <string name="fuzzy_search_toggle_title">ఫజీ శోధన</string>
     <string name="fuzzy_search_toggle_desc">మీ శోధనలో టైపింగ్ పొరపాటు ఉన్నా ఫలితాలను కనుగొనండి.</string>
+    <string name="secondary_ranking_title">శోధన ఫలితాల ర్యాంకింగ్</string>
+    <string name="secondary_ranking_dialog_desc">ఒకే సరిపోలిక నాణ్యత ఉన్న ఫలితాలను ఎలా క్రమబద్ధీకరించాలో ఎంచుకోండి.</string>
+    <string name="secondary_ranking_recency">ఇటీవలివి</string>
+    <string name="secondary_ranking_most_opened">ఎక్కువగా తెరిచినవి</string>
     <string name="recent_queries_toggle_title">శోధన చరిత్ర</string>
     <string name="search_history_tab_recently_opened">ఫలితాలు</string>
     <string name="search_history_tab_searches">శోధనలు</string>
