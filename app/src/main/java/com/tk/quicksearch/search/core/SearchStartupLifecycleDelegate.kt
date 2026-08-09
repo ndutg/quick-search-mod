@@ -411,12 +411,15 @@ internal class SearchStartupLifecycleDelegate(
             if (appSearchManager.cachedApps.isNotEmpty() && permissionStateProvider().hasUsagePermission) {
                 appSearchManager.refreshUsageMetadataNow()
             }
-            // Cached apps seed the home suggestions in phase 1. Rebuilding the complete catalog
-            // queries LauncherApps and usage stats, so only block here when there is no cache to
-            // show. An invalidated or stale cache is reconciled once startup has been idle.
-            val reconcileAppsAfterStartupIdle =
+            // Cached apps seed the home suggestions in phase 1. Rebuild an invalidated or stale
+            // catalog immediately on the background dispatcher without blocking the cached UI or
+            // waiting for the current query to become idle.
+            val reconcileAppsInBackground =
                 shouldReconcileAppsAtStartup() && appSearchManager.cachedApps.isNotEmpty()
-            if (!reconcileAppsAfterStartupIdle && appSearchManager.cachedApps.isEmpty()) {
+            if (reconcileAppsInBackground) {
+                packageRefreshJob?.cancel()
+                packageRefreshJob = launch(startupDispatcher) { loadApps() }
+            } else if (appSearchManager.cachedApps.isEmpty()) {
                 loadApps()
             }
 
@@ -552,9 +555,9 @@ internal class SearchStartupLifecycleDelegate(
 
             optionalStartupJob?.cancel()
             optionalStartupJob = launch(startupDispatcher) {
-                awaitOptionalStartupWindow()
-                if (reconcileAppsAfterStartupIdle) {
-                    loadApps()
+                delay(OPTIONAL_STARTUP_DELAY_MS)
+                while (isQueryActive()) {
+                    delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
                 }
                 val hasApiKey = userPreferences.refreshConfiguredAiProviderHint()
                 val activeProviderId = aiSearchHandler.getAiSearchProviderId()
@@ -642,7 +645,6 @@ internal class SearchStartupLifecycleDelegate(
             packageRefreshJob =
                 scope.launch(startupDispatcher) {
                     delay(PACKAGE_CHANGE_DEBOUNCE_MS)
-                    while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
                     loadApps()
                 }
         }
@@ -666,13 +668,6 @@ internal class SearchStartupLifecycleDelegate(
         if (repository.isAppCatalogInvalidated()) return true
         val ageMs = System.currentTimeMillis() - repository.cacheLastUpdatedMillis()
         return ageMs !in 0 until APP_RECONCILIATION_FRESHNESS_MS
-    }
-
-    private suspend fun awaitOptionalStartupWindow() {
-        delay(OPTIONAL_STARTUP_DELAY_MS)
-        while (isQueryActive()) {
-            delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
-        }
     }
 
     suspend fun loadCacheAndMinimalPrefs() {

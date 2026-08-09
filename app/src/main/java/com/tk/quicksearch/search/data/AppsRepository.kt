@@ -238,7 +238,7 @@ class AppsRepository(
         val removedAppKeys = appCache.removedAppKeys()
         val availableApps = filterRemovedApps(refreshedApps, removedAppKeys)
         if (availableApps != apps || removedAppKeys.isNotEmpty()) {
-            appCache.saveApps(availableApps)
+            appCache.saveApps(availableApps, catalogReconciled = false)
         }
         return availableApps
     }

@@ -1,5 +1,6 @@
 - Pin search results to notification panel by long-pressing
 - Rank search results based on whether they are recently opened or most opened
 - Improved today's agenda experience (requires calendar permission)
+- New search engine: Kagi
 - Option to show 2 app rows in search results
 - Performance improvements, reduced app size and bug fixes

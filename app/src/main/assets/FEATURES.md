@@ -24,7 +24,7 @@ This document highlights all the available features. It also includes details ab
 - **Multi-App Search** - Type a query and tap any "search on" card to quickly search using that search engine. If compact mode is enabled, you can just tap on any icon in the search engine section above your keyboard.
 - **Browser Integration** - Installed browsers automatically appear as search engine options
 - **In-App Browser** - Option to open URLs inside the app instead of an external browser
-- **Supported Search Engines** (26 total): AI Search, Google, ChatGPT, Gemini, Perplexity, Grok, Google Maps, Google Drive, Google Photos, Google Play, Google Translate, YouTube, YouTube Music, Spotify, Reddit, Amazon, X (Twitter), Facebook Marketplace, Bing, DuckDuckGo, Brave, Startpage, You.com, AI Mode, Claude, Wikipedia
+- **Supported Search Engines** (27 total): AI Search, Google, ChatGPT, Gemini, Perplexity, Grok, Google Maps, Google Drive, Google Photos, Google Play, Google Translate, Kagi, YouTube, YouTube Music, Spotify, Reddit, Amazon, X (Twitter), Facebook Marketplace, Bing, DuckDuckGo, Brave, Startpage, You.com, AI Mode, Claude, Wikipedia
 - **AI Search** - Configure your Gemini API key to see answers directly within Quick Search. Ask follow-up questions to continue an AI Search conversation.
 - **Custom Search Engines** - Add your own search engines from the Search Engines settings screen.
 - **Web Search Suggestions** - Web suggestions automatically appear when you type your query; you can disable them or change the count in settings.
