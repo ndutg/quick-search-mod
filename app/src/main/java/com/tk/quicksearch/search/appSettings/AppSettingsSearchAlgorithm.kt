@@ -7,6 +7,7 @@ import com.tk.quicksearch.search.utils.FuzzyMatcher
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 private const val FUZZY_CANDIDATE_BUFFER_MULTIPLIER = 12
 
@@ -15,6 +16,8 @@ object AppSettingsSearchAlgorithm {
         fullList: List<AppSettingResult>,
         queryContext: SearchQueryContext,
         recentSettingScores: Map<String, Int> = emptyMap(),
+        settingOpenCounts: Map<String, Int> = emptyMap(),
+        secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
@@ -37,6 +40,8 @@ object AppSettingsSearchAlgorithm {
                 }.sortedWith(
                     RecentResultRankingUtils.matchThenRecencyThenAlphabeticalComparator(
                         recencyScores = recentSettingScores,
+                        openCounts = settingOpenCounts,
+                        secondaryRankingSignal = secondaryRankingSignal,
                         keySelector = { it.id },
                         labelSelector = { it.title },
                     ),
@@ -113,6 +118,13 @@ object AppSettingsSearchAlgorithm {
                     }
                 }.sortedWith(
                     compareByDescending<Pair<AppSettingResult, Int>> { it.second }
+                        .thenByDescending {
+                            when (secondaryRankingSignal) {
+                                SecondaryRankingSignal.RECENCY -> recentSettingScores[it.first.id] ?: 0
+                                SecondaryRankingSignal.MOST_OPENED -> settingOpenCounts[it.first.id] ?: 0
+                                SecondaryRankingSignal.NONE -> 0
+                            }
+                        }
                         .thenBy { it.first.title.lowercase() },
                 ).map { it.first }
                 .toList()

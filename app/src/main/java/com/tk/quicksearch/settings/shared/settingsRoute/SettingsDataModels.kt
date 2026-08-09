@@ -17,6 +17,7 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.settings.AppShortcutsSettings.AppShortcutSource
@@ -121,6 +122,7 @@ data class SettingsScreenState(
     val appResultRowCount: Int,
     val fuzzySearchEnabled: Boolean,
     val fuzzySearchAvailable: Boolean,
+    val secondaryRankingSignal: SecondaryRankingSignal,
     val hasApiKey: Boolean = false,
     val geminiApiKeyLast4: String? = null,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
@@ -159,6 +161,7 @@ data class SettingsScreenState(
                 appResultRowCount = appResultRowCount,
                 fuzzySearchEnabled = fuzzySearchEnabled,
                 fuzzySearchAvailable = fuzzySearchAvailable,
+                secondaryRankingSignal = secondaryRankingSignal,
             )
 
     val searchEngines: SearchEngineSettingsState
@@ -517,6 +520,7 @@ data class SearchResultsSettingsState(
     val appResultRowCount: Int,
     val fuzzySearchEnabled: Boolean,
     val fuzzySearchAvailable: Boolean,
+    val secondaryRankingSignal: SecondaryRankingSignal,
 )
 
 data class SearchEngineSettingsState(

@@ -70,8 +70,9 @@
 <string name="action_add_to_home">Ajouter à l\'écran d\'accueil</string>
 <string name="action_add_trigger">Ajouter un déclencheur</string>
 <string name="action_app_info">Infos sur l\'application</string>
-<string name="action_archive_today_event">Archiver</string>
 <string name="action_change_icon">Changer l\'icône</string>
+<string name="icon_picker_search">Rechercher des icônes</string>
+<string name="icon_picker_title">Changer l\'icône de « %1$s »</string>
 <string name="action_change_wallpaper">Changer le fond d\'écran</string>
 <string name="action_clear_all_history">Effacer l\'historique</string>
 <string name="action_edit_icon">Modifier l\'icône</string>
@@ -103,31 +104,26 @@
 <string name="settings_gesture_swipe_down">Balayer vers le bas</string>
 <string name="settings_gesture_swipe_up_home">Balayer vers le haut (Accueil)</string>
 <string name="settings_gesture_swipe_down_home">Balayer vers le bas (Accueil)</string>
-<string name="settings_gesture_quick_note">Note rapide</string>
 <string name="settings_gesture_settings">Paramètres</string>
-<string name="settings_gesture_open_keyboard">Ouvrir le clavier</string>
 <string name="settings_gesture_close_keyboard_notifications">Fermer le clavier / Ouvrir les notifications</string>
 <string name="settings_gesture_close_keyboard">Fermer le clavier</string>
 <string name="settings_gesture_notification_panel">Panneau de notifications</string>
 <string name="settings_gesture_none">Aucun</string>
 <string name="settings_gesture_custom">Personnalisé (Applications, fichiers, etc.)</string>
 <string name="settings_keyboard_gestures_title">Gestes du clavier (Accueil)</string>
+<string name="settings_keyboard_gestures_desc">Disponible uniquement lorsqu’il n’y a pas de contenu défilable sur l’écran d’accueil</string>
 <string name="action_pin_app">Épingler</string>
     <string name="action_pin_to_notifications">Épingler aux notifications</string>
     <string name="action_unpin_from_notifications">Désépingler des notifications</string>
-    <string name="pinned_notifications_channel_name">Raccourcis épinglés</string>
     <string name="pinned_notifications_channel_description">Accès rapide aux résultats de recherche épinglés</string>
     <string name="pinned_notifications_title">Raccourcis épinglés</string>
     <string name="notification_pinned_items_title">Éléments de notification épinglés</string>
     <string name="notification_pinned_items_description">Gérer les éléments épinglés affichés dans le panneau de notifications</string>
-    <string name="notification_pinned_items_dialog_title">Éléments de notification épinglés</string>
-    <string name="notification_pinned_items_close">Fermer</string>
     <string name="notification_pinned_items_remove">Retirer %1$s des notifications</string>
     <string name="notification_pinned_item_type_app">Application</string>
     <string name="notification_pinned_item_type_app_shortcut">Raccourci d\'application</string>
     <string name="notification_pinned_item_type_contact">Contact</string>
     <string name="notification_pinned_item_type_file">Fichier</string>
-    <string name="notification_pinned_item_type_setting">Paramètres</string>
     <string name="notification_pinned_item_type_note">Note</string>
 <string name="action_remove">Supprimer</string>
 <string name="action_remove_from_history">Supprimer de l\'historique</string>
@@ -185,7 +181,6 @@
 <string name="dialog_edit_amazon_domain_title">Modifier le domaine Amazon</string>
 <string name="dialog_gemini_model_picker_title">Sélectionner le modèle</string>
 <string name="dialog_nickname_message">Saisissez un surnom pour « %1$s ». Vous pourrez le rechercher en utilisant ce surnom.</string>
-<string name="dialog_no">Non</string>
 <string name="dialog_ok">Continuer</string>
 <string name="dialog_okay">D\'accord</string>
 <string name="dialog_remember_choice">Se souvenir de ce choix</string>
@@ -197,7 +192,6 @@
 <string name="dialog_trigger_error_taken">Ce déclencheur est déjà utilisé.</string>
 <string name="dialog_trigger_hint">Mot déclencheur</string>
 <string name="dialog_trigger_message">Saisissez un déclencheur en un seul mot pour « %1$s ».</string>
-<string name="dialog_yes">Oui</string>
 <string name="exclude_marker"> exclu de </string>
 <string name="permission_action_manage_android">Gérer dans les paramètres Android</string>
 <string name="permission_settings_dialog_message">Cette action nécessite l\'autorisation %1$s. Vous allez être redirigé vers les paramètres système pour l\'accorder.</string>
@@ -227,11 +221,9 @@
 <string name="app_suggestions_tabs_dialog_message">Choisissez les onglets de suggestions d\'applications à afficher sur l\'écran d\'accueil.</string>
 <string name="app_suggestions_tabs_dialog_title">Onglets de suggestions d\'applications</string>
 <string name="app_suggestions_enabled_tabs_picker_hint">Choisir les onglets</string>
-<string name="app_suggestions_enabled_tabs_summary">Actuel : %1$s</string>
 <string name="app_suggestions_tab_required_toast">Gardez au moins un onglet de suggestions d\'applications activé</string>
 <string name="app_suggestions_toggle_desc">Afficher ou masquer les applications suggérées sur l\'écran d\'accueil</string>
 <string name="app_suggestions_toggle_title">Suggestions d\'applications</string>
-<string name="show_all_apps_button_toggle_title">Toutes les applications</string>
 <string name="show_all_apps_button_toggle_desc">Afficher le bouton \"Toutes les applications\" sous les suggestions d\'applications</string>
 <string name="app_suggestions_usage_access_link">l\'autorisation d\'accès aux données d\'utilisation</string>
 <string name="app_suggestions_usage_access_tip">Accordez l\'accès aux données d\'utilisation pour voir des suggestions plus pertinentes</string>
@@ -242,6 +234,10 @@
 <string name="recent_queries_toggle_desc">Nbre d\'éléments affichés avant le développement</string>
 <string name="fuzzy_search_toggle_title">Recherche approximative</string>
 <string name="fuzzy_search_toggle_desc">Trouvez des résultats même si votre recherche contient une faute de frappe.</string>
+<string name="secondary_ranking_title">Classement des résultats de recherche</string>
+<string name="secondary_ranking_dialog_desc">Choisissez comment trier les résultats ayant la même qualité de correspondance.</string>
+<string name="secondary_ranking_recency">Récence</string>
+<string name="secondary_ranking_most_opened">Les plus ouverts</string>
 <string name="recent_queries_toggle_title">Historique de recherche</string>
 <string name="search_history_tab_recently_opened">Résultats</string>
 <string name="search_history_tab_searches">Recherches</string>
@@ -267,7 +263,6 @@
 <string name="section_app_shortcuts">Raccourcis d\'app</string>
 <string name="section_apps">Applications</string>
 <string name="section_calendar">Événements de l\'agenda</string>
-<string name="section_contacts">Contacts</string>
 <string name="section_files">Fichiers</string>
 <string name="section_notes">Notes</string>
 <string name="section_settings">Paramètres de l\'appareil</string>
@@ -443,7 +438,6 @@
 <!-- ============================================================================
      Files &amp; Folders
      ============================================================================ -->
-<string name="excluded_item_type_file">Fichier</string>
 <string name="excluded_item_type_file_extension">Extension de fichier</string>
 <string name="excluded_item_type_folder">Dossier</string>
 <string name="file_extension_label">Fichiers .%s</string>
@@ -483,6 +477,7 @@
      ============================================================================ -->
 <string name="app_settings_create_calendar_event_desc">Créer et ajouter un nouvel événement</string>
 <string name="app_settings_create_calendar_event_title">Nouvel événement d\'agenda</string>
+<string name="agenda_title">Agenda du jour</string>
 <string name="calendar_create_event_name_hint">Nom de l\'événement</string>
 <string name="calendar_create_event_select_date">Sélectionner la date</string>
 <string name="calendar_create_event_sync_notice">Cet événement ne sera pas synchronisé avec l\'agenda de votre appareil</string>
@@ -494,6 +489,8 @@
     <item quantity="other">%d jours</item>
 </plurals>
 <string name="calendar_relative_in_format">dans %1$s</string>
+<string name="calendar_relative_in_minutes">dans %1$d minutes</string>
+<string name="calendar_relative_now">Maintenant</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d mois</item>
     <item quantity="other">%d mois</item>
@@ -667,7 +664,6 @@
 <string name="settings_icon_pack_option_system">Icônes système</string>
 <string name="settings_icon_pack_picker_title">Choisir un pack d\'icônes</string>
 <string name="settings_icon_pack_search_query">Packs d\'icônes gratuits</string>
-<string name="settings_icon_pack_selected_label">Actuel : %1$s</string>
 <string name="settings_icon_pack_title">Pack d\'icônes</string>
 <string name="settings_icon_title">Icône des paramètres</string>
 <string name="settings_launch_options_desc">Différentes manières de lancer cette application</string>
@@ -758,7 +754,6 @@
 <string name="settings_custom_provider_advanced_payload_title">Charge utile de requête avancée</string>
 <string name="settings_direct_search_desc">Les clés API Gemini, OpenAI, Claude et Groq sont prises en charge</string>
 <string name="settings_direct_search_desc_intro">Ajoutez une clé API pour activer la recherche et les outils propulsés par l\'AI.</string>
-<string name="settings_free_api_key_tip_title">Obtenir une clé API gratuite</string>
 <string name="settings_free_api_key_tip_description">Étapes pour obtenir gratuitement une clé API Gemini.</string>
 <string name="settings_open_free_api_key_guide">Ouvrir le guide de la clé API gratuite</string>
 <string name="settings_direct_search_grounding_label">Recherche Web</string>
@@ -807,7 +802,6 @@
 <string name="settings_backup_export_button">Exporter</string>
 <string name="settings_backup_export_failed">Impossible d\'exporter les paramètres.</string>
 <string name="settings_backup_export_option_pinned_items_title">Éléments épinglés</string>
-<string name="settings_backup_export_option_settings_title">Paramètres</string>
 <string name="settings_backup_export_selection_title">Exporter les données</string>
 <string name="settings_backup_export_success">Paramètres exportés avec succès.</string>
 <string name="settings_backup_import_button">Importer</string>
@@ -905,9 +899,7 @@
 <string name="shortcut_voice_search_long_label">Ouvrir la recherche vocale</string>
 <string name="shortcut_voice_search_short_label">Recherche vocale</string>
 <string name="voice_input_not_available">La saisie vocale n\'est pas disponible pour le moment.</string>
-<string name="widget_background_color_custom_dialog_hint">Couleur Hex (RRGGBB)</string>
 <string name="widget_background_color_custom_dialog_title">Couleur personnalisée</string>
-<string name="widget_background_color_custom_invalid">Saisissez une couleur hexadécimale valide à 6 chiffres.</string>
 <string name="widget_border_color">Couleur de la bordure</string>
 <string name="widget_custom_button_add_desc">Ajouter un bouton personnalisé</string>
 <string name="widget_custom_buttons_dialog_hint">Vous pouvez rechercher des applications, des raccourcis d\'app, des contacts, des fichiers, des dossiers, des notes &amp; des paramètres d\'appareil.</string>
@@ -1022,7 +1014,6 @@
 <string name="excluded_item_type_app_results">Application (Résultats)</string>
 <string name="excluded_item_type_app_shortcut">Raccourci d\'app</string>
 <string name="excluded_item_type_app_suggestions">Application (Suggestions)</string>
-<string name="excluded_item_type_contact">Contact</string>
 <string name="excluded_item_type_setting">Paramètre</string>
 <string name="permission_required_title">Autorisation requise</string>
 <string name="settings_action_clear_all">Tout effacer</string>

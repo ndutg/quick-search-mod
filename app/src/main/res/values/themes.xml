@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base theme for the app -->
-    <style name="Theme.QuickSearch" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="Theme.QuickSearch" parent="Theme.AppCompat.NoActionBar">
         <!-- Keep window translucent throughout -->
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

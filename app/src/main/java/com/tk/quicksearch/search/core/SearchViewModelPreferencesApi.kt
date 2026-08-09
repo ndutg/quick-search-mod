@@ -96,6 +96,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setFuzzySearchEnabled(enabled: Boolean) =
         preferencesApiDelegate.setFuzzySearchEnabled(enabled)
 
+    fun setSecondaryRankingSignal(signal: com.tk.quicksearch.search.models.SecondaryRankingSignal) =
+        preferencesApiDelegate.setSecondaryRankingSignal(signal)
+
     fun setTopMatchesEnabled(enabled: Boolean) =
         preferencesApiDelegate.setTopMatchesEnabled(enabled)
 
@@ -364,6 +367,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         preferencesDelegate.setAppResultRowCount(rowCount)
 
     fun setFuzzySearchEnabled(enabled: Boolean) = preferencesDelegate.setFuzzySearchEnabled(enabled)
+
+    fun setSecondaryRankingSignal(signal: com.tk.quicksearch.search.models.SecondaryRankingSignal) =
+        preferencesDelegate.setSecondaryRankingSignal(signal)
 
     fun setShowTodayEvents(enabled: Boolean) = preferencesDelegate.setShowTodayEvents(enabled)
 

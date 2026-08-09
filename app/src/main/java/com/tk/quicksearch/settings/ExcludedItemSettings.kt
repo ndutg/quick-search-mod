@@ -407,7 +407,7 @@ private sealed class ExcludedItem {
         val contactInfo: ContactInfo,
     ) : ExcludedItem() {
         override val displayName: String = contactInfo.displayName
-        override val typeLabelRes: Int = R.string.excluded_item_type_contact
+        override val typeLabelRes: Int = R.string.notification_pinned_item_type_contact
     }
 
     data class File(
@@ -419,7 +419,7 @@ private sealed class ExcludedItem {
                 if (deviceFile.isDirectory) {
                     R.string.excluded_item_type_folder
                 } else {
-                    R.string.excluded_item_type_file
+                    R.string.notification_pinned_item_type_file
                 }
     }
 

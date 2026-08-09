@@ -79,6 +79,7 @@ import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.ItemPriorityConfig
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonType
@@ -119,11 +120,14 @@ private fun SearchOptionsCard(
     onRecentQueriesToggle: (Boolean) -> Unit,
     recentQueriesDisplayCount: Int,
     onRecentQueriesDisplayCountChange: (Int) -> Unit,
+    appResultsEnabled: Boolean,
     appResultRowCount: Int,
     onAppResultRowCountChange: (Int) -> Unit,
     fuzzySearchEnabled: Boolean,
     fuzzySearchAvailable: Boolean,
     onFuzzySearchToggle: (Boolean) -> Unit,
+    secondaryRankingSignal: SecondaryRankingSignal,
+    onSecondaryRankingSignalChange: (SecondaryRankingSignal) -> Unit,
     hasExcludedItems: Boolean,
     hasNicknames: Boolean,
     hasTriggers: Boolean,
@@ -139,6 +143,7 @@ private fun SearchOptionsCard(
     var lastWebStep by remember { mutableStateOf(webSuggestionsCount) }
     var lastRecentQueriesDisplayCount by remember { mutableStateOf(recentQueriesDisplayCount) }
     var showAppSuggestionTabsDialog by rememberSaveable { mutableStateOf(false) }
+    var showSecondaryRankingDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     var pinnedNotificationItems by remember { mutableStateOf(PinnedNotifications.pinnedItems(context)) }
     var showPinnedNotificationItemsDialog by rememberSaveable { mutableStateOf(false) }
@@ -234,11 +239,29 @@ private fun SearchOptionsCard(
             }
             HorizontalDivider(color = AppColors.SettingsDivider)
 
-            AppResultRowsSelector(
-                selectedRowCount = appResultRowCount,
-                onSelectRowCount = onAppResultRowCountChange,
+            SettingsNavigationRow(
+                item =
+                    SettingsCardItem(
+                        title = stringResource(R.string.secondary_ranking_title),
+                        description = secondaryRankingDescription(secondaryRankingSignal),
+                        icon = Icons.Rounded.Reorder,
+                        actionOnPress = { showSecondaryRankingDialog = true },
+                    ),
+                contentPadding =
+                    PaddingValues(
+                        horizontal = DesignTokens.SpacingXXLarge,
+                        vertical = DesignTokens.SpacingLarge,
+                    ),
             )
             HorizontalDivider(color = AppColors.SettingsDivider)
+
+            if (appResultsEnabled) {
+                AppResultRowsSelector(
+                    selectedRowCount = appResultRowCount,
+                    onSelectRowCount = onAppResultRowCountChange,
+                )
+                HorizontalDivider(color = AppColors.SettingsDivider)
+            }
 
             SettingsToggleRow(
                 title = stringResource(R.string.app_suggestions_toggle_title),
@@ -370,7 +393,47 @@ private fun SearchOptionsCard(
             onDismiss = { showPinnedNotificationItemsDialog = false },
         )
     }
+
+    if (showSecondaryRankingDialog) {
+        SecondaryRankingDialog(
+            selectedSignal = secondaryRankingSignal,
+            onSignalSelected = onSecondaryRankingSignalChange,
+            onDismiss = { showSecondaryRankingDialog = false },
+        )
+    }
 }
+
+@Composable
+private fun secondaryRankingDescription(signal: SecondaryRankingSignal): String {
+    val description = stringResource(R.string.secondary_ranking_dialog_desc)
+    val currentSelection =
+        secondaryRankingCurrentSelectionLabel(
+            signal = signal,
+            recencyLabel = stringResource(R.string.secondary_ranking_recency),
+            mostOpenedLabel = stringResource(R.string.secondary_ranking_most_opened),
+        )
+    val currentLine =
+        currentSelection?.let {
+            stringResource(R.string.settings_app_language_desc, it)
+        }
+    return buildSecondaryRankingDescription(description, currentLine)
+}
+
+private fun secondaryRankingCurrentSelectionLabel(
+    signal: SecondaryRankingSignal,
+    recencyLabel: String,
+    mostOpenedLabel: String,
+): String? =
+    when (signal) {
+        SecondaryRankingSignal.RECENCY -> recencyLabel
+        SecondaryRankingSignal.MOST_OPENED -> mostOpenedLabel
+        SecondaryRankingSignal.NONE -> null
+    }
+
+private fun buildSecondaryRankingDescription(
+    description: String,
+    currentSelectionLine: String?,
+): String = currentSelectionLine?.let { "$description\n$it" } ?: description
 
 @Composable
 private fun AppResultRowsSelector(
@@ -470,7 +533,7 @@ private fun PinnedNotificationItemsDialog(
                         ),
             ) {
                 Text(
-                    text = stringResource(R.string.notification_pinned_items_dialog_title),
+                    text = stringResource(R.string.notification_pinned_items_title),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = DesignTokens.SpacingMedium),
@@ -494,7 +557,7 @@ private fun PinnedNotificationItemsDialog(
                                     CustomWidgetButtonType.APP_SHORTCUT -> stringResource(R.string.notification_pinned_item_type_app_shortcut)
                                     CustomWidgetButtonType.CONTACT -> stringResource(R.string.notification_pinned_item_type_contact)
                                     CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
-                                    CustomWidgetButtonType.SETTING -> stringResource(R.string.notification_pinned_item_type_setting)
+                                    CustomWidgetButtonType.SETTING -> stringResource(R.string.settings_gesture_settings)
                                     CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
                                 }
                             Surface(
@@ -568,7 +631,7 @@ private fun PinnedNotificationItemsDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text(stringResource(R.string.notification_pinned_items_close))
+                        Text(stringResource(R.string.common_close))
                     }
                 }
             }
@@ -624,7 +687,7 @@ private fun AppSuggestionTabsPickerRow(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = stringResource(R.string.app_suggestions_enabled_tabs_summary, enabledTabsSummary),
+                text = stringResource(R.string.settings_app_language_desc, enabledTabsSummary),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1292,6 +1355,7 @@ fun SearchResultsSettingsSection(
             onRecentQueriesDisplayCountChange = { count ->
                 callbacks.onApplySettingsCommand(SettingsCommand.RecentQueriesDisplayCount(count))
             },
+            appResultsEnabled = SearchSection.APPS !in state.disabledSections,
             appResultRowCount = state.appResultRowCount,
             onAppResultRowCountChange = { rowCount ->
                 callbacks.onApplySettingsCommand(SettingsCommand.AppResultRowCount(rowCount))
@@ -1305,6 +1369,10 @@ fun SearchResultsSettingsSection(
                         enabled = enabled,
                     ),
                 )
+            },
+            secondaryRankingSignal = state.secondaryRankingSignal,
+            onSecondaryRankingSignalChange = { signal ->
+                callbacks.onApplySettingsCommand(SettingsCommand.SecondaryRanking(signal))
             },
             hasExcludedItems = hasExcludedItems,
             hasNicknames = hasNicknames,

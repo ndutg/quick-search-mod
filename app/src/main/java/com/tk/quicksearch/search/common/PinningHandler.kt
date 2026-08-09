@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.app.startup.StartupTrace
 
 class PinningHandler(
     private val scope: CoroutineScope,
@@ -31,11 +32,18 @@ class PinningHandler(
                     )
                 }.getOrDefault(emptyList())
             uiStateUpdater { state -> state.copy(pinnedContacts = pinnedContacts) }
+            StartupTrace.mark("QS.Home.PinnedContactsMinimalAvailable")
         }
     }
 
     fun loadPinnedContactsAndFiles() {
         scope.launch(Dispatchers.IO) {
+            loadPinnedContactsAndFilesNow()
+        }
+    }
+
+    suspend fun loadPinnedContactsAndFilesNow() {
+        withContext(Dispatchers.IO) {
             val permissions = checkPermissions()
 
             val pinnedContacts = loadPinnedContacts(permissions.contacts)
@@ -49,11 +57,18 @@ class PinningHandler(
                     pinnedNotes = pinnedNotes,
                 )
             }
+            StartupTrace.mark("QS.Home.PinnedItemsAvailable")
         }
     }
 
     fun loadExcludedContactsAndFiles() {
         scope.launch(Dispatchers.IO) {
+            loadExcludedContactsAndFilesNow()
+        }
+    }
+
+    suspend fun loadExcludedContactsAndFilesNow() {
+        withContext(Dispatchers.IO) {
             val permissions = checkPermissions()
 
             val excludedContacts = loadExcludedContacts(permissions.contacts)
@@ -66,6 +81,7 @@ class PinningHandler(
                     excludedFileExtensions = userPreferences.getExcludedFileExtensions(),
                 )
             }
+            StartupTrace.mark("QS.Home.ExcludedItemsAvailable")
         }
     }
 

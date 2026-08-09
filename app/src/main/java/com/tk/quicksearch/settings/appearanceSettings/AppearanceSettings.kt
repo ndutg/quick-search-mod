@@ -260,7 +260,7 @@ fun AppearanceSettingsSection(
                 iconPackDescription =
                         if (hasIconPacks) {
                             androidx.compose.ui.res.stringResource(
-                                    R.string.settings_icon_pack_selected_label,
+                                    R.string.settings_app_language_desc,
                                     selectedIconPackLabel,
                             )
                         } else {

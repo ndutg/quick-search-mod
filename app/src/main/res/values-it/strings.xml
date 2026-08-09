@@ -69,8 +69,9 @@
     <string name="action_add_to_home">Aggiungi a Home</string>
     <string name="action_add_trigger">Aggiungi trigger</string>
     <string name="action_app_info">Info app</string>
-    <string name="action_archive_today_event">Archivia</string>
     <string name="action_change_icon">Cambia icona</string>
+    <string name="icon_picker_search">Cerca icone</string>
+    <string name="icon_picker_title">Cambia icona per "%1$s"</string>
     <string name="action_change_wallpaper">Cambia sfondo</string>
     <string name="action_clear_all_history">Cancella cronologia</string>
     <string name="action_edit_icon">Modifica icona</string>
@@ -102,31 +103,26 @@
     <string name="settings_gesture_swipe_down">Scorri verso il basso</string>
     <string name="settings_gesture_swipe_up_home">Scorri verso l\'alto (Home)</string>
     <string name="settings_gesture_swipe_down_home">Scorri verso il basso (Home)</string>
-    <string name="settings_gesture_quick_note">Nota rapida</string>
     <string name="settings_gesture_settings">Impostazioni</string>
-    <string name="settings_gesture_open_keyboard">Apri tastiera</string>
     <string name="settings_gesture_close_keyboard_notifications">Chiudi tastiera / Apri notifiche</string>
     <string name="settings_gesture_close_keyboard">Chiudi tastiera</string>
     <string name="settings_gesture_notification_panel">Pannello delle notifiche</string>
     <string name="settings_gesture_none">Nessuno</string>
     <string name="settings_gesture_custom">Personalizzato (App, file ecc.)</string>
     <string name="settings_keyboard_gestures_title">Gesti della tastiera (Home)</string>
+    <string name="settings_keyboard_gestures_desc">Disponibile solo quando non sono presenti contenuti scorrevoli nella schermata Home</string>
     <string name="action_pin_app">Fissa</string>
     <string name="action_pin_to_notifications">Fissa nelle notifiche</string>
     <string name="action_unpin_from_notifications">Rimuovi dalle notifiche</string>
-    <string name="pinned_notifications_channel_name">Scorciatoie fissate</string>
     <string name="pinned_notifications_channel_description">Accesso rapido ai risultati di ricerca fissati</string>
     <string name="pinned_notifications_title">Scorciatoie fissate</string>
     <string name="notification_pinned_items_title">Elementi di notifica fissati</string>
     <string name="notification_pinned_items_description">Gestisci gli elementi fissati mostrati nel pannello delle notifiche</string>
-    <string name="notification_pinned_items_dialog_title">Elementi di notifica fissati</string>
-    <string name="notification_pinned_items_close">Chiudi</string>
     <string name="notification_pinned_items_remove">Rimuovi %1$s dalle notifiche</string>
     <string name="notification_pinned_item_type_app">App</string>
     <string name="notification_pinned_item_type_app_shortcut">Scorciatoia dell\'app</string>
     <string name="notification_pinned_item_type_contact">Contatto</string>
     <string name="notification_pinned_item_type_file">File</string>
-    <string name="notification_pinned_item_type_setting">Impostazioni</string>
     <string name="notification_pinned_item_type_note">Nota</string>
     <string name="action_remove">Rimuovi</string>
     <string name="action_remove_from_history">Rimuovi dalla cronologia</string>
@@ -184,7 +180,6 @@
     <string name="dialog_edit_amazon_domain_title">Modifica dominio Amazon</string>
     <string name="dialog_gemini_model_picker_title">Seleziona modello</string>
     <string name="dialog_nickname_message">Inserisci un soprannome per "%1$s". Potrai cercarlo usando questo soprannome.</string>
-    <string name="dialog_no">No</string>
     <string name="dialog_ok">Continua</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Ricorda questa scelta</string>
@@ -196,7 +191,6 @@
     <string name="dialog_trigger_error_taken">Questo trigger è già in uso.</string>
     <string name="dialog_trigger_hint">Parola chiave trigger</string>
     <string name="dialog_trigger_message">Inserisci una sola parola come trigger per "%1$s".</string>
-    <string name="dialog_yes">Sì</string>
     <string name="exclude_marker"> escluso da </string>
     <string name="permission_action_manage_android">Gestisci nelle impostazioni Android</string>
     <string name="permission_settings_dialog_message">Questa azione richiede l\u2019autorizzazione %1$s. Verrai reindirizzato alle impostazioni di sistema per concederla.</string>
@@ -226,11 +220,9 @@
     <string name="app_suggestions_tabs_dialog_message">Scegli quali schede di suggerimenti app visualizzare nella schermata iniziale.</string>
     <string name="app_suggestions_tabs_dialog_title">Schede di suggerimenti app</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">Scegli schede</string>
-    <string name="app_suggestions_enabled_tabs_summary">Corrente: %1$s</string>
     <string name="app_suggestions_tab_required_toast">Mantieni abilitata almeno una scheda dei suggerimenti app</string>
     <string name="app_suggestions_toggle_desc">Mostra o nascondi le app consigliate nella schermata iniziale</string>
     <string name="app_suggestions_toggle_title">Suggerimenti app</string>
-    <string name="show_all_apps_button_toggle_title">Tutte le app</string>
     <string name="show_all_apps_button_toggle_desc">Mostra il pulsante \"Tutte le app\" sotto i suggerimenti di app</string>
     <string name="app_suggestions_usage_access_link">autorizzazione di accesso ai dati di utilizzo</string>
     <string name="app_suggestions_usage_access_tip">Concedi l\u2019autorizzazione di accesso ai dati di utilizzo per vedere suggerimenti più pertinenti</string>
@@ -241,6 +233,10 @@
     <string name="recent_queries_toggle_desc">N. di elementi mostrati prima dell\u2019espansione</string>
     <string name="fuzzy_search_toggle_title">Ricerca approssimativa</string>
     <string name="fuzzy_search_toggle_desc">Trova risultati anche quando la ricerca contiene un errore di battitura.</string>
+    <string name="secondary_ranking_title">Classificazione dei risultati di ricerca</string>
+    <string name="secondary_ranking_dialog_desc">Scegli come ordinare i risultati con la stessa qualità di corrispondenza.</string>
+    <string name="secondary_ranking_recency">Più recenti</string>
+    <string name="secondary_ranking_most_opened">Più aperti</string>
     <string name="recent_queries_toggle_title">Cronologia ricerche</string>
     <string name="search_history_tab_recently_opened">Risultati</string>
     <string name="search_history_tab_searches">Ricerche</string>
@@ -266,7 +262,6 @@
     <string name="section_app_shortcuts">Scorciatoie app</string>
     <string name="section_apps">App</string>
     <string name="section_calendar">Eventi calendario</string>
-    <string name="section_contacts">Contatti</string>
     <string name="section_files">File</string>
     <string name="section_notes">Note</string>
     <string name="section_settings">Impostazioni dispositivo</string>
@@ -442,7 +437,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">File</string>
     <string name="excluded_item_type_file_extension">Estensione file</string>
     <string name="excluded_item_type_folder">Cartella</string>
     <string name="file_extension_label">File .%s</string>
@@ -482,6 +476,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Crea e aggiungi un nuovo evento</string>
     <string name="app_settings_create_calendar_event_title">Nuovo evento calendario</string>
+    <string name="agenda_title">Agenda di oggi</string>
     <string name="calendar_create_event_name_hint">Nome dell\u2019evento</string>
     <string name="calendar_create_event_select_date">Seleziona data</string>
     <string name="calendar_create_event_sync_notice">Questo evento non verrà sincronizzato con il calendario del dispositivo</string>
@@ -493,6 +488,8 @@
         <item quantity="other">%d giorni</item>
     </plurals>
     <string name="calendar_relative_in_format">tra %1$s</string>
+    <string name="calendar_relative_in_minutes">tra %1$d minuti</string>
+    <string name="calendar_relative_now">Ora</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d mese</item>
         <item quantity="other">%d mesi</item>
@@ -666,7 +663,6 @@
     <string name="settings_icon_pack_option_system">Icone di sistema</string>
     <string name="settings_icon_pack_picker_title">Scegli pacchetto icone</string>
     <string name="settings_icon_pack_search_query">Icon pack gratuiti</string>
-    <string name="settings_icon_pack_selected_label">In uso: %1$s</string>
     <string name="settings_icon_pack_title">Pacchetto icone</string>
     <string name="settings_icon_title">Icona impostazioni</string>
     <string name="settings_launch_options_desc">Diversi modi per avviare questa app</string>
@@ -757,7 +753,6 @@
     <string name="settings_custom_provider_advanced_payload_title">Payload di richiesta avanzato</string>
     <string name="settings_direct_search_desc">Sono supportate le chiavi API di Gemini, OpenAI, Claude e Groq</string>
     <string name="settings_direct_search_desc_intro">Aggiungi una chiave API per abilitare la ricerca e gli strumenti basati sull\u2019AI.</string>
-    <string name="settings_free_api_key_tip_title">Ottieni una chiave API gratuita</string>
     <string name="settings_free_api_key_tip_description">Passaggi per ottenere gratuitamente una chiave API Gemini.</string>
     <string name="settings_open_free_api_key_guide">Apri la guida per la chiave API gratuita</string>
     <string name="settings_direct_search_grounding_label">Ricerca Web</string>
@@ -806,7 +801,6 @@
     <string name="settings_backup_export_button">Esporta</string>
     <string name="settings_backup_export_failed">Impossibile esportare le impostazioni.</string>
     <string name="settings_backup_export_option_pinned_items_title">Elementi fissati</string>
-    <string name="settings_backup_export_option_settings_title">Impostazioni</string>
     <string name="settings_backup_export_selection_title">Esporta dati</string>
     <string name="settings_backup_export_success">Impostazioni esportate con successo.</string>
     <string name="settings_backup_import_button">Importa</string>
@@ -904,9 +898,7 @@
     <string name="shortcut_voice_search_long_label">Apri ricerca vocale</string>
     <string name="shortcut_voice_search_short_label">Ricerca vocale</string>
     <string name="voice_input_not_available">La digitazione vocale non è disponibile al momento.</string>
-    <string name="widget_background_color_custom_dialog_hint">Colore Hex (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">Colore personalizzato</string>
-    <string name="widget_background_color_custom_invalid">Inserisci un colore esadecimale valido a 6 cifre.</string>
     <string name="widget_border_color">Colore bordo</string>
     <string name="widget_custom_button_add_desc">Aggiungi pulsante personalizzato</string>
     <string name="widget_custom_buttons_dialog_hint">Puoi cercare app, scorciatoie app, contatti, file, cartelle, note e impostazioni del dispositivo.</string>
@@ -1021,7 +1013,6 @@
     <string name="excluded_item_type_app_results">App (Risultati)</string>
     <string name="excluded_item_type_app_shortcut">Scorciatoia app</string>
     <string name="excluded_item_type_app_suggestions">App (Suggerimenti)</string>
-    <string name="excluded_item_type_contact">Contatto</string>
     <string name="excluded_item_type_setting">Impostazione</string>
     <string name="permission_required_title">Autorizzazione richiesta</string>
     <string name="settings_action_clear_all">Cancella tutto</string>

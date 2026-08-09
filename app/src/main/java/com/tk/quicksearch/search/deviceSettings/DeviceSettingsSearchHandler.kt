@@ -91,6 +91,8 @@ class DeviceSettingsSearchHandler(
                     queryContext = SearchQueryContext.fromRawQuery(query),
                     excludedIds = excludedIds,
                     recentSettingScores = getRecentSettingScores(),
+                    settingOpenCounts = getSettingOpenCounts(),
+                    secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
                 )
             } else {
                 emptyList()
@@ -102,6 +104,9 @@ class DeviceSettingsSearchHandler(
     fun searchSettings(
         queryContext: SearchQueryContext,
         recentSettingScores: Map<String, Int> = getRecentSettingScores(),
+        settingOpenCounts: Map<String, Int> = getSettingOpenCounts(),
+        secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal =
+            userPreferences.getSecondaryRankingSignal(),
         enableFuzzyMatching: Boolean = false,
     ): List<DeviceSetting> {
         // Unified secondary search invokes this on its IO worker. Resolve the catalog on first
@@ -113,6 +118,8 @@ class DeviceSettingsSearchHandler(
             queryContext = queryContext,
             excludedIds = userPreferences.getExcludedSettingIds(),
             recentSettingScores = recentSettingScores,
+            settingOpenCounts = settingOpenCounts,
+            secondaryRankingSignal = secondaryRankingSignal,
             enableFuzzyMatching = enableFuzzyMatching,
         )
     }
@@ -121,6 +128,8 @@ class DeviceSettingsSearchHandler(
         queryContext: SearchQueryContext,
         excludedIds: Set<String>,
         recentSettingScores: Map<String, Int>,
+        settingOpenCounts: Map<String, Int>,
+        secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal,
         enableFuzzyMatching: Boolean = false,
     ): List<DeviceSetting> {
         val nicknameMatches =
@@ -141,6 +150,8 @@ class DeviceSettingsSearchHandler(
             matchingNicknameIds = nicknameMatches,
             nicknameCache = nicknameCache,
             recentSettingScores = recentSettingScores,
+            settingOpenCounts = settingOpenCounts,
+            secondaryRankingSignal = secondaryRankingSignal,
             resultLimit = RESULT_LIMIT,
             enableFuzzyMatching = enableFuzzyMatching,
             isLowRamDevice = isLowRamDevice,
@@ -159,6 +170,11 @@ class DeviceSettingsSearchHandler(
         RecentResultRankingUtils
             .buildRecencyIndex(userPreferences.getRecentResultOpens())
             .settingScores
+
+    private fun getSettingOpenCounts(): Map<String, Int> =
+        RecentResultRankingUtils
+            .buildRecencyIndex(emptyList(), userPreferences.getRecentResultOpenCounts())
+            .settingOpenCounts
 }
 
 private fun <T, K> List<T>.sortedByPinnedOrder(

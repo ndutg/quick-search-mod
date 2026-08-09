@@ -16,7 +16,6 @@ class CalendarRepositoryPolicyTest {
         assertTrue(
             shouldShowTodayEvent(
                 event = event,
-                now = startOfTomorrow - 1,
                 startOfDay = startOfDay,
                 startOfTomorrow = startOfTomorrow,
             ),
@@ -24,14 +23,13 @@ class CalendarRepositoryPolicyTest {
     }
 
     @Test
-    fun timedEventRemainsVisibleThroughHideDelay() {
+    fun timedEventRemainsAvailableForTheDay() {
         val eventStart = startOfDay + 60L * 60L * 1000L
         val event = event(startMillis = eventStart, allDay = false)
 
         assertTrue(
             shouldShowTodayEvent(
                 event = event,
-                now = eventStart + CalendarRepository.TIMED_EVENT_HIDE_DELAY_MILLIS,
                 startOfDay = startOfDay,
                 startOfTomorrow = startOfTomorrow,
             ),
@@ -39,14 +37,13 @@ class CalendarRepositoryPolicyTest {
     }
 
     @Test
-    fun timedEventIsHiddenAfterHideDelay() {
+    fun timedEventFromTodayRemainsAvailableAfterItEnds() {
         val eventStart = startOfDay + 60L * 60L * 1000L
         val event = event(startMillis = eventStart, allDay = false)
 
-        assertFalse(
+        assertTrue(
             shouldShowTodayEvent(
                 event = event,
-                now = eventStart + CalendarRepository.TIMED_EVENT_HIDE_DELAY_MILLIS + 1,
                 startOfDay = startOfDay,
                 startOfTomorrow = startOfTomorrow,
             ),
@@ -60,7 +57,6 @@ class CalendarRepositoryPolicyTest {
         assertFalse(
             shouldShowTodayEvent(
                 event = event,
-                now = startOfDay,
                 startOfDay = startOfDay,
                 startOfTomorrow = startOfTomorrow,
             ),

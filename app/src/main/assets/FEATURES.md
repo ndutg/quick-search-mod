@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 3.9 (Updated July 31 2026)
+**Version**: 4.0 (Updated August 9 2026)
 
 ### Search
 
@@ -86,6 +86,7 @@ Add aliases at the start of your query to quickly let the app know what you want
   - Second word matches
   - Names containing query anywhere
 - **Recently Opened Results** - Recently opened results are prioritized in the result order.
+- **Search Result Ranking** - Choose whether matching results are secondarily ranked by recently opened or most opened items.
 - **Apps** - Use the ranking above plus optional fuzzy matching, acronym-style shortcuts (for example matching initials to an app name), and nicknames you assign.
 - **Device settings** and **Quick Search app settings** - Typo-tolerant fuzzy matching is used in the unified secondary search so small spelling mistakes still surface the right setting rows.
 - **Contacts** and **files** - Also respect **nicknames** you add; using a **section alias** for contacts or files runs a deeper, section-focused search (see Hidden / Non-Obvious Features).
@@ -98,6 +99,7 @@ Long-press on most results to open a context menu with quick actions.
 
 - **Triggers** - Long-press a result to add a trigger phrase. When you type that trigger and press space, Quick Search opens that result automatically.
 - **Pin / Unpin** - Pin or unpin apps, app shortcuts, contacts, files, and device settings so that they stay on your home screen when you open the app. Hold and drag any pinned item to reorder it. You can also long-press a pinned item and tap **Move Up** or **Move Down** to reorder it. On the home screen, tap a pinned section header to expand or collapse its items.
+- **Pin to Notification Panel** - Long-press a search result to pin it to the notification panel for quick access.
 - **Add / Edit Nickname** - Add or edit nicknames for apps, app shortcuts, contacts, files, and device settings so you can search them using custom names.
 - **Exclude / Include** - Exclude individual contacts, app shortcuts, files, and device settings from results. You can include them again later by clearing them from Excluded Items list in Search Results settings.
 - **Add to Home Screen** - Add apps, app shortcuts, contacts, files, and device settings directly to your home screen as shortcuts for one-tap access.
@@ -122,6 +124,7 @@ Long-press on most results to open a context menu with quick actions.
 - **One-Handed Mode** - Most relevant items appear at the bottom of your screen for easy access.
 - **Bottom Searchbar** - You can choose to move the search bar to the bottom.
 - **Apps Per Row** - Choose no. of apps displayed per row in results and suggestions.
+- **App Result Rows** - Choose whether search results show one or two rows of apps.
 - **App Icon Size** - Adjust the size of app icons displayed in results and suggestions.
 - **App Labels** - You can choose to hide app labels.
 - **Circular App icons** - Option to force circular app icons
@@ -140,7 +143,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Search History** - Enable or disable search history and choose how many items appear before the list expands. The expanded list shows up to 15 items; **Clear all** history is available at the bottom of the list. Your search queries, recently opened items (files, contacts, etc.) appear in your search history. AI answers are also saved to history alongside your queries. Swipe left or right on the expanded list to switch between **recent queries** and **recently opened results**.
 - **Excluded Items** - When you exclude any item on the search results page, you can find them here and clear them if you want to.
 - **Refresh Data** - The app automatically refreshes your data from time to time, but if you want to manually refresh the data, you can do it here.
-- **Calendar Options** - Create custom calendar entries and choose to ignore past events in results. Today's events also appear on the home screen.
+- **Calendar Options** - Create custom calendar entries and choose to ignore past events in results. Timed events appear on the home screen 30 minutes before they start, and tap **More Events** to view all of today's events.
 
 ---
 

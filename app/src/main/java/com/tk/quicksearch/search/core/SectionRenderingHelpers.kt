@@ -602,4 +602,5 @@ data class SectionRenderContext(
         RecentResultRankingUtils.RecencyIndex(),
     val isSectionAliasMode: Boolean = false,
     val isHomeScreenCalendarMode: Boolean = false,
+    val hideHomeSectionTitleRows: Boolean = false,
 )

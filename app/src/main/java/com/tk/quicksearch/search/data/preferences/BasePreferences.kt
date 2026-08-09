@@ -513,6 +513,7 @@ abstract class BasePreferences(
         const val KEY_SWIPE_UP_ACTION = "swipe_up_action"
         const val KEY_SWIPE_DOWN_ACTION = "swipe_down_action"
         const val KEY_SWIPE_RIGHT_CUSTOM_ACTION = "swipe_right_custom_action"
+        const val KEY_LAUNCHER_SWIPE_RIGHT_ENABLED = "launcher_swipe_right_enabled"
         const val KEY_SWIPE_LEFT_CUSTOM_ACTION = "swipe_left_custom_action"
         const val KEY_SWIPE_UP_CUSTOM_ACTION = "swipe_up_custom_action"
         const val KEY_SWIPE_DOWN_CUSTOM_ACTION = "swipe_down_custom_action"
@@ -628,6 +629,7 @@ abstract class BasePreferences(
         const val KEY_RECENT_QUERIES = "recent_queries"
         const val KEY_RECENT_QUERIES_ENABLED = "recent_queries_enabled"
         const val KEY_FUZZY_SEARCH_ENABLED = "fuzzy_search_enabled"
+        const val KEY_SECONDARY_RANKING_SIGNAL = "secondary_ranking_signal"
         const val KEY_RECENT_RESULT_OPENS = "recent_result_opens"
 
         // Calculator preferences keys

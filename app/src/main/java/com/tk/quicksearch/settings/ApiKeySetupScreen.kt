@@ -90,7 +90,7 @@ fun ApiKeySetupScreen(
                 annotatedText =
                     buildAnnotatedString {
                         pushStyle(SpanStyle(fontWeight = FontWeight.SemiBold))
-                        append(stringResource(R.string.settings_free_api_key_tip_title))
+                        append(stringResource(R.string.settings_direct_search_how_to))
                         pop()
                         append("\n")
                         append(stringResource(R.string.settings_free_api_key_tip_description))

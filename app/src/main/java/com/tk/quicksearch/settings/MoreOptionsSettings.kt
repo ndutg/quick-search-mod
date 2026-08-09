@@ -34,7 +34,7 @@ fun MoreOptionsSettings(
         listOf(
             ToggleItem(
                 key = AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON,
-                titleRes = R.string.show_all_apps_button_toggle_title,
+                titleRes = R.string.settings_app_shortcuts_filter_all_apps,
                 subtitleRes = R.string.show_all_apps_button_toggle_desc,
                 leadingIcon = Icons.Rounded.Apps,
             ),

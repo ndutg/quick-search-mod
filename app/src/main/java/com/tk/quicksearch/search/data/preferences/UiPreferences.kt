@@ -638,6 +638,15 @@ class UiPreferences(
         setBooleanPref(BasePreferences.KEY_FUZZY_SEARCH_ENABLED, enabled)
     }
 
+    fun getSecondaryRankingSignal(): com.tk.quicksearch.search.models.SecondaryRankingSignal =
+        com.tk.quicksearch.search.models.SecondaryRankingSignal.fromStorage(
+            prefs.getString(BasePreferences.KEY_SECONDARY_RANKING_SIGNAL, null),
+        )
+
+    fun setSecondaryRankingSignal(signal: com.tk.quicksearch.search.models.SecondaryRankingSignal) {
+        prefs.edit().putString(BasePreferences.KEY_SECONDARY_RANKING_SIGNAL, signal.name).apply()
+    }
+
     fun hasSeenOverlayAssistantTip(): Boolean =
             sessionPrefs.getBoolean(UiPreferences.KEY_HAS_SEEN_OVERLAY_ASSISTANT_TIP, false)
 

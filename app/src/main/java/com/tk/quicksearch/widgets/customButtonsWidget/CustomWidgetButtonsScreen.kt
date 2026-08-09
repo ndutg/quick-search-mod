@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Check
@@ -97,21 +96,12 @@ import com.tk.quicksearch.searchEngines.loadCustomIconAsBase64
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
 import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
+import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetColorPickerDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-
-private val FolderIconColours =
-    listOf(
-        Color(0xFF4F8F74),
-        Color(0xFF3E83B5),
-        Color(0xFF8C6CBA),
-        Color(0xFFC67A48),
-        Color(0xFFB95F70),
-        Color(0xFF9A8641),
-    )
 
 @Composable
 fun CustomWidgetButtonsSection(
@@ -501,44 +491,15 @@ private fun FolderIconColourDialog(
     onDismiss: () -> Unit,
     onColourSelected: (Color) -> Unit,
 ) {
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.widget_custom_button_choose_colour)) },
-        text = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                FolderIconColours.forEach { colour ->
-                    val isSelected = selectedColour == colour.toArgb()
-                    Surface(
-                        onClick = { onColourSelected(colour) },
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        color = colour,
-                        border =
-                            if (isSelected) {
-                                BorderStroke(3.dp, MaterialTheme.colorScheme.onSurface)
-                            } else {
-                                null
-                            },
-                    ) {
-                        if (isSelected) {
-                            Icon(
-                                imageVector = Icons.Rounded.Check,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.padding(8.dp),
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {},
+    WidgetColorPickerDialog(
+        initialColor = Color(selectedColour ?: DEFAULT_FOLDER_ICON_COLOR_ARGB),
+        title = stringResource(R.string.widget_custom_button_choose_colour),
+        onDismiss = onDismiss,
+        onConfirm = onColourSelected,
     )
 }
+
+private const val DEFAULT_FOLDER_ICON_COLOR_ARGB = 0xFF4F8F74.toInt()
 
 @Composable
 private fun CustomButtonSlotContent(

@@ -45,6 +45,7 @@ class AppsRepository(
     private val userManager: UserManager? =
         context.getSystemService(Context.USER_SERVICE) as? UserManager
     private val appCache = AppCache(context)
+    private val currentUserHandleId = UserHandleUtils.getIdentifier(Process.myUserHandle())
     @Volatile private var appCatalogInvalidated = false
     private var launcherAppsCallback: LauncherApps.Callback? = null
     private var packageChangeReceiver: BroadcastReceiver? = null
@@ -64,6 +65,8 @@ class AppsRepository(
 
     fun cacheLastUpdatedMillis(): Long = appCache.getLastUpdateTime()
 
+    internal fun currentUserHandleId(): Int = currentUserHandleId
+
     fun clearCache() {
         appCache.clearCache()
         appCatalogInvalidated = true
@@ -72,11 +75,12 @@ class AppsRepository(
     fun isAppCatalogInvalidated(): Boolean =
         appCatalogInvalidated || appCache.isCatalogInvalidated()
 
-    fun startPackageChangeMonitoring(onCatalogInvalidated: () -> Unit) {
+    internal fun startPackageChangeMonitoring(onCatalogInvalidated: (AppCatalogChange) -> Unit) {
         if (packageChangeReceiver != null || launcherAppsCallback != null) return
-        fun invalidate() {
+        fun invalidate(change: AppCatalogChange) {
             appCatalogInvalidated = true
-            onCatalogInvalidated()
+            appCache.recordCatalogChange(change, currentUserHandleId)
+            onCatalogInvalidated(change)
         }
 
         // LauncherApps callbacks are not available on every device/profile combination. A
@@ -85,7 +89,7 @@ class AppsRepository(
         val receiver =
             object : BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent?) {
-                    invalidate()
+                    invalidate(AppCatalogChange.fromIntent(intent, currentUserHandleId))
                 }
             }
         val packageFilter =
@@ -110,11 +114,24 @@ class AppsRepository(
         val service = launcherApps ?: return
         val callback =
             object : LauncherApps.Callback() {
-                override fun onPackageAdded(packageName: String, user: UserHandle) = invalidate()
-                override fun onPackageRemoved(packageName: String, user: UserHandle) = invalidate()
-                override fun onPackageChanged(packageName: String, user: UserHandle) = invalidate()
-                override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = invalidate()
-                override fun onPackagesUnavailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = invalidate()
+                override fun onPackageAdded(packageName: String, user: UserHandle) =
+                    invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))
+
+                override fun onPackageRemoved(packageName: String, user: UserHandle) =
+                    invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = true))
+
+                override fun onPackageChanged(packageName: String, user: UserHandle) =
+                    invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))
+
+                override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) =
+                    packageNames.forEach { packageName ->
+                        invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))
+                    }
+
+                override fun onPackagesUnavailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) =
+                    packageNames.forEach { packageName ->
+                        invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))
+                    }
             }
         launcherAppsCallback = callback
         runCatching { service.registerCallback(callback, Handler(Looper.getMainLooper())) }
@@ -168,8 +185,12 @@ class AppsRepository(
             }
         val apps = launchableApps + nonLaunchableApps
 
-        val sortedApps = apps.sortedWith(AppInfoComparator)
-        if (appCache.loadCachedApps() != sortedApps) {
+        // LauncherApps can briefly return a removed package immediately after an uninstall.
+        // Keep removal tombstones authoritative for this reconciliation so the stale entry is
+        // never written back into the cache or returned to the UI.
+        val removedAppKeys = appCache.removedAppKeys()
+        val sortedApps = filterRemovedApps(apps.sortedWith(AppInfoComparator), removedAppKeys)
+        if (appCache.loadCachedApps() != sortedApps || removedAppKeys.isNotEmpty()) {
             appCache.saveApps(sortedApps)
         }
         appCatalogInvalidated = false
@@ -190,6 +211,36 @@ class AppsRepository(
     fun getRecentlyOpenedApps(apps: List<AppInfo>): List<AppInfo> {
         if (apps.isEmpty()) return emptyList()
         return apps.sortedByDescending { it.lastUsedTime }
+    }
+
+    fun refreshUsageMetadata(
+        apps: List<AppInfo>,
+        launchCounts: Map<String, Int>,
+    ): List<AppInfo> {
+        if (apps.isEmpty()) return apps
+
+        val usageMap = queryUsageStatsMap()
+        if (usageMap.isEmpty()) return apps
+
+        val refreshedApps =
+            apps.map { app ->
+                val stats = usageMap[app.packageName]
+                app.copy(
+                    lastUsedTime = stats?.lastTimeUsed ?: 0L,
+                    totalTimeInForeground = stats?.totalTimeInForeground ?: 0L,
+                    launchCount =
+                        resolveLaunchCount(
+                            usageStats = stats,
+                            localLaunchCount = launchCounts[app.launchCountKey()] ?: app.launchCount,
+                        ),
+                )
+            }
+        val removedAppKeys = appCache.removedAppKeys()
+        val availableApps = filterRemovedApps(refreshedApps, removedAppKeys)
+        if (availableApps != apps || removedAppKeys.isNotEmpty()) {
+            appCache.saveApps(availableApps)
+        }
+        return availableApps
     }
 
     /**

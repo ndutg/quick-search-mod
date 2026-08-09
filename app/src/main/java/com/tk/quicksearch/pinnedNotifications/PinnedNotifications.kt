@@ -191,7 +191,7 @@ object PinnedNotifications {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 ChannelId,
-                context.getString(R.string.pinned_notifications_channel_name),
+                context.getString(R.string.pinned_notifications_title),
                 NotificationManager.IMPORTANCE_LOW,
             ).apply { description = context.getString(R.string.pinned_notifications_channel_description) }
             context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)

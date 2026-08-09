@@ -13,17 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Edit
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
@@ -120,10 +114,8 @@ fun WidgetThemeSection(
                 )
             }
         }
-    var customBgHexValue by rememberSaveable { mutableStateOf("") }
     var showCustomBgColorDialog by rememberSaveable { mutableStateOf(false) }
 
-    var customBorderHexValue by rememberSaveable { mutableStateOf("") }
     var showCustomBorderColorDialog by rememberSaveable { mutableStateOf(false) }
 
     // Resolve the custom border color, shown as a dot in the segmented button
@@ -141,7 +133,6 @@ fun WidgetThemeSection(
         ThemeChoiceSegmentedButtonRow(
             selectedTheme = if (state.backgroundColor == null) state.theme else null,
             onSelectionChange = {
-                customBgHexValue = ""
                 onStateChange(
                     state.copy(
                         theme = it,
@@ -175,7 +166,6 @@ fun WidgetThemeSection(
                         },
                     label = stringResource(option.labelRes),
                     onClick = {
-                        customBgHexValue = ""
                         onStateChange(
                             state.copy(
                                 backgroundColor = option.backgroundColorArgb,
@@ -207,7 +197,6 @@ fun WidgetThemeSection(
                     },
                 selected = isCustomSelected,
                 onClick = {
-                    customBgHexValue = state.backgroundColor?.toHexRgb().orEmpty()
                     showCustomBgColorDialog = true
                 },
                 label = stringResource(R.string.common_custom),
@@ -233,31 +222,25 @@ fun WidgetThemeSection(
             customColor = customBorderColor,
             useDeviceTheme = state.useDeviceThemeBackground,
             onDeviceThemeClick = {
-                customBorderHexValue = ""
                 onStateChange(state.copy(borderColorOption = BorderColorOption.DEVICE_THEME))
             },
             onWhiteClick = {
-                customBorderHexValue = ""
                 onStateChange(state.copy(borderColorOption = BorderColorOption.WHITE))
             },
             onBlackClick = {
-                customBorderHexValue = ""
                 onStateChange(state.copy(borderColorOption = BorderColorOption.BLACK))
             },
             onCustomClick = {
-                customBorderHexValue =
-                    if (state.borderColorOption == BorderColorOption.CUSTOM) state.borderColor.toHexRgb() else ""
                 showCustomBorderColorDialog = true
             },
         )
     }
 
     if (showCustomBgColorDialog) {
-        CustomBackgroundColorDialog(
-            initialHex = customBgHexValue,
+        WidgetColorPickerDialog(
+            initialColor = state.backgroundColor?.let(::Color) ?: MaterialTheme.colorScheme.primary,
             onDismiss = { showCustomBgColorDialog = false },
-            onConfirm = { hex, color ->
-                customBgHexValue = hex
+            onConfirm = { color ->
                 onStateChange(
                     state.copy(
                         backgroundColor = color.toArgb(),
@@ -270,11 +253,16 @@ fun WidgetThemeSection(
     }
 
     if (showCustomBorderColorDialog) {
-        CustomBackgroundColorDialog(
-            initialHex = customBorderHexValue,
+        WidgetColorPickerDialog(
+            initialColor =
+                when (state.borderColorOption) {
+                    BorderColorOption.WHITE -> Color.White
+                    BorderColorOption.BLACK -> Color.Black
+                    BorderColorOption.CUSTOM -> Color(state.borderColor)
+                    BorderColorOption.DEVICE_THEME -> MaterialTheme.colorScheme.primary
+                },
             onDismiss = { showCustomBorderColorDialog = false },
-            onConfirm = { hex, color ->
-                customBorderHexValue = hex
+            onConfirm = { color ->
                 onStateChange(
                     state.copy(
                         borderColor = color.toArgb(),
@@ -349,67 +337,6 @@ private fun ThemeColorOptionChip(
         )
     }
 }
-
-@Composable
-private fun CustomBackgroundColorDialog(
-    initialHex: String,
-    onDismiss: () -> Unit,
-    onConfirm: (String, Color) -> Unit,
-) {
-    var hexValue by rememberSaveable { mutableStateOf(initialHex) }
-    var hasTyped by rememberSaveable { mutableStateOf(initialHex.isNotEmpty()) }
-    val isValidHex = hexValue.matches(Regex("^[0-9A-Fa-f]{6}$"))
-
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.widget_background_color_custom_dialog_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(
-                    value = hexValue,
-                    onValueChange = { updated ->
-                        hexValue = updated.take(6).uppercase(java.util.Locale.US).filter { it.isDigit() || it in 'A'..'F' }
-                        hasTyped = true
-                    },
-                    singleLine = true,
-                    label = { Text(stringResource(R.string.widget_background_color_custom_dialog_hint)) },
-                    leadingIcon = { Text("#") },
-                    keyboardOptions =
-                        KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Characters,
-                        ),
-                    colors = dialogTextFieldColors(),
-                )
-                if (hasTyped && !isValidHex) {
-                    Text(
-                        text = stringResource(R.string.widget_background_color_custom_invalid),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (isValidHex) {
-                        onConfirm(hexValue, Color(android.graphics.Color.parseColor("#$hexValue")))
-                    }
-                },
-                enabled = isValidHex,
-            ) {
-                Text(stringResource(R.string.dialog_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
-            }
-        },
-    )
-}
-
-private fun Int.toHexRgb(): String = String.format(java.util.Locale.US, "%06X", this and 0xFFFFFF)
 
 private data class WidgetBackgroundThemeOption(
     val backgroundColorArgb: Int,

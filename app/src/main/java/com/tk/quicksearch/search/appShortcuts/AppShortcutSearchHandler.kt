@@ -124,6 +124,8 @@ class AppShortcutSearchHandler(
                     excludedIds = excludedIds,
                     disabledIds = disabledIds,
                     recentShortcutScores = getRecentShortcutScores(),
+                    shortcutOpenCounts = getShortcutOpenCounts(),
+                    secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
                 )
             } else {
                 emptyList()
@@ -139,6 +141,9 @@ class AppShortcutSearchHandler(
     fun searchShortcuts(
         queryContext: SearchQueryContext,
         recentShortcutScores: Map<String, Int> = getRecentShortcutScores(),
+        shortcutOpenCounts: Map<String, Int> = getShortcutOpenCounts(),
+        secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal =
+            userPreferences.getSecondaryRankingSignal(),
         enableFuzzyMatching: Boolean = false,
     ): List<StaticShortcut> =
         searchShortcutsInternal(
@@ -146,6 +151,8 @@ class AppShortcutSearchHandler(
             excludedIds = userPreferences.getExcludedAppShortcutIds(),
             disabledIds = userPreferences.getDisabledAppShortcutIds(),
             recentShortcutScores = recentShortcutScores,
+            shortcutOpenCounts = shortcutOpenCounts,
+            secondaryRankingSignal = secondaryRankingSignal,
             enableFuzzyMatching = enableFuzzyMatching,
         )
 
@@ -154,6 +161,8 @@ class AppShortcutSearchHandler(
         excludedIds: Set<String>,
         disabledIds: Set<String>,
         recentShortcutScores: Map<String, Int>,
+        shortcutOpenCounts: Map<String, Int>,
+        secondaryRankingSignal: com.tk.quicksearch.search.models.SecondaryRankingSignal,
         enableFuzzyMatching: Boolean = false,
     ): List<StaticShortcut> =
         mergeIconOverrides(
@@ -164,6 +173,8 @@ class AppShortcutSearchHandler(
                 disabledIds = disabledIds,
                 shortcutNicknames = userPreferences.getAllAppShortcutNicknames(),
                 recentShortcutScores = recentShortcutScores,
+                shortcutOpenCounts = shortcutOpenCounts,
+                secondaryRankingSignal = secondaryRankingSignal,
                 resultLimit = RESULT_LIMIT,
                 enableFuzzyMatching = enableFuzzyMatching,
                 isLowRamDevice = isLowRamDevice,
@@ -193,6 +204,11 @@ class AppShortcutSearchHandler(
         RecentResultRankingUtils
             .buildRecencyIndex(userPreferences.getRecentResultOpens())
             .appShortcutScores
+
+    private fun getShortcutOpenCounts(): Map<String, Int> =
+        RecentResultRankingUtils
+            .buildRecencyIndex(emptyList(), userPreferences.getRecentResultOpenCounts())
+            .appShortcutOpenCounts
 
     private fun normalizeShortcuts(shortcuts: List<StaticShortcut>): List<StaticShortcut> =
         shortcuts

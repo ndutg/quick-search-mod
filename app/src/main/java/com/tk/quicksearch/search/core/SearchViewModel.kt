@@ -1,6 +1,5 @@
 package com.tk.quicksearch.search.core
 import android.app.Application
-import android.content.Intent
 import android.os.Trace
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
@@ -55,9 +54,6 @@ import com.tk.quicksearch.search.webSuggestions.WebSuggestionHandler
 import com.tk.quicksearch.searchEngines.SearchEngineManager
 import com.tk.quicksearch.searchEngines.SecondarySearchOrchestrator
 import com.tk.quicksearch.searchEngines.AliasHandler
-import com.tk.quicksearch.searchEngines.AliasValidator.hasExactAliasConflict
-import com.tk.quicksearch.searchEngines.AliasValidator.hasTriggerAliasConflict
-import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInput
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.isLowRamDevice
@@ -68,11 +64,8 @@ import com.tk.quicksearch.tools.calculator.CalculatorHandler
 import com.tk.quicksearch.tools.dateCalculator.DateCalculatorHandler
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
 import com.tk.quicksearch.tools.unitConverter.UnitConverterHandler
-import com.tk.quicksearch.tools.tasker.TaskerIntegration
-import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
-import java.util.UUID
 import kotlin.concurrent.withLock
 import kotlin.jvm.JvmName
 import kotlinx.coroutines.Dispatchers
@@ -344,11 +337,12 @@ class SearchViewModel(
             directDialEnabledProvider = { legacyPreferenceState.directDialEnabled },
             setDirectDialEnabled = { legacyPreferenceState.directDialEnabled = it },
         )
-    private val startupLifecycleDelegate by lazy { SearchStartupLifecycleDelegate(scope = viewModelScope, applicationProvider = { getApplication() }, repository = repository, userPreferences = userPreferences, handlersProvider = { handlers }, resultsStateProvider = { _resultsState.value }, permissionStateProvider = { _permissionState.value }, configStateProvider = { _configState.value }, stateAccess = startupLifecycleStateAccess, getStartupConfig = { startupConfig }, setStartupConfig = { startupConfig = it }, setPrefCache = { prefCache = it }, readStartupPreferencesSnapshot = this::startupPreferencesSnapshot, readLoadedPreferencesSnapshot = this::loadedPreferencesSnapshot, updatePermissionState = this::updatePermissionState, updateFeatureState = this::updateFeatureState, updateResultsState = this::updateResultsState, updateUiState = this::updateUiState, updateConfigState = this::updateConfigState, applyVisibilityStates = this::applyVisibilityStates, hasContactPermission = this::hasContactPermission, hasFilePermission = this::hasFilePermission, hasCalendarPermission = this::hasCalendarPermission, clearQuery = this::clearQuery, refreshApps = { refreshApps() }, refreshAppSuggestions = { refreshAppSuggestions() }, warmSearchableAppsSnapshot = this::warmSearchableAppsSnapshot, refreshSettingsState = { refreshSettingsState() }, refreshAppShortcutsState = { refreshAppShortcutsState() }, refreshDerivedState = this::refreshDerivedState, saveStartupSurfaceSnapshotAsync = this::saveStartupSurfaceSnapshotAsync, applyPreferenceCacheToLegacyVars = this::applyPreferenceCacheToLegacyVars, applyLauncherIconSelection = this::applyLauncherIconSelection, refreshRecentItems = this::refreshRecentItems, getGridItemCount = this::getGridItemCount, selectSuggestedApps = this::extractSuggestedApps, shouldShowSearchBarWelcome = this::shouldShowSearchBarWelcome, loadApps = { staticDataDelegate.loadAppsForStartup() }, loadSettingsShortcuts = this::loadSettingsShortcuts, loadAppSettings = { handlers.appSettingsSearchHandler.loadSettings() }, loadAppShortcuts = { staticDataDelegate.loadAppShortcutsForStartup() }, startupDispatcher = startupDispatcher, loadPinnedAndExcludedCalendarEvents = this::loadPinnedAndExcludedCalendarEvents, setDirectDialEnabled = this::setDirectDialEnabled, isQueryActive = { _resultsState.value.query.isNotBlank() }) }
+    private val startupLifecycleDelegate by lazy { SearchStartupLifecycleDelegate(scope = viewModelScope, applicationProvider = { getApplication() }, repository = repository, userPreferences = userPreferences, handlersProvider = { handlers }, resultsStateProvider = { _resultsState.value }, permissionStateProvider = { _permissionState.value }, configStateProvider = { _configState.value }, stateAccess = startupLifecycleStateAccess, getStartupConfig = { startupConfig }, setStartupConfig = { startupConfig = it }, setPrefCache = { prefCache = it }, readStartupPreferencesSnapshot = this::startupPreferencesSnapshot, readLoadedPreferencesSnapshot = this::loadedPreferencesSnapshot, updatePermissionState = this::updatePermissionState, updateFeatureState = this::updateFeatureState, updateResultsState = this::updateResultsState, updateUiState = this::updateUiState, updateConfigState = this::updateConfigState, applyVisibilityStates = this::applyVisibilityStates, hasContactPermission = this::hasContactPermission, hasFilePermission = this::hasFilePermission, hasCalendarPermission = this::hasCalendarPermission, clearQuery = this::clearQuery, refreshApps = { refreshApps() }, refreshAppSuggestions = { refreshAppSuggestions() }, warmSearchableAppsSnapshot = this::warmSearchableAppsSnapshot, refreshSettingsState = { refreshSettingsState() }, refreshAppShortcutsState = { refreshAppShortcutsState() }, refreshDerivedState = this::refreshDerivedState, saveStartupSurfaceSnapshotAsync = this::saveStartupSurfaceSnapshotAsync, applyPreferenceCacheToLegacyVars = this::applyPreferenceCacheToLegacyVars, applyLauncherIconSelection = this::applyLauncherIconSelection, refreshRecentItems = this::refreshRecentItems, awaitRecentItemsReady = historyDelegate::awaitRecentItemsReady, getGridItemCount = this::getGridItemCount, selectSuggestedApps = this::extractSuggestedApps, shouldShowSearchBarWelcome = this::shouldShowSearchBarWelcome, loadApps = { staticDataDelegate.loadAppsForStartup() }, loadSettingsShortcuts = this::loadSettingsShortcuts, loadAppSettings = { handlers.appSettingsSearchHandler.loadSettings() }, loadAppShortcuts = { staticDataDelegate.loadAppShortcutsForStartup() }, startupDispatcher = startupDispatcher, loadPinnedAndExcludedCalendarEvents = this::loadPinnedAndExcludedCalendarEvents, setDirectDialEnabled = this::setDirectDialEnabled, isQueryActive = { _resultsState.value.query.isNotBlank() }) }
     private val derivedStateDelegate: SearchDerivedStateDelegate by lazy { SearchDerivedStateDelegate(scope = viewModelScope, appContext = appContext, applicationProvider = { getApplication() }, startupSurfaceStore = startupSurfaceStore, userPreferences = userPreferences, handlersProvider = { handlers }, appSuggestionSelector = appSuggestionSelector, instantStartupSurfaceEnabled = instantStartupSurfaceEnabled, cachedAllSearchableAppsProvider = { cachedAllSearchableApps }, setCachedAllSearchableApps = { cachedAllSearchableApps = it }, resultsStateProvider = { _resultsState.value }, permissionStateProvider = { _permissionState.value }, configStateProvider = { _configState.value }, updateResultsState = this::updateResultsState, updatePermissionState = this::updatePermissionState, updateConfigState = this::updateConfigState) }
     private val specialFlowsDelegate by lazy { SearchViewModelSpecialFlowsDelegate(scope = viewModelScope, userPreferences = userPreferences, aiSearchStateFlow = handlers.aiSearchHandler.aiSearchState, clearAiSearchState = { handlers.aiSearchHandler.clearAiSearchState() }, cancelInactiveTools = toolCoordinator::cancelInactive, shouldRecordPendingAiSearchQueryInHistory = { shouldRecordPendingAiSearchQueryInHistory }, setShouldRecordPendingAiSearchQueryInHistory = { shouldRecordPendingAiSearchQueryInHistory = it }, updateResultsState = this::updateResultsState, updateConfigState = this::updateConfigState, updateFeatureState = this::updateFeatureState, resultsStateProvider = { _resultsState.value }) }
+    private val taskerIntentDelegate by lazy { SearchTaskerIntentDelegate(scope = viewModelScope, appContext = appContext, userPreferences = userPreferences, aliasHandler = { handlers.aliasHandler }, aiSearchHandler = { handlers.aiSearchHandler }, featureStateProvider = { _featureState.value }, currentQueryProvider = { _resultsState.value.query }, lockedTaskerIntentIdProvider = { lockedTaskerIntentId }, updateFeatureState = this::updateFeatureState, clearQuery = this::clearQuery, showToast = this::showToast) }
     override val preferencesApiDelegate by lazy { SearchViewModelPreferencesApiDelegate(preferencesDelegate = preferencesDelegate, webSuggestionHandler = handlers.webSuggestionHandler, iconPackHandler = handlers.iconPackHandler, configStateProvider = { _configState.value }) }
-    override val navigationApiDelegate by lazy { SearchViewModelNavigationApiDelegate(applicationProvider = { getApplication() }, navigationHandler = { handlers.navigationHandler }, userPreferences = userPreferences, permissionStateProvider = { _permissionState.value }, resultsStateProvider = { _resultsState.value }, currentQueryProvider = { uiState.value.query }, onQueryChange = this::onQueryChange, updateResultsState = this::updateResultsState, onNavigationTriggered = this::onNavigationTriggered, showToastText = this::showToast) }
+    override val navigationApiDelegate by lazy { SearchViewModelNavigationApiDelegate(applicationProvider = { getApplication() }, navigationHandler = { handlers.navigationHandler }, userPreferences = userPreferences, resultsStateProvider = { _resultsState.value }, currentQueryProvider = { uiState.value.query }, onQueryChange = this::onQueryChange, updateResultsState = this::updateResultsState, onNavigationTriggered = this::onNavigationTriggered, showToastText = this::showToast) }
     override val managementApiDelegate by lazy { SearchViewModelManagementApiDelegate(scope = viewModelScope, userPreferences = userPreferences, resultsStateProvider = { _resultsState.value }, permissionStateProvider = { _permissionState.value }, historyDelegate = historyDelegate, staticDataDelegate = staticDataDelegate, appManager = { handlers.appManager }, contactManager = { handlers.contactManager }, fileManager = { handlers.fileManager }, settingsManager = { handlers.settingsManager }, calendarManager = { handlers.calendarManager }, appShortcutManager = { handlers.appShortcutManager }, notesRepository = { notesRepository }, appSearchManager = { handlers.appSearchManager }, updateUiState = this::updateUiState, updateFeatureState = this::updateFeatureState, legacyPreferenceState = legacyPreferenceState, lockedAliasSearchSectionProvider = { lockedAliasSearchSection }, refreshRecentItems = this::refreshRecentItems) }
     override val contactActionsApiDelegate by lazy { SearchViewModelContactActionsApiDelegate(userPreferences = userPreferences, resultsStateProvider = { _resultsState.value }, contactActionsDelegate = contactActionsDelegate, contactActionHandler = { handlers.contactActionHandler }, historyDelegate = historyDelegate, legacyPreferenceState = legacyPreferenceState, lockedAliasSearchSectionProvider = { lockedAliasSearchSection }, updateUiState = this::updateUiState) }
     override val searchEngineApiDelegate by lazy { SearchViewModelSearchEngineApiDelegate(scope = viewModelScope, userPreferences = userPreferences, aliasHandler = { handlers.aliasHandler }, sectionManager = { handlers.sectionManager }, messagingHandler = { handlers.messagingHandler }, searchEngineManager = { handlers.searchEngineManager }, aiSearchHandler = { handlers.aiSearchHandler }, releaseNotesHandler = { handlers.releaseNotesHandler }, permissionStateProvider = { _permissionState.value }, configStateProvider = { _configState.value }, updatePermissionState = this::updatePermissionState, updateConfigState = this::updateConfigState) }
@@ -514,6 +508,7 @@ class SearchViewModel(
     fun startStartupPhasesAfterFirstFrame() {
         startupCoordinator.startStartupPhases()
     }
+    fun notifyStartupKeyboardVisible() = startupCoordinator.notifyStartupKeyboardVisible()
     private fun clearInformationCardsExcept(activeCard: ActiveInformationCard) {
         specialFlowsDelegate.clearInformationCardsExcept(activeCard)
     }
@@ -612,93 +607,11 @@ class SearchViewModel(
         toolCoordinator.executeWeatherLookup()
     }
     fun executeCustomToolSearch() {
-        val toolId = lockedCustomToolId ?: return
-        val tool = _featureState.value.customTools.find { it.id == toolId } ?: return
-        val query = _resultsState.value.query.trim()
-        if (query.isBlank()) return
-        handlers.aiSearchHandler.requestCustomToolSearch(
-            query = query,
-            systemInstruction = tool.prompt,
-            providerId = tool.providerId,
-            modelId = tool.modelId,
-            groundingEnabled = tool.groundingEnabled,
-            thinkingEnabled = tool.thinkingEnabled,
-            advancedPayloadJson = tool.advancedPayload?.takeIf { tool.advancedPayloadEnabled },
-        )
+        taskerIntentDelegate.executeCustomToolSearch(lockedCustomToolId)
     }
-    fun executeTaskerIntent() {
-        val toolId = lockedTaskerIntentId ?: return
-        val tool = _featureState.value.taskerIntentTools.find { it.id == toolId } ?: return
-        val query = _resultsState.value.query.trim()
-        if (query.isBlank()) return
-        val isInstalled = runCatching {
-            appContext.packageManager.getPackageInfo(TaskerIntegration.PACKAGE_NAME, 0)
-        }.isSuccess
-        if (!isInstalled) {
-            showToast(appContext.getString(R.string.tasker_not_installed))
-            return
-        }
-        runCatching {
-            appContext.sendBroadcast(
-                Intent(tool.broadcastAction).apply {
-                    setPackage(TaskerIntegration.PACKAGE_NAME)
-                    putExtra(TaskerIntegration.QUERY_EXTRA, query)
-                    putExtra(TaskerIntegration.SOURCE_EXTRA, TaskerIntegration.SOURCE_VALUE)
-                },
-            )
-        }.onSuccess {
-            clearQuery()
-        }.onFailure {
-            showToast(appContext.getString(R.string.tasker_broadcast_failed))
-        }
-    }
-
-    fun addTaskerIntentTool(alias: String, name: String, broadcastAction: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val normalizedAlias = normalizeShortcutCodeInput(alias)
-            val existingAliases = handlers.aliasHandler.reloadFromPreferences().shortcutCodes
-            if (
-                hasExactAliasConflict(normalizedAlias, existingAliases) ||
-                    hasTriggerAliasConflict(
-                        normalizedAlias,
-                        userPreferences.getAllTriggerWordsById().values,
-                    )
-            ) {
-                showToast(R.string.tasker_alias_conflict)
-                return@launch
-            }
-            val id = TaskerIntegration.TOOL_ID_PREFIX + UUID.randomUUID()
-            val tool = TaskerIntentTool(id, name.trim(), broadcastAction.trim())
-            val updated = userPreferences.getTaskerIntentTools() + tool
-            userPreferences.setTaskerIntentTools(updated)
-            userPreferences.setAliasCode(id, normalizedAlias)
-            val aliases = handlers.aliasHandler.reloadFromPreferences()
-            updateFeatureState {
-                it.copy(
-                    taskerIntentTools = updated,
-                    shortcutCodes = aliases.shortcutCodes,
-                    shortcutEnabled = aliases.shortcutEnabled,
-                )
-            }
-        }
-    }
-
-    fun deleteTaskerIntentTool(id: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updated = userPreferences.getTaskerIntentTools().filterNot { it.id == id }
-            userPreferences.setTaskerIntentTools(updated)
-            userPreferences.clearAliasCode(id)
-            val aliases = handlers.aliasHandler.reloadFromPreferences()
-            updateFeatureState {
-                it.copy(
-                    taskerIntentTools = updated,
-                    shortcutCodes = aliases.shortcutCodes,
-                    shortcutEnabled = aliases.shortcutEnabled,
-                )
-            }
-            if (lockedTaskerIntentId == id) clearQuery()
-        }
-    }
+    fun executeTaskerIntent() = taskerIntentDelegate.executeTaskerIntent(lockedTaskerIntentId)
+    fun addTaskerIntentTool(alias: String, name: String, broadcastAction: String) = taskerIntentDelegate.addTaskerIntentTool(alias, name, broadcastAction)
+    fun deleteTaskerIntentTool(id: String) = taskerIntentDelegate.deleteTaskerIntentTool(id)
     fun activateSearchSectionFilter(section: SearchSection) =
             queryCoordinator.activateSearchSectionFilter(section)
     fun clearDetectedShortcut() = queryCoordinator.clearDetectedShortcut()
@@ -791,9 +704,9 @@ class SearchViewModel(
     private fun updateVisibilityStates() = updateUiState { currentState -> applyVisibilityStates(currentState) }
     companion object {
         @Volatile private var inMemoryRetainedQuery: String = ""
-        // Keep a small debounce to avoid thrashing app ranking during rapid typing.
-        // App results are written through as soon as this debounce completes.
-        private const val APP_SEARCH_DEBOUNCE_MS = 150L
+        // Keep a short debounce to collapse very fast key bursts without making the primary app
+        // result path wait as long as the independently debounced secondary providers.
+        private const val APP_SEARCH_DEBOUNCE_MS = 50L
     }
     private fun getGridItemCount(): Int =
             derivedStateDelegate.getGridItemCount()

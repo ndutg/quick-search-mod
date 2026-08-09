@@ -3,6 +3,7 @@ package com.tk.quicksearch.overlay
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.os.Bundle
+import android.os.Trace
 import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.ComponentActivity
@@ -38,6 +39,9 @@ import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.searchWidget.VoiceSearchHandler
 
 class OverlayActivity : ComponentActivity() {
+    private companion object {
+        const val TRACE_ON_CREATE_ENTRY = "QS.Startup.OverlayActivity.OnCreate"
+    }
     private val searchViewModel: SearchViewModel by viewModels()
     private lateinit var userPreferences: UserAppPreferences
     private lateinit var startupCoordinator: StartupCoordinator
@@ -53,6 +57,8 @@ class OverlayActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Trace.beginSection(TRACE_ON_CREATE_ENTRY)
+        try {
         AppLanguageManager.applySavedAppLanguage(this)
         // Set transparent background for seamless overlay appearance
         window.setBackgroundDrawableResource(android.R.color.transparent)
@@ -88,6 +94,9 @@ class OverlayActivity : ComponentActivity() {
 
         renderOverlayContent()
         startupCoordinator.scheduleAfterFirstDraw(window)
+        } finally {
+            Trace.endSection()
+        }
     }
 
     override fun onNewIntent(intent: android.content.Intent) {
