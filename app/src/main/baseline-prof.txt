@@ -126,9 +126,33 @@ Lcom/tk/quicksearch/search/files/FileManagementHandler;
 Lcom/tk/quicksearch/search/deviceSettings/DeviceSettingsManagementHandler;
 Lcom/tk/quicksearch/tools/calculator/CalculatorHandler;
 
+# First-query search and Compose rendering path. These methods are reached when a user types
+# before background dex compilation has had a chance to optimize the newly installed app.
+Lcom/tk/quicksearch/search/core/SearchQueryCoordinator;
+HSPLcom/tk/quicksearch/search/core/SearchQueryCoordinator;->**(**)**
+Lcom/tk/quicksearch/search/core/SearchDerivedStateDelegate;
+HSPLcom/tk/quicksearch/search/core/SearchDerivedStateDelegate;->**(**)**
+Lcom/tk/quicksearch/search/core/UnifiedSearchHandler;
+HSPLcom/tk/quicksearch/search/core/UnifiedSearchHandler;->**(**)**
+Lcom/tk/quicksearch/search/core/SearchViewModelSearchOperationsKt;
+HSPLcom/tk/quicksearch/search/core/SearchViewModelSearchOperationsKt;->**(**)**
+Lcom/tk/quicksearch/search/apps/AppSearchManager;
+HSPLcom/tk/quicksearch/search/apps/AppSearchManager;->**(**)**
+Lcom/tk/quicksearch/search/common/SearchRankingUtils;
+HSPLcom/tk/quicksearch/search/common/SearchRankingUtils;->**(**)**
+Lcom/tk/quicksearch/search/fuzzy/FuzzySearchEngine;
+HSPLcom/tk/quicksearch/search/fuzzy/FuzzySearchEngine;->**(**)**
+
+Lcom/tk/quicksearch/search/searchScreen/SearchScreenContentKt;
+HSPLcom/tk/quicksearch/search/searchScreen/SearchScreenContentKt;->**(**)**
+Lcom/tk/quicksearch/search/searchScreen/SectionRenderingComposablesKt;
+HSPLcom/tk/quicksearch/search/searchScreen/SectionRenderingComposablesKt;->**(**)**
+Lcom/tk/quicksearch/search/searchScreen/searchScreenLayout/ContentLayoutKt;
+HSPLcom/tk/quicksearch/search/searchScreen/searchScreenLayout/ContentLayoutKt;->**(**)**
+Lcom/tk/quicksearch/search/apps/AppGridViewKt;
+HSPLcom/tk/quicksearch/search/apps/AppGridViewKt;->**(**)**
+
 # Utilities on startup path
-Lcom/tk/quicksearch/search/utils/SearchRankingUtils;
-HSPLcom/tk/quicksearch/search/utils/SearchRankingUtils;->calculateMatchPriorityWithNickname(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
 
 Lcom/tk/quicksearch/shared/util/WallpaperUtils;
 HSPLcom/tk/quicksearch/shared/util/WallpaperUtils;->preloadWallpaper(Landroid/content/Context;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

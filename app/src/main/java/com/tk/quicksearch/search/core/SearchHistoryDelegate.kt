@@ -14,6 +14,7 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import com.tk.quicksearch.app.startup.StartupTrace
 
@@ -32,8 +33,11 @@ internal class SearchHistoryDelegate(
     private val updateResultsState: ((SearchResultsState) -> SearchResultsState) -> Unit,
     private val updateUiState: ((SearchUiState) -> SearchUiState) -> Unit,
 ) {
+    private var recentItemsRefreshJob: Job? = null
+
     fun refreshRecentItems() {
-        scope.launch(Dispatchers.IO) {
+        recentItemsRefreshJob?.cancel()
+        recentItemsRefreshJob = scope.launch(Dispatchers.IO) {
             if (!featureStateProvider().recentQueriesEnabled) {
                 updateResultsState { it.copy(recentItems = emptyList()) }
                 StartupTrace.mark("QS.Home.SearchHistoryAvailable")
@@ -138,6 +142,10 @@ internal class SearchHistoryDelegate(
             updateResultsState { it.copy(recentItems = items) }
             StartupTrace.mark("QS.Home.SearchHistoryAvailable")
         }
+    }
+
+    suspend fun awaitRecentItemsReady() {
+        recentItemsRefreshJob?.join()
     }
 
     fun refreshAliasRecentItems(section: SearchSection?) {

@@ -153,6 +153,11 @@ internal object SearchViewModelInitialStateFactory {
                 appIconSizeStep =
                     startupSnapshot?.appIconSizeStep
                         ?: startupPreferencesReader.getAppIconSizeStep(),
+                appIconShape = startupPreferencesReader.getAppIconShape(),
+                themedIconsEnabled = startupPreferencesReader.isThemedIconsEnabled(),
+                deviceThemeEnabled = startupPreferencesReader.isDeviceThemeEnabled(),
+                maskUnsupportedIconPackIcons =
+                    startupPreferencesReader.isIconPackUnsupportedIconMaskEnabled(),
                 appSuggestionsEnabled =
                     startupSnapshot?.appSuggestionsEnabled
                         ?: startupPreferencesReader.areAppSuggestionsEnabled(),
