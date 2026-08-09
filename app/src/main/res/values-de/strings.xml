@@ -70,8 +70,9 @@
     <string name="action_add_to_home">Zum Startbildschirm hinzufügen</string>
     <string name="action_add_trigger">Auslöser</string>
     <string name="action_app_info">App-Info</string>
-    <string name="action_archive_today_event">Archivieren</string>
     <string name="action_change_icon">Symbol ändern</string>
+    <string name="icon_picker_search">Symbole suchen</string>
+    <string name="icon_picker_title">Symbol für „%1$s“ ändern</string>
     <string name="action_change_wallpaper">Hintergrundbild ändern</string>
     <string name="action_clear_all_history">Verlauf löschen</string>
     <string name="action_edit_icon">Symbol bearbeiten</string>
@@ -103,9 +104,7 @@
     <string name="settings_gesture_swipe_down">Nach unten wischen</string>
     <string name="settings_gesture_swipe_up_home">Nach oben wischen (Startseite)</string>
     <string name="settings_gesture_swipe_down_home">Nach unten wischen (Startseite)</string>
-    <string name="settings_gesture_quick_note">Schnellnotiz</string>
     <string name="settings_gesture_settings">Einstellungen</string>
-    <string name="settings_gesture_open_keyboard">Tastatur öffnen</string>
     <string name="settings_gesture_close_keyboard_notifications">Tastatur schließen / Benachrichtigungen öffnen</string>
     <string name="settings_gesture_close_keyboard">Tastatur schließen</string>
     <string name="settings_gesture_notification_panel">Benachrichtigungsleiste</string>
@@ -116,19 +115,15 @@
     <string name="action_pin_app">Anheften</string>
     <string name="action_pin_to_notifications">An Benachrichtigungen anheften</string>
     <string name="action_unpin_from_notifications">Von Benachrichtigungen lösen</string>
-    <string name="pinned_notifications_channel_name">Angeheftete Verknüpfungen</string>
     <string name="pinned_notifications_channel_description">Schnellzugriff auf angeheftete Suchergebnisse</string>
     <string name="pinned_notifications_title">Angeheftete Verknüpfungen</string>
     <string name="notification_pinned_items_title">Angeheftete Benachrichtigungselemente</string>
     <string name="notification_pinned_items_description">Angeheftete Elemente in der Benachrichtigungsleiste verwalten</string>
-    <string name="notification_pinned_items_dialog_title">Angeheftete Benachrichtigungselemente</string>
-    <string name="notification_pinned_items_close">Schließen</string>
     <string name="notification_pinned_items_remove">%1$s aus den Benachrichtigungen entfernen</string>
     <string name="notification_pinned_item_type_app">App</string>
     <string name="notification_pinned_item_type_app_shortcut">App-Verknüpfung</string>
     <string name="notification_pinned_item_type_contact">Kontakt</string>
     <string name="notification_pinned_item_type_file">Datei</string>
-    <string name="notification_pinned_item_type_setting">Einstellungen</string>
     <string name="notification_pinned_item_type_note">Notiz</string>
     <string name="action_remove">Entfernen</string>
     <string name="action_remove_from_history">Aus dem Verlauf entfernen</string>
@@ -186,7 +181,6 @@
     <string name="dialog_edit_amazon_domain_title">Amazon-Domain bearbeiten</string>
     <string name="dialog_gemini_model_picker_title">Modell auswählen</string>
     <string name="dialog_nickname_message">Gib einen Spitznamen für „%1$s“ ein. Du kannst danach mit diesem Spitznamen suchen.</string>
-    <string name="dialog_no">Nein</string>
     <string name="dialog_ok">Weiter</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Diese Wahl merken</string>
@@ -198,7 +192,6 @@
     <string name="dialog_trigger_error_taken">Dieser Auslöser ist bereits vergeben.</string>
     <string name="dialog_trigger_hint">Auslöserwort</string>
     <string name="dialog_trigger_message">Gib ein einzelnes Auslöserwort für „%1$s“ ein.</string>
-    <string name="dialog_yes">Ja</string>
     <string name="exclude_marker"> ausgeschlossen von </string>
     <string name="permission_action_manage_android">In Android-Einstellungen verwalten</string>
     <string name="permission_settings_dialog_message">Diese Aktion erfordert die Berechtigung %1$s. Du wirst zu den Systemeinstellungen weitergeleitet, um sie zu erteilen.</string>
@@ -228,11 +221,9 @@
     <string name="app_suggestions_tabs_dialog_message">Wählen Sie aus, welche App-Vorschlagstabs auf dem Startbildschirm angezeigt werden.</string>
     <string name="app_suggestions_tabs_dialog_title">App-Vorschlagstabs</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">Tabs auswählen</string>
-    <string name="app_suggestions_enabled_tabs_summary">Aktuell: %1$s</string>
     <string name="app_suggestions_tab_required_toast">Mindestens ein App-Vorschlagstab muss aktiviert bleiben</string>
     <string name="app_suggestions_toggle_desc">Vorgeschlagene Apps auf dem Startbildschirm ein- oder ausblenden</string>
     <string name="app_suggestions_toggle_title">App-Vorschläge</string>
-    <string name="show_all_apps_button_toggle_title">Alle Apps</string>
     <string name="show_all_apps_button_toggle_desc">Schaltfläche \"Alle Apps\" unter App-Vorschlägen anzeigen</string>
     <string name="app_suggestions_usage_access_link">Nutzungszugriffsberechtigung</string>
     <string name="app_suggestions_usage_access_tip">Nutzungszugriff erteilen, um passendere Vorschläge zu sehen</string>
@@ -272,7 +263,6 @@
     <string name="section_app_shortcuts">App-Verknüpfungen</string>
     <string name="section_apps">Apps</string>
     <string name="section_calendar">Kalendertermine</string>
-    <string name="section_contacts">Kontakte</string>
     <string name="section_files">Dateien</string>
     <string name="section_notes">Notizen</string>
     <string name="section_settings">Geräteeinstellungen</string>
@@ -448,7 +438,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">Datei</string>
     <string name="excluded_item_type_file_extension">Dateiendung</string>
     <string name="excluded_item_type_folder">Ordner</string>
     <string name="file_extension_label">.%s-Dateien</string>
@@ -675,7 +664,6 @@
     <string name="settings_icon_pack_option_system">System-Symbole</string>
     <string name="settings_icon_pack_picker_title">Icon-Pack auswählen</string>
     <string name="settings_icon_pack_search_query">Kostenlose Icon-Packs</string>
-    <string name="settings_icon_pack_selected_label">Aktuell: %1$s</string>
     <string name="settings_icon_pack_title">Icon-Pack</string>
     <string name="settings_icon_title">Einstellungssymbol</string>
     <string name="settings_launch_options_desc">Verschiedene Möglichkeiten, diese App zu starten</string>
@@ -766,7 +754,6 @@
     <string name="settings_custom_provider_advanced_payload_title">Erweiterte Anfrage-Payload</string>
     <string name="settings_direct_search_desc">Gemini-, OpenAI-, Claude- und Groq-API-Schlüssel werden unterstützt</string>
     <string name="settings_direct_search_desc_intro">Füge einen API-Schlüssel hinzu, um KI-gestützte Suche und Tools zu aktivieren.</string>
-    <string name="settings_free_api_key_tip_title">Kostenlosen API-Schlüssel erhalten</string>
     <string name="settings_free_api_key_tip_description">Schritte, um kostenlos einen Gemini-API-Schlüssel zu erhalten.</string>
     <string name="settings_open_free_api_key_guide">Anleitung für kostenlosen API-Schlüssel öffnen</string>
     <string name="settings_direct_search_grounding_label">Web-Suche</string>
@@ -815,7 +802,6 @@
     <string name="settings_backup_export_button">Exportieren</string>
     <string name="settings_backup_export_failed">Einstellungen konnten nicht exportiert werden.</string>
     <string name="settings_backup_export_option_pinned_items_title">Angeheftete Elemente</string>
-    <string name="settings_backup_export_option_settings_title">Einstellungen</string>
     <string name="settings_backup_export_selection_title">Daten exportieren</string>
     <string name="settings_backup_export_success">Einstellungen erfolgreich exportiert.</string>
     <string name="settings_backup_import_button">Importieren</string>
@@ -913,9 +899,7 @@
     <string name="shortcut_voice_search_long_label">Sprachsuche öffnen</string>
     <string name="shortcut_voice_search_short_label">Sprachsuche</string>
     <string name="voice_input_not_available">Spracheingabe ist gerade nicht verfügbar.</string>
-    <string name="widget_background_color_custom_dialog_hint">Hex-Farbe (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">Benutzerdefinierte Farbe</string>
-    <string name="widget_background_color_custom_invalid">Gib eine gültige 6-stellige Hex-Farbe ein.</string>
     <string name="widget_border_color">Rahmenfarbe</string>
     <string name="widget_custom_button_add_desc">Benutzerdefinierte Schaltfläche hinzufügen</string>
     <string name="widget_custom_buttons_dialog_hint">Du kannst nach Apps, App-Verknüpfungen, Kontakten, Dateien, Ordnern, Notizen &amp; Geräteeinstellungen suchen.</string>
@@ -1030,7 +1014,6 @@
     <string name="excluded_item_type_app_results">App (Ergebnisse)</string>
     <string name="excluded_item_type_app_shortcut">App-Verknüpfung</string>
     <string name="excluded_item_type_app_suggestions">App (Vorschläge)</string>
-    <string name="excluded_item_type_contact">Kontakt</string>
     <string name="excluded_item_type_setting">Einstellung</string>
     <string name="permission_required_title">Berechtigung erforderlich</string>
     <string name="settings_action_clear_all">Alle löschen</string>

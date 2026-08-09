@@ -309,7 +309,7 @@ fun GesturesSettingsSection(
             Column {
                 SettingsNavigationRow(
                     item = SettingsCardItem(
-                        title = stringResource(R.string.settings_gesture_open_keyboard),
+                        title = stringResource(R.string.action_open_keyboard),
                         description = stringResource(keyboardGestureDirection(SwipeGestureAction.OPEN_KEYBOARD)?.titleResId ?: R.string.settings_gesture_none),
                         icon = Icons.Rounded.Keyboard,
                         actionOnPress = { selectedKeyboardAction = SwipeGestureAction.OPEN_KEYBOARD },
@@ -633,9 +633,9 @@ private val SwipeDirection.homeDefaultAction: HomeSwipeGestureAction
 
 private fun SwipeGestureAction.labelResId(): Int =
     when (this) {
-        SwipeGestureAction.QUICK_NOTE -> R.string.settings_gesture_quick_note
+        SwipeGestureAction.QUICK_NOTE -> R.string.notes_quick_note_title
         SwipeGestureAction.SETTINGS -> R.string.settings_gesture_settings
-        SwipeGestureAction.OPEN_KEYBOARD -> R.string.settings_gesture_open_keyboard
+        SwipeGestureAction.OPEN_KEYBOARD -> R.string.action_open_keyboard
         SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS -> R.string.settings_gesture_close_keyboard_notifications
         SwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
         SwipeGestureAction.NONE -> R.string.settings_gesture_none

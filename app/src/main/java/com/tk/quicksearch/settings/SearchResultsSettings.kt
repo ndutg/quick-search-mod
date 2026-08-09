@@ -411,7 +411,7 @@ private fun secondaryRankingDescription(signal: SecondaryRankingSignal): String 
         )
     val currentLine =
         currentSelection?.let {
-            stringResource(R.string.app_suggestions_enabled_tabs_summary, it)
+            stringResource(R.string.settings_app_language_desc, it)
         }
     return buildSecondaryRankingDescription(description, currentLine)
 }
@@ -530,7 +530,7 @@ private fun PinnedNotificationItemsDialog(
                         ),
             ) {
                 Text(
-                    text = stringResource(R.string.notification_pinned_items_dialog_title),
+                    text = stringResource(R.string.notification_pinned_items_title),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = DesignTokens.SpacingMedium),
@@ -554,7 +554,7 @@ private fun PinnedNotificationItemsDialog(
                                     CustomWidgetButtonType.APP_SHORTCUT -> stringResource(R.string.notification_pinned_item_type_app_shortcut)
                                     CustomWidgetButtonType.CONTACT -> stringResource(R.string.notification_pinned_item_type_contact)
                                     CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
-                                    CustomWidgetButtonType.SETTING -> stringResource(R.string.notification_pinned_item_type_setting)
+                                    CustomWidgetButtonType.SETTING -> stringResource(R.string.settings_gesture_settings)
                                     CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
                                 }
                             Surface(
@@ -628,7 +628,7 @@ private fun PinnedNotificationItemsDialog(
                     horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text(stringResource(R.string.notification_pinned_items_close))
+                        Text(stringResource(R.string.common_close))
                     }
                 }
             }
@@ -684,7 +684,7 @@ private fun AppSuggestionTabsPickerRow(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
-                text = stringResource(R.string.app_suggestions_enabled_tabs_summary, enabledTabsSummary),
+                text = stringResource(R.string.settings_app_language_desc, enabledTabsSummary),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

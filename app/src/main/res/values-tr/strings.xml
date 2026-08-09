@@ -69,8 +69,9 @@
 <string name="action_add_to_home">Ana ekrana ekle</string>
 <string name="action_add_trigger">Tetikleyici</string>
 <string name="action_app_info">Uygulama bilgisi</string>
-<string name="action_archive_today_event">Arşivle</string>
 <string name="action_change_icon">Simgeyi değiştir</string>
+<string name="icon_picker_search">Simgeleri ara</string>
+<string name="icon_picker_title">"%1$s" için simgeyi değiştir</string>
 <string name="action_change_wallpaper">Duvar kağıdını değiştir</string>
 <string name="action_clear_all_history">Geçmişi temizle</string>
 <string name="action_edit_icon">Simgeyi düzenle</string>
@@ -102,9 +103,7 @@
 <string name="settings_gesture_swipe_down">Aşağı Kaydır</string>
 <string name="settings_gesture_swipe_up_home">Yukarı Kaydır (Ana Ekran)</string>
 <string name="settings_gesture_swipe_down_home">Aşağı Kaydır (Ana Ekran)</string>
-<string name="settings_gesture_quick_note">Hızlı Not</string>
 <string name="settings_gesture_settings">Ayarlar</string>
-<string name="settings_gesture_open_keyboard">Klavyeyi Aç</string>
 <string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
@@ -115,19 +114,15 @@
 <string name="action_pin_app">Sabitle</string>
     <string name="action_pin_to_notifications">Bildirimlere sabitle</string>
     <string name="action_unpin_from_notifications">Bildirimlerden kaldır</string>
-    <string name="pinned_notifications_channel_name">Sabitlenmiş kısayollar</string>
     <string name="pinned_notifications_channel_description">Sabitlenmiş arama sonuçlarına hızlı erişim</string>
     <string name="pinned_notifications_title">Sabitlenmiş kısayollar</string>
     <string name="notification_pinned_items_title">Sabitlenmiş bildirim öğeleri</string>
     <string name="notification_pinned_items_description">Bildirim panelinizde gösterilen sabitlenmiş öğeleri yönetin</string>
-    <string name="notification_pinned_items_dialog_title">Sabitlenmiş bildirim öğeleri</string>
-    <string name="notification_pinned_items_close">Kapat</string>
     <string name="notification_pinned_items_remove">%1$s öğesini bildirimlerden kaldır</string>
     <string name="notification_pinned_item_type_app">Uygulama</string>
     <string name="notification_pinned_item_type_app_shortcut">Uygulama kısayolu</string>
     <string name="notification_pinned_item_type_contact">Kişi</string>
     <string name="notification_pinned_item_type_file">Dosya</string>
-    <string name="notification_pinned_item_type_setting">Ayarlar</string>
     <string name="notification_pinned_item_type_note">Not</string>
 <string name="action_remove">Kaldır</string>
 <string name="action_remove_from_history">Geçmişten kaldır</string>
@@ -185,7 +180,6 @@
 <string name="dialog_edit_amazon_domain_title">Amazon alan adını düzenle</string>
 <string name="dialog_gemini_model_picker_title">Model seçin</string>
 <string name="dialog_nickname_message">"%1$s" için bir takma ad girin. Bu takma adı kullanarak arama yapabilirsiniz.</string>
-<string name="dialog_no">Hayır</string>
 <string name="dialog_ok">Devam et</string>
 <string name="dialog_okay">Tamam</string>
 <string name="dialog_remember_choice">Seçimimi hatırla</string>
@@ -197,7 +191,6 @@
 <string name="dialog_trigger_error_taken">Bu tetikleyici zaten kullanımda.</string>
 <string name="dialog_trigger_hint">Tetikleyici kelime</string>
 <string name="dialog_trigger_message">"%1$s" için tek kelimelik bir tetikleyici girin.</string>
-<string name="dialog_yes">Evet</string>
 <string name="exclude_marker"> - </string>
 <string name="permission_action_manage_android">Android ayarlarından yönet</string>
 <string name="permission_settings_dialog_message">Bu işlem %1$s izni gerektiriyor. İzin vermek için sistem ayarlarına yönlendirileceksiniz.</string>
@@ -227,11 +220,9 @@
 <string name="app_suggestions_tabs_dialog_message">Ana ekranda hangi uygulama önerisi sekmelerinin görüneceğini seçin.</string>
 <string name="app_suggestions_tabs_dialog_title">Uygulama Önerisi Sekmeleri</string>
 <string name="app_suggestions_enabled_tabs_picker_hint">Sekmeleri Seç</string>
-<string name="app_suggestions_enabled_tabs_summary">Mevcut: %1$s</string>
 <string name="app_suggestions_tab_required_toast">En az bir uygulama önerisi sekmesini etkin tutmalısınız</string>
 <string name="app_suggestions_toggle_desc">Ana ekranda önerilen uygulamaları göster veya gizle</string>
 <string name="app_suggestions_toggle_title">Uygulama önerileri</string>
-<string name="show_all_apps_button_toggle_title">Tüm uygulamalar</string>
 <string name="show_all_apps_button_toggle_desc">Uygulama önerilerinin altında \"Tüm uygulamalar\" düğmesini göster</string>
 <string name="app_suggestions_usage_access_link">kullanım erişimi izni</string>
 <string name="app_suggestions_usage_access_tip">Daha uygun öneriler görmek için kullanım erişimi izni verin</string>
@@ -271,7 +262,6 @@
 <string name="section_app_shortcuts">Uygulama kısayolları</string>
 <string name="section_apps">Uygulamalar</string>
 <string name="section_calendar">Takvim etkinlikleri</string>
-<string name="section_contacts">Kişiler</string>
 <string name="section_files">Dosyalar</string>
 <string name="section_notes">Notlar</string>
 <string name="section_settings">Cihaz ayarları</string>
@@ -447,7 +437,6 @@
 <!-- ============================================================================
      Files &amp; Folders
      ============================================================================ -->
-<string name="excluded_item_type_file">Dosya</string>
 <string name="excluded_item_type_file_extension">Dosya uzantısı</string>
 <string name="excluded_item_type_folder">Klasör</string>
 <string name="file_extension_label">.%s dosyaları</string>
@@ -674,7 +663,6 @@
 <string name="settings_icon_pack_option_system">Sistem simgeleri</string>
 <string name="settings_icon_pack_picker_title">Simge paketi seç</string>
 <string name="settings_icon_pack_search_query">Ücretsiz simge paketleri</string>
-<string name="settings_icon_pack_selected_label">Mevcut: %1$s</string>
 <string name="settings_icon_pack_title">Simge paketi</string>
 <string name="settings_icon_title">Ayarlar simgesi</string>
 <string name="settings_launch_options_desc">Bu uygulamayı başlatmanın farklı yolları</string>
@@ -765,7 +753,6 @@
 <string name="settings_custom_provider_advanced_payload_title">Gelişmiş İstek Yükü</string>
 <string name="settings_direct_search_desc">Gemini, OpenAI, Claude ve Groq API anahtarları desteklenir</string>
 <string name="settings_direct_search_desc_intro">AI destekli aramayı ve araçları etkinleştirmek için bir API anahtarı ek.</string>
-<string name="settings_free_api_key_tip_title">Ücretsiz API anahtarı al</string>
 <string name="settings_free_api_key_tip_description">Ücretsiz bir Gemini API Anahtarı alma adımları.</string>
 <string name="settings_open_free_api_key_guide">Ücretsiz API anahtarı kılavuzunu aç</string>
 <string name="settings_direct_search_grounding_label">Web araması</string>
@@ -814,7 +801,6 @@
 <string name="settings_backup_export_button">Dışa aktar</string>
 <string name="settings_backup_export_failed">Ayarlar dışa aktarılamadı.</string>
 <string name="settings_backup_export_option_pinned_items_title">Sabitlenen öğeler</string>
-<string name="settings_backup_export_option_settings_title">Ayarlar</string>
 <string name="settings_backup_export_selection_title">Verileri dışa aktar</string>
 <string name="settings_backup_export_success">Ayarlar başarıyla dışa aktarıldı.</string>
 <string name="settings_backup_import_button">İçe aktar</string>
@@ -912,9 +898,7 @@
 <string name="shortcut_voice_search_long_label">Sesli aramayı aç</string>
 <string name="shortcut_voice_search_short_label">Sesli arama</string>
 <string name="voice_input_not_available">Sesli yazma şu anda kullanılamıyor.</string>
-<string name="widget_background_color_custom_dialog_hint">Hex rengi (RRGGBB)</string>
 <string name="widget_background_color_custom_dialog_title">Özel renk</string>
-<string name="widget_background_color_custom_invalid">Geçersiz, 6 haneli bir hex rengi gir.</string>
 <string name="widget_border_color">Kenarlık rengi</string>
 <string name="widget_custom_button_add_desc">Özel buton ekle</string>
 <string name="widget_custom_buttons_dialog_hint">Uygulamalar, Uygulama Kısayolları, Kişiler, Dosyalar, Klasörler, Notlar &amp; Cihaz ayarları için arama yapabilirsin.</string>
@@ -1029,7 +1013,6 @@
 <string name="excluded_item_type_app_results">Uygulama (Sonuçlar)</string>
 <string name="excluded_item_type_app_shortcut">Uygulama kısayolu</string>
 <string name="excluded_item_type_app_suggestions">Uygulama (Öneriler)</string>
-<string name="excluded_item_type_contact">Kişi</string>
 <string name="excluded_item_type_setting">Ayar</string>
 <string name="permission_required_title">İzin gerekli</string>
 <string name="settings_action_clear_all">Tümünü temizle</string>

@@ -70,8 +70,9 @@
     <string name="action_add_to_home">होम में जोड़ें</string>
     <string name="action_add_trigger">ट्रिगर जोड़ें</string>
     <string name="action_app_info">ऐप जानकारी</string>
-    <string name="action_archive_today_event">आर्काइव</string>
     <string name="action_change_icon">आइकन बदलें</string>
+    <string name="icon_picker_search">आइकन खोजें</string>
+    <string name="icon_picker_title">"%1$s" के लिए आइकन बदलें</string>
     <string name="action_change_wallpaper">वॉलपेपर बदलें</string>
     <string name="action_clear_all_history">इतिहास साफ करें</string>
     <string name="action_edit_icon">आइकन संपादित करें</string>
@@ -103,9 +104,7 @@
     <string name="settings_gesture_swipe_down">नीचे स्वाइप करें</string>
     <string name="settings_gesture_swipe_up_home">ऊपर स्वाइप करें (होम)</string>
     <string name="settings_gesture_swipe_down_home">नीचे स्वाइप करें (होम)</string>
-    <string name="settings_gesture_quick_note">त्वरित नोट</string>
     <string name="settings_gesture_settings">सेटिंग्स</string>
-    <string name="settings_gesture_open_keyboard">कीबोर्ड खोलें</string>
     <string name="settings_gesture_close_keyboard_notifications">कीबोर्ड बंद करें / नोटिफिकेशन खोलें</string>
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
     <string name="settings_gesture_notification_panel">नोटिफिकेशन पैनल</string>
@@ -116,19 +115,15 @@
     <string name="action_pin_app">पिन करें</string>
     <string name="action_pin_to_notifications">सूचनाओं में पिन करें</string>
     <string name="action_unpin_from_notifications">सूचनाओं से अनपिन करें</string>
-    <string name="pinned_notifications_channel_name">पिन किए गए शॉर्टकट</string>
     <string name="pinned_notifications_channel_description">पिन किए गए खोज परिणामों तक त्वरित पहुंच</string>
     <string name="pinned_notifications_title">पिन किए गए शॉर्टकट</string>
     <string name="notification_pinned_items_title">पिन किए गए सूचना आइटम</string>
     <string name="notification_pinned_items_description">सूचना पैनल में दिखाए गए पिन किए गए आइटम प्रबंधित करें</string>
-    <string name="notification_pinned_items_dialog_title">पिन किए गए सूचना आइटम</string>
-    <string name="notification_pinned_items_close">बंद करें</string>
     <string name="notification_pinned_items_remove">सूचनाओं से %1$s हटाएं</string>
     <string name="notification_pinned_item_type_app">ऐप</string>
     <string name="notification_pinned_item_type_app_shortcut">ऐप शॉर्टकट</string>
     <string name="notification_pinned_item_type_contact">संपर्क</string>
     <string name="notification_pinned_item_type_file">फ़ाइल</string>
-    <string name="notification_pinned_item_type_setting">सेटिंग</string>
     <string name="notification_pinned_item_type_note">नोट</string>
     <string name="action_remove">हटाएं</string>
     <string name="action_remove_from_history">इतिहास से हटाएं</string>
@@ -186,7 +181,6 @@
     <string name="dialog_edit_amazon_domain_title">Amazon डोमेन संपादित करें</string>
     <string name="dialog_gemini_model_picker_title">मॉडल चुनें</string>
     <string name="dialog_nickname_message">\"%1$s\" के लिए एक निकनेम दर्ज करें। आप इस निकनेम से इसे खोज सकेंगे।</string>
-    <string name="dialog_no">नहीं</string>
     <string name="dialog_ok">जारी रखें</string>
     <string name="dialog_okay">ठीक है</string>
     <string name="dialog_remember_choice">इस विकल्प को याद रखें</string>
@@ -198,7 +192,6 @@
     <string name="dialog_trigger_error_taken">यह ट्रिगर पहले से लिया जा चुका है।</string>
     <string name="dialog_trigger_hint">ट्रिगर शब्द</string>
     <string name="dialog_trigger_message">\"%1$s\" के लिए एक-शब्द ट्रिगर दर्ज करें।</string>
-    <string name="dialog_yes">हाँ</string>
     <string name="exclude_marker"> से बाहर रखा गया </string>
     <string name="permission_action_manage_android">Android सेटिंग्स में प्रबंधित करें</string>
     <string name="permission_settings_dialog_message">इस क्रिया के लिए %1$s अनुमति चाहिए। इसे देने के लिए आपको सिस्टम सेटिंग्स में ले जाया जाएगा।</string>
@@ -228,11 +221,9 @@
     <string name="app_suggestions_tabs_dialog_message">चुनें कि होम स्क्रीन पर कौन से ऐप सुझाव टैब दिखाई दें।</string>
     <string name="app_suggestions_tabs_dialog_title">ऐप सुझाव टैब</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">टैब चुनें</string>
-    <string name="app_suggestions_enabled_tabs_summary">वर्तमान: %1$s</string>
     <string name="app_suggestions_tab_required_toast">कम से कम एक ऐप सुझाव टैब सक्षम रखें</string>
     <string name="app_suggestions_toggle_desc">होम स्क्रीन पर सुझाए गए ऐप दिखाएं या छिपाएं</string>
     <string name="app_suggestions_toggle_title">ऐप सुझाव</string>
-    <string name="show_all_apps_button_toggle_title">सभी ऐप्स</string>
     <string name="show_all_apps_button_toggle_desc">ऐप सुझावों के नीचे \"सभी ऐप्स\" बटन दिखाएं</string>
     <string name="app_suggestions_usage_access_link">उपयोग पहुंच अनुमति</string>
     <string name="app_suggestions_usage_access_tip">अधिक उपयुक्त सुझाव देखने के लिए उपयोग पहुंच अनुमति दें</string>
@@ -272,7 +263,6 @@
     <string name="section_app_shortcuts">ऐप शॉर्टकट्स</string>
     <string name="section_apps">ऐप्स</string>
     <string name="section_calendar">कैलेंडर इवेंट्स</string>
-    <string name="section_contacts">कॉन्टैक्ट</string>
     <string name="section_files">फाइलें</string>
     <string name="section_notes">नोट्स</string>
     <string name="section_settings">डिवाइस सेटिंग्स</string>
@@ -448,7 +438,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">फाइल</string>
     <string name="excluded_item_type_file_extension">फाइल एक्सटेंशन</string>
     <string name="excluded_item_type_folder">फोल्डर</string>
     <string name="file_extension_label">.%s फाइलें</string>
@@ -675,7 +664,6 @@
     <string name="settings_icon_pack_option_system">सिस्टम आइकन</string>
     <string name="settings_icon_pack_picker_title">आइकन पैक चुनें</string>
     <string name="settings_icon_pack_search_query">मुफ्त आइकन पैक</string>
-    <string name="settings_icon_pack_selected_label">वर्तमान: %1$s</string>
     <string name="settings_icon_pack_title">आइकन पैक</string>
     <string name="settings_icon_title">सेटिंग्स आइकन</string>
     <string name="settings_launch_options_desc">इस ऐप को लॉन्च करने के अलग-अलग तरीके</string>
@@ -766,7 +754,6 @@
     <string name="settings_custom_provider_advanced_payload_title">उन्नत अनुरोध पेलोड</string>
     <string name="settings_direct_search_desc">Gemini, OpenAI, Claude और Groq API keys समर्थित हैं</string>
     <string name="settings_direct_search_desc_intro">AI-आधारित खोज और टूल्स सक्षम करने के लिए API key जोड़ें।</string>
-    <string name="settings_free_api_key_tip_title">मुफ्त API Key प्राप्त करें</string>
     <string name="settings_free_api_key_tip_description">मुफ्त में Gemini API Key प्राप्त करने के चरण।</string>
     <string name="settings_open_free_api_key_guide">मुफ्त API Key गाइड खोलें</string>
     <string name="settings_direct_search_grounding_label">वेब खोज</string>
@@ -815,7 +802,6 @@
     <string name="settings_backup_export_button">एक्सपोर्ट</string>
     <string name="settings_backup_export_failed">सेटिंग्स एक्सपोर्ट नहीं हो सकीं।</string>
     <string name="settings_backup_export_option_pinned_items_title">पिन किए गए आइटम</string>
-    <string name="settings_backup_export_option_settings_title">सेटिंग्स</string>
     <string name="settings_backup_export_selection_title">डेटा एक्सपोर्ट करें</string>
     <string name="settings_backup_export_success">सेटिंग्स सफलतापूर्वक एक्सपोर्ट हो गईं।</string>
     <string name="settings_backup_import_button">इम्पोर्ट</string>
@@ -913,9 +899,7 @@
     <string name="shortcut_voice_search_long_label">Voice Search खोलें</string>
     <string name="shortcut_voice_search_short_label">Voice Search</string>
     <string name="voice_input_not_available">वॉइस टाइपिंग अभी उपलब्ध नहीं है।</string>
-    <string name="widget_background_color_custom_dialog_hint">Hex रंग (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">कस्टम रंग</string>
-    <string name="widget_background_color_custom_invalid">6 अंकों का एक मान्य hex रंग दर्ज करें।</string>
     <string name="widget_border_color">बॉर्डर रंग</string>
     <string name="widget_custom_button_add_desc">कस्टम बटन जोड़ें</string>
     <string name="widget_custom_buttons_dialog_hint">आप ऐप्स, ऐप शॉर्टकट्स, कॉन्टैक्ट्स, फाइलें, फोल्डर्स, नोट्स और डिवाइस सेटिंग्स खोज सकते हैं।</string>
@@ -1030,7 +1014,6 @@
     <string name="excluded_item_type_app_results">ऐप (परिणाम)</string>
     <string name="excluded_item_type_app_shortcut">ऐप शॉर्टकट</string>
     <string name="excluded_item_type_app_suggestions">ऐप (सुझाव)</string>
-    <string name="excluded_item_type_contact">कॉन्टैक्ट</string>
     <string name="excluded_item_type_setting">सेटिंग</string>
     <string name="permission_required_title">अनुमति आवश्यक</string>
     <string name="settings_action_clear_all">सभी साफ करें</string>

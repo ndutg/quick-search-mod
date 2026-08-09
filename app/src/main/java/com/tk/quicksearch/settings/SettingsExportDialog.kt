@@ -45,7 +45,7 @@ fun SettingsExportDialog(
                         .verticalScroll(rememberScrollState()),
             ) {
                 SettingsCheckboxRow(
-                    title = stringResource(R.string.settings_backup_export_option_settings_title),
+                    title = stringResource(R.string.settings_gesture_settings),
                     description = "",
                     checked = selectionState.includeSettings,
                     onCheckedChange = {

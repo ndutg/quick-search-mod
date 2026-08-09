@@ -70,8 +70,9 @@
     <string name="action_add_to_home">Προσθήκη στην αρχική οθόνη</string>
     <string name="action_add_trigger">Ενεργοποίηση</string>
     <string name="action_app_info">Πληροφορίες εφαρμογής</string>
-    <string name="action_archive_today_event">Αρχειοθέτηση</string>
     <string name="action_change_icon">Αλλαγή εικονιδίου</string>
+    <string name="icon_picker_search">Αναζήτηση εικονιδίων</string>
+    <string name="icon_picker_title">Αλλαγή εικονιδίου για το "%1$s"</string>
     <string name="action_change_wallpaper">Αλλαγή ταπετσαρίας</string>
     <string name="action_clear_all_history">Εκκαθάριση ιστορικού</string>
     <string name="action_edit_icon">Επεξεργασία εικονιδίου</string>
@@ -103,9 +104,7 @@
     <string name="settings_gesture_swipe_down">Σάρωση προς τα κάτω</string>
     <string name="settings_gesture_swipe_up_home">Σάρωση προς τα πάνω (Αρχική)</string>
     <string name="settings_gesture_swipe_down_home">Σάρωση προς τα κάτω (Αρχική)</string>
-    <string name="settings_gesture_quick_note">Γρήγορη σημείωση</string>
     <string name="settings_gesture_settings">Ρυθμίσεις</string>
-    <string name="settings_gesture_open_keyboard">Άνοιγμα πληκτρολογίου</string>
     <string name="settings_gesture_close_keyboard_notifications">Κλείσιμο πληκτρολογίου / Άνοιγμα ειδοποιήσεων</string>
     <string name="settings_gesture_close_keyboard">Κλείσιμο πληκτρολογίου</string>
     <string name="settings_gesture_notification_panel">Πίνακας ειδοποιήσεων</string>
@@ -116,19 +115,15 @@
     <string name="action_pin_app">Καρφίτσωμα</string>
     <string name="action_pin_to_notifications">Καρφίτσωμα στις ειδοποιήσεις</string>
     <string name="action_unpin_from_notifications">Ξεκαρφίτσωμα από τις ειδοποιήσεις</string>
-    <string name="pinned_notifications_channel_name">Καρφιτσωμένες συντομεύσεις</string>
     <string name="pinned_notifications_channel_description">Γρήγορη πρόσβαση σε καρφιτσωμένα αποτελέσματα αναζήτησης</string>
     <string name="pinned_notifications_title">Καρφιτσωμένες συντομεύσεις</string>
     <string name="notification_pinned_items_title">Καρφιτσωμένα στοιχεία ειδοποιήσεων</string>
     <string name="notification_pinned_items_description">Διαχείριση καρφιτσωμένων στοιχείων στο πλαίσιο ειδοποιήσεων</string>
-    <string name="notification_pinned_items_dialog_title">Καρφιτσωμένα στοιχεία ειδοποιήσεων</string>
-    <string name="notification_pinned_items_close">Κλείσιμο</string>
     <string name="notification_pinned_items_remove">Κατάργηση του %1$s από τις ειδοποιήσεις</string>
     <string name="notification_pinned_item_type_app">Εφαρμογή</string>
     <string name="notification_pinned_item_type_app_shortcut">Συντόμευση εφαρμογής</string>
     <string name="notification_pinned_item_type_contact">Επαφή</string>
     <string name="notification_pinned_item_type_file">Αρχείο</string>
-    <string name="notification_pinned_item_type_setting">Ρυθμίσεις</string>
     <string name="notification_pinned_item_type_note">Σημείωση</string>
     <string name="action_remove">Κατάργηση</string>
     <string name="action_remove_from_history">Κατάργηση από το ιστορικό</string>
@@ -186,7 +181,6 @@
     <string name="dialog_edit_amazon_domain_title">Επεξεργασία Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Επιλογή μοντέλου</string>
     <string name="dialog_nickname_message">Εισαγάγετε ένα ψευδώνυμο για το "%1$s". Μπορείτε να το αναζητήσετε χρησιμοποιώντας αυτό το ψευδώνυμο.</string>
-    <string name="dialog_no">Όχι</string>
     <string name="dialog_ok">Συνέχεια</string>
     <string name="dialog_okay">Εντάξει</string>
     <string name="dialog_remember_choice">Απομνημόνευση επιλογής</string>
@@ -198,7 +192,6 @@
     <string name="dialog_trigger_error_taken">Αυτή η ενεργοποίηση χρησιμοποιείται ήδη.</string>
     <string name="dialog_trigger_hint">Λέξη ενεργοποίησης</string>
     <string name="dialog_trigger_message">Εισαγάγετε μια μονολεκτική λέξη ενεργοποίησης για το "%1$s".</string>
-    <string name="dialog_yes">Ναι</string>
     <string name="exclude_marker"> εξαιρέθηκε από </string>
     <string name="permission_action_manage_android">Διαχείριση στις ρυθμίσεις Android</string>
     <string name="permission_settings_dialog_message">Αυτή η ενέργεια απαιτεί την άδεια %1$s. Θα μεταφερθείτε στις ρυθμίσεις συστήματος για να τη χορηγήσετε.</string>
@@ -228,11 +221,9 @@
     <string name="app_suggestions_tabs_dialog_message">Επιλέξτε ποιες καρτέλες προτάσεων εφαρμογών θα εμφανίζονται στην αρχική οθόνη.</string>
     <string name="app_suggestions_tabs_dialog_title">Καρτέλες προτάσεων εφαρμογών</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">Επιλογή καρτελών</string>
-    <string name="app_suggestions_enabled_tabs_summary">Τρέχον: %1$s</string>
     <string name="app_suggestions_tab_required_toast">Διατηρήστε τουλάχιστον μία καρτέλα προτάσεων εφαρμογών ενεργοποιημένη</string>
     <string name="app_suggestions_toggle_desc">Εμφάνιση ή απόκρυψη προτεινόμενων εφαρμογών στην αρχική οθόνη</string>
     <string name="app_suggestions_toggle_title">Προτάσεις εφαρμογών</string>
-    <string name="show_all_apps_button_toggle_title">Όλες οι εφαρμογές</string>
     <string name="show_all_apps_button_toggle_desc">Εμφάνιση του κουμπιού \"Όλες οι εφαρμογές\" κάτω από τις προτάσεις εφαρμογών</string>
     <string name="app_suggestions_usage_access_link">άδεια πρόσβασης στη χρήση</string>
     <string name="app_suggestions_usage_access_tip">Χορηγήστε την άδεια πρόσβασης στη χρήση για να βλέπετε πιο κατάλληλες προτάσεις</string>
@@ -272,7 +263,6 @@
     <string name="section_app_shortcuts">Συντομεύσεις εφαρμογών</string>
     <string name="section_apps">Εφαρμογές</string>
     <string name="section_calendar">Συμβάντα ημερολογίου</string>
-    <string name="section_contacts">Επαφές</string>
     <string name="section_files">Αρχεία</string>
     <string name="section_notes">Σημειώσεις</string>
     <string name="section_settings">Ρυθμίσεις συσκευής</string>
@@ -448,7 +438,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">Αρχείο</string>
     <string name="excluded_item_type_file_extension">Επέκταση αρχείου</string>
     <string name="excluded_item_type_folder">Φάκελος</string>
     <string name="file_extension_label">Αρχεία .%s</string>
@@ -675,7 +664,6 @@
     <string name="settings_icon_pack_option_system">Εικονίδια συστήματος</string>
     <string name="settings_icon_pack_picker_title">Επιλογή πακέτου εικονιδίων</string>
     <string name="settings_icon_pack_search_query">Free icon packs</string>
-    <string name="settings_icon_pack_selected_label">Τρέχον: %1$s</string>
     <string name="settings_icon_pack_title">Πακέτο εικονιδίων</string>
     <string name="settings_icon_title">Εικονίδιο ρυθμίσεων</string>
     <string name="settings_launch_options_desc">Διαφορετικοί τρόποι εκκίνησης αυτής της εφαρμογής</string>
@@ -766,7 +754,6 @@
     <string name="settings_custom_provider_advanced_payload_title">Προηγμένο Ωφέλιμο Φορτίο Αιτήματος</string>
     <string name="settings_direct_search_desc">Υποστηρίζονται κλειδιά API για Gemini, OpenAI, Claude και Groq</string>
     <string name="settings_direct_search_desc_intro">Προσθέστε ένα κλειδί API για να ενεργοποιήσετε την αναζήτηση και τα εργαλεία με υποστήριξη AI.</string>
-    <string name="settings_free_api_key_tip_title">Λάβετε δωρεάν κλειδί API</string>
     <string name="settings_free_api_key_tip_description">Βήματα για να αποκτήσετε ένα κλειδί Gemini API δωρεάν.</string>
     <string name="settings_open_free_api_key_guide">Άνοιγμα οδηγού δωρεάν κλειδιού API</string>
     <string name="settings_direct_search_grounding_label">Αναζήτηση στον ιστό</string>
@@ -815,7 +802,6 @@
     <string name="settings_backup_export_button">Εξαγωγή</string>
     <string name="settings_backup_export_failed">Αδυναμία εξαγωγής ρυθμίσεων.</string>
     <string name="settings_backup_export_option_pinned_items_title">Καρφιτσωμένα στοιχεία</string>
-    <string name="settings_backup_export_option_settings_title">Ρυθμίσεις</string>
     <string name="settings_backup_export_selection_title">Εξαγωγή δεδομένων</string>
     <string name="settings_backup_export_success">Οι ρυθμίσεις εξήχθησαν επιτυχώς.</string>
     <string name="settings_backup_import_button">Εισαγωγή</string>
@@ -913,9 +899,7 @@
     <string name="shortcut_voice_search_long_label">Άνοιγμα Φωνητικής Αναζήτησης</string>
     <string name="shortcut_voice_search_short_label">Φωνητική Αναζήτηση</string>
     <string name="voice_input_not_available">Η φωνητική πληκτρολόγηση δεν είναι διαθέσιμη αυτή τη στιγμή.</string>
-    <string name="widget_background_color_custom_dialog_hint">Χρώμα Hex (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">Προσαρμοσμένο χρώμα</string>
-    <string name="widget_background_color_custom_invalid">Εισαγάγετε ένα έγκυρο 6ψήφιο χρώμα hex.</string>
     <string name="widget_border_color">Χρώμα περιγράμματος</string>
     <string name="widget_custom_button_add_desc">Προσθήκη προσαρμοσμένου κουμπιού</string>
     <string name="widget_custom_buttons_dialog_hint">Μπορείτε να αναζητήσετε Εφαρμογές, Συντομεύσεις, Επαφές, Αρχεία, Φακέλους, Σημειώσεις &amp; Ρυθμίσεις συσκευής.</string>
@@ -1030,7 +1014,6 @@
     <string name="excluded_item_type_app_results">Εφαρμογή (Αποτελέσματα)</string>
     <string name="excluded_item_type_app_shortcut">Συντόμευση εφαρμογής</string>
     <string name="excluded_item_type_app_suggestions">Εφαρμογή (Προτάσεις)</string>
-    <string name="excluded_item_type_contact">Επαφή</string>
     <string name="excluded_item_type_setting">Ρύθμιση</string>
     <string name="permission_required_title">Απαιτείται άδεια</string>
     <string name="settings_action_clear_all">Εκκαθάριση όλων</string>

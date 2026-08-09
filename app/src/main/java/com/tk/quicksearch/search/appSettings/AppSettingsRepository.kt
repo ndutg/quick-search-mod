@@ -418,7 +418,7 @@ class AppSettingsRepository(
             )
             addToggle(
                 id = "app_toggle_show_all_apps_button",
-                titleRes = R.string.show_all_apps_button_toggle_title,
+                titleRes = R.string.settings_app_shortcuts_filter_all_apps,
                 descriptionRes = R.string.show_all_apps_button_toggle_desc,
                 toggleKey = AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON,
                 keywords = listOf("all apps", "app drawer"),

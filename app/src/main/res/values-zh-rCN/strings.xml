@@ -70,8 +70,9 @@
     <string name="action_add_to_home">添加到主屏幕</string>
     <string name="action_add_trigger">添加触发词</string>
     <string name="action_app_info">应用信息</string>
-    <string name="action_archive_today_event">归档</string>
     <string name="action_change_icon">更改图标</string>
+    <string name="icon_picker_search">搜索图标</string>
+    <string name="icon_picker_title">更改“%1$s”的图标</string>
     <string name="action_change_wallpaper">更改壁纸</string>
     <string name="action_clear_all_history">清空历史记录</string>
     <string name="action_edit_icon">编辑图标</string>
@@ -103,9 +104,7 @@
     <string name="settings_gesture_swipe_down">向下滑动</string>
     <string name="settings_gesture_swipe_up_home">向上滑动 (主屏幕)</string>
     <string name="settings_gesture_swipe_down_home">向下滑动 (主屏幕)</string>
-    <string name="settings_gesture_quick_note">随手记</string>
     <string name="settings_gesture_settings">设置</string>
-    <string name="settings_gesture_open_keyboard">打开键盘</string>
     <string name="settings_gesture_close_keyboard_notifications">关闭键盘 / 打开通知</string>
     <string name="settings_gesture_close_keyboard">关闭键盘</string>
     <string name="settings_gesture_notification_panel">通知面板</string>
@@ -116,19 +115,15 @@
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">固定到通知</string>
     <string name="action_unpin_from_notifications">从通知中取消固定</string>
-    <string name="pinned_notifications_channel_name">已固定的快捷方式</string>
     <string name="pinned_notifications_channel_description">快速访问已固定的搜索结果</string>
     <string name="pinned_notifications_title">已固定的快捷方式</string>
     <string name="notification_pinned_items_title">已固定的通知项目</string>
     <string name="notification_pinned_items_description">管理通知面板中显示的已固定项目</string>
-    <string name="notification_pinned_items_dialog_title">已固定的通知项目</string>
-    <string name="notification_pinned_items_close">关闭</string>
     <string name="notification_pinned_items_remove">从通知中移除 %1$s</string>
     <string name="notification_pinned_item_type_app">应用</string>
     <string name="notification_pinned_item_type_app_shortcut">应用快捷方式</string>
     <string name="notification_pinned_item_type_contact">联系人</string>
     <string name="notification_pinned_item_type_file">文件</string>
-    <string name="notification_pinned_item_type_setting">设置</string>
     <string name="notification_pinned_item_type_note">笔记</string>
     <string name="action_remove">移除</string>
     <string name="action_remove_from_history">从历史记录中移除</string>
@@ -186,7 +181,6 @@
     <string name="dialog_edit_amazon_domain_title">编辑 Amazon 域名</string>
     <string name="dialog_gemini_model_picker_title">选择模型</string>
     <string name="dialog_nickname_message">为“%1$s”输入一个昵称。此后您可以使用该昵称来搜索它。</string>
-    <string name="dialog_no">否</string>
     <string name="dialog_ok">继续</string>
     <string name="dialog_okay">好的</string>
     <string name="dialog_remember_choice">记住此选择</string>
@@ -198,7 +192,6 @@
     <string name="dialog_trigger_error_taken">此触发词已被占用。</string>
     <string name="dialog_trigger_hint">触发词</string>
     <string name="dialog_trigger_message">为“%1$s”输入一个单字的触发词。</string>
-    <string name="dialog_yes">是</string>
     <string name="exclude_marker"> 已从</string>
     <string name="permission_action_manage_android">在 Android 设置中管理</string>
     <string name="permission_settings_dialog_message">此操作需要 %1$s 权限。系统将带您前往系统设置以授予该权限。</string>
@@ -228,11 +221,9 @@
     <string name="app_suggestions_tabs_dialog_message">选择要在主屏幕上显示哪些应用建议标签页。</string>
     <string name="app_suggestions_tabs_dialog_title">应用建议标签页</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">选择标签页</string>
-    <string name="app_suggestions_enabled_tabs_summary">当前: %1$s</string>
     <string name="app_suggestions_tab_required_toast">请至少保留一个启用的应用建议标签页</string>
     <string name="app_suggestions_toggle_desc">在主屏幕上显示或隐藏建议的应用</string>
     <string name="app_suggestions_toggle_title">应用建议</string>
-    <string name="show_all_apps_button_toggle_title">所有应用</string>
     <string name="show_all_apps_button_toggle_desc">在应用建议下方显示\"所有应用\"按钮</string>
     <string name="app_suggestions_usage_access_link">使用情况访问权限</string>
     <string name="app_suggestions_usage_access_tip">授予使用情况访问权限以获取更精准的应用建议</string>
@@ -272,7 +263,6 @@
     <string name="section_app_shortcuts">应用快捷方式</string>
     <string name="section_apps">应用</string>
     <string name="section_calendar">日历日程</string>
-    <string name="section_contacts">联系人</string>
     <string name="section_files">文件</string>
     <string name="section_notes">笔记</string>
     <string name="section_settings">设备设置</string>
@@ -448,7 +438,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">文件</string>
     <string name="excluded_item_type_file_extension">文件扩展名</string>
     <string name="excluded_item_type_folder">文件夹</string>
     <string name="file_extension_label">.%s 文件</string>
@@ -675,7 +664,6 @@
     <string name="settings_icon_pack_option_system">系统默认图标</string>
     <string name="settings_icon_pack_picker_title">选择图标包</string>
     <string name="settings_icon_pack_search_query">免费图标包</string>
-    <string name="settings_icon_pack_selected_label">当前: %1$s</string>
     <string name="settings_icon_pack_title">图标包</string>
     <string name="settings_icon_title">设置图标</string>
     <string name="settings_launch_options_desc">启动此应用的不同方式</string>
@@ -766,7 +754,6 @@
     <string name="settings_custom_provider_advanced_payload_title">高级请求负载</string>
     <string name="settings_direct_search_desc">支持 Gemini、OpenAI、Claude 和 Groq 的 API 密钥</string>
     <string name="settings_direct_search_desc_intro">添加 API 密钥以启用 AI 驱动的搜索和相关实用工具。</string>
-    <string name="settings_free_api_key_tip_title">获取免费 API 密钥</string>
     <string name="settings_free_api_key_tip_description">免费获取 Gemini API 密钥的步骤。</string>
     <string name="settings_open_free_api_key_guide">打开免费 API 密钥指南</string>
     <string name="settings_direct_search_grounding_label">联网搜索</string>
@@ -815,7 +802,6 @@
     <string name="settings_backup_export_button">导出</string>
     <string name="settings_backup_export_failed">无法导出设置。</string>
     <string name="settings_backup_export_option_pinned_items_title">固定的项目</string>
-    <string name="settings_backup_export_option_settings_title">配置设置</string>
     <string name="settings_backup_export_selection_title">导出数据</string>
     <string name="settings_backup_export_success">配置设置导出成功。</string>
     <string name="settings_backup_import_button">导入</string>
@@ -913,9 +899,7 @@
     <string name="shortcut_voice_search_long_label">开启语音搜索</string>
     <string name="shortcut_voice_search_short_label">语音搜索</string>
     <string name="voice_input_not_available">目前无法使用语音输入法。</string>
-    <string name="widget_background_color_custom_dialog_hint">十六进制颜色代码 (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">自定义色彩</string>
-    <string name="widget_background_color_custom_invalid">请输入有效的 6 位十六进制颜色值。</string>
     <string name="widget_border_color">边框颜色</string>
     <string name="widget_custom_button_add_desc">添加自定义按钮</string>
     <string name="widget_custom_buttons_dialog_hint">您可以关联搜索应用、应用快捷方式、联系人、文件、文件夹、笔记及设备系统设置。</string>
@@ -1030,7 +1014,6 @@
     <string name="excluded_item_type_app_results">应用 (搜索结果)</string>
     <string name="excluded_item_type_app_shortcut">应用快捷方式</string>
     <string name="excluded_item_type_app_suggestions">应用 (桌面建议)</string>
-    <string name="excluded_item_type_contact">联系人</string>
     <string name="excluded_item_type_setting">设置项</string>
     <string name="permission_required_title">需要相关权限</string>
     <string name="settings_action_clear_all">清除全部</string>

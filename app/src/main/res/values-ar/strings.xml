@@ -71,8 +71,9 @@
     <string name="action_add_to_home">إضافة إلى الشاشة الرئيسية</string>
     <string name="action_add_trigger">إضافة كلمة تشغيل</string>
     <string name="action_app_info">معلومات التطبيق</string>
-    <string name="action_archive_today_event">أرشفة</string>
     <string name="action_change_icon">تغيير الأيقونة</string>
+    <string name="icon_picker_search">البحث عن الأيقونات</string>
+    <string name="icon_picker_title">تغيير أيقونة "%1$s"</string>
     <string name="action_change_wallpaper">تغيير الخلفية</string>
     <string name="action_clear_all_history">مسح سجل البحث</string>
     <string name="action_edit_icon">تعديل الأيقونة</string>
@@ -104,9 +105,7 @@
     <string name="settings_gesture_swipe_down">السحب للأسفل</string>
     <string name="settings_gesture_swipe_up_home">السحب للأعلى (الرئيسية)</string>
     <string name="settings_gesture_swipe_down_home">السحب للأسفل (الرئيسية)</string>
-    <string name="settings_gesture_quick_note">ملاحظة سريعة</string>
     <string name="settings_gesture_settings">الإعدادات</string>
-    <string name="settings_gesture_open_keyboard">فتح لوحة المفاتيح</string>
     <string name="settings_gesture_close_keyboard_notifications">إغلاق لوحة المفاتيح / فتح الإشعارات</string>
     <string name="settings_gesture_close_keyboard">إغلاق لوحة المفاتيح</string>
     <string name="settings_gesture_notification_panel">لوحة الإشعارات</string>
@@ -117,19 +116,15 @@
     <string name="action_pin_app">تثبيت</string>
     <string name="action_pin_to_notifications">تثبيت في الإشعارات</string>
     <string name="action_unpin_from_notifications">إلغاء التثبيت من الإشعارات</string>
-    <string name="pinned_notifications_channel_name">الاختصارات المثبتة</string>
     <string name="pinned_notifications_channel_description">وصول سريع إلى نتائج البحث المثبتة</string>
     <string name="pinned_notifications_title">الاختصارات المثبتة</string>
     <string name="notification_pinned_items_title">عناصر الإشعارات المثبتة</string>
     <string name="notification_pinned_items_description">إدارة العناصر المثبتة المعروضة في لوحة الإشعارات</string>
-    <string name="notification_pinned_items_dialog_title">عناصر الإشعارات المثبتة</string>
-    <string name="notification_pinned_items_close">إغلاق</string>
     <string name="notification_pinned_items_remove">إزالة %1$s من الإشعارات</string>
     <string name="notification_pinned_item_type_app">تطبيق</string>
     <string name="notification_pinned_item_type_app_shortcut">اختصار التطبيق</string>
     <string name="notification_pinned_item_type_contact">جهة اتصال</string>
     <string name="notification_pinned_item_type_file">ملف</string>
-    <string name="notification_pinned_item_type_setting">الإعدادات</string>
     <string name="notification_pinned_item_type_note">ملاحظة</string>
     <string name="action_remove">إزالة</string>
     <string name="action_remove_from_history">إزالة من السجل</string>
@@ -187,7 +182,6 @@
     <string name="dialog_edit_amazon_domain_title">تعديل نطاق Amazon</string>
     <string name="dialog_gemini_model_picker_title">اختر النموذج</string>
     <string name="dialog_nickname_message">أدخل لقباً لـ "%1$s". ستتمكن من البحث عنه باستخدام هذا اللقب.</string>
-    <string name="dialog_no">لا</string>
     <string name="dialog_ok">متابعة</string>
     <string name="dialog_okay">موافق</string>
     <string name="dialog_remember_choice">تذكر هذا الخيار</string>
@@ -199,7 +193,6 @@
     <string name="dialog_trigger_error_taken">كلمة التشغيل هذه مستخدمة بالفعل.</string>
     <string name="dialog_trigger_hint">كلمة التشغيل</string>
     <string name="dialog_trigger_message">أدخل كلمة تشغيل من كلمة واحدة لـ "%1$s".</string>
-    <string name="dialog_yes">نعم</string>
     <string name="exclude_marker">تم استبعاده من</string>
     <string name="permission_action_manage_android">إدارة من إعدادات Android</string>
     <string name="permission_settings_dialog_message">يتطلب هذا الإجراء إذن %1$s. سيتم توجيهك إلى إعدادات النظام لمنحه.</string>
@@ -229,11 +222,9 @@
     <string name="app_suggestions_tabs_dialog_message">اختر تبويبات اقتراحات التطبيقات التي تظهر على الشاشة الرئيسية.</string>
     <string name="app_suggestions_tabs_dialog_title">تبويبات اقتراحات التطبيقات</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">اختر التبويبات</string>
-    <string name="app_suggestions_enabled_tabs_summary">الحالي: %1$s</string>
     <string name="app_suggestions_tab_required_toast">يجب إبقاء تبويب واحد على الأقل مفعل لاقتراحات التطبيقات</string>
     <string name="app_suggestions_toggle_desc">إظهار أو إخفاء التطبيقات المقترحة على الشاشة الرئيسية</string>
     <string name="app_suggestions_toggle_title">اقتراحات التطبيقات</string>
-    <string name="show_all_apps_button_toggle_title">جميع التطبيقات</string>
     <string name="show_all_apps_button_toggle_desc">إظهار زر \"جميع التطبيقات\" أسفل اقتراحات التطبيقات</string>
     <string name="app_suggestions_usage_access_link">إذن الوصول إلى بيانات الاستخدام</string>
     <string name="app_suggestions_usage_access_tip">امنح إذن الوصول إلى بيانات الاستخدام للحصول على اقتراحات أكثر ملاءمة</string>
@@ -273,7 +264,6 @@
     <string name="section_app_shortcuts">اختصارات التطبيقات</string>
     <string name="section_apps">التطبيقات</string>
     <string name="section_calendar">أحداث التقويم</string>
-    <string name="section_contacts">جهات الاتصال</string>
     <string name="section_files">الملفات</string>
     <string name="section_notes">الملاحظات</string>
     <string name="section_settings">إعدادات الجهاز</string>
@@ -449,7 +439,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">ملف</string>
     <string name="excluded_item_type_file_extension">امتداد الملف</string>
     <string name="excluded_item_type_folder">مجلد</string>
     <string name="file_extension_label">ملفات .%s</string>
@@ -676,7 +665,6 @@
     <string name="settings_icon_pack_option_system">أيقونات النظام</string>
     <string name="settings_icon_pack_picker_title">اختر حزمة الأيقونات</string>
     <string name="settings_icon_pack_search_query">أيقونات مجانية</string>
-    <string name="settings_icon_pack_selected_label">الحالي: %1$s</string>
     <string name="settings_icon_pack_title">حزمة الأيقونات</string>
     <string name="settings_icon_title">أيقونة الإعدادات</string>
     <string name="settings_launch_options_desc">طرق تشغيل التطبيق المختلفة</string>
@@ -767,7 +755,6 @@
     <string name="settings_custom_provider_advanced_payload_title">حمولة الطلب المتقدمة</string>
     <string name="settings_direct_search_desc">يدعم مفاتيح API لـ Gemini وOpenAI وClaude وGroq</string>
     <string name="settings_direct_search_desc_intro">أضف مفتاح API لتفعيل ميزات البحث والأدوات المدعومة بالذكاء الاصطناعي (AI).</string>
-    <string name="settings_free_api_key_tip_title">احصل على مفتاح API مجاناً</string>
     <string name="settings_free_api_key_tip_description">خطوات الحصول على مفتاح Gemini API مجانًا.</string>
     <string name="settings_open_free_api_key_guide">فتح دليل مفتاح API المجاني</string>
     <string name="settings_direct_search_grounding_label">البحث في الويب</string>
@@ -816,7 +803,6 @@
     <string name="settings_backup_export_button">تصدير</string>
     <string name="settings_backup_export_failed">تعذر تصدير الإعدادات.</string>
     <string name="settings_backup_export_option_pinned_items_title">العناصر المثبتة</string>
-    <string name="settings_backup_export_option_settings_title">الإعدادات</string>
     <string name="settings_backup_export_selection_title">تصدير البيانات</string>
     <string name="settings_backup_export_success">تم تصدير الإعدادات بنجاح.</string>
     <string name="settings_backup_import_button">استيراد</string>
@@ -914,9 +900,7 @@
     <string name="shortcut_voice_search_long_label">فتح البحث الصوتي</string>
     <string name="shortcut_voice_search_short_label">البحث الصوتي</string>
     <string name="voice_input_not_available">الكتابة الصوتية غير متاحة حالياً.</string>
-    <string name="widget_background_color_custom_dialog_hint">رمز اللون Hex (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">لون مخصص</string>
-    <string name="widget_background_color_custom_invalid">يرجى إدخال لون سداسي (Hex) صالح مكون من 6 أرقام.</string>
     <string name="widget_border_color">لون الحدود</string>
     <string name="widget_custom_button_add_desc">إضافة زر مخصص</string>
     <string name="widget_custom_buttons_dialog_hint">يمكنك البحث عن التطبيقات، واختصارات التطبيقات، وجهات الاتصال، والملفات، والمجلدات، والملاحظات، وإعدادات الجهاز.</string>
@@ -1031,7 +1015,6 @@
     <string name="excluded_item_type_app_results">التطبيقات (النتائج)</string>
     <string name="excluded_item_type_app_shortcut">اختصارات التطبيقات</string>
     <string name="excluded_item_type_app_suggestions">التطبيقات (الاقتراحات)</string>
-    <string name="excluded_item_type_contact">جهات الاتصال</string>
     <string name="excluded_item_type_setting">الإعدادات</string>
     <string name="permission_required_title">مطلوب إذن</string>
     <string name="settings_action_clear_all">مسح الكل</string>

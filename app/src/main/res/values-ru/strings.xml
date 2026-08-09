@@ -70,8 +70,9 @@
 <string name="action_add_to_home">На главный экран</string>
 <string name="action_add_trigger">Добавить триггер</string>
 <string name="action_app_info">О приложении</string>
-<string name="action_archive_today_event">В архив</string>
 <string name="action_change_icon">Изменить значок</string>
+<string name="icon_picker_search">Поиск значков</string>
+<string name="icon_picker_title">Изменить значок для «%1$s»</string>
 <string name="action_change_wallpaper">Изменить обои</string>
 <string name="action_clear_all_history">Очистить историю</string>
     <string name="action_edit_icon">Редактировать значок</string>
@@ -103,9 +104,7 @@
 <string name="settings_gesture_swipe_down">Смахивание вниз</string>
 <string name="settings_gesture_swipe_up_home">Смахивание вверх (Главный экран)</string>
 <string name="settings_gesture_swipe_down_home">Смахивание вниз (Главный экран)</string>
-<string name="settings_gesture_quick_note">Быстрая заметка</string>
 <string name="settings_gesture_settings">Настройки</string>
-<string name="settings_gesture_open_keyboard">Открыть клавиатуру</string>
 <string name="settings_gesture_close_keyboard_notifications">Закрыть клавиатуру / Открыть уведомления</string>
 <string name="settings_gesture_close_keyboard">Закрыть клавиатуру</string>
 <string name="settings_gesture_notification_panel">Панель уведомлений</string>
@@ -116,19 +115,15 @@
 <string name="action_pin_app">Закрепить</string>
 <string name="action_pin_to_notifications">Закрепить в уведомлениях</string>
 <string name="action_unpin_from_notifications">Открепить от уведомлений</string>
-<string name="pinned_notifications_channel_name">Закреплённые ярлыки</string>
 <string name="pinned_notifications_channel_description">Быстрый доступ к закреплённым результатам поиска</string>
 <string name="pinned_notifications_title">Закреплённые ярлыки</string>
 <string name="notification_pinned_items_title">Закреплённые элементы уведомлений</string>
 <string name="notification_pinned_items_description">Управление закреплёнными элементами на панели уведомлений</string>
-<string name="notification_pinned_items_dialog_title">Закреплённые элементы уведомлений</string>
-<string name="notification_pinned_items_close">Закрыть</string>
 <string name="notification_pinned_items_remove">Удалить %1$s из уведомлений</string>
 <string name="notification_pinned_item_type_app">Приложение</string>
 <string name="notification_pinned_item_type_app_shortcut">Ярлык приложения</string>
 <string name="notification_pinned_item_type_contact">Контакт</string>
 <string name="notification_pinned_item_type_file">Файл</string>
-<string name="notification_pinned_item_type_setting">Настройки</string>
 <string name="notification_pinned_item_type_note">Заметка</string>
 <string name="action_remove">Удалить</string>
 <string name="action_remove_from_history">Удалить из истории</string>
@@ -186,7 +181,6 @@
 <string name="dialog_edit_amazon_domain_title">Изменить домен Amazon</string>
 <string name="dialog_gemini_model_picker_title">Выберите модель</string>
     <string name="dialog_nickname_message">Введите псевдоним для «%1$s». Вы сможете искать его по этому псевдониму.</string>
-<string name="dialog_no">Нет</string>
 <string name="dialog_ok">Продолжить</string>
 <string name="dialog_okay">Окей</string>
 <string name="dialog_remember_choice">Запомнить выбор</string>
@@ -198,7 +192,6 @@
 <string name="dialog_trigger_error_taken">Этот триггер уже занят.</string>
 <string name="dialog_trigger_hint">Слово-триггер</string>
 <string name="dialog_trigger_message">Введите одно слово в качестве триггера для «%1$s».</string>
-<string name="dialog_yes">Да</string>
 <string name="exclude_marker"> исключено из </string>
 <string name="permission_action_manage_android">Управление в настройках Android</string>
 <string name="permission_settings_dialog_message">Для этого действия требуется разрешение «%1$s». Вы будете перенаправлены в системные настройки для его предоставления.</string>
@@ -228,11 +221,9 @@
 <string name="app_suggestions_tabs_dialog_message">Выберите, какие вкладки с подсказками приложений отображать на главном экране.</string>
 <string name="app_suggestions_tabs_dialog_title">Вкладки с подсказками приложений</string>
 <string name="app_suggestions_enabled_tabs_picker_hint">Выбрать вкладки</string>
-<string name="app_suggestions_enabled_tabs_summary">Текущий: %1$s</string>
 <string name="app_suggestions_tab_required_toast">Должна быть включена хотя бы одна вкладка с подсказками приложений</string>
 <string name="app_suggestions_toggle_desc">Показывать или скрывать рекомендуемые приложения на главном экране</string>
 <string name="app_suggestions_toggle_title">Подсказки приложений</string>
-<string name="show_all_apps_button_toggle_title">Все приложения</string>
 <string name="show_all_apps_button_toggle_desc">Показывать кнопку \"Все приложения\" под подсказками приложений</string>
 <string name="app_suggestions_usage_access_link">доступ к истории использования</string>
 <string name="app_suggestions_usage_access_tip">Предоставьте доступ к истории использования, чтобы видеть более точные рекомендации</string>
@@ -272,7 +263,6 @@
 <string name="section_app_shortcuts">Ярлыки приложений</string>
 <string name="section_apps">Приложения</string>
 <string name="section_calendar">События календаря</string>
-<string name="section_contacts">Контакты</string>
 <string name="section_files">Файлы</string>
 <string name="section_notes">Заметки</string>
 <string name="section_settings">Настройки устройства</string>
@@ -450,7 +440,6 @@
 <!-- ============================================================================
      Files &amp; Folders
      ============================================================================ -->
-<string name="excluded_item_type_file">Файл</string>
 <string name="excluded_item_type_file_extension">Расширение файла</string>
 <string name="excluded_item_type_folder">Папка</string>
 <string name="file_extension_label">Файлы .%s</string>
@@ -691,7 +680,6 @@
 <string name="settings_icon_pack_option_system">Системные значки</string>
 <string name="settings_icon_pack_picker_title">Выберите пакет значков</string>
 <string name="settings_icon_pack_search_query">Бесплатные пакеты значков</string>
-<string name="settings_icon_pack_selected_label">Текущий: %1$s</string>
 <string name="settings_icon_pack_title">Пакет значков</string>
 <string name="settings_icon_title">Значок настроек</string>
 <string name="settings_launch_options_desc">Различные способы запуска приложения</string>
@@ -782,7 +770,6 @@
     <string name="settings_custom_provider_advanced_payload_title">Расширенная полезная нагрузка запроса</string>
 <string name="settings_direct_search_desc">Поддерживаются API-ключи Gemini, OpenAI, Claude и Groq</string>
 <string name="settings_direct_search_desc_intro">Добавьте API-ключ, чтобы включить поиск и инструменты на базе искусственного интеллекта.</string>
-<string name="settings_free_api_key_tip_title">Получить бесплатный API-ключ</string>
 <string name="settings_free_api_key_tip_description">Инструкция по бесплатному получению API-ключа Gemini.</string>
 <string name="settings_open_free_api_key_guide">Открыть руководство по бесплатному API-ключу</string>
 <string name="settings_direct_search_grounding_label">Поиск в Интернете</string>
@@ -831,7 +818,6 @@
 <string name="settings_backup_export_button">Экспорт</string>
 <string name="settings_backup_export_failed">Не удалось экспортировать настройки.</string>
 <string name="settings_backup_export_option_pinned_items_title">Закрепленные элементы</string>
-<string name="settings_backup_export_option_settings_title">Настройки</string>
 <string name="settings_backup_export_selection_title">Экспорт данных</string>
 <string name="settings_backup_export_success">Настройки успешно экспортированы.</string>
 <string name="settings_backup_import_button">Импорт</string>
@@ -929,9 +915,7 @@
 <string name="shortcut_voice_search_long_label">Открыть голосовой поиск</string>
 <string name="shortcut_voice_search_short_label">Голосовой поиск</string>
 <string name="voice_input_not_available">Голосовой ввод сейчас недоступен.</string>
-<string name="widget_background_color_custom_dialog_hint">Цвет в Hex (RRGGBB)</string>
 <string name="widget_background_color_custom_dialog_title">Кастомный цвет</string>
-<string name="widget_background_color_custom_invalid">Введите корректный 6-значный hex-код цвета.</string>
 <string name="widget_border_color">Цвет рамки</string>
 <string name="widget_custom_button_add_desc">Добавить кастомную кнопку</string>
 <string name="widget_custom_buttons_dialog_hint">Вы можете искать приложения, ярлыки приложений, контакты, файлы, папки, заметки и настройки устройства.</string>
@@ -1046,7 +1030,6 @@
 <string name="excluded_item_type_app_results">Приложение (в результатах)</string>
 <string name="excluded_item_type_app_shortcut">Ярлык приложения</string>
 <string name="excluded_item_type_app_suggestions">Приложение (в подсказках)</string>
-<string name="excluded_item_type_contact">Контакт</string>
 <string name="excluded_item_type_setting">Настройка</string>
 <string name="permission_required_title">Требуется разрешение</string>
 <string name="settings_action_clear_all">Очистить всё</string>
