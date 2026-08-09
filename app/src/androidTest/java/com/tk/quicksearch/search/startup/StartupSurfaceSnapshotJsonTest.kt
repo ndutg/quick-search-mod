@@ -82,4 +82,63 @@ class StartupSurfaceSnapshotJsonTest {
     fun handlesCorruptPayload() {
         assertNull(StartupSurfaceSnapshotJson.fromJson("not-json"))
     }
+
+    @Test
+    fun missingFieldsUseBackwardCompatibleDefaults() {
+        val decoded = StartupSurfaceSnapshotJson.fromJson("""{"version":1,"createdAtMillis":42}""")
+
+        assertNotNull(decoded)
+        requireNotNull(decoded)
+        assertEquals(42L, decoded.createdAtMillis)
+        assertEquals(BackgroundSource.THEME, decoded.backgroundSource)
+        assertEquals(AppTheme.MONOCHROME, decoded.appTheme)
+        assertEquals(false, decoded.showWallpaperBackground)
+        assertEquals(0.5f, decoded.wallpaperBackgroundAlpha)
+        assertEquals(20f, decoded.wallpaperBlurRadius)
+        assertEquals(true, decoded.topResultIndicatorEnabled)
+        assertEquals(true, decoded.openKeyboardOnLaunch)
+        assertEquals(1f, decoded.fontScaleMultiplier)
+        assertEquals(true, decoded.showAppLabels)
+        assertEquals(true, decoded.appSuggestionsEnabled)
+        assertEquals(emptyList<AppInfo>(), decoded.suggestedApps)
+        assertEquals(emptyList<SearchTarget>(), decoded.searchTargetsOrder)
+        assertEquals(emptySet<String>(), decoded.disabledSearchTargetIds)
+        assertEquals(false, decoded.isSearchEngineCompactMode)
+        assertEquals(1, decoded.searchEngineCompactRowCount)
+    }
+
+    @Test
+    fun legacyThemeKeyIsStillAccepted() {
+        val decoded =
+            StartupSurfaceSnapshotJson.fromJson(
+                """{"version":1,"overlayGradientTheme":"AURORA","backgroundSource":"SYSTEM_WALLPAPER"}""",
+            )
+
+        assertNotNull(decoded)
+        assertEquals(AppTheme.AURORA, decoded?.appTheme)
+        assertEquals(BackgroundSource.SYSTEM_WALLPAPER, decoded?.backgroundSource)
+        assertEquals(true, decoded?.showWallpaperBackground)
+    }
+
+    @Test
+    fun unknownTargetsAreSkippedWithoutDroppingValidTargets() {
+        val raw =
+            """
+            {
+              "version": 1,
+              "searchTargetsOrder": [
+                {"type":"engine","engine":"GOOGLE"},
+                {"type":"engine","engine":"REMOVED_ENGINE"},
+                {"type":"future_target","id":"future"}
+              ],
+              "disabledSearchTargetIds": ["GOOGLE", "future"]
+            }
+            """.trimIndent()
+
+        val decoded = StartupSurfaceSnapshotJson.fromJson(raw)
+
+        assertNotNull(decoded)
+        assertEquals(listOf(SearchTarget.Engine(SearchEngine.GOOGLE)), decoded?.searchTargetsOrder)
+        assertEquals(setOf("GOOGLE", "future"), decoded?.disabledSearchTargetIds)
+    }
 }

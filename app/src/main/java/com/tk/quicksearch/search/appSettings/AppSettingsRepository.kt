@@ -540,7 +540,7 @@ class AppSettingsRepository(
                     keywords = listOf("grid", "layout"),
                 )
             }
-        }
+        }.also(::validateAppSettingsCatalog)
     }
 
     private fun MutableList<AppSettingResult>.addNavigation(
@@ -720,5 +720,27 @@ class AppSettingsRepository(
         val APPEARANCE_FONT_TOKENS = setOf("fonts", "size", "text")
         val APPEARANCE_LAYOUT_TOKENS =
             setOf("layout", "one handed", "bottom", "searchbar")
+    }
+}
+
+internal fun validateAppSettingsCatalog(settings: List<AppSettingResult>) {
+    check(settings.all { it.id.isNotBlank() }) { "Searchable app-setting IDs must not be blank" }
+
+    val duplicateIds =
+        settings
+            .groupingBy { it.id }
+            .eachCount()
+            .filterValues { count -> count > 1 }
+            .keys
+    check(duplicateIds.isEmpty()) {
+        "Duplicate searchable app-setting IDs: ${duplicateIds.sorted().joinToString()}"
+    }
+
+    SearchSectionRegistry.orderedDefinitions.forEach { definition ->
+        val registrationCount =
+            settings.count { setting -> setting.toggleKey == definition.appSettingsToggleKey }
+        check(registrationCount == 1) {
+            "Expected exactly one searchable toggle for ${definition.section}, found $registrationCount"
+        }
     }
 }

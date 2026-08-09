@@ -22,6 +22,23 @@ internal object SearchEngineIntents {
     private const val GOOGLE_SEARCH_ACTION = "com.google.android.googlequicksearchbox.GOOGLE_SEARCH"
     private const val GMS_SEARCH_EXTRA_QUERY = "query"
 
+    internal data class ShareIntentSpec(
+        val action: String,
+        val packageName: String,
+        val className: String,
+        val mimeType: String,
+        val text: String,
+    )
+
+    internal fun buildKagiShareIntentSpec(query: String) =
+        ShareIntentSpec(
+            action = Intent.ACTION_SEND,
+            packageName = PackageConstants.KAGI_PACKAGE,
+            className = KAGI_HOME_ACTIVITY,
+            mimeType = "text/plain",
+            text = query.trim(),
+        )
+
     fun getNativeHandler(searchEngine: SearchEngine): NativeSearchHandler? =
         when (searchEngine.getNativeLaunchMode()) {
             SearchEngineNativeLaunchMode.CHATGPT -> ::openChatGpt
@@ -465,12 +482,12 @@ internal object SearchEngineIntents {
         context: Application,
         query: String,
     ) {
-        val trimmedQuery = query.trim()
+        val spec = buildKagiShareIntentSpec(query)
         val appSearchIntent =
-            Intent(Intent.ACTION_SEND).apply {
-                setClassName(PackageConstants.KAGI_PACKAGE, KAGI_HOME_ACTIVITY)
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, trimmedQuery)
+            Intent(spec.action).apply {
+                setClassName(spec.packageName, spec.className)
+                type = spec.mimeType
+                putExtra(Intent.EXTRA_TEXT, spec.text)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
@@ -483,7 +500,7 @@ internal object SearchEngineIntents {
             }
         }
 
-        openWebUrl(context, buildSearchUrl(trimmedQuery, SearchEngine.KAGI))
+        openWebUrl(context, buildSearchUrl(spec.text, SearchEngine.KAGI))
     }
 
     /** Opens a web URL in a browser. */
