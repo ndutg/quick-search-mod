@@ -69,6 +69,7 @@ import com.tk.quicksearch.search.searchScreen.PinnedNonAppItemsSection
 import com.tk.quicksearch.search.searchScreen.components.SectionPermissionResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.startup.StartupTrace
 
 /** Unified content layout that handles both one-handed mode and top-aligned layouts. */
 @Composable
@@ -541,6 +542,7 @@ fun ContentLayout(
     @Composable
     fun renderSearchHistoryBlock() {
         if (isHomeCalendarExpanded) return
+        LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.SearchHistoryRendered") }
         HomeLoadingAnimatedContent(
             animationKey = "home-search-history",
             enabled = !hasQuery,

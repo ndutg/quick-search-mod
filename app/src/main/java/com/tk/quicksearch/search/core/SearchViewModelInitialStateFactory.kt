@@ -7,6 +7,7 @@ import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceStore
 import com.tk.quicksearch.shared.util.isLowRamDevice
+import com.tk.quicksearch.app.startup.StartupTrace
 
 internal data class SearchViewModelInitialState(
     val instantStartupSurfaceEnabled: Boolean,
@@ -38,6 +39,9 @@ internal object SearchViewModelInitialStateFactory {
             } else {
                 null
             }
+        if (startupSnapshot != null) {
+            StartupTrace.mark("QS.Home.StartupSnapshotAvailable")
+        }
 
         val initialBackgroundSource = startupPreferencesReader.getBackgroundSource()
         val initialCustomImageUri = startupPreferencesReader.getCustomImageUri()

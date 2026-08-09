@@ -22,6 +22,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.app.startup.StartupTrace
 import android.os.SystemClock
 
 internal interface SearchStartupLifecycleStateAccess {
@@ -296,7 +297,9 @@ internal class SearchStartupLifecycleDelegate(
         saveStartupSurfaceSnapshotAsync(true, false)
     }
 
-    fun refreshOptionalPermissions(): Boolean {
+    fun refreshOptionalPermissions(
+        refreshCalendarData: Boolean = stateAccess.isStartupComplete,
+    ): Boolean {
         val hasContacts = hasContactPermission()
         val hasFiles = hasFilePermission()
         val hasCalendar = hasCalendarPermission()
@@ -340,7 +343,7 @@ internal class SearchStartupLifecycleDelegate(
                 )
             }
 
-            if (hasCalendar) {
+            if (hasCalendar && refreshCalendarData) {
                 loadPinnedAndExcludedCalendarEvents()
             }
 
@@ -362,11 +365,32 @@ internal class SearchStartupLifecycleDelegate(
                     pinningHandler.loadPinnedContactsForStartup()
                 }
 
+            // These provider-backed values define whether enabled Home sections have content or
+            // a valid empty state. Load them on IO during phased startup instead of holding them
+            // behind the long-idle maintenance window.
+            scope.launch(Dispatchers.IO) {
+                pinnedContactsStartupJob.join()
+                pinningHandler.loadPinnedContactsAndFilesNow()
+                pinningHandler.loadExcludedContactsAndFilesNow()
+                loadPinnedAndExcludedCalendarEvents()
+
+                val pinnedSettingsState = settingsSearchHandler.getPinnedAndExcludedOnly()
+                updateResultsState { state ->
+                    state.copy(
+                        pinnedSettings = pinnedSettingsState.pinned,
+                        excludedSettings = pinnedSettingsState.excluded,
+                    )
+                }
+                StartupTrace.mark("QS.Home.PinnedSettingsAvailable")
+                StartupTrace.mark("QS.Home.EnabledSectionsAvailable")
+            }
+
             // Pinned shortcuts are part of the empty-query home surface. Restore the bounded
             // persisted cache as soon as deferred initialization begins so they do not wait for
             // the long-idle system refresh below.
             if (appShortcutSearchHandler.loadCachedShortcutsOnly()) {
                 withContext(Dispatchers.Main) { refreshAppShortcutsState() }
+                StartupTrace.mark("QS.Home.ShortcutsCacheAvailable")
             }
 
             refreshAppsUsageAndPermissions()
@@ -528,11 +552,6 @@ internal class SearchStartupLifecycleDelegate(
                             },
                     )
                 }
-                pinnedContactsStartupJob.join()
-                pinningHandler.loadPinnedContactsAndFiles()
-                pinningHandler.loadExcludedContactsAndFiles()
-                loadPinnedAndExcludedCalendarEvents()
-
                 val pinnedAppShortcutsState = appShortcutSearchHandler.getPinnedAndExcludedOnly()
                 val iconOverrides = userPreferences.getAllAppShortcutIconOverrides()
                 updateUiState { state ->
@@ -550,13 +569,6 @@ internal class SearchStartupLifecycleDelegate(
                     )
                 }
 
-                val pinnedSettingsState = settingsSearchHandler.getPinnedAndExcludedOnly()
-                updateResultsState { state ->
-                    state.copy(
-                        pinnedSettings = pinnedSettingsState.pinned,
-                        excludedSettings = pinnedSettingsState.excluded,
-                    )
-                }
                 // App settings build themselves lazily on the first matching query. Device
                 // settings do the same on their IO search path. Refresh app shortcuts only in
                 // the long-idle tier; their bounded cache was already loaded above.
@@ -566,6 +578,7 @@ internal class SearchStartupLifecycleDelegate(
                 // PackageManager scan out of the critical path and only validate/discover packs
                 // after the optional-startup idle window.
                 iconPackHandler.refreshIconPacks()
+                StartupTrace.mark("QS.Startup.NonessentialRefreshComplete")
             }
 
             withContext(Dispatchers.Main) {
@@ -579,6 +592,7 @@ internal class SearchStartupLifecycleDelegate(
                 }
             }
             withContext(Dispatchers.Default) { refreshDerivedState(null, null) }
+            StartupTrace.mark("QS.Startup.PhasedInitializationComplete")
             saveStartupSurfaceSnapshotAsync(true, false)
         }
     }
@@ -693,6 +707,7 @@ internal class SearchStartupLifecycleDelegate(
 
             if (!cachedAppsList.isNullOrEmpty()) {
                 initializeWithCacheMinimal(cachedAppsList, hasUsagePermission)
+                StartupTrace.mark("QS.Home.CachedAppsAvailable")
             }
         }
         markPermissionSnapshotRefreshed()

@@ -91,6 +91,7 @@ import androidx.compose.ui.zIndex
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.common.AddToHomeHandler
 import com.tk.quicksearch.search.core.AppIconShape
+import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.StartupPhase
@@ -367,7 +368,6 @@ fun AppGridView(
             }
     var showAllAppsDialog by remember { mutableStateOf(false) }
     val shouldShowAllAppsButton = showAllAppsButton && !isSearching && allApps.isNotEmpty()
-
     Column(
             modifier = modifier.fillMaxWidth().then(tabSwipeModifier),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -377,6 +377,12 @@ fun AppGridView(
 
         LaunchedEffect(showAppGrid, isSearching) {
             if (!showAppGrid) return@LaunchedEffect
+            if (!isSearching) {
+                StartupTrace.mark("QS.Home.AppGridComposed")
+                if (showAppLabels) {
+                    StartupTrace.mark("QS.Home.AppLabelsComposed")
+                }
+            }
             if (isSearching || suppressSuggestionsEnterAnimation) {
                 suggestionsAlpha.snapTo(1f)
                 suggestionsTranslationYDp.snapTo(0f)
@@ -385,6 +391,9 @@ fun AppGridView(
                         targetValue = 1f,
                         animationSpec = tween(durationMillis = SuggestionsEnterDurationMillis),
                 )
+            }
+            if (!isSearching) {
+                StartupTrace.mark("QS.Home.AppGridInteractive")
             }
             onGridAppeared?.invoke()
         }
@@ -701,7 +710,6 @@ private fun AllAppsDialogGridItem(
                     userHandleId = app.userHandleId,
                     forceCircularMask = appIconShape == AppIconShape.CIRCLE,
             )
-
     Box(
             modifier =
                     Modifier
@@ -1265,6 +1273,11 @@ private fun AppGridItem(
                     userHandleId = appInfo.userHandleId,
                     forceCircularMask = appIconShape == AppIconShape.CIRCLE,
             )
+    LaunchedEffect(iconResult.bitmap) {
+        if (iconResult.bitmap != null) {
+            StartupTrace.mark("QS.Home.AppIconLoaded")
+        }
+    }
     var showOptions by remember { mutableStateOf(false) }
     val appIconSize =
             remember(appState.isOverlayPresentation, appIconSizeStep) {

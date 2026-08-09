@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.app.startup.StartupTrace
 
 internal class SearchStaticDataDelegate(
     private val scope: CoroutineScope,
@@ -82,12 +83,14 @@ internal class SearchStaticDataDelegate(
             val loadedCached = appShortcutSearchHandler.loadCachedShortcutsOnly()
             if (loadedCached) {
                 withContext(Dispatchers.Main) { refreshAppShortcutsState() }
+                StartupTrace.mark("QS.Home.ShortcutsCacheAvailable")
             }
 
             val loadedFresh = appShortcutSearchHandler.refreshShortcutsFromSystem()
             if (loadedFresh || !loadedCached) {
                 withContext(Dispatchers.Main) { refreshAppShortcutsState() }
             }
+            StartupTrace.mark("QS.Startup.ShortcutsRefreshComplete")
         } finally {
             isAppShortcutsLoadInFlight.set(false)
         }
@@ -254,6 +257,7 @@ internal class SearchStaticDataDelegate(
                 todayCalendarEvents = today,
             )
         }
+        StartupTrace.mark("QS.Home.CalendarAvailable")
     }
 
     fun setAppShortcutEnabled(

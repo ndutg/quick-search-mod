@@ -15,6 +15,7 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.tk.quicksearch.app.startup.StartupTrace
 
 internal class SearchHistoryDelegate(
     private val scope: CoroutineScope,
@@ -35,6 +36,7 @@ internal class SearchHistoryDelegate(
         scope.launch(Dispatchers.IO) {
             if (!featureStateProvider().recentQueriesEnabled) {
                 updateResultsState { it.copy(recentItems = emptyList()) }
+                StartupTrace.mark("QS.Home.SearchHistoryAvailable")
                 return@launch
             }
 
@@ -134,6 +136,7 @@ internal class SearchHistoryDelegate(
                     }
                 }
             updateResultsState { it.copy(recentItems = items) }
+            StartupTrace.mark("QS.Home.SearchHistoryAvailable")
         }
     }
 

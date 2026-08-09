@@ -96,6 +96,7 @@ import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
+import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
@@ -232,6 +233,11 @@ internal fun SearchScreenContent(
                 state.searchTargetsOrder.filter { it.getId() !in state.disabledSearchTargetIds }
             }
     val isImeVisible = WindowInsets.ime.getBottom(density) > 0
+    LaunchedEffect(isImeVisible) {
+        if (isImeVisible) {
+            StartupTrace.mark("QS.Home.KeyboardVisible")
+        }
+    }
     LaunchedEffect(openKeyboardOnLaunchOnStartup, isImeVisible) {
         if (!openKeyboardOnLaunchOnStartup) {
             hasSeenStartupKeyboardVisible = false

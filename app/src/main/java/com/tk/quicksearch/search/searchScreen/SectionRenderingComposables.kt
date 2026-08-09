@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.searchScreen
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import com.tk.quicksearch.search.files.FileResultsSection
 import com.tk.quicksearch.search.notes.NotesResultsSection
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.app.startup.StartupTrace
 
 // ============================================================================
 // Section Rendering Functions
@@ -157,6 +159,9 @@ private fun renderAppsSection(
         context.shouldRenderApps &&
             ((appsParams.hasAppResults && appsParams.apps.isNotEmpty()) || appsParams.showAllAppsButton)
     ) {
+        if (!appsParams.isSearching) {
+            LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.AppSectionRendered") }
+        }
         val shouldShowRateQuickSearchCard = appsParams.showRateQuickSearchCard
         val shouldShowUpdateCard = appsParams.showUpdateCard
         val renderPromptCardsFirst = (shouldShowUpdateCard || shouldShowRateQuickSearchCard) && appsParams.oneHandedMode
@@ -247,6 +252,7 @@ private fun renderAppShortcutsSection(
 ) {
     val appShortcutsParams = params.appShortcutsParams ?: return
     if (context.shouldRenderAppShortcuts) {
+        LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.ShortcutsRendered") }
         AppShortcutResultsSection(
             shortcuts = context.appShortcutsList,
             isExpanded = context.isAppShortcutsExpanded,
@@ -356,6 +362,9 @@ private fun renderCalendarSection(
 ) {
     val calendarParams = params.calendarParams ?: return
     if (context.shouldRenderCalendar || context.todayCalendarEventsList.isNotEmpty()) {
+        if (context.isHomeScreenCalendarMode || context.todayCalendarEventsList.isNotEmpty()) {
+            LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.CalendarRendered") }
+        }
         if (context.isHomeScreenCalendarMode && context.todayCalendarEventsList.isNotEmpty()) {
             if (!calendarParams.isExpanded && !context.hideHomeSectionTitleRows) {
                 Text(
