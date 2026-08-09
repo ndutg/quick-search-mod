@@ -223,7 +223,7 @@ internal fun AppSettingResultRow(
         Modifier.fillMaxWidth()
             .heightIn(min = ROW_MIN_HEIGHT.dp)
             .topPredictedRowContainer(isTopPredicted = isPredicted)
-            .topPredictedRowContentPadding(isTopPredicted = isPredicted)
+            .topPredictedRowContentPadding()
             .padding(vertical = DesignTokens.SpacingLarge)
             .combinedClickable(
                 enabled = !isBlockedByLauncher,

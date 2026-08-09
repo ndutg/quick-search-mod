@@ -1141,12 +1141,6 @@ internal class SearchPreferencesDelegate(
         }
     }
 
-    fun loadCustomToolsInitialState(): Pair<List<CustomTool>, Set<String>> {
-        val tools = userPreferences.getCustomTools()
-        val disabled = userPreferences.getDisabledCustomTools()
-        return Pair(tools, disabled)
-    }
-
     fun addCustomTool(
         name: String,
         prompt: String,

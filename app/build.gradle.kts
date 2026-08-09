@@ -122,7 +122,6 @@ dependencies {
     baselineProfile(project(":benchmark"))
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-    compileOnly(libs.error.prone.annotations)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)

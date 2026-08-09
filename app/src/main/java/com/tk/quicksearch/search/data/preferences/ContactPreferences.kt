@@ -120,13 +120,6 @@ class ContactPreferences(
             ).apply()
     }
 
-    fun clearPrimaryContactCardAction(contactId: Long) {
-        prefs
-            .edit()
-            .remove("${BasePreferences.KEY_CONTACT_PRIMARY_ACTION_PREFIX}$contactId")
-            .apply()
-    }
-
     fun getSecondaryContactCardAction(contactId: Long): com.tk.quicksearch.search.contacts.models.ContactCardAction? {
         val serialized =
             prefs.getString(
@@ -151,10 +144,4 @@ class ContactPreferences(
             ).apply()
     }
 
-    fun clearSecondaryContactCardAction(contactId: Long) {
-        prefs
-            .edit()
-            .remove("${BasePreferences.KEY_CONTACT_SECONDARY_ACTION_PREFIX}$contactId")
-            .apply()
-    }
 }

@@ -1,7 +1,6 @@
 package com.tk.quicksearch.settings.AppShortcutsSettings
 
 import android.content.Context
-import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import java.util.Locale
 
 fun shortcutMatchPriority(name: String, query: String, locale: Locale): ShortcutSearchMatchPriority? {
@@ -16,21 +15,6 @@ fun shortcutMatchPriority(name: String, query: String, locale: Locale): Shortcut
         normalizedName.contains(query) -> ShortcutSearchMatchPriority.CONTAINS
         else -> null
     }
-}
-
-fun bestShortcutMatchPriority(
-    group: AppShortcutGroup,
-    query: String,
-    locale: Locale,
-): ShortcutSearchMatchPriority? {
-    val allCandidates =
-        buildList {
-            add(group.appLabel)
-            addAll(group.shortcuts.map(::shortcutDisplayName))
-            addAll(group.sources.map { it.label })
-            addAll(group.searchTargetSources.map { it.label })
-        }
-    return allCandidates.mapNotNull { shortcutMatchPriority(it, query, locale) }.minOrNull()
 }
 
 fun resolveAppLabel(

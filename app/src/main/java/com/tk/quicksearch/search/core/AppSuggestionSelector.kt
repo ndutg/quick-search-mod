@@ -114,7 +114,6 @@ internal class AppSuggestionSelector(
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
-        val startOfToday = calendar.timeInMillis
         calendar.add(Calendar.DAY_OF_YEAR, 1)
         val startOfTomorrow = calendar.timeInMillis
         calendar.add(Calendar.DAY_OF_YEAR, -2)

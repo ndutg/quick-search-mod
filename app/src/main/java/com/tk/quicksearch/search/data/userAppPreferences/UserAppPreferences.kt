@@ -62,7 +62,7 @@ class UserAppPreferences(
     private val amazonPreferences by lazy { AmazonPreferences(context) }
     private val recentSearchesPreferences by lazy { SearchHistoryPreferences(context) }
     private val recentResultOpensPreferences by lazy { RecentResultOpensPreferences(context) }
-    private val startupPreferences by lazy { StartupPreferencesFacade(this, context) }
+    private val startupPreferences by lazy { StartupPreferencesFacade(context) }
     private val aiStartupPreferences by lazy {
         context.applicationContext.getSharedPreferences(
                 AI_STARTUP_PREFS_NAME,
@@ -814,18 +814,6 @@ class UserAppPreferences(
         refreshConfiguredAiProviderHint()
     }
 
-    /** Clear the API key for every provider (used when resetting). */
-    fun clearAllLlmApiKeys() {
-        geminiPreferences.setGeminiApiKey(null)
-        openAiPreferences.setApiKey(null)
-        anthropicPreferences.setApiKey(null)
-        groqPreferences.setApiKey(null)
-        customLlmProviderPreferences.getProviders().forEach {
-            customLlmProviderPreferences.removeProvider(AiSearchLlmProviderId.custom(it.id))
-        }
-        aiStartupPreferences.edit().putBoolean(KEY_HAS_CONFIGURED_AI_PROVIDER, false).apply()
-    }
-
     fun getLlmModel(providerId: AiSearchLlmProviderId): String =
         if (providerId.isCustom) {
             customLlmProviderPreferences.getProvider(providerId)?.modelId ?: OpenAiModelCatalog.DEFAULT_MODEL_ID
@@ -936,14 +924,6 @@ class UserAppPreferences(
             !groqPreferences.getApiKey().isNullOrBlank() ||
             customLlmProviderPreferences.getProviders().any { it.apiKey.isNotBlank() }
 
-    /** Non-sensitive startup hint. Null means an older install has not reconciled it yet. */
-    fun getConfiguredAiProviderHint(): Boolean? =
-        if (aiStartupPreferences.contains(KEY_HAS_CONFIGURED_AI_PROVIDER)) {
-            aiStartupPreferences.getBoolean(KEY_HAS_CONFIGURED_AI_PROVIDER, false)
-        } else {
-            null
-        }
-
     /** Opens encrypted storage only from an AI/settings or long-idle path. */
     fun refreshConfiguredAiProviderHint(): Boolean =
         hasAnyLlmApiKey().also { configured ->
@@ -973,9 +953,6 @@ class UserAppPreferences(
     fun getConfiguredLlmProviderIds(): List<AiSearchLlmProviderId> =
         AiSearchLlmProviderId.entries +
             customLlmProviderPreferences.getProviders().map { AiSearchLlmProviderId.custom(it.id) }
-
-    fun getCustomLlmProviders(): List<CustomLlmProviderConfig> =
-        customLlmProviderPreferences.getProviders()
 
     fun getCustomLlmProvider(providerId: AiSearchLlmProviderId): CustomLlmProviderConfig? =
         customLlmProviderPreferences.getProvider(providerId)

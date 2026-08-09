@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -53,7 +52,6 @@ import com.tk.quicksearch.searchEngines.inferCustomSearchEngineName
 import com.tk.quicksearch.searchEngines.IN_APP_BROWSER_PACKAGE
 import com.tk.quicksearch.searchEngines.loadCustomIconAsBase64
 import com.tk.quicksearch.searchEngines.validateCustomSearchTemplate
-import com.tk.quicksearch.shared.ui.components.AppBottomSheet
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -62,23 +60,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-@Composable
-fun AddSearchEngineBottomSheet(
-    availableBrowsers: List<BrowserApp> = emptyList(),
-    onSave: (String, String, String, String?) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AppBottomSheet(onDismissRequest = onDismiss, swipeToDismissEnabled = false) {
-        AddSearchEngineForm(
-            availableBrowsers = availableBrowsers,
-            onSave = onSave,
-            onCancel = onDismiss,
-            modifier = Modifier.imePadding(),
-            requestInitialFocus = true,
-        )
-    }
-}
 
 @Composable
 fun AddSearchEngineCard(

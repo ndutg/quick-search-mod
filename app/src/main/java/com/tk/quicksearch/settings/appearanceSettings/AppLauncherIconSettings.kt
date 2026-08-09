@@ -32,7 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -51,11 +50,9 @@ private val LauncherIconPreviewSize = DesignTokens.Spacing48
 private const val IconsPerRow = 4
 
 @Composable
-@Suppress("UNUSED_PARAMETER")
 fun AppLauncherIconCard(
     launcherAppIcon: LauncherAppIcon,
     onSetLauncherAppIcon: (LauncherAppIcon) -> Unit,
-    appTheme: AppTheme,
     modifier: Modifier = Modifier,
 ) {
     val tiles = launcherIconPickerTiles()

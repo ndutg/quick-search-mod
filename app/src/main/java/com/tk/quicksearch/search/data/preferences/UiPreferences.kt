@@ -1218,7 +1218,6 @@ class UiPreferences(
         private const val APP_ICON_SIZE_PERCENT_DELTA = 5
         private const val MIN_APP_ICON_SIZE_PERCENT = 50
         private const val DEFAULT_APP_ICON_SIZE_PERCENT = 80
-        private const val MAX_APP_ICON_SIZE_PERCENT = 100
         const val DEFAULT_TOP_MATCHES_LIMIT = 3
         val TOP_MATCHES_LIMIT_OPTIONS = listOf(1, 3, 5, 7, 10)
         val DEFAULT_TOP_MATCHES_SECTION_ORDER: List<SearchSection>
@@ -1239,7 +1238,6 @@ class UiPreferences(
         const val KEY_HAS_SEEN_OVERLAY_ASSISTANT_TIP = "has_seen_overlay_assistant_tip"
         const val KEY_HAS_SEEN_SETTINGS_SEARCH_TIP = "has_seen_settings_search_tip"
         // Section preferences keys
-        const val KEY_SECTION_ORDER = "section_order"
         const val KEY_DISABLED_SECTIONS = "disabled_sections"
 
         // Amazon domain preferences keys
@@ -1282,7 +1280,6 @@ class UiPreferences(
         const val DEFAULT_FONT_SCALE_MULTIPLIER = 1f
         const val OVERLAY_THEME_INTENSITY_STEP = 0.1f
         const val OVERLAY_THEME_INTENSITY_DELTA_STEPS = 2
-        const val FONT_SCALE_MULTIPLIER_STEP = 0.05f
         const val MIN_OVERLAY_THEME_INTENSITY =
                 DEFAULT_OVERLAY_THEME_INTENSITY -
                         (OVERLAY_THEME_INTENSITY_STEP * OVERLAY_THEME_INTENSITY_DELTA_STEPS)

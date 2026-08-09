@@ -111,6 +111,5 @@ internal fun Modifier.topPredictedRowContainer(
         .clip(shape)
 
 internal fun Modifier.topPredictedRowContentPadding(
-    @Suppress("UNUSED_PARAMETER") isTopPredicted: Boolean,
 ): Modifier =
     this

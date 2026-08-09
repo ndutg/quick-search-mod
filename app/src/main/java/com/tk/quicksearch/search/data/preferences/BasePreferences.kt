@@ -540,7 +540,6 @@ abstract class BasePreferences(
         const val KEY_CALLING_APP = "calling_app"
         const val KEY_FIRST_LAUNCH = "first_launch"
         const val KEY_INSTALL_TIME = "install_time"
-        const val KEY_CLEAR_QUERY_AFTER_SEARCH_ENGINE = "clear_query_after_search_engine"
         const val KEY_SELECTED_ICON_PACK = "selected_icon_pack"
         const val KEY_LAST_SEEN_VERSION = "last_seen_version"
         const val KEY_AI_SEARCH_SETUP_EXPANDED = "direct_search_setup_expanded"

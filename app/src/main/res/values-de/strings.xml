@@ -752,8 +752,6 @@
     <string name="settings_custom_provider_advanced_payload_error">Geben Sie ein gültiges JSON-Objekt ein.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">Erweiterte Anfrage-Payload</string>
-    <string name="settings_direct_search_desc">Gemini-, OpenAI-, Claude- und Groq-API-Schlüssel werden unterstützt</string>
-    <string name="settings_direct_search_desc_intro">Füge einen API-Schlüssel hinzu, um KI-gestützte Suche und Tools zu aktivieren.</string>
     <string name="settings_free_api_key_tip_description">Schritte, um kostenlos einen Gemini-API-Schlüssel zu erhalten.</string>
     <string name="settings_open_free_api_key_guide">Anleitung für kostenlosen API-Schlüssel öffnen</string>
     <string name="settings_direct_search_grounding_label">Web-Suche</string>

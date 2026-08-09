@@ -346,7 +346,6 @@
     <string name="settings_app_shortcuts_add_url_dialog_title">添加 URL 快捷方式到 %1$s</string>
     <string name="settings_app_shortcuts_add_url_shortcut">自定义 URL</string>
     <plurals name="settings_app_shortcuts_card_count">
-        <item quantity="one">%d 个快捷方式</item>
         <item quantity="other">%d 个快捷方式</item>
     </plurals>
     <string name="settings_app_shortcuts_collapse_all">全部折叠</string>
@@ -485,38 +484,31 @@
     <string name="calendar_edit_event_title">编辑日程</string>
     <string name="calendar_relative_ago_format">%1$s前</string>
     <plurals name="calendar_relative_days">
-        <item quantity="one">%d 天</item>
         <item quantity="other">%d 天</item>
     </plurals>
     <string name="calendar_relative_in_format">%1$s后</string>
     <string name="calendar_relative_in_minutes">%1$d 分钟后</string>
     <string name="calendar_relative_now">现在</string>
     <plurals name="calendar_relative_months">
-        <item quantity="one">%d 个月</item>
         <item quantity="other">%d 个月</item>
     </plurals>
     <string name="calendar_relative_today">今天</string>
     <string name="calendar_relative_tomorrow">明天</string>
     <plurals name="calendar_relative_years">
-        <item quantity="one">%d 年</item>
         <item quantity="other">%d 年</item>
     </plurals>
     <string name="calendar_relative_yesterday">昨天</string>
     <string name="calendar_repeats_daily">每天</string>
     <plurals name="calendar_repeats_every_days">
-        <item quantity="one">每 %d 天</item>
         <item quantity="other">每 %d 天</item>
     </plurals>
     <plurals name="calendar_repeats_every_months">
-        <item quantity="one">每 %d 个月</item>
         <item quantity="other">每 %d 个月</item>
     </plurals>
     <plurals name="calendar_repeats_every_weeks">
-        <item quantity="one">每 %d 周</item>
         <item quantity="other">每 %d 周</item>
     </plurals>
     <plurals name="calendar_repeats_every_years">
-        <item quantity="one">每 %d 年</item>
         <item quantity="other">每 %d 年</item>
     </plurals>
     <string name="calendar_repeats_generic">定期重复</string>
@@ -752,8 +744,6 @@
     <string name="settings_custom_provider_advanced_payload_error">请输入有效的 JSON 对象。</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">高级请求负载</string>
-    <string name="settings_direct_search_desc">支持 Gemini、OpenAI、Claude 和 Groq 的 API 密钥</string>
-    <string name="settings_direct_search_desc_intro">添加 API 密钥以启用 AI 驱动的搜索和相关实用工具。</string>
     <string name="settings_free_api_key_tip_description">免费获取 Gemini API 密钥的步骤。</string>
     <string name="settings_open_free_api_key_guide">打开免费 API 密钥指南</string>
     <string name="settings_direct_search_grounding_label">联网搜索</string>

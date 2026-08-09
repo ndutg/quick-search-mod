@@ -9,13 +9,11 @@ import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.models.FileType
-import com.tk.quicksearch.search.data.UserAppPreferences
 
 /**
  * Facade for startup preference operations
  */
 class StartupPreferencesFacade(
-    private val parent: UserAppPreferences,
     private val context: Context
 ) {
     /**

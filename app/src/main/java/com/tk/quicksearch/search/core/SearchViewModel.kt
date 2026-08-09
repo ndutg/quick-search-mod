@@ -700,7 +700,6 @@ class SearchViewModel(
     }
     private fun applyVisibilityStates(state: SearchUiState): SearchUiState =
             visibilityStateResolver.apply(state)
-    private fun updateVisibilityStates() = updateUiState { currentState -> applyVisibilityStates(currentState) }
     companion object {
         @Volatile private var inMemoryRetainedQuery: String = ""
         // Keep a short debounce to collapse very fast key bursts without making the primary app

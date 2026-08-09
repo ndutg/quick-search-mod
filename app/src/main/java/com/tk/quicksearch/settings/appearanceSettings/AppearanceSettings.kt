@@ -177,7 +177,6 @@ fun AppearanceSettingsSection(
         AppLauncherIconCard(
                 launcherAppIcon = launcherAppIcon,
                 onSetLauncherAppIcon = onSetLauncherAppIcon,
-                appTheme = appTheme,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

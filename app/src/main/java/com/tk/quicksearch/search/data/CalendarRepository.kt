@@ -1,9 +1,7 @@
 package com.tk.quicksearch.search.data
 
 import android.Manifest
-import android.content.ContentUris
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.CalendarContract
@@ -105,11 +103,6 @@ class CalendarRepository(
         return queryEventsAroundNow(now = now, limit = ids.size, eventIds = ids)
     }
 
-    fun getFutureEvents(limit: Int = MAX_EVENT_SEARCH_CANDIDATES): List<CalendarEventInfo> {
-        if (limit <= 0 || !hasPermission()) return emptyList()
-        return queryEventsAroundNow(now = System.currentTimeMillis(), limit = limit)
-    }
-
     fun getUpcomingEventsSortedAscending(limit: Int): List<CalendarEventInfo> {
         if (limit <= 0 || !hasPermission()) return emptyList()
         val now = System.currentTimeMillis()
@@ -186,12 +179,6 @@ class CalendarRepository(
 
         return recurrenceByEventId
     }
-
-    fun createViewEventIntent(eventId: Long): Intent =
-        Intent(Intent.ACTION_VIEW).apply {
-            data = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
 
     private fun queryEventsAroundNow(
         now: Long,
