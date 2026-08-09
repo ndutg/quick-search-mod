@@ -573,13 +573,19 @@ internal fun SearchScreenContent(
                 if (!shouldShowPredictedHighlight) {
                     null
                 } else {
+                    val defaultBrowserPackage =
+                            if (isLikelyWebUrl(state.query.trim())) {
+                                resolveDefaultBrowserPackage(context)
+                            } else {
+                                null
+                            }
                     resolvePredictedSubmitTarget(
                             query = state.query,
                             renderingState = renderingState,
                             enabledTargets = enabledTargets,
                             detectedShortcutTarget = state.detectedShortcutTarget,
                             searchTargetsOrder = state.searchTargetsOrder,
-                            defaultBrowserPackage = resolveDefaultBrowserPackage(context),
+                            defaultBrowserPackage = defaultBrowserPackage,
                     )
                 }
             }
@@ -1052,7 +1058,6 @@ internal fun SearchScreenContent(
                     }
 
                     val isUrlQuery = isLikelyWebUrl(trimmedQuery)
-                    val defaultBrowserPackage = resolveDefaultBrowserPackage(context)
 
                     // If query has trailing/leading spaces, trim it first
                     if (state.query != trimmedQuery) {
@@ -1060,6 +1065,7 @@ internal fun SearchScreenContent(
                     }
 
                     if (isUrlQuery && trimmedQuery.isNotBlank()) {
+                        val defaultBrowserPackage = resolveDefaultBrowserPackage(context)
                         val browserTarget =
                                 defaultBrowserTarget(state.searchTargetsOrder, defaultBrowserPackage)
                         if (browserTarget != null) {

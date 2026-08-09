@@ -152,6 +152,7 @@ internal class SearchStartupLifecycleDelegate(
     private var optionalStartupJob: Job? = null
     private var packageRefreshJob: Job? = null
     private var appUsageRefreshJob: Job? = null
+    private var resumeCalendarRefreshJob: Job? = null
     private val pinningHandler get() = handlersProvider().pinningHandler
     private val searchEngineManager get() = handlersProvider().searchEngineManager
     private val secondarySearchOrchestrator get() = handlersProvider().secondarySearchOrchestrator
@@ -222,7 +223,6 @@ internal class SearchStartupLifecycleDelegate(
         if (startupComplete && optionalPermissionsChanged) {
             pinningHandler.loadPinnedContactsAndFiles()
             pinningHandler.loadExcludedContactsAndFiles()
-            loadPinnedAndExcludedCalendarEvents()
         }
 
         if (startupComplete && stateAccess.resumeNeedsStaticDataRefresh) {
@@ -232,7 +232,11 @@ internal class SearchStartupLifecycleDelegate(
         }
 
         if (startupComplete) {
-            loadPinnedAndExcludedCalendarEvents()
+            resumeCalendarRefreshJob?.cancel()
+            resumeCalendarRefreshJob =
+                scope.launch(Dispatchers.IO) {
+                    loadPinnedAndExcludedCalendarEvents()
+                }
             refreshAppUsageMetadata()
         }
 

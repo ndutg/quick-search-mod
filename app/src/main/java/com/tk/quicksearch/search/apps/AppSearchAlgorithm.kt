@@ -37,10 +37,12 @@ object AppSearchAlgorithm {
     ): List<AppInfo> {
         if (queryContext.normalizedQuery.isBlank()) return emptyList()
 
-        val canUseFuzzySearch = fuzzySearchStrategy.canUseFuzzySearch(queryContext.normalizedQuery)
+        val preparedFuzzyQuery =
+            fuzzySearchStrategy.prepareQuery(queryContext.normalizedQuery)
+        val canUseFuzzySearch = preparedFuzzyQuery.policy.enabled
         val fuzzyCandidateLimit =
             if (canUseFuzzySearch) {
-                fuzzySearchStrategy.fuzzyCandidateLimitFor(queryContext.normalizedQuery)
+                preparedFuzzyQuery.policy.candidateLimit
             } else {
                 0
             }
@@ -54,6 +56,7 @@ object AppSearchAlgorithm {
                         app = app,
                         queryContext = queryContext,
                         fuzzySearchStrategy = fuzzySearchStrategy,
+                        preparedFuzzyQuery = preparedFuzzyQuery,
                         appNicknames = appNicknames,
                         canScoreFuzzyCandidate = {
                             if (fuzzyCandidatesScored >= fuzzyCandidateLimit) {
@@ -91,6 +94,7 @@ object AppSearchAlgorithm {
         app: AppInfo,
         queryContext: SearchQueryContext,
         fuzzySearchStrategy: FuzzyAppSearchStrategy,
+        preparedFuzzyQuery: PreparedAppFuzzyQuery,
         appNicknames: Map<String, String>,
         canScoreFuzzyCandidate: () -> Boolean,
     ): AppMatch? {
@@ -114,7 +118,7 @@ object AppSearchAlgorithm {
 
         if (
             !fuzzySearchStrategy.isTypoEligibleCandidate(
-                query = queryContext.normalizedQuery,
+                preparedQuery = preparedFuzzyQuery,
                 appName = app.appName,
                 nickname = nickname,
                 initials = initials,
@@ -126,8 +130,8 @@ object AppSearchAlgorithm {
         if (!canScoreFuzzyCandidate()) return null
 
         val match =
-            fuzzySearchStrategy.computeMatch(
-                query = queryContext.normalizedQuery,
+            fuzzySearchStrategy.scoreEligibleCandidate(
+                preparedQuery = preparedFuzzyQuery,
                 app = app,
                 nickname = appNicknames[app.packageName],
                 initials = initials,
