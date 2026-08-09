@@ -35,6 +35,7 @@ class SecondarySearchOrchestrator(
 
     companion object {
         private const val SECONDARY_SEARCH_DEBOUNCE_MS = 150L
+        private const val WEB_SUGGESTIONS_AFTER_LOCAL_RESULTS_DELAY_MS = 32L
     }
 
     fun willRunSecondarySearch(query: String): Boolean {
@@ -240,23 +241,33 @@ class SecondarySearchOrchestrator(
                             )
                         }
 
-                        // Fetch web suggestions if query is long enough and suggestions are enabled
-                        if (shouldFetchWebSuggestions) {
-                            webSuggestionHandler.fetchWebSuggestions(
-                                trimmedQuery,
-                                currentVersion,
-                                activeQueryVersionProvider = {
-                                    this@SecondarySearchOrchestrator.queryVersion.get()
-                                },
-                                activeQueryProvider = { currentStateProvider().query },
-                            )
-                        } else {
+                        if (!shouldFetchWebSuggestions) {
                             // Clear suggestions if disabled or query too short
                             webSuggestionHandler.cancelSuggestions()
                             uiStateUpdater { state ->
                                 state.copy(webSuggestions = emptyList(), webSuggestionsLoading = false)
                             }
                         }
+                    }
+                }
+
+                if (shouldFetchWebSuggestions) {
+                    // Let the local-results state update render before starting DNS/network work.
+                    // On older, memory-constrained devices, launching both in the same frame can
+                    // preempt the main thread while Compose is measuring the new result cards.
+                    delay(WEB_SUGGESTIONS_AFTER_LOCAL_RESULTS_DELAY_MS)
+                    if (currentVersion != queryVersion.get()) return@launch
+
+                    withContext(Dispatchers.Main) {
+                        if (currentVersion != queryVersion.get()) return@withContext
+                        webSuggestionHandler.fetchWebSuggestions(
+                            trimmedQuery,
+                            currentVersion,
+                            activeQueryVersionProvider = {
+                                this@SecondarySearchOrchestrator.queryVersion.get()
+                            },
+                            activeQueryProvider = { currentStateProvider().query },
+                        )
                     }
                 }
             }
