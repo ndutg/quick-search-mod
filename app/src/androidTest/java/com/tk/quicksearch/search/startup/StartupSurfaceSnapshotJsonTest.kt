@@ -2,6 +2,10 @@ package com.tk.quicksearch.search.startup
 
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.AppTheme
+import com.tk.quicksearch.search.core.BrowserApp
+import com.tk.quicksearch.search.core.CustomSearchEngine
+import com.tk.quicksearch.search.core.SearchEngine
+import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.models.AppInfo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -43,6 +47,23 @@ class StartupSurfaceSnapshotJsonTest {
                             componentName = "com.maps/.Main",
                         ),
                     ),
+                searchTargetsOrder =
+                    listOf(
+                        SearchTarget.Engine(SearchEngine.GOOGLE),
+                        SearchTarget.Browser(BrowserApp("com.browser", "Browser")),
+                        SearchTarget.Custom(
+                            CustomSearchEngine(
+                                id = "docs",
+                                name = "Docs",
+                                urlTemplate = "https://example.com?q=%s",
+                                faviconBase64 = "favicon",
+                                browserPackage = "com.browser",
+                            ),
+                        ),
+                    ),
+                disabledSearchTargetIds = setOf(SearchEngine.GOOGLE.name),
+                isSearchEngineCompactMode = true,
+                searchEngineCompactRowCount = 2,
             )
 
         val decoded = StartupSurfaceSnapshotJson.fromJson(StartupSurfaceSnapshotJson.toJson(source))

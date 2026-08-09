@@ -427,24 +427,6 @@ internal class SearchStartupLifecycleDelegate(
             val messagingInfo = getMessagingAppInfo(packageNames)
 
             searchEngineManager.ensureInitialized()
-            val visibleSearchTargetIconPackages =
-                searchEngineManager
-                    .getEnabledSearchTargets()
-                    .take(MAX_STARTUP_SEARCH_TARGETS_TO_PREFETCH)
-                    .flatMap { target ->
-                        when (target) {
-                            is SearchTarget.Engine -> target.engine.getAppPackageCandidates()
-                            is SearchTarget.Browser -> listOf(target.app.packageName)
-                            is SearchTarget.Custom -> emptyList()
-                        }
-                    }
-            prefetchAppIcons(
-                context = applicationProvider(),
-                packageNames = visibleSearchTargetIconPackages,
-                iconPackPackage = userPreferences.getSelectedIconPackPackage(),
-                maxCount = MAX_STARTUP_SEARCH_TARGET_ICON_PACKAGES,
-                forceCircularMask = configStateProvider().appIconShape == AppIconShape.CIRCLE,
-            )
             val shortcutsState = aliasHandler.getInitialState()
             val customTools = normalizeCustomToolModels(userPreferences.getCustomTools())
             val hasApiKey = userPreferences.hasAnyLlmApiKey()
@@ -500,6 +482,39 @@ internal class SearchStartupLifecycleDelegate(
                         },
                 )
             }
+            updateResultsState { state ->
+                val searchEnginesState =
+                    when {
+                        state.detectedShortcutTarget != null ->
+                            SearchEnginesVisibility.ShortcutDetected(state.detectedShortcutTarget)
+                        state.detectedAliasSearchSection != null -> SearchEnginesVisibility.Hidden
+                        searchEngineManager.isSearchEngineCompactMode &&
+                            searchEngineManager.getEnabledSearchTargets().isNotEmpty() ->
+                            SearchEnginesVisibility.Compact
+                        else -> SearchEnginesVisibility.Hidden
+                    }
+                state.copy(searchEnginesState = searchEnginesState)
+            }
+            StartupTrace.mark("QS.Home.SearchEnginesPublished")
+
+            val visibleSearchTargetIconPackages =
+                searchEngineManager
+                    .getEnabledSearchTargets()
+                    .take(MAX_STARTUP_SEARCH_TARGETS_TO_PREFETCH)
+                    .flatMap { target ->
+                        when (target) {
+                            is SearchTarget.Engine -> target.engine.getAppPackageCandidates()
+                            is SearchTarget.Browser -> listOf(target.app.packageName)
+                            is SearchTarget.Custom -> emptyList()
+                        }
+                    }
+            prefetchAppIcons(
+                context = applicationProvider(),
+                packageNames = visibleSearchTargetIconPackages,
+                iconPackPackage = userPreferences.getSelectedIconPackPackage(),
+                maxCount = MAX_STARTUP_SEARCH_TARGET_ICON_PACKAGES,
+                forceCircularMask = configStateProvider().appIconShape == AppIconShape.CIRCLE,
+            )
             updateConfigState { state ->
                 state.copy(
                     showSearchEngineOnboarding =

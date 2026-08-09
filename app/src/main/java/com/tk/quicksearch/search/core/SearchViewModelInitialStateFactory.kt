@@ -6,6 +6,7 @@ import com.tk.quicksearch.search.data.filterAvailableStartupApps
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceStore
+import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import com.tk.quicksearch.app.startup.StartupTrace
 
@@ -28,11 +29,17 @@ internal object SearchViewModelInitialStateFactory {
         val startupSnapshot =
             if (instantStartupSurfaceEnabled) {
                 startupSurfaceStore.loadSnapshot()?.let { snapshot ->
+                    val availableSuggestions =
+                        filterAvailableStartupApps(
+                            context = appContext,
+                            apps = snapshot.suggestedApps,
+                        )
                     snapshot.copy(
                         suggestedApps =
-                            filterAvailableStartupApps(
-                                context = appContext,
-                                apps = snapshot.suggestedApps,
+                            applyRecentLaunchOrderToStartupSuggestions(
+                                apps = availableSuggestions,
+                                pinnedAppKeys = startupPreferencesReader.getPinnedPackages(),
+                                recentLaunchKeys = startupPreferencesReader.getRecentAppLaunches(),
                             ),
                     )
                 }
@@ -67,6 +74,12 @@ internal object SearchViewModelInitialStateFactory {
             }
 
         val clearQueryOnLaunch = startupPreferencesReader.isClearQueryOnLaunchEnabled()
+        val hasCachedEnabledSearchTargets =
+            startupSnapshot?.let { snapshot ->
+                snapshot.searchTargetsOrder.any { target ->
+                    target.getId() !in snapshot.disabledSearchTargetIds
+                }
+            } == true
 
         val initialResultsState =
             SearchResultsState(
@@ -74,6 +87,12 @@ internal object SearchViewModelInitialStateFactory {
                 recentApps = startupSnapshot?.suggestedApps.orEmpty(),
                 pinnedNonAppItemOrder = startupPreferencesReader.getPinnedNonAppItemOrder(),
                 indexedAppCount = startupSnapshot?.suggestedApps?.size ?: 0,
+                searchEnginesState =
+                    if (startupSnapshot?.isSearchEngineCompactMode == true && hasCachedEnabledSearchTargets) {
+                        SearchEnginesVisibility.Compact
+                    } else {
+                        SearchEnginesVisibility.Hidden
+                    },
             )
 
         // Seeded from preferences so fuzzy matching never runs against the enabled-by-default
@@ -82,6 +101,12 @@ internal object SearchViewModelInitialStateFactory {
 
         val initialFeatureState =
             SearchFeatureState(
+                searchTargetsOrder = startupSnapshot?.searchTargetsOrder.orEmpty(),
+                disabledSearchTargetIds = startupSnapshot?.disabledSearchTargetIds.orEmpty(),
+                isSearchEngineCompactMode =
+                    startupSnapshot?.isSearchEngineCompactMode == true && hasCachedEnabledSearchTargets,
+                searchEngineCompactRowCount =
+                    startupSnapshot?.searchEngineCompactRowCount?.coerceIn(1, 2) ?: 1,
                 fuzzySearchEnabled =
                     !isLowRamDevice && startupPreferencesReader.isFuzzySearchEnabled(),
                 fuzzySearchAvailable = !isLowRamDevice,
@@ -176,5 +201,24 @@ internal object SearchViewModelInitialStateFactory {
             featureState = initialFeatureState,
             configState = initialConfigState,
         )
+    }
+
+    internal fun applyRecentLaunchOrderToStartupSuggestions(
+        apps: List<com.tk.quicksearch.search.models.AppInfo>,
+        pinnedAppKeys: Set<String>,
+        recentLaunchKeys: List<String>,
+    ): List<com.tk.quicksearch.search.models.AppInfo> {
+        if (apps.size < 2 || recentLaunchKeys.isEmpty()) return apps
+
+        val recentRank = recentLaunchKeys.withIndex().associate { (index, key) -> key to index }
+        val originalRank = apps.withIndex().associate { (index, app) -> app.launchCountKey() to index }
+        val (pinnedApps, recentApps) = apps.partition { it.launchCountKey() in pinnedAppKeys }
+
+        return pinnedApps +
+            recentApps.sortedWith(
+                compareBy<com.tk.quicksearch.search.models.AppInfo> {
+                    recentRank[it.launchCountKey()] ?: Int.MAX_VALUE
+                }.thenBy { originalRank[it.launchCountKey()] ?: Int.MAX_VALUE },
+            )
     }
 }
