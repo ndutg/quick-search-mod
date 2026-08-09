@@ -36,6 +36,7 @@ internal object SearchEngineIntents {
             SearchEngineNativeLaunchMode.CLAUDE -> ::openClaude
             SearchEngineNativeLaunchMode.GROK -> ::openGrok
             SearchEngineNativeLaunchMode.GOOGLE_TRANSLATE -> ::openGoogleTranslate
+            SearchEngineNativeLaunchMode.KAGI -> ::openKagi
             SearchEngineNativeLaunchMode.NONE -> null
         }
 
@@ -459,6 +460,32 @@ internal object SearchEngineIntents {
         openWebUrl(context, searchUrl)
     }
 
+    /** Opens Kagi's installed Android app with the search URL, otherwise opens it in a browser. */
+    fun openKagi(
+        context: Application,
+        query: String,
+    ) {
+        val trimmedQuery = query.trim()
+        val appSearchIntent =
+            Intent(Intent.ACTION_SEND).apply {
+                setClassName(PackageConstants.KAGI_PACKAGE, KAGI_HOME_ACTIVITY)
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, trimmedQuery)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+        if (IntentUtils.canResolveIntent(context, appSearchIntent)) {
+            try {
+                context.startActivity(appSearchIntent)
+                return
+            } catch (_: ActivityNotFoundException) {
+            } catch (_: SecurityException) {
+            }
+        }
+
+        openWebUrl(context, buildSearchUrl(trimmedQuery, SearchEngine.KAGI))
+    }
+
     /** Opens a web URL in a browser. */
     private fun openWebUrl(
         context: Application,
@@ -505,4 +532,6 @@ internal object SearchEngineIntents {
 
         openWebUrl(context, buildSearchUrl(query, searchEngine))
     }
+
+    private const val KAGI_HOME_ACTIVITY = "com.kagi.search.HomeActivity"
 }

@@ -26,6 +26,7 @@ enum class SearchEngineNativeLaunchMode {
     CLAUDE,
     GROK,
     GOOGLE_TRANSLATE,
+    KAGI,
 }
 
 data class SearchEngineDefinition(
@@ -308,6 +309,17 @@ object SearchEngineRegistry {
                 installOnly = true,
                 defaultDisabledOnFirstRun = true,
                 nativeLaunchMode = SearchEngineNativeLaunchMode.GOOGLE_TRANSLATE,
+            ),
+            SearchEngineDefinition(
+                engine = SearchEngine.KAGI,
+                drawableResId = R.drawable.kagi,
+                contentDescriptionResId = R.string.search_engine_kagi,
+                urlTemplate = "https://kagi.com/search?q=%s",
+                defaultShortcutCode = "kgi",
+                homeUrl = "https://kagi.com",
+                appPackages = listOf(PackageConstants.KAGI_PACKAGE),
+                defaultDisableIfAppMissing = true,
+                nativeLaunchMode = SearchEngineNativeLaunchMode.KAGI,
             ),
         )
 
