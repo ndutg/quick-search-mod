@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -72,6 +71,8 @@ internal fun SettingsDetailLevel1Screen(
     disabledSearchEnginesExpanded: Boolean = true,
     onToggleDisabledSearchEnginesExpanded: (() -> Unit)? = null,
     onNavigateToDetail: (SettingsDetailType) -> Unit = {},
+    scrollState: androidx.compose.foundation.ScrollState =
+        androidx.compose.foundation.rememberScrollState(),
 ) {
     if (detailType.isLevel2()) return
 
@@ -85,7 +86,6 @@ internal fun SettingsDetailLevel1Screen(
             callbacks.onBack
         }
     BackHandler(onBack = onBackAction)
-    val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val hasExcludedItems =
         state.suggestionExcludedApps.isNotEmpty() ||

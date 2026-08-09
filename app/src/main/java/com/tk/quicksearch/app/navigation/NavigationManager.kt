@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -418,7 +419,16 @@ fun MainContent(
                     settingsDetailType = settingsDetailType,
                     previousSettingsDetailType = previousSettingsDetailType,
                     onSettingsDetailTypeChange = {
-                        previousSettingsDetailType = settingsDetailType
+                        val currentDetailType = settingsDetailType
+                        val isReturningToPreviousPage =
+                            currentDetailType != null &&
+                                it == currentDetailType.resolveBackDestination(previousSettingsDetailType)
+                        previousSettingsDetailType =
+                            when {
+                                it == null -> null
+                                isReturningToPreviousPage -> previousSettingsDetailType
+                                else -> currentDetailType
+                            }
                         settingsDetailType = it
                     },
                     onSettingsDetailTypeChangeFromSearch = {
@@ -680,6 +690,7 @@ private fun SettingsNavigationContent(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val settingsScrollState = rememberScrollState()
+    val detailScrollStates = remember { mutableStateMapOf<SettingsDetailType, androidx.compose.foundation.ScrollState>() }
 
     LaunchedEffect(settingsDetailType) {
         onSettingsDetailAnimationDirectionConsumed()
@@ -721,6 +732,18 @@ private fun SettingsNavigationContent(
         label = "SettingsDetailTransition",
     ) { currentDetailType ->
         if (currentDetailType != null) {
+            val detailScrollState =
+                remember(currentDetailType, previousSettingsDetailType) {
+                    if (currentDetailType == previousSettingsDetailType) {
+                        detailScrollStates.getOrPut(currentDetailType) {
+                            androidx.compose.foundation.ScrollState(initial = 0)
+                        }
+                    } else {
+                        androidx.compose.foundation.ScrollState(initial = 0).also {
+                            detailScrollStates[currentDetailType] = it
+                        }
+                    }
+                }
             SettingsDetailRoute(
                 onBack = { onSettingsDetailTypeChange(null) },
                 viewModel = viewModel,
@@ -742,6 +765,7 @@ private fun SettingsNavigationContent(
                 onRequestContactPermission = viewModel::openContactPermissionSettings,
                 onRequestFilePermission = viewModel::openFilesPermissionSettings,
                 onRequestCallPermission = viewModel::openAppSettings,
+                scrollState = detailScrollState,
             )
         } else {
             SettingsRoute(
