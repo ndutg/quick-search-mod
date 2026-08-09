@@ -563,14 +563,6 @@ fun ContentLayout(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
-                if (!hideHomeSectionTitleRows) {
-                    Text(
-                        text = stringResource(R.string.recent_queries_toggle_title),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
-                    )
-                }
                 SearchHistorySection(
                     items = state.recentItems,
                     callingApp =
