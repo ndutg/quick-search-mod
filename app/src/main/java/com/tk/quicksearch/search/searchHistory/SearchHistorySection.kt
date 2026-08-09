@@ -100,6 +100,7 @@ private const val SETTINGS_VERTICAL_PADDING = 4
 private const val SHORTCUT_VERTICAL_PADDING = 4
 private const val SEARCH_HISTORY_TAB_SWIPE_THRESHOLD_PX = 64f
 private const val SEARCH_HISTORY_TAB_ROW_HEIGHT = 56
+private val SEARCH_HISTORY_EXPANDED_CARD_MIN_HEIGHT = 180.dp
 
 @Composable
 fun SearchHistorySection(
@@ -211,6 +212,15 @@ fun SearchHistorySection(
                 .fillMaxWidth(),
     ) {
         ExpandableResultsCard(
+            modifier =
+                Modifier.heightIn(
+                    min =
+                        if (expanded) {
+                            SEARCH_HISTORY_EXPANDED_CARD_MIN_HEIGHT
+                        } else {
+                            0.dp
+                        },
+                ),
             resultCount = items.size,
             isExpanded = expanded,
             showAllResults = false,

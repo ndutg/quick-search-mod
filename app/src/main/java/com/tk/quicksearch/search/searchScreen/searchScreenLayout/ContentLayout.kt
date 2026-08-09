@@ -39,6 +39,7 @@ import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.core.isLikelyWebUrl
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
+import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
 import com.tk.quicksearch.search.searchHistory.SearchHistorySection
 import com.tk.quicksearch.searchEngines.*
@@ -255,7 +256,9 @@ fun ContentLayout(
             !state.isDictionaryAliasMode &&
             !state.isWeatherAliasMode &&
             state.recentQueriesEnabled &&
-            state.recentItems.isNotEmpty()
+            // The collapsed home history starts on the Searches tab. Recently opened
+            // results alone must not create an empty Search History section.
+            state.recentItems.any { it is RecentSearchItem.Query }
 
     var searchHistoryExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(showRecentItems) {
