@@ -76,6 +76,7 @@ import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
 import com.tk.quicksearch.search.data.CustomCalendarEventRepository
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomEventEditDialog
+import com.tk.quicksearch.settings.settingsDetailScreen.SecondaryRankingDialog
 import com.tk.quicksearch.search.searchScreen.SearchScreen as SearchScreenComposable
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
@@ -339,6 +340,7 @@ fun SearchRoute(
         viewModel.dismissContactMethodsBottomSheet()
     }
     var showPermissionSettingsDialog by remember { mutableStateOf(false) }
+    var showSecondaryRankingDialog by remember { mutableStateOf(false) }
     var pendingPermissionSettingsAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     var pendingPermissionSettingsType by remember { mutableStateOf<Int?>(null) }
     var pendingDirectDialToggleFromAppSetting by remember { mutableStateOf(false) }
@@ -459,6 +461,10 @@ fun SearchRoute(
         viewModel.trackRecentAppSettingTap(setting.id)
         if (setting.action != AppSettingResultAction.NAVIGATE) return@appSettingClick
         setting.destination?.let { destination ->
+            if (destination == AppSettingsDestination.SEARCH_RESULT_RANKING) {
+                showSecondaryRankingDialog = true
+                return@appSettingClick
+            }
             if (destination == AppSettingsDestination.RATE_QUICK_SEARCH) {
                 viewModel.markRateQuickSearchCompleted()
             }
@@ -545,6 +551,7 @@ fun SearchRoute(
             ),
         )
     }
+    var isLauncherSwipeRightEnabled by remember { mutableStateOf(gesturePreferences.isLauncherSwipeRightEnabled()) }
     DisposableEffect(lifecycleOwner, notesPreferences) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -582,6 +589,7 @@ fun SearchRoute(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
                     gesturePreferences.getHomeSwipeDownCustomAction(),
                 )
+            isLauncherSwipeRightEnabled = gesturePreferences.isLauncherSwipeRightEnabled()
         }
         preferences.registerOnSharedPreferenceChangeListener(listener)
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
@@ -600,7 +608,7 @@ fun SearchRoute(
         when (swipe) {
             HomeHorizontalSwipe.RIGHT -> {
                 if (isDefaultLauncher) {
-                    onOpenWidgetsPanelFromSwipe?.invoke()
+                    if (isLauncherSwipeRightEnabled) onOpenWidgetsPanelFromSwipe?.invoke()
                 } else {
                     when (swipeActions[0]) {
                         SwipeGestureAction.QUICK_NOTE -> if (quickNoteEnabled) openQuickNoteEditor()
@@ -627,7 +635,7 @@ fun SearchRoute(
         }
     }
     val swipeNavigationModifier =
-        Modifier.pointerInput(isDefaultLauncher, quickNoteEnabled, swipeActions, customSwipeActions, uiState.query) {
+        Modifier.pointerInput(isDefaultLauncher, isLauncherSwipeRightEnabled, quickNoteEnabled, swipeActions, customSwipeActions, uiState.query) {
             var totalHorizontalDrag = 0f
             detectHorizontalDragGestures(
                 onDragStart = { totalHorizontalDrag = 0f },
@@ -675,6 +683,7 @@ fun SearchRoute(
             onQueryChanged = viewModel::onQueryChange,
             onSelectRetainedQueryHandled = viewModel::consumeRetainedQuerySelectionRequest,
             onRestoreSearchKeyboardHandled = viewModel::consumeSearchKeyboardRestoreRequest,
+            onStartupKeyboardVisible = viewModel::notifyStartupKeyboardVisible,
             onClearQuery = viewModel::clearQuery,
             onRequestUsagePermission = { viewModel.openUsageAccessSettings() },
             onSettingsClick = onSettingsClick,
@@ -987,6 +996,17 @@ fun SearchRoute(
                     pendingPermissionSettingsAction = null
                     pendingPermissionSettingsType = null
                 },
+            )
+        }
+
+        if (showSecondaryRankingDialog) {
+            SecondaryRankingDialog(
+                selectedSignal = uiState.secondaryRankingSignal,
+                onSignalSelected = { signal ->
+                    viewModel.setSecondaryRankingSignal(signal)
+                    viewModel.onQueryChange(uiState.query)
+                },
+                onDismiss = { showSecondaryRankingDialog = false },
             )
         }
 

@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.files
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.FileTypeUtils
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.FileClassifier
 import com.tk.quicksearch.search.utils.FileUtils
@@ -25,6 +26,8 @@ object FileSearchAlgorithm {
             showSystemFiles: Boolean,
             fileNicknames: Map<String, String?>,
             recentFileScores: Map<String, Int> = emptyMap(),
+            fileOpenCounts: Map<String, Int> = emptyMap(),
+            secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
             resultLimit: Int = 25,
     ): List<DeviceFile> {
         val normalizedQuery = SearchTextNormalizer.normalizeQueryWhitespace(query)
@@ -46,6 +49,8 @@ object FileSearchAlgorithm {
                 SearchQueryContext.fromRawQuery(normalizedQuery),
                 fileNicknames,
                 recentFileScores,
+                fileOpenCounts,
+                secondaryRankingSignal,
         ).take(resultLimit)
     }
 
@@ -61,6 +66,8 @@ object FileSearchAlgorithm {
             showSystemFiles: Boolean,
             fileNicknames: Map<String, String?>,
             recentFileScores: Map<String, Int> = emptyMap(),
+            fileOpenCounts: Map<String, Int> = emptyMap(),
+            secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
             resultLimit: Int = 25,
     ): List<DeviceFile> {
         val filteredFiles =
@@ -76,7 +83,14 @@ object FileSearchAlgorithm {
                         showSystemFiles = showSystemFiles,
                 )
 
-        return rankFiles(filteredFiles, queryContext, fileNicknames, recentFileScores).take(resultLimit)
+        return rankFiles(
+            filteredFiles,
+            queryContext,
+            fileNicknames,
+            recentFileScores,
+            fileOpenCounts,
+            secondaryRankingSignal,
+        ).take(resultLimit)
     }
 
     fun filterCandidates(
@@ -136,6 +150,8 @@ object FileSearchAlgorithm {
             queryContext: SearchQueryContext,
             fileNicknames: Map<String, String?>,
             recentFileScores: Map<String, Int>,
+            fileOpenCounts: Map<String, Int>,
+            secondaryRankingSignal: SecondaryRankingSignal,
     ): List<DeviceFile> {
         if (files.isEmpty()) return emptyList()
 
@@ -155,6 +171,8 @@ object FileSearchAlgorithm {
                 .sortedWith(
                         RecentResultRankingUtils.matchThenRecencyThenAlphabeticalComparator(
                                 recencyScores = recentFileScores,
+                                openCounts = fileOpenCounts,
+                                secondaryRankingSignal = secondaryRankingSignal,
                                 keySelector = { it.uri.toString() },
                                 labelSelector = { it.displayName },
                         ),

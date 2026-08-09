@@ -2,11 +2,53 @@ package com.tk.quicksearch.search.apps
 
 import com.tk.quicksearch.search.fuzzy.FuzzySearchConfig
 import com.tk.quicksearch.search.models.AppInfo
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AppSearchAlgorithmTest {
+
+    @Test
+    fun secondaryRankingSignalChangesOrderWithinSameMatchTier() {
+        val alpha = app("Alpha Search", "alpha", launchCount = 2, lastUsedTime = 300L)
+        val beta = app("Beta Search", "beta", launchCount = 8, lastUsedTime = 100L)
+        val source = listOf(beta, alpha)
+
+        fun ranked(signal: SecondaryRankingSignal) =
+            AppSearchAlgorithm.findMatches(
+                query = "search",
+                source = source,
+                limit = 10,
+                fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
+                appNicknames = emptyMap(),
+                secondaryRankingSignal = signal,
+            )
+
+        assertEquals(listOf(alpha, beta), ranked(SecondaryRankingSignal.RECENCY))
+        assertEquals(listOf(beta, alpha), ranked(SecondaryRankingSignal.MOST_OPENED))
+        assertEquals(listOf(alpha, beta), ranked(SecondaryRankingSignal.NONE))
+    }
+
+    @Test
+    fun secondaryRankingSignalDoesNotOverridePrimaryMatchQuality() {
+        val exactMatch = app("Search", "exact", launchCount = 1, lastUsedTime = 1L)
+        val weakerMatch = app("Alpha Search", "weaker", launchCount = 1_000, lastUsedTime = 1_000L)
+
+        SecondaryRankingSignal.entries.forEach { signal ->
+            val matches =
+                AppSearchAlgorithm.findMatches(
+                    query = "search",
+                    source = listOf(weakerMatch, exactMatch),
+                    limit = 10,
+                    fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
+                    appNicknames = emptyMap(),
+                    secondaryRankingSignal = signal,
+                )
+
+            assertEquals("Unexpected order for $signal", listOf(exactMatch, weakerMatch), matches)
+        }
+    }
 
     @Test
     fun deterministicMatchesRankBeforeFuzzyOnlyMatches() {
@@ -20,7 +62,7 @@ class AppSearchAlgorithmTest {
                 limit = 10,
                 fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = true,
+                secondaryRankingSignal = SecondaryRankingSignal.RECENCY,
             )
 
         assertEquals(listOf(exactMatch, fuzzyOnlyMatch), matches)
@@ -35,7 +77,7 @@ class AppSearchAlgorithmTest {
                 limit = 10,
                 fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = false,
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
             )
 
         assertTrue(matches.isEmpty())
@@ -52,7 +94,7 @@ class AppSearchAlgorithmTest {
                 limit = 10,
                 fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = false,
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
             )
 
         assertEquals(listOf(settings), matches)
@@ -73,7 +115,7 @@ class AppSearchAlgorithmTest {
                         isFuzzySearchEnabled = { false },
                     ),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = false,
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
             )
 
         assertTrue(matches.isEmpty())
@@ -94,7 +136,7 @@ class AppSearchAlgorithmTest {
                         isLowRamDevice = true,
                     ),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = false,
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
             )
 
         assertTrue(matches.isEmpty())
@@ -111,7 +153,7 @@ class AppSearchAlgorithmTest {
                 limit = 10,
                 fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = false,
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
             )
         val substitutedCharMatches =
             AppSearchAlgorithm.findMatches(
@@ -120,7 +162,7 @@ class AppSearchAlgorithmTest {
                 limit = 10,
                 fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = false,
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
             )
 
         assertEquals(listOf(github), deletedCharMatches)
@@ -139,7 +181,7 @@ class AppSearchAlgorithmTest {
                     limit = 10,
                     fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
                     appNicknames = emptyMap(),
-                    sortAppsByUsageEnabled = false,
+                    secondaryRankingSignal = SecondaryRankingSignal.NONE,
                 )
 
             assertEquals("Expected F-Droid to match $query", listOf(fdroid), matches)
@@ -161,7 +203,7 @@ class AppSearchAlgorithmTest {
                 limit = 10,
                 fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
                 appNicknames = emptyMap(),
-                sortAppsByUsageEnabled = true,
+                secondaryRankingSignal = SecondaryRankingSignal.RECENCY,
             )
 
         assertTrue(matches.contains(github))
@@ -171,11 +213,12 @@ class AppSearchAlgorithmTest {
         appName: String,
         packageSuffix: String,
         launchCount: Int = 0,
+        lastUsedTime: Long = 0L,
     ): AppInfo =
         AppInfo(
             appName = appName,
             packageName = "com.example.$packageSuffix",
-            lastUsedTime = 0L,
+            lastUsedTime = lastUsedTime,
             totalTimeInForeground = 0L,
             launchCount = launchCount,
             firstInstallTime = 0L,

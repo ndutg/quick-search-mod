@@ -68,6 +68,7 @@ fun GesturesSettingsSection(
     var actions by remember { mutableStateOf(SwipeDirection.entries.associateWith(preferences::actionFor)) }
     var customActions by remember { mutableStateOf(SwipeDirection.entries.associateWith(preferences::customActionFor)) }
     var selectedDirection by remember { mutableStateOf<SwipeDirection?>(null) }
+    var isLauncherSwipeRightEnabled by remember { mutableStateOf(preferences.isLauncherSwipeRightEnabled()) }
     var customPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
     var homeCustomPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
     var selectedKeyboardAction by remember { mutableStateOf<SwipeGestureAction?>(null) }
@@ -137,7 +138,17 @@ fun GesturesSettingsSection(
         listOf(SwipeDirection.UP, SwipeDirection.DOWN).firstOrNull { actions[it] == action }
 
     selectedDirection?.let { direction ->
-        GestureActionDialog(
+        if (direction == SwipeDirection.RIGHT && isDefaultLauncher) {
+            LauncherSwipeRightActionDialog(
+                isEnabled = isLauncherSwipeRightEnabled,
+                onEnabledChange = { enabled ->
+                    preferences.setLauncherSwipeRightEnabled(enabled)
+                    isLauncherSwipeRightEnabled = enabled
+                    selectedDirection = null
+                },
+                onDismiss = { selectedDirection = null },
+            )
+        } else GestureActionDialog(
             direction = direction,
             selectedAction = actions.getValue(direction),
             selectedCustomActionJson = customActions[direction],
@@ -255,13 +266,15 @@ fun GesturesSettingsSection(
                                 icon = direction.gestureIcon(),
                                 description =
                                     if (direction == SwipeDirection.RIGHT && isDefaultLauncher) {
-                                        stringResource(R.string.settings_gesture_widget_panel)
+                                        stringResource(
+                                            if (isLauncherSwipeRightEnabled) R.string.settings_gesture_widget_panel
+                                            else R.string.settings_gesture_none,
+                                        )
                                     } else if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
                                         homeGestureDescription(homeActions.getValue(direction), homeCustomActions[direction])
                                     } else {
                                         gestureDescription(actions.getValue(direction), customActions[direction])
                                 },
-                                isEnabled = direction != SwipeDirection.RIGHT || !isDefaultLauncher,
                                 actionOnPress = {
                                     if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
                                         selectedHomeVerticalDirection = direction
@@ -286,11 +299,17 @@ fun GesturesSettingsSection(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = DesignTokens.SectionTitleBottomPadding),
         )
+        Text(
+            text = stringResource(R.string.settings_keyboard_gestures_desc),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = DesignTokens.SectionDescriptionBottomPadding),
+        )
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             Column {
                 SettingsNavigationRow(
                     item = SettingsCardItem(
-                        title = stringResource(R.string.settings_gesture_open_keyboard),
+                        title = stringResource(R.string.action_open_keyboard),
                         description = stringResource(keyboardGestureDirection(SwipeGestureAction.OPEN_KEYBOARD)?.titleResId ?: R.string.settings_gesture_none),
                         icon = Icons.Rounded.Keyboard,
                         actionOnPress = { selectedKeyboardAction = SwipeGestureAction.OPEN_KEYBOARD },
@@ -310,6 +329,34 @@ fun GesturesSettingsSection(
             }
         }
     }
+}
+
+@Composable
+private fun LauncherSwipeRightActionDialog(
+    isEnabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_gesture_swipe_right)) },
+        text = {
+            Column {
+                GestureActionRow(
+                    label = stringResource(R.string.settings_gesture_none),
+                    selected = !isEnabled,
+                    onClick = { onEnabledChange(false) },
+                )
+                HorizontalDivider(color = AppColors.SettingsDivider)
+                GestureActionRow(
+                    label = stringResource(R.string.settings_gesture_widget_panel),
+                    selected = isEnabled,
+                    onClick = { onEnabledChange(true) },
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
+    )
 }
 
 private fun SwipeDirection.gestureIcon() =
@@ -586,9 +633,9 @@ private val SwipeDirection.homeDefaultAction: HomeSwipeGestureAction
 
 private fun SwipeGestureAction.labelResId(): Int =
     when (this) {
-        SwipeGestureAction.QUICK_NOTE -> R.string.settings_gesture_quick_note
+        SwipeGestureAction.QUICK_NOTE -> R.string.notes_quick_note_title
         SwipeGestureAction.SETTINGS -> R.string.settings_gesture_settings
-        SwipeGestureAction.OPEN_KEYBOARD -> R.string.settings_gesture_open_keyboard
+        SwipeGestureAction.OPEN_KEYBOARD -> R.string.action_open_keyboard
         SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS -> R.string.settings_gesture_close_keyboard_notifications
         SwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
         SwipeGestureAction.NONE -> R.string.settings_gesture_none

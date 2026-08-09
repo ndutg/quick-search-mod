@@ -2,10 +2,12 @@ package com.tk.quicksearch.search.core
 
 import android.content.Context
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.filterAvailableStartupApps
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceStore
 import com.tk.quicksearch.shared.util.isLowRamDevice
+import com.tk.quicksearch.app.startup.StartupTrace
 
 internal data class SearchViewModelInitialState(
     val instantStartupSurfaceEnabled: Boolean,
@@ -25,10 +27,21 @@ internal object SearchViewModelInitialStateFactory {
         val instantStartupSurfaceEnabled = startupPreferencesReader.isInstantStartupSurfaceEnabled()
         val startupSnapshot =
             if (instantStartupSurfaceEnabled) {
-                startupSurfaceStore.loadSnapshot()
+                startupSurfaceStore.loadSnapshot()?.let { snapshot ->
+                    snapshot.copy(
+                        suggestedApps =
+                            filterAvailableStartupApps(
+                                context = appContext,
+                                apps = snapshot.suggestedApps,
+                            ),
+                    )
+                }
             } else {
                 null
             }
+        if (startupSnapshot != null) {
+            StartupTrace.mark("QS.Home.StartupSnapshotAvailable")
+        }
 
         val initialBackgroundSource = startupPreferencesReader.getBackgroundSource()
         val initialCustomImageUri = startupPreferencesReader.getCustomImageUri()
@@ -72,6 +85,7 @@ internal object SearchViewModelInitialStateFactory {
                 fuzzySearchEnabled =
                     !isLowRamDevice && startupPreferencesReader.isFuzzySearchEnabled(),
                 fuzzySearchAvailable = !isLowRamDevice,
+                secondaryRankingSignal = startupPreferencesReader.getSecondaryRankingSignal(),
                 isSearchEngineAliasSuffixEnabled =
                     startupPreferencesReader.isSearchEngineAliasSuffixEnabled(),
                 isAliasTriggerAfterSpaceEnabled =
@@ -139,6 +153,11 @@ internal object SearchViewModelInitialStateFactory {
                 appIconSizeStep =
                     startupSnapshot?.appIconSizeStep
                         ?: startupPreferencesReader.getAppIconSizeStep(),
+                appIconShape = startupPreferencesReader.getAppIconShape(),
+                themedIconsEnabled = startupPreferencesReader.isThemedIconsEnabled(),
+                deviceThemeEnabled = startupPreferencesReader.isDeviceThemeEnabled(),
+                maskUnsupportedIconPackIcons =
+                    startupPreferencesReader.isIconPackUnsupportedIconMaskEnabled(),
                 appSuggestionsEnabled =
                     startupSnapshot?.appSuggestionsEnabled
                         ?: startupPreferencesReader.areAppSuggestionsEnabled(),

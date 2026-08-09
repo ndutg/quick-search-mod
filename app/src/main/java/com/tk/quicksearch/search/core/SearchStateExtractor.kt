@@ -135,6 +135,7 @@ internal object SearchStateExtractor {
             appResultRowCount = s.appResultRowCount,
             fuzzySearchEnabled = s.fuzzySearchEnabled,
             fuzzySearchAvailable = s.fuzzySearchAvailable,
+            secondaryRankingSignal = s.secondaryRankingSignal,
             topMatchesEnabled = s.topMatchesEnabled,
             topMatchesLimit = s.topMatchesLimit,
             topMatchesSectionOrder = s.topMatchesSectionOrder,

@@ -9,6 +9,7 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.apps.prefetchAppIcons
+import com.tk.quicksearch.searchEngines.getAppPackageCandidates
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.shared.util.WallpaperUtils
@@ -22,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.app.startup.StartupTrace
 import android.os.SystemClock
 
 internal interface SearchStartupLifecycleStateAccess {
@@ -137,6 +139,7 @@ internal class SearchStartupLifecycleDelegate(
     private val applyPreferenceCacheToLegacyVars: () -> Unit,
     private val applyLauncherIconSelection: () -> Unit,
     private val refreshRecentItems: () -> Unit,
+    private val awaitRecentItemsReady: suspend () -> Unit,
     private val getGridItemCount: () -> Int,
     private val selectSuggestedApps: (List<AppInfo>, Int, Boolean) -> List<AppInfo>,
     private val shouldShowSearchBarWelcome: () -> Boolean,
@@ -151,6 +154,8 @@ internal class SearchStartupLifecycleDelegate(
 ) {
     private var optionalStartupJob: Job? = null
     private var packageRefreshJob: Job? = null
+    private var appUsageRefreshJob: Job? = null
+    private var resumeCalendarRefreshJob: Job? = null
     private val pinningHandler get() = handlersProvider().pinningHandler
     private val searchEngineManager get() = handlersProvider().searchEngineManager
     private val secondarySearchOrchestrator get() = handlersProvider().secondarySearchOrchestrator
@@ -221,7 +226,6 @@ internal class SearchStartupLifecycleDelegate(
         if (startupComplete && optionalPermissionsChanged) {
             pinningHandler.loadPinnedContactsAndFiles()
             pinningHandler.loadExcludedContactsAndFiles()
-            loadPinnedAndExcludedCalendarEvents()
         }
 
         if (startupComplete && stateAccess.resumeNeedsStaticDataRefresh) {
@@ -231,7 +235,12 @@ internal class SearchStartupLifecycleDelegate(
         }
 
         if (startupComplete) {
-            loadPinnedAndExcludedCalendarEvents()
+            resumeCalendarRefreshJob?.cancel()
+            resumeCalendarRefreshJob =
+                scope.launch(Dispatchers.IO) {
+                    loadPinnedAndExcludedCalendarEvents()
+                }
+            refreshAppUsageMetadata()
         }
 
         val now = System.currentTimeMillis()
@@ -290,7 +299,9 @@ internal class SearchStartupLifecycleDelegate(
         saveStartupSurfaceSnapshotAsync(true, false)
     }
 
-    fun refreshOptionalPermissions(): Boolean {
+    fun refreshOptionalPermissions(
+        refreshCalendarData: Boolean = stateAccess.isStartupComplete,
+    ): Boolean {
         val hasContacts = hasContactPermission()
         val hasFiles = hasFilePermission()
         val hasCalendar = hasCalendarPermission()
@@ -334,7 +345,7 @@ internal class SearchStartupLifecycleDelegate(
                 )
             }
 
-            if (hasCalendar) {
+            if (hasCalendar && refreshCalendarData) {
                 loadPinnedAndExcludedCalendarEvents()
             }
 
@@ -345,6 +356,8 @@ internal class SearchStartupLifecycleDelegate(
 
     fun launchDeferredInitialization() {
         scope.launch(startupDispatcher) {
+            startPackageChangeMonitoring()
+
             withContext(Dispatchers.Main.immediate) {
                 releaseNotesHandler.checkForReleaseNotes()
             }
@@ -354,14 +367,38 @@ internal class SearchStartupLifecycleDelegate(
                     pinningHandler.loadPinnedContactsForStartup()
                 }
 
+            // These provider-backed values define whether enabled Home sections have content or
+            // a valid empty state. Load them on IO during phased startup instead of holding them
+            // behind the long-idle maintenance window.
+            val homeProviderStateJob = scope.launch(Dispatchers.IO) {
+                pinnedContactsStartupJob.join()
+                pinningHandler.loadPinnedContactsAndFilesNow()
+                pinningHandler.loadExcludedContactsAndFilesNow()
+                loadPinnedAndExcludedCalendarEvents()
+
+                val pinnedSettingsState = settingsSearchHandler.getPinnedAndExcludedOnly()
+                updateResultsState { state ->
+                    state.copy(
+                        pinnedSettings = pinnedSettingsState.pinned,
+                        excludedSettings = pinnedSettingsState.excluded,
+                    )
+                }
+                StartupTrace.mark("QS.Home.PinnedSettingsAvailable")
+                StartupTrace.mark("QS.Home.EnabledSectionsAvailable")
+            }
+
             // Pinned shortcuts are part of the empty-query home surface. Restore the bounded
             // persisted cache as soon as deferred initialization begins so they do not wait for
             // the long-idle system refresh below.
             if (appShortcutSearchHandler.loadCachedShortcutsOnly()) {
                 withContext(Dispatchers.Main) { refreshAppShortcutsState() }
+                StartupTrace.mark("QS.Home.ShortcutsCacheAvailable")
             }
 
             refreshAppsUsageAndPermissions()
+            if (appSearchManager.cachedApps.isNotEmpty() && permissionStateProvider().hasUsagePermission) {
+                appSearchManager.refreshUsageMetadataNow()
+            }
             // Cached apps seed the home suggestions in phase 1. Rebuilding the complete catalog
             // queries LauncherApps and usage stats, so only block here when there is no cache to
             // show. An invalidated or stale cache is reconciled once startup has been idle.
@@ -375,6 +412,24 @@ internal class SearchStartupLifecycleDelegate(
             val messagingInfo = getMessagingAppInfo(packageNames)
 
             searchEngineManager.ensureInitialized()
+            val visibleSearchTargetIconPackages =
+                searchEngineManager
+                    .getEnabledSearchTargets()
+                    .take(MAX_STARTUP_SEARCH_TARGETS_TO_PREFETCH)
+                    .flatMap { target ->
+                        when (target) {
+                            is SearchTarget.Engine -> target.engine.getAppPackageCandidates()
+                            is SearchTarget.Browser -> listOf(target.app.packageName)
+                            is SearchTarget.Custom -> emptyList()
+                        }
+                    }
+            prefetchAppIcons(
+                context = applicationProvider(),
+                packageNames = visibleSearchTargetIconPackages,
+                iconPackPackage = userPreferences.getSelectedIconPackPackage(),
+                maxCount = MAX_STARTUP_SEARCH_TARGET_ICON_PACKAGES,
+                forceCircularMask = configStateProvider().appIconShape == AppIconShape.CIRCLE,
+            )
             val shortcutsState = aliasHandler.getInitialState()
             val customTools = normalizeCustomToolModels(userPreferences.getCustomTools())
             val hasApiKey = userPreferences.hasAnyLlmApiKey()
@@ -517,11 +572,6 @@ internal class SearchStartupLifecycleDelegate(
                             },
                     )
                 }
-                pinnedContactsStartupJob.join()
-                pinningHandler.loadPinnedContactsAndFiles()
-                pinningHandler.loadExcludedContactsAndFiles()
-                loadPinnedAndExcludedCalendarEvents()
-
                 val pinnedAppShortcutsState = appShortcutSearchHandler.getPinnedAndExcludedOnly()
                 val iconOverrides = userPreferences.getAllAppShortcutIconOverrides()
                 updateUiState { state ->
@@ -539,13 +589,6 @@ internal class SearchStartupLifecycleDelegate(
                     )
                 }
 
-                val pinnedSettingsState = settingsSearchHandler.getPinnedAndExcludedOnly()
-                updateResultsState { state ->
-                    state.copy(
-                        pinnedSettings = pinnedSettingsState.pinned,
-                        excludedSettings = pinnedSettingsState.excluded,
-                    )
-                }
                 // App settings build themselves lazily on the first matching query. Device
                 // settings do the same on their IO search path. Refresh app shortcuts only in
                 // the long-idle tier; their bounded cache was already loaded above.
@@ -555,7 +598,11 @@ internal class SearchStartupLifecycleDelegate(
                 // PackageManager scan out of the critical path and only validate/discover packs
                 // after the optional-startup idle window.
                 iconPackHandler.refreshIconPacks()
+                StartupTrace.mark("QS.Startup.NonessentialRefreshComplete")
             }
+
+            homeProviderStateJob.join()
+            awaitRecentItemsReady()
 
             withContext(Dispatchers.Main) {
                 stateAccess.isStartupComplete = true
@@ -567,18 +614,39 @@ internal class SearchStartupLifecycleDelegate(
                     )
                 }
             }
-            repository.startPackageChangeMonitoring {
-                packageRefreshJob?.cancel()
-                packageRefreshJob =
-                    scope.launch(startupDispatcher) {
-                        delay(PACKAGE_CHANGE_DEBOUNCE_MS)
-                        while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
-                        loadApps()
-                    }
-            }
             withContext(Dispatchers.Default) { refreshDerivedState(null, null) }
+            StartupTrace.mark("QS.Startup.PhasedInitializationComplete")
             saveStartupSurfaceSnapshotAsync(true, false)
         }
+    }
+
+    private fun startPackageChangeMonitoring() {
+        repository.startPackageChangeMonitoring { change ->
+            if (change.isRemoval) {
+                appSearchManager.removeUnavailableApp(change)
+            }
+
+            packageRefreshJob?.cancel()
+            packageRefreshJob =
+                scope.launch(startupDispatcher) {
+                    delay(PACKAGE_CHANGE_DEBOUNCE_MS)
+                    while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
+                    loadApps()
+                }
+        }
+    }
+
+    private fun refreshAppUsageMetadata() {
+        if (!permissionStateProvider().hasUsagePermission) {
+            refreshAppSuggestions()
+            return
+        }
+
+        appUsageRefreshJob?.cancel()
+        appUsageRefreshJob =
+            scope.launch(startupDispatcher) {
+                appSearchManager.refreshUsageMetadataNow()
+            }
     }
 
     private fun shouldReconcileAppsAtStartup(): Boolean {
@@ -662,6 +730,7 @@ internal class SearchStartupLifecycleDelegate(
 
             if (!cachedAppsList.isNullOrEmpty()) {
                 initializeWithCacheMinimal(cachedAppsList, hasUsagePermission)
+                StartupTrace.mark("QS.Home.CachedAppsAvailable")
             }
         }
         markPermissionSnapshotRefreshed()
@@ -670,21 +739,23 @@ internal class SearchStartupLifecycleDelegate(
         applyLauncherIconSelection()
 
         if (!cachedAppsList.isNullOrEmpty()) {
-            withContext(Dispatchers.Default) {
-                warmSearchableAppsSnapshot(cachedAppsList)
-            }
-            scope.launch(Dispatchers.IO) {
-                if (userPreferences.areAppSuggestionsEnabled()) {
-                    val visibleApps =
-                        selectSuggestedApps(cachedAppsList, getGridItemCount(), hasUsagePermission)
-                    val iconPack = userPreferences.getSelectedIconPackPackage()
-                    prefetchAppIcons(
-                        context = applicationProvider(),
-                        packageNames = visibleApps.map { it.packageName },
-                        iconPackPackage = iconPack,
-                    )
+            val searchableAppsWarmupJob =
+                scope.launch(Dispatchers.Default) {
+                    warmSearchableAppsSnapshot(cachedAppsList)
                 }
+            if (userPreferences.areAppSuggestionsEnabled()) {
+                val visibleApps =
+                    selectSuggestedApps(cachedAppsList, getGridItemCount(), hasUsagePermission)
+                val iconPack = userPreferences.getSelectedIconPackPackage()
+                prefetchAppIcons(
+                    context = applicationProvider(),
+                    packageNames = visibleApps.map { it.packageName },
+                    iconPackPackage = iconPack,
+                    forceCircularMask = startupSnapshot.appIconShape == AppIconShape.CIRCLE,
+                )
+                publishStartupAppSuggestions()
             }
+            searchableAppsWarmupJob.join()
         }
     }
 
@@ -695,7 +766,6 @@ internal class SearchStartupLifecycleDelegate(
 
         withContext(Dispatchers.Main) {
             applyStartupPreferences(startupPrefs)
-            appSearchManager.setSortAppsByUsage(true)
         }
 
         val lastUpdated =
@@ -774,6 +844,7 @@ internal class SearchStartupLifecycleDelegate(
                         userPreferences.isFuzzySearchEnabled(),
                 fuzzySearchAvailable =
                     !com.tk.quicksearch.shared.util.isLowRamDevice(applicationProvider()),
+                secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
                 webSuggestionsCount = userPreferences.getWebSuggestionsCount(),
                 topMatchesEnabled = userPreferences.isTopMatchesEnabled(),
                 topMatchesLimit = userPreferences.getTopMatchesLimit(),
@@ -962,6 +1033,25 @@ internal class SearchStartupLifecycleDelegate(
         saveStartupSurfaceSnapshotAsync(false, false)
     }
 
+    private suspend fun publishStartupAppSuggestions() {
+        withContext(Dispatchers.Main.immediate) {
+            updateResultsState { state ->
+                if (state.query.isNotBlank() || state.recentApps.isEmpty()) {
+                    state
+                } else {
+                    state.copy(
+                        screenState = ScreenVisibilityState.Content,
+                        appsSectionState =
+                            AppsSectionVisibility.ShowingResults(
+                                hasPinned = state.pinnedApps.isNotEmpty(),
+                            ),
+                    )
+                }
+            }
+            StartupTrace.mark("QS.Home.AppSuggestionsPublished")
+        }
+    }
+
     private fun getMessagingAppInfo(packageNames: Set<String>): MessagingAppInfo {
         val isWhatsAppInstalled =
             if (packageNames.isNotEmpty()) {
@@ -1083,5 +1173,7 @@ internal class SearchStartupLifecycleDelegate(
         private const val APP_RECONCILIATION_FRESHNESS_MS = 24L * 60L * 60L * 1_000L
         private const val PERMISSION_SNAPSHOT_DEDUP_WINDOW_MS = 1_500L
         private const val PACKAGE_CHANGE_DEBOUNCE_MS = 750L
+        private const val MAX_STARTUP_SEARCH_TARGETS_TO_PREFETCH = 14
+        private const val MAX_STARTUP_SEARCH_TARGET_ICON_PACKAGES = 30
     }
 }

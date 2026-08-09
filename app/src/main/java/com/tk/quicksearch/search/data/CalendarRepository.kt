@@ -133,8 +133,6 @@ class CalendarRepository(
         val startOfTomorrow = today.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
         val utcStartOfDay = today.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
         val utcStartOfTomorrow = today.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
-        val now = System.currentTimeMillis()
-
         // CalendarContract stores all-day instances at UTC midnight. Query both the local-day
         // and UTC-day boundaries, then use the normalized local timestamps for final filtering.
         val queryStart = minOf(startOfDay, utcStartOfDay)
@@ -143,7 +141,6 @@ class CalendarRepository(
             .filter { event ->
                 shouldShowTodayEvent(
                     event = event,
-                    now = now,
                     startOfDay = startOfDay,
                     startOfTomorrow = startOfTomorrow,
                 )
@@ -342,11 +339,9 @@ class CalendarRepository(
 
 internal fun shouldShowTodayEvent(
     event: CalendarEventInfo,
-    now: Long,
     startOfDay: Long,
     startOfTomorrow: Long,
 ): Boolean {
     if (event.startMillis !in startOfDay until startOfTomorrow) return false
-    if (event.allDay) return true
-    return event.startMillis >= now - CalendarRepository.TIMED_EVENT_HIDE_DELAY_MILLIS
+    return true
 }

@@ -77,7 +77,6 @@ class SearchViewModelNavigationApiDelegate internal constructor(
     private val applicationProvider: () -> android.app.Application,
     private val navigationHandler: () -> com.tk.quicksearch.app.navigation.NavigationHandler,
     private val userPreferences: com.tk.quicksearch.search.data.UserAppPreferences,
-    private val permissionStateProvider: () -> SearchPermissionState,
     private val resultsStateProvider: () -> SearchResultsState,
     private val currentQueryProvider: () -> String,
     private val onQueryChange: (String) -> Unit,
@@ -104,7 +103,6 @@ class SearchViewModelNavigationApiDelegate internal constructor(
         navigationHandler().launchApp(
             appInfo,
             launchContext,
-            shouldTrackRecentFallback = !permissionStateProvider().hasUsagePermission,
         )
     }
 

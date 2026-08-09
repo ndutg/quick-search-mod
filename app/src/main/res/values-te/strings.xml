@@ -70,8 +70,9 @@
     <string name="action_add_to_home">హోమ్ స్క్రీన్‌కు జోడించు</string>
     <string name="action_add_trigger">ట్రిగ్గర్ జోడించు</string>
     <string name="action_app_info">యాప్ సమాచారం</string>
-    <string name="action_archive_today_event">ఆర్కైవ్ చేయి</string>
     <string name="action_change_icon">ఐకాన్ మార్చు</string>
+    <string name="icon_picker_search">చిహ్నాలను శోధించండి</string>
+    <string name="icon_picker_title">"%1$s" కోసం చిహ్నాన్ని మార్చండి</string>
     <string name="action_change_wallpaper">వాల్‌పేపర్ మార్చు</string>
     <string name="action_clear_all_history">చరిత్రను క్లియర్ చేయి</string>
     <string name="action_edit_icon">ఐకాన్ సవరించు</string>
@@ -103,31 +104,26 @@
     <string name="settings_gesture_swipe_down">క్రిందికి స్వైప్ చేయండి</string>
     <string name="settings_gesture_swipe_up_home">పైకి స్వైప్ చేయండి (హోమ్)</string>
     <string name="settings_gesture_swipe_down_home">క్రిందికి స్వైప్ చేయండి (హోమ్)</string>
-    <string name="settings_gesture_quick_note">త్వరిత గమనిక</string>
     <string name="settings_gesture_settings">సెట్టింగులు</string>
-    <string name="settings_gesture_open_keyboard">కీబోర్డ్ తెరవండి</string>
     <string name="settings_gesture_close_keyboard_notifications">కీబోర్డ్ మూసివేయి / నోటిఫికేషన్‌లను తెరవండి</string>
     <string name="settings_gesture_close_keyboard">కీబోర్డ్ మూసివేయి</string>
     <string name="settings_gesture_notification_panel">నోటిఫికేషన్ ప్యానెల్</string>
     <string name="settings_gesture_none">ఏదీ లేదు</string>
     <string name="settings_gesture_custom">అనుకూలమైనవి (యాప్‌లు, ఫైల్‌లు మొదలైనవి)</string>
     <string name="settings_keyboard_gestures_title">కీబోర్డ్ హావభావాలు (హోమ్)</string>
+    <string name="settings_keyboard_gestures_desc">హోమ్ స్క్రీన్‌లో స్క్రోల్ చేయగల కంటెంట్ లేనప్పుడు మాత్రమే అందుబాటులో ఉంటుంది</string>
     <string name="action_pin_app">పిన్ చేయి</string>
     <string name="action_pin_to_notifications">నోటిఫికేషన్‌లకు పిన్ చేయి</string>
     <string name="action_unpin_from_notifications">నోటిఫికేషన్‌ల నుండి అన్‌పిన్ చేయి</string>
-    <string name="pinned_notifications_channel_name">పిన్ చేసిన షార్ట్‌కట్‌లు</string>
     <string name="pinned_notifications_channel_description">పిన్ చేసిన శోధన ఫలితాలకు త్వరిత ప్రాప్యత</string>
     <string name="pinned_notifications_title">పిన్ చేసిన షార్ట్‌కట్‌లు</string>
     <string name="notification_pinned_items_title">పిన్ చేసిన నోటిఫికేషన్ అంశాలు</string>
     <string name="notification_pinned_items_description">మీ నోటిఫికేషన్ ప్యానెల్‌లో చూపే పిన్ చేసిన అంశాలను నిర్వహించండి</string>
-    <string name="notification_pinned_items_dialog_title">పిన్ చేసిన నోటిఫికేషన్ అంశాలు</string>
-    <string name="notification_pinned_items_close">మూసివేయి</string>
     <string name="notification_pinned_items_remove">నోటిఫికేషన్‌ల నుండి %1$s తొలగించు</string>
     <string name="notification_pinned_item_type_app">యాప్</string>
     <string name="notification_pinned_item_type_app_shortcut">యాప్ షార్ట్‌కట్</string>
     <string name="notification_pinned_item_type_contact">కాంటాక్ట్</string>
     <string name="notification_pinned_item_type_file">ఫైల్</string>
-    <string name="notification_pinned_item_type_setting">సెట్టింగ్‌లు</string>
     <string name="notification_pinned_item_type_note">నోట్</string>
     <string name="action_remove">తొలగించు</string>
     <string name="action_remove_from_history">చరిత్ర నుండి తొలగించు</string>
@@ -185,7 +181,6 @@
     <string name="dialog_edit_amazon_domain_title">Amazon డొమైన్‌ను సవరించండి</string>
     <string name="dialog_gemini_model_picker_title">మోడల్‌ను ఎంచుకోండి</string>
     <string name="dialog_nickname_message">\"%1$s\" కోసం ఒక మారుపేరును నమోదు చేయండి. మీరు ఈ మారుపేరుతో కూడా శోధించవచ్చు.</string>
-    <string name="dialog_no">కాదు</string>
     <string name="dialog_ok">కొనసాగించు</string>
     <string name="dialog_okay">సరే</string>
     <string name="dialog_remember_choice">ఈ ఎంపికను గుర్తుంచుకో</string>
@@ -197,7 +192,6 @@
     <string name="dialog_trigger_error_taken">ఈ ట్రిగ్గర్ ఇప్పటికే ఉపయోగంలో ఉంది.</string>
     <string name="dialog_trigger_hint">ట్రిగ్గర్ పదం</string>
     <string name="dialog_trigger_message">\"%1$s\" కోసం ఒకే ఒక పదంతో కూడిన ట్రిగ్గర్‌ను నమోదు చేయండి.</string>
-    <string name="dialog_yes">అవును</string>
     <string name="exclude_marker"> నుండి మినహాయించబడింది </string>
     <string name="permission_action_manage_android">Android సెట్టింగ్స్‌లో నిర్వహించండి</string>
     <string name="permission_settings_dialog_message">ఈ చర్యకు %1$s అనుమతి అవసరం. దీనిని మంజూరు చేయడానికి మీరు సిస్టమ్ సెట్టింగ్స్‌కు తీసుకువెళ్లబడతారు.</string>
@@ -227,11 +221,9 @@
     <string name="app_suggestions_tabs_dialog_message">హోమ్ స్క్రీన్‌పై ఏ యాప్ సూచన ట్యాబ్‌లు కనిపించాలో ఎంచుకోండి.</string>
     <string name="app_suggestions_tabs_dialog_title">యాప్ సూచన ట్యాబ్‌లు</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">ట్యాబ్‌లను ఎంచుకోండి</string>
-    <string name="app_suggestions_enabled_tabs_summary">ప్రస్తుత: %1$s</string>
     <string name="app_suggestions_tab_required_toast">కనీసం ఒక యాప్ సూచన ట్యాబ్‌నైనా ప్రారంభించి ఉంచండి</string>
     <string name="app_suggestions_toggle_desc">హోమ్ స్క్రీన్‌పై సూచించిన యాప్‌లను చూపించు లేదా దాచు</string>
     <string name="app_suggestions_toggle_title">యాప్ సూచనలు</string>
-    <string name="show_all_apps_button_toggle_title">అన్ని యాప్‌లు</string>
     <string name="show_all_apps_button_toggle_desc">యాప్ సూచనల క్రింద \"అన్ని యాప్‌లు\" బటన్‌ను చూపించు</string>
     <string name="app_suggestions_usage_access_link">వినియోగ ప్రాప్యత అనుమతి</string>
     <string name="app_suggestions_usage_access_tip">మరింత తగిన సూచనలను చూడటానికి వినియోగ ప్రాప్యత అనుమతిని మంజూరు చేయండి</string>
@@ -242,6 +234,10 @@
     <string name="recent_queries_toggle_desc">విస్తరించడానికి ముందు చూపే అంశాల సంఖ్య</string>
     <string name="fuzzy_search_toggle_title">ఫజీ శోధన</string>
     <string name="fuzzy_search_toggle_desc">మీ శోధనలో టైపింగ్ పొరపాటు ఉన్నా ఫలితాలను కనుగొనండి.</string>
+    <string name="secondary_ranking_title">శోధన ఫలితాల ర్యాంకింగ్</string>
+    <string name="secondary_ranking_dialog_desc">ఒకే సరిపోలిక నాణ్యత ఉన్న ఫలితాలను ఎలా క్రమబద్ధీకరించాలో ఎంచుకోండి.</string>
+    <string name="secondary_ranking_recency">ఇటీవలివి</string>
+    <string name="secondary_ranking_most_opened">ఎక్కువగా తెరిచినవి</string>
     <string name="recent_queries_toggle_title">శోధన చరిత్ర</string>
     <string name="search_history_tab_recently_opened">ఫలితాలు</string>
     <string name="search_history_tab_searches">శోధనలు</string>
@@ -267,7 +263,6 @@
     <string name="section_app_shortcuts">యాప్ షార్ట్‌కట్‌లు</string>
     <string name="section_apps">యాప్‌లు</string>
     <string name="section_calendar">క్యాలెండర్ ఈవెంట్‌లు</string>
-    <string name="section_contacts">పరిచయాలు</string>
     <string name="section_files">ఫైళ్లు</string>
     <string name="section_notes">గమనికలు</string>
     <string name="section_settings">పరికర సెట్టింగ్‌లు</string>
@@ -443,7 +438,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">ఫైల్</string>
     <string name="excluded_item_type_file_extension">ఫైల్ ఎక్స్‌టెన్షన్</string>
     <string name="excluded_item_type_folder">ఫోల్డర్</string>
     <string name="file_extension_label">.%s ఫైళ్లు</string>
@@ -483,6 +477,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">కొత్త ఈవెంట్‌ను సృష్టించి మరియు జోడించండి</string>
     <string name="app_settings_create_calendar_event_title">కొత్త క్యాలెండర్ ఈవెంట్</string>
+    <string name="agenda_title">నేటి అజెండా</string>
     <string name="calendar_create_event_name_hint">ఈవెంట్ పేరు</string>
     <string name="calendar_create_event_select_date">తేదీని ఎంచుకోండి</string>
     <string name="calendar_create_event_sync_notice">ఈ ఈవెంట్ మీ పరికర క్యాలెండర్‌కు సమకాలీకరించబడదు</string>
@@ -494,6 +489,8 @@
         <item quantity="other">%d రోజులు</item>
     </plurals>
     <string name="calendar_relative_in_format">%1$s లో</string>
+    <string name="calendar_relative_in_minutes">%1$d నిమిషాల్లో</string>
+    <string name="calendar_relative_now">ఇప్పుడు</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d నెల</item>
         <item quantity="other">%d నెలలు</item>
@@ -667,7 +664,6 @@
     <string name="settings_icon_pack_option_system">సిస్టమ్ ఐకాన్‌లు</string>
     <string name="settings_icon_pack_picker_title">ఐకాన్ ప్యాక్‌ను ఎంచుకోండి</string>
     <string name="settings_icon_pack_search_query">ఉచిత ఐకాన్ ప్యాక్‌లు</string>
-    <string name="settings_icon_pack_selected_label">ప్రస్తుత: %1$s</string>
     <string name="settings_icon_pack_title">ఐకాన్ ప్యాక్</string>
     <string name="settings_icon_title">సెట్టింగ్‌ల ఐకాన్</string>
     <string name="settings_launch_options_desc">ఈ యాప్‌ను ప్రారంభించడానికి వివిధ మార్గాలు</string>
@@ -758,7 +754,6 @@
     <string name="settings_custom_provider_advanced_payload_title">అధునాతన అభ్యర్థన పేలోడ్</string>
     <string name="settings_direct_search_desc">Gemini, OpenAI, Claude మరియు Groq API కీలు మద్దతు ఇవ్వబడతాయి</string>
     <string name="settings_direct_search_desc_intro">AI-ఆధారిత శోధన మరియు సాధనాలను (Tools) ప్రారంభించడానికి API కీని జోడించండి.</string>
-    <string name="settings_free_api_key_tip_title">ఉచిత API కీని పొందండి</string>
     <string name="settings_free_api_key_tip_description">Gemini API కీని ఉచితంగా పొందడానికి దశలు.</string>
     <string name="settings_open_free_api_key_guide">ఉచిత API కీ మార్గదర్శిని తెరువు</string>
     <string name="settings_direct_search_grounding_label">వెబ్ శోధన</string>
@@ -807,7 +802,6 @@
     <string name="settings_backup_export_button">ఎగుమతి చేయి</string>
     <string name="settings_backup_export_failed">సెట్టింగ్‌లను ఎగుమతి చేయడం సాధ్యపడలేదు.</string>
     <string name="settings_backup_export_option_pinned_items_title">పిన్ చేసిన అంశాలు</string>
-    <string name="settings_backup_export_option_settings_title">సెట్టింగ్‌లు</string>
     <string name="settings_backup_export_selection_title">డేటాను ఎగుమతి చేయి</string>
     <string name="settings_backup_export_success">సెట్టింగ్‌లు విజయవంతంగా ఎగుమతి చేయబడ్డాయి.</string>
     <string name="settings_backup_import_button">దిగుమతి చేయి</string>
@@ -905,9 +899,7 @@
     <string name="shortcut_voice_search_long_label">వాయిస్ శోధనను తెరువు</string>
     <string name="shortcut_voice_search_short_label">వాయిస్ శోధన</string>
     <string name="voice_input_not_available">వాయిస్ టైపింగ్ ప్రస్తుతం అందుబాటులో లేదు.</string>
-    <string name="widget_background_color_custom_dialog_hint">హెక్స్ రంగు (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">కస్టమ్ రంగు</string>
-    <string name="widget_background_color_custom_invalid">దయచేసి సరైన 6-అంకెల హెక్స్ రంగును నమోదు చేయండి.</string>
     <string name="widget_border_color">అంచు రంగు</string>
     <string name="widget_custom_button_add_desc">కస్టమ్ బటన్‌ను జోడించండి</string>
     <string name="widget_custom_buttons_dialog_hint">మీరు యాప్‌లు, యాప్ షార్ట్‌కట్‌లు, పరిచయాలు, ఫైళ్లు, ఫోల్డర్‌లు, గమనికలు &amp; పరికర సెట్టింగ్‌ల కోసం శోధించవచ్చు.</string>
@@ -1022,7 +1014,6 @@
     <string name="excluded_item_type_app_results">యాప్ (ఫలితాలు)</string>
     <string name="excluded_item_type_app_shortcut">యాప్ షార్ట్‌కట్</string>
     <string name="excluded_item_type_app_suggestions">యాప్ (సూచనలు)</string>
-    <string name="excluded_item_type_contact">పరిచయం</string>
     <string name="excluded_item_type_setting">సెట్టింగ్</string>
     <string name="permission_required_title">అనుమతి అవసరం</string>
     <string name="settings_action_clear_all">అన్నింటినీ క్లియర్ చేయి</string>

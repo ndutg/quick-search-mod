@@ -67,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -105,6 +106,7 @@ import com.tk.quicksearch.searchEngines.shared.IconRenderStyle
 import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.hapticStrong
 import kotlinx.coroutines.delay
@@ -553,6 +555,9 @@ internal fun PersistentSearchBar(
         TextField(
             value = textFieldValue,
             onValueChange = { newValue ->
+                if (textFieldValue.text.isEmpty() && newValue.text.isNotEmpty()) {
+                    StartupTrace.mark("QS.Home.FirstInputAccepted")
+                }
                 textFieldValue = newValue
                 onQueryChange(newValue.text)
             },
@@ -560,6 +565,11 @@ internal fun PersistentSearchBar(
                 Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            StartupTrace.mark("QS.Home.SearchFieldFocused")
+                        }
+                    }
                     .onGloballyPositioned {
                         if (!hasLaidOutSearchField) {
                             hasLaidOutSearchField = true

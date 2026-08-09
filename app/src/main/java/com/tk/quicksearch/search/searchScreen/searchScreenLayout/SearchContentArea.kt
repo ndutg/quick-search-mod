@@ -146,7 +146,6 @@ fun SearchContentArea(
     onChangeWallpaperClick: () -> Unit = {},
     onOpenSettingsClick: () -> Unit = {},
     showOpenSettingsOption: Boolean = true,
-    isDefaultLauncher: Boolean = false,
     onBottomOneHandedOverscrollUp: () -> Unit = {},
     onLauncherOverscrollUp: () -> Unit = {},
     onLauncherOverscrollDown: () -> Unit = {},
@@ -315,14 +314,15 @@ fun SearchContentArea(
                 !shouldHideScrollView && scrollState.maxValue > 0
             val bottomOneHandedOverscrollEnabled =
                 state.bottomSearchBarEnabled && useOneHandedMode && alignResultsToBottom
+            val keyboardGesturesEnabled = scrollState.maxValue == 0
             val launcherOverscrollUpEnabled =
-                isDefaultLauncher &&
+                keyboardGesturesEnabled &&
                     hasQuery.not() &&
                     renderingState.expandedSection == ExpandedSection.NONE
-            // A keyboard-open home search can already contain text. Keep the downward
+            // A keyboard-open search can already contain text. Keep the downward
             // overscroll active in that state so the configured close-keyboard action
             // still receives the gesture before the notification panel does.
-            val launcherOverscrollDownEnabled = isDefaultLauncher
+            val launcherOverscrollDownEnabled = keyboardGesturesEnabled
             val bottomOneHandedOverscrollConnection =
                 remember(
                     bottomOneHandedOverscrollEnabled,

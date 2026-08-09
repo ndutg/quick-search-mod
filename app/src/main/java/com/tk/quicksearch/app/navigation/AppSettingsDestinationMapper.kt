@@ -31,6 +31,7 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.UNIT_CONVERTER_INFO -> SettingsDetailType.UNIT_CONVERTER_INFO
         AppSettingsDestination.DATE_CALCULATOR_INFO -> SettingsDetailType.DATE_CALCULATOR_INFO
         AppSettingsDestination.RELOAD_APPS,
+        AppSettingsDestination.SEARCH_RESULT_RANKING,
         AppSettingsDestination.RELOAD_CONTACTS,
         AppSettingsDestination.RELOAD_FILES,
         AppSettingsDestination.SEND_FEEDBACK,

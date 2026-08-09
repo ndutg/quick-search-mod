@@ -1033,7 +1033,7 @@ fun SettingsHeader(onBack: () -> Unit) {
         androidx.compose.foundation.layout
             .Spacer(modifier = Modifier.width(DesignTokens.HeaderIconSpacing))
         Text(
-            text = stringResource(R.string.settings_backup_export_option_settings_title),
+            text = stringResource(R.string.settings_gesture_settings),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )

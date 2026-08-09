@@ -54,6 +54,7 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.notes.NoteRow
 import com.tk.quicksearch.search.searchScreen.components.predictedSubmitHighlight
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
@@ -72,14 +73,14 @@ private const val APP_ICON_SIZE = 32
 internal sealed interface TopMatchItem {
     val priority: Int
     val sectionOrder: Int
-    val recencyScore: Long
+    val secondaryScore: Long
     val index: Int
 
     data class App(
         val app: AppInfo,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 
@@ -87,7 +88,7 @@ internal sealed interface TopMatchItem {
         val shortcut: StaticShortcut,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 
@@ -95,7 +96,7 @@ internal sealed interface TopMatchItem {
         val contact: ContactInfo,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 
@@ -103,7 +104,7 @@ internal sealed interface TopMatchItem {
         val file: DeviceFile,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 
@@ -111,7 +112,7 @@ internal sealed interface TopMatchItem {
         val setting: DeviceSetting,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 
@@ -119,7 +120,7 @@ internal sealed interface TopMatchItem {
         val setting: AppSettingResult,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 
@@ -127,7 +128,7 @@ internal sealed interface TopMatchItem {
         val event: CalendarEventInfo,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 
@@ -135,7 +136,7 @@ internal sealed interface TopMatchItem {
         val note: NoteInfo,
         override val priority: Int,
         override val sectionOrder: Int,
-        override val recencyScore: Long,
+        override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
 }
@@ -149,8 +150,18 @@ internal fun rememberTopMatches(
     limit: Int,
     topMatchesSectionOrder: List<SearchSection>,
     disabledTopMatchesSections: Set<SearchSection>,
+    secondaryRankingSignal: SecondaryRankingSignal,
 ): List<TopMatchItem> =
-    remember(query, renderingState, context, params, limit, topMatchesSectionOrder, disabledTopMatchesSections) {
+    remember(
+        query,
+        renderingState,
+        context,
+        params,
+        limit,
+        topMatchesSectionOrder,
+        disabledTopMatchesSections,
+        secondaryRankingSignal,
+    ) {
         if (query.isBlank() || limit <= 0) {
             emptyList()
         } else {
@@ -162,6 +173,7 @@ internal fun rememberTopMatches(
                 limit = limit,
                 topMatchesSectionOrder = topMatchesSectionOrder,
                 disabledTopMatchesSections = disabledTopMatchesSections,
+                secondaryRankingSignal = secondaryRankingSignal,
             )
         }
     }
@@ -174,6 +186,7 @@ private fun buildTopMatches(
     limit: Int,
     topMatchesSectionOrder: List<SearchSection>,
     disabledTopMatchesSections: Set<SearchSection>,
+    secondaryRankingSignal: SecondaryRankingSignal,
 ): List<TopMatchItem> {
     val sectionOrder =
         topMatchesSectionOrder.mapIndexed { index, section -> section to index }.toMap()
@@ -191,7 +204,11 @@ private fun buildTopMatches(
                 app = app,
                 priority = priority(app.appName, params.appsParams?.getAppNickname?.invoke(app.packageName)),
                 sectionOrder = order(SearchSection.APPS),
-                recencyScore = app.lastUsedTime.takeIf { it > 0L } ?: app.launchCount.toLong(),
+                secondaryScore = topMatchSecondaryScore(
+                    secondaryRankingSignal,
+                    recencyScore = app.lastUsedTime,
+                    openCount = app.launchCount.toLong(),
+                ),
                 index = index,
             )
         }
@@ -206,7 +223,11 @@ private fun buildTopMatches(
                     params.appShortcutsParams?.getShortcutNickname?.invoke(id),
                 ),
                 sectionOrder = order(SearchSection.APP_SHORTCUTS),
-                recencyScore = (recencyIndex.appShortcutScores[id] ?: 0).toLong(),
+                secondaryScore = secondaryScore(
+                    secondaryRankingSignal,
+                    recencyIndex.appShortcutScores[id],
+                    recencyIndex.appShortcutOpenCounts[id],
+                ),
                 index = index,
             )
         }
@@ -220,7 +241,11 @@ private fun buildTopMatches(
                     params.contactsParams.getContactNickname(contact.contactId),
                 ),
                 sectionOrder = order(SearchSection.CONTACTS),
-                recencyScore = (recencyIndex.contactScores[contact.contactId] ?: 0).toLong(),
+                secondaryScore = secondaryScore(
+                    secondaryRankingSignal,
+                    recencyIndex.contactScores[contact.contactId],
+                    recencyIndex.contactOpenCounts[contact.contactId],
+                ),
                 index = index,
             )
         }
@@ -234,7 +259,11 @@ private fun buildTopMatches(
                     params.filesParams.getFileNickname(file.uri.toString()),
                 ),
                 sectionOrder = order(SearchSection.FILES),
-                recencyScore = (recencyIndex.fileScores[file.uri.toString()] ?: 0).toLong(),
+                secondaryScore = secondaryScore(
+                    secondaryRankingSignal,
+                    recencyIndex.fileScores[file.uri.toString()],
+                    recencyIndex.fileOpenCounts[file.uri.toString()],
+                ),
                 index = index,
             )
         }
@@ -248,7 +277,11 @@ private fun buildTopMatches(
                     params.settingsParams?.getSettingNickname?.invoke(setting.id),
                 ),
                 sectionOrder = order(SearchSection.SETTINGS),
-                recencyScore = (recencyIndex.settingScores[setting.id] ?: 0).toLong(),
+                secondaryScore = secondaryScore(
+                    secondaryRankingSignal,
+                    recencyIndex.settingScores[setting.id],
+                    recencyIndex.settingOpenCounts[setting.id],
+                ),
                 index = index,
             )
         }
@@ -259,7 +292,11 @@ private fun buildTopMatches(
                 setting = setting,
                 priority = priority(setting.title),
                 sectionOrder = order(SearchSection.APP_SETTINGS),
-                recencyScore = (recencyIndex.appSettingScores[setting.id] ?: 0).toLong(),
+                secondaryScore = secondaryScore(
+                    secondaryRankingSignal,
+                    recencyIndex.appSettingScores[setting.id],
+                    recencyIndex.appSettingOpenCounts[setting.id],
+                ),
                 index = index,
             )
         }
@@ -273,7 +310,11 @@ private fun buildTopMatches(
                     params.calendarParams?.getEventNickname?.invoke(event.eventId),
                 ),
                 sectionOrder = order(SearchSection.CALENDAR),
-                recencyScore = 0L,
+                secondaryScore = topMatchSecondaryScore(
+                    secondaryRankingSignal,
+                    recencyScore = recencyIndex.calendarLastOpenedTimes[event.eventId] ?: 0L,
+                    openCount = (recencyIndex.calendarOpenCounts[event.eventId] ?: 0).toLong(),
+                ),
                 index = index,
             )
         }
@@ -287,21 +328,53 @@ private fun buildTopMatches(
                 note = note,
                 priority = priority(note.title),
                 sectionOrder = order(SearchSection.NOTES),
-                recencyScore = (recencyIndex.noteScores[note.noteId] ?: 0).toLong(),
+                secondaryScore = secondaryScore(
+                    secondaryRankingSignal,
+                    recencyIndex.noteScores[note.noteId],
+                    recencyIndex.noteOpenCounts[note.noteId],
+                ),
                 index = index,
             )
         }
     }
 
-    return matches
+    return rankTopMatches(matches, limit)
+}
+
+internal fun rankTopMatches(
+    matches: List<TopMatchItem>,
+    limit: Int,
+): List<TopMatchItem> =
+    matches
         .sortedWith(
             compareBy<TopMatchItem> { it.priority }
-                .thenByDescending { it.recencyScore }
+                .thenByDescending { it.secondaryScore }
                 .thenBy { it.sectionOrder }
                 .thenBy { it.index },
         )
         .take(limit)
-}
+
+internal fun topMatchSecondaryScore(
+    signal: SecondaryRankingSignal,
+    recencyScore: Long,
+    openCount: Long,
+): Long =
+    when (signal) {
+        SecondaryRankingSignal.RECENCY -> recencyScore
+        SecondaryRankingSignal.MOST_OPENED -> openCount
+        SecondaryRankingSignal.NONE -> 0L
+    }
+
+private fun secondaryScore(
+    signal: SecondaryRankingSignal,
+    recencyScore: Int?,
+    openCount: Int?,
+): Long =
+    topMatchSecondaryScore(
+        signal,
+        recencyScore = recencyScore?.toLong() ?: 0L,
+        openCount = openCount?.toLong() ?: 0L,
+    )
 
 @Composable
 internal fun TopMatchesSection(

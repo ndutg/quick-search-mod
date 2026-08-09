@@ -2,10 +2,12 @@ package com.tk.quicksearch.search.core
 
 import android.os.Trace
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.withContext
 
 internal class SearchStartupCoordinator(
@@ -18,7 +20,14 @@ internal class SearchStartupCoordinator(
     private val launchDeferredInitializationBlock: () -> Unit,
 ) {
     private companion object {
-        const val KeyboardStartupQuietWindowMs = 350L
+        const val KeyboardStartupMaxWaitMs = 350L
+        const val KeyboardStartupSettleMs = 32L
+    }
+
+    private val startupKeyboardVisible = CompletableDeferred<Unit>()
+
+    fun notifyStartupKeyboardVisible() {
+        startupKeyboardVisible.complete(Unit)
     }
 
     fun startStartupPhases() {
@@ -35,7 +44,14 @@ internal class SearchStartupCoordinator(
 
             kotlinx.coroutines.yield()
             if (shouldReserveKeyboardStartupWindow()) {
-                delay(KeyboardStartupQuietWindowMs)
+                val keyboardBecameVisible =
+                    withTimeoutOrNull(KeyboardStartupMaxWaitMs) {
+                        startupKeyboardVisible.await()
+                        true
+                    } ?: false
+                if (keyboardBecameVisible) {
+                    delay(KeyboardStartupSettleMs)
+                }
             }
 
             updateStartupPhase(StartupPhase.PHASE_2_HEAVY_FEATURES)

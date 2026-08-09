@@ -313,6 +313,7 @@ internal class SearchHandlerContainer(
                 onRequestAiSearch = onRequestAiSearch,
                 onClearQuery = clearQuery,
                 onExternalNavigation = externalNavigation,
+                onAppLaunched = { appInfo -> appSearchManager.recordAppLaunch(appInfo) },
                 showToastCallback = showFormattedToast,
             )
 

@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +56,7 @@ import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContaine
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import kotlinx.coroutines.delay
 import com.tk.quicksearch.shared.util.hapticConfirm
 
 private const val ROW_MIN_HEIGHT_DP = 52
@@ -99,6 +101,8 @@ fun CalendarEventsSection(
     predictedTarget: PredictedSubmitTarget? = null,
     fillExpandedHeight: Boolean = false,
     showPinnedItemMenu: Boolean = false,
+    collapsedEvents: List<CalendarEventInfo>? = null,
+    allowInternalScroll: Boolean = true,
 ) {
     if (!hasPermission) {
         permissionDisabledCard(
@@ -122,6 +126,28 @@ fun CalendarEventsSection(
             else event
         }
     }
+    val effectiveCollapsedEvents = remember(collapsedEvents, effectiveEvents) {
+        collapsedEvents
+            ?.mapNotNull { collapsedEvent ->
+                effectiveEvents.firstOrNull { it.eventId == collapsedEvent.eventId }
+            }
+            ?.sortedBy { it.startMillis }
+            ?: effectiveEvents
+    }
+    val nowMillis by produceState(initialValue = System.currentTimeMillis()) {
+        while (true) {
+            delay(30_000)
+            value = System.currentTimeMillis()
+        }
+    }
+    val collapsedDisplayEvents =
+        if (isHomeScreenMode) {
+            effectiveEvents.filter { event ->
+                event.allDay || isCalendarEventCurrentlyRelevant(event, nowMillis)
+            }
+        } else {
+            effectiveCollapsedEvents.take(SearchScreenConstants.INITIAL_RESULT_COUNT)
+        }
     var editingCustomEvent by remember { mutableStateOf<CalendarEventInfo?>(null) }
 
     val predictedEventId = (predictedTarget as? PredictedSubmitTarget.Calendar)?.eventId
@@ -131,15 +157,18 @@ fun CalendarEventsSection(
     val overlayDividerColor = LocalOverlayDividerColor.current
     val overlayCardColor = LocalOverlayResultCardColor.current
     val scrollState = rememberScrollState()
+    val shouldUseInternalScroll = isExpanded && allowInternalScroll
 
     ExpandableResultsCard(
         resultCount = effectiveEvents.size,
+        hasAdditionalResults = effectiveEvents.size > collapsedDisplayEvents.size,
         isExpanded = isExpanded,
         showAllResults = showAllResults,
         isTopPredicted = useCardLevelPrediction,
         showExpandControls = showExpandControls,
         expandedCardMaxHeight = expandedCardMaxHeight,
-        hasScrollableContent = scrollState.maxValue > 0,
+        constrainExpandedHeight = allowInternalScroll,
+        hasScrollableContent = shouldUseInternalScroll && scrollState.maxValue > 0,
         fillExpandedHeight = fillExpandedHeight,
         showWallpaperBackground = showWallpaperBackground,
         overlayCardColor = overlayCardColor,
@@ -148,12 +177,12 @@ fun CalendarEventsSection(
             if (cardState.displayAsExpanded) {
                 effectiveEvents
             } else {
-                effectiveEvents.take(SearchScreenConstants.INITIAL_RESULT_COUNT)
+                collapsedDisplayEvents
             }
         Column(
             modifier =
                 contentModifier.then(
-                    if (isExpanded) {
+                    if (shouldUseInternalScroll) {
                         Modifier.verticalScroll(scrollState)
                     } else {
                         Modifier
@@ -195,7 +224,8 @@ fun CalendarEventsSection(
                             onInclude = onInclude,
                             onNicknameClick = onNicknameClick,
                             isPredicted = showPredictedOnRow,
-                            isHomescreenTodayEvent = isHomeScreenMode && !isPinned,
+                            isHomescreenTodayEvent =
+                                isHomeScreenMode && !isPinned && !cardState.displayAsExpanded,
                             onArchive = onArchiveTodayEvent,
                             showPinnedItemMenu = showPinnedItemMenu,
                         )
@@ -294,10 +324,7 @@ internal fun CalendarEventRow(
             )
             Text(
                 text = if (isHomescreenTodayEvent) {
-                    listOf(
-                        formatCalendarEventDate(event),
-                        calendarRelativeDateLabel(event.startMillis),
-                    ).joinToString(" \u00b7 ")
+                    calendarHomeScheduleLabel(event)
                 } else {
                     listOfNotNull(
                         formatCalendarEventDate(event),

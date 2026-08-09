@@ -314,6 +314,17 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setSecondaryRankingSignal(signal: com.tk.quicksearch.search.models.SecondaryRankingSignal) {
+        userPreferences.setSecondaryRankingSignal(signal)
+        updateFeatureState { it.copy(secondaryRankingSignal = signal) }
+
+        scope.launch(Dispatchers.IO) {
+            refreshAppSuggestions()
+            secondarySearchOrchestrator.resetNoResultTracking()
+            rerunSecondarySearchIfNeeded()
+        }
+    }
+
     fun setTopMatchesEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             userPreferences.setTopMatchesEnabled(enabled)

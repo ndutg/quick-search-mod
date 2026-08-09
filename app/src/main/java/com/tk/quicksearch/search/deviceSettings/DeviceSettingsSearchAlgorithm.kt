@@ -7,6 +7,7 @@ import com.tk.quicksearch.search.utils.FuzzyMatcher
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 private const val FUZZY_CANDIDATE_BUFFER_MULTIPLIER = 12
 
@@ -18,6 +19,8 @@ object DeviceSettingsSearchAlgorithm {
         matchingNicknameIds: Set<String>,
         nicknameCache: Map<String, String?>,
         recentSettingScores: Map<String, Int> = emptyMap(),
+        settingOpenCounts: Map<String, Int> = emptyMap(),
+        secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
@@ -32,6 +35,8 @@ object DeviceSettingsSearchAlgorithm {
             matchingNicknameIds = matchingNicknameIds,
             nicknameCache = nicknameCache,
             recentSettingScores = recentSettingScores,
+            settingOpenCounts = settingOpenCounts,
+            secondaryRankingSignal = secondaryRankingSignal,
             resultLimit = resultLimit,
             enableFuzzyMatching = enableFuzzyMatching,
             isLowRamDevice = isLowRamDevice,
@@ -45,6 +50,8 @@ object DeviceSettingsSearchAlgorithm {
         matchingNicknameIds: Set<String>,
         nicknameCache: Map<String, String?>,
         recentSettingScores: Map<String, Int> = emptyMap(),
+        settingOpenCounts: Map<String, Int> = emptyMap(),
+        secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
@@ -73,6 +80,8 @@ object DeviceSettingsSearchAlgorithm {
             }.sortedWith(
                 RecentResultRankingUtils.matchThenRecencyThenAlphabeticalComparator(
                     recencyScores = recentSettingScores,
+                    openCounts = settingOpenCounts,
+                    secondaryRankingSignal = secondaryRankingSignal,
                     keySelector = { it.id },
                     labelSelector = { it.title },
                 ),
@@ -155,6 +164,13 @@ object DeviceSettingsSearchAlgorithm {
                     }
                 }.sortedWith(
                     compareByDescending<Pair<DeviceSetting, Int>> { it.second }
+                        .thenByDescending {
+                            when (secondaryRankingSignal) {
+                                SecondaryRankingSignal.RECENCY -> recentSettingScores[it.first.id] ?: 0
+                                SecondaryRankingSignal.MOST_OPENED -> settingOpenCounts[it.first.id] ?: 0
+                                SecondaryRankingSignal.NONE -> 0
+                            }
+                        }
                         .thenBy { it.first.title.lowercase() },
                 ).map { it.first }
                 .toList()

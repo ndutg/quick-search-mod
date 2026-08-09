@@ -295,11 +295,13 @@ suspend fun prefetchAppIcons(
     packageNames: Collection<String>,
     iconPackPackage: String?,
     maxCount: Int = 30,
+    forceCircularMask: Boolean = false,
 ) {
     if (packageNames.isEmpty()) return
+    val userPreferences = UserAppPreferences(context)
     val maskUnsupportedIconPackIcons =
         if (iconPackPackage == null) false
-        else UserAppPreferences(context).isIconPackUnsupportedIconMaskEnabled()
+        else userPreferences.isIconPackUnsupportedIconMaskEnabled()
 
     val packagesToLoad =
         packageNames
@@ -308,23 +310,35 @@ suspend fun prefetchAppIcons(
             .filter { it.isNotEmpty() }
             .distinct()
             .map { pkg ->
-                pkg to
+                val iconOverride = userPreferences.getAppIconOverride(pkg)
+                Triple(
+                    pkg,
                     buildCacheKey(
                         packageName = pkg,
                         iconPackPackage = iconPackPackage,
+                        iconOverride = iconOverride,
                         maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons,
-                    )
+                        forceCircularMask = forceCircularMask,
+                    ),
+                    iconOverride,
+                )
             }
-            .filter { (_, cacheKey) -> AppIconCache.get(cacheKey) == null }
+            .filter { (_, cacheKey, _) -> AppIconCache.get(cacheKey) == null }
             .take(maxCount)
             .toList()
 
     if (packagesToLoad.isEmpty()) return
 
     withContext(Dispatchers.IO) {
-        packagesToLoad.forEach { (packageName, cacheKey) ->
+        packagesToLoad.forEach { (packageName, cacheKey, iconOverride) ->
             val iconPackBitmap =
-                iconPackPackage?.let { pack ->
+                iconOverride?.let { override ->
+                    IconPackManager.loadDrawableBitmap(
+                        context = context,
+                        iconPackPackage = override.iconPackPackage,
+                        drawableName = override.drawableName,
+                    )
+                } ?: iconPackPackage?.let { pack ->
                     IconPackManager.loadIconBitmap(
                         context = context,
                         iconPackPackage = pack,
@@ -339,7 +353,11 @@ suspend fun prefetchAppIcons(
                     runCatching {
                         val drawable = context.packageManager.getApplicationIcon(packageName)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
-                            val bitmap = drawable.toBitmap().asImageBitmap()
+                            val bitmap =
+                                adaptiveToBitmap(
+                                    drawable = drawable,
+                                    forceCircularMask = forceCircularMask,
+                                ).asImageBitmap()
                             val monochromeData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                 extractMonochromeBitmap(drawable)?.asImageBitmap()
                             } else null

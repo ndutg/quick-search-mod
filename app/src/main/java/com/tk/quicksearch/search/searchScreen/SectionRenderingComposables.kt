@@ -1,6 +1,12 @@
 package com.tk.quicksearch.search.searchScreen
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.search.appSettings.AppSettingsResultsSection
 import com.tk.quicksearch.search.appShortcuts.AppShortcutResultsSection
 import com.tk.quicksearch.search.apps.AppGridView
@@ -15,6 +21,9 @@ import com.tk.quicksearch.search.core.SectionRenderParams
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsResultsSection
 import com.tk.quicksearch.search.files.FileResultsSection
 import com.tk.quicksearch.search.notes.NotesResultsSection
+import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.app.startup.StartupTrace
 
 // ============================================================================
 // Section Rendering Functions
@@ -150,6 +159,9 @@ private fun renderAppsSection(
         context.shouldRenderApps &&
             ((appsParams.hasAppResults && appsParams.apps.isNotEmpty()) || appsParams.showAllAppsButton)
     ) {
+        if (!appsParams.isSearching) {
+            LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.AppSectionRendered") }
+        }
         val shouldShowRateQuickSearchCard = appsParams.showRateQuickSearchCard
         val shouldShowUpdateCard = appsParams.showUpdateCard
         val renderPromptCardsFirst = (shouldShowUpdateCard || shouldShowRateQuickSearchCard) && appsParams.oneHandedMode
@@ -240,6 +252,7 @@ private fun renderAppShortcutsSection(
 ) {
     val appShortcutsParams = params.appShortcutsParams ?: return
     if (context.shouldRenderAppShortcuts) {
+        LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.ShortcutsRendered") }
         AppShortcutResultsSection(
             shortcuts = context.appShortcutsList,
             isExpanded = context.isAppShortcutsExpanded,
@@ -349,11 +362,22 @@ private fun renderCalendarSection(
 ) {
     val calendarParams = params.calendarParams ?: return
     if (context.shouldRenderCalendar || context.todayCalendarEventsList.isNotEmpty()) {
+        if (context.isHomeScreenCalendarMode || context.todayCalendarEventsList.isNotEmpty()) {
+            LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.CalendarRendered") }
+        }
         if (context.isHomeScreenCalendarMode && context.todayCalendarEventsList.isNotEmpty()) {
+            if (!calendarParams.isExpanded && !context.hideHomeSectionTitleRows) {
+                Text(
+                    text = stringResource(R.string.agenda_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                )
+            }
             CalendarEventsSection(
                 events = context.todayCalendarEventsList,
                 hasPermission = calendarParams.hasPermission,
-                isExpanded = true,
+                isExpanded = calendarParams.isExpanded,
                 pinnedEventIds = emptySet(),
                 excludedEventIds = calendarParams.excludedEventIds,
                 onEventClick = calendarParams.onEventClick,
@@ -365,8 +389,8 @@ private fun renderCalendarSection(
                 onNicknameClick = calendarParams.onNicknameClick,
                 onArchiveTodayEvent = calendarParams.onArchiveTodayEvent,
                 getEventNickname = calendarParams.getEventNickname,
-                showAllResults = true,
-                showExpandControls = false,
+                showAllResults = false,
+                showExpandControls = true,
                 onExpandClick = context.calendarExpandClick,
                 expandedCardMaxHeight = calendarParams.expandedCardMaxHeight,
                 permissionDisabledCard = calendarParams.permissionDisabledCard,
@@ -375,6 +399,8 @@ private fun renderCalendarSection(
                 fillExpandedHeight = false,
                 isHomeScreenMode = true,
                 showPinnedItemMenu = false,
+                collapsedEvents = context.todayCalendarEventsList,
+                allowInternalScroll = true,
             )
         }
         if (context.calendarEventsList.isEmpty() && context.isHomeScreenCalendarMode) return

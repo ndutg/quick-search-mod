@@ -11,6 +11,7 @@ import com.tk.quicksearch.search.utils.FuzzyMatcher
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 private const val FUZZY_CANDIDATE_BUFFER_MULTIPLIER = 12
 
@@ -22,6 +23,8 @@ object AppShortcutSearchAlgorithm {
         disabledIds: Set<String>,
         shortcutNicknames: Map<String, String>,
         recentShortcutScores: Map<String, Int> = emptyMap(),
+        shortcutOpenCounts: Map<String, Int> = emptyMap(),
+        secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
         minQueryLength: Int = 1,
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
@@ -37,6 +40,8 @@ object AppShortcutSearchAlgorithm {
             disabledIds = disabledIds,
             shortcutNicknames = shortcutNicknames,
             recentShortcutScores = recentShortcutScores,
+            shortcutOpenCounts = shortcutOpenCounts,
+            secondaryRankingSignal = secondaryRankingSignal,
             resultLimit = resultLimit,
             enableFuzzyMatching = enableFuzzyMatching,
             isLowRamDevice = isLowRamDevice,
@@ -50,6 +55,8 @@ object AppShortcutSearchAlgorithm {
         disabledIds: Set<String>,
         shortcutNicknames: Map<String, String>,
         recentShortcutScores: Map<String, Int> = emptyMap(),
+        shortcutOpenCounts: Map<String, Int> = emptyMap(),
+        secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
@@ -82,6 +89,8 @@ object AppShortcutSearchAlgorithm {
             }.sortedWith(
                 RecentResultRankingUtils.matchThenRecencyThenAlphabeticalComparator(
                     recencyScores = recentShortcutScores,
+                    openCounts = shortcutOpenCounts,
+                    secondaryRankingSignal = secondaryRankingSignal,
                     keySelector = { shortcutKey(it) },
                     labelSelector = { shortcutDisplayName(it) },
                 ),
@@ -164,6 +173,14 @@ object AppShortcutSearchAlgorithm {
                     }
                 }.sortedWith(
                     compareByDescending<Pair<StaticShortcut, Int>> { it.second }
+                        .thenByDescending {
+                            val key = shortcutKey(it.first)
+                            when (secondaryRankingSignal) {
+                                SecondaryRankingSignal.RECENCY -> recentShortcutScores[key] ?: 0
+                                SecondaryRankingSignal.MOST_OPENED -> shortcutOpenCounts[key] ?: 0
+                                SecondaryRankingSignal.NONE -> 0
+                            }
+                        }
                         .thenBy { shortcutDisplayName(it.first).lowercase() },
                 ).map { it.first }
                 .toList()

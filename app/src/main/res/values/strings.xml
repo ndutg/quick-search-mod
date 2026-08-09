@@ -60,7 +60,6 @@
     <string name="action_add_to_home">Add to Home</string>
     <string name="action_add_trigger">Trigger</string>
     <string name="action_app_info">App Info</string>
-    <string name="action_archive_today_event">Archive</string>
     <string name="action_change_icon">Change Icon</string>
     <string name="icon_picker_no_icon_packs">No Icon packs are installed to change the app icon.</string>
     <string name="icon_picker_download_icon_packs">Download Icon Packs</string>
@@ -97,31 +96,26 @@
     <string name="settings_gesture_swipe_down">Swipe Down</string>
     <string name="settings_gesture_swipe_up_home">Swipe Up (Home)</string>
     <string name="settings_gesture_swipe_down_home">Swipe Down (Home)</string>
-    <string name="settings_gesture_quick_note">Quick Note</string>
     <string name="settings_gesture_settings">Settings</string>
-    <string name="settings_gesture_open_keyboard">Open Keyboard</string>
     <string name="settings_gesture_close_keyboard_notifications">Close Keyboard / Open Notifications</string>
     <string name="settings_gesture_close_keyboard">Close Keyboard</string>
     <string name="settings_gesture_notification_panel">Notification Panel</string>
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
     <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>
+    <string name="settings_keyboard_gestures_desc">Available only when there is no scrollable content in home</string>
     <string name="action_pin_app">Pin</string>
     <string name="action_pin_to_notifications">Pin to Notifications</string>
     <string name="action_unpin_from_notifications">Unpin from Notifications</string>
-    <string name="pinned_notifications_channel_name">Pinned shortcuts</string>
     <string name="pinned_notifications_channel_description">Quick access to pinned search results</string>
     <string name="pinned_notifications_title">Pinned shortcuts</string>
     <string name="notification_pinned_items_title">Pinned Notification Items</string>
     <string name="notification_pinned_items_description">Manage pinned items shown in your notification panel</string>
-    <string name="notification_pinned_items_dialog_title">Pinned Notification Items</string>
-    <string name="notification_pinned_items_close">Close</string>
     <string name="notification_pinned_items_remove">Remove %1$s from notifications</string>
     <string name="notification_pinned_item_type_app">App</string>
     <string name="notification_pinned_item_type_app_shortcut">App shortcut</string>
     <string name="notification_pinned_item_type_contact">Contact</string>
     <string name="notification_pinned_item_type_file">File</string>
-    <string name="notification_pinned_item_type_setting">Settings</string>
     <string name="notification_pinned_item_type_note">Note</string>
     <string name="action_remove">Remove</string>
     <string name="action_remove_from_history">Remove From History</string>
@@ -179,7 +173,6 @@
     <string name="dialog_edit_amazon_domain_title">Edit Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Select Model</string>
     <string name="dialog_nickname_message">Enter a nickname for "%1$s". You can search for it using this nickname.</string>
-    <string name="dialog_no">No</string>
     <string name="dialog_ok">Continue</string>
     <string name="dialog_okay">Okay</string>
     <string name="dialog_remember_choice">Remember this choice</string>
@@ -191,7 +184,6 @@
     <string name="dialog_trigger_error_taken">This trigger is already taken.</string>
     <string name="dialog_trigger_hint">Trigger word</string>
     <string name="dialog_trigger_message">Enter a one-word trigger for "%1$s".</string>
-    <string name="dialog_yes">Yes</string>
     <string name="exclude_marker"> excluded from </string>
     <string name="permission_action_manage_android">Manage in Android settings</string>
     <string name="permission_settings_dialog_message">This action requires %1$s permission. You will be taken to system settings to grant it.</string>
@@ -221,11 +213,9 @@
     <string name="app_suggestions_tabs_dialog_message">Choose which app suggestion tabs appear on the home screen.</string>
     <string name="app_suggestions_tabs_dialog_title">App Suggestion Tabs</string>
     <string name="app_suggestions_enabled_tabs_picker_hint">Choose Tabs</string>
-    <string name="app_suggestions_enabled_tabs_summary">Current: %1$s</string>
     <string name="app_suggestions_tab_required_toast">Keep at least one app suggestion tab enabled</string>
     <string name="app_suggestions_toggle_desc">Show or hide suggested apps on the home screen</string>
     <string name="app_suggestions_toggle_title">App Suggestions</string>
-    <string name="show_all_apps_button_toggle_title">All Apps</string>
     <string name="show_all_apps_button_toggle_desc">Show All Apps button below app suggestions</string>
     <string name="app_suggestions_usage_access_link">usage access permission</string>
     <string name="app_suggestions_usage_access_tip">Grant usage access permission to see more appropriate suggestions</string>
@@ -236,6 +226,10 @@
     <string name="recent_queries_toggle_desc">No. of items shown before expansion</string>
     <string name="fuzzy_search_toggle_title">Fuzzy search</string>
     <string name="fuzzy_search_toggle_desc">Find results even when your search contains a typo.</string>
+    <string name="secondary_ranking_title">Search Result Ranking</string>
+    <string name="secondary_ranking_dialog_desc">Choose how results with the same match quality are ordered.</string>
+    <string name="secondary_ranking_recency">Recency</string>
+    <string name="secondary_ranking_most_opened">Most Opened</string>
     <string name="recent_queries_toggle_title">Search History</string>
     <string name="search_history_tab_recently_opened">Results</string>
     <string name="search_history_tab_searches">Searches</string>
@@ -261,7 +255,6 @@
     <string name="section_app_shortcuts">App Shortcuts</string>
     <string name="section_apps">Apps</string>
     <string name="section_calendar">Calendar Events</string>
-    <string name="section_contacts">Contacts</string>
     <string name="section_files">Files</string>
     <string name="section_notes">Notes</string>
     <string name="section_settings">Device Settings</string>
@@ -439,7 +432,6 @@
     <!-- ============================================================================
          Files &amp; Folders
          ============================================================================ -->
-    <string name="excluded_item_type_file">File</string>
     <string name="excluded_item_type_file_extension">File Extension</string>
     <string name="excluded_item_type_folder">Folder</string>
     <string name="file_extension_label">.%s files</string>
@@ -479,6 +471,7 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Create and add a new event</string>
     <string name="app_settings_create_calendar_event_title">New Calendar Event</string>
+    <string name="agenda_title">Today\'s Agenda</string>
     <string name="calendar_create_event_name_hint">Event name</string>
     <string name="calendar_create_event_select_date">Select date</string>
     <string name="calendar_create_event_sync_notice">This event won\'t sync to your device calendar</string>
@@ -490,6 +483,8 @@
         <item quantity="other">%d days</item>
     </plurals>
     <string name="calendar_relative_in_format">in %1$s</string>
+    <string name="calendar_relative_in_minutes">in %1$d minutes</string>
+    <string name="calendar_relative_now">Now</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d month</item>
         <item quantity="other">%d months</item>
@@ -664,7 +659,6 @@
     <string name="settings_icon_pack_option_system">System icons</string>
     <string name="settings_icon_pack_picker_title">Choose Icon Pack</string>
     <string name="settings_icon_pack_search_query">Free icon packs</string>
-    <string name="settings_icon_pack_selected_label">Current: %1$s</string>
     <string name="settings_icon_pack_title">Icon Pack</string>
     <string name="settings_icon_title">Settings Icon</string>
     <string name="settings_launch_options_desc">Different ways to launch this app</string>
@@ -755,7 +749,6 @@
     <string name="settings_custom_provider_advanced_payload_title">Advanced Request Payload</string>
     <string name="settings_direct_search_desc">Gemini, OpenAI, Claude and Groq API keys are supported</string>
     <string name="settings_direct_search_desc_intro">Add an API key to enable AI-powered search and tools.</string>
-    <string name="settings_free_api_key_tip_title">Get Free API Key</string>
     <string name="settings_free_api_key_tip_description">Steps to get a Gemini API Key for free.</string>
     <string name="settings_open_free_api_key_guide">Open free API key guide</string>
     <string name="settings_direct_search_grounding_label">Web Search</string>
@@ -804,7 +797,6 @@
     <string name="settings_backup_export_button">Export</string>
     <string name="settings_backup_export_failed">Unable to export settings.</string>
     <string name="settings_backup_export_option_pinned_items_title">Pinned items</string>
-    <string name="settings_backup_export_option_settings_title">Settings</string>
     <string name="settings_backup_export_selection_title">Export Data</string>
     <string name="settings_backup_export_success">Settings exported successfully.</string>
     <string name="settings_backup_import_button">Import</string>
@@ -902,9 +894,7 @@
     <string name="shortcut_voice_search_long_label">Open Voice Search</string>
     <string name="shortcut_voice_search_short_label">Voice Search</string>
     <string name="voice_input_not_available">Voice typing isn’t available right now.</string>
-    <string name="widget_background_color_custom_dialog_hint">Hex Color (RRGGBB)</string>
     <string name="widget_background_color_custom_dialog_title">Custom Color</string>
-    <string name="widget_background_color_custom_invalid">Enter a valid 6-digit hex color.</string>
     <string name="widget_border_color">Border Color</string>
     <string name="widget_custom_button_add_desc">Add custom button</string>
     <string name="widget_custom_button_change_colour">Change colour</string>
@@ -1022,7 +1012,6 @@
     <string name="excluded_item_type_app_results">App (Results)</string>
     <string name="excluded_item_type_app_shortcut">App Shortcut</string>
     <string name="excluded_item_type_app_suggestions">App (Suggestions)</string>
-    <string name="excluded_item_type_contact">Contact</string>
     <string name="excluded_item_type_setting">Setting</string>
     <string name="permission_required_title">Permission required</string>
     <string name="settings_action_clear_all">Clear All</string>

@@ -2,13 +2,18 @@ package com.tk.quicksearch.search.searchScreen
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +66,7 @@ import com.tk.quicksearch.search.core.WeatherStatus
 import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
+import com.tk.quicksearch.search.core.SearchEnginesVisibility
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SectionRenderParams
 import com.tk.quicksearch.search.core.WorldClockStatus
@@ -96,6 +102,7 @@ import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
+import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
@@ -105,6 +112,10 @@ import kotlinx.coroutines.withContext
 private const val OPEN_KEYBOARD_ACTION_APPEAR_DELAY_MS = 200L
 private const val OPEN_KEYBOARD_COLD_START_SUPPRESS_MS = 1000L
 private const val SEARCH_HINT_ROTATION_INTERVAL_MS = 5000L
+private const val ONE_HANDED_COMPACT_ENGINES_REFLOW_DURATION_MS = 280
+private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DURATION_MS = 180
+private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DELAY_MS = 40
+private const val ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS = 130
 
 private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, context: android.content.Context) {
     when (this) {
@@ -139,6 +150,7 @@ internal fun SearchScreenContent(
         onQueryChanged: (String) -> Unit,
         onSelectRetainedQueryHandled: () -> Unit,
         onRestoreSearchKeyboardHandled: () -> Unit = {},
+        onStartupKeyboardVisible: () -> Unit = {},
         onClearQuery: () -> Unit,
         onSettingsClick: () -> Unit,
         onAppClick: (com.tk.quicksearch.search.models.AppInfo) -> Unit,
@@ -232,6 +244,12 @@ internal fun SearchScreenContent(
                 state.searchTargetsOrder.filter { it.getId() !in state.disabledSearchTargetIds }
             }
     val isImeVisible = WindowInsets.ime.getBottom(density) > 0
+    LaunchedEffect(isImeVisible) {
+        if (isImeVisible) {
+            StartupTrace.mark("QS.Home.KeyboardVisible")
+            onStartupKeyboardVisible()
+        }
+    }
     LaunchedEffect(openKeyboardOnLaunchOnStartup, isImeVisible) {
         if (!openKeyboardOnLaunchOnStartup) {
             hasSeenStartupKeyboardVisible = false
@@ -573,13 +591,19 @@ internal fun SearchScreenContent(
                 if (!shouldShowPredictedHighlight) {
                     null
                 } else {
+                    val defaultBrowserPackage =
+                            if (isLikelyWebUrl(state.query.trim())) {
+                                resolveDefaultBrowserPackage(context)
+                            } else {
+                                null
+                            }
                     resolvePredictedSubmitTarget(
                             query = state.query,
                             renderingState = renderingState,
                             enabledTargets = enabledTargets,
                             detectedShortcutTarget = state.detectedShortcutTarget,
                             searchTargetsOrder = state.searchTargetsOrder,
-                            defaultBrowserPackage = resolveDefaultBrowserPackage(context),
+                            defaultBrowserPackage = defaultBrowserPackage,
                     )
                 }
             }
@@ -672,7 +696,8 @@ internal fun SearchScreenContent(
                     limit = state.topMatchesLimit,
                     topMatchesSectionOrder = state.topMatchesSectionOrder,
                     disabledTopMatchesSections = state.disabledTopMatchesSections,
-            )
+                    secondaryRankingSignal = state.secondaryRankingSignal,
+                )
     val shouldSubmitTopMatch =
             state.topMatchesEnabled &&
                     state.query.isNotBlank() &&
@@ -1051,7 +1076,6 @@ internal fun SearchScreenContent(
                     }
 
                     val isUrlQuery = isLikelyWebUrl(trimmedQuery)
-                    val defaultBrowserPackage = resolveDefaultBrowserPackage(context)
 
                     // If query has trailing/leading spaces, trim it first
                     if (state.query != trimmedQuery) {
@@ -1059,6 +1083,7 @@ internal fun SearchScreenContent(
                     }
 
                     if (isUrlQuery && trimmedQuery.isNotBlank()) {
+                        val defaultBrowserPackage = resolveDefaultBrowserPackage(context)
                         val browserTarget =
                                 defaultBrowserTarget(state.searchTargetsOrder, defaultBrowserPackage)
                         if (browserTarget != null) {
@@ -1234,7 +1259,6 @@ internal fun SearchScreenContent(
                 showAiSearch = state.AiSearchState.status != AiSearchStatus.Idle,
                 aiSearchState = state.AiSearchState,
                 isOverlayPresentation = isOverlayPresentation,
-                isDefaultLauncher = isDefaultLauncher,
                 onBottomOneHandedOverscrollUp = {
                     searchFocusRequester.requestFocus()
                     keyboardController?.show()
@@ -1248,7 +1272,8 @@ internal fun SearchScreenContent(
                         swipeUpAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
                             keyboardController?.hide()
                         }
-                        else -> homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, context)
+                        isDefaultLauncher ->
+                            homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, context)
                     }
                 },
                 onLauncherOverscrollDown = {
@@ -1260,7 +1285,8 @@ internal fun SearchScreenContent(
                         swipeDownAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
                             keyboardController?.hide()
                         }
-                        else -> homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, context)
+                        isDefaultLauncher ->
+                            homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, context)
                     }
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
@@ -1330,9 +1356,80 @@ internal fun SearchScreenContent(
                                 modifier = searchEnginesModifier,
                         )
                     } else {
-                        SearchEnginesVisibility(
-                            enginesState = state.searchEnginesState,
-                            modifier = searchEnginesModifier,
+                        AnimatedContent(
+                            targetState = state.searchEnginesState,
+                            modifier = Modifier.fillMaxWidth(),
+                            contentKey = { it::class },
+                            transitionSpec = {
+                                if (
+                                    state.oneHandedMode &&
+                                        (initialState is SearchEnginesVisibility.Compact ||
+                                            targetState is SearchEnginesVisibility.Compact)
+                                ) {
+                                    val enterTransition =
+                                        if (targetState is SearchEnginesVisibility.Compact) {
+                                            fadeIn(
+                                                animationSpec =
+                                                    tween(
+                                                        durationMillis =
+                                                            ONE_HANDED_COMPACT_ENGINES_FADE_IN_DURATION_MS,
+                                                        delayMillis =
+                                                            ONE_HANDED_COMPACT_ENGINES_FADE_IN_DELAY_MS,
+                                                    ),
+                                            ) +
+                                                expandVertically(
+                                                    expandFrom = Alignment.Bottom,
+                                                    animationSpec =
+                                                        tween(
+                                                            durationMillis =
+                                                                ONE_HANDED_COMPACT_ENGINES_REFLOW_DURATION_MS,
+                                                            easing = FastOutSlowInEasing,
+                                                        ),
+                                                )
+                                        } else {
+                                            EnterTransition.None
+                                        }
+                                    val exitTransition =
+                                        if (initialState is SearchEnginesVisibility.Compact) {
+                                            fadeOut(
+                                                animationSpec =
+                                                    tween(
+                                                        durationMillis =
+                                                            ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS,
+                                                    ),
+                                            ) +
+                                                shrinkVertically(
+                                                    shrinkTowards = Alignment.Bottom,
+                                                    animationSpec =
+                                                        tween(
+                                                            durationMillis =
+                                                                ONE_HANDED_COMPACT_ENGINES_REFLOW_DURATION_MS,
+                                                            easing = FastOutSlowInEasing,
+                                                        ),
+                                                )
+                                        } else {
+                                            ExitTransition.None
+                                        }
+                                    enterTransition
+                                        .togetherWith(exitTransition)
+                                        .using(
+                                            SizeTransform(clip = false) { _, _ ->
+                                                tween(
+                                                    durationMillis =
+                                                        ONE_HANDED_COMPACT_ENGINES_REFLOW_DURATION_MS,
+                                                    easing = FastOutSlowInEasing,
+                                                )
+                                            },
+                                        )
+                                } else {
+                                    (EnterTransition.None togetherWith ExitTransition.None)
+                                        .using(null)
+                                }
+                            },
+                            label = "oneHandedCompactSearchEnginesReflow",
+                        ) { animatedEnginesState ->
+                            SearchEnginesVisibility(
+                                enginesState = animatedEnginesState,
                             compactContent = {
                                 SearchEngineIconsSection(
                                         query = state.query,
@@ -1418,7 +1515,8 @@ internal fun SearchScreenContent(
                                     Spacer(modifier = searchEnginesModifier)
                                 }
                             },
-                        )
+                            )
+                        }
                     }
                 }
             }

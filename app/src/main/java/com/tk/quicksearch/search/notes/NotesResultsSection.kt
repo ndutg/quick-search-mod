@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.PinEnd
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -340,10 +341,17 @@ internal fun NoteRow(
                         PinnedNotifications.toggle(context, notificationAction)
                     },
                     leadingIcon = {
-                        Icon(
-                            painterResource(if (isPinnedToNotifications) R.drawable.ic_unpin else R.drawable.ic_pin),
-                            contentDescription = null,
-                        )
+                        if (isPinnedToNotifications) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_unpin),
+                                contentDescription = null,
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Rounded.PinEnd,
+                                contentDescription = null,
+                            )
+                        }
                     },
                 )
                 HorizontalDivider()

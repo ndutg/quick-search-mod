@@ -27,7 +27,8 @@ class AppCache(
      * @return List of cached apps, or null if no cache exists or if cache is corrupted.
      */
     fun loadCachedApps(): List<AppInfo>? {
-        loadCachedAppsFromFile()?.let { return it }
+        val removedAppKeys = getRemovedAppKeys()
+        loadCachedAppsFromFile()?.let { return filterRemovedApps(it, removedAppKeys) }
         if (!prefs.contains(KEY_APP_LIST)) return null
 
         val migratedApps = runCatching {
@@ -39,10 +40,11 @@ class AppCache(
             Log.e(TAG, "Failed to load legacy cached apps", exception)
         }.getOrNull()
 
-        if (!migratedApps.isNullOrEmpty()) {
-            saveAppsToFile(migratedApps)
+        val filteredApps = migratedApps?.let { filterRemovedApps(it, removedAppKeys) }
+        if (!filteredApps.isNullOrEmpty()) {
+            saveAppsToFile(filteredApps)
         }
-        return migratedApps
+        return filteredApps
     }
 
     /**
@@ -56,6 +58,7 @@ class AppCache(
                 .edit()
                 .putLong(KEY_LAST_UPDATE, System.currentTimeMillis())
                 .putBoolean(KEY_CATALOG_INVALIDATED, false)
+                .remove(KEY_REMOVED_APP_KEYS)
                 .apply()
             true
         }.onFailure { exception ->
@@ -69,13 +72,53 @@ class AppCache(
 
     fun isCatalogInvalidated(): Boolean = prefs.getBoolean(KEY_CATALOG_INVALIDATED, false)
 
-    fun markCatalogInvalidated() {
-        prefs.edit().putBoolean(KEY_CATALOG_INVALIDATED, true).apply()
+    internal fun recordCatalogChange(
+        change: AppCatalogChange,
+        currentUserHandleId: Int,
+        commitSynchronously: Boolean = false,
+    ) {
+        val appKey = change.appKey(currentUserHandleId)
+        val removedAppKeys = getRemovedAppKeys().toMutableSet()
+        if (appKey != null) {
+            if (change.isRemoval) {
+                removedAppKeys.add(appKey)
+            } else {
+                removedAppKeys.remove(appKey)
+            }
+        }
+
+        val editor =
+            prefs
+                .edit()
+                .putBoolean(KEY_CATALOG_INVALIDATED, true)
+                .putStringSet(KEY_REMOVED_APP_KEYS, removedAppKeys)
+        if (commitSynchronously) {
+            editor.commit()
+        } else {
+            editor.apply()
+        }
     }
+
+    internal fun recordUnavailableApps(apps: List<AppInfo>) {
+        if (apps.isEmpty()) return
+
+        val removedAppKeys = getRemovedAppKeys().toMutableSet()
+        removedAppKeys.addAll(apps.map { it.launchCountKey() })
+        prefs
+            .edit()
+            .putBoolean(KEY_CATALOG_INVALIDATED, true)
+            .putStringSet(KEY_REMOVED_APP_KEYS, removedAppKeys)
+            .apply()
+    }
+
+    internal fun removedAppKeys(): Set<String> = getRemovedAppKeys()
 
     fun clearCatalogInvalidation() {
         prefs.edit().putBoolean(KEY_CATALOG_INVALIDATED, false).apply()
     }
+
+    private fun getRemovedAppKeys(): Set<String> =
+        prefs.getStringSet(KEY_REMOVED_APP_KEYS, emptySet()).orEmpty().toSet()
 
     fun clearCache() {
         prefs.edit().clear().apply()
@@ -127,6 +170,7 @@ class AppCache(
         private const val KEY_APP_LIST = "app_list"
         private const val KEY_LAST_UPDATE = "last_update"
         private const val KEY_CATALOG_INVALIDATED = "catalog_invalidated"
+        private const val KEY_REMOVED_APP_KEYS = "removed_app_keys"
         private const val CACHE_FILE_NAME = "app_cache_v1.bin"
         private const val CACHE_FILE_VERSION = 3
 

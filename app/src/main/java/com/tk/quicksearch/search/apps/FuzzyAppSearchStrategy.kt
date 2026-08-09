@@ -11,6 +11,11 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.utils.FuzzyMatcher
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 
+internal data class PreparedAppFuzzyQuery(
+    val query: String,
+    val policy: FuzzySearchPolicy,
+)
+
 /**
  * Fuzzy search strategy specifically for app search.
  * Handles fuzzy matching of app names and nicknames.
@@ -40,7 +45,8 @@ class FuzzyAppSearchStrategy(
         candidates: List<AppInfo>,
         nicknameProvider: (AppInfo) -> String?,
     ): List<FuzzySearchStrategy.Match<AppInfo>> {
-        val policy = appPolicyFor(query)
+        val preparedQuery = prepareQuery(query)
+        val policy = preparedQuery.policy
         if (!policy.enabled) return emptyList()
         val candidateCount = minOf(candidates.size, policy.candidateLimit)
 
@@ -52,7 +58,7 @@ class FuzzyAppSearchStrategy(
             candidates
                 .asSequence()
                 .take(candidateCount)
-                .mapNotNull { app -> computeMatch(query, app, nicknameProvider(app)) }
+                .mapNotNull { app -> computeMatch(preparedQuery, app, nicknameProvider(app)) }
                 .sortedByDescending { it.score }
                 .toList()
         }
@@ -63,12 +69,69 @@ class FuzzyAppSearchStrategy(
         app: AppInfo,
         nickname: String?,
         initials: List<String> = emptyList(),
+    ): FuzzySearchStrategy.Match<AppInfo>? =
+        computeMatch(prepareQuery(query), app, nickname, initials)
+
+    private fun computeMatch(
+        preparedQuery: PreparedAppFuzzyQuery,
+        app: AppInfo,
+        nickname: String?,
+        initials: List<String> = emptyList(),
     ): FuzzySearchStrategy.Match<AppInfo>? {
-        val policy = appPolicyFor(query)
-        if (!policy.enabled) return null
+        if (!preparedQuery.policy.enabled) return null
         val alternateNames = buildAlternateNames(nickname, initials)
-        val score = engine.computeScore(query, app.appName, alternateNames, policy.minimumQueryLength)
-        return if (score >= policy.minimumScore && isWithinTypoTolerance(query, app.appName, alternateNames, policy)) {
+        if (!isWithinTypoTolerance(preparedQuery.query, app.appName, alternateNames, preparedQuery.policy)) {
+            return null
+        }
+        return scoreEligibleCandidate(preparedQuery, app, alternateNames)
+    }
+
+    internal fun prepareQuery(query: String): PreparedAppFuzzyQuery =
+        PreparedAppFuzzyQuery(query = query, policy = appPolicyFor(query))
+
+    internal fun isTypoEligibleCandidate(
+        preparedQuery: PreparedAppFuzzyQuery,
+        appName: String,
+        nickname: String?,
+        initials: List<String> = emptyList(),
+    ): Boolean {
+        if (!preparedQuery.policy.enabled) return false
+        val alternateNames = buildAlternateNames(nickname, initials)
+        return isWithinTypoTolerance(
+            preparedQuery.query,
+            appName,
+            alternateNames,
+            preparedQuery.policy,
+        )
+    }
+
+    internal fun scoreEligibleCandidate(
+        preparedQuery: PreparedAppFuzzyQuery,
+        app: AppInfo,
+        nickname: String?,
+        initials: List<String> = emptyList(),
+    ): FuzzySearchStrategy.Match<AppInfo>? =
+        scoreEligibleCandidate(
+            preparedQuery = preparedQuery,
+            app = app,
+            alternateNames = buildAlternateNames(nickname, initials),
+        )
+
+    private fun scoreEligibleCandidate(
+        preparedQuery: PreparedAppFuzzyQuery,
+        app: AppInfo,
+        alternateNames: String?,
+    ): FuzzySearchStrategy.Match<AppInfo>? {
+        val policy = preparedQuery.policy
+        if (!policy.enabled) return null
+        val score =
+            engine.computeScore(
+                preparedQuery.query,
+                app.appName,
+                alternateNames,
+                policy.minimumQueryLength,
+            )
+        return if (score >= policy.minimumScore) {
             FuzzySearchStrategy.Match(
                 item = app,
                 score = score,
@@ -78,22 +141,6 @@ class FuzzyAppSearchStrategy(
         } else {
             null
         }
-    }
-
-    fun canUseFuzzySearch(query: String): Boolean = appPolicyFor(query).enabled
-
-    fun fuzzyCandidateLimitFor(query: String): Int = appPolicyFor(query).candidateLimit
-
-    fun isTypoEligibleCandidate(
-        query: String,
-        appName: String,
-        nickname: String?,
-        initials: List<String> = emptyList(),
-    ): Boolean {
-        val policy = appPolicyFor(query)
-        if (!policy.enabled) return false
-        val alternateNames = buildAlternateNames(nickname, initials)
-        return isWithinTypoTolerance(query, appName, alternateNames, policy)
     }
 
     fun isTokenCoveredByApp(
