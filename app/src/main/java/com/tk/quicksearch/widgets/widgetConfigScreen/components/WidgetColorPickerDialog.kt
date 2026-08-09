@@ -49,6 +49,7 @@ internal fun WidgetColorPickerDialog(
     initialColor: Color,
     onDismiss: () -> Unit,
     onConfirm: (Color) -> Unit,
+    title: String = stringResource(R.string.widget_background_color_custom_dialog_title),
 ) {
     val initialHsv = remember(initialColor) { initialColor.toHsv() }
     var hue by rememberSaveable(initialColor.toArgb()) { mutableFloatStateOf(initialHsv[0]) }
@@ -58,7 +59,7 @@ internal fun WidgetColorPickerDialog(
 
     AppAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.widget_background_color_custom_dialog_title)) },
+        title = { Text(text = title) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge)) {
                 SaturationBrightnessPicker(
