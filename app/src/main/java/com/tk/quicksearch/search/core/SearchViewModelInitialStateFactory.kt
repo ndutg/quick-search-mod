@@ -29,17 +29,11 @@ internal object SearchViewModelInitialStateFactory {
         val startupSnapshot =
             if (instantStartupSurfaceEnabled) {
                 startupSurfaceStore.loadSnapshot()?.let { snapshot ->
-                    val availableSuggestions =
-                        filterAvailableStartupApps(
-                            context = appContext,
-                            apps = snapshot.suggestedApps,
-                        )
                     snapshot.copy(
                         suggestedApps =
-                            applyRecentLaunchOrderToStartupSuggestions(
-                                apps = availableSuggestions,
-                                pinnedAppKeys = startupPreferencesReader.getPinnedPackages(),
-                                recentLaunchKeys = startupPreferencesReader.getRecentAppLaunches(),
+                            filterAvailableStartupApps(
+                                context = appContext,
+                                apps = snapshot.suggestedApps,
                             ),
                     )
                 }
@@ -84,7 +78,9 @@ internal object SearchViewModelInitialStateFactory {
         val initialResultsState =
             SearchResultsState(
                 query = if (clearQueryOnLaunch) "" else inMemoryRetainedQuery,
-                recentApps = startupSnapshot?.suggestedApps.orEmpty(),
+                // Suggestions are intentionally withheld until their startup usage refresh has
+                // completed, preventing a cached order from visibly rearranging after first draw.
+                recentApps = emptyList(),
                 pinnedNonAppItemOrder = startupPreferencesReader.getPinnedNonAppItemOrder(),
                 indexedAppCount = startupSnapshot?.suggestedApps?.size ?: 0,
                 searchEnginesState =
@@ -203,22 +199,4 @@ internal object SearchViewModelInitialStateFactory {
         )
     }
 
-    internal fun applyRecentLaunchOrderToStartupSuggestions(
-        apps: List<com.tk.quicksearch.search.models.AppInfo>,
-        pinnedAppKeys: Set<String>,
-        recentLaunchKeys: List<String>,
-    ): List<com.tk.quicksearch.search.models.AppInfo> {
-        if (apps.size < 2 || recentLaunchKeys.isEmpty()) return apps
-
-        val recentRank = recentLaunchKeys.withIndex().associate { (index, key) -> key to index }
-        val originalRank = apps.withIndex().associate { (index, app) -> app.launchCountKey() to index }
-        val (pinnedApps, recentApps) = apps.partition { it.launchCountKey() in pinnedAppKeys }
-
-        return pinnedApps +
-            recentApps.sortedWith(
-                compareBy<com.tk.quicksearch.search.models.AppInfo> {
-                    recentRank[it.launchCountKey()] ?: Int.MAX_VALUE
-                }.thenBy { originalRank[it.launchCountKey()] ?: Int.MAX_VALUE },
-            )
-    }
 }

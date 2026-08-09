@@ -158,7 +158,9 @@ class AppSearchManager(
         if (updatedApps != cachedApps) {
             cachedApps = updatedApps
             noMatchPrefix = null
-            onAppsUpdated()
+            // Keep the launch metadata current without refreshing the visible suggestions while
+            // Android is transitioning to the launched app. The next resume/usage refresh will
+            // publish the updated ordering.
         }
     }
 
