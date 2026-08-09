@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.appSettings
 
 import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.EXCLUDED_ITEMS
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.NICKNAMES
@@ -91,12 +92,16 @@ class AppSettingsSearchHandler(
             val shouldHideFuzzySearch =
                 setting.toggleKey == AppSettingsToggleKey.FUZZY_SEARCH &&
                     isLowRamDevice
+            val shouldHideAppResultRows =
+                setting.toggleKey == AppSettingsToggleKey.APP_RESULT_ROWS &&
+                    SearchSection.APPS.name in userPreferences.getDisabledSections()
             !shouldHideExcludedItems &&
                 !shouldHideNicknames &&
                 !shouldHideTriggers &&
                 !shouldHideWallpaperAccent &&
                 !shouldHideTopResultIndicator &&
-                !shouldHideFuzzySearch
+                !shouldHideFuzzySearch &&
+                !shouldHideAppResultRows
         }
     }
 

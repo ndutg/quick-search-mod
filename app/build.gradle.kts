@@ -17,8 +17,8 @@ android {
         applicationId = "com.tk.quicksearch"
         minSdk = 24
         targetSdk = 36
-        versionCode = 69
-        versionName = "3.9"
+        versionCode = 70
+        versionName = "4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,6 +45,7 @@ android {
         release {
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -71,6 +72,25 @@ android {
     buildFeatures {
         compose = true
     }
+
+    androidResources {
+        localeFilters +=
+            listOf(
+                "en",
+                "ar",
+                "de",
+                "el",
+                "es",
+                "fr",
+                "hi",
+                "it",
+                "pt-rBR",
+                "ru",
+                "te",
+                "tr",
+                "zh-rCN",
+            )
+    }
 }
 
 android {
@@ -89,6 +109,7 @@ ksp {
 
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+    compileOnly(libs.error.prone.annotations)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -103,7 +124,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.profileinstaller)
-    implementation(libs.google.material)
+    implementation(libs.material.color.utilities)
     implementation(libs.androidx.security.crypto)
     implementation(libs.okhttp)
     "standardImplementation"(libs.play.review.ktx)

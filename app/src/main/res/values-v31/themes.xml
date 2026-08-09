@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Override base theme for API 31+ to include splash screen attributes -->
-    <style name="Theme.QuickSearch" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="Theme.QuickSearch" parent="Theme.AppCompat.NoActionBar">
         <!-- Keep window translucent throughout -->
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.tk.quicksearch.shared.ui.theme
 
 import android.content.BroadcastReceiver
@@ -27,7 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.android.material.color.utilities.CorePalette
+import me.tatarka.google.material.palettes.CorePalette
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.shared.util.ImageAppearance
 import com.tk.quicksearch.shared.util.WallpaperUtils

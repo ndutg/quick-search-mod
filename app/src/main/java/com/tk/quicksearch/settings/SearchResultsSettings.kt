@@ -120,6 +120,7 @@ private fun SearchOptionsCard(
     onRecentQueriesToggle: (Boolean) -> Unit,
     recentQueriesDisplayCount: Int,
     onRecentQueriesDisplayCountChange: (Int) -> Unit,
+    appResultsEnabled: Boolean,
     appResultRowCount: Int,
     onAppResultRowCountChange: (Int) -> Unit,
     fuzzySearchEnabled: Boolean,
@@ -254,11 +255,13 @@ private fun SearchOptionsCard(
             )
             HorizontalDivider(color = AppColors.SettingsDivider)
 
-            AppResultRowsSelector(
-                selectedRowCount = appResultRowCount,
-                onSelectRowCount = onAppResultRowCountChange,
-            )
-            HorizontalDivider(color = AppColors.SettingsDivider)
+            if (appResultsEnabled) {
+                AppResultRowsSelector(
+                    selectedRowCount = appResultRowCount,
+                    onSelectRowCount = onAppResultRowCountChange,
+                )
+                HorizontalDivider(color = AppColors.SettingsDivider)
+            }
 
             SettingsToggleRow(
                 title = stringResource(R.string.app_suggestions_toggle_title),
@@ -1352,6 +1355,7 @@ fun SearchResultsSettingsSection(
             onRecentQueriesDisplayCountChange = { count ->
                 callbacks.onApplySettingsCommand(SettingsCommand.RecentQueriesDisplayCount(count))
             },
+            appResultsEnabled = SearchSection.APPS !in state.disabledSections,
             appResultRowCount = state.appResultRowCount,
             onAppResultRowCountChange = { rowCount ->
                 callbacks.onApplySettingsCommand(SettingsCommand.AppResultRowCount(rowCount))
