@@ -500,7 +500,6 @@ class SearchViewModel(
     }
     init {
         FeatureFlags.initialize(appContext)
-        userPreferences.ensureCalendarSectionDefaultDisabledMigration()
         // Initialize services after all handlers are available
         initializeServices()
         setupAiSearchStateListener()

@@ -51,7 +51,6 @@ internal object StartupSurfaceSnapshotJson {
     private const val KEY_WALLPAPER_ALPHA = "wallpaperBackgroundAlpha"
     private const val KEY_WALLPAPER_BLUR = "wallpaperBlurRadius"
     private const val KEY_APP_THEME = "appTheme"
-    private const val LEGACY_KEY_APP_THEME = "overlayGradientTheme"
     private const val KEY_THEME_INTENSITY = "overlayThemeIntensity"
     private const val KEY_CUSTOM_IMAGE_URI = "customImageUri"
     private const val KEY_PREVIEW_PATH = "startupBackgroundPreviewPath"
@@ -175,11 +174,10 @@ internal object StartupSurfaceSnapshotJson {
                     ?.let { runCatching { BackgroundSource.valueOf(it) }.getOrNull() }
                     ?: BackgroundSource.THEME
 
-            val appThemeRaw =
-                root.optString(KEY_APP_THEME).takeIf { it.isNotBlank() }
-                    ?: root.optString(LEGACY_KEY_APP_THEME).takeIf { it.isNotBlank() }
             val appTheme =
-                appThemeRaw?.let { runCatching { AppTheme.valueOf(it) }.getOrNull() }
+                root.optString(KEY_APP_THEME)
+                    .takeIf { it.isNotBlank() }
+                    ?.let { runCatching { AppTheme.valueOf(it) }.getOrNull() }
                     ?: AppTheme.MONOCHROME
 
             val suggestedApps =

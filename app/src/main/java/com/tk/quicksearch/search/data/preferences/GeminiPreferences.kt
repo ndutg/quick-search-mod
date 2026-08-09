@@ -22,21 +22,7 @@ class GeminiPreferences(
                 return null
             }
 
-        // First try to get from encrypted storage
-        val encryptedKey = securePrefs.getString(BasePreferences.KEY_GEMINI_API_KEY, null)
-        if (!encryptedKey.isNullOrBlank()) return encryptedKey
-
-        // Migration: If not in encrypted storage, check plain text storage and migrate
-        val plainTextKey = prefs.getString(BasePreferences.KEY_GEMINI_API_KEY, null)
-        if (!plainTextKey.isNullOrBlank()) {
-            // Migrate to encrypted storage
-            securePrefs.edit().putString(BasePreferences.KEY_GEMINI_API_KEY, plainTextKey).apply()
-            // Remove from plain text storage
-            prefs.edit().remove(BasePreferences.KEY_GEMINI_API_KEY).apply()
-            return plainTextKey
-        }
-
-        return null
+        return securePrefs.getString(BasePreferences.KEY_GEMINI_API_KEY, null)
     }
 
     fun setGeminiApiKey(key: String?) {
@@ -47,17 +33,12 @@ class GeminiPreferences(
             }
 
         if (key.isNullOrBlank()) {
-            // Remove from both encrypted and plain text (for migration safety)
             securePrefs.edit().remove(BasePreferences.KEY_GEMINI_API_KEY).apply()
-            prefs.edit().remove(BasePreferences.KEY_GEMINI_API_KEY).apply()
             return
         }
 
         val normalizedKey = key.trim()
-        // Save to encrypted storage
         securePrefs.edit().putString(BasePreferences.KEY_GEMINI_API_KEY, normalizedKey).apply()
-        // Also remove from plain text storage if it exists (cleanup)
-        prefs.edit().remove(BasePreferences.KEY_GEMINI_API_KEY).apply()
     }
 
     fun getPersonalContext(): String? {

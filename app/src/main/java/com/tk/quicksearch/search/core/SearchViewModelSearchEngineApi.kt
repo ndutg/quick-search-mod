@@ -7,8 +7,6 @@ import kotlinx.coroutines.launch
 internal interface SearchViewModelSearchEngineApi {
     val searchEngineApiDelegate: SearchViewModelSearchEngineApiDelegate
 
-    fun setAliasesEnabled(enabled: Boolean) = searchEngineApiDelegate.setAliasesEnabled(enabled)
-
     fun setAlias(target: SearchTarget, code: String) = searchEngineApiDelegate.setAlias(target, code)
 
     fun setAlias(targetId: String, code: String) = searchEngineApiDelegate.setAlias(targetId, code)
@@ -97,8 +95,6 @@ class SearchViewModelSearchEngineApiDelegate internal constructor(
     private val updatePermissionState: ((SearchPermissionState) -> SearchPermissionState) -> Unit,
     private val updateConfigState: ((SearchUiConfigState) -> SearchUiConfigState) -> Unit,
 ) {
-    fun setAliasesEnabled(enabled: Boolean) = aliasHandler().setAliasesEnabled(enabled)
-
     fun setAlias(target: SearchTarget, code: String) = aliasHandler().setAlias(target, code)
 
     fun setAlias(targetId: String, code: String) = aliasHandler().setAlias(targetId, code)

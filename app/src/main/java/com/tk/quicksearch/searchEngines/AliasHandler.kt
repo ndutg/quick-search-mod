@@ -111,10 +111,6 @@ class AliasHandler(
     private var isInitialized = false
 
     private fun loadFromPreferences() {
-        // Ensure aliases are always enabled (legacy compatibility)
-        if (!userPreferences.areAliasesEnabled()) {
-            userPreferences.setAliasesEnabled(true)
-        }
         val targets =
             searchTargetsProvider().ifEmpty {
                 SearchEngine.values().map { SearchTarget.Engine(it) }
@@ -245,14 +241,6 @@ class AliasHandler(
             shortcutCodes = aliasState.aliasCodes,
             shortcutEnabled = aliasState.aliasEnabled,
         )
-    }
-
-    fun setAliasesEnabled(enabled: Boolean) {
-        scope.launch(Dispatchers.IO) {
-            // Aliases are always enabled
-            userPreferences.setAliasesEnabled(true)
-            uiStateUpdater { it.copy(shortcutsEnabled = true) }
-        }
     }
 
     private fun setAliasInternal(

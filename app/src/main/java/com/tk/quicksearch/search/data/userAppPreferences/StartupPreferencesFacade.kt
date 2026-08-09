@@ -152,21 +152,12 @@ class StartupPreferencesFacade(
                                 Boolean
                                 ?: true,
                 showSystemFiles =
-                        (
-                                allPrefs[
-                                        com.tk.quicksearch.search.data.preferences.BasePreferences
-                                                .KEY_SHOW_SYSTEM_FILES,
-                                ] as?
-                                        Boolean
-                                ?: false
-                        ) || (
-                                allPrefs[
-                                        com.tk.quicksearch.search.data.preferences.BasePreferences
-                                                .KEY_SHOW_HIDDEN_FILES,
-                                ] as?
-                                        Boolean
-                                ?: false
-                        ),
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.BasePreferences
+                                        .KEY_SHOW_SYSTEM_FILES,
+                        ] as?
+                                Boolean
+                                ?: false,
                 folderWhitelistPatterns =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.BasePreferences
@@ -306,16 +297,10 @@ class StartupPreferencesFacade(
                             allPrefs[key] as? Float ?: default
                         },
                 appTheme =
-                        (
-                                (allPrefs[
-                                        com.tk.quicksearch.search.data.preferences.UiPreferences
-                                                .KEY_APP_THEME,
-                                ] as? String)
-                                        ?: (allPrefs[
-                                                com.tk.quicksearch.search.data.preferences
-                                                        .UiPreferences.KEY_OVERLAY_GRADIENT_THEME,
-                                        ] as? String)
-                                )
+                        (allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_APP_THEME,
+                        ] as? String)
                                 ?.let { value ->
                                     runCatching { AppTheme.valueOf(value) }.getOrNull()
                                 }
@@ -597,21 +582,12 @@ class StartupPreferencesFacade(
                                         Boolean
                                         ?: true,
                         showSystemFiles =
-                                (
-                                        allPrefs[
-                                                com.tk.quicksearch.search.data.preferences.BasePreferences
-                                                        .KEY_SHOW_SYSTEM_FILES,
-                                        ] as?
-                                                Boolean
-                                        ?: false
-                                ) || (
-                                        allPrefs[
-                                                com.tk.quicksearch.search.data.preferences.BasePreferences
-                                                        .KEY_SHOW_HIDDEN_FILES,
-                                        ] as?
-                                                Boolean
-                                        ?: false
-                                ),
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.BasePreferences
+                                                .KEY_SHOW_SYSTEM_FILES,
+                                ] as?
+                                        Boolean
+                                        ?: false,
                         folderWhitelistPatterns =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.BasePreferences
@@ -745,16 +721,10 @@ class StartupPreferencesFacade(
                                     allPrefs[key] as? Float ?: default
                                 },
                         appTheme =
-                                (
-                                        (allPrefs[
-                                                com.tk.quicksearch.search.data.preferences.UiPreferences
-                                                        .KEY_APP_THEME,
-                                        ] as? String)
-                                                ?: (allPrefs[
-                                                        com.tk.quicksearch.search.data.preferences
-                                                                .UiPreferences.KEY_OVERLAY_GRADIENT_THEME,
-                                                ] as? String)
-                                        )
+                                (allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_APP_THEME,
+                                ] as? String)
                                         ?.let { value ->
                                             runCatching { AppTheme.valueOf(value) }
                                                     .getOrNull()

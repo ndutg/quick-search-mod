@@ -711,10 +711,6 @@ class UserAppPreferences(
     // Alias Preferences
     // ============================================================================
 
-    fun areAliasesEnabled(): Boolean = aliasPreferences.areAliasesEnabled()
-
-    fun setAliasesEnabled(enabled: Boolean) = aliasPreferences.setAliasesEnabled(enabled)
-
     fun getAliasCode(engine: SearchEngine): String = aliasPreferences.getAliasCode(engine)
 
     fun setAliasCode(
@@ -758,33 +754,6 @@ class UserAppPreferences(
     ) = aliasPreferences.setAliasEnabled(targetId, enabled)
 
     fun getAllAliasCodes(): Map<SearchEngine, String> = aliasPreferences.getAllAliasCodes()
-
-    fun areShortcutsEnabled(): Boolean = areAliasesEnabled()
-
-    fun setShortcutsEnabled(enabled: Boolean) = setAliasesEnabled(enabled)
-
-    fun getShortcutCode(engine: SearchEngine): String = getAliasCode(engine)
-
-    fun setShortcutCode(
-            engine: SearchEngine,
-            code: String,
-    ) = setAliasCode(engine, code)
-
-    fun getShortcutCode(targetId: String): String? = getAliasCode(targetId)
-
-    fun setShortcutCode(
-            targetId: String,
-            code: String,
-    ) = setAliasCode(targetId, code)
-
-    fun isShortcutEnabled(engine: SearchEngine): Boolean = isAliasEnabled(engine)
-
-    fun setShortcutEnabled(
-            engine: SearchEngine,
-            enabled: Boolean,
-    ) = setAliasEnabled(engine, enabled)
-
-    fun getAllShortcutCodes(): Map<SearchEngine, String> = getAllAliasCodes()
 
     // ============================================================================
     // Amazon Domain Preferences
@@ -1556,23 +1525,6 @@ class UserAppPreferences(
     fun getDisabledSections(): Set<String> = uiPreferences.getDisabledSections()
 
     fun setDisabledSections(disabled: Set<String>) = uiPreferences.setDisabledSections(disabled)
-
-    /**
-     * One-time migration to ensure calendar section is default-off for all users, including
-     * existing installs.
-     */
-    fun ensureCalendarSectionDefaultDisabledMigration() {
-        if (sharedPrefs.getBoolean(BasePreferences.KEY_CALENDAR_SECTION_DEFAULT_MIGRATION_DONE, false)) {
-            return
-        }
-
-        val updatedDisabledSections = getDisabledSections().toMutableSet().apply { add("CALENDAR") }
-        setDisabledSections(updatedDisabledSections)
-        sharedPrefs
-                .edit()
-                .putBoolean(BasePreferences.KEY_CALENDAR_SECTION_DEFAULT_MIGRATION_DONE, true)
-                .apply()
-    }
 
     // ============================================================================
     // Rate Quick Search Prompt Preferences

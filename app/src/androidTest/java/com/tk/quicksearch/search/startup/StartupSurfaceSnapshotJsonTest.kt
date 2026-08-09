@@ -108,19 +108,6 @@ class StartupSurfaceSnapshotJsonTest {
     }
 
     @Test
-    fun legacyThemeKeyIsStillAccepted() {
-        val decoded =
-            StartupSurfaceSnapshotJson.fromJson(
-                """{"version":1,"overlayGradientTheme":"AURORA","backgroundSource":"SYSTEM_WALLPAPER"}""",
-            )
-
-        assertNotNull(decoded)
-        assertEquals(AppTheme.AURORA, decoded?.appTheme)
-        assertEquals(BackgroundSource.SYSTEM_WALLPAPER, decoded?.backgroundSource)
-        assertEquals(true, decoded?.showWallpaperBackground)
-    }
-
-    @Test
     fun unknownTargetsAreSkippedWithoutDroppingValidTargets() {
         val raw =
             """

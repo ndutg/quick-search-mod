@@ -61,16 +61,10 @@ class FilePreferences(
     fun setFilePreviewsEnabled(enabled: Boolean) =
         prefs.edit().putBoolean(BasePreferences.KEY_FILE_PREVIEWS_ENABLED, enabled).apply()
 
-    fun getShowSystemFiles(): Boolean =
-        prefs.getBoolean(BasePreferences.KEY_SHOW_SYSTEM_FILES, false) ||
-            prefs.getBoolean(BasePreferences.KEY_SHOW_HIDDEN_FILES, false)
+    fun getShowSystemFiles(): Boolean = prefs.getBoolean(BasePreferences.KEY_SHOW_SYSTEM_FILES, false)
 
     fun setShowSystemFiles(show: Boolean) =
-        prefs
-            .edit()
-            .putBoolean(BasePreferences.KEY_SHOW_SYSTEM_FILES, show)
-            .remove(BasePreferences.KEY_SHOW_HIDDEN_FILES)
-            .apply()
+        prefs.edit().putBoolean(BasePreferences.KEY_SHOW_SYSTEM_FILES, show).apply()
 
     fun getFolderWhitelistPatterns(): Set<String> = getStringSet(BasePreferences.KEY_FOLDER_WHITELIST_PATTERNS)
 
