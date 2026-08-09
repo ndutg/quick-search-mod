@@ -62,6 +62,23 @@ class IconPackService(
 
             if (selectedIconPackPackage == normalizedSelection) return@launch
 
+            val iconOverridesToClear =
+                findIconOverridesReplacedByPack(
+                    iconPackPackage = normalizedSelection,
+                    overriddenPackages = userPreferences.getAppIconOverridePackageNames(),
+                ) { iconPackPackage, appPackage ->
+                    IconPackManager.hasExplicitIcon(
+                        context = application,
+                        iconPackPackage = iconPackPackage,
+                        targetPackage = appPackage,
+                    )
+                }
+
+            if (iconOverridesToClear.isNotEmpty()) {
+                userPreferences.clearAppIconOverrides(iconOverridesToClear)
+                invalidateAppIconCache()
+            }
+
             val packagesToPrefetch =
                 visiblePackageNames
                     .asSequence()
@@ -110,5 +127,17 @@ class IconPackService(
                 maxCount = 30,
             )
         }
+    }
+}
+
+internal fun findIconOverridesReplacedByPack(
+    iconPackPackage: String?,
+    overriddenPackages: Set<String>,
+    hasExplicitIcon: (iconPackPackage: String, appPackage: String) -> Boolean,
+): Set<String> {
+    if (iconPackPackage == null || overriddenPackages.isEmpty()) return emptySet()
+
+    return overriddenPackages.filterTo(mutableSetOf()) { appPackage ->
+        hasExplicitIcon(iconPackPackage, appPackage)
     }
 }

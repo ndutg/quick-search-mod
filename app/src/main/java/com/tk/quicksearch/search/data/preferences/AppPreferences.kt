@@ -102,6 +102,26 @@ class AppPreferences(
             .apply()
     }
 
+    fun getAppIconOverridePackageNames(): Set<String> =
+        prefs.all.keys
+            .asSequence()
+            .filter { it.startsWith(BasePreferences.KEY_APP_ICON_OVERRIDE_PREFIX) }
+            .map { it.removePrefix(BasePreferences.KEY_APP_ICON_OVERRIDE_PREFIX) }
+            .filter { it.isNotBlank() }
+            .toSet()
+
+    fun clearAppIconOverrides(packageNames: Collection<String>) {
+        if (packageNames.isEmpty()) return
+
+        prefs.edit()
+            .apply {
+                packageNames.forEach { packageName ->
+                    remove("${BasePreferences.KEY_APP_ICON_OVERRIDE_PREFIX}$packageName")
+                }
+            }
+            .apply()
+    }
+
     fun clearAllHiddenAppsInSuggestions(): Set<String> = clearStringSet(BasePreferences.KEY_HIDDEN_SUGGESTIONS)
 
     fun clearAllHiddenAppsInResults(): Set<String> = clearStringSet(BasePreferences.KEY_HIDDEN_RESULTS)

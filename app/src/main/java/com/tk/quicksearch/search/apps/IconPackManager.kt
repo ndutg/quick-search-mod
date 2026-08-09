@@ -156,6 +156,19 @@ object IconPackManager {
         return loadAppFilterRenderData(iconPackPackage, resources).packageMapping.values.distinct().sorted()
     }
 
+    /** Returns true only when the pack explicitly maps the app to a loadable icon. */
+    fun hasExplicitIcon(
+        context: Context,
+        iconPackPackage: String,
+        targetPackage: String,
+    ): Boolean {
+        val resources = getIconPackResources(context, iconPackPackage) ?: return false
+        val drawableName =
+            loadAppFilterRenderData(iconPackPackage, resources).packageMapping[targetPackage]
+                ?: return false
+        return loadDrawable(resources, iconPackPackage, drawableName) != null
+    }
+
     /** Loads one explicitly selected drawable from an icon pack. */
     fun loadDrawableBitmap(
         context: Context,

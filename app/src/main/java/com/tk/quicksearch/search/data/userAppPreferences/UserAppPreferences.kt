@@ -138,6 +138,12 @@ class UserAppPreferences(
         drawableName: String,
     ) = appPreferences.setAppIconOverride(packageName, iconPackPackage, drawableName)
 
+    fun getAppIconOverridePackageNames(): Set<String> =
+            appPreferences.getAppIconOverridePackageNames()
+
+    fun clearAppIconOverrides(packageNames: Collection<String>) =
+            appPreferences.clearAppIconOverrides(packageNames)
+
     fun clearAllHiddenAppsInSuggestions(): Set<String> =
             appPreferences.clearAllHiddenAppsInSuggestions()
 
