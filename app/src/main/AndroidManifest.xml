@@ -320,7 +320,7 @@
         <!-- Search Activities -->
         <activity
             android:name=".overlay.OverlayActivity"
-            android:exported="false"
+            android:exported="${profileCaptureExported}"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:theme="@style/Theme.QuickSearch"

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.oss.licenses)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.baselineprofile)
     id("kotlin-parcelize")
 }
 
@@ -19,6 +20,8 @@ android {
         targetSdk = 36
         versionCode = 70
         versionName = "4.0"
+        manifestPlaceholders["profileCaptureExported"] =
+            providers.gradleProperty("profileCapture").orElse("false").get().toBoolean()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -107,7 +110,17 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+baselineProfile {
+    // Dependencies ship their own profiles. Keep our generated profile focused on Quick Search
+    // so startup DEX layout is not inflated by captured framework and library implementation code.
+    filter {
+        include("com.tk.quicksearch.**")
+    }
+}
+
 dependencies {
+    baselineProfile(project(":benchmark"))
+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     compileOnly(libs.error.prone.annotations)
     implementation(libs.androidx.core.ktx)

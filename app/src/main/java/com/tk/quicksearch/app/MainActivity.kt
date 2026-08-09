@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.app.navigation.MainContent
+import com.tk.quicksearch.BuildConfig
 import com.tk.quicksearch.app.navigation.NavigationRequest
 import com.tk.quicksearch.app.navigation.RootDestination
 import com.tk.quicksearch.app.navigation.SettingsNavigationMemory
@@ -73,6 +74,8 @@ open class MainActivity : ComponentActivity() {
         const val ACTION_SEARCH_TARGET_SHORTCUT = "com.tk.quicksearch.action.SEARCH_TARGET_SHORTCUT"
         const val EXTRA_SHORTCUT_QUERY = "com.tk.quicksearch.extra.SHORTCUT_QUERY"
         const val EXTRA_SHORTCUT_TARGET_ENGINE = "com.tk.quicksearch.extra.SHORTCUT_TARGET_ENGINE"
+        const val EXTRA_BASELINE_PROFILE_SKIP_ONBOARDING =
+            "com.tk.quicksearch.extra.BASELINE_PROFILE_SKIP_ONBOARDING"
 
         private const val EXTRA_CONTACT_ACTION_PICKER = "overlay_contact_action_picker"
         private const val EXTRA_CONTACT_ACTION_PICKER_ID = "overlay_contact_action_picker_id"
@@ -142,7 +145,12 @@ open class MainActivity : ComponentActivity() {
             if (launchOverlayIfNeeded(intent)) {
                 return
             }
-            isFirstLaunchAtActivityStart = BootstrapPreferences.isFirstLaunch(this)
+            val skipOnboardingForBaselineProfile =
+                (BuildConfig.BUILD_TYPE == "nonMinifiedRelease" ||
+                    BuildConfig.BUILD_TYPE == "benchmarkRelease") &&
+                    intent.getBooleanExtra(EXTRA_BASELINE_PROFILE_SKIP_ONBOARDING, false)
+            isFirstLaunchAtActivityStart =
+                !skipOnboardingForBaselineProfile && BootstrapPreferences.isFirstLaunch(this)
 
             Trace.beginSection(TRACE_SET_CONTENT)
             try {
