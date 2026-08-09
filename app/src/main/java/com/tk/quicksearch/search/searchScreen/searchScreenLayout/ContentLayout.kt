@@ -528,14 +528,22 @@ fun ContentLayout(
         sectionContext: SectionRenderContext,
     ): Boolean =
         when (section) {
-            SearchSection.APP_SHORTCUTS -> sectionContext.appShortcutsList.isNotEmpty()
-            SearchSection.CONTACTS -> sectionContext.contactsList.isNotEmpty()
-            SearchSection.FILES -> sectionContext.filesList.isNotEmpty()
+            SearchSection.APP_SHORTCUTS ->
+                sectionContext.shouldRenderAppShortcuts && sectionContext.appShortcutsList.isNotEmpty()
+            SearchSection.CONTACTS ->
+                sectionContext.shouldRenderContacts && sectionContext.contactsList.isNotEmpty()
+            SearchSection.FILES ->
+                sectionContext.shouldRenderFiles && sectionContext.filesList.isNotEmpty()
             SearchSection.SETTINGS ->
-                sectionContext.settingsList.isNotEmpty() || sectionContext.appSettingsList.isNotEmpty()
+                sectionContext.shouldRenderSettings &&
+                    !sectionContext.isAppSettingsExpanded &&
+                    sectionContext.settingsList.isNotEmpty()
             SearchSection.CALENDAR ->
-                sectionContext.calendarEventsList.isNotEmpty() || sectionContext.todayCalendarEventsList.isNotEmpty()
-            SearchSection.NOTES -> sectionContext.notesList.isNotEmpty()
+                (sectionContext.shouldRenderCalendar && sectionContext.calendarEventsList.isNotEmpty()) ||
+                    (sectionContext.isHomeScreenCalendarMode &&
+                        sectionContext.todayCalendarEventsList.isNotEmpty())
+            SearchSection.NOTES ->
+                sectionContext.shouldRenderNotes && sectionContext.notesList.isNotEmpty()
             SearchSection.APPS, SearchSection.APP_SETTINGS -> true
         }
 

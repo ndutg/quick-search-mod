@@ -14,6 +14,7 @@ enum class SearchEngineIconColorPolicy {
 
 enum class SearchEngineNativeLaunchMode {
     NONE,
+    CHATGPT,
     GEMINI,
     GOOGLE,
     GOOGLE_PHOTOS,
@@ -75,6 +76,7 @@ object SearchEngineRegistry {
                 defaultShortcutCode = "cgpt",
                 appPackages = listOf(PackageConstants.CHATGPT_PACKAGE),
                 iconColorPolicy = SearchEngineIconColorPolicy.INVERT_ON_LIGHT,
+                nativeLaunchMode = SearchEngineNativeLaunchMode.CHATGPT,
             ),
             SearchEngineDefinition(
                 engine = SearchEngine.GEMINI,

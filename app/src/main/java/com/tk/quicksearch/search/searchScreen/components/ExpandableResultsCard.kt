@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -64,11 +65,12 @@ internal fun ExpandableResultsCard(
     val cardModifier =
         modifier
             .fillMaxWidth()
-                .predictedSubmitHighlight(
-                    isPredicted = isTopPredicted,
-                    shape = SearchResultCardDefaults.shape,
-                    opaqueCardTopResultBorder = true,
-                )
+            .animateContentSize()
+            .predictedSubmitHighlight(
+                isPredicted = isTopPredicted,
+                shape = SearchResultCardDefaults.shape,
+                opaqueCardTopResultBorder = true,
+            )
 
     SearchResultCard(
         modifier = cardModifier,

@@ -24,6 +24,7 @@ internal object SearchEngineIntents {
 
     fun getNativeHandler(searchEngine: SearchEngine): NativeSearchHandler? =
         when (searchEngine.getNativeLaunchMode()) {
+            SearchEngineNativeLaunchMode.CHATGPT -> ::openChatGpt
             SearchEngineNativeLaunchMode.GEMINI -> ::openGemini
             SearchEngineNativeLaunchMode.GOOGLE -> ::openGoogle
             SearchEngineNativeLaunchMode.GOOGLE_PHOTOS -> ::openGooglePhotos
@@ -37,6 +38,20 @@ internal object SearchEngineIntents {
             SearchEngineNativeLaunchMode.GOOGLE_TRANSLATE -> ::openGoogleTranslate
             SearchEngineNativeLaunchMode.NONE -> null
         }
+
+    /** Opens ChatGPT when the query is empty, otherwise opens its web search URL. */
+    fun openChatGpt(
+        context: Application,
+        query: String,
+    ) {
+        openWebBackedEngine(
+            context = context,
+            query = query,
+            searchEngine = SearchEngine.CHATGPT,
+            packageName = PackageConstants.CHATGPT_PACKAGE,
+            logTag = "ChatGptLaunch",
+        )
+    }
 
     /** Opens Google Translate with the query pre-filled as text to translate. */
     fun openGoogleTranslate(

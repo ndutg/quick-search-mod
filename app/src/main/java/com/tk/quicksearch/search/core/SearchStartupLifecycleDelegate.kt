@@ -14,6 +14,7 @@ import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
+import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import kotlinx.coroutines.CoroutineDispatcher
@@ -200,6 +201,7 @@ internal class SearchStartupLifecycleDelegate(
     }
 
     fun handleOnResume() {
+        disableOverlayModeForDefaultLauncher()
         val startupComplete = stateAccess.isStartupComplete
 
         val shouldRefreshLaunchPermissions = shouldRefreshPermissionSnapshot()
@@ -297,6 +299,16 @@ internal class SearchStartupLifecycleDelegate(
             )
         }
         saveStartupSurfaceSnapshotAsync(true, false)
+    }
+
+    private fun disableOverlayModeForDefaultLauncher() {
+        if (!applicationProvider().isDefaultHomeApp() || !userPreferences.isOverlayModeEnabled()) {
+            return
+        }
+
+        userPreferences.setOverlayModeEnabled(false)
+        updateUiState { it.copy(overlayModeEnabled = false) }
+        OverlayModeController.stopOverlay(applicationProvider())
     }
 
     fun refreshOptionalPermissions(
