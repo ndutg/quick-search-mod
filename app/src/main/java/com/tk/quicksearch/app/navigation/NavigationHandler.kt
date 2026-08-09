@@ -28,6 +28,7 @@ class NavigationHandler(
     private val onRequestAiSearch: (String, Boolean) -> Unit,
     private val onClearQuery: () -> Unit,
     private val onExternalNavigation: () -> Unit,
+    private val onAppLaunched: (AppInfo) -> Unit,
     private val showToastCallback: (Int, String?) -> Unit,
 ) {
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -71,7 +72,6 @@ class NavigationHandler(
     fun launchApp(
         appInfo: AppInfo,
         launchContext: Context,
-        shouldTrackRecentFallback: Boolean,
     ) {
         if (!appInfo.hasLaunchIntent) {
             IntentHelpers.openAppInfo(application, appInfo.packageName)
@@ -84,10 +84,9 @@ class NavigationHandler(
             showToastCallback(stringResId, formatArg)
         }
         userPreferences.incrementAppLaunchCount(appInfo.packageName, appInfo.userHandleId)
-        if (shouldTrackRecentFallback) {
-            userPreferences.addRecentAppLaunch(appInfo.launchCountKey())
-        }
+        userPreferences.addRecentAppLaunch(appInfo.launchCountKey())
         onClearQuery()
+        onAppLaunched(appInfo)
     }
 
     fun openAppInfo(appInfo: AppInfo) {
@@ -104,7 +103,6 @@ class NavigationHandler(
         IntentHelpers.requestUninstall(application, appInfo) { stringResId, formatArg ->
             showToastCallback(stringResId, formatArg)
         }
-        onExternalNavigation()
     }
 
     fun openSearchUrl(

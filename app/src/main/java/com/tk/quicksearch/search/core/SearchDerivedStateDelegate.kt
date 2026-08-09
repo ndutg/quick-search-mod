@@ -215,6 +215,9 @@ internal class SearchDerivedStateDelegate(
         suggestionsEnabled: Boolean,
     ): List<AppInfo> {
         if (!suggestionsEnabled || currentSuggestions.isEmpty()) return refreshedSuggestions
+        if (shouldApplyRefreshedSuggestionOrder(currentSuggestions, refreshedSuggestions)) {
+            return refreshedSuggestions
+        }
 
         val refreshedByKey = refreshedSuggestions.associateBy { it.launchCountKey() }
         val visibleByKey = visibleApps.associateBy { it.launchCountKey() }
@@ -231,6 +234,26 @@ internal class SearchDerivedStateDelegate(
         val appendedSuggestions = refreshedSuggestions.filterNot { existingKeys.contains(it.launchCountKey()) }
 
         return (stableExisting + appendedSuggestions).take(limit)
+    }
+
+    internal companion object {
+        internal fun shouldApplyRefreshedSuggestionOrder(
+            currentSuggestions: List<AppInfo>,
+            refreshedSuggestions: List<AppInfo>,
+        ): Boolean {
+            if (currentSuggestions.isEmpty() || refreshedSuggestions.isEmpty()) return false
+
+            val currentByKey = currentSuggestions.associateBy { it.launchCountKey() }
+            val newestCurrentLaunch = currentSuggestions.maxOf { it.lastUsedTime }
+            return refreshedSuggestions.any { refreshed ->
+                val previousLaunch = currentByKey[refreshed.launchCountKey()]?.lastUsedTime
+                if (previousLaunch != null) {
+                    refreshed.lastUsedTime > previousLaunch
+                } else {
+                    refreshed.lastUsedTime > newestCurrentLaunch
+                }
+            }
+        }
     }
 
     fun refreshMessagingState() {

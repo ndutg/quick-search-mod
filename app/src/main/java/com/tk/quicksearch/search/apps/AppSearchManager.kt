@@ -2,8 +2,10 @@ package com.tk.quicksearch.search.apps
 
 import android.content.Context
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.data.AppCatalogChange
 import com.tk.quicksearch.search.data.AppsRepository
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.applyCatalogRemoval
 import com.tk.quicksearch.search.fuzzy.FuzzySearchConfig
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.utils.SearchQueryContext
@@ -128,6 +130,53 @@ class AppSearchManager(
         }
     }
 
+    internal fun removeUnavailableApp(change: AppCatalogChange): Boolean {
+        if (!change.isRemoval || cachedApps.isEmpty()) return false
+
+        val remainingApps =
+            applyCatalogRemoval(
+                apps = cachedApps,
+                change = change,
+                currentUserHandleId = repository.currentUserHandleId(),
+            )
+        if (remainingApps.size == cachedApps.size) return false
+
+        cachedApps = remainingApps
+        noMatchPrefix = null
+        onAppsUpdated()
+        return true
+    }
+
+    fun recordAppLaunch(appInfo: AppInfo) {
+        val appKey = appInfo.launchCountKey()
+        val updatedApps =
+            applyRecordedAppLaunch(
+                apps = cachedApps,
+                appKey = appKey,
+                launchTime = System.currentTimeMillis(),
+            )
+        if (updatedApps != cachedApps) {
+            cachedApps = updatedApps
+            noMatchPrefix = null
+            onAppsUpdated()
+        }
+    }
+
+    suspend fun refreshUsageMetadataNow() {
+        if (cachedApps.isEmpty()) return
+
+        val refreshedApps =
+            repository.refreshUsageMetadata(
+                apps = cachedApps,
+                launchCounts = userPreferences.getAllAppLaunchCounts(),
+            )
+        if (refreshedApps != cachedApps) {
+            cachedApps = refreshedApps
+            noMatchPrefix = null
+            onAppsUpdated()
+        }
+    }
+
     fun resetNoMatchPrefixIfNeeded(normalizedQuery: String) {
         val prefix = noMatchPrefix ?: return
         if (!normalizedQuery.startsWith(prefix)) {
@@ -239,3 +288,19 @@ class AppSearchManager(
         }
     }
 }
+
+internal fun applyRecordedAppLaunch(
+    apps: List<AppInfo>,
+    appKey: String,
+    launchTime: Long,
+): List<AppInfo> =
+    apps.map { app ->
+        if (app.launchCountKey() == appKey) {
+            app.copy(
+                lastUsedTime = launchTime,
+                launchCount = app.launchCount + 1,
+            )
+        } else {
+            app
+        }
+    }

@@ -3,6 +3,8 @@ package com.tk.quicksearch.search.data
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Process
+import com.tk.quicksearch.search.common.UserHandleUtils
 
 /**
  * Invalidates the persisted app catalog when the app process is not running.
@@ -13,6 +15,12 @@ import android.content.Intent
  */
 class AppCatalogChangeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        AppCache(context.applicationContext).markCatalogInvalidated()
+        val currentUserHandleId = UserHandleUtils.getIdentifier(Process.myUserHandle())
+        val change = AppCatalogChange.fromIntent(intent, currentUserHandleId)
+        AppCache(context.applicationContext).recordCatalogChange(
+            change = change,
+            currentUserHandleId = currentUserHandleId,
+            commitSynchronously = true,
+        )
     }
 }

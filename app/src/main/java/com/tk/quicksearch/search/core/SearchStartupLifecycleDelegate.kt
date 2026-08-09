@@ -151,6 +151,7 @@ internal class SearchStartupLifecycleDelegate(
 ) {
     private var optionalStartupJob: Job? = null
     private var packageRefreshJob: Job? = null
+    private var appUsageRefreshJob: Job? = null
     private val pinningHandler get() = handlersProvider().pinningHandler
     private val searchEngineManager get() = handlersProvider().searchEngineManager
     private val secondarySearchOrchestrator get() = handlersProvider().secondarySearchOrchestrator
@@ -232,6 +233,7 @@ internal class SearchStartupLifecycleDelegate(
 
         if (startupComplete) {
             loadPinnedAndExcludedCalendarEvents()
+            refreshAppUsageMetadata()
         }
 
         val now = System.currentTimeMillis()
@@ -345,6 +347,8 @@ internal class SearchStartupLifecycleDelegate(
 
     fun launchDeferredInitialization() {
         scope.launch(startupDispatcher) {
+            startPackageChangeMonitoring()
+
             withContext(Dispatchers.Main.immediate) {
                 releaseNotesHandler.checkForReleaseNotes()
             }
@@ -362,6 +366,9 @@ internal class SearchStartupLifecycleDelegate(
             }
 
             refreshAppsUsageAndPermissions()
+            if (appSearchManager.cachedApps.isNotEmpty() && permissionStateProvider().hasUsagePermission) {
+                appSearchManager.refreshUsageMetadataNow()
+            }
             // Cached apps seed the home suggestions in phase 1. Rebuilding the complete catalog
             // queries LauncherApps and usage stats, so only block here when there is no cache to
             // show. An invalidated or stale cache is reconciled once startup has been idle.
@@ -567,18 +574,38 @@ internal class SearchStartupLifecycleDelegate(
                     )
                 }
             }
-            repository.startPackageChangeMonitoring {
-                packageRefreshJob?.cancel()
-                packageRefreshJob =
-                    scope.launch(startupDispatcher) {
-                        delay(PACKAGE_CHANGE_DEBOUNCE_MS)
-                        while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
-                        loadApps()
-                    }
-            }
             withContext(Dispatchers.Default) { refreshDerivedState(null, null) }
             saveStartupSurfaceSnapshotAsync(true, false)
         }
+    }
+
+    private fun startPackageChangeMonitoring() {
+        repository.startPackageChangeMonitoring { change ->
+            if (change.isRemoval) {
+                appSearchManager.removeUnavailableApp(change)
+            }
+
+            packageRefreshJob?.cancel()
+            packageRefreshJob =
+                scope.launch(startupDispatcher) {
+                    delay(PACKAGE_CHANGE_DEBOUNCE_MS)
+                    while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
+                    loadApps()
+                }
+        }
+    }
+
+    private fun refreshAppUsageMetadata() {
+        if (!permissionStateProvider().hasUsagePermission) {
+            refreshAppSuggestions()
+            return
+        }
+
+        appUsageRefreshJob?.cancel()
+        appUsageRefreshJob =
+            scope.launch(startupDispatcher) {
+                appSearchManager.refreshUsageMetadataNow()
+            }
     }
 
     private fun shouldReconcileAppsAtStartup(): Boolean {

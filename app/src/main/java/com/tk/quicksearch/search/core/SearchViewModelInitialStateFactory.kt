@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.core
 
 import android.content.Context
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.filterAvailableStartupApps
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceStore
@@ -25,7 +26,15 @@ internal object SearchViewModelInitialStateFactory {
         val instantStartupSurfaceEnabled = startupPreferencesReader.isInstantStartupSurfaceEnabled()
         val startupSnapshot =
             if (instantStartupSurfaceEnabled) {
-                startupSurfaceStore.loadSnapshot()
+                startupSurfaceStore.loadSnapshot()?.let { snapshot ->
+                    snapshot.copy(
+                        suggestedApps =
+                            filterAvailableStartupApps(
+                                context = appContext,
+                                apps = snapshot.suggestedApps,
+                            ),
+                    )
+                }
             } else {
                 null
             }
