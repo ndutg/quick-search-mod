@@ -412,6 +412,14 @@ fun ContentLayout(
             !hideResults &&
             !isSectionAliasMode &&
             !hideHomeSectionTitleRows
+    // Same home states as the sectioned headers above, minus the pinned-mode split: an item-less
+    // home section renders nothing either way, yet still takes a slot in the content Column's
+    // arrangement spacing.
+    val skipItemlessHomeSections =
+        !hasQuery &&
+            !hideResults &&
+            !isSectionAliasMode &&
+            !hideHomeSectionTitleRows
 
     @Composable
     fun renderHomePinnedSection(
@@ -681,6 +689,10 @@ fun ContentLayout(
             if (isExpanded && !isSectionItem) return@forEach
 
             if (section != null) {
+                // The expanded search history owns the whole content area. Skipping the sections
+                // outright keeps them from emitting empty layout nodes, which would still take a
+                // slot in this Column's arrangement spacing and push the card down.
+                if (hidePinnedAndAppsWhenSearchHistoryExpanded) return@forEach
                 if (isHomeCalendarExpanded && section != SearchSection.CALENDAR) return@forEach
                 if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
                 if (!shouldRenderSection(section)) return@forEach
@@ -781,8 +793,7 @@ fun ContentLayout(
                         sectionContextForRecentHistoryExpansion
                     }
                 if (
-                    !hasQuery &&
-                    showSectionedPinnedHeaders &&
+                    skipItemlessHomeSections &&
                     section.supportsPinnedHomeCollapse() &&
                     !homePinnedSectionHasItems(section, sectionContext)
                 ) {
