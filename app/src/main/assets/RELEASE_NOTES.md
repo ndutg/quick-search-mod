@@ -4,4 +4,4 @@
 - New search engine: Kagi
 - Option to allow two app rows in search results
 - Performance optimisations
-- Reduced app size and bug fixes
+- Smaller app size and bug fixes
