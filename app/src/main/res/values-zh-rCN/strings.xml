@@ -652,6 +652,7 @@
     <string name="settings_icon_desc">在搜索栏中显示/隐藏齿轮设置图标。您随时可以通过向左滑动或进行搜索来访问设置。</string>
     <string name="settings_icon_required_by_gesture_desc">将“向左滑动手势”设置为“打开设置”即可关闭此图标。</string>
     <string name="settings_icon_pack_empty">未找到任何图标包。</string>
+    <string name="settings_icon_pack_description_no_packs">为应用图标设置图标包。</string>
     <string name="settings_icon_pack_mask_unsupported_icons">为不支持的图标添加蒙版</string>
     <string name="settings_icon_pack_option_system">系统默认图标</string>
     <string name="settings_icon_pack_picker_title">选择图标包</string>
@@ -1055,5 +1056,5 @@
     <string name="tasker_broadcast_failed">无法发送 Tasker 广播</string>
     <string name="settings_more_apps_from_developer_title">开发者的更多应用</string>
     <string name="icon_picker_no_icon_packs">未安装可用于更改应用图标的图标包。</string>
-    <string name="icon_picker_download_icon_packs">下载图标包</string>
+    <string name="icon_picker_download_icon_packs">下载</string>
 </resources>

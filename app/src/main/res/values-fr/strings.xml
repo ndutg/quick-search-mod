@@ -660,6 +660,7 @@
 <string name="settings_icon_desc">Afficher/masquer l\'icône d\'engrenage dans la barre de recherche. Accédez aux paramètres à tout moment en glissant vers la gauche ou en effectuant une recherche.</string>
 <string name="settings_icon_required_by_gesture_desc">Définissez le geste \"Balayer vers la gauche\" sur \"Ouvrir les paramètres\" pour masquer cette icône.</string>
 <string name="settings_icon_pack_empty">Aucun pack d\'icônes trouvé.</string>
+<string name="settings_icon_pack_description_no_packs">Définissez un pack d\'icônes pour les icônes des applications.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Masquer les icônes non prises en charge</string>
 <string name="settings_icon_pack_option_system">Icônes système</string>
 <string name="settings_icon_pack_picker_title">Choisir un pack d\'icônes</string>
@@ -1063,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Impossible d\'envoyer la diffusion Tasker</string>
     <string name="settings_more_apps_from_developer_title">Plus d’applications du développeur</string>
 <string name="icon_picker_no_icon_packs">Aucun pack d\'icônes n\'est installé pour modifier l\'icône de l\'application.</string>
-<string name="icon_picker_download_icon_packs">Télécharger des packs d\'icônes</string>
+    <string name="icon_picker_download_icon_packs">Télécharger</string>
 </resources>

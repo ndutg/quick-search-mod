@@ -659,6 +659,7 @@
 <string name="settings_icon_desc">Arama çubuğundaki ayarlar (dişli) simgesini göster/gizle. Sola kaydırarak veya arama yaparak ayarlara istediğin zaman erişebilirsin.</string>
 <string name="settings_icon_required_by_gesture_desc">Bu simgeyi kapatmak için Sola Kaydırma Hareketini \"Ayarları Aç\" olarak ayarlayın.</string>
 <string name="settings_icon_pack_empty">Simge paketi bulunamadı.</string>
+<string name="settings_icon_pack_description_no_packs">Uygulama simgeleri için bir simge paketi ayarlayın.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Desteklenmeyen simgeleri maskele</string>
 <string name="settings_icon_pack_option_system">Sistem simgeleri</string>
 <string name="settings_icon_pack_picker_title">Simge paketi seç</string>
@@ -1062,5 +1063,5 @@
     <string name="tasker_broadcast_failed">Tasker yayını gönderilemedi</string>
     <string name="settings_more_apps_from_developer_title">Geliştiricinin diğer uygulamaları</string>
 <string name="icon_picker_no_icon_packs">Uygulama simgesini değiştirmek için yüklü simge paketi yok.</string>
-<string name="icon_picker_download_icon_packs">Simge paketlerini indir</string>
+<string name="icon_picker_download_icon_packs">İndir</string>
 </resources>

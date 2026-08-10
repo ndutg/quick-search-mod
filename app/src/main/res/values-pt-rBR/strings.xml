@@ -660,6 +660,7 @@
     <string name="settings_icon_desc">Mostrar/ocultar o ícone de engrenagem na barra de pesquisa. Acesse as configurações a qualquer momento deslizando para a esquerda ou pesquisando.</string>
     <string name="settings_icon_required_by_gesture_desc">Defina o gesto de Deslizar para a Esquerda como \"Abrir Configurações\" para desativar este ícone.</string>
     <string name="settings_icon_pack_empty">Nenhum pacote de ícones encontrado.</string>
+    <string name="settings_icon_pack_description_no_packs">Defina um pacote de ícones para os ícones dos apps.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Mascarar ícones não suportados</string>
     <string name="settings_icon_pack_option_system">Ícones do sistema</string>
     <string name="settings_icon_pack_picker_title">Escolha o pacote de ícones</string>
@@ -1063,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Não foi possível enviar o broadcast do Tasker</string>
     <string name="settings_more_apps_from_developer_title">Mais apps do desenvolvedor</string>
     <string name="icon_picker_no_icon_packs">Não há pacotes de ícones instalados para alterar o ícone do app.</string>
-    <string name="icon_picker_download_icon_packs">Baixar pacotes de ícones</string>
+    <string name="icon_picker_download_icon_packs">Baixar</string>
 </resources>

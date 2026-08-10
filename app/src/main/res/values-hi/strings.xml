@@ -660,6 +660,7 @@
     <string name="settings_icon_desc">सर्च बार में गियर आइकन दिखाएं/छिपाएं। बाएं स्वाइप करके या खोजकर कभी भी सेटिंग्स खोलें।</string>
     <string name="settings_icon_required_by_gesture_desc">इस आइकन को बंद करने के लिए \"सेटिंग्स खोलें\" पर स्वाइप लेफ्ट जेस्चर सेट करें।</string>
     <string name="settings_icon_pack_empty">कोई आइकन पैक नहीं मिला।</string>
+    <string name="settings_icon_pack_description_no_packs">ऐप आइकन के लिए एक आइकन पैक सेट करें।</string>
     <string name="settings_icon_pack_mask_unsupported_icons">असमर्थित आइकनों को मास्क करें</string>
     <string name="settings_icon_pack_option_system">सिस्टम आइकन</string>
     <string name="settings_icon_pack_picker_title">आइकन पैक चुनें</string>
@@ -1063,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Tasker ब्रॉडकास्ट नहीं भेजा जा सका</string>
     <string name="settings_more_apps_from_developer_title">डेवलपर के और ऐप्स</string>
     <string name="icon_picker_no_icon_packs">ऐप आइकन बदलने के लिए कोई आइकन पैक इंस्टॉल नहीं है।</string>
-    <string name="icon_picker_download_icon_packs">आइकन पैक डाउनलोड करें</string>
+    <string name="icon_picker_download_icon_packs">डाउनलोड करें</string>
 </resources>

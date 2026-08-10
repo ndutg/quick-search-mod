@@ -660,6 +660,7 @@
     <string name="settings_icon_desc">శోధన పట్టీలో గేర్ ఐకాన్‌ను చూపించు/దాచు. ఎడమవైపుకు స్వైప్ చేయడం ద్వారా లేదా శోధించడం ద్వారా ఎప్పుడైనా సెట్టింగ్‌లను యాక్సెస్ చేయండి.</string>
     <string name="settings_icon_required_by_gesture_desc">ఈ చిహ్నాన్ని నిలిపివేయడానికి \"సెట్టింగులను తెరవండి\" కి ఎడమకు స్వైప్ హావాభావాన్ని సెట్ చేయండి.</string>
     <string name="settings_icon_pack_empty">ఐకాన్ ప్యాక్‌లు ఏవీ కనుగొనబడలేదు.</string>
+    <string name="settings_icon_pack_description_no_packs">యాప్ చిహ్నాల కోసం ఒక ఐకాన్ ప్యాక్‌ను సెట్ చేయండి.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">మద్దతు లేని ఐకాన్‌లను మాస్క్ చేయి</string>
     <string name="settings_icon_pack_option_system">సిస్టమ్ ఐకాన్‌లు</string>
     <string name="settings_icon_pack_picker_title">ఐకాన్ ప్యాక్‌ను ఎంచుకోండి</string>
@@ -1063,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Tasker బ్రాడ్‌కాస్ట్‌ను పంపలేకపోయాము</string>
     <string name="settings_more_apps_from_developer_title">డెవలపర్ నుండి మరిన్ని యాప్‌లు</string>
     <string name="icon_picker_no_icon_packs">యాప్ ఐకాన్‌ను మార్చడానికి ఐకాన్ ప్యాక్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు.</string>
-    <string name="icon_picker_download_icon_packs">ఐకాన్ ప్యాక్‌లను డౌన్‌లోడ్ చేయండి</string>
+    <string name="icon_picker_download_icon_packs">డౌన్‌లోడ్ చేయండి</string>
 </resources>

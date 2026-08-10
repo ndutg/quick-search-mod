@@ -10,6 +10,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Color as AndroidColor
 import android.graphics.drawable.AdaptiveIconDrawable
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.util.LruCache
 import androidx.annotation.RequiresApi
@@ -19,6 +20,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
@@ -92,7 +94,8 @@ data class AppIconResult(
 
 /**
  * Loads an app icon from cache or package manager.
- * When [userHandleId] is set (work profile), loads the badged icon via LauncherApps.
+ * When [userHandleId] is set (work profile), uses a themed icon only when the pack explicitly
+ * supports the app; otherwise it preserves the system-badged fallback icon.
  * Returns bitmap and whether the icon is legacy (non-adaptive); legacy icons may need circular clip.
  */
 @Composable
@@ -141,51 +144,48 @@ fun rememberAppIcon(
 
             val entry =
                 withContext(Dispatchers.IO) {
-                    if (userHandleId != null) {
-                        loadWorkProfileBadgedIcon(
-                            context = context,
-                            packageName = packageName,
-                            userHandleId = userHandleId,
-                            densityDpi = densityDpi,
-                            forceCircularMask = forceCircularMask,
-                        )
-                    } else {
-                        val iconPackBitmap =
-                            iconOverride?.let { override ->
-                                IconPackManager.loadDrawableBitmap(
-                                    context = context,
-                                    iconPackPackage = override.iconPackPackage,
-                                    drawableName = override.drawableName,
-                                )
-                            } ?: iconPackPackage?.let { pack ->
-                                IconPackManager.loadIconBitmap(
-                                    context = context,
-                                    iconPackPackage = pack,
-                                    targetPackage = packageName,
-                                )
-                            }
-
-                        if (iconPackBitmap != null) {
-                            AppIconEntry(iconPackBitmap, isLegacy = false)
-                        } else {
-                            runCatching {
-                                val drawable = context.packageManager.getApplicationIcon(packageName)
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
-                                    val bitmap =
-                                        adaptiveToBitmap(
-                                            drawable = drawable,
-                                            forceCircularMask = forceCircularMask,
-                                        ).asImageBitmap()
-                                    val monochromeData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                        extractMonochromeBitmap(drawable)?.asImageBitmap()
-                                    } else null
-                                    AppIconEntry(bitmap, isLegacy = false, monochromeData = monochromeData)
-                                } else {
-                                    val bitmap = drawable.toBitmap().asImageBitmap()
-                                    AppIconEntry(bitmap, isLegacy = Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                                }
-                            }.getOrNull()
+                    val iconPackBitmap =
+                        iconOverride?.let { override ->
+                            IconPackManager.loadDrawableBitmap(
+                                context = context,
+                                iconPackPackage = override.iconPackPackage,
+                                drawableName = override.drawableName,
+                            )
+                        } ?: iconPackPackage?.let { pack ->
+                            IconPackManager.loadIconBitmap(
+                                context = context,
+                                iconPackPackage = pack,
+                                targetPackage = packageName,
+                            )
                         }
+                    val hasExplicitIconPackIcon =
+                        iconOverride != null ||
+                            iconPackPackage?.let { pack ->
+                                IconPackManager.hasExplicitIcon(context, pack, packageName)
+                            } == true
+
+                    when {
+                        iconPackBitmap != null && (userHandleId == null || hasExplicitIconPackIcon) ->
+                            AppIconEntry(
+                                bitmap =
+                                    userHandleId?.let { handleId ->
+                                        addWorkProfileBadge(
+                                            context = context,
+                                            icon = iconPackBitmap,
+                                            userHandleId = handleId,
+                                        )
+                                    } ?: iconPackBitmap,
+                                isLegacy = false,
+                            )
+                        userHandleId != null ->
+                            loadWorkProfileBadgedIcon(
+                                context = context,
+                                packageName = packageName,
+                                userHandleId = userHandleId,
+                                densityDpi = densityDpi,
+                                forceCircularMask = forceCircularMask,
+                            )
+                        else -> loadSystemAppIcon(context, packageName, forceCircularMask)
                     }
                 }
 
@@ -197,6 +197,48 @@ fun rememberAppIcon(
 
     return iconState.value
 }
+
+private fun addWorkProfileBadge(
+    context: Context,
+    icon: ImageBitmap,
+    userHandleId: Int,
+): ImageBitmap {
+    val userManager = context.getSystemService(Context.USER_SERVICE) as? android.os.UserManager ?: return icon
+    val userHandle =
+        UserHandleUtils.of(userHandleId)
+            ?: userManager.userProfiles.find { UserHandleUtils.getIdentifier(it) == userHandleId }
+            ?: return icon
+    return runCatching {
+        val drawable = BitmapDrawable(context.resources, icon.asAndroidBitmap())
+        context.packageManager
+            .getUserBadgedIcon(drawable, userHandle)
+            .toBitmap(width = icon.width, height = icon.height)
+            .asImageBitmap()
+    }.getOrDefault(icon)
+}
+
+private fun loadSystemAppIcon(
+    context: Context,
+    packageName: String,
+    forceCircularMask: Boolean,
+): AppIconEntry? =
+    runCatching {
+        val drawable = context.packageManager.getApplicationIcon(packageName)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
+            val bitmap =
+                adaptiveToBitmap(
+                    drawable = drawable,
+                    forceCircularMask = forceCircularMask,
+                ).asImageBitmap()
+            val monochromeData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                extractMonochromeBitmap(drawable)?.asImageBitmap()
+            } else null
+            AppIconEntry(bitmap, isLegacy = false, monochromeData = monochromeData)
+        } else {
+            val bitmap = drawable.toBitmap().asImageBitmap()
+            AppIconEntry(bitmap, isLegacy = Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+        }
+    }.getOrNull()
 
 private fun loadWorkProfileBadgedIcon(
     context: Context,

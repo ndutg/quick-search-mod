@@ -659,6 +659,7 @@
     <string name="settings_icon_desc">Mostra/nascondi l\u2019icona dell\u2019ingranaggio nella barra di ricerca. Accedi alle impostazioni in qualsiasi momento scorrendo a sinistra o tramite la ricerca.</string>
     <string name="settings_icon_required_by_gesture_desc">Imposta il gesto \"Scorri a sinistra\" su \"Apri impostazioni\" per nascondere questa icona.</string>
     <string name="settings_icon_pack_empty">Nessun pacchetto di icone trovato.</string>
+    <string name="settings_icon_pack_description_no_packs">Imposta un pacchetto di icone per le icone delle app.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Maschera icone non supportate</string>
     <string name="settings_icon_pack_option_system">Icone di sistema</string>
     <string name="settings_icon_pack_picker_title">Scegli pacchetto icone</string>
@@ -1062,5 +1063,5 @@
     <string name="tasker_broadcast_failed">Impossibile inviare il broadcast di Tasker</string>
     <string name="settings_more_apps_from_developer_title">Altre app dello sviluppatore</string>
     <string name="icon_picker_no_icon_packs">Non sono installati pacchetti di icone per modificare l\'icona dell\'app.</string>
-    <string name="icon_picker_download_icon_packs">Scarica pacchetti di icone</string>
+    <string name="icon_picker_download_icon_packs">Scarica</string>
 </resources>

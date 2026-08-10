@@ -130,7 +130,6 @@ fun SettingsRoute(
         )
 
     androidx.compose.runtime.LaunchedEffect(Unit) {
-        viewModel.refreshIconPacks()
         viewModel.handleOptionalPermissionChange()
     }
 

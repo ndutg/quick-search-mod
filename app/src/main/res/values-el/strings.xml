@@ -660,6 +660,7 @@
     <string name="settings_icon_desc">Εμφάνιση/απόκρυψη του εικονιδίου γραναζιού στη γραμμή αναζήτησης. Αποκτήστε πρόσβαση στις ρυθμίσεις ανά πάσα στιγμή κάνοντας σάρωση προς τα αριστερά ή μέσω αναζήτησης.</string>
     <string name="settings_icon_required_by_gesture_desc">Ορίστε τη χειρονομία \"Σάρωση αριστερά\" σε \"Άνοιγμα ρυθμίσεων\" για να απενεργοποιήσετε αυτό το εικονίδιο.</string>
     <string name="settings_icon_pack_empty">Δεν βρέθηκαν πακέτα εικονιδίων.</string>
+    <string name="settings_icon_pack_description_no_packs">Ορίστε ένα πακέτο εικονιδίων για τα εικονίδια εφαρμογών.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Μάσκα μη υποστηριζόμενων εικονιδίων</string>
     <string name="settings_icon_pack_option_system">Εικονίδια συστήματος</string>
     <string name="settings_icon_pack_picker_title">Επιλογή πακέτου εικονιδίων</string>
@@ -1063,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Αδυναμία αποστολής της εκπομπής Tasker</string>
     <string name="settings_more_apps_from_developer_title">Περισσότερες εφαρμογές από τον προγραμματιστή</string>
     <string name="icon_picker_no_icon_packs">Δεν έχουν εγκατασταθεί πακέτα εικονιδίων για αλλαγή του εικονιδίου της εφαρμογής.</string>
-    <string name="icon_picker_download_icon_packs">Λήψη πακέτων εικονιδίων</string>
+    <string name="icon_picker_download_icon_packs">Λήψη</string>
 </resources>

@@ -62,7 +62,7 @@
     <string name="action_app_info">App Info</string>
     <string name="action_change_icon">Change Icon</string>
     <string name="icon_picker_no_icon_packs">No Icon packs are installed to change the app icon.</string>
-    <string name="icon_picker_download_icon_packs">Download Icon Packs</string>
+    <string name="icon_picker_download_icon_packs">Download</string>
     <string name="icon_picker_search">Search icons</string>
     <string name="icon_picker_title">Change icon for "%1$s"</string>
     <string name="action_change_wallpaper">Change Wallpaper</string>
@@ -655,6 +655,7 @@
     <string name="settings_icon_desc">Show/hide the gear icon in the search bar. Access settings anytime by swiping left or by searching.</string>
     <string name="settings_icon_required_by_gesture_desc">Set Swipe Left Gesture to Open Settings to turn this icon off.</string>
     <string name="settings_icon_pack_empty">No icon packs found.</string>
+    <string name="settings_icon_pack_description_no_packs">Set an icon pack for the app icons.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Mask unsupported icons</string>
     <string name="settings_icon_pack_option_system">System icons</string>
     <string name="settings_icon_pack_picker_title">Choose Icon Pack</string>

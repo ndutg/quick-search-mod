@@ -31,12 +31,17 @@ class AppSettingsRepository(
                         "font size",
                         "system font",
                         "text size",
-                        "icons",
                         "icon size",
-                        "icon pack",
                         "inline",
                         "compact"
                     ),
+            )
+            addNavigation(
+                id = "app_settings_icon_packs",
+                titleRes = R.string.settings_icon_pack_title,
+                descriptionRes = R.string.settings_search_description_change_icon_pack,
+                destination = AppSettingsDestination.ICON_PACKS,
+                keywords = listOf("icons", "icon pack", "themed icons"),
             )
             addNavigation(
                 id = "app_settings_search_results",
@@ -657,9 +662,6 @@ class AppSettingsRepository(
         if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_THEME_TOKENS) }) {
             return context.getString(R.string.settings_search_description_change_app_theme)
         }
-        if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_ICON_PACK_TOKENS) }) {
-            return context.getString(R.string.settings_search_description_change_icon_pack)
-        }
         if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_WALLPAPER_TOKENS) }) {
             return context.getString(R.string.settings_search_description_change_wallpaper)
         }
@@ -714,7 +716,6 @@ class AppSettingsRepository(
 
     private companion object {
         val APPEARANCE_THEME_TOKENS = setOf("themes", "dark", "light", "system", "background")
-        val APPEARANCE_ICON_PACK_TOKENS = setOf("icon", "packs")
         val APPEARANCE_WALLPAPER_TOKENS =
             setOf("wallpaper", "blur", "transparency")
         val APPEARANCE_FONT_TOKENS = setOf("fonts", "size", "text")

@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
@@ -41,6 +43,7 @@ fun IconPackPickerDialog(
         maskUnsupportedIcons: Boolean,
         onSelect: (String?) -> Unit,
         onMaskUnsupportedIconsChange: (Boolean) -> Unit,
+        onDownloadIconPacks: () -> Unit = {},
         onDismiss: () -> Unit,
 ) {
     AppAlertDialog(
@@ -55,8 +58,13 @@ fun IconPackPickerDialog(
             },
             text = {
                 Column(
-                        modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp, max = 400.dp),
+                        verticalArrangement =
+                                if (availableIconPacks.isEmpty()) {
+                                    Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
+                                } else {
+                                    Arrangement.spacedBy(12.dp)
+                                },
                 ) {
                     if (availableIconPacks.isEmpty()) {
                         Text(
@@ -64,9 +72,20 @@ fun IconPackPickerDialog(
                                         androidx.compose.ui.res.stringResource(
                                                 R.string.settings_icon_pack_empty,
                                         ),
+                                modifier = Modifier.fillMaxWidth(),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
                         )
+                        Button(
+                                onClick = {
+                                            onDismiss()
+                                            onDownloadIconPacks()
+                                        },
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                        ) {
+                            Text(stringResource(R.string.icon_picker_download_icon_packs))
+                        }
                     } else {
                         Column(
                                 modifier =

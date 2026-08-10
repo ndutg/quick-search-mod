@@ -660,6 +660,7 @@
     <string name="settings_icon_desc">Muestra u oculta el icono de engranaje en la barra de búsqueda. Entra en ajustes en cualquier momento deslizando hacia la izquierda o buscando.</string>
     <string name="settings_icon_required_by_gesture_desc">Establece el gesto \"Deslizar a la izquierda\" en \"Abrir ajustes\" para desactivar este icono.</string>
     <string name="settings_icon_pack_empty">No se encontraron paquetes de iconos.</string>
+    <string name="settings_icon_pack_description_no_packs">Configura un paquete de iconos para los iconos de las aplicaciones.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Enmascarar iconos no compatibles</string>
     <string name="settings_icon_pack_option_system">Iconos del sistema</string>
     <string name="settings_icon_pack_picker_title">Elegir paquete de iconos</string>
@@ -1063,5 +1064,5 @@
     <string name="tasker_broadcast_failed">No se pudo enviar la difusión de Tasker</string>
     <string name="settings_more_apps_from_developer_title">Más aplicaciones del desarrollador</string>
     <string name="icon_picker_no_icon_packs">No hay paquetes de iconos instalados para cambiar el icono de la aplicación.</string>
-    <string name="icon_picker_download_icon_packs">Descargar paquetes de iconos</string>
+    <string name="icon_picker_download_icon_packs">Descargar</string>
 </resources>

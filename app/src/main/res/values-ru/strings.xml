@@ -676,6 +676,7 @@
     <string name="settings_icon_desc">Показывать/скрывать значок шестерёнки в поисковой строке. Вы всегда можете перейти в настройки свайпом влево или через поиск.</string>
     <string name="settings_icon_required_by_gesture_desc">Установите жест \"Смахивание влево\" на \"Открыть настройки\", чтобы скрыть этот значок.</string>
 <string name="settings_icon_pack_empty">Пакеты значков не найдены.</string>
+<string name="settings_icon_pack_description_no_packs">Установите пакет значков для значков приложений.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Маскировать неподдерживаемые значки</string>
 <string name="settings_icon_pack_option_system">Системные значки</string>
 <string name="settings_icon_pack_picker_title">Выберите пакет значков</string>
@@ -1079,5 +1080,5 @@
     <string name="tasker_broadcast_failed">Не удалось отправить трансляцию Tasker</string>
     <string name="settings_more_apps_from_developer_title">Другие приложения разработчика</string>
 <string name="icon_picker_no_icon_packs">Для изменения значка приложения не установлены пакеты значков.</string>
-<string name="icon_picker_download_icon_packs">Скачать пакеты значков</string>
+<string name="icon_picker_download_icon_packs">Скачать</string>
 </resources>
