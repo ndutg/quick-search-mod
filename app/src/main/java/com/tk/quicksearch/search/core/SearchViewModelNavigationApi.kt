@@ -162,7 +162,9 @@ class SearchViewModelNavigationApiDelegate internal constructor(
         } else {
             onQueryChange(suggestion)
         }
-        updateResultsState { it.copy(webSuggestionWasSelected = true) }
+        // Treat a suggestion tap like any other query update so the applied text can
+        // immediately fetch and display its own suggestions.
+        updateResultsState { it.copy(webSuggestionWasSelected = false) }
     }
 
     fun onRecentQueryTap(entry: RecentSearchEntry.Query) {
