@@ -2,7 +2,6 @@ package com.tk.quicksearch.settings.AppearanceSettings
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -52,7 +50,6 @@ fun AppIconCard(
         iconPackTitle: String,
         iconPackDescription: String,
         onIconPackClick: () -> Unit,
-        onRefreshIconPacks: () -> Unit = {},
         appIconShape: AppIconShape,
         onSetAppIconShape: (AppIconShape) -> Unit,
         modifier: Modifier = Modifier,
@@ -128,9 +125,7 @@ fun AppIconCard(
                     isLastItem = false,
             )
 
-            // Icon Pack Section (with navigation)
-            val hasIconPacks =
-                    iconPackDescription != stringResource(R.string.settings_icon_pack_empty)
+            // Icon Pack Section
             Row(
                     modifier =
                             Modifier.fillMaxWidth()
@@ -139,7 +134,7 @@ fun AppIconCard(
                                             start = 24.dp,
                                             top = 16.dp,
                                             end = 24.dp,
-                                            bottom = if (hasIconPacks) 16.dp else 20.dp,
+                                            bottom = 16.dp,
                                     ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -160,35 +155,10 @@ fun AppIconCard(
                     )
                 }
                 Icon(
-                        imageVector =
-                                if (hasIconPacks) {
-                                    Icons.Rounded.ChevronRight
-                                } else {
-                                    Icons.Rounded.Refresh
-                                },
-                        contentDescription =
-                                if (hasIconPacks) {
-                                    stringResource(R.string.desc_navigate_forward)
-                                } else {
-                                    stringResource(R.string.settings_refresh_icon_packs)
-                                },
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = stringResource(R.string.desc_navigate_forward),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier =
-                                Modifier.padding(start = 8.dp)
-                                        .then(
-                                                if (!hasIconPacks) {
-                                                    Modifier.clickable(
-                                                            interactionSource =
-                                                                    remember {
-                                                                        MutableInteractionSource()
-                                                                    },
-                                                            indication = null,
-                                                            onClick = onRefreshIconPacks,
-                                                    )
-                                                } else {
-                                                    Modifier
-                                                },
-                                        ),
+                        modifier = Modifier.padding(start = 8.dp),
                 )
             }
         }

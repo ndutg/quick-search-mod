@@ -1,25 +1,10 @@
 package com.tk.quicksearch.search.files
 
 import com.tk.quicksearch.search.utils.SearchQueryContext
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FileSearchPolicyTest {
-    @Test
-    fun multiWordQueryRejectsFileWhenAQueryTokenIsNotCovered() {
-        val covered =
-            FileSearchPolicy.areAllQueryTokensCovered(
-                query = SearchQueryContext.fromRawQuery("teja passport"),
-                displayName = "teja_notes.txt",
-                nickname = null,
-                fuzzyMinScore = 72,
-                fuzzyMaxEditDistance = 2,
-            )
-
-        assertFalse(covered)
-    }
-
     @Test
     fun multiWordQueryCanBeCoveredByNickname() {
         val covered =

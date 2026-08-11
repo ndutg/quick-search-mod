@@ -73,8 +73,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
-                <action android:name="android.intent.action.PACKAGE_CHANGED" />
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
@@ -321,7 +319,7 @@
         <!-- Search Activities -->
         <activity
             android:name=".overlay.OverlayActivity"
-            android:exported="false"
+            android:exported="${profileCaptureExported}"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:theme="@style/Theme.QuickSearch"

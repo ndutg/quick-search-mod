@@ -1,7 +1,5 @@
 package com.tk.quicksearch.search.searchScreen.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -9,9 +7,15 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
@@ -44,44 +48,50 @@ internal fun Modifier.predictedSubmitHighlight(
                 label = "predictedSubmitIndicatorAlpha",
             ) { predicted ->
                 if (predicted) 1f else 0f
-            }.value
+            }
+        val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
+        val primary = MaterialTheme.colorScheme.primary
+        val highlightColor =
+            when (imageBackgroundIsDark) {
+                true -> lerp(Color.White, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
+                false -> lerp(Color.Black, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
+                null ->
+                    if (opaqueCardTopResultBorder) {
+                        val neutral = if (LocalAppIsDarkTheme.current) Color.White else Color.Black
+                        lerp(neutral, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
+                    } else {
+                        primary
+                    }
+            }
+        val (fillAlpha, borderAlpha) =
+            if (opaqueCardTopResultBorder) {
+                0.055f to 0.42f
+            } else {
+                0.08f to 0.22f
+            }
 
-        if (indicatorAlpha <= 0f) {
-            this
-        } else {
-            val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
-            val primary = MaterialTheme.colorScheme.primary
-            val highlightColor =
-                when (imageBackgroundIsDark) {
-                    true ->
-                        lerp(Color.White, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
-                    false ->
-                        lerp(Color.Black, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
-                    null ->
-                        if (opaqueCardTopResultBorder) {
-                            val neutral =
-                                if (LocalAppIsDarkTheme.current) Color.White else Color.Black
-                            lerp(neutral, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
-                        } else {
-                            primary
-                        }
+        this.drawWithCache {
+            val outline = shape.createOutline(size, layoutDirection, this)
+            val outlinePath = outline.toPath()
+            val borderWidthPx = DesignTokens.BorderWidth.toPx()
+            onDrawWithContent {
+                // Read animation state here so each tick invalidates drawing, not composition.
+                val alpha = indicatorAlpha.value
+                if (alpha > 0f) {
+                    drawPath(
+                        path = outlinePath,
+                        color = highlightColor.copy(alpha = fillAlpha * alpha),
+                    )
                 }
-            val (fillAlpha, borderAlpha) =
-                if (opaqueCardTopResultBorder) {
-                    0.055f to 0.42f
-                } else {
-                    0.08f to 0.22f
+                drawContent()
+                if (alpha > 0f) {
+                    drawInsideBorder(
+                        path = outlinePath,
+                        color = highlightColor.copy(alpha = borderAlpha * alpha),
+                        width = borderWidthPx,
+                    )
                 }
-            this
-                .background(
-                    color = highlightColor.copy(alpha = fillAlpha * indicatorAlpha),
-                    shape = shape,
-                )
-                .border(
-                    width = DesignTokens.BorderWidth,
-                    color = highlightColor.copy(alpha = borderAlpha * indicatorAlpha),
-                    shape = shape,
-                )
+            }
         }
     }
 
@@ -108,27 +118,62 @@ internal fun Modifier.predictedSubmitCardBorder(
                 label = "predictedSubmitBorderAlpha",
             ) { predicted ->
                 if (predicted) 1f else 0f
-            }.value
+            }
+        val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
+        val primary = MaterialTheme.colorScheme.primary
+        val borderColor =
+            when (imageBackgroundIsDark) {
+                true ->
+                    lerp(Color.White, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
+                        .copy(alpha = 0.24f)
+                false ->
+                    lerp(Color.Black, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
+                        .copy(alpha = 0.24f)
+                null -> primary
+            }
 
-        if (indicatorAlpha <= 0f) {
-            this
-        } else {
-            val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
-            val primary = MaterialTheme.colorScheme.primary
-            val borderColor =
-                when (imageBackgroundIsDark) {
-                    true ->
-                        lerp(Color.White, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
-                            .copy(alpha = 0.24f)
-                    false ->
-                        lerp(Color.Black, primary, DesignTokens.PredictedSubmitHighlightAccentBlend)
-                            .copy(alpha = 0.24f)
-                    null -> primary.copy(alpha = 0.24f * indicatorAlpha)
+        this.drawWithCache {
+            val outline = shape.createOutline(size, layoutDirection, this)
+            val outlinePath = outline.toPath()
+            val borderWidthPx = DesignTokens.BorderWidth.toPx()
+            onDrawWithContent {
+                drawContent()
+                // Keep the animated alpha read in the draw phase for draw-only invalidation.
+                val alpha = indicatorAlpha.value
+                if (alpha > 0f) {
+                    val effectiveAlpha =
+                        if (imageBackgroundIsDark == null) {
+                            0.24f * alpha * alpha
+                        } else {
+                            borderColor.alpha * alpha
+                        }
+                    drawInsideBorder(
+                        path = outlinePath,
+                        color = borderColor.copy(alpha = effectiveAlpha),
+                        width = borderWidthPx,
+                    )
                 }
-            this.border(
-                width = DesignTokens.BorderWidth,
-                color = borderColor.copy(alpha = borderColor.alpha * indicatorAlpha),
-                shape = shape,
-            )
+            }
         }
+    }
+
+private fun DrawScope.drawInsideBorder(
+    path: Path,
+    color: Color,
+    width: Float,
+) {
+    clipPath(path) {
+        drawPath(
+            path = path,
+            color = color,
+            style = Stroke(width = width * 2f),
+        )
+    }
+}
+
+private fun Outline.toPath(): Path =
+    when (this) {
+        is Outline.Rectangle -> Path().apply { addRect(rect) }
+        is Outline.Rounded -> Path().apply { addRoundRect(roundRect) }
+        is Outline.Generic -> path
     }

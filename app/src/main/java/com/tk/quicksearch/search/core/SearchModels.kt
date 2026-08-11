@@ -53,6 +53,7 @@ enum class SearchEngine {
         BING,
         STARTPAGE,
         GOOGLE_TRANSLATE,
+        KAGI,
 }
 
 data class BrowserApp(

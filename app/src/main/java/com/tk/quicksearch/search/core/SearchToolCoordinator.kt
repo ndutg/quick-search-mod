@@ -61,13 +61,6 @@ internal class SearchToolCoordinator(
     private var weatherJob: Job? = null
     private var weatherQueryVersion: Long = 0L
 
-    fun cancelAll() {
-        currencyConversionJob?.cancel()
-        worldClockJob?.cancel()
-        dictionaryJob?.cancel()
-        weatherJob?.cancel()
-    }
-
     fun cancelInactive(activeCard: SearchViewModel.ActiveInformationCard) {
         if (activeCard != SearchViewModel.ActiveInformationCard.CURRENCY_CONVERTER) {
             currencyConversionJob?.cancel()

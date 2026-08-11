@@ -14,6 +14,7 @@ enum class SearchEngineIconColorPolicy {
 
 enum class SearchEngineNativeLaunchMode {
     NONE,
+    CHATGPT,
     GEMINI,
     GOOGLE,
     GOOGLE_PHOTOS,
@@ -25,6 +26,7 @@ enum class SearchEngineNativeLaunchMode {
     CLAUDE,
     GROK,
     GOOGLE_TRANSLATE,
+    KAGI,
 }
 
 data class SearchEngineDefinition(
@@ -75,6 +77,7 @@ object SearchEngineRegistry {
                 defaultShortcutCode = "cgpt",
                 appPackages = listOf(PackageConstants.CHATGPT_PACKAGE),
                 iconColorPolicy = SearchEngineIconColorPolicy.INVERT_ON_LIGHT,
+                nativeLaunchMode = SearchEngineNativeLaunchMode.CHATGPT,
             ),
             SearchEngineDefinition(
                 engine = SearchEngine.GEMINI,
@@ -306,6 +309,17 @@ object SearchEngineRegistry {
                 installOnly = true,
                 defaultDisabledOnFirstRun = true,
                 nativeLaunchMode = SearchEngineNativeLaunchMode.GOOGLE_TRANSLATE,
+            ),
+            SearchEngineDefinition(
+                engine = SearchEngine.KAGI,
+                drawableResId = R.drawable.kagi,
+                contentDescriptionResId = R.string.search_engine_kagi,
+                urlTemplate = "https://kagi.com/search?q=%s",
+                defaultShortcutCode = "kgi",
+                homeUrl = "https://kagi.com",
+                appPackages = listOf(PackageConstants.KAGI_PACKAGE),
+                defaultDisableIfAppMissing = true,
+                nativeLaunchMode = SearchEngineNativeLaunchMode.KAGI,
             ),
         )
 

@@ -75,9 +75,6 @@ fun NicknameItemsScreen(
             } catch (e: Exception) {
                 emptyMap()
             }
-            // Fallback lookup by bare shortcut id for legacy entries stored without packageName prefix
-            val shortcutsByBareId = shortcutsById.mapKeys { (key, _) -> key.substringAfter(':') }
-
             buildList {
                 prefs.getAllAppNicknames().forEach { (packageName, nickname) ->
                     val appName = try {
@@ -88,7 +85,7 @@ fun NicknameItemsScreen(
                     add(NicknameItem.App(packageName = packageName, nickname = nickname, itemName = appName))
                 }
                 prefs.getAllAppShortcutNicknames().forEach { (shortcutId, nickname) ->
-                    val shortcut = shortcutsById[shortcutId] ?: shortcutsByBareId[shortcutId]
+                    val shortcut = shortcutsById[shortcutId]
                     val shortcutName = shortcut?.shortLabel?.takeIf { it.isNotBlank() }
                         ?: shortcut?.longLabel?.takeIf { it.isNotBlank() }
                         ?: shortcut?.appLabel?.takeIf { it.isNotBlank() }
@@ -145,17 +142,6 @@ fun NicknameItemsScreen(
                     } ?: eventId.toString()
                     add(NicknameItem.CalendarEvent(eventId = eventId, nickname = nickname, itemName = eventTitle))
                 }
-            }.let { list ->
-                // Deduplicate: remove legacy bare-ID entries when a full packageName:id entry exists
-                val shortcutItems = list.filterIsInstance<NicknameItem.AppShortcut>()
-                val fullKeyBareIds = shortcutItems
-                    .filter { ':' in it.shortcutId }
-                    .map { it.shortcutId.substringAfter(':') }
-                    .toSet()
-                val legacyToRemove = shortcutItems
-                    .filter { ':' !in it.shortcutId && it.shortcutId in fullKeyBareIds }
-                    .toSet()
-                if (legacyToRemove.isEmpty()) list else list.filter { it !in legacyToRemove }
             }.sortedBy { it.nickname.lowercase() }
         }
         allItems = items

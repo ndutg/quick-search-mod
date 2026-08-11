@@ -93,7 +93,6 @@ import com.tk.quicksearch.search.common.AddToHomeHandler
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.search.core.AppSuggestionTabType
-import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.StartupPhase
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.launchStaticShortcut

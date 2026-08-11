@@ -93,6 +93,4 @@ object SearchSectionUiMetadataRegistry {
 
     fun metadataFor(section: SearchSection): SearchSectionUiMetadata = metadataBySection.getValue(section)
 
-    fun orderedMetadata(sections: List<SearchSection> = SearchSectionRegistry.orderedSections): List<SearchSectionUiMetadata> =
-        sections.map(::metadataFor)
 }

@@ -17,7 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 object PermissionHelper {
-    private tailrec fun findActivity(context: Context): Activity? =
+    private fun findActivity(context: Context): Activity? =
         when (context) {
             is Activity -> context
             is ContextWrapper -> context.baseContext?.let(::findActivity)

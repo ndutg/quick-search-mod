@@ -660,6 +660,7 @@
     <string name="settings_icon_desc">శోధన పట్టీలో గేర్ ఐకాన్‌ను చూపించు/దాచు. ఎడమవైపుకు స్వైప్ చేయడం ద్వారా లేదా శోధించడం ద్వారా ఎప్పుడైనా సెట్టింగ్‌లను యాక్సెస్ చేయండి.</string>
     <string name="settings_icon_required_by_gesture_desc">ఈ చిహ్నాన్ని నిలిపివేయడానికి \"సెట్టింగులను తెరవండి\" కి ఎడమకు స్వైప్ హావాభావాన్ని సెట్ చేయండి.</string>
     <string name="settings_icon_pack_empty">ఐకాన్ ప్యాక్‌లు ఏవీ కనుగొనబడలేదు.</string>
+    <string name="settings_icon_pack_description_no_packs">యాప్ చిహ్నాల కోసం ఒక ఐకాన్ ప్యాక్‌ను సెట్ చేయండి.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">మద్దతు లేని ఐకాన్‌లను మాస్క్ చేయి</string>
     <string name="settings_icon_pack_option_system">సిస్టమ్ ఐకాన్‌లు</string>
     <string name="settings_icon_pack_picker_title">ఐకాన్ ప్యాక్‌ను ఎంచుకోండి</string>
@@ -752,8 +753,6 @@
     <string name="settings_custom_provider_advanced_payload_error">దయచేసి చెల్లుబాటు అయ్యే JSON ఆబ్జెక్ట్‌ను నమోదు చేయండి.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">అధునాతన అభ్యర్థన పేలోడ్</string>
-    <string name="settings_direct_search_desc">Gemini, OpenAI, Claude మరియు Groq API కీలు మద్దతు ఇవ్వబడతాయి</string>
-    <string name="settings_direct_search_desc_intro">AI-ఆధారిత శోధన మరియు సాధనాలను (Tools) ప్రారంభించడానికి API కీని జోడించండి.</string>
     <string name="settings_free_api_key_tip_description">Gemini API కీని ఉచితంగా పొందడానికి దశలు.</string>
     <string name="settings_open_free_api_key_guide">ఉచిత API కీ మార్గదర్శిని తెరువు</string>
     <string name="settings_direct_search_grounding_label">వెబ్ శోధన</string>
@@ -1049,6 +1048,7 @@
     <string name="widget_custom_button_change_colour">రంగు మార్చండి</string>
     <string name="widget_custom_button_choose_colour">ఫోల్డర్ రంగును ఎంచుకోండి</string>
     <string name="search_engine_google_translate">గూగుల్ అనువాదం</string>
+    <string name="search_engine_kagi">Kagi</string>
     <string name="tasker_integration_title">Tasker చర్యలు</string>
     <string name="tasker_integration_description">బ్రాడ్‌కాస్ట్ ఇంటెంట్‌లను ఉపయోగించి Tasker చర్యలను సృష్టించండి.</string>
     <string name="tasker_add_intent_title">Tasker బ్రాడ్‌కాస్ట్ ఇంటెంట్‌ను జోడించండి</string>
@@ -1064,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Tasker బ్రాడ్‌కాస్ట్‌ను పంపలేకపోయాము</string>
     <string name="settings_more_apps_from_developer_title">డెవలపర్ నుండి మరిన్ని యాప్‌లు</string>
     <string name="icon_picker_no_icon_packs">యాప్ ఐకాన్‌ను మార్చడానికి ఐకాన్ ప్యాక్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు.</string>
-    <string name="icon_picker_download_icon_packs">ఐకాన్ ప్యాక్‌లను డౌన్‌లోడ్ చేయండి</string>
+    <string name="icon_picker_download_icon_packs">డౌన్‌లోడ్ చేయండి</string>
 </resources>

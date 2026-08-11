@@ -51,14 +51,6 @@ data class ThemeAccentColors(
     val darkOnSecondaryContainer: Color,
 )
 
-val ForestThemeAccent = ThemeColorRegistry.accent(com.tk.quicksearch.search.core.AppTheme.FOREST)
-
-val AuroraThemeAccent = ThemeColorRegistry.accent(com.tk.quicksearch.search.core.AppTheme.AURORA)
-
-val SunsetThemeAccent = ThemeColorRegistry.accent(com.tk.quicksearch.search.core.AppTheme.SUNSET)
-
-val MonochromeThemeAccent = ThemeColorRegistry.accent(com.tk.quicksearch.search.core.AppTheme.MONOCHROME)
-
 // ============================================================================
 // Light Theme Colors
 // ============================================================================

@@ -226,36 +226,3 @@ fun AddEditAliasDialog(
         },
     )
 }
-
-@Composable
-fun EditAliasDialog(
-    currentCode: String,
-    existingShortcuts: Map<String, String>,
-    currentShortcutId: String? = null,
-    onSave: (String) -> Unit,
-    aliasInfoType: AliasInfoType = AliasInfoType.SEARCH_ENGINE,
-    isSearchEngineAliasSuffixEnabled: Boolean = true,
-    aliasTargetName: String = "",
-    dialogTitle: String? = null,
-    validateCode: (String) -> Boolean = ::isValidGeneralAliasCode,
-    validateConflict: (String, Map<String, String>) -> Boolean = { input, existing ->
-        !hasExactAliasConflict(input, existing)
-    },
-    existingTriggerWords: Collection<String> = emptyList(),
-    conflictErrorMessage: String? = null,
-    onDismiss: () -> Unit,
-) = AddEditAliasDialog(
-    currentCode = currentCode,
-    existingShortcuts = existingShortcuts,
-    currentShortcutId = currentShortcutId,
-    onSave = onSave,
-    aliasInfoType = aliasInfoType,
-    isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled,
-    aliasTargetName = aliasTargetName,
-    dialogTitle = dialogTitle,
-    validateCode = validateCode,
-    validateConflict = validateConflict,
-    existingTriggerWords = existingTriggerWords,
-    conflictErrorMessage = conflictErrorMessage,
-    onDismiss = onDismiss,
-)

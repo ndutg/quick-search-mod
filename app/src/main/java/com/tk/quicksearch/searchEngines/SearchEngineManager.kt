@@ -459,7 +459,16 @@ class SearchEngineManager(
         }
         val newDefaultDisabledEngines =
             availableEngines
-                .filter { it.isDefaultDisabledOnFirstRun() && it.name !in savedOrder }
+                .filter { engine ->
+                    engine.name !in savedOrder &&
+                        (engine.isDefaultDisabledOnFirstRun() ||
+                            (engine.shouldDefaultDisableIfAppMissing() &&
+                                engine
+                                    .getAppPackageCandidates()
+                                    .none { packageName ->
+                                        isPackageInstalled(packageManager, packageName)
+                                    }))
+                }
                 .map { it.name }
                 .toSet()
         if (newDefaultDisabledEngines.isNotEmpty()) {

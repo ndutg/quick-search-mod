@@ -4,6 +4,7 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.tk.quicksearch.searchEngines.DisabledSearchSectionsProvider
 
 /** Handles section configuration and management. */
 class SectionManager(
@@ -11,12 +12,12 @@ class SectionManager(
     private val permissionManager: PermissionManager,
     private val scope: CoroutineScope,
     private val onStateUpdate: ((SearchUiState) -> SearchUiState) -> Unit,
-) {
+) : DisabledSearchSectionsProvider {
     // Section order is centrally defined in ItemPriorityConfig
     // Uses searchingStatePriority as default section order (can be customized by query state)
     val sectionOrder: List<SearchSection> = ItemPriorityConfig.getSearchResultsPriority()
 
-    var disabledSections: Set<SearchSection> = permissionManager.computeDisabledSections()
+    override var disabledSections: Set<SearchSection> = permissionManager.computeDisabledSections()
         private set
 
     fun setSectionEnabled(

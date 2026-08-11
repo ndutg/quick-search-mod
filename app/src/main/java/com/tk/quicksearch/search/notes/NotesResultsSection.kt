@@ -213,7 +213,7 @@ internal fun NoteRow(
                         },
                         onLongClick = { showMenu = true },
                     )
-                    .topPredictedRowContentPadding(isTopPredicted = isPredicted)
+                    .topPredictedRowContentPadding()
                     .padding(vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Top,

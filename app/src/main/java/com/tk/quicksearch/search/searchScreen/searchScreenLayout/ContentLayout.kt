@@ -39,6 +39,7 @@ import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.core.isLikelyWebUrl
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
+import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
 import com.tk.quicksearch.search.searchHistory.SearchHistorySection
 import com.tk.quicksearch.searchEngines.*
@@ -162,7 +163,9 @@ fun ContentLayout(
                 suggestionsAppGridHasAppeared = true
             }
         },
-        suppressSuggestionsEnterAnimation = suggestionsAppGridHasAppeared,
+        // Cached suggestions are already complete before this grid is rendered. Showing them
+        // directly avoids a first-display fade that can look like the icons blink on launch.
+        suppressSuggestionsEnterAnimation = true,
     )
 
     // 1. Determine Layout Order based on ItemPriorityConfig
@@ -255,7 +258,9 @@ fun ContentLayout(
             !state.isDictionaryAliasMode &&
             !state.isWeatherAliasMode &&
             state.recentQueriesEnabled &&
-            state.recentItems.isNotEmpty()
+            // The collapsed home history starts on the Searches tab. Recently opened
+            // results alone must not create an empty Search History section.
+            state.recentItems.any { it is RecentSearchItem.Query }
 
     var searchHistoryExpanded by remember { mutableStateOf(false) }
     LaunchedEffect(showRecentItems) {
@@ -528,14 +533,22 @@ fun ContentLayout(
         sectionContext: SectionRenderContext,
     ): Boolean =
         when (section) {
-            SearchSection.APP_SHORTCUTS -> sectionContext.appShortcutsList.isNotEmpty()
-            SearchSection.CONTACTS -> sectionContext.contactsList.isNotEmpty()
-            SearchSection.FILES -> sectionContext.filesList.isNotEmpty()
+            SearchSection.APP_SHORTCUTS ->
+                sectionContext.shouldRenderAppShortcuts && sectionContext.appShortcutsList.isNotEmpty()
+            SearchSection.CONTACTS ->
+                sectionContext.shouldRenderContacts && sectionContext.contactsList.isNotEmpty()
+            SearchSection.FILES ->
+                sectionContext.shouldRenderFiles && sectionContext.filesList.isNotEmpty()
             SearchSection.SETTINGS ->
-                sectionContext.settingsList.isNotEmpty() || sectionContext.appSettingsList.isNotEmpty()
+                sectionContext.shouldRenderSettings &&
+                    !sectionContext.isAppSettingsExpanded &&
+                    sectionContext.settingsList.isNotEmpty()
             SearchSection.CALENDAR ->
-                sectionContext.calendarEventsList.isNotEmpty() || sectionContext.todayCalendarEventsList.isNotEmpty()
-            SearchSection.NOTES -> sectionContext.notesList.isNotEmpty()
+                (sectionContext.shouldRenderCalendar && sectionContext.calendarEventsList.isNotEmpty()) ||
+                    (sectionContext.isHomeScreenCalendarMode &&
+                        sectionContext.todayCalendarEventsList.isNotEmpty())
+            SearchSection.NOTES ->
+                sectionContext.shouldRenderNotes && sectionContext.notesList.isNotEmpty()
             SearchSection.APPS, SearchSection.APP_SETTINGS -> true
         }
 
@@ -552,14 +565,6 @@ fun ContentLayout(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
-                if (!hideHomeSectionTitleRows) {
-                    Text(
-                        text = stringResource(R.string.recent_queries_toggle_title),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
-                    )
-                }
                 SearchHistorySection(
                     items = state.recentItems,
                     callingApp =

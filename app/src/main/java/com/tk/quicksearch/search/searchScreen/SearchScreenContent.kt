@@ -1433,7 +1433,6 @@ internal fun SearchScreenContent(
                             compactContent = {
                                 SearchEngineIconsSection(
                                         query = state.query,
-                                        hasAppResults = renderingState.hasAppResults,
                                         enabledEngines = enabledTargets,
                                         onSearchEngineClick = onSearchTargetClick,
                                         onSearchEngineLongPress = onSearchEngineLongPress,
@@ -1455,7 +1454,6 @@ internal fun SearchScreenContent(
                             fullContent = {
                                 SearchEngineIconsSection(
                                         query = state.query,
-                                        hasAppResults = renderingState.hasAppResults,
                                         enabledEngines = enabledTargets,
                                         onSearchEngineClick = onSearchTargetClick,
                                         onSearchEngineLongPress = onSearchEngineLongPress,
@@ -1472,7 +1470,6 @@ internal fun SearchScreenContent(
                             shortcutContent = { target ->
                                 SearchEngineIconsSection(
                                         query = state.query,
-                                        hasAppResults = renderingState.hasAppResults,
                                         enabledEngines = enabledTargets,
                                         onSearchEngineClick = onSearchTargetClick,
                                         onSearchEngineLongPress = onSearchEngineLongPress,
@@ -1491,7 +1488,6 @@ internal fun SearchScreenContent(
                                     SearchEngineIconsSection(
                                             modifier = searchEnginesModifier,
                                             query = state.query,
-                                            hasAppResults = renderingState.hasAppResults,
                                             enabledEngines = enabledTargets,
                                             onSearchEngineClick = onSearchTargetClick,
                                             onSearchEngineLongPress = onSearchEngineLongPress,

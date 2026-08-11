@@ -119,7 +119,6 @@ private fun InlineCardEnterAnimation(
  *
  * @param modifier Modifier for the section
  * @param query The current search query
- * @param hasAppResults Whether app results are displayed (unused but kept for API compatibility)
  * @param enabledEngines List of enabled search engines to display
  * @param onSearchEngineClick Callback when a search engine is clicked
  */
@@ -128,7 +127,6 @@ private fun InlineCardEnterAnimation(
 fun SearchEngineIconsSection(
     modifier: Modifier = Modifier,
     query: String,
-    hasAppResults: Boolean,
     enabledEngines: List<SearchTarget>,
     onSearchEngineClick: (String, SearchTarget) -> Unit,
     onSearchEngineLongPress: () -> Unit,

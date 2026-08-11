@@ -2,11 +2,10 @@ package com.tk.quicksearch.search.files
 
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.FileSearchTextNormalizer
-import com.tk.quicksearch.search.utils.FuzzyMatcher
 import com.tk.quicksearch.search.utils.SearchRankingUtils
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
-import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.utils.SearchTokenCoveragePolicy
 
 object FileSearchPolicy {
     fun matchPriority(
@@ -39,39 +38,12 @@ object FileSearchPolicy {
         fuzzyMinScore: Int,
         fuzzyMaxEditDistance: Int,
     ): Boolean {
-        if (query.tokens.size <= 1) return true
-
-        val normalizedDisplayName = SearchTextNormalizer.normalizeForSearch(displayName)
-        val normalizedNickname = nickname?.let(SearchTextNormalizer::normalizeForSearch)
-
-        return query.tokens.all { token ->
-            isTokenCovered(
-                token = token,
-                normalizedPrimary = normalizedDisplayName,
-                normalizedSecondary = normalizedNickname,
-                fuzzyMinScore = fuzzyMinScore,
-                fuzzyMaxEditDistance = fuzzyMaxEditDistance,
-            )
-        }
-    }
-
-    private fun isTokenCovered(
-        token: String,
-        normalizedPrimary: String,
-        normalizedSecondary: String?,
-        fuzzyMinScore: Int,
-        fuzzyMaxEditDistance: Int,
-    ): Boolean {
-        if (normalizedPrimary.contains(token)) return true
-        if (!normalizedSecondary.isNullOrBlank() && normalizedSecondary.contains(token)) return true
-
-        val fuzzyScore =
-            FuzzyMatcher.score(
-                query = token,
-                primaryTarget = normalizedPrimary,
-                secondaryTarget = normalizedSecondary,
-                maxEditDistance = fuzzyMaxEditDistance,
-            )
-        return fuzzyScore >= fuzzyMinScore
+        return SearchTokenCoveragePolicy.areAllTokensCovered(
+            query = query,
+            primaryText = displayName,
+            supportingText = nickname,
+            fuzzyMinScore = fuzzyMinScore,
+            fuzzyMaxEditDistance = fuzzyMaxEditDistance,
+        )
     }
 }

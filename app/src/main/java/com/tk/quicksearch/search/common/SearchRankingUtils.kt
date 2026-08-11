@@ -199,19 +199,6 @@ object SearchRankingUtils {
     }
 
     /**
-     * Gets the best match priority from multiple text fields.
-     * Returns the highest priority (lowest number) among all fields.
-     *
-     * @param query The search query
-     * @param textFields Variable number of text fields to check
-     * @return The best (lowest) priority found
-     */
-    fun getBestMatchPriority(
-        query: String,
-        vararg textFields: String,
-    ): Int = textFields.minOfOrNull { calculateMatchPriority(it, query) } ?: PRIORITY_NO_MATCH
-
-    /**
      * Checks if the given priority represents a non-match (lowest priority).
      *
      * @param priority The priority to check

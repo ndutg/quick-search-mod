@@ -17,6 +17,7 @@ class AppCatalogChangeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val currentUserHandleId = UserHandleUtils.getIdentifier(Process.myUserHandle())
         val change = AppCatalogChange.fromIntent(intent, currentUserHandleId)
+        if (!change.requiresCatalogReconciliation) return
         AppCache(context.applicationContext).recordCatalogChange(
             change = change,
             currentUserHandleId = currentUserHandleId,

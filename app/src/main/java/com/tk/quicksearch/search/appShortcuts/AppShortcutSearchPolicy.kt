@@ -1,10 +1,9 @@
 package com.tk.quicksearch.search.appShortcuts
 
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
-import com.tk.quicksearch.search.utils.FuzzyMatcher
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
-import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.utils.SearchTokenCoveragePolicy
 
 object AppShortcutSearchPolicy {
     fun matchPriority(
@@ -34,43 +33,13 @@ object AppShortcutSearchPolicy {
         fuzzyMinScore: Int,
         fuzzyMaxEditDistance: Int,
     ): Boolean {
-        if (query.tokens.size <= 1) return true
-
-        val normalizedDisplayName = SearchTextNormalizer.normalizeForSearch(displayName)
-        val normalizedSupportingText =
-            SearchTextNormalizer.normalizeForSearch(
-                listOfNotNull(appLabel, nickname).joinToString(" "),
-            )
-
-        return query.tokens.all { token ->
-            isTokenCovered(
-                token = token,
-                normalizedPrimary = normalizedDisplayName,
-                normalizedSecondary = normalizedSupportingText,
-                fuzzyMinScore = fuzzyMinScore,
-                fuzzyMaxEditDistance = fuzzyMaxEditDistance,
-            )
-        }
-    }
-
-    private fun isTokenCovered(
-        token: String,
-        normalizedPrimary: String,
-        normalizedSecondary: String?,
-        fuzzyMinScore: Int,
-        fuzzyMaxEditDistance: Int,
-    ): Boolean {
-        if (normalizedPrimary.contains(token)) return true
-        if (!normalizedSecondary.isNullOrBlank() && normalizedSecondary.contains(token)) return true
-
-        val fuzzyScore =
-            FuzzyMatcher.score(
-                query = token,
-                primaryTarget = normalizedPrimary,
-                secondaryTarget = normalizedSecondary,
-                maxEditDistance = fuzzyMaxEditDistance,
-            )
-        return fuzzyScore >= fuzzyMinScore
+        return SearchTokenCoveragePolicy.areAllTokensCovered(
+            query = query,
+            primaryText = displayName,
+            supportingText = listOfNotNull(appLabel, nickname).joinToString(" "),
+            fuzzyMinScore = fuzzyMinScore,
+            fuzzyMaxEditDistance = fuzzyMaxEditDistance,
+        )
     }
 
     private fun buildCombinedNicknameFields(

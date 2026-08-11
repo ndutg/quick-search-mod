@@ -28,8 +28,6 @@ import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.getAppPackageCandidates
 import com.tk.quicksearch.searchEngines.getContentDescription
 import com.tk.quicksearch.searchEngines.isInAppBrowserPackage
-import com.tk.quicksearch.searchEngines.getContentDescriptionResId
-import com.tk.quicksearch.searchEngines.getDisplayName
 import com.tk.quicksearch.searchEngines.getDrawableResId
 import com.tk.quicksearch.searchEngines.getIconColorPolicy
 import com.tk.quicksearch.searchEngines.isInstallOnlyEngine

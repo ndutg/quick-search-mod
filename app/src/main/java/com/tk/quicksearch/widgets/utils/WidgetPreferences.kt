@@ -74,9 +74,7 @@ internal object WidgetDefaults {
     const val SHOW_LABEL = true
     const val ICON_SIZE_SCALE = 1f
 
-    // Default to left-aligned search icon (previously was showSearchIcon=true, iconAlignLeft=true)
     val SEARCH_ICON_DISPLAY = SearchIconDisplay.LEFT
-    const val SHOW_MIC_ICON = true
 
     // Default to dark theme for higher contrast out of the box.
     val THEME = WidgetTheme.DARK
@@ -114,7 +112,6 @@ private object WidgetKeys {
     val SHOW_LABEL = booleanPreferencesKey("quick_search_widget_show_label")
     val ICON_SIZE_SCALE = floatPreferencesKey("quick_search_widget_icon_size_scale")
     val SEARCH_ICON_DISPLAY = stringPreferencesKey("quick_search_widget_search_icon_display")
-    val SHOW_MIC_ICON = booleanPreferencesKey("quick_search_widget_show_mic_icon")
     val THEME = stringPreferencesKey("quick_search_widget_theme")
     val BACKGROUND_COLOR = intPreferencesKey("quick_search_widget_background_color")
     val BACKGROUND_ALPHA = floatPreferencesKey("quick_search_widget_background_alpha")
@@ -135,13 +132,6 @@ private object WidgetKeys {
     val CUSTOM_BUTTON_4 = stringPreferencesKey("quick_search_widget_custom_button_4")
     val CUSTOM_BUTTON_5 = stringPreferencesKey("quick_search_widget_custom_button_5")
 
-    // Legacy keys for migration
-    val SHOW_SEARCH_ICON = booleanPreferencesKey("quick_search_widget_show_search_icon")
-    val ICON_ALIGN_LEFT = booleanPreferencesKey("quick_search_widget_icon_align_left")
-    val BACKGROUND_COLOR_IS_WHITE =
-        booleanPreferencesKey("quick_search_widget_background_color_is_white")
-    val TEXT_ICON_COLOR_IS_WHITE =
-        booleanPreferencesKey("quick_search_widget_text_icon_color_is_white")
 }
 
 /** Preferences for the Quick Search widget appearance and behavior. */
@@ -154,7 +144,6 @@ data class WidgetPreferences(
     val showLabel: Boolean = WidgetDefaults.SHOW_LABEL,
     val iconSizeScale: Float = WidgetDefaults.ICON_SIZE_SCALE,
     val searchIconDisplay: SearchIconDisplay = WidgetDefaults.SEARCH_ICON_DISPLAY,
-    val showMicIcon: Boolean = WidgetDefaults.SHOW_MIC_ICON,
     val theme: WidgetTheme = WidgetDefaults.THEME,
     val backgroundColor: Int? = WidgetDefaults.BACKGROUND_COLOR,
     val backgroundAlpha: Float = WidgetDefaults.BACKGROUND_ALPHA,
@@ -171,7 +160,6 @@ data class WidgetPreferences(
         val Default = WidgetPreferences()
     }
 
-    // Backward compatibility properties
     val showSearchIcon: Boolean
         get() = searchIconDisplay != SearchIconDisplay.OFF
 
@@ -249,25 +237,10 @@ private fun normalizeCustomButtons(
 }
 
 fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
-    // Handle theme migration from legacy separate color preferences
     val theme =
         this[WidgetKeys.THEME]?.let { themeString ->
             WidgetTheme.entries.find { it.value == themeString }
-        }
-            ?: run {
-                // Migration logic: convert old separate color preferences to theme
-                val backgroundIsWhite =
-                    this[WidgetKeys.BACKGROUND_COLOR_IS_WHITE]
-                        ?: false // Default to dark (was the old default)
-                val textIconIsWhite =
-                    this[WidgetKeys.TEXT_ICON_COLOR_IS_WHITE] ?: !backgroundIsWhite
-
-                when {
-                    backgroundIsWhite && !textIconIsWhite -> WidgetTheme.LIGHT
-                    !backgroundIsWhite && textIconIsWhite -> WidgetTheme.DARK
-                    else -> WidgetDefaults.THEME
-                }
-            }
+        } ?: WidgetDefaults.THEME
 
     val customButtons =
         listOf(
@@ -294,26 +267,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         searchIconDisplay =
             this[WidgetKeys.SEARCH_ICON_DISPLAY]?.let { displayString ->
                 SearchIconDisplay.entries.find { it.value == displayString }
-            }
-                ?: run {
-                    // Migration logic: convert old separate boolean preferences
-                    // to new enum
-                    val showSearchIcon =
-                        this[WidgetKeys.SHOW_SEARCH_ICON]
-                            ?: true // Default to true for backward
-                    // compatibility
-                    val iconAlignLeft =
-                        this[WidgetKeys.ICON_ALIGN_LEFT]
-                            ?: true // Default to true for backward
-                    // compatibility
-
-                    when {
-                        !showSearchIcon -> SearchIconDisplay.OFF
-                        iconAlignLeft -> SearchIconDisplay.LEFT
-                        else -> SearchIconDisplay.CENTER
-                    }
-                },
-        showMicIcon = true, // Always true now, mic visibility controlled by micAction
+            } ?: WidgetDefaults.SEARCH_ICON_DISPLAY,
         theme = theme,
         backgroundColor = this[WidgetKeys.BACKGROUND_COLOR],
         backgroundAlpha =
@@ -325,20 +279,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         micAction =
             this[WidgetKeys.MIC_ACTION]?.let { actionString ->
                 MicAction.entries.find { it.value == actionString }
-            }
-                ?: run {
-                    // Migration logic: convert old showMicIcon boolean to new
-                    // micAction enum
-                    val showMicIcon =
-                        this[WidgetKeys.SHOW_MIC_ICON]
-                            ?: WidgetDefaults.SHOW_MIC_ICON
-                    if (showMicIcon) {
-                        WidgetDefaults.MIC_ACTION // Keep existing or default to
-                        // DEFAULT_VOICE_SEARCH
-                    } else {
-                        OFF // If mic was previously hidden, use OFF
-                    }
-                },
+            } ?: WidgetDefaults.MIC_ACTION,
         textIconColorOverride =
             this[WidgetKeys.TEXT_ICON_COLOR_OVERRIDE]?.let { overrideString ->
                 TextIconColorOverride.entries.find { it.value == overrideString }
@@ -369,7 +310,6 @@ fun MutablePreferences.applyWidgetPreferences(
     this[WidgetKeys.SHOW_LABEL] = validated.showLabel
     this[WidgetKeys.ICON_SIZE_SCALE] = validated.iconSizeScale
     this[WidgetKeys.SEARCH_ICON_DISPLAY] = validated.searchIconDisplay.value
-    this[WidgetKeys.SHOW_MIC_ICON] = validated.showMicIcon
     this[WidgetKeys.THEME] = validated.theme.value
     validated.backgroundColor?.let { this[WidgetKeys.BACKGROUND_COLOR] = it }
         ?: remove(WidgetKeys.BACKGROUND_COLOR)
@@ -458,7 +398,6 @@ fun WidgetPreferences.enforceVariantConstraints(variant: WidgetVariant): WidgetP
             normalized.copy(
                 showLabel = false,
                 searchIconDisplay = SearchIconDisplay.OFF,
-                showMicIcon = false,
                 micAction = OFF,
                 customButtons =
                     normalizeCustomButtons(

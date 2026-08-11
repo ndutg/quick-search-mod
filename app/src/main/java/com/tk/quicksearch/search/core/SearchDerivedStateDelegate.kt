@@ -28,6 +28,7 @@ internal class SearchDerivedStateDelegate(
     private val setCachedAllSearchableApps: (List<AppInfo>) -> Unit,
     private val resultsStateProvider: () -> SearchResultsState,
     private val permissionStateProvider: () -> SearchPermissionState,
+    private val featureStateProvider: () -> SearchFeatureState,
     private val configStateProvider: () -> SearchUiConfigState,
     private val updateResultsState: ((SearchResultsState) -> SearchResultsState) -> Unit,
     private val updatePermissionState: ((SearchPermissionState) -> SearchPermissionState) -> Unit,
@@ -319,6 +320,7 @@ internal class SearchDerivedStateDelegate(
         scope.launch(Dispatchers.IO) {
             val config = configStateProvider()
             val results = resultsStateProvider()
+            val features = featureStateProvider()
             val suggestionLimit = getGridItemCount().coerceAtLeast(1)
             val startupSuggestions =
                 buildList {
@@ -367,6 +369,10 @@ internal class SearchDerivedStateDelegate(
                     phoneAppGridColumns = config.phoneAppGridColumns,
                     appIconSizeStep = config.appIconSizeStep,
                     suggestedApps = startupSuggestions,
+                    searchTargetsOrder = features.searchTargetsOrder,
+                    disabledSearchTargetIds = features.disabledSearchTargetIds,
+                    isSearchEngineCompactMode = features.isSearchEngineCompactMode,
+                    searchEngineCompactRowCount = features.searchEngineCompactRowCount,
                 )
             startupSurfaceStore.saveSnapshot(snapshot)
 

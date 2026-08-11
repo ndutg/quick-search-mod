@@ -660,6 +660,7 @@
     <string name="settings_icon_desc">Εμφάνιση/απόκρυψη του εικονιδίου γραναζιού στη γραμμή αναζήτησης. Αποκτήστε πρόσβαση στις ρυθμίσεις ανά πάσα στιγμή κάνοντας σάρωση προς τα αριστερά ή μέσω αναζήτησης.</string>
     <string name="settings_icon_required_by_gesture_desc">Ορίστε τη χειρονομία \"Σάρωση αριστερά\" σε \"Άνοιγμα ρυθμίσεων\" για να απενεργοποιήσετε αυτό το εικονίδιο.</string>
     <string name="settings_icon_pack_empty">Δεν βρέθηκαν πακέτα εικονιδίων.</string>
+    <string name="settings_icon_pack_description_no_packs">Ορίστε ένα πακέτο εικονιδίων για τα εικονίδια εφαρμογών.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Μάσκα μη υποστηριζόμενων εικονιδίων</string>
     <string name="settings_icon_pack_option_system">Εικονίδια συστήματος</string>
     <string name="settings_icon_pack_picker_title">Επιλογή πακέτου εικονιδίων</string>
@@ -752,8 +753,6 @@
     <string name="settings_custom_provider_advanced_payload_error">Εισαγάγετε ένα έγκυρο αντικείμενο JSON.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">Προηγμένο Ωφέλιμο Φορτίο Αιτήματος</string>
-    <string name="settings_direct_search_desc">Υποστηρίζονται κλειδιά API για Gemini, OpenAI, Claude και Groq</string>
-    <string name="settings_direct_search_desc_intro">Προσθέστε ένα κλειδί API για να ενεργοποιήσετε την αναζήτηση και τα εργαλεία με υποστήριξη AI.</string>
     <string name="settings_free_api_key_tip_description">Βήματα για να αποκτήσετε ένα κλειδί Gemini API δωρεάν.</string>
     <string name="settings_open_free_api_key_guide">Άνοιγμα οδηγού δωρεάν κλειδιού API</string>
     <string name="settings_direct_search_grounding_label">Αναζήτηση στον ιστό</string>
@@ -1049,6 +1048,7 @@
     <string name="widget_custom_button_change_colour">Αλλαγή χρώματος</string>
     <string name="widget_custom_button_choose_colour">Επιλογή χρώματος φακέλου</string>
     <string name="search_engine_google_translate">Μετάφραση Google</string>
+    <string name="search_engine_kagi">Kagi</string>
     <string name="tasker_integration_title">Ενέργειες Tasker</string>
     <string name="tasker_integration_description">Δημιουργήστε ενέργειες Tasker χρησιμοποιώντας broadcast intents.</string>
     <string name="tasker_add_intent_title">Προσθήκη Intent Εκπομπής Tasker</string>
@@ -1064,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Αδυναμία αποστολής της εκπομπής Tasker</string>
     <string name="settings_more_apps_from_developer_title">Περισσότερες εφαρμογές από τον προγραμματιστή</string>
     <string name="icon_picker_no_icon_packs">Δεν έχουν εγκατασταθεί πακέτα εικονιδίων για αλλαγή του εικονιδίου της εφαρμογής.</string>
-    <string name="icon_picker_download_icon_packs">Λήψη πακέτων εικονιδίων</string>
+    <string name="icon_picker_download_icon_packs">Λήψη</string>
 </resources>

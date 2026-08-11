@@ -5,12 +5,10 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionPermissionRequirement
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchUiState
-import com.tk.quicksearch.search.core.SectionManager
-import com.tk.quicksearch.search.core.UnifiedSearchHandler
 import com.tk.quicksearch.search.core.UnifiedSearchResults
 import com.tk.quicksearch.search.core.UnifiedSectionSearchConfig
-import com.tk.quicksearch.search.webSuggestions.WebSuggestionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -18,13 +16,46 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicLong
 
+interface SecondarySearchDataSource {
+    suspend fun performSearch(
+        query: String,
+        enabledFileTypes: Set<com.tk.quicksearch.search.models.FileType>,
+        sectionSearchConfig: Map<SearchSection, UnifiedSectionSearchConfig>,
+        showFolders: Boolean,
+        showSystemFiles: Boolean,
+        aliasSection: SearchSection?,
+    ): UnifiedSearchResults
+}
+
+interface SecondaryWebSuggestionController {
+    val isEnabled: Boolean
+
+    fun fetchWebSuggestions(
+        query: String,
+        currentQueryVersion: Long,
+        activeQueryVersionProvider: () -> Long,
+        activeQueryProvider: () -> String,
+    )
+
+    fun cancelSuggestions()
+}
+
+interface DisabledSearchSectionsProvider {
+    val disabledSections: Set<SearchSection>
+}
+
 class SecondarySearchOrchestrator(
     private val scope: CoroutineScope,
-    private val unifiedSearchHandler: UnifiedSearchHandler,
-    private val webSuggestionHandler: WebSuggestionHandler,
-    private val sectionManager: SectionManager,
+    private val unifiedSearchHandler: SecondarySearchDataSource,
+    private val webSuggestionHandler: SecondaryWebSuggestionController,
+    private val sectionManager: DisabledSearchSectionsProvider,
     private val uiStateUpdater: ((SearchUiState) -> SearchUiState) -> Unit,
     private val currentStateProvider: () -> SearchUiState,
+    private val workerDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
+    private val mainThreadChecker: () -> Boolean = {
+        Looper.myLooper() == Looper.getMainLooper()
+    },
 ) {
     private var searchJob: Job? = null
     private val queryVersion = AtomicLong(0L)
@@ -35,6 +66,7 @@ class SecondarySearchOrchestrator(
 
     companion object {
         private const val SECONDARY_SEARCH_DEBOUNCE_MS = 150L
+        private const val WEB_SUGGESTIONS_AFTER_LOCAL_RESULTS_DELAY_MS = 32L
     }
 
     fun willRunSecondarySearch(query: String): Boolean {
@@ -62,7 +94,7 @@ class SecondarySearchOrchestrator(
 
     fun performSecondarySearches(query: String) {
         if (!isOnMainThread()) {
-            scope.launch(Dispatchers.Main.immediate) {
+            scope.launch(mainDispatcher) {
                 performSecondarySearchesInternal(query)
             }
             return
@@ -153,11 +185,11 @@ class SecondarySearchOrchestrator(
             }
 
             searchJob =
-                scope.launch(Dispatchers.IO) {
+                scope.launch(workerDispatcher) {
                     delay(SECONDARY_SEARCH_DEBOUNCE_MS)
                     if (currentVersion != queryVersion.get()) return@launch
 
-                    withContext(Dispatchers.Main) {
+                    withContext(mainDispatcher) {
                         if (currentVersion != queryVersion.get()) return@withContext
 
                         if (shouldFetchWebSuggestions) {
@@ -185,7 +217,7 @@ class SecondarySearchOrchestrator(
         uiStateUpdater { it.copy(isSecondarySearchInProgress = true) }
 
         searchJob =
-            scope.launch(Dispatchers.IO) {
+            scope.launch(workerDispatcher) {
                 // Debounce expensive contact/file queries during rapid typing
                 delay(SECONDARY_SEARCH_DEBOUNCE_MS)
                 if (currentVersion != queryVersion.get()) return@launch
@@ -200,7 +232,7 @@ class SecondarySearchOrchestrator(
                         aliasSection = null,
                     )
 
-                withContext(Dispatchers.Main) {
+                withContext(mainDispatcher) {
                     if (currentVersion == queryVersion.get()) {
                         // Update no-results tracking based on search results
                         SearchSectionRegistry.secondarySearchDefinitions.forEach { definition ->
@@ -240,23 +272,33 @@ class SecondarySearchOrchestrator(
                             )
                         }
 
-                        // Fetch web suggestions if query is long enough and suggestions are enabled
-                        if (shouldFetchWebSuggestions) {
-                            webSuggestionHandler.fetchWebSuggestions(
-                                trimmedQuery,
-                                currentVersion,
-                                activeQueryVersionProvider = {
-                                    this@SecondarySearchOrchestrator.queryVersion.get()
-                                },
-                                activeQueryProvider = { currentStateProvider().query },
-                            )
-                        } else {
+                        if (!shouldFetchWebSuggestions) {
                             // Clear suggestions if disabled or query too short
                             webSuggestionHandler.cancelSuggestions()
                             uiStateUpdater { state ->
                                 state.copy(webSuggestions = emptyList(), webSuggestionsLoading = false)
                             }
                         }
+                    }
+                }
+
+                if (shouldFetchWebSuggestions) {
+                    // Let the local-results state update render before starting DNS/network work.
+                    // On older, memory-constrained devices, launching both in the same frame can
+                    // preempt the main thread while Compose is measuring the new result cards.
+                    delay(WEB_SUGGESTIONS_AFTER_LOCAL_RESULTS_DELAY_MS)
+                    if (currentVersion != queryVersion.get()) return@launch
+
+                    withContext(mainDispatcher) {
+                        if (currentVersion != queryVersion.get()) return@withContext
+                        webSuggestionHandler.fetchWebSuggestions(
+                            trimmedQuery,
+                            currentVersion,
+                            activeQueryVersionProvider = {
+                                this@SecondarySearchOrchestrator.queryVersion.get()
+                            },
+                            activeQueryProvider = { currentStateProvider().query },
+                        )
                     }
                 }
             }
@@ -268,7 +310,7 @@ class SecondarySearchOrchestrator(
         ignoreSectionToggle: Boolean = false,
     ) {
         if (!isOnMainThread()) {
-            scope.launch(Dispatchers.Main.immediate) {
+            scope.launch(mainDispatcher) {
                 performTargetedSecondarySearchInternal(
                     query = query,
                     section = section,
@@ -368,7 +410,7 @@ class SecondarySearchOrchestrator(
 
         uiStateUpdater { it.copy(isSecondarySearchInProgress = true) }
         searchJob =
-            scope.launch(Dispatchers.IO) {
+            scope.launch(workerDispatcher) {
                 delay(SECONDARY_SEARCH_DEBOUNCE_MS)
                 if (currentVersion != queryVersion.get()) return@launch
 
@@ -382,7 +424,7 @@ class SecondarySearchOrchestrator(
                         aliasSection = section,
                     )
 
-                withContext(Dispatchers.Main) {
+                withContext(mainDispatcher) {
                     if (currentVersion != queryVersion.get()) return@withContext
                     updateNoResultTracking(
                         section = section,
@@ -414,7 +456,7 @@ class SecondarySearchOrchestrator(
 
     fun resetNoResultTracking() {
         if (!isOnMainThread()) {
-            scope.launch(Dispatchers.Main.immediate) {
+            scope.launch(mainDispatcher) {
                 resetNoResultTrackingInternal()
             }
             return
@@ -429,7 +471,7 @@ class SecondarySearchOrchestrator(
 
     fun performWebSuggestionsOnly(query: String) {
         if (!isOnMainThread()) {
-            scope.launch(Dispatchers.Main.immediate) {
+            scope.launch(mainDispatcher) {
                 performWebSuggestionsOnlyInternal(query)
             }
             return
@@ -454,12 +496,12 @@ class SecondarySearchOrchestrator(
         }
 
         searchJob =
-            scope.launch(Dispatchers.IO) {
+            scope.launch(workerDispatcher) {
                 // Debounce to match regular search behavior
                 delay(SECONDARY_SEARCH_DEBOUNCE_MS)
                 if (currentVersion != queryVersion.get()) return@launch
 
-                withContext(Dispatchers.Main) {
+                withContext(mainDispatcher) {
                     // Clear all other results
                     uiStateUpdater { state ->
                         state.copy(
@@ -499,7 +541,7 @@ class SecondarySearchOrchestrator(
 
     fun cancel() {
         if (!isOnMainThread()) {
-            scope.launch(Dispatchers.Main.immediate) {
+            scope.launch(mainDispatcher) {
                 searchJob?.cancel()
                 uiStateUpdater { state ->
                     state.copy(
@@ -524,7 +566,7 @@ class SecondarySearchOrchestrator(
         }
     }
 
-    private fun isOnMainThread(): Boolean = Looper.myLooper() == Looper.getMainLooper()
+    private fun isOnMainThread(): Boolean = mainThreadChecker()
 
     private fun resetNoResultPrefixesForBackspace(trimmedQuery: String) {
         val currentLength = trimmedQuery.length
