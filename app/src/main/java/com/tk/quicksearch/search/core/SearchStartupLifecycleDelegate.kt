@@ -136,6 +136,7 @@ internal class SearchStartupLifecycleDelegate(
     private val refreshSettingsState: () -> Unit,
     private val refreshAppShortcutsState: () -> Unit,
     private val refreshDerivedState: (Long?, Boolean?) -> Unit,
+    private val refreshPostStartupState: () -> Unit,
     private val saveStartupSurfaceSnapshotAsync: (Boolean, Boolean) -> Unit,
     private val applyPreferenceCacheToLegacyVars: () -> Unit,
     private val applyLauncherIconSelection: () -> Unit,
@@ -647,7 +648,9 @@ internal class SearchStartupLifecycleDelegate(
                     )
                 }
             }
-            withContext(Dispatchers.Default) { refreshDerivedState(null, null) }
+            // Suggestions were finalized and published above. Only refresh the remaining
+            // derived state here so the visible app grid does not change after first display.
+            withContext(Dispatchers.Default) { refreshPostStartupState() }
             StartupTrace.mark("QS.Startup.PhasedInitializationComplete")
             saveStartupSurfaceSnapshotAsync(true, false)
         }
