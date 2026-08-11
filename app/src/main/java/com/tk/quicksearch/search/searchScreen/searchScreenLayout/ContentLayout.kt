@@ -163,7 +163,9 @@ fun ContentLayout(
                 suggestionsAppGridHasAppeared = true
             }
         },
-        suppressSuggestionsEnterAnimation = suggestionsAppGridHasAppeared,
+        // Cached suggestions are already complete before this grid is rendered. Showing them
+        // directly avoids a first-display fade that can look like the icons blink on launch.
+        suppressSuggestionsEnterAnimation = true,
     )
 
     // 1. Determine Layout Order based on ItemPriorityConfig
