@@ -154,9 +154,11 @@ fun ContentLayout(
             expandedCardMaxHeight = expandedCardMaxHeight,
         )
     val hasQuery = state.query.isNotBlank()
-    // The overlay already animates its full surface on entry. In one-handed mode, layering the
-    // async Home section height animations on top of that bottom-anchored surface makes late
-    // startup content briefly reflow in the opposite direction and look like a layout jerk.
+    // The overlay already animates its full surface on entry. In one-handed mode, layering every
+    // async Home section height animation on top of that bottom-anchored surface makes early
+    // content briefly reflow in the opposite direction. App suggestions are the exception: they
+    // arrive after the agenda is visible, so their height must expand instead of being inserted in
+    // one frame and jumping the agenda to its final position.
     val animateHomeLoadingContent = !(isOverlayPresentation && state.oneHandedMode)
     var suggestionsAppGridHasAppeared by remember { mutableStateOf(false) }
     val appearedHomeContentKeys = remember { mutableSetOf<String>() }
@@ -167,9 +169,10 @@ fun ContentLayout(
                 suggestionsAppGridHasAppeared = true
             }
         },
-        // Cached suggestions are already complete before this grid is rendered. Showing them
-        // directly avoids a first-display fade that can look like the icons blink on launch.
-        suppressSuggestionsEnterAnimation = true,
+        // The suggestions are already in their final order when this grid is rendered. Animate
+        // only its first appearance so the late section joins the agenda transition smoothly;
+        // subsequent recompositions keep the settled grid fully visible.
+        suppressSuggestionsEnterAnimation = suggestionsAppGridHasAppeared,
     )
 
     // 1. Determine Layout Order based on ItemPriorityConfig
@@ -868,7 +871,7 @@ fun ContentLayout(
                         enabled =
                             !hasQuery &&
                                 !isHomeCalendarExpanded &&
-                                animateHomeLoadingContent,
+                                (animateHomeLoadingContent || section == SearchSection.APPS),
                         fadeContent = section != SearchSection.APPS,
                         appearedKeys = appearedHomeContentKeys,
                     ) {
