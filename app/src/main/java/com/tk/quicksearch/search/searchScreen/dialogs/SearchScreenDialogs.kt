@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.searchScreen.dialogs
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.ChevronRight
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.material3.Button
@@ -35,6 +38,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.PastReleaseNotes
@@ -138,23 +142,37 @@ internal fun ReleaseNotesDrawer(
                             )
 
                         else ->
-                            pastReleaseNotes.forEach { release ->
-                                val isExpanded = expandedPastVersion == release.versionName
-                                ReleaseNotesExpanderRow(
-                                    label = "v${release.versionName}",
-                                    isExpanded = isExpanded,
-                                    style = MaterialTheme.typography.bodyMedium,
+                            {
+                                pastReleaseNotes.forEach { release ->
+                                    val isExpanded = expandedPastVersion == release.versionName
+                                    ReleaseNotesExpanderRow(
+                                        label = "v${release.versionName}",
+                                        isExpanded = isExpanded,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        bottomPadding = if (isExpanded) 0.dp else 10.dp,
+                                        onClick = {
+                                            expandedPastVersion =
+                                                if (isExpanded) null else release.versionName
+                                        },
+                                    )
+                                    AnimatedVisibility(visible = isExpanded) {
+                                        ReleaseNotesBulletList(
+                                            bulletPoints = parseReleaseNotesBulletPoints(release.markdown),
+                                            modifier = Modifier.padding(start = 8.dp, top = 4.dp, bottom = 8.dp),
+                                        )
+                                    }
+                                }
+
+                                ReleaseNotesNavigationRow(
+                                    label = stringResource(R.string.release_notes_action_more),
                                     onClick = {
-                                        expandedPastVersion =
-                                            if (isExpanded) null else release.versionName
+                                        runCatching {
+                                            context.startActivity(
+                                                Intent(Intent.ACTION_VIEW, Uri.parse(releasesUrl)),
+                                            )
+                                        }
                                     },
                                 )
-                                AnimatedVisibility(visible = isExpanded) {
-                                    ReleaseNotesBulletList(
-                                        bulletPoints = parseReleaseNotesBulletPoints(release.markdown),
-                                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
-                                    )
-                                }
                             }
                     }
                 }
@@ -175,6 +193,8 @@ internal fun ReleaseNotesDrawer(
         }
     }
 }
+
+private const val releasesUrl = "https://github.com/teja2495/quick-search/releases/"
 
 @Composable
 private fun ReleaseNotesBulletList(
@@ -210,6 +230,7 @@ private fun ReleaseNotesExpanderRow(
     label: String,
     isExpanded: Boolean,
     style: TextStyle,
+    bottomPadding: Dp = 10.dp,
     onClick: () -> Unit,
 ) {
     val chevronRotation by animateFloatAsState(
@@ -225,7 +246,7 @@ private fun ReleaseNotesExpanderRow(
                 indication = null,
                 onClick = onClick,
             )
-            .padding(vertical = 10.dp),
+            .padding(top = 10.dp, bottom = bottomPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -240,6 +261,39 @@ private fun ReleaseNotesExpanderRow(
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp).rotate(chevronRotation),
+        )
+    }
+}
+
+@Composable
+private fun ReleaseNotesNavigationRow(
+    label: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick,
+            )
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Icon(
+            imageVector = Icons.Rounded.ChevronRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp),
         )
     }
 }
