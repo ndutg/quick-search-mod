@@ -154,6 +154,10 @@ fun ContentLayout(
             expandedCardMaxHeight = expandedCardMaxHeight,
         )
     val hasQuery = state.query.isNotBlank()
+    // The overlay already animates its full surface on entry. In one-handed mode, layering the
+    // async Home section height animations on top of that bottom-anchored surface makes late
+    // startup content briefly reflow in the opposite direction and look like a layout jerk.
+    val animateHomeLoadingContent = !(isOverlayPresentation && state.oneHandedMode)
     var suggestionsAppGridHasAppeared by remember { mutableStateOf(false) }
     val appearedHomeContentKeys = remember { mutableSetOf<String>() }
     val effectiveAppsParams = appsParams.copy(
@@ -562,7 +566,7 @@ fun ContentLayout(
         LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.SearchHistoryRendered") }
         HomeLoadingAnimatedContent(
             animationKey = "home-search-history",
-            enabled = !hasQuery,
+            enabled = !hasQuery && animateHomeLoadingContent,
             appearedKeys = appearedHomeContentKeys,
         ) {
             Column(
@@ -834,7 +838,7 @@ fun ContentLayout(
                     }
                     HomeLoadingAnimatedContent(
                         animationKey = "home-today-calendar",
-                        enabled = true,
+                        enabled = animateHomeLoadingContent,
                         appearedKeys = appearedHomeContentKeys,
                     ) {
                         renderSection(
@@ -861,7 +865,10 @@ fun ContentLayout(
                 if (homeSectionContentReady) {
                     HomeLoadingAnimatedContent(
                         animationKey = "home-section-${section.name}",
-                        enabled = !hasQuery && !isHomeCalendarExpanded,
+                        enabled =
+                            !hasQuery &&
+                                !isHomeCalendarExpanded &&
+                                animateHomeLoadingContent,
                         fadeContent = section != SearchSection.APPS,
                         appearedKeys = appearedHomeContentKeys,
                     ) {
@@ -878,7 +885,7 @@ fun ContentLayout(
                 ) {
                     HomeLoadingAnimatedContent(
                         animationKey = "home-today-calendar",
-                        enabled = true,
+                        enabled = animateHomeLoadingContent,
                         appearedKeys = appearedHomeContentKeys,
                     ) {
                         renderSection(
