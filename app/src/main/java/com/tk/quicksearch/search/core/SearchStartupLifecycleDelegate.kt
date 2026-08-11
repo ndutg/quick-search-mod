@@ -14,6 +14,7 @@ import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
+import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import kotlinx.coroutines.CoroutineDispatcher
@@ -135,6 +136,7 @@ internal class SearchStartupLifecycleDelegate(
     private val refreshSettingsState: () -> Unit,
     private val refreshAppShortcutsState: () -> Unit,
     private val refreshDerivedState: (Long?, Boolean?) -> Unit,
+    private val refreshPostStartupState: () -> Unit,
     private val saveStartupSurfaceSnapshotAsync: (Boolean, Boolean) -> Unit,
     private val applyPreferenceCacheToLegacyVars: () -> Unit,
     private val applyLauncherIconSelection: () -> Unit,
@@ -200,6 +202,7 @@ internal class SearchStartupLifecycleDelegate(
     }
 
     fun handleOnResume() {
+        disableOverlayModeForDefaultLauncher()
         val startupComplete = stateAccess.isStartupComplete
 
         val shouldRefreshLaunchPermissions = shouldRefreshPermissionSnapshot()
@@ -297,6 +300,16 @@ internal class SearchStartupLifecycleDelegate(
             )
         }
         saveStartupSurfaceSnapshotAsync(true, false)
+    }
+
+    private fun disableOverlayModeForDefaultLauncher() {
+        if (!applicationProvider().isDefaultHomeApp() || !userPreferences.isOverlayModeEnabled()) {
+            return
+        }
+
+        userPreferences.setOverlayModeEnabled(false)
+        updateUiState { it.copy(overlayModeEnabled = false) }
+        OverlayModeController.stopOverlay(applicationProvider())
     }
 
     fun refreshOptionalPermissions(
@@ -399,37 +412,25 @@ internal class SearchStartupLifecycleDelegate(
             if (appSearchManager.cachedApps.isNotEmpty() && permissionStateProvider().hasUsagePermission) {
                 appSearchManager.refreshUsageMetadataNow()
             }
-            // Cached apps seed the home suggestions in phase 1. Rebuilding the complete catalog
-            // queries LauncherApps and usage stats, so only block here when there is no cache to
-            // show. An invalidated or stale cache is reconciled once startup has been idle.
-            val reconcileAppsAfterStartupIdle =
+            // Finish any required catalog reconciliation before suggestions become visible. The
+            // rest of the startup UI remains independent, but the app grid is published once in
+            // its final startup order instead of visibly rearranging.
+            val reconcileAppsInBackground =
                 shouldReconcileAppsAtStartup() && appSearchManager.cachedApps.isNotEmpty()
-            if (!reconcileAppsAfterStartupIdle && appSearchManager.cachedApps.isEmpty()) {
+            if (reconcileAppsInBackground) {
+                packageRefreshJob?.cancel()
+                packageRefreshJob = launch(startupDispatcher) { loadApps() }
+                packageRefreshJob?.join()
+            } else if (appSearchManager.cachedApps.isEmpty()) {
                 loadApps()
             }
+            refreshAppSuggestions()
+            publishStartupAppSuggestions()
 
             val packageNames = appSearchManager.cachedApps.map { it.packageName }.toSet()
             val messagingInfo = getMessagingAppInfo(packageNames)
 
             searchEngineManager.ensureInitialized()
-            val visibleSearchTargetIconPackages =
-                searchEngineManager
-                    .getEnabledSearchTargets()
-                    .take(MAX_STARTUP_SEARCH_TARGETS_TO_PREFETCH)
-                    .flatMap { target ->
-                        when (target) {
-                            is SearchTarget.Engine -> target.engine.getAppPackageCandidates()
-                            is SearchTarget.Browser -> listOf(target.app.packageName)
-                            is SearchTarget.Custom -> emptyList()
-                        }
-                    }
-            prefetchAppIcons(
-                context = applicationProvider(),
-                packageNames = visibleSearchTargetIconPackages,
-                iconPackPackage = userPreferences.getSelectedIconPackPackage(),
-                maxCount = MAX_STARTUP_SEARCH_TARGET_ICON_PACKAGES,
-                forceCircularMask = configStateProvider().appIconShape == AppIconShape.CIRCLE,
-            )
             val shortcutsState = aliasHandler.getInitialState()
             val customTools = normalizeCustomToolModels(userPreferences.getCustomTools())
             val hasApiKey = userPreferences.hasAnyLlmApiKey()
@@ -485,6 +486,39 @@ internal class SearchStartupLifecycleDelegate(
                         },
                 )
             }
+            updateResultsState { state ->
+                val searchEnginesState =
+                    when {
+                        state.detectedShortcutTarget != null ->
+                            SearchEnginesVisibility.ShortcutDetected(state.detectedShortcutTarget)
+                        state.detectedAliasSearchSection != null -> SearchEnginesVisibility.Hidden
+                        searchEngineManager.isSearchEngineCompactMode &&
+                            searchEngineManager.getEnabledSearchTargets().isNotEmpty() ->
+                            SearchEnginesVisibility.Compact
+                        else -> SearchEnginesVisibility.Hidden
+                    }
+                state.copy(searchEnginesState = searchEnginesState)
+            }
+            StartupTrace.mark("QS.Home.SearchEnginesPublished")
+
+            val visibleSearchTargetIconPackages =
+                searchEngineManager
+                    .getEnabledSearchTargets()
+                    .take(MAX_STARTUP_SEARCH_TARGETS_TO_PREFETCH)
+                    .flatMap { target ->
+                        when (target) {
+                            is SearchTarget.Engine -> target.engine.getAppPackageCandidates()
+                            is SearchTarget.Browser -> listOf(target.app.packageName)
+                            is SearchTarget.Custom -> emptyList()
+                        }
+                    }
+            prefetchAppIcons(
+                context = applicationProvider(),
+                packageNames = visibleSearchTargetIconPackages,
+                iconPackPackage = userPreferences.getSelectedIconPackPackage(),
+                maxCount = MAX_STARTUP_SEARCH_TARGET_ICON_PACKAGES,
+                forceCircularMask = configStateProvider().appIconShape == AppIconShape.CIRCLE,
+            )
             updateConfigState { state ->
                 state.copy(
                     showSearchEngineOnboarding =
@@ -540,9 +574,9 @@ internal class SearchStartupLifecycleDelegate(
 
             optionalStartupJob?.cancel()
             optionalStartupJob = launch(startupDispatcher) {
-                awaitOptionalStartupWindow()
-                if (reconcileAppsAfterStartupIdle) {
-                    loadApps()
+                delay(OPTIONAL_STARTUP_DELAY_MS)
+                while (isQueryActive()) {
+                    delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
                 }
                 val hasApiKey = userPreferences.refreshConfiguredAiProviderHint()
                 val activeProviderId = aiSearchHandler.getAiSearchProviderId()
@@ -614,7 +648,9 @@ internal class SearchStartupLifecycleDelegate(
                     )
                 }
             }
-            withContext(Dispatchers.Default) { refreshDerivedState(null, null) }
+            // Suggestions were finalized and published above. Only refresh the remaining
+            // derived state here so the visible app grid does not change after first display.
+            withContext(Dispatchers.Default) { refreshPostStartupState() }
             StartupTrace.mark("QS.Startup.PhasedInitializationComplete")
             saveStartupSurfaceSnapshotAsync(true, false)
         }
@@ -630,7 +666,6 @@ internal class SearchStartupLifecycleDelegate(
             packageRefreshJob =
                 scope.launch(startupDispatcher) {
                     delay(PACKAGE_CHANGE_DEBOUNCE_MS)
-                    while (isQueryActive()) delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
                     loadApps()
                 }
         }
@@ -654,13 +689,6 @@ internal class SearchStartupLifecycleDelegate(
         if (repository.isAppCatalogInvalidated()) return true
         val ageMs = System.currentTimeMillis() - repository.cacheLastUpdatedMillis()
         return ageMs !in 0 until APP_RECONCILIATION_FRESHNESS_MS
-    }
-
-    private suspend fun awaitOptionalStartupWindow() {
-        delay(OPTIONAL_STARTUP_DELAY_MS)
-        while (isQueryActive()) {
-            delay(OPTIONAL_STARTUP_QUERY_RECHECK_MS)
-        }
     }
 
     suspend fun loadCacheAndMinimalPrefs() {
@@ -729,7 +757,7 @@ internal class SearchStartupLifecycleDelegate(
             updateFeatureState { it.copy(disabledAppShortcutIds = disabledAppShortcutIds) }
 
             if (!cachedAppsList.isNullOrEmpty()) {
-                initializeWithCacheMinimal(cachedAppsList, hasUsagePermission)
+                initializeWithCacheMinimal(cachedAppsList)
                 StartupTrace.mark("QS.Home.CachedAppsAvailable")
             }
         }
@@ -753,7 +781,6 @@ internal class SearchStartupLifecycleDelegate(
                     iconPackPackage = iconPack,
                     forceCircularMask = startupSnapshot.appIconShape == AppIconShape.CIRCLE,
                 )
-                publishStartupAppSuggestions()
             }
             searchableAppsWarmupJob.join()
         }
@@ -988,7 +1015,6 @@ internal class SearchStartupLifecycleDelegate(
 
     private fun initializeWithCacheMinimal(
         cachedAppsList: List<AppInfo>,
-        hasUsagePermission: Boolean,
     ) {
         val startupSnapshot = readStartupPreferencesSnapshot()
         appSearchManager.initCache(cachedAppsList)
@@ -1004,12 +1030,9 @@ internal class SearchStartupLifecycleDelegate(
         updateResultsState {
             it.copy(
                 cacheLastUpdatedMillis = lastUpdated,
-                recentApps =
-                    if (suggestionsEnabled) {
-                        selectSuggestedApps(cachedAppsList, getGridItemCount(), hasUsagePermission)
-                    } else {
-                        emptyList()
-                    },
+                // The cached order is kept off-screen until usage metadata and any required app
+                // catalog reconciliation are complete.
+                recentApps = emptyList(),
                 indexedAppCount = cachedAppsList.size,
             )
         }

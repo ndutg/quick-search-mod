@@ -141,9 +141,7 @@ internal fun ContactResultRow(
                                                                                 null
                                                                         },
                                                 )
-                                                .topPredictedRowContentPadding(
-                                                        isTopPredicted = isPredicted,
-                                                )
+                                                .topPredictedRowContentPadding()
                                                 .padding(vertical = DesignTokens.SpacingSmall),
                                 horizontalArrangement =
                                         Arrangement.spacedBy(DesignTokens.SpacingMedium),

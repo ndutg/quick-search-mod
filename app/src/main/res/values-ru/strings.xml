@@ -676,6 +676,7 @@
     <string name="settings_icon_desc">Показывать/скрывать значок шестерёнки в поисковой строке. Вы всегда можете перейти в настройки свайпом влево или через поиск.</string>
     <string name="settings_icon_required_by_gesture_desc">Установите жест \"Смахивание влево\" на \"Открыть настройки\", чтобы скрыть этот значок.</string>
 <string name="settings_icon_pack_empty">Пакеты значков не найдены.</string>
+<string name="settings_icon_pack_description_no_packs">Установите пакет значков для значков приложений.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Маскировать неподдерживаемые значки</string>
 <string name="settings_icon_pack_option_system">Системные значки</string>
 <string name="settings_icon_pack_picker_title">Выберите пакет значков</string>
@@ -768,8 +769,6 @@
     <string name="settings_custom_provider_advanced_payload_error">Введите допустимый объект JSON.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">Расширенная полезная нагрузка запроса</string>
-<string name="settings_direct_search_desc">Поддерживаются API-ключи Gemini, OpenAI, Claude и Groq</string>
-<string name="settings_direct_search_desc_intro">Добавьте API-ключ, чтобы включить поиск и инструменты на базе искусственного интеллекта.</string>
 <string name="settings_free_api_key_tip_description">Инструкция по бесплатному получению API-ключа Gemini.</string>
 <string name="settings_open_free_api_key_guide">Открыть руководство по бесплатному API-ключу</string>
 <string name="settings_direct_search_grounding_label">Поиск в Интернете</string>
@@ -1065,6 +1064,7 @@
     <string name="widget_custom_button_change_colour">Изменить цвет</string>
     <string name="widget_custom_button_choose_colour">Выбрать цвет папки</string>
     <string name="search_engine_google_translate">Google Переводчик</string>
+    <string name="search_engine_kagi">Kagi</string>
     <string name="tasker_integration_title">Действия Tasker</string>
     <string name="tasker_integration_description">Создавайте действия Tasker с помощью широковещательных интентов (broadcast intents).</string>
     <string name="tasker_add_intent_title">Добавить интент Tasker</string>
@@ -1080,5 +1080,5 @@
     <string name="tasker_broadcast_failed">Не удалось отправить трансляцию Tasker</string>
     <string name="settings_more_apps_from_developer_title">Другие приложения разработчика</string>
 <string name="icon_picker_no_icon_packs">Для изменения значка приложения не установлены пакеты значков.</string>
-<string name="icon_picker_download_icon_packs">Скачать пакеты значков</string>
+<string name="icon_picker_download_icon_packs">Скачать</string>
 </resources>

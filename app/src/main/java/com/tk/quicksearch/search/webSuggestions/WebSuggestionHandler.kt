@@ -8,16 +8,17 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.searchEngines.SecondaryWebSuggestionController
 
 class WebSuggestionHandler(
     private val scope: CoroutineScope,
     private val userPreferences: UserAppPreferences,
     private val uiStateUpdater: ((SearchUiState) -> SearchUiState) -> Unit,
-) {
+) : SecondaryWebSuggestionController {
     private val webSuggestionsCount: Int
         get() = userPreferences.getWebSuggestionsCount()
     private var webSuggestionsJob: Job? = null
-    var isEnabled: Boolean = userPreferences.areWebSuggestionsEnabled()
+    override var isEnabled: Boolean = userPreferences.areWebSuggestionsEnabled()
         private set
 
     fun reloadFromPreferences(): Boolean {
@@ -40,7 +41,7 @@ class WebSuggestionHandler(
         }
     }
 
-    fun fetchWebSuggestions(
+    override fun fetchWebSuggestions(
         query: String,
         currentQueryVersion: Long,
         activeQueryVersionProvider: () -> Long,
@@ -110,7 +111,7 @@ class WebSuggestionHandler(
             }
     }
 
-    fun cancelSuggestions() {
+    override fun cancelSuggestions() {
         webSuggestionsJob?.cancel()
         uiStateUpdater { it.copy(webSuggestionsLoading = false) }
     }

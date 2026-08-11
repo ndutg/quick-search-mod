@@ -75,8 +75,6 @@ fun TriggerItemsScreen(
             } catch (e: Exception) {
                 emptyMap()
             }
-            // Fallback lookup by bare shortcut id for legacy entries stored without packageName prefix
-            val shortcutsByBareId = shortcutsById.mapKeys { (key, _) -> key.substringAfter(':') }
             val notesById = try {
                 NotesRepository(context).getAllNotes().associateBy { it.noteId }
             } catch (e: Exception) {
@@ -93,7 +91,7 @@ fun TriggerItemsScreen(
                     add(TriggerItem.App(packageName = packageName, word = trigger.word, triggerAfterSpace = trigger.triggerAfterSpace, itemName = appName))
                 }
                 prefs.getAllAppShortcutTriggers().forEach { (shortcutId, trigger) ->
-                    val shortcut = shortcutsById[shortcutId] ?: shortcutsByBareId[shortcutId]
+                    val shortcut = shortcutsById[shortcutId]
                     val shortcutName = shortcut?.shortLabel?.takeIf { it.isNotBlank() }
                         ?: shortcut?.longLabel?.takeIf { it.isNotBlank() }
                         ?: shortcut?.appLabel?.takeIf { it.isNotBlank() }
@@ -140,17 +138,6 @@ fun TriggerItemsScreen(
                         ?: context.getString(R.string.notes_untitled)
                     add(TriggerItem.Note(noteId = noteId, word = trigger.word, triggerAfterSpace = trigger.triggerAfterSpace, itemName = noteTitle))
                 }
-            }.let { list ->
-                // Deduplicate: remove legacy bare-ID entries when a full packageName:id entry exists
-                val shortcutItems = list.filterIsInstance<TriggerItem.AppShortcut>()
-                val fullKeyBareIds = shortcutItems
-                    .filter { ':' in it.shortcutId }
-                    .map { it.shortcutId.substringAfter(':') }
-                    .toSet()
-                val legacyToRemove = shortcutItems
-                    .filter { ':' !in it.shortcutId && it.shortcutId in fullKeyBareIds }
-                    .toSet()
-                if (legacyToRemove.isEmpty()) list else list.filter { it !in legacyToRemove }
             }.sortedBy { it.word.lowercase() }
         }
         allItems = items

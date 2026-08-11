@@ -397,13 +397,8 @@ object SettingsBackupManager {
             key == BasePreferences.KEY_SEARCH_ENGINE_COMPACT_ROW_COUNT ||
             key == BasePreferences.KEY_SEARCH_ENGINE_ALIAS_SUFFIX_ENABLED ||
             key == BasePreferences.KEY_ALIAS_TRIGGER_AFTER_SPACE ||
-            key == BasePreferences.KEY_ALIASES_ENABLED ||
-            key == BasePreferences.KEY_SHORTCUTS_ENABLED ||
             key == BasePreferences.KEY_AMAZON_DOMAIN ||
-            key.startsWith(BasePreferences.KEY_ALIAS_CODE_PREFIX) ||
-            key.startsWith(BasePreferences.KEY_ALIAS_ENABLED_PREFIX) ||
-            key.startsWith(BasePreferences.KEY_SHORTCUT_CODE_PREFIX) ||
-            key.startsWith(BasePreferences.KEY_SHORTCUT_ENABLED_PREFIX)
+            key.startsWith(BasePreferences.KEY_ALIAS_CODE_PREFIX)
     }
 
     private fun isNotesKey(

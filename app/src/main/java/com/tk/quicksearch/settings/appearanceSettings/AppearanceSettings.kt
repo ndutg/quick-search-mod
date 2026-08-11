@@ -177,7 +177,6 @@ fun AppearanceSettingsSection(
         AppLauncherIconCard(
                 launcherAppIcon = launcherAppIcon,
                 onSetLauncherAppIcon = onSetLauncherAppIcon,
-                appTheme = appTheme,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -265,17 +264,13 @@ fun AppearanceSettingsSection(
                             )
                         } else {
                             androidx.compose.ui.res.stringResource(
-                                    R.string.settings_icon_pack_empty,
+                                    R.string.settings_icon_pack_description_no_packs,
                             )
                         },
                 onIconPackClick = {
-                    if (hasIconPacks) {
-                        showIconPackDialog = true
-                    } else {
-                        onSearchIconPacks()
-                    }
+                    onRefreshIconPacks()
+                    showIconPackDialog = true
                 },
-                onRefreshIconPacks = onRefreshIconPacks,
                 appIconShape = appIconShape,
                 onSetAppIconShape = onSetAppIconShape,
         )
@@ -292,6 +287,7 @@ fun AppearanceSettingsSection(
                     showIconPackDialog = false
                 },
                 onMaskUnsupportedIconsChange = onSetMaskUnsupportedIconPackIcons,
+                onDownloadIconPacks = onSearchIconPacks,
                 onDismiss = { showIconPackDialog = false },
         )
     }

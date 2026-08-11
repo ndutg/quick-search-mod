@@ -31,12 +31,17 @@ class AppSettingsRepository(
                         "font size",
                         "system font",
                         "text size",
-                        "icons",
                         "icon size",
-                        "icon pack",
                         "inline",
                         "compact"
                     ),
+            )
+            addNavigation(
+                id = "app_settings_icon_packs",
+                titleRes = R.string.settings_icon_pack_title,
+                descriptionRes = R.string.settings_search_description_change_icon_pack,
+                destination = AppSettingsDestination.ICON_PACKS,
+                keywords = listOf("icons", "icon pack", "themed icons"),
             )
             addNavigation(
                 id = "app_settings_search_results",
@@ -540,7 +545,7 @@ class AppSettingsRepository(
                     keywords = listOf("grid", "layout"),
                 )
             }
-        }
+        }.also(::validateAppSettingsCatalog)
     }
 
     private fun MutableList<AppSettingResult>.addNavigation(
@@ -657,9 +662,6 @@ class AppSettingsRepository(
         if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_THEME_TOKENS) }) {
             return context.getString(R.string.settings_search_description_change_app_theme)
         }
-        if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_ICON_PACK_TOKENS) }) {
-            return context.getString(R.string.settings_search_description_change_icon_pack)
-        }
         if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_WALLPAPER_TOKENS) }) {
             return context.getString(R.string.settings_search_description_change_wallpaper)
         }
@@ -714,11 +716,32 @@ class AppSettingsRepository(
 
     private companion object {
         val APPEARANCE_THEME_TOKENS = setOf("themes", "dark", "light", "system", "background")
-        val APPEARANCE_ICON_PACK_TOKENS = setOf("icon", "packs")
         val APPEARANCE_WALLPAPER_TOKENS =
             setOf("wallpaper", "blur", "transparency")
         val APPEARANCE_FONT_TOKENS = setOf("fonts", "size", "text")
         val APPEARANCE_LAYOUT_TOKENS =
             setOf("layout", "one handed", "bottom", "searchbar")
+    }
+}
+
+internal fun validateAppSettingsCatalog(settings: List<AppSettingResult>) {
+    check(settings.all { it.id.isNotBlank() }) { "Searchable app-setting IDs must not be blank" }
+
+    val duplicateIds =
+        settings
+            .groupingBy { it.id }
+            .eachCount()
+            .filterValues { count -> count > 1 }
+            .keys
+    check(duplicateIds.isEmpty()) {
+        "Duplicate searchable app-setting IDs: ${duplicateIds.sorted().joinToString()}"
+    }
+
+    SearchSectionRegistry.orderedDefinitions.forEach { definition ->
+        val registrationCount =
+            settings.count { setting -> setting.toggleKey == definition.appSettingsToggleKey }
+        check(registrationCount == 1) {
+            "Expected exactly one searchable toggle for ${definition.section}, found $registrationCount"
+        }
     }
 }

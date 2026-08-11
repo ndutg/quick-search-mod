@@ -62,7 +62,7 @@ class UserAppPreferences(
     private val amazonPreferences by lazy { AmazonPreferences(context) }
     private val recentSearchesPreferences by lazy { SearchHistoryPreferences(context) }
     private val recentResultOpensPreferences by lazy { RecentResultOpensPreferences(context) }
-    private val startupPreferences by lazy { StartupPreferencesFacade(this, context) }
+    private val startupPreferences by lazy { StartupPreferencesFacade(context) }
     private val aiStartupPreferences by lazy {
         context.applicationContext.getSharedPreferences(
                 AI_STARTUP_PREFS_NAME,
@@ -711,10 +711,6 @@ class UserAppPreferences(
     // Alias Preferences
     // ============================================================================
 
-    fun areAliasesEnabled(): Boolean = aliasPreferences.areAliasesEnabled()
-
-    fun setAliasesEnabled(enabled: Boolean) = aliasPreferences.setAliasesEnabled(enabled)
-
     fun getAliasCode(engine: SearchEngine): String = aliasPreferences.getAliasCode(engine)
 
     fun setAliasCode(
@@ -758,33 +754,6 @@ class UserAppPreferences(
     ) = aliasPreferences.setAliasEnabled(targetId, enabled)
 
     fun getAllAliasCodes(): Map<SearchEngine, String> = aliasPreferences.getAllAliasCodes()
-
-    fun areShortcutsEnabled(): Boolean = areAliasesEnabled()
-
-    fun setShortcutsEnabled(enabled: Boolean) = setAliasesEnabled(enabled)
-
-    fun getShortcutCode(engine: SearchEngine): String = getAliasCode(engine)
-
-    fun setShortcutCode(
-            engine: SearchEngine,
-            code: String,
-    ) = setAliasCode(engine, code)
-
-    fun getShortcutCode(targetId: String): String? = getAliasCode(targetId)
-
-    fun setShortcutCode(
-            targetId: String,
-            code: String,
-    ) = setAliasCode(targetId, code)
-
-    fun isShortcutEnabled(engine: SearchEngine): Boolean = isAliasEnabled(engine)
-
-    fun setShortcutEnabled(
-            engine: SearchEngine,
-            enabled: Boolean,
-    ) = setAliasEnabled(engine, enabled)
-
-    fun getAllShortcutCodes(): Map<SearchEngine, String> = getAllAliasCodes()
 
     // ============================================================================
     // Amazon Domain Preferences
@@ -843,18 +812,6 @@ class UserAppPreferences(
             else -> Unit
         }
         refreshConfiguredAiProviderHint()
-    }
-
-    /** Clear the API key for every provider (used when resetting). */
-    fun clearAllLlmApiKeys() {
-        geminiPreferences.setGeminiApiKey(null)
-        openAiPreferences.setApiKey(null)
-        anthropicPreferences.setApiKey(null)
-        groqPreferences.setApiKey(null)
-        customLlmProviderPreferences.getProviders().forEach {
-            customLlmProviderPreferences.removeProvider(AiSearchLlmProviderId.custom(it.id))
-        }
-        aiStartupPreferences.edit().putBoolean(KEY_HAS_CONFIGURED_AI_PROVIDER, false).apply()
     }
 
     fun getLlmModel(providerId: AiSearchLlmProviderId): String =
@@ -967,14 +924,6 @@ class UserAppPreferences(
             !groqPreferences.getApiKey().isNullOrBlank() ||
             customLlmProviderPreferences.getProviders().any { it.apiKey.isNotBlank() }
 
-    /** Non-sensitive startup hint. Null means an older install has not reconciled it yet. */
-    fun getConfiguredAiProviderHint(): Boolean? =
-        if (aiStartupPreferences.contains(KEY_HAS_CONFIGURED_AI_PROVIDER)) {
-            aiStartupPreferences.getBoolean(KEY_HAS_CONFIGURED_AI_PROVIDER, false)
-        } else {
-            null
-        }
-
     /** Opens encrypted storage only from an AI/settings or long-idle path. */
     fun refreshConfiguredAiProviderHint(): Boolean =
         hasAnyLlmApiKey().also { configured ->
@@ -1004,9 +953,6 @@ class UserAppPreferences(
     fun getConfiguredLlmProviderIds(): List<AiSearchLlmProviderId> =
         AiSearchLlmProviderId.entries +
             customLlmProviderPreferences.getProviders().map { AiSearchLlmProviderId.custom(it.id) }
-
-    fun getCustomLlmProviders(): List<CustomLlmProviderConfig> =
-        customLlmProviderPreferences.getProviders()
 
     fun getCustomLlmProvider(providerId: AiSearchLlmProviderId): CustomLlmProviderConfig? =
         customLlmProviderPreferences.getProvider(providerId)
@@ -1556,23 +1502,6 @@ class UserAppPreferences(
     fun getDisabledSections(): Set<String> = uiPreferences.getDisabledSections()
 
     fun setDisabledSections(disabled: Set<String>) = uiPreferences.setDisabledSections(disabled)
-
-    /**
-     * One-time migration to ensure calendar section is default-off for all users, including
-     * existing installs.
-     */
-    fun ensureCalendarSectionDefaultDisabledMigration() {
-        if (sharedPrefs.getBoolean(BasePreferences.KEY_CALENDAR_SECTION_DEFAULT_MIGRATION_DONE, false)) {
-            return
-        }
-
-        val updatedDisabledSections = getDisabledSections().toMutableSet().apply { add("CALENDAR") }
-        setDisabledSections(updatedDisabledSections)
-        sharedPrefs
-                .edit()
-                .putBoolean(BasePreferences.KEY_CALENDAR_SECTION_DEFAULT_MIGRATION_DONE, true)
-                .apply()
-    }
 
     // ============================================================================
     // Rate Quick Search Prompt Preferences

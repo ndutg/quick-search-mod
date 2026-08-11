@@ -52,6 +52,8 @@ fun SettingsDetailRoute(
         onRequestFilePermission: () -> Unit = {},
         onRequestCalendarPermission: () -> Unit = {},
         onRequestCallPermission: () -> Unit = {},
+        scrollState: androidx.compose.foundation.ScrollState =
+                androidx.compose.foundation.rememberScrollState(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -384,6 +386,7 @@ fun SettingsDetailRoute(
                 onNavigateToDetail = onNavigateToDetail,
                 onNavigateToSearch = onNavigateToSearch,
                 onNicknameRemoved = { userPreferences.reloadNicknameCaches() },
+                scrollState = scrollState,
         )
     } else {
         SettingsDetailLevel1Screen(
@@ -400,6 +403,7 @@ fun SettingsDetailRoute(
                 disabledSearchEnginesExpanded = disabledSearchEnginesExpanded,
                 onToggleDisabledSearchEnginesExpanded = onToggleDisabledSearchEnginesExpanded,
                 onNavigateToDetail = onNavigateToDetail,
+                scrollState = scrollState,
         )
     }
 

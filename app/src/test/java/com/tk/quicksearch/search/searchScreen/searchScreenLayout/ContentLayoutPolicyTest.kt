@@ -7,36 +7,6 @@ import org.junit.Test
 
 class ContentLayoutPolicyTest {
     @Test
-    fun calendarSlotRendersStandaloneTodayEvents() {
-        assertTrue(
-            shouldRenderStandaloneTodayCalendarSection(
-                section = SearchSection.CALENDAR,
-                todayCalendarEventsCount = 1,
-            ),
-        )
-    }
-
-    @Test
-    fun calendarSlotDoesNotRenderWithoutTodayEvents() {
-        assertFalse(
-            shouldRenderStandaloneTodayCalendarSection(
-                section = SearchSection.CALENDAR,
-                todayCalendarEventsCount = 0,
-            ),
-        )
-    }
-
-    @Test
-    fun anotherSectionDoesNotRenderTodayCalendarEvents() {
-        assertFalse(
-            shouldRenderStandaloneTodayCalendarSection(
-                section = SearchSection.APPS,
-                todayCalendarEventsCount = 1,
-            ),
-        )
-    }
-
-    @Test
     fun regularCalendarSlotIsSkippedWhenTodayEventsHaveNoPinnedCalendarEvents() {
         assertTrue(
             shouldSkipRegularCalendarSectionForStandaloneTodayEvents(

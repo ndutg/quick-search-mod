@@ -67,7 +67,6 @@ internal class SearchCustomizationStore(context: Context) {
         val INDEXED_PREFIXES =
             listOf(
                 BasePreferences.KEY_ALIAS_CODE_PREFIX,
-                BasePreferences.KEY_SHORTCUT_CODE_PREFIX_LEGACY,
                 BasePreferences.KEY_NICKNAME_APP_PREFIX,
                 BasePreferences.KEY_NICKNAME_CONTACT_PREFIX,
                 BasePreferences.KEY_NICKNAME_FILE_PREFIX,

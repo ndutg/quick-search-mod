@@ -214,75 +214,6 @@ AppCard(
 }
 ```
 
-### SectionDivider
-
-Consistent horizontal divider (0.5dp thickness).
-
-```kotlin
-import com.tk.quicksearch.ui.components.SectionDivider
-
-Column {
-    Text("Item 1")
-    SectionDivider()
-    Text("Item 2")
-}
-```
-
-### IconWithText
-
-Icon + text row pattern with standard 8dp spacing.
-
-```kotlin
-import com.tk.quicksearch.ui.components.IconWithText
-
-IconWithText(
-    icon = Icons.Rounded.Search,
-    text = "Search",
-    iconTint = MaterialTheme.colorScheme.primary,
-    textStyle = MaterialTheme.typography.bodyLarge
-)
-```
-
-### LoadingIndicator
-
-Standardized loading state with optional message.
-
-```kotlin
-import com.tk.quicksearch.ui.components.LoadingIndicator
-
-LoadingIndicator(
-    message = "Loading results..."
-)
-```
-
-### EmptyStateMessage
-
-Empty state display with consistent spacing.
-
-```kotlin
-import com.tk.quicksearch.ui.components.EmptyStateMessage
-
-EmptyStateMessage(
-    title = "No results found",
-    subtitle = "Try a different search query"
-)
-```
-
-### SectionHeader
-
-Section titles with optional subtitles.
-
-```kotlin
-import com.tk.quicksearch.ui.components.SectionHeader
-
-SectionHeader(
-    title = "Recent Contacts",
-    subtitle = "Last 7 days"
-)
-```
-
----
-
 ## Usage Guidelines
 
 ### When to Use Design Tokens
@@ -322,9 +253,6 @@ Column(
 #### 2. Use Common Components
 
 ```kotlin
-// ✅ Good - Using common component
-SectionDivider()
-
 // ❌ Avoid - Manual divider
 HorizontalDivider(
     thickness = 0.5.dp,

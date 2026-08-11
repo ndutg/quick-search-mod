@@ -661,6 +661,7 @@
     <string name="settings_icon_desc">إظهار أو إخفاء أيقونة الإعدادات (الترس) في شريط البحث. يمكنك دائماً الوصول للإعدادات بالسحب يساراً أو عبر البحث عنها.</string>
     <string name="settings_icon_required_by_gesture_desc">اضبط إيماءة السحب لليسار لفتح الإعدادات لإيقاف تشغيل هذا الرمز.</string>
     <string name="settings_icon_pack_empty">لم يتم العثور على أي حزم أيقونات.</string>
+    <string name="settings_icon_pack_description_no_packs">عيّن حزمة أيقونات لأيقونات التطبيقات.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">تطبيق قناع على الأيقونات غير المدعومة</string>
     <string name="settings_icon_pack_option_system">أيقونات النظام</string>
     <string name="settings_icon_pack_picker_title">اختر حزمة الأيقونات</string>
@@ -753,8 +754,6 @@
     <string name="settings_custom_provider_advanced_payload_error">أدخل كائن JSON صالحًا.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">حمولة الطلب المتقدمة</string>
-    <string name="settings_direct_search_desc">يدعم مفاتيح API لـ Gemini وOpenAI وClaude وGroq</string>
-    <string name="settings_direct_search_desc_intro">أضف مفتاح API لتفعيل ميزات البحث والأدوات المدعومة بالذكاء الاصطناعي (AI).</string>
     <string name="settings_free_api_key_tip_description">خطوات الحصول على مفتاح Gemini API مجانًا.</string>
     <string name="settings_open_free_api_key_guide">فتح دليل مفتاح API المجاني</string>
     <string name="settings_direct_search_grounding_label">البحث في الويب</string>
@@ -1051,6 +1050,7 @@
     <string name="widget_custom_button_change_colour">تغيير اللون</string>
     <string name="widget_custom_button_choose_colour">اختيار لون المجلد</string>
     <string name="search_engine_google_translate">ترجمة Google</string>
+    <string name="search_engine_kagi">Kagi</string>
     <string name="tasker_integration_title">إجراءات Tasker</string>
     <string name="tasker_integration_description">إنشاء إجراءات Tasker باستخدام نوايا البث (broadcast intents).</string>
     <string name="tasker_add_intent_title">إضافة نية بث لـ Tasker</string>
@@ -1066,5 +1066,5 @@
     <string name="tasker_broadcast_failed">تعذر إرسال بث Tasker</string>
     <string name="settings_more_apps_from_developer_title">المزيد من التطبيقات من المطور</string>
     <string name="icon_picker_no_icon_packs">لا توجد حزم أيقونات مثبتة لتغيير أيقونة التطبيق.</string>
-    <string name="icon_picker_download_icon_packs">تنزيل حزم الأيقونات</string>
+    <string name="icon_picker_download_icon_packs">تنزيل</string>
 </resources>

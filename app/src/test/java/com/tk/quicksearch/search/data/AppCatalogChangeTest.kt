@@ -50,6 +50,35 @@ class AppCatalogChangeTest {
             )
 
         assertFalse(change.isRemoval)
+        assertFalse(change.requiresCatalogReconciliation)
+    }
+
+    @Test
+    fun packageReplacementAddIsNotTreatedAsAnInstall() {
+        val change =
+            AppCatalogChange.fromPackageEvent(
+                action = Intent.ACTION_PACKAGE_ADDED,
+                packageName = "com.example.updated",
+                userHandleId = 0,
+                replacing = true,
+            )
+
+        assertFalse(change.isInstallation)
+        assertFalse(change.requiresCatalogReconciliation)
+    }
+
+    @Test
+    fun packageAddRequiresCatalogReconciliation() {
+        val change =
+            AppCatalogChange.fromPackageEvent(
+                action = Intent.ACTION_PACKAGE_ADDED,
+                packageName = "com.example.installed",
+                userHandleId = 0,
+                replacing = false,
+            )
+
+        assertTrue(change.isInstallation)
+        assertTrue(change.requiresCatalogReconciliation)
     }
 
     @Test

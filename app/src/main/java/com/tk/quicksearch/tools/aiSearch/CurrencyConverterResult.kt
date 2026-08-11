@@ -14,7 +14,6 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CurrencyConverterState
 import com.tk.quicksearch.search.core.CurrencyConverterStatus
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Currency
 import java.util.Locale

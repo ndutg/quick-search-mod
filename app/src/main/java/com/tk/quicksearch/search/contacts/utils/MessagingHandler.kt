@@ -4,8 +4,6 @@ import android.app.Application
 import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.data.UserAppPreferences
-import com.tk.quicksearch.shared.util.PackageConstants
-import kotlinx.coroutines.flow.update
 
 class MessagingHandler(
     private val application: Application,

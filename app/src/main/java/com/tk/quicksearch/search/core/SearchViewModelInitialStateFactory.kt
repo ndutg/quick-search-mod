@@ -6,6 +6,7 @@ import com.tk.quicksearch.search.data.filterAvailableStartupApps
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
 import com.tk.quicksearch.search.startup.StartupSurfaceStore
+import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import com.tk.quicksearch.app.startup.StartupTrace
 
@@ -67,13 +68,27 @@ internal object SearchViewModelInitialStateFactory {
             }
 
         val clearQueryOnLaunch = startupPreferencesReader.isClearQueryOnLaunchEnabled()
+        val hasCachedEnabledSearchTargets =
+            startupSnapshot?.let { snapshot ->
+                snapshot.searchTargetsOrder.any { target ->
+                    target.getId() !in snapshot.disabledSearchTargetIds
+                }
+            } == true
 
         val initialResultsState =
             SearchResultsState(
                 query = if (clearQueryOnLaunch) "" else inMemoryRetainedQuery,
-                recentApps = startupSnapshot?.suggestedApps.orEmpty(),
+                // Suggestions are intentionally withheld until their startup usage refresh has
+                // completed, preventing a cached order from visibly rearranging after first draw.
+                recentApps = emptyList(),
                 pinnedNonAppItemOrder = startupPreferencesReader.getPinnedNonAppItemOrder(),
                 indexedAppCount = startupSnapshot?.suggestedApps?.size ?: 0,
+                searchEnginesState =
+                    if (startupSnapshot?.isSearchEngineCompactMode == true && hasCachedEnabledSearchTargets) {
+                        SearchEnginesVisibility.Compact
+                    } else {
+                        SearchEnginesVisibility.Hidden
+                    },
             )
 
         // Seeded from preferences so fuzzy matching never runs against the enabled-by-default
@@ -82,6 +97,12 @@ internal object SearchViewModelInitialStateFactory {
 
         val initialFeatureState =
             SearchFeatureState(
+                searchTargetsOrder = startupSnapshot?.searchTargetsOrder.orEmpty(),
+                disabledSearchTargetIds = startupSnapshot?.disabledSearchTargetIds.orEmpty(),
+                isSearchEngineCompactMode =
+                    startupSnapshot?.isSearchEngineCompactMode == true && hasCachedEnabledSearchTargets,
+                searchEngineCompactRowCount =
+                    startupSnapshot?.searchEngineCompactRowCount?.coerceIn(1, 2) ?: 1,
                 fuzzySearchEnabled =
                     !isLowRamDevice && startupPreferencesReader.isFuzzySearchEnabled(),
                 fuzzySearchAvailable = !isLowRamDevice,
@@ -177,4 +198,5 @@ internal object SearchViewModelInitialStateFactory {
             configState = initialConfigState,
         )
     }
+
 }

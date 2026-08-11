@@ -2,6 +2,10 @@ package com.tk.quicksearch.search.startup
 
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.AppTheme
+import com.tk.quicksearch.search.core.BrowserApp
+import com.tk.quicksearch.search.core.CustomSearchEngine
+import com.tk.quicksearch.search.core.SearchEngine
+import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.models.AppInfo
 import org.json.JSONArray
 import org.json.JSONObject
@@ -33,6 +37,10 @@ data class StartupSurfaceSnapshot(
     val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
     val appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
     val suggestedApps: List<AppInfo>,
+    val searchTargetsOrder: List<SearchTarget> = emptyList(),
+    val disabledSearchTargetIds: Set<String> = emptySet(),
+    val isSearchEngineCompactMode: Boolean = false,
+    val searchEngineCompactRowCount: Int = 1,
 )
 
 internal object StartupSurfaceSnapshotJson {
@@ -43,7 +51,6 @@ internal object StartupSurfaceSnapshotJson {
     private const val KEY_WALLPAPER_ALPHA = "wallpaperBackgroundAlpha"
     private const val KEY_WALLPAPER_BLUR = "wallpaperBlurRadius"
     private const val KEY_APP_THEME = "appTheme"
-    private const val LEGACY_KEY_APP_THEME = "overlayGradientTheme"
     private const val KEY_THEME_INTENSITY = "overlayThemeIntensity"
     private const val KEY_CUSTOM_IMAGE_URI = "customImageUri"
     private const val KEY_PREVIEW_PATH = "startupBackgroundPreviewPath"
@@ -58,6 +65,22 @@ internal object StartupSurfaceSnapshotJson {
     private const val KEY_PHONE_APP_GRID_COLUMNS = "phoneAppGridColumns"
     private const val KEY_APP_ICON_SIZE_STEP = "appIconSizeStep"
     private const val KEY_SUGGESTED_APPS = "suggestedApps"
+    private const val KEY_SEARCH_TARGETS_ORDER = "searchTargetsOrder"
+    private const val KEY_DISABLED_SEARCH_TARGET_IDS = "disabledSearchTargetIds"
+    private const val KEY_SEARCH_ENGINE_COMPACT_MODE = "isSearchEngineCompactMode"
+    private const val KEY_SEARCH_ENGINE_COMPACT_ROW_COUNT = "searchEngineCompactRowCount"
+
+    private const val KEY_TARGET_TYPE = "type"
+    private const val TARGET_TYPE_ENGINE = "engine"
+    private const val TARGET_TYPE_BROWSER = "browser"
+    private const val TARGET_TYPE_CUSTOM = "custom"
+    private const val KEY_ENGINE = "engine"
+    private const val KEY_LABEL = "label"
+    private const val KEY_CUSTOM_ID = "id"
+    private const val KEY_CUSTOM_NAME = "name"
+    private const val KEY_CUSTOM_URL_TEMPLATE = "urlTemplate"
+    private const val KEY_CUSTOM_FAVICON_BASE64 = "faviconBase64"
+    private const val KEY_CUSTOM_BROWSER_PACKAGE = "browserPackage"
 
     private const val KEY_APP_NAME = "appName"
     private const val KEY_PACKAGE_NAME = "packageName"
@@ -92,6 +115,8 @@ internal object StartupSurfaceSnapshotJson {
                 put(KEY_APP_SUGGESTIONS, snapshot.appSuggestionsEnabled)
                 put(KEY_PHONE_APP_GRID_COLUMNS, snapshot.phoneAppGridColumns)
                 put(KEY_APP_ICON_SIZE_STEP, snapshot.appIconSizeStep)
+                put(KEY_SEARCH_ENGINE_COMPACT_MODE, snapshot.isSearchEngineCompactMode)
+                put(KEY_SEARCH_ENGINE_COMPACT_ROW_COUNT, snapshot.searchEngineCompactRowCount)
                 if (!snapshot.customImageUri.isNullOrBlank()) {
                     put(KEY_CUSTOM_IMAGE_URI, snapshot.customImageUri)
                 }
@@ -117,6 +142,20 @@ internal object StartupSurfaceSnapshotJson {
                         )
                     }
                 })
+                put(
+                    KEY_SEARCH_TARGETS_ORDER,
+                    JSONArray().apply {
+                        snapshot.searchTargetsOrder.forEach { target ->
+                            put(target.toJson())
+                        }
+                    },
+                )
+                put(
+                    KEY_DISABLED_SEARCH_TARGET_IDS,
+                    JSONArray().apply {
+                        snapshot.disabledSearchTargetIds.forEach { id -> put(id) }
+                    },
+                )
             }
         return root.toString()
     }
@@ -135,11 +174,10 @@ internal object StartupSurfaceSnapshotJson {
                     ?.let { runCatching { BackgroundSource.valueOf(it) }.getOrNull() }
                     ?: BackgroundSource.THEME
 
-            val appThemeRaw =
-                root.optString(KEY_APP_THEME).takeIf { it.isNotBlank() }
-                    ?: root.optString(LEGACY_KEY_APP_THEME).takeIf { it.isNotBlank() }
             val appTheme =
-                appThemeRaw?.let { runCatching { AppTheme.valueOf(it) }.getOrNull() }
+                root.optString(KEY_APP_THEME)
+                    .takeIf { it.isNotBlank() }
+                    ?.let { runCatching { AppTheme.valueOf(it) }.getOrNull() }
                     ?: AppTheme.MONOCHROME
 
             val suggestedApps =
@@ -173,9 +211,99 @@ internal object StartupSurfaceSnapshotJson {
                         com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
                     ),
                 suggestedApps = suggestedApps,
+                searchTargetsOrder =
+                    root.optJSONArray(KEY_SEARCH_TARGETS_ORDER)
+                        ?.toSearchTargetList()
+                        .orEmpty(),
+                disabledSearchTargetIds =
+                    root.optJSONArray(KEY_DISABLED_SEARCH_TARGET_IDS)
+                        ?.toStringSet()
+                        .orEmpty(),
+                isSearchEngineCompactMode =
+                    root.optBoolean(KEY_SEARCH_ENGINE_COMPACT_MODE, false),
+                searchEngineCompactRowCount =
+                    root.optInt(KEY_SEARCH_ENGINE_COMPACT_ROW_COUNT, 1).coerceIn(1, 2),
             )
         }.getOrNull()
     }
+
+    private fun SearchTarget.toJson(): JSONObject =
+        JSONObject().apply {
+            when (this@toJson) {
+                is SearchTarget.Engine -> {
+                    put(KEY_TARGET_TYPE, TARGET_TYPE_ENGINE)
+                    put(KEY_ENGINE, engine.name)
+                }
+
+                is SearchTarget.Browser -> {
+                    put(KEY_TARGET_TYPE, TARGET_TYPE_BROWSER)
+                    put(KEY_PACKAGE_NAME, app.packageName)
+                    put(KEY_LABEL, app.label)
+                }
+
+                is SearchTarget.Custom -> {
+                    put(KEY_TARGET_TYPE, TARGET_TYPE_CUSTOM)
+                    put(KEY_CUSTOM_ID, custom.id)
+                    put(KEY_CUSTOM_NAME, custom.name)
+                    put(KEY_CUSTOM_URL_TEMPLATE, custom.urlTemplate)
+                    custom.faviconBase64?.let { put(KEY_CUSTOM_FAVICON_BASE64, it) }
+                    custom.browserPackage?.let { put(KEY_CUSTOM_BROWSER_PACKAGE, it) }
+                }
+            }
+        }
+
+    private fun JSONArray.toSearchTargetList(): List<SearchTarget> =
+        buildList {
+            for (index in 0 until length()) {
+                val target = optJSONObject(index)?.toSearchTarget() ?: continue
+                add(target)
+            }
+        }
+
+    private fun JSONObject.toSearchTarget(): SearchTarget? =
+        when (optString(KEY_TARGET_TYPE)) {
+            TARGET_TYPE_ENGINE -> {
+                val engine =
+                    optString(KEY_ENGINE)
+                        .takeIf { it.isNotBlank() }
+                        ?.let { runCatching { SearchEngine.valueOf(it) }.getOrNull() }
+                        ?: return null
+                SearchTarget.Engine(engine)
+            }
+
+            TARGET_TYPE_BROWSER -> {
+                val packageName = optString(KEY_PACKAGE_NAME).takeIf { it.isNotBlank() } ?: return null
+                val label = optString(KEY_LABEL).ifBlank { packageName }
+                SearchTarget.Browser(BrowserApp(packageName = packageName, label = label))
+            }
+
+            TARGET_TYPE_CUSTOM -> {
+                val id = optString(KEY_CUSTOM_ID).takeIf { it.isNotBlank() } ?: return null
+                val name = optString(KEY_CUSTOM_NAME).takeIf { it.isNotBlank() } ?: return null
+                val urlTemplate =
+                    optString(KEY_CUSTOM_URL_TEMPLATE).takeIf { it.isNotBlank() } ?: return null
+                SearchTarget.Custom(
+                    CustomSearchEngine(
+                        id = id,
+                        name = name,
+                        urlTemplate = urlTemplate,
+                        faviconBase64 =
+                            optString(KEY_CUSTOM_FAVICON_BASE64).takeIf { it.isNotBlank() },
+                        browserPackage =
+                            optString(KEY_CUSTOM_BROWSER_PACKAGE).takeIf { it.isNotBlank() },
+                    ),
+                )
+            }
+
+            else -> null
+        }
+
+    private fun JSONArray.toStringSet(): Set<String> =
+        buildSet {
+            for (index in 0 until length()) {
+                optString(index).takeIf { it.isNotBlank() }?.let(::add)
+            }
+        }
 
     private fun JSONArray.toAppInfoList(): List<AppInfo> =
         buildList {

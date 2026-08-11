@@ -62,7 +62,7 @@
     <string name="action_app_info">App Info</string>
     <string name="action_change_icon">Change Icon</string>
     <string name="icon_picker_no_icon_packs">No Icon packs are installed to change the app icon.</string>
-    <string name="icon_picker_download_icon_packs">Download Icon Packs</string>
+    <string name="icon_picker_download_icon_packs">Download</string>
     <string name="icon_picker_search">Search icons</string>
     <string name="icon_picker_title">Change icon for "%1$s"</string>
     <string name="action_change_wallpaper">Change Wallpaper</string>
@@ -655,6 +655,7 @@
     <string name="settings_icon_desc">Show/hide the gear icon in the search bar. Access settings anytime by swiping left or by searching.</string>
     <string name="settings_icon_required_by_gesture_desc">Set Swipe Left Gesture to Open Settings to turn this icon off.</string>
     <string name="settings_icon_pack_empty">No icon packs found.</string>
+    <string name="settings_icon_pack_description_no_packs">Set an icon pack for the app icons.</string>
     <string name="settings_icon_pack_mask_unsupported_icons">Mask unsupported icons</string>
     <string name="settings_icon_pack_option_system">System icons</string>
     <string name="settings_icon_pack_picker_title">Choose Icon Pack</string>
@@ -747,8 +748,6 @@
     <string name="settings_custom_provider_advanced_payload_error">Enter a valid JSON object.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
     <string name="settings_custom_provider_advanced_payload_title">Advanced Request Payload</string>
-    <string name="settings_direct_search_desc">Gemini, OpenAI, Claude and Groq API keys are supported</string>
-    <string name="settings_direct_search_desc_intro">Add an API key to enable AI-powered search and tools.</string>
     <string name="settings_free_api_key_tip_description">Steps to get a Gemini API Key for free.</string>
     <string name="settings_open_free_api_key_guide">Open free API key guide</string>
     <string name="settings_direct_search_grounding_label">Web Search</string>
@@ -991,6 +990,7 @@
     <string name="search_engine_google_translate">Google Translate</string>
     <string name="search_engine_google_play">Google Play</string>
     <string name="search_engine_grok">Grok</string>
+    <string name="search_engine_kagi">Kagi</string>
     <string name="search_engine_onboarding_description">When you type your search query and tap on any of these search engines, it will trigger search within these apps. You can modify them by long pressing.</string>
     <string name="search_engine_perplexity">Perplexity</string>
     <string name="search_engine_reddit">Reddit</string>

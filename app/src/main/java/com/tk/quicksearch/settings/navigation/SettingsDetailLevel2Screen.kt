@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
@@ -89,13 +88,14 @@ internal fun SettingsDetailLevel2Screen(
     onNavigateToDetail: (SettingsDetailType) -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
     onNicknameRemoved: () -> Unit = {},
+    scrollState: androidx.compose.foundation.ScrollState =
+        androidx.compose.foundation.rememberScrollState(),
 ) {
     if (!detailType.isLevel2()) return
 
     val context = LocalContext.current
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
     val imeBottom = WindowInsets.ime.getBottom(density)
     var showClearAllConfirmation by remember { mutableStateOf(false) }
     var appShortcutsSearchQuery by remember { mutableStateOf("") }
@@ -445,6 +445,7 @@ internal fun SettingsDetailLevel2Screen(
                                 onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)
                             },
                             modifier = Modifier.fillMaxWidth().weight(1f),
+                            scrollState = scrollState,
                     )
                 }
             } else if (detailType == SettingsDetailType.TASKER_INTEGRATION) {
@@ -1003,8 +1004,8 @@ internal fun SettingsDetailLevel2Screen(
                         calendarEventsRefreshSignal++
                         showCreateCalendarEventDialog = false
                     }
-                },
-            )
+                            },
+                    )
         }
     }
     }

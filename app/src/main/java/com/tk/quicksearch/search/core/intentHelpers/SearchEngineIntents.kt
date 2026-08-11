@@ -22,8 +22,26 @@ internal object SearchEngineIntents {
     private const val GOOGLE_SEARCH_ACTION = "com.google.android.googlequicksearchbox.GOOGLE_SEARCH"
     private const val GMS_SEARCH_EXTRA_QUERY = "query"
 
+    internal data class ShareIntentSpec(
+        val action: String,
+        val packageName: String,
+        val className: String,
+        val mimeType: String,
+        val text: String,
+    )
+
+    internal fun buildKagiShareIntentSpec(query: String) =
+        ShareIntentSpec(
+            action = Intent.ACTION_SEND,
+            packageName = PackageConstants.KAGI_PACKAGE,
+            className = KAGI_HOME_ACTIVITY,
+            mimeType = "text/plain",
+            text = query.trim(),
+        )
+
     fun getNativeHandler(searchEngine: SearchEngine): NativeSearchHandler? =
         when (searchEngine.getNativeLaunchMode()) {
+            SearchEngineNativeLaunchMode.CHATGPT -> ::openChatGpt
             SearchEngineNativeLaunchMode.GEMINI -> ::openGemini
             SearchEngineNativeLaunchMode.GOOGLE -> ::openGoogle
             SearchEngineNativeLaunchMode.GOOGLE_PHOTOS -> ::openGooglePhotos
@@ -35,8 +53,23 @@ internal object SearchEngineIntents {
             SearchEngineNativeLaunchMode.CLAUDE -> ::openClaude
             SearchEngineNativeLaunchMode.GROK -> ::openGrok
             SearchEngineNativeLaunchMode.GOOGLE_TRANSLATE -> ::openGoogleTranslate
+            SearchEngineNativeLaunchMode.KAGI -> ::openKagi
             SearchEngineNativeLaunchMode.NONE -> null
         }
+
+    /** Opens ChatGPT when the query is empty, otherwise opens its web search URL. */
+    fun openChatGpt(
+        context: Application,
+        query: String,
+    ) {
+        openWebBackedEngine(
+            context = context,
+            query = query,
+            searchEngine = SearchEngine.CHATGPT,
+            packageName = PackageConstants.CHATGPT_PACKAGE,
+            logTag = "ChatGptLaunch",
+        )
+    }
 
     /** Opens Google Translate with the query pre-filled as text to translate. */
     fun openGoogleTranslate(
@@ -444,6 +477,32 @@ internal object SearchEngineIntents {
         openWebUrl(context, searchUrl)
     }
 
+    /** Opens Kagi's installed Android app with the search URL, otherwise opens it in a browser. */
+    fun openKagi(
+        context: Application,
+        query: String,
+    ) {
+        val spec = buildKagiShareIntentSpec(query)
+        val appSearchIntent =
+            Intent(spec.action).apply {
+                setClassName(spec.packageName, spec.className)
+                type = spec.mimeType
+                putExtra(Intent.EXTRA_TEXT, spec.text)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+        if (IntentUtils.canResolveIntent(context, appSearchIntent)) {
+            try {
+                context.startActivity(appSearchIntent)
+                return
+            } catch (_: ActivityNotFoundException) {
+            } catch (_: SecurityException) {
+            }
+        }
+
+        openWebUrl(context, buildSearchUrl(spec.text, SearchEngine.KAGI))
+    }
+
     /** Opens a web URL in a browser. */
     private fun openWebUrl(
         context: Application,
@@ -490,4 +549,6 @@ internal object SearchEngineIntents {
 
         openWebUrl(context, buildSearchUrl(query, searchEngine))
     }
+
+    private const val KAGI_HOME_ACTIVITY = "com.kagi.search.HomeActivity"
 }

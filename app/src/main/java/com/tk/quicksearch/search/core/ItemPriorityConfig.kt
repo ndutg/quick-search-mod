@@ -121,13 +121,6 @@ object ItemPriorityConfig {
     val searchingStatePriority: List<SearchSection> = SearchSectionRegistry.orderedSections
 
     /**
-     * Section priority order for app open state (pinned items and recent apps).
-     *
-     * Priority (highest to lowest): APPS > APP_SHORTCUTS > CONTACTS > FILES > CALENDAR > SETTINGS > APP_SETTINGS
-     */
-    val appOpenStatePriority: List<SearchSection> = SearchSectionRegistry.orderedSections
-
-    /**
      * Gets the complete layout order based on the current query state.
      *
      * @param hasQuery true when query is present (searching), false when query is absent (app open)

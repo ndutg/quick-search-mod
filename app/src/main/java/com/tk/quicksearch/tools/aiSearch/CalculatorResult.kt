@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.calendar.calendarRelativeDateLabel
@@ -32,21 +30,8 @@ import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.withStyle
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.foundation.layout.paddingFromBaseline
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.ui.text.style.TextOverflow
 
 private val unitResultRegex = Regex("^([+-]?(?:\\d+(?:\\.\\d+)?|\\.\\d+))(?:\\s+(.+))?$")
 private val dateNumberRegex = Regex("(\\d+)")

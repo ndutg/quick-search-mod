@@ -106,8 +106,4 @@ object BootstrapPreferences {
             .apply()
     }
 
-    internal fun clearProcessCacheForTest() {
-        cachedLanguageTag = null
-        cachedLanguageLoaded = false
-    }
 }

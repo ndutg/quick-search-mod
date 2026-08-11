@@ -660,6 +660,7 @@
 <string name="settings_icon_desc">Afficher/masquer l\'icône d\'engrenage dans la barre de recherche. Accédez aux paramètres à tout moment en glissant vers la gauche ou en effectuant une recherche.</string>
 <string name="settings_icon_required_by_gesture_desc">Définissez le geste \"Balayer vers la gauche\" sur \"Ouvrir les paramètres\" pour masquer cette icône.</string>
 <string name="settings_icon_pack_empty">Aucun pack d\'icônes trouvé.</string>
+<string name="settings_icon_pack_description_no_packs">Définissez un pack d\'icônes pour les icônes des applications.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Masquer les icônes non prises en charge</string>
 <string name="settings_icon_pack_option_system">Icônes système</string>
 <string name="settings_icon_pack_picker_title">Choisir un pack d\'icônes</string>
@@ -752,8 +753,6 @@
 <string name="settings_custom_provider_advanced_payload_error">Saisissez un objet JSON valide.</string>
 <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
 <string name="settings_custom_provider_advanced_payload_title">Charge utile de requête avancée</string>
-<string name="settings_direct_search_desc">Les clés API Gemini, OpenAI, Claude et Groq sont prises en charge</string>
-<string name="settings_direct_search_desc_intro">Ajoutez une clé API pour activer la recherche et les outils propulsés par l\'AI.</string>
 <string name="settings_free_api_key_tip_description">Étapes pour obtenir gratuitement une clé API Gemini.</string>
 <string name="settings_open_free_api_key_guide">Ouvrir le guide de la clé API gratuite</string>
 <string name="settings_direct_search_grounding_label">Recherche Web</string>
@@ -1049,6 +1048,7 @@
     <string name="widget_custom_button_change_colour">Changer la couleur</string>
     <string name="widget_custom_button_choose_colour">Choisir la couleur du dossier</string>
     <string name="search_engine_google_translate">Google Traduction</string>
+    <string name="search_engine_kagi">Kagi</string>
     <string name="tasker_integration_title">Actions Tasker</string>
     <string name="tasker_integration_description">Créez des actions Tasker en utilisant des intents de diffusion (broadcast).</string>
     <string name="tasker_add_intent_title">Ajouter un intent de diffusion Tasker</string>
@@ -1064,5 +1064,5 @@
     <string name="tasker_broadcast_failed">Impossible d\'envoyer la diffusion Tasker</string>
     <string name="settings_more_apps_from_developer_title">Plus d’applications du développeur</string>
 <string name="icon_picker_no_icon_packs">Aucun pack d\'icônes n\'est installé pour modifier l\'icône de l\'application.</string>
-<string name="icon_picker_download_icon_packs">Télécharger des packs d\'icônes</string>
+    <string name="icon_picker_download_icon_packs">Télécharger</string>
 </resources>

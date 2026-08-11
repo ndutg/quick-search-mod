@@ -354,19 +354,14 @@ class UiPreferences(
     }
 
     fun getAppTheme(): AppTheme {
-        val saved =
-                prefs.getString(KEY_APP_THEME, null)
-                        ?: prefs.getString(KEY_OVERLAY_GRADIENT_THEME, DEFAULT_APP_THEME)
+        val saved = prefs.getString(KEY_APP_THEME, DEFAULT_APP_THEME)
         return saved?.let {
             runCatching { AppTheme.valueOf(it) }.getOrNull()
         } ?: AppTheme.MONOCHROME
     }
 
     fun setAppTheme(theme: AppTheme) {
-        prefs.edit()
-                .putString(KEY_APP_THEME, theme.name)
-                .remove(KEY_OVERLAY_GRADIENT_THEME)
-                .apply()
+        prefs.edit().putString(KEY_APP_THEME, theme.name).apply()
     }
 
     fun getAppThemeMode(): com.tk.quicksearch.search.core.AppThemeMode {
@@ -884,26 +879,14 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_DICTIONARY_ENABLED, enabled)
     }
 
-    fun getCurrencyConverterModel(): String {
-        val stored = prefs.getString(UiPreferences.KEY_CURRENCY_CONVERTER_MODEL, null)
-        if (stored != null) return stored
-        val legacy =
-                prefs.getString(UiPreferences.LEGACY_KEY_CURRENCY_CONVERTER_MODEL_PREF, "").orEmpty()
-        if (legacy.isNotEmpty()) {
-            prefs.edit()
-                    .putString(UiPreferences.KEY_CURRENCY_CONVERTER_MODEL, legacy)
-                    .remove(UiPreferences.LEGACY_KEY_CURRENCY_CONVERTER_MODEL_PREF)
-                    .apply()
-        }
-        return legacy
-    }
+    fun getCurrencyConverterModel(): String =
+        prefs.getString(UiPreferences.KEY_CURRENCY_CONVERTER_MODEL, "").orEmpty()
 
     fun setCurrencyConverterModel(modelId: String) {
         val normalized = modelId.trim()
         if (normalized.isEmpty()) return
         prefs.edit()
             .putString(UiPreferences.KEY_CURRENCY_CONVERTER_MODEL, normalized)
-            .remove(UiPreferences.LEGACY_KEY_CURRENCY_CONVERTER_MODEL_PREF)
             .apply()
     }
 
@@ -1201,8 +1184,6 @@ class UiPreferences(
         const val KEY_CLEAR_QUERY_ON_LAUNCH = "clear_query_on_launch"
         const val KEY_AUTO_CLOSE_OVERLAY = "auto_close_overlay"
         const val KEY_OVERLAY_MODE_ENABLED = "overlay_mode_enabled"
-        const val KEY_USE_WHATSAPP_FOR_MESSAGES =
-                "use_whatsapp_for_messages" // Deprecated, kept for migration
         const val KEY_MESSAGING_APP = "messaging_app"
         const val KEY_CALLING_APP = "calling_app"
         const val KEY_FIRST_LAUNCH = "first_launch"
@@ -1212,16 +1193,12 @@ class UiPreferences(
         const val KEY_WALLPAPER_BACKGROUND_ALPHA_LIGHT = "wallpaper_background_alpha_light"
         const val KEY_WALLPAPER_BLUR_RADIUS_LIGHT = "wallpaper_blur_radius_light"
         const val KEY_APP_THEME = "app_theme"
-        const val KEY_OVERLAY_GRADIENT_THEME = "overlay_gradient_theme"
         const val KEY_APP_THEME_MODE = "app_theme_mode"
         const val KEY_OVERLAY_THEME_INTENSITY = "overlay_theme_intensity"
         const val KEY_FONT_SCALE_MULTIPLIER = "font_scale_multiplier"
         const val KEY_USE_SYSTEM_FONT = "use_system_font"
         const val KEY_BACKGROUND_SOURCE = "background_source"
         const val KEY_CUSTOM_IMAGE_URI = "custom_image_uri"
-        const val KEY_SHOW_WALLPAPER_BACKGROUND = "show_wallpaper_background" // Legacy only.
-        const val KEY_OVERLAY_BACKGROUND_SOURCE = "overlay_background_source" // Legacy only.
-        const val KEY_OVERLAY_CUSTOM_IMAGE_URI = "overlay_custom_image_uri" // Legacy only.
         const val KEY_SELECTED_ICON_PACK = "selected_icon_pack"
         const val KEY_ICON_PACK_UNSUPPORTED_ICON_MASK_ENABLED =
                 "icon_pack_unsupported_icon_mask_enabled"
@@ -1241,7 +1218,6 @@ class UiPreferences(
         private const val APP_ICON_SIZE_PERCENT_DELTA = 5
         private const val MIN_APP_ICON_SIZE_PERCENT = 50
         private const val DEFAULT_APP_ICON_SIZE_PERCENT = 80
-        private const val MAX_APP_ICON_SIZE_PERCENT = 100
         const val DEFAULT_TOP_MATCHES_LIMIT = 3
         val TOP_MATCHES_LIMIT_OPTIONS = listOf(1, 3, 5, 7, 10)
         val DEFAULT_TOP_MATCHES_SECTION_ORDER: List<SearchSection>
@@ -1262,7 +1238,6 @@ class UiPreferences(
         const val KEY_HAS_SEEN_OVERLAY_ASSISTANT_TIP = "has_seen_overlay_assistant_tip"
         const val KEY_HAS_SEEN_SETTINGS_SEARCH_TIP = "has_seen_settings_search_tip"
         // Section preferences keys
-        const val KEY_SECTION_ORDER = "section_order"
         const val KEY_DISABLED_SECTIONS = "disabled_sections"
 
         // Amazon domain preferences keys
@@ -1305,7 +1280,6 @@ class UiPreferences(
         const val DEFAULT_FONT_SCALE_MULTIPLIER = 1f
         const val OVERLAY_THEME_INTENSITY_STEP = 0.1f
         const val OVERLAY_THEME_INTENSITY_DELTA_STEPS = 2
-        const val FONT_SCALE_MULTIPLIER_STEP = 0.05f
         const val MIN_OVERLAY_THEME_INTENSITY =
                 DEFAULT_OVERLAY_THEME_INTENSITY -
                         (OVERLAY_THEME_INTENSITY_STEP * OVERLAY_THEME_INTENSITY_DELTA_STEPS)
@@ -1341,9 +1315,6 @@ class UiPreferences(
         const val KEY_WORD_CLOCK_THINKING_ENABLED = "word_clock_thinking_enabled"
         const val KEY_DICTIONARY_GROUNDING_ENABLED = "dictionary_grounding_enabled"
         const val KEY_DICTIONARY_THINKING_ENABLED = "dictionary_thinking_enabled"
-        /** Previous preference key; migrated automatically on read/write. */
-        const val LEGACY_KEY_CURRENCY_CONVERTER_MODEL_PREF = "currency_converter_gemini_model"
-
         // Rate Quick Search prompt keys
         const val KEY_FIRST_APP_OPEN_TIME = "first_app_open_time"
         const val KEY_APP_OPEN_COUNT = "app_open_count"

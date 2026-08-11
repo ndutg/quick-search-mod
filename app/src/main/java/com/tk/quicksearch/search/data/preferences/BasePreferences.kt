@@ -9,7 +9,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.tk.quicksearch.search.models.FileType
 import org.json.JSONArray
-import org.json.JSONException
 
 /** Utility class containing common SharedPreferences operations. */
 object PreferenceUtils {
@@ -57,22 +56,11 @@ object PreferenceUtils {
         key: String,
     ): List<String> {
         val stored = prefs.getString(key, null)
-        return if (stored.isNullOrBlank()) {
-            emptyList()
-        } else {
-            try {
-                // Prefer JSON storage; fall back to legacy comma-separated values.
-                val jsonArray = JSONArray(stored)
-                val items = mutableListOf<String>()
-                for (index in 0 until jsonArray.length()) {
-                    val item = jsonArray.optString(index)
-                    if (item.isNotBlank()) {
-                        items.add(item)
-                    }
-                }
-                items
-            } catch (_: JSONException) {
-                stored.split(",").filter { it.isNotBlank() }
+        if (stored.isNullOrBlank()) return emptyList()
+        val jsonArray = runCatching { JSONArray(stored) }.getOrNull() ?: return emptyList()
+        return buildList {
+            for (index in 0 until jsonArray.length()) {
+                jsonArray.optString(index).takeIf(String::isNotBlank)?.let(::add)
             }
         }
     }
@@ -450,7 +438,6 @@ abstract class BasePreferences(
         const val ENCRYPTED_PREFS_NAME = "encrypted_user_preferences"
 
         // App preferences keys
-        const val KEY_HIDDEN_LEGACY = "hidden_packages"
         const val KEY_HIDDEN_SUGGESTIONS = "hidden_packages_suggestions"
         const val KEY_HIDDEN_RESULTS = "hidden_packages_results"
         const val KEY_PINNED = "pinned_packages"
@@ -479,8 +466,6 @@ abstract class BasePreferences(
         const val KEY_SHOW_FOLDERS_IN_RESULTS = "show_folders_in_results"
         const val KEY_FILE_PREVIEWS_ENABLED = "file_previews_enabled"
         const val KEY_SHOW_SYSTEM_FILES = "show_system_files"
-        // Legacy key kept only to migrate old "Hidden Files" toggle state into System Files.
-        const val KEY_SHOW_HIDDEN_FILES = "show_hidden_files"
         const val KEY_FOLDER_WHITELIST_PATTERNS = "folder_whitelist_patterns"
         const val KEY_FOLDER_BLACKLIST_PATTERNS = "folder_blacklist_patterns"
 
@@ -547,26 +532,14 @@ abstract class BasePreferences(
         const val KEY_APP_LANGUAGE_TAG = "app_language_tag"
 
         // Alias preferences keys
-        const val KEY_ALIASES_ENABLED = "aliases_enabled"
         const val KEY_ALIAS_CODE_PREFIX = "alias_code_"
-        const val KEY_ALIAS_ENABLED_PREFIX = "alias_enabled_"
-        const val KEY_SHORTCUTS_ENABLED_LEGACY = "shortcuts_enabled"
-        const val KEY_SHORTCUT_CODE_PREFIX_LEGACY = "shortcut_code_"
-        const val KEY_SHORTCUT_ENABLED_PREFIX_LEGACY = "shortcut_enabled_"
-        const val KEY_SHORTCUTS_ENABLED = KEY_SHORTCUTS_ENABLED_LEGACY
-        const val KEY_SHORTCUT_CODE_PREFIX = KEY_SHORTCUT_CODE_PREFIX_LEGACY
-        const val KEY_SHORTCUT_ENABLED_PREFIX = KEY_SHORTCUT_ENABLED_PREFIX_LEGACY
 
         // UI preferences keys
         const val KEY_ONE_HANDED_MODE = "one_handed_mode"
-        const val KEY_USE_WHATSAPP_FOR_MESSAGES =
-            "use_whatsapp_for_messages" // Deprecated, kept for migration
         const val KEY_MESSAGING_APP = "messaging_app"
         const val KEY_CALLING_APP = "calling_app"
         const val KEY_FIRST_LAUNCH = "first_launch"
         const val KEY_INSTALL_TIME = "install_time"
-        const val KEY_SHOW_WALLPAPER_BACKGROUND = "show_wallpaper_background"
-        const val KEY_CLEAR_QUERY_AFTER_SEARCH_ENGINE = "clear_query_after_search_engine"
         const val KEY_SELECTED_ICON_PACK = "selected_icon_pack"
         const val KEY_LAST_SEEN_VERSION = "last_seen_version"
         const val KEY_AI_SEARCH_SETUP_EXPANDED = "direct_search_setup_expanded"
@@ -665,8 +638,5 @@ abstract class BasePreferences(
         const val KEY_CONTACT_PRIMARY_ACTION_PREFIX = "contact_primary_action_"
         const val KEY_CONTACT_SECONDARY_ACTION_PREFIX = "contact_secondary_action_"
 
-        // One-time migration keys
-        const val KEY_CALENDAR_SECTION_DEFAULT_MIGRATION_DONE =
-            "calendar_section_default_migration_done"
     }
 }

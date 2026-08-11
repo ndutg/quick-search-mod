@@ -36,6 +36,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.searchEngines.SecondarySearchDataSource
 
 data class UnifiedSearchResults(
         val contactResults: List<ContactInfo> = emptyList(),
@@ -68,7 +69,7 @@ class UnifiedSearchHandler(
         private val appShortcutSearchHandler: AppShortcutSearchHandler,
         private val fileSearchHandler: FileSearchHandler,
         private val searchOperations: SearchOperations,
-) {
+) : SecondarySearchDataSource {
         companion object {
                 private const val ALIAS_CONTACT_RESULT_LIMIT = 60
                 private const val ALIAS_FILE_RESULT_LIMIT = 60
@@ -81,13 +82,13 @@ class UnifiedSearchHandler(
         private val isLowRamDevice by lazy { isLowRamDevice(context) }
         private val calendarPreferences by lazy { CalendarPreferences(context) }
 
-        suspend fun performSearch(
+        override suspend fun performSearch(
                 query: String,
                 enabledFileTypes: Set<FileType>,
                 sectionSearchConfig: Map<SearchSection, UnifiedSectionSearchConfig>,
-                showFolders: Boolean = true,
-                showSystemFiles: Boolean = false,
-                aliasSection: SearchSection? = null,
+                showFolders: Boolean,
+                showSystemFiles: Boolean,
+                aliasSection: SearchSection?,
         ): UnifiedSearchResults =
                 withContext(Dispatchers.IO) {
                         val trimmedQuery = query.trim()

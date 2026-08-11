@@ -29,8 +29,6 @@ data class FuzzySearchPolicy(
     val allowDistanceTwoForLongerQueries: Boolean,
     val lowRamOverride: LowRamFuzzySearchOverride = LowRamFuzzySearchOverride(),
 ) {
-    fun supportsQuery(query: String): Boolean = enabled && query.trim().length >= minimumQueryLength
-
     fun effectiveMaximumEditDistance(query: String): Int {
         if (!allowDistanceTwoForLongerQueries || query.trim().length < LONG_QUERY_MIN_LENGTH) {
             return maximumEditDistance.coerceAtMost(1)

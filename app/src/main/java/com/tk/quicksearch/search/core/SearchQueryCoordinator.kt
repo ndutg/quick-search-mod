@@ -23,6 +23,36 @@ internal data class SearchQueryAliasState(
     val lockedTaskerIntentId: String? = null,
 )
 
+internal class LatestSearchJobRunner<T>(
+    private val scope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
+    private val debounceMs: Long,
+) {
+    private var job: Job? = null
+    private val version = AtomicLong(0L)
+
+    fun submit(
+        compute: suspend () -> T,
+        publish: (T) -> Unit,
+    ) {
+        cancel()
+        val currentVersion = version.incrementAndGet()
+        job =
+            scope.launch(dispatcher) {
+                delay(debounceMs)
+                if (currentVersion != version.get()) return@launch
+                val result = compute()
+                if (currentVersion != version.get()) return@launch
+                publish(result)
+            }
+    }
+
+    fun cancel() {
+        job?.cancel()
+        version.incrementAndGet()
+    }
+}
+
 internal class SearchQueryCoordinator(
     private val scope: CoroutineScope,
     private val workerDispatcher: CoroutineDispatcher,
@@ -42,8 +72,12 @@ internal class SearchQueryCoordinator(
     private val refreshRecentItems: () -> Unit,
     private val refreshAliasRecentItems: (SearchSection?) -> Unit,
 ) {
-    private var appSearchJob: Job? = null
-    private val appSearchQueryVersion = AtomicLong(0L)
+    private val appSearchRunner =
+        LatestSearchJobRunner<List<com.tk.quicksearch.search.models.AppInfo>>(
+            scope = scope,
+            dispatcher = workerDispatcher,
+            debounceMs = appSearchDebounceMs,
+        )
 
     private sealed interface AliasQueryResolution {
         data object None : AliasQueryResolution
@@ -136,8 +170,7 @@ internal class SearchQueryCoordinator(
     }
 
     private fun cancelAppSearch() {
-        appSearchJob?.cancel()
-        appSearchQueryVersion.incrementAndGet()
+        appSearchRunner.cancel()
     }
 
     private fun setDetectedAliasMode(
@@ -675,25 +708,17 @@ internal class SearchQueryCoordinator(
         if (
             shouldRunAppSearch
         ) {
-            val currentVersion = appSearchQueryVersion.incrementAndGet()
-
-            appSearchJob =
-                scope.launch(workerDispatcher) {
-                    delay(appSearchDebounceMs)
-                    if (currentVersion != appSearchQueryVersion.get()) return@launch
-
+            appSearchRunner.submit(
+                compute = {
                     val appsSnapshot = getSearchableAppsSnapshot()
                     val gridLimit = getGridItemCount()
-
-                    val results =
-                        appSearchManager.deriveMatches(
-                            queryContext,
-                            appsSnapshot,
-                            gridLimit,
-                        )
-
-                    if (currentVersion != appSearchQueryVersion.get()) return@launch
-
+                    appSearchManager.deriveMatches(
+                        queryContext,
+                        appsSnapshot,
+                        gridLimit,
+                    )
+                },
+                publish = { results ->
                     if (results.isEmpty() && normalizedQuery.length > 1) {
                         appSearchManager.setNoMatchPrefix(normalizedQuery)
                     } else if (normalizedQuery.length <= 1) {
@@ -707,7 +732,8 @@ internal class SearchQueryCoordinator(
                             isAppSearchInProgress = false,
                         )
                     }
-                }
+                },
+            )
         } else if (shouldSkipSearch) {
             updateResultsState {
                 it.copy(

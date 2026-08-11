@@ -11,6 +11,7 @@ enum class AppSettingResultAction {
 
 enum class AppSettingsDestination {
     APPEARANCE,
+    ICON_PACKS,
     SEARCH_RESULTS,
     SEARCH_RESULT_RANKING,
     SEARCH_ENGINES,

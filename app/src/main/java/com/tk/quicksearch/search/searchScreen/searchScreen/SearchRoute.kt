@@ -77,6 +77,7 @@ import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
 import com.tk.quicksearch.search.data.CustomCalendarEventRepository
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomEventEditDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.SecondaryRankingDialog
+import com.tk.quicksearch.settings.AppearanceSettings.IconPackPickerDialog
 import com.tk.quicksearch.search.searchScreen.SearchScreen as SearchScreenComposable
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
@@ -341,6 +342,7 @@ fun SearchRoute(
     }
     var showPermissionSettingsDialog by remember { mutableStateOf(false) }
     var showSecondaryRankingDialog by remember { mutableStateOf(false) }
+    var showIconPackDialog by remember { mutableStateOf(false) }
     var pendingPermissionSettingsAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     var pendingPermissionSettingsType by remember { mutableStateOf<Int?>(null) }
     var pendingDirectDialToggleFromAppSetting by remember { mutableStateOf(false) }
@@ -463,6 +465,11 @@ fun SearchRoute(
         setting.destination?.let { destination ->
             if (destination == AppSettingsDestination.SEARCH_RESULT_RANKING) {
                 showSecondaryRankingDialog = true
+                return@appSettingClick
+            }
+            if (destination == AppSettingsDestination.ICON_PACKS) {
+                viewModel.refreshIconPacks()
+                showIconPackDialog = true
                 return@appSettingClick
             }
             if (destination == AppSettingsDestination.RATE_QUICK_SEARCH) {
@@ -1007,6 +1014,21 @@ fun SearchRoute(
                     viewModel.onQueryChange(uiState.query)
                 },
                 onDismiss = { showSecondaryRankingDialog = false },
+            )
+        }
+
+        if (showIconPackDialog) {
+            IconPackPickerDialog(
+                availableIconPacks = uiState.availableIconPacks,
+                selectedPackage = uiState.selectedIconPackPackage,
+                maskUnsupportedIcons = uiState.maskUnsupportedIconPackIcons,
+                onSelect = { packageName ->
+                    viewModel.setIconPackPackage(packageName)
+                    showIconPackDialog = false
+                },
+                onMaskUnsupportedIconsChange = viewModel::setIconPackUnsupportedIconMaskEnabled,
+                onDownloadIconPacks = viewModel::searchIconPacks,
+                onDismiss = { showIconPackDialog = false },
             )
         }
 

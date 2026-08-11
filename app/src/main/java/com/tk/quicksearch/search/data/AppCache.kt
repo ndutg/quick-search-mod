@@ -51,15 +51,20 @@ class AppCache(
      * @param apps The list of apps to cache.
      * @return true if the save operation succeeded, false otherwise.
      */
-    fun saveApps(apps: List<AppInfo>): Boolean =
+    fun saveApps(
+        apps: List<AppInfo>,
+        catalogReconciled: Boolean = true,
+    ): Boolean =
         runCatching {
             saveAppsToFile(apps)
-            prefs
-                .edit()
-                .putLong(KEY_LAST_UPDATE, System.currentTimeMillis())
-                .putBoolean(KEY_CATALOG_INVALIDATED, false)
-                .remove(KEY_REMOVED_APP_KEYS)
-                .apply()
+            if (catalogReconciled) {
+                prefs
+                    .edit()
+                    .putLong(KEY_LAST_UPDATE, System.currentTimeMillis())
+                    .putBoolean(KEY_CATALOG_INVALIDATED, false)
+                    .remove(KEY_REMOVED_APP_KEYS)
+                    .apply()
+            }
             true
         }.onFailure { exception ->
             Log.e(TAG, "Failed to save apps to cache", exception)
