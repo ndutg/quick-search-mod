@@ -172,11 +172,15 @@ fun ContentLayout(
     val queryLength = state.query.trim().length
     val isUrlQuery = remember(state.query) { isLikelyWebUrl(state.query) }
     val baseLayoutOrder = ItemPriorityConfig.getLayoutOrder(hasQuery)
-
-    // 2. Apply One-Handed Mode Reversal if needed
-    // User Requirement: "When one handed mode is enabled the same order is reversed."
-    // isReversed flag passed here reflects one-handed mode state.
-    val finalLayoutOrder = if (isReversed) baseLayoutOrder.reversed() else baseLayoutOrder
+    // reverseScrolling anchors content to the bottom but does not reverse child placement.
+    val finalLayoutOrder =
+        if (!hasQuery) {
+            homeLayoutOrder(baseLayoutOrder, isReversed)
+        } else if (isReversed) {
+            baseLayoutOrder.reversed()
+        } else {
+            baseLayoutOrder
+        }
 
     // 3. Prepare Shared Rendering Context and Params
     // We reuse the extracted logic to determine visibility and expansion states
@@ -565,6 +569,18 @@ fun ContentLayout(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
+                if (
+                    shouldShowSearchHistoryTitle(
+                        sectionContextForRecentHistoryExpansion.todayCalendarEventsList.isNotEmpty(),
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.recent_queries_toggle_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                    )
+                }
                 SearchHistorySection(
                     items = state.recentItems,
                     callingApp =
@@ -806,6 +822,33 @@ fun ContentLayout(
                 ) {
                     return@forEach
                 }
+                if (
+                    shouldRenderStandaloneTodayAgendaBeforeApps(isReversed) &&
+                        section == SearchSection.APPS &&
+                        hasStandaloneTodayCalendarSection &&
+                        !standaloneTodayCalendarRendered
+                ) {
+                    if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
+                    }
+                    HomeLoadingAnimatedContent(
+                        animationKey = "home-today-calendar",
+                        enabled = true,
+                        appearedKeys = appearedHomeContentKeys,
+                    ) {
+                        renderSection(
+                            section = SearchSection.CALENDAR,
+                            params = regularSectionParams,
+                            sectionContext =
+                                sectionContextForRecentHistoryExpansion.copy(
+                                    shouldRenderCalendar = false,
+                                    calendarEventsList = emptyList(),
+                                ),
+                        )
+                    }
+                    standaloneTodayCalendarRendered = true
+                }
                 val homeSectionContentReady =
                     section != SearchSection.APPS ||
                         (
@@ -828,6 +871,7 @@ fun ContentLayout(
                     }
                 }
                 if (
+                    !isReversed &&
                     section == SearchSection.APPS &&
                         hasStandaloneTodayCalendarSection &&
                         !standaloneTodayCalendarRendered
@@ -848,7 +892,10 @@ fun ContentLayout(
                         )
                     }
                     standaloneTodayCalendarRendered = true
-                    if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                    if (
+                        shouldDeferSearchHistoryUntilTodayEvents &&
+                            !deferredSearchHistoryRendered
+                    ) {
                         renderSearchHistoryBlock()
                         deferredSearchHistoryRendered = true
                     }
