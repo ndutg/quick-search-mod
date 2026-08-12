@@ -39,11 +39,7 @@ import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.core.AppThemeMode
-import com.tk.quicksearch.search.apps.clearAppIconMemoryCache
 import com.tk.quicksearch.search.data.UserAppPreferences
-import com.tk.quicksearch.search.data.AppShortcutRepository.clearShortcutIconMemoryCache
-import com.tk.quicksearch.search.files.clearFileThumbnailMemoryCache
-import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
@@ -51,7 +47,6 @@ import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.search.data.preferences.BootstrapPreferences
 import com.tk.quicksearch.shared.util.CrashLogManager
-import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.searchWidget.SearchWidget
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.searchWidget.VoiceSearchHandler
@@ -60,7 +55,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.atomic.AtomicInteger
 
 open class MainActivity : ComponentActivity() {
     private data class PendingContactActionPickerRequest(
@@ -91,10 +85,6 @@ open class MainActivity : ComponentActivity() {
         private const val TRACE_SUGGESTIONS_READY = "QS.Startup.Suggestions.Ready"
         private const val QUICK_SEARCH_BACKUP_EXTENSION = ".quicksearch"
 
-        // Launcher activities can be created and destroyed many times while this long-lived
-        // process remains in the background. Track overlapping replacements so cleanup only
-        // runs after the last activity has actually gone away.
-        private val activeActivityInstances = AtomicInteger(0)
     }
 
     private val searchViewModel: SearchViewModel by viewModels()
@@ -133,7 +123,7 @@ open class MainActivity : ComponentActivity() {
 
             super.onCreate(savedInstanceState)
             PinnedNotifications.show(this)
-            activeActivityInstances.incrementAndGet()
+            UiSurfaceMemoryManager.onSurfaceCreated()
             isActivityInstanceTracked = true
             window.setBackgroundDrawable(null)
 
@@ -201,36 +191,20 @@ open class MainActivity : ComponentActivity() {
         super.onDestroy()
         if (!isActivityInstanceTracked) return
         isActivityInstanceTracked = false
-        val remainingInstances =
-            activeActivityInstances.updateAndGet { count -> (count - 1).coerceAtLeast(0) }
-        if (remainingInstances == 0 && !isChangingConfigurations) {
-            clearBitmapMemoryCaches()
-            // A destroyed Compose launcher surface can leave a large unreachable bitmap/render
-            // graph in this otherwise long-lived process. Reclaim it while no UI is visible so
-            // repeated HOME launches do not accumulate until the next background OOM.
-            Runtime.getRuntime().gc()
-        }
+        UiSurfaceMemoryManager.onSurfaceDestroyed(isChangingConfigurations)
     }
 
     @Suppress("DEPRECATION")
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
-            clearBitmapMemoryCaches()
+            UiSurfaceMemoryManager.clearBitmapMemoryCaches()
         }
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        clearBitmapMemoryCaches()
-    }
-
-    private fun clearBitmapMemoryCaches() {
-        WallpaperUtils.clearMemoryCaches()
-        clearAppIconMemoryCache()
-        clearShortcutIconMemoryCache()
-        clearFileThumbnailMemoryCache()
-        IconPackManager.clearAllCaches()
+        UiSurfaceMemoryManager.clearBitmapMemoryCaches()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
