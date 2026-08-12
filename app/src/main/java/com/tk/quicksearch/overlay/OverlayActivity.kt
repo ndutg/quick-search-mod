@@ -29,7 +29,7 @@ import com.tk.quicksearch.app.startup.StartupMode
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchViewModel
-import com.tk.quicksearch.search.apps.invalidateAppIconCache
+import com.tk.quicksearch.search.apps.clearAppIconMemoryCache
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
@@ -121,7 +121,7 @@ class OverlayActivity : ComponentActivity() {
         super.onTrimMemory(level)
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
             WallpaperUtils.clearMemoryCaches()
-            invalidateAppIconCache()
+            clearAppIconMemoryCache()
             IconPackManager.clearAllCaches()
         }
     }
@@ -129,7 +129,7 @@ class OverlayActivity : ComponentActivity() {
     override fun onLowMemory() {
         super.onLowMemory()
         WallpaperUtils.clearMemoryCaches()
-        invalidateAppIconCache()
+        clearAppIconMemoryCache()
         IconPackManager.clearAllCaches()
     }
 

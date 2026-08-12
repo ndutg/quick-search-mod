@@ -39,7 +39,7 @@ import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.core.AppThemeMode
-import com.tk.quicksearch.search.apps.invalidateAppIconCache
+import com.tk.quicksearch.search.apps.clearAppIconMemoryCache
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.AppShortcutRepository.clearShortcutIconMemoryCache
 import com.tk.quicksearch.search.files.clearFileThumbnailMemoryCache
@@ -227,7 +227,7 @@ open class MainActivity : ComponentActivity() {
 
     private fun clearBitmapMemoryCaches() {
         WallpaperUtils.clearMemoryCaches()
-        invalidateAppIconCache()
+        clearAppIconMemoryCache()
         clearShortcutIconMemoryCache()
         clearFileThumbnailMemoryCache()
         IconPackManager.clearAllCaches()
