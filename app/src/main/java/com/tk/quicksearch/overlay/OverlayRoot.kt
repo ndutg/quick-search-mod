@@ -195,14 +195,6 @@ fun OverlayRoot(
                                 if (imeBottomPadding > maxLiveImeHeight) {
                                         maxLiveImeHeight = imeBottomPadding
                                 }
-                                // Once the real keyboard has reached (about) the reserved height,
-                                // hand control back to the live inset so later hide/show is normal.
-                                if (reservedKeyboardHeight > 0.dp &&
-                                        imeBottomPadding >=
-                                                reservedKeyboardHeight - KEYBOARD_RESERVE_TOLERANCE
-                                ) {
-                                        keyboardReservationFinished = true
-                                }
                         }
                         // Safety net: if the keyboard never shows (e.g. a hardware keyboard),
                         // drop the reservation so the surface expands to full height.
@@ -215,6 +207,18 @@ fun OverlayRoot(
                                 if (maxLiveImeHeight >= MIN_RESERVABLE_KEYBOARD_HEIGHT) {
                                         delay(KEYBOARD_MEASURE_SETTLE_MS)
                                         onKeyboardHeightMeasured(landscape, maxLiveImeHeight)
+                                        // Do not release the reservation while the IME inset is
+                                        // still animating. An early handoff can briefly grow the
+                                        // overlay before the next inset frame shrinks it again,
+                                        // which is especially visible with bottom-aligned
+                                        // one-handed content.
+                                        if (reservedKeyboardHeight > 0.dp &&
+                                                imeBottomPadding >=
+                                                        reservedKeyboardHeight -
+                                                                KEYBOARD_RESERVE_TOLERANCE
+                                        ) {
+                                                keyboardReservationFinished = true
+                                        }
                                 }
                         }
                         val shouldReserveKeyboardSpace =

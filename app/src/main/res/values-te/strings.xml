@@ -788,6 +788,7 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">అన్ని ఫీచర్లు</string>
+    <string name="release_notes_action_more">పాత వెర్షన్‌లను చూడండి</string>
     <string name="release_notes_previous_versions">మునుపటి వెర్షన్‌లు</string>
     <string name="release_notes_previous_versions_unavailable">మునుపటి వెర్షన్‌లను లోడ్ చేయలేకపోయాము</string>
     <string name="release_notes_action_got_it">అర్థమైంది</string>

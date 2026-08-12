@@ -7,6 +7,12 @@ import org.junit.Test
 
 class WidgetPreferencesTest {
     @Test
+    fun `default widget preferences use the white border shown by the default widget`() {
+        assertEquals(BorderColorOption.WHITE, WidgetPreferences.Default.borderColorOption)
+        assertEquals(WidgetDefaults.BORDER_COLOR_ARGB, WidgetPreferences.Default.borderColor)
+    }
+
+    @Test
     fun `standard widget with custom buttons keeps search affordance visible`() {
         val preferences =
             WidgetPreferences(

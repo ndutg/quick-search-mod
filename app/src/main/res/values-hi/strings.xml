@@ -788,6 +788,7 @@
          Settings - Backup, Feedback &amp; About
          ============================================================================ -->
     <string name="release_notes_action_all_features">सभी फ़ीचर्स</string>
+    <string name="release_notes_action_more">पुराने वर्शन देखें</string>
     <string name="release_notes_previous_versions">पिछले संस्करण</string>
     <string name="release_notes_previous_versions_unavailable">पिछले संस्करण लोड नहीं हो सके</string>
     <string name="release_notes_action_got_it">समझ गया</string>

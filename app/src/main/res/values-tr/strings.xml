@@ -787,6 +787,7 @@
      Settings - Backup, Feedback &amp; About
      ============================================================================ -->
 <string name="release_notes_action_all_features">Tüm özellikler</string>
+<string name="release_notes_action_more">Eski sürümleri görüntüle</string>
 <string name="release_notes_previous_versions">Önceki sürümler</string>
 <string name="release_notes_previous_versions_unavailable">Önceki sürümler yüklenemedi</string>
 <string name="release_notes_action_got_it">Anladım</string>

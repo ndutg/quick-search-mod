@@ -86,6 +86,17 @@ fun invalidateAppIconCache() {
     appIconCacheEpoch++
 }
 
+/**
+ * Evicts cached icon entries without replacing bitmaps already displayed by Compose.
+ *
+ * Memory callbacks use this path so a retained launcher surface does not briefly replace every
+ * visible icon with its loading placeholder. Explicit icon changes should continue to call
+ * [invalidateAppIconCache] so active icon states are refreshed.
+ */
+fun clearAppIconMemoryCache() {
+    AppIconCache.clear()
+}
+
 data class AppIconResult(
     val bitmap: ImageBitmap?,
     val isLegacy: Boolean,

@@ -788,6 +788,7 @@
      Settings - Backup, Feedback &amp; About
      ============================================================================ -->
 <string name="release_notes_action_all_features">Toutes les fonctions</string>
+<string name="release_notes_action_more">Voir les anciennes versions</string>
 <string name="release_notes_previous_versions">Versions précédentes</string>
 <string name="release_notes_previous_versions_unavailable">Impossible de charger les versions précédentes</string>
 <string name="release_notes_action_got_it">J\'ai compris</string>
