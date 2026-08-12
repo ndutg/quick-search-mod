@@ -28,7 +28,7 @@ class ReleaseNotesRepository {
                 if (release.optBoolean("draft") || release.optBoolean("prerelease")) continue
 
                 val versionName = release.getString("tag_name").normalizeVersionName()
-                if (versionName == normalizedCurrentVersion) continue
+                if (normalizedCurrentVersion == null || !isVersionBefore(versionName, normalizedCurrentVersion)) continue
 
                 add(
                     PastReleaseNotes(
@@ -69,10 +69,24 @@ class ReleaseNotesRepository {
                 .build()
         private val releasesRequest =
             Request.Builder()
-                .url("https://api.github.com/repos/teja2495/quick-search/releases?per_page=100")
+                .url("https://api.github.com/repos/teja2495/quick-search/releases?per_page=10")
                 .header("Accept", "application/vnd.github+json")
                 .build()
     }
 }
 
 private fun String.normalizeVersionName(): String = removePrefix("v").trim()
+
+internal fun isVersionBefore(versionName: String, currentVersionName: String): Boolean {
+    val versionParts = versionName.split('.').map { it.toIntOrNull() ?: 0 }
+    val currentVersionParts = currentVersionName.split('.').map { it.toIntOrNull() ?: 0 }
+    val partCount = maxOf(versionParts.size, currentVersionParts.size)
+
+    for (index in 0 until partCount) {
+        val comparison =
+            versionParts.getOrElse(index) { 0 }.compareTo(currentVersionParts.getOrElse(index) { 0 })
+        if (comparison != 0) return comparison < 0
+    }
+
+    return false
+}

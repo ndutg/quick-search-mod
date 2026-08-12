@@ -19,16 +19,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import kotlin.math.floor
@@ -40,6 +50,25 @@ fun WidgetPreviewCard(
 ) {
     val previewState = state.enforceVariantConstraints(widgetVariant)
     val context = LocalContext.current
+    val hasWallpaperAccess = remember(context) { WallpaperUtils.hasWallpaperAccessPermission(context) }
+    val wallpaperBitmap by
+        produceState<ImageBitmap?>(
+            initialValue =
+                if (hasWallpaperAccess) {
+                    WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
+                } else {
+                    null
+                },
+            key1 = hasWallpaperAccess,
+        ) {
+            value =
+                if (hasWallpaperAccess) {
+                    WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
+                        ?: WallpaperUtils.getWallpaperBitmap(context)?.asImageBitmap()
+                } else {
+                    null
+                }
+        }
     val colors = calculatePreviewColors(previewState)
     val borderShape = RoundedCornerShape(previewState.borderRadiusDp.dp)
     val shouldShowBorder = previewState.borderWidthDp >= WidgetConfigConstants.BORDER_VISIBILITY_THRESHOLD
@@ -63,16 +92,27 @@ fun WidgetPreviewCard(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(
-                    top = WidgetConfigConstants.PREVIEW_TOP_PADDING,
-                    bottom = WidgetConfigConstants.PREVIEW_BOTTOM_PADDING,
+                .height(previewBarHeight + (PREVIEW_WALLPAPER_VERTICAL_PADDING * 2))
+                .clip(DesignTokens.ShapeLarge)
+                .then(
+                    wallpaperBitmap?.let { bitmap ->
+                        Modifier.paint(
+                            painter = BitmapPainter(bitmap),
+                            sizeToIntrinsics = false,
+                            contentScale = ContentScale.Crop,
+                        )
+                    } ?: Modifier,
                 ),
+        contentAlignment = Alignment.Center,
     ) {
         Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = outerHorizontalPadding, end = outerHorizontalPadding)
+                    .padding(
+                        start = outerHorizontalPadding + PREVIEW_WALLPAPER_HORIZONTAL_PADDING,
+                        end = outerHorizontalPadding + PREVIEW_WALLPAPER_HORIZONTAL_PADDING,
+                    )
                     .height(previewBarHeight)
                     .background(colors.background, shape = borderShape)
                     .then(
@@ -284,6 +324,8 @@ private fun computeSafePreviewOuterPadding(
 private fun Float.finiteOr(default: Float): Float = if (isFinite()) this else default
 
 private const val PREVIEW_MIN_RENDERABLE_WIDTH_DP = 48f
+private val PREVIEW_WALLPAPER_HORIZONTAL_PADDING = 8.dp
+private val PREVIEW_WALLPAPER_VERTICAL_PADDING = 16.dp
 
 private data class PreviewColors(
     val background: Color,

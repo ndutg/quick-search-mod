@@ -154,6 +154,12 @@ fun ContentLayout(
             expandedCardMaxHeight = expandedCardMaxHeight,
         )
     val hasQuery = state.query.isNotBlank()
+    // The overlay already animates its full surface on entry. In one-handed mode, layering every
+    // async Home section height animation on top of that bottom-anchored surface makes early
+    // content briefly reflow in the opposite direction. App suggestions are the exception: they
+    // arrive after the agenda is visible, so their height must expand instead of being inserted in
+    // one frame and jumping the agenda to its final position.
+    val animateHomeLoadingContent = !(isOverlayPresentation && state.oneHandedMode)
     var suggestionsAppGridHasAppeared by remember { mutableStateOf(false) }
     val appearedHomeContentKeys = remember { mutableSetOf<String>() }
     val effectiveAppsParams = appsParams.copy(
@@ -163,20 +169,25 @@ fun ContentLayout(
                 suggestionsAppGridHasAppeared = true
             }
         },
-        // Cached suggestions are already complete before this grid is rendered. Showing them
-        // directly avoids a first-display fade that can look like the icons blink on launch.
-        suppressSuggestionsEnterAnimation = true,
+        // The suggestions are already in their final order when this grid is rendered. Animate
+        // only its first appearance so the late section joins the agenda transition smoothly;
+        // subsequent recompositions keep the settled grid fully visible.
+        suppressSuggestionsEnterAnimation = suggestionsAppGridHasAppeared,
     )
 
     // 1. Determine Layout Order based on ItemPriorityConfig
     val queryLength = state.query.trim().length
     val isUrlQuery = remember(state.query) { isLikelyWebUrl(state.query) }
     val baseLayoutOrder = ItemPriorityConfig.getLayoutOrder(hasQuery)
-
-    // 2. Apply One-Handed Mode Reversal if needed
-    // User Requirement: "When one handed mode is enabled the same order is reversed."
-    // isReversed flag passed here reflects one-handed mode state.
-    val finalLayoutOrder = if (isReversed) baseLayoutOrder.reversed() else baseLayoutOrder
+    // reverseScrolling anchors content to the bottom but does not reverse child placement.
+    val finalLayoutOrder =
+        if (!hasQuery) {
+            homeLayoutOrder(baseLayoutOrder, isReversed)
+        } else if (isReversed) {
+            baseLayoutOrder.reversed()
+        } else {
+            baseLayoutOrder
+        }
 
     // 3. Prepare Shared Rendering Context and Params
     // We reuse the extracted logic to determine visibility and expansion states
@@ -558,13 +569,25 @@ fun ContentLayout(
         LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.SearchHistoryRendered") }
         HomeLoadingAnimatedContent(
             animationKey = "home-search-history",
-            enabled = !hasQuery,
+            enabled = !hasQuery && animateHomeLoadingContent,
             appearedKeys = appearedHomeContentKeys,
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
+                if (
+                    shouldShowSearchHistoryTitle(
+                        sectionContextForRecentHistoryExpansion.todayCalendarEventsList.isNotEmpty(),
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.recent_queries_toggle_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                    )
+                }
                 SearchHistorySection(
                     items = state.recentItems,
                     callingApp =
@@ -806,35 +829,19 @@ fun ContentLayout(
                 ) {
                     return@forEach
                 }
-                val homeSectionContentReady =
-                    section != SearchSection.APPS ||
-                        (
-                            sectionContext.shouldRenderApps &&
-                                (
-                                    effectiveAppsParams.hasAppResults && effectiveAppsParams.apps.isNotEmpty() ||
-                                        effectiveAppsParams.showAllAppsButton && effectiveAppsParams.allApps.isNotEmpty()
-                                )
-                        )
-                if (homeSectionContentReady) {
-                    HomeLoadingAnimatedContent(
-                        animationKey = "home-section-${section.name}",
-                        enabled = !hasQuery && !isHomeCalendarExpanded,
-                        fadeContent = section != SearchSection.APPS,
-                        appearedKeys = appearedHomeContentKeys,
-                    ) {
-                        renderHomePinnedSection(section) {
-                            renderSection(section, regularSectionParams, sectionContext)
-                        }
-                    }
-                }
                 if (
-                    section == SearchSection.APPS &&
+                    shouldRenderStandaloneTodayAgendaBeforeApps(isReversed) &&
+                        section == SearchSection.APPS &&
                         hasStandaloneTodayCalendarSection &&
                         !standaloneTodayCalendarRendered
                 ) {
+                    if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
+                    }
                     HomeLoadingAnimatedContent(
                         animationKey = "home-today-calendar",
-                        enabled = true,
+                        enabled = animateHomeLoadingContent,
                         appearedKeys = appearedHomeContentKeys,
                     ) {
                         renderSection(
@@ -848,7 +855,57 @@ fun ContentLayout(
                         )
                     }
                     standaloneTodayCalendarRendered = true
-                    if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                }
+                val homeSectionContentReady =
+                    section != SearchSection.APPS ||
+                        (
+                            sectionContext.shouldRenderApps &&
+                                (
+                                    effectiveAppsParams.hasAppResults && effectiveAppsParams.apps.isNotEmpty() ||
+                                        effectiveAppsParams.showAllAppsButton && effectiveAppsParams.allApps.isNotEmpty()
+                                )
+                        )
+                if (homeSectionContentReady) {
+                    HomeLoadingAnimatedContent(
+                        animationKey = "home-section-${section.name}",
+                        enabled =
+                            !hasQuery &&
+                                !isHomeCalendarExpanded &&
+                                (animateHomeLoadingContent || section == SearchSection.APPS),
+                        fadeContent = section != SearchSection.APPS,
+                        appearedKeys = appearedHomeContentKeys,
+                    ) {
+                        renderHomePinnedSection(section) {
+                            renderSection(section, regularSectionParams, sectionContext)
+                        }
+                    }
+                }
+                if (
+                    !isReversed &&
+                    section == SearchSection.APPS &&
+                        hasStandaloneTodayCalendarSection &&
+                        !standaloneTodayCalendarRendered
+                ) {
+                    HomeLoadingAnimatedContent(
+                        animationKey = "home-today-calendar",
+                        enabled = animateHomeLoadingContent,
+                        appearedKeys = appearedHomeContentKeys,
+                    ) {
+                        renderSection(
+                            section = SearchSection.CALENDAR,
+                            params = regularSectionParams,
+                            sectionContext =
+                                sectionContextForRecentHistoryExpansion.copy(
+                                    shouldRenderCalendar = false,
+                                    calendarEventsList = emptyList(),
+                                ),
+                        )
+                    }
+                    standaloneTodayCalendarRendered = true
+                    if (
+                        shouldDeferSearchHistoryUntilTodayEvents &&
+                            !deferredSearchHistoryRendered
+                    ) {
                         renderSearchHistoryBlock()
                         deferredSearchHistoryRendered = true
                     }

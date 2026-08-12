@@ -66,9 +66,9 @@ internal object WidgetButtonSlotConfig {
 }
 
 internal object WidgetDefaults {
-    val BORDER_COLOR = AppColors.WidgetBorderDefault
+    val BORDER_COLOR = AppColors.WidgetBorder
     val BORDER_COLOR_ARGB = BORDER_COLOR.toArgb()
-    val BORDER_COLOR_OPTION = BorderColorOption.BLACK
+    val BORDER_COLOR_OPTION = BorderColorOption.WHITE
     const val BORDER_RADIUS_DP = 29f
     const val BORDER_WIDTH_DP = 1.5f
     const val SHOW_LABEL = true

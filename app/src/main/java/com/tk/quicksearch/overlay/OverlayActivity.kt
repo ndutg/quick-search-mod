@@ -26,12 +26,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.app.startup.StartupCoordinator
 import com.tk.quicksearch.app.startup.StartupMode
+import com.tk.quicksearch.app.UiSurfaceMemoryManager
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchViewModel
-import com.tk.quicksearch.search.apps.invalidateAppIconCache
 import com.tk.quicksearch.search.data.UserAppPreferences
-import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.WallpaperUtils
@@ -47,6 +46,7 @@ class OverlayActivity : ComponentActivity() {
     private lateinit var startupCoordinator: StartupCoordinator
     private lateinit var voiceSearchHandler: VoiceSearchHandler
     private var animationToken: Long = 0L
+    private var isActivityInstanceTracked = false
     private val voiceInputLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             voiceSearchHandler.processVoiceInputResult(result, searchViewModel::onQueryChange)
@@ -68,6 +68,8 @@ class OverlayActivity : ComponentActivity() {
         enableEdgeToEdge(statusBarStyle, navigationBarStyle)
 
         super.onCreate(savedInstanceState)
+        UiSurfaceMemoryManager.onSurfaceCreated()
+        isActivityInstanceTracked = true
 
         // Disable activity opening animation for instant appearance
         @Suppress("DEPRECATION")
@@ -116,21 +118,24 @@ class OverlayActivity : ComponentActivity() {
         searchViewModel.handleOnStop()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (!isActivityInstanceTracked) return
+        isActivityInstanceTracked = false
+        UiSurfaceMemoryManager.onSurfaceDestroyed(isChangingConfigurations)
+    }
+
     @Suppress("DEPRECATION")
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
-            WallpaperUtils.clearMemoryCaches()
-            invalidateAppIconCache()
-            IconPackManager.clearAllCaches()
+            UiSurfaceMemoryManager.clearBitmapMemoryCaches()
         }
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        WallpaperUtils.clearMemoryCaches()
-        invalidateAppIconCache()
-        IconPackManager.clearAllCaches()
+        UiSurfaceMemoryManager.clearBitmapMemoryCaches()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

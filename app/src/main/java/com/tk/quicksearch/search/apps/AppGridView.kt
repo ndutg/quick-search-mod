@@ -14,7 +14,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -130,7 +129,6 @@ private val TopResultIndicatorTopPadding = 0.dp
 private val TopResultIndicatorBottomPadding = DesignTokens.SpacingSmall
 private val TopResultIndicatorHorizontalPadding = DesignTokens.SpacingSmall
 private const val TopResultIndicatorBackgroundAlpha = 0.12f
-private const val TopResultIndicatorBorderAlpha = 0.22f
 private const val LightWallpaperAppIconShadowAmbientAlpha = 0.28f
 private const val LightWallpaperAppIconShadowSpotAlpha = 0.45f
 private const val ThemedMonochromeGlyphScale = 1.42f
@@ -1399,15 +1397,6 @@ private fun AppGridItem(
                                                 TopResultIndicatorBackgroundAlpha * indicatorAlpha,
                                 ),
                         shape = DesignTokens.ShapeLarge,
-                    )
-                    .then(
-                        if (showWallpaperBackground) {
-                            Modifier.border(
-                                width = DesignTokens.BorderWidth,
-                                color = indicatorFillBase.copy(alpha = TopResultIndicatorBorderAlpha * indicatorAlpha),
-                                shape = DesignTokens.ShapeLarge,
-                            )
-                        } else Modifier
                     )
                     .padding(
                         top = TopResultIndicatorTopPadding,
