@@ -1039,6 +1039,8 @@
 <string name="settings_create_new_tool_button">Создать новый инструмент</string>
 <string name="settings_custom_tool_alias_hint">Ключевое слово для запуска этого инструмента</string>
 <string name="settings_custom_tool_alias_label">Алиас</string>
+<string name="settings_home_text_color_title">Цвет текста на главном экране</string>
+<string name="settings_home_text_color_desc">Названия приложений, заголовки разделов и т. д.</string>
 <string name="settings_custom_tool_delete_button">Удалить инструмент</string>
 <string name="settings_custom_tool_editor_title">Кастомный инструмент</string>
 <string name="settings_custom_tool_name_label">Название инструмента</string>

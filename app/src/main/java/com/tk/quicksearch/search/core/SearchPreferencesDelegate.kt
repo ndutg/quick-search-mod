@@ -49,6 +49,7 @@ internal interface SearchPreferencesStateAccess {
     var overlayThemeIntensity: Float
     var fontScaleMultiplier: Float
     var useSystemFont: Boolean
+    var homeTextColorOverride: HomeTextColor?
     var backgroundSource: BackgroundSource
     var customImageUri: String?
     var clearQueryOnLaunch: Boolean
@@ -495,11 +496,31 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setHomeTextColorOverride(color: HomeTextColor) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.homeTextColorOverride == color) return@launch
+            userPreferences.setHomeTextColorOverride(color)
+            stateAccess.homeTextColorOverride = color
+            updateConfigState { it.copy(homeTextColorOverride = color) }
+        }
+    }
+
+    fun resetHomeTextColorForNewWallpaper() {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.homeTextColorOverride == null) return@launch
+            userPreferences.clearHomeTextColorOverride()
+            stateAccess.homeTextColorOverride = null
+            updateConfigState { it.copy(homeTextColorOverride = null) }
+        }
+    }
+
     fun setBackgroundSource(source: BackgroundSource) {
         scope.launch(Dispatchers.IO) {
             if (stateAccess.backgroundSource == source) return@launch
             userPreferences.setBackgroundSource(source)
+            userPreferences.clearHomeTextColorOverride()
             stateAccess.backgroundSource = source
+            stateAccess.homeTextColorOverride = null
             val autoTheme =
                 if (source != BackgroundSource.THEME && stateAccess.appTheme != AppTheme.MONOCHROME) {
                     userPreferences.setAppTheme(AppTheme.MONOCHROME)
@@ -513,6 +534,7 @@ internal class SearchPreferencesDelegate(
                     backgroundSource = source,
                     showWallpaperBackground = source != BackgroundSource.THEME,
                     appTheme = autoTheme ?: it.appTheme,
+                    homeTextColorOverride = null,
                 )
             }
             stateAccess.saveStartupSurfaceSnapshotAsync(
@@ -527,8 +549,10 @@ internal class SearchPreferencesDelegate(
             val normalized = uri?.trim()?.takeIf { it.isNotEmpty() }
             if (stateAccess.customImageUri == normalized) return@launch
             userPreferences.setCustomImageUri(normalized)
+            userPreferences.clearHomeTextColorOverride()
             stateAccess.customImageUri = normalized
-            updateConfigState { it.copy(customImageUri = normalized) }
+            stateAccess.homeTextColorOverride = null
+            updateConfigState { it.copy(customImageUri = normalized, homeTextColorOverride = null) }
             stateAccess.saveStartupSurfaceSnapshotAsync(
                 forcePreviewRefresh = true,
                 allowDuringQuery = true,

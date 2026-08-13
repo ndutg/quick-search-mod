@@ -1023,6 +1023,8 @@
     <string name="settings_create_new_tool_button">Δημιουργία νέου εργαλείου</string>
     <string name="settings_custom_tool_alias_hint">Μια λέξη-κλειδί για την ενεργοποίηση αυτού του εργαλείου</string>
     <string name="settings_custom_tool_alias_label">Συντομογραφία</string>
+    <string name="settings_home_text_color_title">Χρώμα κειμένου στην αρχική οθόνη</string>
+    <string name="settings_home_text_color_desc">Ετικέτες εφαρμογών, τίτλοι ενοτήτων κ.λπ.</string>
     <string name="settings_custom_tool_delete_button">Διαγραφή εργαλείου</string>
     <string name="settings_custom_tool_editor_title">Προσαρμοσμένο εργαλείο</string>
     <string name="settings_custom_tool_name_label">Όνομα εργαλείου</string>

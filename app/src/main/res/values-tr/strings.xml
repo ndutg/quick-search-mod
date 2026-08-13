@@ -1022,6 +1022,8 @@
 <string name="settings_create_new_tool_button">Yeni araç oluştur</string>
 <string name="settings_custom_tool_alias_hint">Bu aracı tetikleyecek bir anahtar kelime</string>
 <string name="settings_custom_tool_alias_label">Kısaltma</string>
+<string name="settings_home_text_color_title">Ana ekrandaki metin rengi</string>
+<string name="settings_home_text_color_desc">Uygulama etiketleri, bölüm başlıkları vb.</string>
 <string name="settings_custom_tool_delete_button">Aracı sil</string>
 <string name="settings_custom_tool_editor_title">Özel araç</string>
 <string name="settings_custom_tool_name_label">Araç adı</string>

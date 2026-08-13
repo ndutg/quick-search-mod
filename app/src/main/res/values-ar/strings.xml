@@ -1024,6 +1024,8 @@
     <string name="settings_create_new_tool_button">إنشاء أداة جديدة</string>
     <string name="settings_custom_tool_alias_hint">كلمة مفتاحية لتشغيل هذه الأداة</string>
     <string name="settings_custom_tool_alias_label">الاسم المستعار</string>
+    <string name="settings_home_text_color_title">لون النص في الصفحة الرئيسية</string>
+    <string name="settings_home_text_color_desc">أسماء التطبيقات، عناوين الأقسام، إلخ.</string>
     <string name="settings_custom_tool_delete_button">حذف الأداة</string>
     <string name="settings_custom_tool_editor_title">أداة مخصصة</string>
     <string name="settings_custom_tool_name_label">اسم الأداة</string>

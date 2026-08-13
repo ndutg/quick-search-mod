@@ -411,6 +411,8 @@ class SearchViewModel(
     private var fontScaleMultiplier by legacyPreferenceState::fontScaleMultiplier
     @set:JvmName("setUseSystemFontLegacy")
     private var useSystemFont by legacyPreferenceState::useSystemFont
+    @set:JvmName("setHomeTextColorOverrideLegacy")
+    private var homeTextColorOverride by legacyPreferenceState::homeTextColorOverride
     @set:JvmName("setBackgroundSourceLegacy")
     private var backgroundSource by legacyPreferenceState::backgroundSource
     @set:JvmName("setCustomImageUriLegacy")

@@ -420,6 +420,19 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_USE_SYSTEM_FONT, enabled)
     }
 
+    fun getHomeTextColorOverride(): com.tk.quicksearch.search.core.HomeTextColor? =
+            prefs.getString(UiPreferences.KEY_HOME_TEXT_COLOR_OVERRIDE, null)?.let { value ->
+                runCatching { com.tk.quicksearch.search.core.HomeTextColor.valueOf(value) }.getOrNull()
+            }
+
+    fun setHomeTextColorOverride(color: com.tk.quicksearch.search.core.HomeTextColor) {
+        prefs.edit().putString(UiPreferences.KEY_HOME_TEXT_COLOR_OVERRIDE, color.name).apply()
+    }
+
+    fun clearHomeTextColorOverride() {
+        prefs.edit().remove(UiPreferences.KEY_HOME_TEXT_COLOR_OVERRIDE).apply()
+    }
+
     fun getAppLanguageTag(): String? = prefs.getString(BasePreferences.KEY_APP_LANGUAGE_TAG, null)?.takeIf { it.isNotBlank() }
 
     fun setAppLanguageTag(languageTag: String?) {
@@ -1197,6 +1210,7 @@ class UiPreferences(
         const val KEY_OVERLAY_THEME_INTENSITY = "overlay_theme_intensity"
         const val KEY_FONT_SCALE_MULTIPLIER = "font_scale_multiplier"
         const val KEY_USE_SYSTEM_FONT = "use_system_font"
+        const val KEY_HOME_TEXT_COLOR_OVERRIDE = "home_text_color_override"
         const val KEY_BACKGROUND_SOURCE = "background_source"
         const val KEY_CUSTOM_IMAGE_URI = "custom_image_uri"
         const val KEY_SELECTED_ICON_PACK = "selected_icon_pack"

@@ -1022,6 +1022,8 @@
     <string name="settings_create_new_tool_button">Crea nuovo strumento</string>
     <string name="settings_custom_tool_alias_hint">Una parola chiave per attivare questo strumento</string>
     <string name="settings_custom_tool_alias_label">Alias</string>
+    <string name="settings_home_text_color_title">Colore del testo nella schermata Home</string>
+    <string name="settings_home_text_color_desc">Etichette delle app, titoli delle sezioni ecc.</string>
     <string name="settings_custom_tool_delete_button">Elimina strumento</string>
     <string name="settings_custom_tool_editor_title">Strumento personalizzato</string>
     <string name="settings_custom_tool_name_label">Nome strumento</string>

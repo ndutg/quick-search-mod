@@ -1129,6 +1129,14 @@ class UserAppPreferences(
 
     fun setUseSystemFont(enabled: Boolean) = uiPreferences.setUseSystemFont(enabled)
 
+    fun getHomeTextColorOverride(): com.tk.quicksearch.search.core.HomeTextColor? =
+            uiPreferences.getHomeTextColorOverride()
+
+    fun setHomeTextColorOverride(color: com.tk.quicksearch.search.core.HomeTextColor) =
+            uiPreferences.setHomeTextColorOverride(color)
+
+    fun clearHomeTextColorOverride() = uiPreferences.clearHomeTextColorOverride()
+
     fun getAppLanguageTag(): String? = uiPreferences.getAppLanguageTag()
 
     fun setAppLanguageTag(languageTag: String?) = uiPreferences.setAppLanguageTag(languageTag)

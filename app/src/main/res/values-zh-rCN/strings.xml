@@ -1015,6 +1015,8 @@
     <string name="settings_create_new_tool_button">新建自定义工具</string>
     <string name="settings_custom_tool_alias_hint">快速呼出调用此专属工具的关联关键字别名</string>
     <string name="settings_custom_tool_alias_label">别名关键词</string>
+    <string name="settings_home_text_color_title">主屏幕文字颜色</string>
+    <string name="settings_home_text_color_desc">应用标签、分区标题等。</string>
     <string name="settings_custom_tool_delete_button">删除该工具</string>
     <string name="settings_custom_tool_editor_title">自定义工具面板</string>
     <string name="settings_custom_tool_name_label">工具显示名称</string>

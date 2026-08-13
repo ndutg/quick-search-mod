@@ -171,6 +171,7 @@ internal fun SearchScreenStateManagement(
     onDismissSearchHistoryTip: () -> Unit,
     onWelcomeAnimationCompleted: (() -> Unit)?,
     onWallpaperLoaded: (() -> Unit)?,
+    onSystemWallpaperChanged: (() -> Unit)?,
     onCustomAction: (ContactInfo, ContactCardAction) -> Unit,
     getPrimaryContactCardAction: (Long) -> ContactCardAction?,
     getSecondaryContactCardAction: (Long) -> ContactCardAction?,
@@ -362,6 +363,7 @@ internal fun SearchScreenStateManagement(
     val (imageBitmap, useImageBackground, useMonoThemeFallback) = SearchScreenWallpaperLogic(
         state = state,
         onWallpaperLoaded = onWallpaperLoaded,
+        onSystemWallpaperChanged = onSystemWallpaperChanged,
         isOverlayPresentation = isOverlayPresentation,
     )
 

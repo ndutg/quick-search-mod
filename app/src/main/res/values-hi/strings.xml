@@ -1023,6 +1023,8 @@
     <string name="settings_create_new_tool_button">नया टूल बनाएं</string>
     <string name="settings_custom_tool_alias_hint">इस टूल को ट्रिगर करने के लिए एक कीवर्ड</string>
     <string name="settings_custom_tool_alias_label">उपनाम</string>
+    <string name="settings_home_text_color_title">होम में टेक्स्ट का रंग</string>
+    <string name="settings_home_text_color_desc">ऐप लेबल, सेक्शन शीर्षक आदि</string>
     <string name="settings_custom_tool_delete_button">टूल हटाएं</string>
     <string name="settings_custom_tool_editor_title">कस्टम टूल</string>
     <string name="settings_custom_tool_name_label">टूल नाम</string>

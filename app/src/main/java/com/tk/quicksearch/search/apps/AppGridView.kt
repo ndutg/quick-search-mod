@@ -107,6 +107,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
+import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.shared.ui.theme.LocalIsSystemWallpaperActive
 import com.tk.quicksearch.shared.ui.theme.LocalWallpaperDynamicAccentActive
 import com.tk.quicksearch.shared.util.getAppGridColumns
@@ -789,8 +790,8 @@ private fun AppSuggestionTabStrip(
         selectedIndex: Int,
         onSelectedIndexChange: (Int) -> Unit,
 ) {
-    val activeColor = MaterialTheme.colorScheme.onSurface
-    val inactiveColor = MaterialTheme.colorScheme.onSurface.copy(alpha = SuggestionTabInactiveAlpha)
+    val activeColor = homeTextColor()
+    val inactiveColor = activeColor.copy(alpha = SuggestionTabInactiveAlpha)
     val leftTab = tabs.getOrNull(selectedIndex - 1)
     val rightTab = tabs.getOrNull(selectedIndex + 1)
 
@@ -1698,12 +1699,7 @@ private fun AppLabelText(
         appName: String,
         isOverlayPresentation: Boolean,
 ) {
-    val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
-    val labelColor = when (imageBackgroundIsDark) {
-        true -> Color.White
-        false -> Color.Black
-        null -> MaterialTheme.colorScheme.onSurface
-    }
+    val labelColor = homeTextColor()
     Spacer(
             modifier =
                     Modifier.height(

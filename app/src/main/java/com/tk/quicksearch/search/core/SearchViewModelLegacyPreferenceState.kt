@@ -42,6 +42,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var overlayThemeIntensity: Float = UiPreferences.DEFAULT_OVERLAY_THEME_INTENSITY
     var fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER
     var useSystemFont: Boolean = false
+    var homeTextColorOverride: HomeTextColor? = null
     var backgroundSource: BackgroundSource = BackgroundSource.THEME
     var customImageUri: String? = null
     var lockedShortcutTarget: SearchTarget? = null

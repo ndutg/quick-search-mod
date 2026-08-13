@@ -25,6 +25,7 @@ import com.tk.quicksearch.search.files.FileResultsSection
 import com.tk.quicksearch.search.notes.NotesResultsSection
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.app.startup.StartupTrace
 import kotlinx.coroutines.delay
 
@@ -381,7 +382,7 @@ private fun renderCalendarSection(
                 Text(
                     text = stringResource(R.string.agenda_title),
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = homeTextColor(),
                     modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
                 )
             }

@@ -7,6 +7,7 @@ import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.LauncherAppIcon
+import com.tk.quicksearch.search.core.HomeTextColor
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchUiState
@@ -50,6 +51,8 @@ sealed interface SettingsCommand {
     data class FontScaleMultiplier(val multiplier: Float) : SettingsCommand
 
     data class UseSystemFont(val enabled: Boolean) : SettingsCommand
+
+    data class HomeTextColorOverride(val color: HomeTextColor) : SettingsCommand
 
     data class WallpaperBackgroundAlpha(val alpha: Float) : SettingsCommand
 
@@ -163,6 +166,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
             setSearchEngineCompactRowCount(command.rowCount)
         is SettingsCommand.FontScaleMultiplier -> setFontScaleMultiplier(command.multiplier)
         is SettingsCommand.UseSystemFont -> setUseSystemFont(command.enabled)
+        is SettingsCommand.HomeTextColorOverride -> setHomeTextColorOverride(command.color)
         is SettingsCommand.WallpaperBackgroundAlpha -> setWallpaperBackgroundAlpha(command.alpha)
         is SettingsCommand.WallpaperBlurRadius -> setWallpaperBlurRadius(command.radius)
         is SettingsCommand.OverlayThemeIntensity -> setOverlayThemeIntensity(command.intensity)

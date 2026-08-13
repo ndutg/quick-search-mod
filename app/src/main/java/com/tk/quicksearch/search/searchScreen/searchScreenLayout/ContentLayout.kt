@@ -46,6 +46,7 @@ import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.searchEngines.compact.NoResultsSearchEngineCards
 import com.tk.quicksearch.search.webSuggestions.WebSuggestionsSection
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.tools.aiSearch.CurrencyConverterResult
 import com.tk.quicksearch.tools.aiSearch.CalculatorResult
 import com.tk.quicksearch.tools.aiSearch.DictionaryResult
@@ -484,14 +485,14 @@ fun ContentLayout(
                         Icon(
                             imageVector = sectionIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = homeTextColor(),
                             modifier = Modifier.size(DesignTokens.IconSizeSmall),
                         )
                     }
                     Text(
                         text = stringResource(metadata.sectionLabelRes),
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = homeTextColor(),
                     )
                 }
                 Icon(
@@ -584,7 +585,7 @@ fun ContentLayout(
                     Text(
                         text = stringResource(R.string.recent_queries_toggle_title),
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = homeTextColor(),
                         modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
                     )
                 }
@@ -1230,7 +1231,7 @@ private fun UnifiedPinnedItemsBlock(
             Text(
                 text = stringResource(R.string.app_suggestions_tab_pinned),
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = homeTextColor(),
             )
             Icon(
                 imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,

@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
+import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.DirectDialOption
@@ -134,6 +135,7 @@ fun SearchScreen(
     onRefreshAvailableGeminiModels: () -> Unit = {},
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
     onWallpaperLoaded: (() -> Unit)? = null,
+    onSystemWallpaperChanged: (() -> Unit)? = null,
     isOverlayPresentation: Boolean = false,
     onOpenAppSettings: () -> Unit,
     onOpenCalendarPermissionSettings: () -> Unit,
@@ -341,6 +343,7 @@ fun SearchScreen(
         onDismissSearchHistoryTip = onDismissSearchHistoryTip,
         onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
         onWallpaperLoaded = onWallpaperLoaded,
+        onSystemWallpaperChanged = onSystemWallpaperChanged,
         onCustomAction = onCustomAction,
         getPrimaryContactCardAction = getPrimaryContactCardAction,
         getSecondaryContactCardAction = getSecondaryContactCardAction,
@@ -430,7 +433,10 @@ fun SearchScreen(
         }
     }
 
-    CompositionLocalProvider(LocalImageBackgroundIsDark provides imageBackgroundIsDark) {
+    CompositionLocalProvider(
+        LocalImageBackgroundIsDark provides imageBackgroundIsDark,
+        LocalHomeTextColorOverride provides state.homeTextColorOverride,
+    ) {
     Box(modifier = screenModifier) {
         if (!isOverlayPresentation) {
             SearchScreenBackground(
