@@ -2,6 +2,8 @@ package com.tk.quicksearch.search.searchScreen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +26,7 @@ import com.tk.quicksearch.search.notes.NotesResultsSection
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.app.startup.StartupTrace
+import kotlinx.coroutines.delay
 
 // ============================================================================
 // Section Rendering Functions
@@ -361,11 +364,19 @@ private fun renderCalendarSection(
     context: SectionRenderContext,
 ) {
     val calendarParams = params.calendarParams ?: return
-    if (context.shouldRenderCalendar || context.todayCalendarEventsList.isNotEmpty()) {
-        if (context.isHomeScreenCalendarMode || context.todayCalendarEventsList.isNotEmpty()) {
+    val nowMillis by produceState(initialValue = System.currentTimeMillis()) {
+        while (true) {
+            delay(30_000)
+            value = System.currentTimeMillis()
+        }
+    }
+    val visibleTodayCalendarEvents =
+        context.todayCalendarEventsList.filter { event -> event.allDay || event.endMillis >= nowMillis }
+    if (context.shouldRenderCalendar || visibleTodayCalendarEvents.isNotEmpty()) {
+        if (context.isHomeScreenCalendarMode || visibleTodayCalendarEvents.isNotEmpty()) {
             LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.CalendarRendered") }
         }
-        if (context.isHomeScreenCalendarMode && context.todayCalendarEventsList.isNotEmpty()) {
+        if (context.isHomeScreenCalendarMode && visibleTodayCalendarEvents.isNotEmpty()) {
             if (!calendarParams.isExpanded && !context.hideHomeSectionTitleRows) {
                 Text(
                     text = stringResource(R.string.agenda_title),
@@ -375,7 +386,7 @@ private fun renderCalendarSection(
                 )
             }
             CalendarEventsSection(
-                events = context.todayCalendarEventsList,
+                events = visibleTodayCalendarEvents,
                 hasPermission = calendarParams.hasPermission,
                 isExpanded = calendarParams.isExpanded,
                 pinnedEventIds = emptySet(),
@@ -399,7 +410,7 @@ private fun renderCalendarSection(
                 fillExpandedHeight = false,
                 isHomeScreenMode = true,
                 showPinnedItemMenu = false,
-                collapsedEvents = context.todayCalendarEventsList,
+                collapsedEvents = visibleTodayCalendarEvents,
                 allowInternalScroll = true,
             )
         }

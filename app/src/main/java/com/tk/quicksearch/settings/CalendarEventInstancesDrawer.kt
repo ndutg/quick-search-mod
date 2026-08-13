@@ -86,7 +86,7 @@ fun CalendarEventInstancesDrawer(
                 ) { index, instance ->
                     CalendarEventInstanceDrawerRow(
                         dateLabel = formatCalendarEventDate(instance),
-                        relativeLabel = calendarRelativeDateLabel(instance.startMillis),
+                        relativeLabel = calendarRelativeDateLabel(instance),
                         onClick = { onInstanceClick(instance) },
                     )
                     if (index < instances.lastIndex) {

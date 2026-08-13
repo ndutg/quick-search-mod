@@ -482,8 +482,16 @@
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
     <string name="calendar_relative_in_format">in %1$s</string>
     <string name="calendar_relative_in_minutes">in %1$d minutes</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
     <string name="calendar_relative_now">Now</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d month</item>

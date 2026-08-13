@@ -142,8 +142,12 @@ fun CalendarEventsSection(
     }
     val collapsedDisplayEvents =
         if (isHomeScreenMode) {
-            effectiveEvents.filter { event ->
-                event.allDay || isCalendarEventCurrentlyRelevant(event, nowMillis)
+            if (effectiveEvents.size == 1) {
+                effectiveEvents
+            } else {
+                effectiveEvents.filter { event ->
+                    event.allDay || isCalendarEventCurrentlyRelevant(event, nowMillis)
+                }
             }
         } else {
             effectiveCollapsedEvents.take(SearchScreenConstants.INITIAL_RESULT_COUNT)
@@ -191,7 +195,8 @@ fun CalendarEventsSection(
         ) {
             Column(
                 modifier =
-                    Modifier.padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp)
+                    Modifier.fillMaxWidth()
+                        .padding(horizontal = DesignTokens.SpacingMedium, vertical = 4.dp)
                         .padding(
                             bottom =
                                 if (cardState.shouldFillExpandedHeight) {
@@ -338,7 +343,7 @@ internal fun CalendarEventRow(
             )
             if (!isHomescreenTodayEvent) {
                 Text(
-                    text = calendarRelativeDateLabel(event.startMillis),
+                    text = calendarRelativeDateLabel(event),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,

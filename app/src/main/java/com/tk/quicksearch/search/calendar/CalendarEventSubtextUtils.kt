@@ -25,11 +25,10 @@ fun calendarHomeScheduleLabel(
 ): String {
     if (event.allDay) return stringResource(R.string.calendar_relative_today)
     if (nowMillis in event.startMillis..event.endMillis) {
-        return stringResource(R.string.calendar_relative_now)
+        return "${formatCalendarEventStartTime(event.startMillis)} · ${stringResource(R.string.calendar_relative_now)}"
     }
 
-    val minutesUntilStart = ((event.startMillis - nowMillis) / MILLIS_PER_MINUTE).coerceAtLeast(1L)
-    return stringResource(R.string.calendar_relative_in_minutes, minutesUntilStart)
+    return "${formatCalendarEventStartTime(event.startMillis)} · ${calendarRelativeTimeLabel(event.startMillis, nowMillis)}"
 }
 
 fun isCalendarEventCurrentlyRelevant(
@@ -130,13 +129,33 @@ fun calendarRecurrenceLabel(
 fun calendarRelativeDateLabel(
     eventStartMillis: Long,
     nowMillis: Long = System.currentTimeMillis(),
+): String = calendarRelativeDateLabel(eventStartMillis, isAllDay = true, nowMillis)
+
+@Composable
+fun calendarRelativeDateLabel(
+    event: CalendarEventInfo,
+    nowMillis: Long = System.currentTimeMillis(),
+): String {
+    val relativeLabel = calendarRelativeDateLabel(event.startMillis, event.allDay, nowMillis)
+    return if (event.allDay) relativeLabel
+    else "${formatCalendarEventStartTime(event.startMillis)} · $relativeLabel"
+}
+
+@Composable
+private fun calendarRelativeDateLabel(
+    eventStartMillis: Long,
+    isAllDay: Boolean,
+    nowMillis: Long,
 ): String {
     val zoneId = ZoneId.systemDefault()
     val today = Instant.ofEpochMilli(nowMillis).atZone(zoneId).toLocalDate()
     val eventDate = Instant.ofEpochMilli(eventStartMillis).atZone(zoneId).toLocalDate()
 
     val dayDelta = eventDate.toEpochDay() - today.toEpochDay()
-    if (dayDelta == 0L) return stringResource(R.string.calendar_relative_today)
+    if (dayDelta == 0L) {
+        return if (isAllDay) stringResource(R.string.calendar_relative_today)
+        else calendarRelativeTimeLabel(eventStartMillis, nowMillis)
+    }
     if (dayDelta == -1L) return stringResource(R.string.calendar_relative_yesterday)
     if (dayDelta == 1L) return stringResource(R.string.calendar_relative_tomorrow)
 
@@ -155,6 +174,31 @@ fun calendarRelativeDateLabel(
         stringResource(R.string.calendar_relative_ago_format, deltaText)
     }
 }
+
+@Composable
+private fun calendarRelativeTimeLabel(
+    eventStartMillis: Long,
+    nowMillis: Long,
+): String {
+    val minutes = (kotlin.math.abs(eventStartMillis - nowMillis) / MILLIS_PER_MINUTE).coerceAtLeast(1L)
+    val hours = (minutes / 60).toInt()
+    val duration =
+        if (hours > 0) {
+            pluralStringResource(R.plurals.calendar_relative_hours, hours, hours)
+        } else {
+            pluralStringResource(R.plurals.calendar_relative_minutes, minutes.toInt(), minutes.toInt())
+        }
+
+    return if (eventStartMillis >= nowMillis) {
+        stringResource(R.string.calendar_relative_in_format, duration)
+    } else {
+        stringResource(R.string.calendar_relative_ago_format, duration)
+    }
+}
+
+@Composable
+private fun formatCalendarEventStartTime(startMillis: Long): String =
+    DateFormat.getTimeFormat(LocalContext.current).format(Date(startMillis))
 
 @Composable
 private fun formatRelativeUnits(period: Period): String {
