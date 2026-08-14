@@ -1,310 +1,103 @@
-# Quick Search - AI Agent Guide
+# Quick Search Agent Guide
 
-This file is for AI coding agents only.
-Use it as the primary implementation playbook for building new features and updating existing ones in this repository.
+Use this file as the repository-specific playbook. Prefer the current code and build files over prose when they disagree.
 
-## 1) Project Snapshot
+## Working rules
 
-- App type: Android launcher/search app
-- Language: Kotlin
-- UI: Jetpack Compose + Material 3
-- Architecture: MVVM with unidirectional data flow
-- Package: `com.tk.quicksearch`
-- Core behavior: unified search for apps, app shortcuts, contacts, calendar events, files, device settings, app settings, web, and tools (calculator/unit/date/ai search)
+- Keep changes narrow and preserve unrelated work in the working tree.
+- Do not run automated UI tests unless the user asks. The user normally performs manual UI testing.
+- Do not run `git add`, `git commit`, create tags, publish releases, or push without explicit permission.
+- Do not mix feature work with speculative refactors or broad cleanup.
+- A successful build, install, and launch proves only those steps. Do not claim that a visual state, gesture, keyboard interaction, provider response, or intermittent issue is fixed without reproducing it.
 
-## 2) Core Architecture (Do Not Bypass)
+## Current project shape
 
-### Layers
+- Android launcher and unified-search app written in Kotlin with Jetpack Compose and Material 3.
+- Architecture: MVVM, unidirectional data flow, `StateFlow`, and immutable state updates.
+- Modules: `:app` and the macrobenchmark/baseline-profile module `:benchmark`.
+- Distribution flavors: `standard` and `fdroid`. Flavor-specific implementations live in `app/src/standard/` and `app/src/fdroid/`; shared behavior belongs in `app/src/main/`.
+- Entry points:
+  - regular launches, assistant/search/share/process-text/import flows: `app/MainActivity.kt`
+  - launcher HOME role: `app/HomeActivity.kt`
+  - draw-over-other-apps mode: `overlay/OverlayActivity.kt`
+- Persistence is primarily modular `SharedPreferences`; secrets use the existing encrypted preference path. Notes are stored with Room under `search/data/notes/`. The startup app catalog uses `search/data/AppCache.kt`.
 
-- **UI layer**: composables under `search/`, `settings/`, `widgets/`, `overlay/`, `onboarding/`
-- **ViewModel layer**: orchestration and state in `search/core/`
-- **Data layer**: repositories and preferences in `search/data/`
+## Architecture map
 
-### Single source of truth
+### Search state and orchestration
 
-- Main state: `SearchUiState` in `search/core/SearchModels.kt`
-- Additional state models: `search/core/SearchStateModels.kt`
-- Main orchestrator: `search/core/SearchViewModel.kt`
-- State transport: `StateFlow`
-- Update pattern: always use immutable `copy(...)` through ViewModel update helpers
+- Canonical UI state and section visibility models: `search/core/SearchModels.kt` and `SearchStateModels.kt`.
+- Main orchestrator: `search/core/SearchViewModel.kt`; prefer its focused delegates and API files instead of growing the main class.
+- Query coordination: `SearchQueryCoordinator.kt`, `UnifiedSearchHandler.kt`, and `searchEngines/SecondarySearchOrchestrator.kt`.
+- `SearchSectionRegistry.kt` is the canonical table for search-section ordering, aliases, settings toggles, permissions, and minimum query lengths. Keep coordinated section metadata there.
+- Ranking and matching live in `search/common/`, `search/fuzzy/`, and `search/utils/`. Preserve query-version checks, debounce behavior, and stale-result suppression.
 
-### State conventions
+### Data and preferences
 
-- Use sealed classes for visibility/loading/no-results/showing-results states.
-- Do not perform permission checks directly inside UI composables when state already exists in `SearchUiState`.
-- Prefer adding state in `SearchModels.kt`/`SearchStateModels.kt` before wiring UI logic.
+- Search repositories live in `search/data/`; feature-specific search policies and handlers live in their feature packages.
+- Add preferences to the relevant class under `search/data/preferences/`, then expose them through `search/data/userAppPreferences/UserAppPreferences.kt`.
+- Startup-critical preference reads go through `StartupPreferencesFacade.kt`. Do not add one-off blocking reads to startup or composables.
+- Search history remains in `search/searchHistory/SearchHistoryPreferences.kt`.
+- Searchable Quick Search settings are catalogued in `search/appSettings/AppSettingsRepository.kt`; new applicable settings must be wired there as well as in the Settings UI.
 
-## 3) Repository and Preference Patterns
+### UI and navigation
 
-### Repositories (search data)
+- Search route/state collection: `search/searchScreen/searchScreen/SearchRoute.kt`.
+- Main search composition: `SearchScreen.kt`, `SearchScreenContent.kt`, `SectionRenderingComposables.kt`, and `searchScreenLayout/`.
+- Settings routes and destinations: `settings/shared/`, `settings/navigation/`, and feature-specific settings packages.
+- Reuse `shared/ui/components/`, `shared/ui/theme/DesignTokens.kt`, and `shared/ui/theme/AppColors.kt`. Account for wallpaper, custom-background, one-handed/bottom-search-bar, tablet, and overlay modes when the changed path is shared.
+- Put user-facing strings in resources. When adding or changing copy, update the base file and all 12 localized `values-*` `strings.xml` files unless the user narrows the scope.
 
-- `AppsRepository.kt`
-- `ContactRepository.kt`
-- `FileSearchRepository.kt`
-- `CalendarRepository.kt`
-- `search/data/appShortcutRepository/AppShortcutRepository.kt`
-- `search/deviceSettings/DeviceSettingsRepository.kt`
+### Startup and process-wide caches
 
-### Preferences
+- App startup is phased through `app/startup/StartupCoordinator.kt`, `search/core/SearchStartupCoordinator.kt`, and `SearchStartupLifecycleDelegate.kt`. Keep expensive work off the main thread and outside the first visible phase.
+- `MainActivity` and `OverlayActivity` share process-wide icon caches. Route lifecycle cleanup through `app/UiSurfaceMemoryManager.kt`; do not clear caches when one surface exits while another is still active.
+- Use `clearAppIconMemoryCache()` for memory eviction without forcing displayed icons to refresh. Use `invalidateAppIconCache()` only when an explicit icon change should refresh active UI.
 
-- Central facade: `search/data/userAppPreferences/UserAppPreferences.kt`
-- Startup facade: `search/data/userAppPreferences/StartupPreferencesFacade.kt`
-- Specialized modules: `search/data/preferences/`
-- Keep new preferences modular; delegate through `UserAppPreferences`.
-- `SearchHistoryPreferences.kt` stays in `search/searchHistory/`.
+## Feature guides
 
-### Cache/Startup behavior
+Read the matching guide before implementing these changes:
 
-- App cache: `search/data/AppCache.kt`
-- Startup strategy is phased (critical prefs -> remaining prefs -> deferred init) via `app/startup/StartupCoordinator.kt` and `search/core/SearchStartupCoordinator.kt`.
-- Avoid expensive synchronous work on startup paths.
+| Change | Guide |
+|---|---|
+| Built-in tool | `app/src/main/java/com/tk/quicksearch/tools/new-tool.md` |
+| Search result type or section | `app/src/main/java/com/tk/quicksearch/search/new-search-type.md` |
+| Built-in search engine | `app/src/main/java/com/tk/quicksearch/searchEngines/new-search-engine.md` |
+| Searchable app-setting row | `app/src/main/java/com/tk/quicksearch/search/appSettings/new-app-setting.md` |
+| General preference or Settings UI | `app/src/main/java/com/tk/quicksearch/settings/new-setting.md` |
 
-## 4) Key Feature Areas and Main Files
+For a new section, update the model/repository or handler, `SearchUiState`, `SearchSectionRegistry`, orchestration, rendering/order, permission degradation, preferences, and searchable app-setting entry as applicable. For a new tool, also inspect `settings/ToolSettingsRegistry.kt`, `searchEngines/AliasHandler.kt`, and `search/core/SearchToolCoordinator.kt` rather than assuming one integration point.
 
-### Search core
+## Implementation guardrails
 
-- `search/core/SearchViewModel.kt`
-- `search/core/SearchViewModelSearchOperations.kt`
-- `search/core/UnifiedSearchHandler.kt`
-- `search/core/SectionManager.kt`
-- `search/core/SearchSectionRegistry.kt`
-- `search/core/SearchModels.kt`
-- `search/core/SearchStateModels.kt`
+- UI reads state and emits events; repositories, handlers, and the ViewModel own business logic and permission-aware behavior.
+- Use immutable `copy(...)` updates and existing visibility/loading/result state types.
+- Extend existing repositories, policies, registries, and delegates before creating parallel abstractions.
+- Keep Android provider work and network work off the main thread. Preserve local-first behavior and do not add analytics or tracking.
+- For permission denial, hide or degrade only the affected feature through existing state; never crash or block unrelated search.
+- Check both distribution source sets when changing review/update behavior, typography, or distribution defaults.
+- If a touched Kotlin file is already very large, place new cohesive logic in a focused file or delegate when that matches the surrounding structure.
 
-### Search UI composition
+## Validation
 
-- `search/searchScreen/SearchScreen.kt`
-- `search/searchScreen/SearchScreenContent.kt`
-- `search/searchScreen/SectionRenderingComposables.kt`
-- `search/searchScreen/SearchScreenLayout.kt`
-- `search/searchScreen/searchScreen/SearchRoute.kt`
-- `search/searchScreen/searchScreenLayout/`
+- Run focused unit tests for changed pure logic. Do not run instrumented/Compose UI tests unless requested.
+- If resource XML changes, validate every affected `app/src/main/res/values*/strings.xml` file and run `git diff --check`.
+- After every completed coding task, always run this exact command from the repository root before considering the task complete:
 
-### Feature packages
+```bash
+./gradlew assembleStandardDebug && adb install --user 0 -r app/build/outputs/apk/standard/debug/app-standard-debug.apk && adb shell am force-stop com.tk.quicksearch && adb shell am force-stop com.tk.quicksearch.debug && adb shell am start -W -n com.tk.quicksearch.debug/com.tk.quicksearch.app.MainActivity
+```
 
-- Apps: `search/apps/`
-- App settings results: `search/appSettings/`
-- App shortcuts: `search/appShortcuts/`
-- Contacts: `search/contacts/`
-- Calendar: `search/calendar/`
-- Files: `search/files/`
-- Device settings: `search/deviceSettings/`
-- Web suggestions: `search/webSuggestions/`
-- Search history: `search/searchHistory/`
-- Fuzzy search: `search/fuzzy/`
+- If any part fails, diagnose it and rerun the full command until it succeeds. If completion is impossible because no device is connected or the environment is blocked, report that boundary plainly instead of claiming completion.
+- For Gradle cache permission/lock failures, use the project-local cache with `GRADLE_USER_HOME=$PWD/.gradle-codex`. For Kotlin daemon marker failures, also use `-Pkotlin.compiler.execution.strategy=in-process`.
+- Manually verify only what the change affects: empty and non-empty queries for search work, typo/acronym behavior for matching work, permission-off states for protected data, persistence after restart for settings, and standard/wallpaper/overlay surfaces for shared UI. Leave actual manual UI execution to the user unless asked.
 
-### Search engines and tools
+## Release safety
 
-- Search engines: `searchEngines/`
-- Orchestration/debounce: `searchEngines/SecondarySearchOrchestrator.kt`
-- AI Search: `tools/aiSearch/`
-- Built-in tools: `tools/calculator/`, `tools/unitConverter/`, `tools/dateCalculator/`, `tools/aiTools/`
-
-### Overlay mode
-
-- `overlay/OverlayActivity.kt`
-- `overlay/OverlayRoot.kt`
-- `overlay/OverlayModeController.kt`
-- App theme color utils: `search/searchScreen/AppThemeUtils.kt`
-
-### Settings
-
-- Root: `settings/SettingsScreen.kt`
-- Detail navigation: `settings/navigation/`
-- Detail sections: `settings/settingsDetailScreen/`
-- Appearance: `settings/appearanceSettings/`
-- Search engine settings: `settings/searchEngineSettings/`
-- App shortcuts settings: `settings/appShortcutsSettings/`
-- Shared settings route/state: `settings/shared/settingsRoute/`
-
-## 5) UI Design System Rules
-
-### Tokens and colors
-
-- Use `shared/ui/theme/DesignTokens.kt` for spacing, shapes, dimensions.
-- Use `shared/ui/theme/AppColors.kt` for colors and wallpaper-aware surfaces.
-- Avoid hardcoded dp, corner radii, and color literals unless extending tokens.
-
-### Shared components first
-
-- Prefer components in `shared/ui/components/` before creating new one-off UI.
-- Keep composables stateless where possible; hoist state to ViewModel/parent.
-- Keep `modifier: Modifier = Modifier` in reusable composables.
-- Try existing design tokens first.
-- Add new design tokens when they are reusable across multiple places.
-- If a value is file-specific, add a top-level `const` in that file instead of a global token.
-
-### Responsive behavior
-
-- Device/orientation helpers: `shared/util/DeviceUtils.kt`
-- Preserve tablet behavior for app grid and search engine layout.
-
-## 6) Search and Ranking Behavior
-
-### Ranking stack
-
-- Traditional ranking: `search/common/SearchRankingUtils.kt`
-  - exact > startsWith > second-word startsWith > contains
-- Fuzzy enhancement: `search/fuzzy/FuzzySearchEngine.kt`
-  - typo tolerance + acronym matching + nickname support
-
-### App result rules
-
-- Empty query: pinned + recent apps
-- Non-empty query: ranked app results + fuzzy enhancements
-- Respect existing max grid/result constraints from current UI layout logic
-
-### Secondary search
-
-- Contacts/files/settings/app shortcuts/calendar are debounced and orchestrated
-- Preserve query version checks and no-result cache behavior to prevent regressions
-
-## 7) Permissions and Graceful Degradation
-
-- Required baseline permission: usage stats
-- Optional permissions: contacts, calendar, files/storage, call phone, package visibility, wallpaper-related access, overlay permission
-- Rule: if permission unavailable, hide/degrade corresponding section cleanly through state
-
-## 8) Navigation and Entry Points
-
-- Main app entry: `app/MainActivity.kt`
-- Overlay entry: `overlay/OverlayActivity.kt`
-- Main routing: `app/navigation/NavigationManager.kt`
-- Search route: `search/searchScreen/searchScreen/`
-- Settings routes: `settings/shared/` + `settings/navigation/`
-
-## 9) Naming and Organization Conventions
-
-- Data classes: `*Info`, `*State`, `*Model`
-- Repositories: `*Repository`
-- Handlers: `*Handler`
-- Section composables: `*Section`
-- Utility files: `*Utils`
-- Organize code by feature package first, then by layer inside feature when needed.
-- File names should be PascalCase.
-- Folder names should be lowerCamelCase.
-- If a file grows beyond ~700 lines, split it into focused files rather than adding more to the same file.
-
-## 10) Feature-Specific Implementation Guides
-
-For the task types below, read the corresponding guide file **before** starting implementation. Each guide has a step-by-step checklist, high-risk file callouts, and validation criteria tailored to that feature area.
-
-| Task | Guide file |
-|------|-----------|
-| Add a new built-in tool (calculator, converter, etc.) | `app/src/main/java/com/tk/quicksearch/tools/new-tool.md` |
-| Add a new app setting row (toggle or navigate) | `app/src/main/java/com/tk/quicksearch/search/appSettings/new-app-setting.md` |
-| Add a new search/app preference | `app/src/main/java/com/tk/quicksearch/search/appSettings/new-app-setting.md` or `app/src/main/java/com/tk/quicksearch/settings/new-setting.md` |
-| Add a new search result type / section | `app/src/main/java/com/tk/quicksearch/search/new-search-type.md` |
-| Add a new built-in search engine | `app/src/main/java/com/tk/quicksearch/searchEngines/new-search-engine.md` |
-| Add a new general app setting (preferences/UI) | `app/src/main/java/com/tk/quicksearch/settings/new-setting.md` |
-
-Always read the guide, then follow the steps in order.
-
-## 11) Standard Implementation Workflows
-
-### Add or update a search section
-
-1. Add/update models (`search/models/` or feature models)
-2. Add/update repository or handler logic
-3. Add/update state in `SearchUiState` (`SearchModels.kt`/`SearchStateModels.kt`)
-4. Wire orchestration in ViewModel/core handlers
-5. Render section composable (typically via `SectionRenderingComposables.kt` and `SearchRoute.kt`)
-6. Integrate section rendering and ordering
-7. Add settings toggles/preferences if user-configurable
-
-### Add a new preference
-
-1. Add preference in correct class under `search/data/preferences/`
-2. Expose through `search/data/userAppPreferences/UserAppPreferences.kt`
-3. Reflect in `SearchUiState` if needed for runtime UI
-4. Update settings UI and mappers
-5. Verify persistence and default handling
-
-### Modify search UI
-
-1. Locate the correct composable in `search/searchScreen/` or `search/searchScreen/searchScreen/`
-2. Use shared tokens/components
-3. Verify wallpaper mode and one-handed mode behavior
-4. Verify overlay mode if shared rendering path is used
-
-## 12) Performance Guardrails
-
-- Keep heavy work off main thread.
-- Prefer debounced/reused search pipelines over new parallel ad-hoc searches.
-- Reuse caches where existing architecture already supports them.
-- For startup-sensitive logic, avoid adding blocking work to early initialization.
-
-## 13) Security and Privacy Constraints
-
-- Keep local-first behavior; no unsolicited analytics/tracking additions.
-- Sensitive values (such as API keys) must use existing encrypted storage patterns.
-- Preserve intent safety and permission checks around external app integrations.
-
-## 14) Testing and Validation Checklist (Minimum)
-
-- Build compiles after changes.
-- After every completed coding task, the agent must always run this command before considering the task complete:
-  - `./gradlew assembleStandardDebug && adb install --user 0 -r app/build/outputs/apk/standard/debug/app-standard-debug.apk && adb shell am force-stop com.tk.quicksearch && adb shell am force-stop com.tk.quicksearch.debug && adb shell am start -W -n com.tk.quicksearch.debug/com.tk.quicksearch.app.MainActivity`
-  - Do not skip this step, even for small or localized code changes.
-  - If this command fails at any point, treat it as a blocking issue, fix the problem, and rerun the same command until it succeeds before considering the task complete.
-- Search behavior verified for:
-  - empty query
-  - normal query
-  - typo/acronym query (if search logic touched)
-- Permission-off states verified for impacted sections.
-- Wallpaper mode + standard mode verified if UI touched.
-- Overlay mode sanity check if shared UI/state touched.
-- Settings persistence verified when preferences are changed.
-
-## 15) High-Risk Files (Edit Carefully)
-
-- `search/core/SearchViewModel.kt`
-- `search/core/SearchModels.kt`
-- `search/core/SearchStateModels.kt`
-- `search/core/SearchSectionRegistry.kt`
-- `searchEngines/SecondarySearchOrchestrator.kt`
-- `search/data/userAppPreferences/UserAppPreferences.kt`
-- `search/searchScreen/searchScreen/SearchRoute.kt`
-
-When touching these files, keep changes minimal, localized, and regression-aware.
-
-## 16) Agent Do/Do Not
-
-### Do
-
-- Follow existing package structure and naming.
-- Extend existing handlers/repositories before introducing new abstractions.
-- Keep logic readable and incremental.
-- Reuse design tokens/shared components.
-- Preserve sealed-state and immutable-state patterns.
-- Put user-facing strings in `strings.xml`.
-- Remove unused code when touching related areas.
-- Create reusable functions/components when there is a significant chance of code duplication.
-
-### Do Not
-
-- Do not hardcode colors/spacing where tokens already exist.
-- Do not bypass ViewModel/state flow with UI-local business logic.
-- Do not mix unrelated refactors into feature changes.
-- Do not introduce unnecessary complexity or speculative architecture.
-
-## 17) Useful File Index
-
-- `search/core/SearchModels.kt`
-- `search/core/SearchStateModels.kt`
-- `search/core/SearchViewModel.kt`
-- `search/core/SectionManager.kt`
-- `search/core/SearchSectionRegistry.kt`
-- `search/common/SearchRankingUtils.kt`
-- `search/fuzzy/FuzzySearchEngine.kt`
-- `search/searchScreen/SearchScreen.kt`
-- `search/searchScreen/searchScreen/SearchRoute.kt`
-- `overlay/OverlayRoot.kt`
-- `search/data/userAppPreferences/UserAppPreferences.kt`
-- `shared/ui/theme/DesignTokens.kt`
-- `shared/ui/theme/AppColors.kt`
-- `app/navigation/NavigationManager.kt`
+- Standard releases include Play review/update integrations; F-Droid substitutes flavor-local implementations without Play libraries.
+- For F-Droid work, read `docs/FDROID.md` and the `fdroid-release` skill when available.
+- Treat version tags as immutable. Before any authorized publish, align version name/code, release notes/changelog, artifact, and tag, then verify the remote result.
 
 ---
 
-Last updated: 2026-05-18
+Last audited against the repository: 2026-08-13
