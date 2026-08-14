@@ -58,14 +58,16 @@ object OtherSearchItemRegistry {
         itemId: OtherSearchItemId,
         query: String,
         pinnedItemOrder: List<String>,
-    ): Boolean = matches(itemId, query) || isPinned(itemId, pinnedItemOrder)
+    ): Boolean =
+        matches(itemId, query) ||
+            (query.isBlank() && isPinned(itemId, pinnedItemOrder))
 
     fun shouldRenderScreenTime(
         query: String,
         pinnedItemOrder: List<String>,
         state: ScreenTimeState,
     ): Boolean {
-        if (state == ScreenTimeState.Hidden) return false
+        if (state !is ScreenTimeState.Available) return false
         return if (query.isBlank()) {
             isPinned(OtherSearchItemId.SCREEN_TIME, pinnedItemOrder)
         } else {

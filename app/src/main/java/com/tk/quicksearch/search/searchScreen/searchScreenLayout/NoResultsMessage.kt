@@ -32,6 +32,7 @@ internal fun computeShouldShowNoResults(state: SearchUiState): Boolean {
     return trimmedQuery.isNotBlank() &&
         !state.isAppSearchInProgress &&
         !state.isSecondarySearchInProgress &&
+        state.screenTimeState != com.tk.quicksearch.search.core.ScreenTimeState.Loading &&
         !hasAnySearchResults &&
         !com.tk.quicksearch.search.other.OtherSearchItemRegistry.hasVisibleResult(
             query = state.query,

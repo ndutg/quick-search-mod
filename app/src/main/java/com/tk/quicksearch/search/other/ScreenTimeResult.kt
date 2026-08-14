@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -120,8 +119,6 @@ internal fun ScreenTimeResultCard(
                         maxLines = 2,
                     )
                     when (state) {
-                        ScreenTimeState.Loading ->
-                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         is ScreenTimeState.Available ->
                             Text(
                                 text = formatScreenTime(state.durationMillis),
@@ -130,7 +127,9 @@ internal fun ScreenTimeResultCard(
                                 color = homeTextColor(),
                                 maxLines = 1,
                             )
-                        ScreenTimeState.Hidden -> Unit
+                        ScreenTimeState.Hidden,
+                        ScreenTimeState.Loading,
+                        -> Unit
                     }
                 }
 

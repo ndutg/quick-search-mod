@@ -21,6 +21,26 @@ class OtherSearchItemRegistryTest {
     }
 
     @Test
+    fun pinnedScreenTimeLoadsOnHomeButNotForUnrelatedSearches() {
+        val pinnedOrder = listOf(OtherSearchItemId.SCREEN_TIME.pinnedItemKey)
+
+        assertTrue(
+            OtherSearchItemRegistry.shouldLoad(
+                OtherSearchItemId.SCREEN_TIME,
+                query = "",
+                pinnedItemOrder = pinnedOrder,
+            ),
+        )
+        assertFalse(
+            OtherSearchItemRegistry.shouldLoad(
+                OtherSearchItemId.SCREEN_TIME,
+                query = "weather",
+                pinnedItemOrder = pinnedOrder,
+            ),
+        )
+    }
+
+    @Test
     fun screenTimeRendersForMatchingSearchOrPinnedHomeOnly() {
         val pinnedOrder = listOf(OtherSearchItemId.SCREEN_TIME.pinnedItemKey)
 
@@ -28,21 +48,21 @@ class OtherSearchItemRegistryTest {
             OtherSearchItemRegistry.shouldRenderScreenTime(
                 query = "screen time",
                 pinnedItemOrder = emptyList(),
-                state = ScreenTimeState.Loading,
+                state = ScreenTimeState.Available(0L, emptyList()),
             ),
         )
         assertTrue(
             OtherSearchItemRegistry.shouldRenderScreenTime(
                 query = "",
                 pinnedItemOrder = pinnedOrder,
-                state = ScreenTimeState.Loading,
+                state = ScreenTimeState.Available(0L, emptyList()),
             ),
         )
         assertFalse(
             OtherSearchItemRegistry.shouldRenderScreenTime(
                 query = "weather",
                 pinnedItemOrder = pinnedOrder,
-                state = ScreenTimeState.Loading,
+                state = ScreenTimeState.Available(0L, emptyList()),
             ),
         )
         assertFalse(
@@ -61,8 +81,26 @@ class OtherSearchItemRegistryTest {
             OtherSearchItemRegistry.visibleSearchItemIds(
                 query = "screen time",
                 pinnedItemOrder = emptyList(),
-                screenTimeState = ScreenTimeState.Loading,
+                screenTimeState = ScreenTimeState.Available(0L, emptyList()),
             ),
+        )
+    }
+
+    @Test
+    fun loadingScreenTimeDoesNotRenderOrEnterTopMatches() {
+        assertFalse(
+            OtherSearchItemRegistry.shouldRenderScreenTime(
+                query = "screen time",
+                pinnedItemOrder = emptyList(),
+                state = ScreenTimeState.Loading,
+            ),
+        )
+        assertTrue(
+            OtherSearchItemRegistry.visibleSearchItemIds(
+                query = "screen time",
+                pinnedItemOrder = emptyList(),
+                screenTimeState = ScreenTimeState.Loading,
+            ).isEmpty(),
         )
     }
 

@@ -121,6 +121,8 @@ class SearchViewModel(
     private val notesRepository by lazy { NotesRepository(appContext) }
     private val screenTimeRepository by lazy { ScreenTimeRepository(appContext) }
     private var screenTimeSearchJob: Job? = null
+    @Volatile
+    private var hasScreenTimeResultForCurrentSearch = false
     private val settingsShortcutRepository by lazy {
         DeviceSettingsRepository(appContext)
     }
@@ -564,8 +566,11 @@ class SearchViewModel(
     }
 
     private fun refreshScreenTimeResult(query: String) {
-        screenTimeSearchJob?.cancel()
         val pinnedItemOrder = _resultsState.value.pinnedNonAppItemOrder
+        val matchesQuery = OtherSearchItemRegistry.matchesScreenTime(query)
+        if (!matchesQuery) {
+            hasScreenTimeResultForCurrentSearch = false
+        }
         if (
             !OtherSearchItemRegistry.shouldLoad(
                 itemId = OtherSearchItemId.SCREEN_TIME,
@@ -573,22 +578,34 @@ class SearchViewModel(
                 pinnedItemOrder = pinnedItemOrder,
             )
         ) {
+            screenTimeSearchJob?.cancel()
             _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
             return
         }
         if (!com.tk.quicksearch.search.utils.PermissionUtils.hasUsageStatsPermission(appContext)) {
+            screenTimeSearchJob?.cancel()
             _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
             return
         }
+        val currentState = _resultsState.value.screenTimeState
+        if (currentState == ScreenTimeState.Loading) return
+        if (
+            matchesQuery &&
+                hasScreenTimeResultForCurrentSearch &&
+                currentState is ScreenTimeState.Available
+        ) {
+            return
+        }
+        screenTimeSearchJob?.cancel()
         _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Loading) }
         screenTimeSearchJob =
             viewModelScope.launch(Dispatchers.IO) {
                 val screenTime = screenTimeRepository.getTodayScreenTime()
                 if (
-                    _resultsState.value.query == query &&
+                    com.tk.quicksearch.search.utils.PermissionUtils.hasUsageStatsPermission(appContext) &&
                         OtherSearchItemRegistry.shouldLoad(
                             itemId = OtherSearchItemId.SCREEN_TIME,
-                            query = query,
+                            query = _resultsState.value.query,
                             pinnedItemOrder = _resultsState.value.pinnedNonAppItemOrder,
                         )
                 ) {
@@ -599,8 +616,10 @@ class SearchViewModel(
                                     durationMillis = screenTime.durationMillis,
                                     topApps = screenTime.topApps,
                                 ),
-                        )
+                            )
                     }
+                    hasScreenTimeResultForCurrentSearch =
+                        OtherSearchItemRegistry.matchesScreenTime(_resultsState.value.query)
                 }
             }
     }
