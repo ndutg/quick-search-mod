@@ -1068,4 +1068,9 @@
     <string name="settings_more_apps_from_developer_title">Más aplicaciones del desarrollador</string>
     <string name="icon_picker_no_icon_packs">No hay paquetes de iconos instalados para cambiar el icono de la aplicación.</string>
     <string name="icon_picker_download_icon_packs">Descargar</string>
+    <string name="app_menu_usage_today">%1$s hoy · Abierta %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d vez</item><item quantity="other">%d veces</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d h</item><item quantity="other">%d h</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="other">%d min</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s h</string>
 </resources>

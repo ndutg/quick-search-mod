@@ -31,7 +31,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.AppsRepository
+import com.tk.quicksearch.search.data.TodayAppUsage
 import com.tk.quicksearch.search.data.AppShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.models.AppInfo
@@ -56,6 +61,8 @@ import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private data class AppMenuItem(
     val textResId: Int,
@@ -91,6 +98,17 @@ fun AppItemDropdownMenu(
     onAddToHome: () -> Unit,
 ) {
     val context = LocalContext.current
+    val todayUsage by produceState<TodayAppUsage?>(
+        initialValue = null,
+        key1 = expanded,
+        key2 = appInfo.packageName,
+    ) {
+        if (expanded) {
+            value = withContext(Dispatchers.IO) {
+                AppsRepository(context.applicationContext).getTodayAppUsage(appInfo.packageName)
+            }
+        }
+    }
     val isCurrentApp = appInfo.packageName == context.packageName
     val isLaunchableApp = appInfo.hasLaunchIntent
     val notificationAction =
@@ -207,13 +225,23 @@ fun AppItemDropdownMenu(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    if (shortcuts.isNotEmpty()) {
-                        Text(
-                            text = "${shortcuts.size} shortcuts • ${menuItems.size} actions",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                    todayUsage
+                        ?.takeIf { it.openedCount > 0 }
+                        ?.let { usage ->
+                            Text(
+                                text = stringResource(
+                                    R.string.app_menu_usage_today,
+                                    formatUsageDuration(usage.foregroundTimeMillis),
+                                    pluralStringResource(
+                                        R.plurals.app_menu_opened_count,
+                                        usage.openedCount,
+                                        usage.openedCount,
+                                    ),
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                 }
             },
         ) {
@@ -367,6 +395,19 @@ fun AppItemDropdownMenu(
             appName = appInfo.appName,
             onDismiss = { showIconPicker.value = false },
         )
+    }
+}
+
+@Composable
+private fun formatUsageDuration(durationMillis: Long): String {
+    val totalMinutes = (durationMillis / 60_000L).toInt().coerceAtLeast(1)
+    val halfHours = totalMinutes / 30
+    val hours = halfHours / 2
+    return when {
+        totalMinutes >= 60 && halfHours % 2 == 1 ->
+            stringResource(R.string.app_menu_usage_hours_decimal, "$hours.5")
+        totalMinutes >= 60 -> pluralStringResource(R.plurals.app_menu_usage_hours, hours, hours)
+        else -> pluralStringResource(R.plurals.app_menu_usage_minutes, totalMinutes, totalMinutes)
     }
 }
 

@@ -1068,4 +1068,9 @@
     <string name="settings_more_apps_from_developer_title">Περισσότερες εφαρμογές από τον προγραμματιστή</string>
     <string name="icon_picker_no_icon_packs">Δεν έχουν εγκατασταθεί πακέτα εικονιδίων για αλλαγή του εικονιδίου της εφαρμογής.</string>
     <string name="icon_picker_download_icon_packs">Λήψη</string>
+    <string name="app_menu_usage_today">%1$s σήμερα · Άνοιξε %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d φορά</item><item quantity="other">%d φορές</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d ωρ.</item><item quantity="other">%d ώρ.</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d λ.</item><item quantity="other">%d λ.</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s ώρ.</string>
 </resources>
