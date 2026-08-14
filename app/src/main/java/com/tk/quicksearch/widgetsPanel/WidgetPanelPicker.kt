@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
@@ -78,10 +79,13 @@ private val WidgetPickerHeight = 720.dp
 
 private data class WidgetPickerApp(
     val packageName: String,
+    val profileId: Int,
     val appLabel: String,
     val icon: Drawable?,
     val widgets: List<AppWidgetProviderInfo>,
-)
+) {
+    val key: String = "$packageName:$profileId"
+}
 
 @Composable
 internal fun WidgetPickerSheet(
@@ -96,18 +100,29 @@ internal fun WidgetPickerSheet(
         value =
             withContext(Dispatchers.Default) {
                 appWidgetManager.installedProviders
-                    .groupBy { it.provider.packageName }
-                    .map { (packageName, providers) ->
+                    .groupBy { it.provider.packageName to UserHandleUtils.getIdentifier(it.profile) }
+                    .map { (appKey, providers) ->
+                        val (packageName, profileId) = appKey
                         val appInfo =
                             runCatching { packageManager.getApplicationInfo(packageName, 0) }
                                 .getOrNull()
+                        val profile = providers.first().profile
                         WidgetPickerApp(
                             packageName = packageName,
+                            profileId = profileId,
                             appLabel =
                                 appInfo
                                     ?.let { packageManager.getApplicationLabel(it).toString() }
                                     ?: packageName,
-                            icon = appInfo?.let { runCatching { packageManager.getApplicationIcon(it) }.getOrNull() },
+                            // Badging makes a cloned/profile-specific app visibly distinct even
+                            // when Android gives both copies the same app label and package name.
+                            icon =
+                                appInfo
+                                    ?.let { runCatching { packageManager.getApplicationIcon(it) }.getOrNull() }
+                                    ?.let { icon ->
+                                        runCatching { packageManager.getUserBadgedIcon(icon, profile) }
+                                            .getOrDefault(icon)
+                                    },
                             widgets =
                                 providers.sortedBy {
                                     it.loadLabel(packageManager)?.toString().orEmpty().lowercase()
@@ -219,16 +234,16 @@ internal fun WidgetPickerSheet(
                                 .nestedScroll(blockSheetDragFromListScroll),
                         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                     ) {
-                        items(filteredApps, key = { it.packageName }) { app ->
+                        items(filteredApps, key = { it.key }) { app ->
                             WidgetPickerAppGroup(
                                 app = app,
-                                isExpanded = expandedApps.contains(app.packageName),
+                                isExpanded = expandedApps.contains(app.key),
                                 onToggleExpanded = {
                                     expandedApps =
-                                        if (expandedApps.contains(app.packageName)) {
-                                            expandedApps - app.packageName
+                                        if (expandedApps.contains(app.key)) {
+                                            expandedApps - app.key
                                         } else {
-                                            expandedApps + app.packageName
+                                            expandedApps + app.key
                                         }
                                 },
                                 packageManager = packageManager,

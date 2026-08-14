@@ -82,7 +82,7 @@ For a new section, update the model/repository or handler, `SearchUiState`, `Sea
 
 - Run focused unit tests for changed pure logic. Do not run instrumented/Compose UI tests unless requested.
 - If resource XML changes, validate every affected `app/src/main/res/values*/strings.xml` file and run `git diff --check`.
-- After every completed coding task, always run this exact command from the repository root before considering the task complete:
+- After every completed coding task, always run this exact command from the repository root outside the sandbox before considering the task complete:
 
 ```bash
 ./gradlew assembleStandardDebug && adb install --user 0 -r app/build/outputs/apk/standard/debug/app-standard-debug.apk && adb shell am force-stop com.tk.quicksearch && adb shell am force-stop com.tk.quicksearch.debug && adb shell am start -W -n com.tk.quicksearch.debug/com.tk.quicksearch.app.MainActivity

@@ -93,7 +93,12 @@ fun AppItemDropdownMenu(
     val context = LocalContext.current
     val isCurrentApp = appInfo.packageName == context.packageName
     val isLaunchableApp = appInfo.hasLaunchIntent
-    val notificationAction = CustomWidgetButtonAction.App(appInfo.packageName, appInfo.appName)
+    val notificationAction =
+        CustomWidgetButtonAction.App(
+            packageName = appInfo.packageName,
+            appName = appInfo.appName,
+            userHandleId = appInfo.userHandleId,
+        )
     val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     val showIconPicker = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
     val menuItems = buildList {
