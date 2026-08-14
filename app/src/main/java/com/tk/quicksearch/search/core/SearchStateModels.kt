@@ -100,6 +100,7 @@ data class SearchResultsState(
         val worldClockState: WorldClockState = WorldClockState(),
         val dictionaryState: DictionaryState = DictionaryState(),
         val weatherState: WeatherState = WeatherState(),
+        val screenTimeState: ScreenTimeState = ScreenTimeState.Hidden,
         val AiSearchState: AiSearchState = AiSearchState(),
         val webSuggestions: List<String> = emptyList(),
         val webSuggestionsLoading: Boolean = false,

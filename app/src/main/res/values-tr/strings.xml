@@ -1072,4 +1072,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">%d sa.</item><item quantity="other">%d sa.</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d dk.</item><item quantity="other">%d dk.</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s sa.</string>
+    <string name="other_screen_time_today_title">Bugünkü ekran süresi</string>
+    <string name="other_screen_time_hours_minutes">%1$d sa %2$d dk</string>
 </resources>

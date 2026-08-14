@@ -1065,4 +1065,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">%d 小时</item><item quantity="other">%d 小时</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d 分钟</item><item quantity="other">%d 分钟</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s 小时</string>
+    <string name="other_screen_time_today_title">今日屏幕使用时间</string>
+    <string name="other_screen_time_hours_minutes">%1$d 小时 %2$d 分钟</string>
 </resources>

@@ -95,6 +95,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.CalculatorResult
 import com.tk.quicksearch.tools.aiSearch.AiSearchResult
 import kotlin.math.min
+import com.tk.quicksearch.search.other.OtherSearchItemId
 
 private const val SEARCH_HISTORY_TAB_SWIPE_THRESHOLD_PX = 64f
 private const val OVERSCROLL_FOCUS_THRESHOLD_PX = 24f
@@ -115,6 +116,7 @@ fun SearchContentArea(
     predictedTarget: PredictedSubmitTarget? = null,
     isPhysicalKeyboardConnected: Boolean,
     onRequestUsagePermission: () -> Unit,
+    onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
     scrollState: androidx.compose.foundation.ScrollState,
     onPhoneNumberClick: (String) -> Unit = {},
     onEmailClick: (String) -> Unit = {},
@@ -290,6 +292,11 @@ fun SearchContentArea(
                         !showDictionary &&
                         !showWeather &&
                         !showAiSearch &&
+                        !com.tk.quicksearch.search.other.OtherSearchItemRegistry.hasVisibleResult(
+                            query = state.query,
+                            pinnedItemOrder = state.pinnedNonAppItemOrder,
+                            screenTimeState = state.screenTimeState,
+                        ) &&
                         !hasInlineSearchEngines
 
             val heightModifier =
@@ -522,6 +529,7 @@ fun SearchContentArea(
                                 predictedTarget = predictedTarget,
                                 isPhysicalKeyboardConnected = isPhysicalKeyboardConnected,
                                 onRequestUsagePermission = onRequestUsagePermission,
+                                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
                                 minContentHeight =
                                     if (isOverlayPresentation) {
                                         0.dp

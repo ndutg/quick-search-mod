@@ -1089,4 +1089,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">%d ч</item><item quantity="other">%d ч</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d мин</item><item quantity="other">%d мин</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s ч</string>
+    <string name="other_screen_time_today_title">Экранное время сегодня</string>
+    <string name="other_screen_time_hours_minutes">%1$d ч %2$d мин</string>
 </resources>

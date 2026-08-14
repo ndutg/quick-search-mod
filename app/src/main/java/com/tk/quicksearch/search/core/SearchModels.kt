@@ -182,6 +182,21 @@ enum class WeatherStatus {
         Error,
 }
 
+sealed interface ScreenTimeState {
+        data object Hidden : ScreenTimeState
+        data object Loading : ScreenTimeState
+        data class Available(
+                val durationMillis: Long,
+                val topApps: List<ScreenTimeAppUsage>,
+        ) : ScreenTimeState
+}
+
+data class ScreenTimeAppUsage(
+        val packageName: String,
+        val appName: String,
+        val durationMillis: Long,
+)
+
 enum class SearchToolType {
         CALCULATOR,
         UNIT_CONVERTER,
@@ -615,6 +630,7 @@ data class SearchUiState(
         val worldClockState: WorldClockState = WorldClockState(),
         val dictionaryState: DictionaryState = DictionaryState(),
         val weatherState: WeatherState = WeatherState(),
+        val screenTimeState: ScreenTimeState = ScreenTimeState.Hidden,
         val webSuggestions: List<String> = emptyList(),
         val webSuggestionsLoading: Boolean = false,
         val isAppSearchInProgress: Boolean = false,
@@ -729,6 +745,7 @@ fun SearchUiState(
                 worldClockState = results.worldClockState,
                 dictionaryState = results.dictionaryState,
                 weatherState = results.weatherState,
+                screenTimeState = results.screenTimeState,
                 AiSearchState = results.AiSearchState,
                 webSuggestions = results.webSuggestions,
                 webSuggestionsLoading = results.webSuggestionsLoading,

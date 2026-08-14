@@ -68,6 +68,7 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.search.core.SearchEnginesVisibility
 import com.tk.quicksearch.search.core.SearchTarget
+import com.tk.quicksearch.search.core.ScreenTimeState
 import com.tk.quicksearch.search.core.SectionRenderParams
 import com.tk.quicksearch.search.core.WorldClockStatus
 import com.tk.quicksearch.search.core.SearchUiState
@@ -100,6 +101,8 @@ import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.openNotificationShade
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.search.other.OtherSearchItemId
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 import com.tk.quicksearch.app.startup.StartupTrace
@@ -155,6 +158,7 @@ internal fun SearchScreenContent(
         onSettingsClick: () -> Unit,
         onAppClick: (com.tk.quicksearch.search.models.AppInfo) -> Unit,
         onRequestUsagePermission: () -> Unit,
+        onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
         onSearchTargetClick: (String, SearchTarget) -> Unit,
         onSearchEngineLongPress: () -> Unit,
         onAiSearchEmailClick: (String) -> Unit,
@@ -265,6 +269,18 @@ internal fun SearchScreenContent(
     }
     val isCalculatorMode = state.calculatorState.isCalculatorMode
     val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
+
+    LaunchedEffect(state.hasUsagePermission, state.pinnedNonAppItemOrder) {
+        if (
+            OtherSearchItemRegistry.shouldLoad(
+                itemId = com.tk.quicksearch.search.other.OtherSearchItemId.SCREEN_TIME,
+                query = state.query,
+                pinnedItemOrder = state.pinnedNonAppItemOrder,
+            )
+        ) {
+            onQueryChanged(state.query)
+        }
+    }
     val isToolMode = state.calculatorState.isToolMode
     val isUnitConverterMode = state.calculatorState.isUnitConverterMode
     val activeToolType = if (isToolMode) state.calculatorState.toolType else null
@@ -628,9 +644,16 @@ internal fun SearchScreenContent(
                 }
             }
     val hasSuffixAliasKeywordAtQueryEnd = suffixAliasMatchIgnoringTrailingSpace != null
+    val isOtherSearchResultVisible =
+        OtherSearchItemRegistry.hasVisibleResult(
+            query = state.query,
+            pinnedItemOrder = state.pinnedNonAppItemOrder,
+            screenTimeState = state.screenTimeState,
+        )
     val shouldShowTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected
     val predictedTargetForIndicator =
             if (shouldShowTopResultIndicator &&
+                    !isOtherSearchResultVisible &&
                     !showCurrencyConverterSearchCard &&
                     !showDictionarySearchCard &&
                     !showWeatherSearchCard &&
@@ -697,6 +720,12 @@ internal fun SearchScreenContent(
                     topMatchesSectionOrder = state.topMatchesSectionOrder,
                     disabledTopMatchesSections = state.disabledTopMatchesSections,
                     secondaryRankingSignal = state.secondaryRankingSignal,
+                    otherSearchItemIds =
+                        OtherSearchItemRegistry.visibleSearchItemIds(
+                            query = state.query,
+                            pinnedItemOrder = state.pinnedNonAppItemOrder,
+                            screenTimeState = state.screenTimeState,
+                        ),
                 )
     val shouldSubmitTopMatch =
             state.topMatchesEnabled &&
@@ -1034,6 +1063,10 @@ internal fun SearchScreenContent(
                 onMoveTopResultSelectionUp = { moveSelectedTopMatch(-1) },
                 onMoveTopResultSelectionDown = { moveSelectedTopMatch(1) },
                 onSearchAction = {
+                    if (isOtherSearchResultVisible && !state.topMatchesEnabled) {
+                        return@PersistentSearchBar true
+                    }
+
                     // Tool prompt cards take priority: Done triggers the card action.
                     // When no card is visible, fall through to the search engine.
                     if (showCurrencyConverterSearchCard) {
@@ -1228,6 +1261,7 @@ internal fun SearchScreenContent(
                 predictedTarget = predictedTargetForIndicator,
                 isPhysicalKeyboardConnected = isPhysicalKeyboardConnected,
                 onRequestUsagePermission = onRequestUsagePermission,
+                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
                 scrollState = scrollState,
                 onPhoneNumberClick = onPhoneNumberClick,
                 onEmailClick = onAiSearchEmailClick,

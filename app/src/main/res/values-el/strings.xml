@@ -1073,4 +1073,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">%d ωρ.</item><item quantity="other">%d ώρ.</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d λ.</item><item quantity="other">%d λ.</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s ώρ.</string>
+    <string name="other_screen_time_today_title">Σημερινός χρόνος οθόνης</string>
+    <string name="other_screen_time_hours_minutes">%1$d ώ. %2$d λ.</string>
 </resources>

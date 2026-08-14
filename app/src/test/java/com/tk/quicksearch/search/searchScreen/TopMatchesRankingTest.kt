@@ -2,10 +2,21 @@ package com.tk.quicksearch.search.searchScreen
 
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
+import com.tk.quicksearch.search.other.OtherSearchItemId
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TopMatchesRankingTest {
+    @Test
+    fun otherResultPriorityTracksQueryRelevance() {
+        val exactPriority =
+            otherSearchItemMatchPriority(OtherSearchItemId.SCREEN_TIME, "screen time")
+        val partialPriority =
+            otherSearchItemMatchPriority(OtherSearchItemId.SCREEN_TIME, "time")
+
+        org.junit.Assert.assertTrue(exactPriority < partialPriority)
+    }
+
     @Test
     fun selectedSignalControlsTopMatchSecondaryScore() {
         assertEquals(300L, topMatchSecondaryScore(SecondaryRankingSignal.RECENCY, 300L, 2L))

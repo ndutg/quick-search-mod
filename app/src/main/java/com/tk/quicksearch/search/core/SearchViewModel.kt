@@ -46,6 +46,9 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.search.other.OtherSearchItemId
+import com.tk.quicksearch.search.other.ScreenTimeRepository
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
@@ -80,6 +83,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 class SearchViewModel(
         application: Application,
 ) : AndroidViewModel(application),
@@ -115,6 +119,8 @@ class SearchViewModel(
     private val contactRepository by lazy { ContactRepository(appContext) }
     private val fileRepository by lazy { FileSearchRepository(appContext) }
     private val notesRepository by lazy { NotesRepository(appContext) }
+    private val screenTimeRepository by lazy { ScreenTimeRepository(appContext) }
+    private var screenTimeSearchJob: Job? = null
     private val settingsShortcutRepository by lazy {
         DeviceSettingsRepository(appContext)
     }
@@ -554,6 +560,64 @@ class SearchViewModel(
     fun onQueryChange(newQuery: String) {
         inMemoryRetainedQuery = newQuery
         queryCoordinator.onQueryChange(newQuery)
+        refreshScreenTimeResult(newQuery)
+    }
+
+    private fun refreshScreenTimeResult(query: String) {
+        screenTimeSearchJob?.cancel()
+        val pinnedItemOrder = _resultsState.value.pinnedNonAppItemOrder
+        if (
+            !OtherSearchItemRegistry.shouldLoad(
+                itemId = OtherSearchItemId.SCREEN_TIME,
+                query = query,
+                pinnedItemOrder = pinnedItemOrder,
+            )
+        ) {
+            _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
+            return
+        }
+        if (!com.tk.quicksearch.search.utils.PermissionUtils.hasUsageStatsPermission(appContext)) {
+            _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
+            return
+        }
+        _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Loading) }
+        screenTimeSearchJob =
+            viewModelScope.launch(Dispatchers.IO) {
+                val screenTime = screenTimeRepository.getTodayScreenTime()
+                if (
+                    _resultsState.value.query == query &&
+                        OtherSearchItemRegistry.shouldLoad(
+                            itemId = OtherSearchItemId.SCREEN_TIME,
+                            query = query,
+                            pinnedItemOrder = _resultsState.value.pinnedNonAppItemOrder,
+                        )
+                ) {
+                    _resultsState.update {
+                        it.copy(
+                            screenTimeState =
+                                ScreenTimeState.Available(
+                                    durationMillis = screenTime.durationMillis,
+                                    topApps = screenTime.topApps,
+                                ),
+                        )
+                    }
+                }
+            }
+    }
+
+    fun toggleOtherSearchItemPin(itemId: OtherSearchItemId) {
+        _resultsState.update { state ->
+            val key = itemId.pinnedItemKey
+            val updatedOrder =
+                if (key in state.pinnedNonAppItemOrder) {
+                    state.pinnedNonAppItemOrder.filterNot { it == key }
+                } else {
+                    state.pinnedNonAppItemOrder + key
+                }
+            userPreferences.setPinnedNonAppItemOrder(updatedOrder)
+            state.copy(pinnedNonAppItemOrder = updatedOrder)
+        }
+        refreshScreenTimeResult(_resultsState.value.query)
     }
     fun submitAiFollowUp(followUpQuestion: String) {
         val trimmedQuestion = followUpQuestion.trim()

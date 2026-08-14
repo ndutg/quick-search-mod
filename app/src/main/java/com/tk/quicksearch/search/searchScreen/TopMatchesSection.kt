@@ -56,6 +56,10 @@ import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.notes.NoteRow
+import com.tk.quicksearch.search.other.OtherSearchItemId
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.search.other.ScreenTimeResultCard
+import com.tk.quicksearch.search.core.ScreenTimeState
 import com.tk.quicksearch.search.searchScreen.components.predictedSubmitHighlight
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
@@ -139,6 +143,14 @@ internal sealed interface TopMatchItem {
         override val secondaryScore: Long,
         override val index: Int,
     ) : TopMatchItem
+
+    data class Other(
+        val itemId: OtherSearchItemId,
+        override val priority: Int,
+        override val sectionOrder: Int,
+        override val secondaryScore: Long,
+        override val index: Int,
+    ) : TopMatchItem
 }
 
 @Composable
@@ -151,6 +163,7 @@ internal fun rememberTopMatches(
     topMatchesSectionOrder: List<SearchSection>,
     disabledTopMatchesSections: Set<SearchSection>,
     secondaryRankingSignal: SecondaryRankingSignal,
+    otherSearchItemIds: List<OtherSearchItemId> = emptyList(),
 ): List<TopMatchItem> =
     remember(
         query,
@@ -161,6 +174,7 @@ internal fun rememberTopMatches(
         topMatchesSectionOrder,
         disabledTopMatchesSections,
         secondaryRankingSignal,
+        otherSearchItemIds,
     ) {
         if (query.isBlank() || limit <= 0) {
             emptyList()
@@ -174,6 +188,7 @@ internal fun rememberTopMatches(
                 topMatchesSectionOrder = topMatchesSectionOrder,
                 disabledTopMatchesSections = disabledTopMatchesSections,
                 secondaryRankingSignal = secondaryRankingSignal,
+                otherSearchItemIds = otherSearchItemIds,
             )
         }
     }
@@ -187,6 +202,7 @@ private fun buildTopMatches(
     topMatchesSectionOrder: List<SearchSection>,
     disabledTopMatchesSections: Set<SearchSection>,
     secondaryRankingSignal: SecondaryRankingSignal,
+    otherSearchItemIds: List<OtherSearchItemId>,
 ): List<TopMatchItem> {
     val sectionOrder =
         topMatchesSectionOrder.mapIndexed { index, section -> section to index }.toMap()
@@ -198,6 +214,16 @@ private fun buildTopMatches(
     val recencyIndex = context.recentResultRecencyIndex
 
     val matches = mutableListOf<TopMatchItem>()
+    otherSearchItemIds.forEachIndexed { index, itemId ->
+        matches +=
+            TopMatchItem.Other(
+                itemId = itemId,
+                priority = otherSearchItemMatchPriority(itemId, query),
+                sectionOrder = Int.MAX_VALUE,
+                secondaryScore = 0L,
+                index = index,
+            )
+    }
     if (isTopMatchesSectionEnabled(SearchSection.APPS)) {
         renderingState.displayApps.forEachIndexed { index, app ->
             matches += TopMatchItem.App(
@@ -341,6 +367,14 @@ private fun buildTopMatches(
     return rankTopMatches(matches, limit)
 }
 
+internal fun otherSearchItemMatchPriority(
+    itemId: OtherSearchItemId,
+    query: String,
+): Int =
+    OtherSearchItemRegistry.searchTerms(itemId).minOf { searchTerm ->
+        SearchRankingUtils.calculateMatchPriority(searchTerm, query)
+    }
+
 internal fun rankTopMatches(
     matches: List<TopMatchItem>,
     limit: Int,
@@ -384,6 +418,10 @@ internal fun TopMatchesSection(
     showTopResultIndicator: Boolean,
     selectedMatchIndex: Int? = null,
     reverseOrder: Boolean = false,
+    screenTimeState: ScreenTimeState,
+    pinnedNonAppItemOrder: List<String>,
+    iconPackPackage: String?,
+    onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (matches.isEmpty()) return
@@ -421,6 +459,31 @@ internal fun TopMatchesSection(
 
         displayedMatches.forEach { item ->
             val isTopPredicted = showTopResultIndicator && item == highlightedMatch
+            if (item is TopMatchItem.Other) {
+                when (item.itemId) {
+                    OtherSearchItemId.SCREEN_TIME ->
+                        ScreenTimeResultCard(
+                            state = screenTimeState,
+                            isPinned =
+                                OtherSearchItemRegistry.isPinned(
+                                    item.itemId,
+                                    pinnedNonAppItemOrder,
+                                ),
+                            showWallpaperBackground = showWallpaperBackground,
+                            iconPackPackage = iconPackPackage,
+                            onTogglePin = { onToggleOtherSearchItemPin(item.itemId) },
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .predictedSubmitHighlight(
+                                        isPredicted = isTopPredicted,
+                                        shape = SearchResultCardDefaults.shape,
+                                        opaqueCardTopResultBorder = true,
+                                    ),
+                        )
+                }
+                return@forEach
+            }
             SearchResultCard(
                 modifier =
                     Modifier
@@ -480,6 +543,7 @@ internal fun openTopMatch(
         is TopMatchItem.Calendar ->
             params.calendarParams?.onEventClick?.invoke(item.event) ?: return null
         is TopMatchItem.Note -> params.notesParams?.onNoteClick?.invoke(item.note) ?: return null
+        is TopMatchItem.Other -> return true
     }
     return false
 }
@@ -617,6 +681,8 @@ private fun TopMatchRow(
                 isPredicted = isPredicted,
             )
         }
+
+        is TopMatchItem.Other -> Unit
     }
 }
 

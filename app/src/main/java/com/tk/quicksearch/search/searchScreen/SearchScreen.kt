@@ -37,6 +37,7 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.other.OtherSearchItemId
 // import com.tk.quicksearch.search.searchScreen.SearchEngineOnboardingOverlay
 import com.tk.quicksearch.search.searchScreen.SearchScreenBackground
 import com.tk.quicksearch.search.searchScreen.SearchScreenContent
@@ -63,6 +64,7 @@ fun SearchScreen(
     onClearQuery: () -> Unit,
     onSettingsClick: () -> Unit,
     onRequestUsagePermission: () -> Unit,
+    onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
     onAppClick: (AppInfo) -> Unit,
     onAppInfoClick: (AppInfo) -> Unit,
     onUninstallClick: (AppInfo) -> Unit,
@@ -491,6 +493,7 @@ fun SearchScreen(
             onSettingsClick = onSettingsClick,
             onAppClick = onAppClick,
             onRequestUsagePermission = onRequestUsagePermission,
+            onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
             onSearchTargetClick = onSearchTargetClick,
             onSearchEngineLongPress = onSearchEngineLongPress,
             onAiSearchEmailClick = onAiSearchEmailClick,

@@ -70,6 +70,9 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.PinnedNonAppItemsSection
 import com.tk.quicksearch.search.searchScreen.components.SectionPermissionResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
+import com.tk.quicksearch.search.other.OtherSearchItemId
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.search.other.OtherSearchResults
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.startup.StartupTrace
 
@@ -89,6 +92,7 @@ fun ContentLayout(
     predictedTarget: PredictedSubmitTarget? = null,
     isPhysicalKeyboardConnected: Boolean,
     onRequestUsagePermission: () -> Unit,
+    onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
     minContentHeight: Dp,
     expandedCardMaxHeight: Dp,
     isReversed: Boolean,
@@ -352,6 +356,12 @@ fun ContentLayout(
             topMatchesSectionOrder = state.topMatchesSectionOrder,
             disabledTopMatchesSections = state.disabledTopMatchesSections,
             secondaryRankingSignal = state.secondaryRankingSignal,
+            otherSearchItemIds =
+                OtherSearchItemRegistry.visibleSearchItemIds(
+                    query = state.query,
+                    pinnedItemOrder = state.pinnedNonAppItemOrder,
+                    screenTimeState = state.screenTimeState,
+                ),
         )
     val showTopMatches =
         state.topMatchesEnabled &&
@@ -693,9 +703,14 @@ fun ContentLayout(
                 matches = topMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+                showTopResultIndicator =
+                    state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
                 selectedMatchIndex = selectedTopMatchIndex,
                 reverseOrder = false,
+                screenTimeState = state.screenTimeState,
+                pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
+                iconPackPackage = state.selectedIconPackPackage,
+                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (hasMoreResults) {
@@ -990,6 +1005,19 @@ fun ContentLayout(
                     }
                 }
 
+                ItemPriorityConfig.ItemType.OTHER_RESULTS -> {
+                    if (!hasQuery || !state.topMatchesEnabled) {
+                        OtherSearchResults(
+                            query = state.query,
+                            pinnedItemOrder = state.pinnedNonAppItemOrder,
+                            state = state.screenTimeState,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            iconPackPackage = state.selectedIconPackPackage,
+                            onTogglePin = onToggleOtherSearchItemPin,
+                        )
+                    }
+                }
+
                 ItemPriorityConfig.ItemType.AI_SEARCH_RESULT -> {
                     if (showAiSearch && aiSearchState != null) {
                         AiSearchResult(
@@ -1106,9 +1134,14 @@ fun ContentLayout(
                 matches = topMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+                showTopResultIndicator =
+                    state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
                 selectedMatchIndex = selectedTopMatchIndex,
                 reverseOrder = true,
+                screenTimeState = state.screenTimeState,
+                pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
+                iconPackPackage = state.selectedIconPackPackage,
+                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
                 modifier = Modifier.fillMaxWidth(),
             )
         }

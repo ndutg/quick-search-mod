@@ -1073,4 +1073,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">%d h</item><item quantity="other">%d h</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="other">%d min</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s h</string>
+    <string name="other_screen_time_today_title">Temps d’écran aujourd’hui</string>
+    <string name="other_screen_time_hours_minutes">%1$d h %2$d min</string>
 </resources>

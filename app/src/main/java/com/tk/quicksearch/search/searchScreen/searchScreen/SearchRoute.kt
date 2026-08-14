@@ -693,6 +693,7 @@ fun SearchRoute(
             onStartupKeyboardVisible = viewModel::notifyStartupKeyboardVisible,
             onClearQuery = viewModel::clearQuery,
             onRequestUsagePermission = { viewModel.openUsageAccessSettings() },
+            onToggleOtherSearchItemPin = viewModel::toggleOtherSearchItemPin,
             onSettingsClick = onSettingsClick,
             onAppClick = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.launchApp(app, context)

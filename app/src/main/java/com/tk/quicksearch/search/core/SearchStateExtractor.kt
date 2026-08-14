@@ -51,6 +51,7 @@ internal object SearchStateExtractor {
             worldClockState = s.worldClockState,
             dictionaryState = s.dictionaryState,
             weatherState = s.weatherState,
+            screenTimeState = s.screenTimeState,
             AiSearchState = s.AiSearchState,
             webSuggestions = s.webSuggestions,
             webSuggestionsLoading = s.webSuggestionsLoading,

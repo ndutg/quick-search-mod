@@ -1073,4 +1073,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">%d గం.</item><item quantity="other">%d గం.</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d ని.</item><item quantity="other">%d ని.</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s గం.</string>
+    <string name="other_screen_time_today_title">ఈ రోజు స్క్రీన్ టైమ్</string>
+    <string name="other_screen_time_hours_minutes">%1$d గం %2$d నిమి</string>
 </resources>

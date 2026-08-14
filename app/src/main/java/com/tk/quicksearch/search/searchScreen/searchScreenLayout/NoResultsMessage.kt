@@ -33,6 +33,11 @@ internal fun computeShouldShowNoResults(state: SearchUiState): Boolean {
         !state.isAppSearchInProgress &&
         !state.isSecondarySearchInProgress &&
         !hasAnySearchResults &&
+        !com.tk.quicksearch.search.other.OtherSearchItemRegistry.hasVisibleResult(
+            query = state.query,
+            pinnedItemOrder = state.pinnedNonAppItemOrder,
+            screenTimeState = state.screenTimeState,
+        ) &&
         state.detectedShortcutTarget == null &&
         state.detectedAliasSearchSection == null &&
         !state.isCurrencyConverterAliasMode &&

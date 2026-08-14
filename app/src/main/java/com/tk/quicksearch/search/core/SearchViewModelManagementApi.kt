@@ -13,6 +13,7 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -954,6 +955,7 @@ private fun StaticShortcut.pinnedNonAppItemKey(): String = "shortcut:${shortcutK
 private fun SearchUiState.completePinnedNonAppItemOrder(): List<String> {
     val liveKeys =
         buildList {
+            addAll(pinnedNonAppItemOrder.filter(OtherSearchItemRegistry::isOtherPinnedItemKey))
             addAll(pinnedAppShortcuts.map { it.pinnedNonAppItemKey() })
             addAll(pinnedContacts.map { it.pinnedNonAppItemKey() })
             addAll(pinnedFiles.map { it.pinnedNonAppItemKey() })

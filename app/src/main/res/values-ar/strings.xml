@@ -1075,4 +1075,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">ساعة واحدة</item><item quantity="other">%d س</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">دقيقة واحدة</item><item quantity="other">%d د</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s س</string>
+    <string name="other_screen_time_today_title">وقت استخدام الشاشة اليوم</string>
+    <string name="other_screen_time_hours_minutes">%1$d س %2$d د</string>
 </resources>

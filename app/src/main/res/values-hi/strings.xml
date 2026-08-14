@@ -1073,4 +1073,6 @@
     <plurals name="app_menu_usage_hours"><item quantity="one">%d घंटा</item><item quantity="other">%d घंटे</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d मिनट</item><item quantity="other">%d मिनट</item></plurals>
     <string name="app_menu_usage_hours_decimal">%1$s घंटे</string>
+    <string name="other_screen_time_today_title">आज का स्क्रीन टाइम</string>
+    <string name="other_screen_time_hours_minutes">%1$d घंटा %2$d मिनट</string>
 </resources>
