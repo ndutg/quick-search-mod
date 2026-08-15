@@ -120,7 +120,7 @@ private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DURATION_MS = 180
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DELAY_MS = 40
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS = 130
 
-private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, context: android.content.Context) {
+private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, aliasTarget: String?, context: android.content.Context, onAliasTarget: (HomeSwipeGestureAction, String) -> Unit) {
     when (this) {
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
         HomeSwipeGestureAction.CUSTOM -> {
@@ -128,6 +128,8 @@ private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, conte
                 context.startActivity(WidgetActionActivity.createIntent(context, action))
             }
         }
+        HomeSwipeGestureAction.SEARCH_ENGINE,
+        HomeSwipeGestureAction.TOOL -> aliasTarget?.let { onAliasTarget(this, it) }
         HomeSwipeGestureAction.NONE -> Unit
     }
 }
@@ -200,12 +202,18 @@ internal fun SearchScreenContent(
         swipeDownAction: SwipeGestureAction = SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS,
         swipeUpCustomActionJson: String? = null,
         swipeDownCustomActionJson: String? = null,
+        swipeUpAliasTarget: String? = null,
+        swipeDownAliasTarget: String? = null,
         homeSwipeUpAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NONE,
         homeSwipeDownAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NOTIFICATION_PANEL,
         homeSwipeUpCustomActionJson: String? = null,
         homeSwipeDownCustomActionJson: String? = null,
         homeDoubleTapAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NONE,
         homeDoubleTapCustomActionJson: String? = null,
+        homeSwipeUpAliasTarget: String? = null,
+        homeSwipeDownAliasTarget: String? = null,
+        homeDoubleTapAliasTarget: String? = null,
+        onGestureAliasTarget: (Enum<*>, String) -> Unit = { _, _ -> },
         getAllTriggerWordsById: () -> Map<String, String> = { emptyMap() },
         getAllContactActionTriggers: () -> Map<com.tk.quicksearch.search.data.preferences.ContactActionTriggerKey, com.tk.quicksearch.search.data.preferences.ResultTrigger> = { emptyMap() },
         onContactActionTrigger: (Long, com.tk.quicksearch.search.contacts.models.ContactCardAction) -> Unit = { _, _ -> },
@@ -1308,8 +1316,10 @@ internal fun SearchScreenContent(
                         swipeUpAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
                             keyboardController?.hide()
                         }
+                        swipeUpAction == SwipeGestureAction.SEARCH_ENGINE || swipeUpAction == SwipeGestureAction.TOOL ->
+                            swipeUpAliasTarget?.let { onGestureAliasTarget(swipeUpAction, it) }
                         isDefaultLauncher ->
-                            homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, context)
+                            homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, homeSwipeUpAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
                     }
                 },
                 onLauncherOverscrollDown = {
@@ -1321,12 +1331,14 @@ internal fun SearchScreenContent(
                         swipeDownAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
                             keyboardController?.hide()
                         }
+                        swipeDownAction == SwipeGestureAction.SEARCH_ENGINE || swipeDownAction == SwipeGestureAction.TOOL ->
+                            swipeDownAliasTarget?.let { onGestureAliasTarget(swipeDownAction, it) }
                         isDefaultLauncher ->
-                            homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, context)
+                            homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, homeSwipeDownAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
                     }
                 },
                 onHomeDoubleTap = {
-                    homeDoubleTapAction.performHomeGesture(homeDoubleTapCustomActionJson, context)
+                    homeDoubleTapAction.performHomeGesture(homeDoubleTapCustomActionJson, homeDoubleTapAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
         )

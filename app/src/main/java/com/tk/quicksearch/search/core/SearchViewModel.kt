@@ -57,6 +57,7 @@ import com.tk.quicksearch.search.webSuggestions.WebSuggestionHandler
 import com.tk.quicksearch.searchEngines.SearchEngineManager
 import com.tk.quicksearch.searchEngines.SecondarySearchOrchestrator
 import com.tk.quicksearch.searchEngines.AliasHandler
+import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.isLowRamDevice
@@ -698,6 +699,11 @@ class SearchViewModel(
     fun deleteTaskerIntentTool(id: String) = taskerIntentDelegate.deleteTaskerIntentTool(id)
     fun activateSearchSectionFilter(section: SearchSection) =
             queryCoordinator.activateSearchSectionFilter(section)
+    fun activateGestureSearchTarget(targetId: String) {
+        _featureState.value.searchTargetsOrder.firstOrNull { it.getId() == targetId }
+            ?.let(queryCoordinator::activateGestureSearchTarget)
+    }
+    fun activateGestureTool(featureId: String) = queryCoordinator.activateGestureTool(featureId)
     fun clearDetectedShortcut() = queryCoordinator.clearDetectedShortcut()
     fun clearQuery() = queryCoordinator.clearQuery()
     fun consumeRetainedQuerySelectionRequest() {
