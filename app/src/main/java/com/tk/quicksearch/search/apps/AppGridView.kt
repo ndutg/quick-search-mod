@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -236,6 +237,8 @@ fun AppGridView(
     val newUpdatedTitle = stringResource(R.string.app_suggestions_tab_new_updated)
     val mostUsedTitle = stringResource(R.string.common_most_used)
     val allAppsTitle = stringResource(R.string.settings_app_shortcuts_filter_all_apps)
+    val suggestionSlotCount =
+            (rowCount * getAppGridColumns(phoneColumnOverride)).coerceAtLeast(1)
     val alphabeticalApps =
             remember(allApps) {
                 allApps.sortedWith(
@@ -257,23 +260,29 @@ fun AppGridView(
                     pinnedAndRecentApps,
                     mostUsedApps,
                     enabledSuggestionTabs,
+                    suggestionSlotCount,
             ) {
                 if (isSearching) return@remember emptyList()
-                val pinnedAppsFirst =
+                val recentsApps =
                     if (AppSuggestionTabType.PINNED !in enabledSuggestionTabs) {
-                        val pinnedKeys = pinnedApps.map { it.launchCountKey() }.toSet()
-                        pinnedApps + pinnedAndRecentApps.filterNot { it.launchCountKey() in pinnedKeys }
+                        replaceSuggestionAppsWithPinned(
+                                pinnedApps = pinnedApps,
+                                suggestedApps = pinnedAndRecentApps,
+                                slotCount = suggestionSlotCount,
+                        )
                     } else {
                         pinnedAndRecentApps
                     }
-                val recentsApps = pinnedAppsFirst
                 val mostUsedAppsWithPinned =
                     if (
                         AppSuggestionTabType.PINNED !in enabledSuggestionTabs &&
                             AppSuggestionTabType.RECENTS !in enabledSuggestionTabs
                     ) {
-                        val pinnedKeys = pinnedApps.map { it.launchCountKey() }.toSet()
-                        pinnedApps + mostUsedApps.filterNot { it.launchCountKey() in pinnedKeys }
+                        replaceSuggestionAppsWithPinned(
+                                pinnedApps = pinnedApps,
+                                suggestedApps = mostUsedApps,
+                                slotCount = suggestionSlotCount,
+                        )
                     } else {
                         mostUsedApps
                     }
@@ -319,7 +328,7 @@ fun AppGridView(
             onSuggestionTabSelected(tab.type)
         }
     }
-    val minSuggestionGridItems = (rowCount * getAppGridColumns(phoneColumnOverride)).coerceAtLeast(1)
+    val minSuggestionGridItems = suggestionSlotCount
     val suggestionFallbackApps = remember(pinnedAndRecentApps, apps) { pinnedAndRecentApps + apps }
     val selectedSuggestionTabType = suggestionTabs.getOrNull(selectedSuggestionTabIndex)?.type
     val selectedSuggestionTabItem = suggestionTabs.getOrNull(selectedSuggestionTabIndex)
@@ -511,6 +520,8 @@ fun AppGridView(
                                 appIconShape = appIconShape,
                                 themedIconsEnabled = themedIconsEnabled,
                                 showWallpaperBackground = showWallpaperBackground,
+                                showPinnedIndicators =
+                                        AppSuggestionTabType.PINNED !in enabledSuggestionTabs,
                                 reorderPinnedApps = selectedTab.type == AppSuggestionTabType.PINNED,
                         )
                     }
@@ -544,6 +555,9 @@ fun AppGridView(
                             appIconShape = appIconShape,
                             themedIconsEnabled = themedIconsEnabled,
                             showWallpaperBackground = showWallpaperBackground,
+                            showPinnedIndicators =
+                                    !isSearching &&
+                                            AppSuggestionTabType.PINNED !in enabledSuggestionTabs,
                             reorderPinnedApps =
                                     selectedSuggestionTabType == AppSuggestionTabType.PINNED,
                     )
@@ -900,6 +914,19 @@ private fun fillSuggestionGridApps(
     return result
 }
 
+private fun replaceSuggestionAppsWithPinned(
+        pinnedApps: List<AppInfo>,
+        suggestedApps: List<AppInfo>,
+        slotCount: Int,
+): List<AppInfo> {
+    val seen = LinkedHashSet<String>(slotCount)
+    return (pinnedApps + suggestedApps)
+            .asSequence()
+            .filter { seen.add(it.launchCountKey()) }
+            .take(slotCount)
+            .toList()
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AppGrid(
@@ -932,6 +959,7 @@ private fun AppGrid(
         appIconShape: AppIconShape,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
+        showPinnedIndicators: Boolean = false,
         reorderPinnedApps: Boolean = false,
         scrollableRowCount: Int? = null,
 ) {
@@ -1197,6 +1225,7 @@ private fun AppGrid(
                             appIconShape = appIconShape,
                             themedIconsEnabled = themedIconsEnabled,
                             showWallpaperBackground = showWallpaperBackground,
+                            showPinnedIndicators = showPinnedIndicators,
                             onItemMeasured = { height ->
                                 measuredItemHeightPx = height.toFloat()
                             },
@@ -1227,6 +1256,7 @@ private fun AppGrid(
                                 appIconShape = appIconShape,
                                 themedIconsEnabled = themedIconsEnabled,
                                 showWallpaperBackground = showWallpaperBackground,
+                                showPinnedIndicators = showPinnedIndicators,
                                 isDragging = isThisDragging,
                                 dragOffset =
                                         if (isThisDragging) {
@@ -1270,6 +1300,7 @@ private fun AppGridItem(
         appIconShape: AppIconShape = AppIconShape.DEFAULT,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
+        showPinnedIndicators: Boolean = false,
         isDragging: Boolean = false,
         dragOffset: IntOffset? = null,
         onItemMeasured: (Int) -> Unit = {},
@@ -1454,6 +1485,7 @@ private fun AppGridItem(
                     oneHandedMode = oneHandedMode,
                     themedIconsEnabled = themedIconsEnabled,
                     showWallpaperBackground = showWallpaperBackground,
+                    showPinnedIndicator = showPinnedIndicators && appState.isPinned,
             )
             if (appState.showAppLabel) {
                 AppLabelText(
@@ -1506,6 +1538,7 @@ private fun AppIconSurface(
         oneHandedMode: Boolean = false,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
+        showPinnedIndicator: Boolean = false,
 ) {
     val view = LocalView.current
     val context = LocalContext.current
@@ -1555,6 +1588,7 @@ private fun AppIconSurface(
                 colorScheme.primary
             }
     val themedIconContainerShape = CircleShape
+    val pinnedIndicatorInset = (appIconSurfaceSize - appIconSize) / 2
 
     Surface(
             modifier = Modifier.requiredSize(appIconSurfaceSize).then(gestureModifier),
@@ -1718,6 +1752,18 @@ private fun AppIconSurface(
                                                     colorScheme.surfaceVariant.copy(alpha = 0.7f)
                                                 },
                                         ),
+                )
+            }
+            if (showPinnedIndicator) {
+                Icon(
+                        imageVector = Icons.Rounded.PushPin,
+                        contentDescription = null,
+                        modifier =
+                                Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = pinnedIndicatorInset, end = pinnedIndicatorInset)
+                                        .size(14.dp),
+                        tint = colorScheme.primary,
                 )
             }
         }

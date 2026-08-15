@@ -86,6 +86,7 @@ import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
@@ -737,20 +738,21 @@ private fun AppSuggestionTabsDialog(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (AppSuggestionTabType.PINNED !in enabledTabs) {
+                    TipBanner(
+                        text = pinnedTabDisabledDescription,
+                        showDismissButton = false,
+                        modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
+                    )
+                }
                 configurableTabs.forEachIndexed { index, (tab, title) ->
                     if (index > 0) {
                         HorizontalDivider(color = AppColors.SettingsDivider)
                     }
                     val isEnabled = tab in enabledTabs
-                    val subtitle =
-                        if (tab == AppSuggestionTabType.PINNED && !isEnabled) {
-                            pinnedTabDisabledDescription
-                        } else {
-                            null
-                        }
                     AppSuggestionTabCheckboxItem(
                         title = title,
-                        subtitle = subtitle,
+                        subtitle = null,
                         checked = isEnabled,
                         onCheckedChange = { enabled -> onTabEnabledChange(tab, enabled) },
                         modifier = Modifier.fillMaxWidth(),
