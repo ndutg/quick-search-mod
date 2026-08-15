@@ -391,6 +391,7 @@
 <string name="contact_method_telegram_voice_call_label">Аудиозвонок в Telegram</string>
 <string name="contact_method_view_in_contacts_label">Открыть в «Контактах»</string>
 <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+<string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
 <string name="contact_method_whatsapp_video_call_label">Видеозвонок в WhatsApp</string>
 <string name="contact_method_whatsapp_voice_call_label">Аудиозвонок в WhatsApp</string>
 <string name="contacts_action_button_chat">Чат</string>

@@ -387,7 +387,8 @@
     <string name="contact_method_telegram_video_call_label">Telegram 视频通话</string>
     <string name="contact_method_telegram_voice_call_label">Telegram 语音通话</string>
     <string name="contact_method_view_in_contacts_label">在通讯录应用中查看</string>
-    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+<string name="contact_method_whatsapp_message_label">WhatsApp</string>
+<string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">WhatsApp 视频通话</string>
     <string name="contact_method_whatsapp_voice_call_label">WhatsApp 语音通话</string>
     <string name="contacts_action_button_chat">聊天</string>

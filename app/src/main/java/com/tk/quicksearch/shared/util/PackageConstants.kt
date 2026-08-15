@@ -6,6 +6,7 @@ package com.tk.quicksearch.shared.util
 object PackageConstants {
     // Messaging apps
     const val WHATSAPP_PACKAGE = "com.whatsapp"
+    const val WHATSAPP_BUSINESS_PACKAGE = "com.whatsapp.w4b"
     const val TELEGRAM_PACKAGE = "org.telegram.messenger"
     const val SIGNAL_PACKAGE = "org.thoughtcrime.securesms"
     const val GOOGLE_MEET_PACKAGE = "com.google.android.apps.tachyon"

@@ -389,6 +389,7 @@
     <string name="contact_method_telegram_voice_call_label">Chamada de voz do Telegram</string>
     <string name="contact_method_view_in_contacts_label">Ver no app de contatos</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">Videochamada do WhatsApp</string>
     <string name="contact_method_whatsapp_voice_call_label">Chamada de voz do WhatsApp</string>
     <string name="contacts_action_button_chat">Conversar</string>

@@ -390,6 +390,7 @@
     <string name="contact_method_telegram_voice_call_label">مكالمة صوتية عبر Telegram</string>
     <string name="contact_method_view_in_contacts_label">عرض في تطبيق جهات الاتصال</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">مكالمة فيديو عبر WhatsApp</string>
     <string name="contact_method_whatsapp_voice_call_label">مكالمة صوتية عبر WhatsApp</string>
     <string name="contacts_action_button_chat">دردشة</string>

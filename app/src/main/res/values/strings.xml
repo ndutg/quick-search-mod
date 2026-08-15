@@ -381,6 +381,7 @@
     <string name="contact_method_telegram_voice_call_label">Telegram voice call</string>
     <string name="contact_method_view_in_contacts_label">View in contacts app</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">WhatsApp video call</string>
     <string name="contact_method_whatsapp_voice_call_label">WhatsApp voice call</string>
     <string name="contacts_action_button_chat">Chat</string>
