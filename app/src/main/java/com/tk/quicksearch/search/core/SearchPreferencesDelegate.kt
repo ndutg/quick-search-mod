@@ -200,7 +200,6 @@ internal class SearchPreferencesDelegate(
     ) {
         scope.launch(Dispatchers.IO) {
             val currentTabs = userPreferences.getEnabledAppSuggestionTabs()
-            if (!enabled && currentTabs.size <= 1 && tab in currentTabs) return@launch
             val updatedTabs =
                 currentTabs.toMutableSet().apply {
                     if (enabled) {
@@ -208,11 +207,17 @@ internal class SearchPreferencesDelegate(
                     } else {
                         remove(tab)
                     }
+                    if (
+                        AppSuggestionTabType.RECENTS !in this &&
+                            AppSuggestionTabType.MOST_USED !in this
+                    ) {
+                        add(AppSuggestionTabType.PINNED)
+                    }
                 }
             userPreferences.setEnabledAppSuggestionTabs(updatedTabs)
             updateConfigState { state ->
                 val selectedTab =
-                    state.selectedAppSuggestionTab.takeIf { it in updatedTabs || it == AppSuggestionTabType.PINNED }
+                    state.selectedAppSuggestionTab.takeIf { it in updatedTabs }
                         ?: updatedTabs.firstOrNull()
                         ?: AppSuggestionTabType.RECENTS
                 state.copy(

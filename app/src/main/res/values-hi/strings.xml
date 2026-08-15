@@ -217,6 +217,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">नए/अपडेटेड</string>
     <string name="app_suggestions_tab_pinned">पिन किए गए</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">पिन किए गए ऐप्स %1$s टैब में दिखाई देते रहेंगे</string>
     <string name="app_suggestions_tab_recent">हाल के</string>
     <string name="app_suggestions_tabs_dialog_message">चुनें कि होम स्क्रीन पर कौन से ऐप सुझाव टैब दिखाई दें।</string>
     <string name="app_suggestions_tabs_dialog_title">ऐप सुझाव टैब</string>

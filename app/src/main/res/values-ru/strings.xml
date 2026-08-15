@@ -217,6 +217,7 @@
      ============================================================================ -->
 <string name="app_suggestions_tab_new_updated">Новые/Обновленные</string>
 <string name="app_suggestions_tab_pinned">Закрепленные</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Закрепленные приложения по-прежнему будут отображаться на вкладке «%1$s»</string>
 <string name="app_suggestions_tab_recent">Недавние</string>
 <string name="app_suggestions_tabs_dialog_message">Выберите, какие вкладки с подсказками приложений отображать на главном экране.</string>
 <string name="app_suggestions_tabs_dialog_title">Вкладки с подсказками приложений</string>

@@ -217,6 +217,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Neu/Aktualisiert</string>
     <string name="app_suggestions_tab_pinned">Angeheftet</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Angeheftete Apps werden weiterhin im Tab „%1$s“ angezeigt</string>
     <string name="app_suggestions_tab_recent">Zuletzt verwendet</string>
     <string name="app_suggestions_tabs_dialog_message">Wählen Sie aus, welche App-Vorschlagstabs auf dem Startbildschirm angezeigt werden.</string>
     <string name="app_suggestions_tabs_dialog_title">App-Vorschlagstabs</string>

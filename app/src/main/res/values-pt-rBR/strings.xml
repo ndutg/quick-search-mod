@@ -217,6 +217,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Novos/Atualizados</string>
     <string name="app_suggestions_tab_pinned">Fixados</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Os apps fixados continuarão aparecendo na guia %1$s</string>
     <string name="app_suggestions_tab_recent">Recentes</string>
     <string name="app_suggestions_tabs_dialog_message">Escolha quais guias de sugestões de apps aparecem na tela inicial.</string>
     <string name="app_suggestions_tabs_dialog_title">Guias de sugestões de apps</string>

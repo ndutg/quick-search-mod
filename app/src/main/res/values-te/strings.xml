@@ -217,6 +217,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">కొత్తవి/నవీకరించబడినవి</string>
     <string name="app_suggestions_tab_pinned">పిన్ చేసినవి</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">పిన్ చేసిన యాప్‌లు %1$s ట్యాబ్‌లో కనిపిస్తూనే ఉంటాయి</string>
     <string name="app_suggestions_tab_recent">ఇటీవలివి</string>
     <string name="app_suggestions_tabs_dialog_message">హోమ్ స్క్రీన్‌పై ఏ యాప్ సూచన ట్యాబ్‌లు కనిపించాలో ఎంచుకోండి.</string>
     <string name="app_suggestions_tabs_dialog_title">యాప్ సూచన ట్యాబ్‌లు</string>

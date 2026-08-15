@@ -257,6 +257,24 @@ fun AppGridView(
                     enabledSuggestionTabs,
             ) {
                 if (isSearching) return@remember emptyList()
+                val pinnedAppsFirst =
+                    if (AppSuggestionTabType.PINNED !in enabledSuggestionTabs) {
+                        val pinnedKeys = pinnedApps.map { it.launchCountKey() }.toSet()
+                        pinnedApps + pinnedAndRecentApps.filterNot { it.launchCountKey() in pinnedKeys }
+                    } else {
+                        pinnedAndRecentApps
+                    }
+                val recentsApps = pinnedAppsFirst
+                val mostUsedAppsWithPinned =
+                    if (
+                        AppSuggestionTabType.PINNED !in enabledSuggestionTabs &&
+                            AppSuggestionTabType.RECENTS !in enabledSuggestionTabs
+                    ) {
+                        val pinnedKeys = pinnedApps.map { it.launchCountKey() }.toSet()
+                        pinnedApps + mostUsedApps.filterNot { it.launchCountKey() in pinnedKeys }
+                    } else {
+                        mostUsedApps
+                    }
                 if (hasUsagePermission) {
                     buildList {
                         if (AppSuggestionTabType.NEW_UPDATED in enabledSuggestionTabs) {
@@ -266,10 +284,10 @@ fun AppGridView(
                             add(AppSuggestionTab(AppSuggestionTabType.PINNED, pinnedTitle, pinnedApps))
                         }
                         if (AppSuggestionTabType.RECENTS in enabledSuggestionTabs) {
-                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, pinnedAndRecentApps))
+                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, recentsApps))
                         }
                         if (AppSuggestionTabType.MOST_USED in enabledSuggestionTabs) {
-                            add(AppSuggestionTab(AppSuggestionTabType.MOST_USED, mostUsedTitle, mostUsedApps))
+                            add(AppSuggestionTab(AppSuggestionTabType.MOST_USED, mostUsedTitle, mostUsedAppsWithPinned))
                         }
                     }
                 } else {
@@ -278,7 +296,7 @@ fun AppGridView(
                             add(AppSuggestionTab(AppSuggestionTabType.PINNED, pinnedTitle, pinnedApps))
                         }
                         if (AppSuggestionTabType.RECENTS in enabledSuggestionTabs) {
-                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, pinnedAndRecentApps))
+                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, recentsApps))
                         }
                     }
                 }

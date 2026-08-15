@@ -787,13 +787,23 @@ class UiPreferences(
         tabs: Set<AppSuggestionTabType>,
     ) {
         val normalizedTabs =
-            tabs.ifEmpty { AppSuggestionTabType.DefaultEnabledTabs }
+            tabs
+                .ifEmpty { AppSuggestionTabType.DefaultEnabledTabs }
+                .toMutableSet()
+                .apply {
+                    if (
+                        AppSuggestionTabType.RECENTS !in this &&
+                            AppSuggestionTabType.MOST_USED !in this
+                    ) {
+                        add(AppSuggestionTabType.PINNED)
+                    }
+                }
         editor.putStringSet(
             UiPreferences.KEY_ENABLED_APP_SUGGESTION_TABS,
             normalizedTabs.map { it.name }.toSet(),
         )
         val selectedTab = getSelectedAppSuggestionTab()
-        if (selectedTab !in normalizedTabs && selectedTab != AppSuggestionTabType.PINNED) {
+        if (selectedTab !in normalizedTabs) {
             editor.putString(
                 UiPreferences.KEY_SELECTED_APP_SUGGESTION_TAB,
                 normalizedTabs.firstOrNull()?.name ?: AppSuggestionTabType.RECENTS.name,

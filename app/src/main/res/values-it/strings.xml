@@ -216,6 +216,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Nuove/Aggiornate</string>
     <string name="app_suggestions_tab_pinned">Fissate</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Le app fissate continueranno ad apparire nella scheda %1$s</string>
     <string name="app_suggestions_tab_recent">Recenti</string>
     <string name="app_suggestions_tabs_dialog_message">Scegli quali schede di suggerimenti app visualizzare nella schermata iniziale.</string>
     <string name="app_suggestions_tabs_dialog_title">Schede di suggerimenti app</string>

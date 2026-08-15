@@ -216,6 +216,7 @@
      ============================================================================ -->
 <string name="app_suggestions_tab_new_updated">Yeni/Güncellenen</string>
 <string name="app_suggestions_tab_pinned">Sabitlenenler</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Sabitlenmiş uygulamalar %1$s sekmesinde görünmeye devam eder</string>
 <string name="app_suggestions_tab_recent">Son kullanılanlar</string>
 <string name="app_suggestions_tabs_dialog_message">Ana ekranda hangi uygulama önerisi sekmelerinin görüneceğini seçin.</string>
 <string name="app_suggestions_tabs_dialog_title">Uygulama Önerisi Sekmeleri</string>

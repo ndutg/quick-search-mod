@@ -217,6 +217,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Nuevas/Actualizadas</string>
     <string name="app_suggestions_tab_pinned">Fijadas</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Las aplicaciones fijadas seguirán apareciendo en la pestaña %1$s</string>
     <string name="app_suggestions_tab_recent">Recientes</string>
     <string name="app_suggestions_tabs_dialog_message">Elige qué pestañas de sugerencias de apps aparecen en la pantalla de inicio.</string>
     <string name="app_suggestions_tabs_dialog_title">Pestañas de sugerencias de apps</string>
