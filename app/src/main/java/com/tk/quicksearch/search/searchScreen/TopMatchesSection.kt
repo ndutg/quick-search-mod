@@ -784,6 +784,7 @@ private fun TopMatchAppRow(
             onNicknameClick = { params.onNicknameClick(app) },
             onTriggerClick = { params.onTriggerClick(app) },
             onAddToHome = { addToHomeHandler.addAppToHome(app) },
+            onOpenInSplitScreen = { params.onOpenInSplitScreen(app) },
         )
     }
 }

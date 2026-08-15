@@ -169,6 +169,7 @@ private data class AppActions(
         val onNicknameClick: () -> Unit,
         val onTriggerClick: () -> Unit,
         val onAddToHome: () -> Unit,
+        val onOpenInSplitScreen: () -> Unit,
 )
 
 /** Data class containing app state information to reduce parameter count in composables. */
@@ -206,6 +207,7 @@ fun AppGridView(
         onReorderPinnedApps: (List<AppInfo>) -> Unit,
         onNicknameClick: (AppInfo) -> Unit,
         onTriggerClick: (AppInfo) -> Unit,
+        onOpenInSplitScreen: (AppInfo) -> Unit,
         getAppNickname: (String) -> String?,
         getAppTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
         pinnedPackageNames: Set<String>,
@@ -492,6 +494,7 @@ fun AppGridView(
                                 onReorderPinnedApps = onReorderPinnedApps,
                                 onNicknameClick = onNicknameClick,
                                 onTriggerClick = onTriggerClick,
+                                onOpenInSplitScreen = onOpenInSplitScreen,
                                 getAppNickname = getAppNickname,
                                 getAppTrigger = getAppTrigger,
                                 pinnedPackageNames = pinnedPackageNames,
@@ -524,6 +527,7 @@ fun AppGridView(
                             onReorderPinnedApps = onReorderPinnedApps,
                             onNicknameClick = onNicknameClick,
                             onTriggerClick = onTriggerClick,
+                            onOpenInSplitScreen = onOpenInSplitScreen,
                             getAppNickname = getAppNickname,
                             getAppTrigger = getAppTrigger,
                             pinnedPackageNames = pinnedPackageNames,
@@ -583,6 +587,7 @@ fun AppGridView(
                 onUnpinApp = onUnpinApp,
                 onNicknameClick = onNicknameClick,
                 onTriggerClick = onTriggerClick,
+                onOpenInSplitScreen = onOpenInSplitScreen,
                 getAppNickname = getAppNickname,
                 getAppTrigger = getAppTrigger,
                 pinnedPackageNames = pinnedPackageNames,
@@ -608,6 +613,7 @@ private fun AllAppsDialog(
         onUnpinApp: (AppInfo) -> Unit,
         onNicknameClick: (AppInfo) -> Unit,
         onTriggerClick: (AppInfo) -> Unit,
+        onOpenInSplitScreen: (AppInfo) -> Unit,
         getAppNickname: (String) -> String?,
         getAppTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
         pinnedPackageNames: Set<String>,
@@ -667,6 +673,7 @@ private fun AllAppsDialog(
                                                     onNicknameClick = { onNicknameClick(app) },
                                                     onTriggerClick = { onTriggerClick(app) },
                                                     onAddToHome = { addToHomeHandler.addAppToHome(app) },
+                                                    onOpenInSplitScreen = { onOpenInSplitScreen(app) },
                                             ),
                                     appState =
                                             AppState(
@@ -798,6 +805,7 @@ private fun AllAppsDialogGridItem(
                 onNicknameClick = appActions.onNicknameClick,
                 onTriggerClick = appActions.onTriggerClick,
                 onAddToHome = appActions.onAddToHome,
+                onOpenInSplitScreen = appActions.onOpenInSplitScreen,
         )
     }
 }
@@ -907,6 +915,7 @@ private fun AppGrid(
         onReorderPinnedApps: (List<AppInfo>) -> Unit,
         onNicknameClick: (AppInfo) -> Unit,
         onTriggerClick: (AppInfo) -> Unit,
+        onOpenInSplitScreen: (AppInfo) -> Unit,
         getAppNickname: (String) -> String?,
         getAppTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
         pinnedPackageNames: Set<String>,
@@ -1068,6 +1077,7 @@ private fun AppGrid(
                         onUnpinApp,
                         onNicknameClick,
                         onTriggerClick,
+                        onOpenInSplitScreen,
                         addToHomeHandler
                 ) {
                     { app: AppInfo ->
@@ -1081,6 +1091,7 @@ private fun AppGrid(
                                 onNicknameClick = { onNicknameClick(app) },
                                 onTriggerClick = { onTriggerClick(app) },
                                 onAddToHome = { addToHomeHandler.addAppToHome(app) },
+                                onOpenInSplitScreen = { onOpenInSplitScreen(app) },
                         )
                     }
                 }
@@ -1472,6 +1483,7 @@ private fun AppGridItem(
                 onNicknameClick = appActions.onNicknameClick,
                 onTriggerClick = appActions.onTriggerClick,
                 onAddToHome = appActions.onAddToHome,
+                onOpenInSplitScreen = appActions.onOpenInSplitScreen,
         )
     }
 }

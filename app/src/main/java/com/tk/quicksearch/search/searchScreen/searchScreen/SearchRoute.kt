@@ -698,6 +698,9 @@ fun SearchRoute(
             onAppClick = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.launchApp(app, context)
             },
+            onOpenInSplitScreen = { app: com.tk.quicksearch.search.models.AppInfo ->
+                viewModel.launchAppInSplitScreen(app, context)
+            },
             onAppInfoClick = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.openAppInfo(app)
             },

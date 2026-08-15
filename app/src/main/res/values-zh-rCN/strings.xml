@@ -92,6 +92,7 @@
     <string name="action_include_generic">包含</string>
     <string name="action_more_search_history">更多历史记录</string>
     <string name="action_open">打开</string>
+    <string name="action_open_in_split_screen">分屏</string>
     <string name="action_open_folder">打开文件夹</string>
     <string name="action_open_keyboard">打开键盘</string>
     <string name="action_open_settings">打开设置</string>

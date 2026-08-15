@@ -5,6 +5,7 @@ Use this file as the repository-specific playbook. Prefer the current code and b
 ## Working rules
 
 - Keep changes narrow and preserve unrelated work in the working tree.
+- In app action menus, never leave placeholder gaps between options. Reflow items so gaps appear only at the end of the final row when adding or removing an item.
 - Do not run automated UI tests unless the user asks. The user normally performs manual UI testing.
 - Do not run `git add`, `git commit`, create tags, publish releases, or push without explicit permission.
 - Do not mix feature work with speculative refactors or broad cleanup.

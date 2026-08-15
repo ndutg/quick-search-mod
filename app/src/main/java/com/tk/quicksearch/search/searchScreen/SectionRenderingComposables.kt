@@ -210,6 +210,7 @@ private fun renderAppsSection(
             onReorderPinnedApps = appsParams.onReorderPinnedApps,
             onNicknameClick = appsParams.onNicknameClick,
             onTriggerClick = appsParams.onTriggerClick,
+            onOpenInSplitScreen = appsParams.onOpenInSplitScreen,
             getAppNickname = appsParams.getAppNickname,
             getAppTrigger = appsParams.getAppTrigger,
             pinnedPackageNames = appsParams.pinnedPackageNames,

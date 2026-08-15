@@ -93,6 +93,7 @@
     <string name="action_include_generic">تضمين</string>
     <string name="action_more_search_history">المزيد من سجل البحث</string>
     <string name="action_open">فتح</string>
+    <string name="action_open_in_split_screen">تقسيم الشاشة</string>
     <string name="action_open_folder">فتح المجلد</string>
     <string name="action_open_keyboard">فتح لوحة المفاتيح</string>
     <string name="action_open_settings">فتح الإعدادات</string>

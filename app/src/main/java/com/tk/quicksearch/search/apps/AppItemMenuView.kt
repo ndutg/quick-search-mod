@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.HorizontalSplit
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Edit
@@ -23,8 +23,6 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PinEnd
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -72,7 +70,6 @@ private data class AppMenuItem(
 )
 
 private val ShortcutGridIconSize = 32.dp
-private val ActionGridIconSize = DesignTokens.IconSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,6 +93,7 @@ fun AppItemDropdownMenu(
     onNicknameClick: () -> Unit,
     onTriggerClick: () -> Unit,
     onAddToHome: () -> Unit,
+    onOpenInSplitScreen: () -> Unit,
 ) {
     val context = LocalContext.current
     val todayUsage by produceState<TodayAppUsage?>(
@@ -150,6 +148,13 @@ fun AppItemDropdownMenu(
             ))
         }
         if (isLaunchableApp) {
+            if (appInfo.userHandleId == null) {
+                add(AppMenuItem(
+                    textResId = R.string.action_open_in_split_screen,
+                    icon = { Icon(imageVector = Icons.Rounded.HorizontalSplit, contentDescription = null) },
+                    onClick = { onDismiss(); onOpenInSplitScreen() },
+                ))
+            }
             add(AppMenuItem(
                 textResId = R.string.action_add_to_home,
                 icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
@@ -307,11 +312,17 @@ fun AppItemDropdownMenu(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                val actionItems = if (showUninstall) menuItems.dropLast(1) else menuItems
+                val uninstallActionItem =
+                    menuItems.singleOrNull { it.textResId == R.string.action_uninstall_app }
+                val actionItems = menuItems.filterNot { it == uninstallActionItem }
                 val notificationActionItem = actionItems.singleOrNull { it.spansTwoColumns }
                 val trailingExclude = actionItems.lastOrNull { it.textResId == R.string.action_exclude_generic }
+                val splitScreenActionItem =
+                    actionItems.singleOrNull { it.textResId == R.string.action_open_in_split_screen }
                 val standardActionItems = actionItems.filterNot {
-                    it.spansTwoColumns || (notificationActionItem != null && it == trailingExclude)
+                    it.spansTwoColumns ||
+                        ((notificationActionItem != null || uninstallActionItem != null) && it == trailingExclude) ||
+                        (notificationActionItem != null && it == splitScreenActionItem)
                 }
                 standardActionItems.chunked(3).forEach { row ->
                     Row(
@@ -329,7 +340,45 @@ fun AppItemDropdownMenu(
                         repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
                     }
                 }
-                if (trailingExclude != null && notificationActionItem != null) {
+                if (splitScreenActionItem != null && notificationActionItem != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        AppMenuGridButton(
+                            label = stringResource(splitScreenActionItem.textResId),
+                            icon = { splitScreenActionItem.icon() },
+                            onClick = splitScreenActionItem.onClick,
+                            modifier = Modifier.weight(1f),
+                        )
+                        AppMenuGridButton(
+                            label = stringResource(notificationActionItem.textResId),
+                            icon = { notificationActionItem.icon() },
+                            onClick = notificationActionItem.onClick,
+                            modifier = Modifier.weight(2f),
+                        )
+                    }
+                    trailingExclude?.let { excludeActionItem ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                        ) {
+                            AppMenuGridButton(
+                                label = stringResource(excludeActionItem.textResId),
+                                icon = { excludeActionItem.icon() },
+                                onClick = excludeActionItem.onClick,
+                                modifier = Modifier.weight(1f),
+                            )
+                            uninstallActionItem?.let { uninstallItem ->
+                                UninstallMenuGridButton(
+                                    item = uninstallItem,
+                                    modifier = Modifier.weight(1f),
+                                )
+                            } ?: Spacer(Modifier.weight(1f))
+                            Spacer(Modifier.weight(1f))
+                        }
+                    }
+                } else if (trailingExclude != null && notificationActionItem != null) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
@@ -340,12 +389,37 @@ fun AppItemDropdownMenu(
                             onClick = trailingExclude.onClick,
                             modifier = Modifier.weight(1f),
                         )
+                        uninstallActionItem?.let { uninstallItem ->
+                            UninstallMenuGridButton(
+                                item = uninstallItem,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
                         AppMenuGridButton(
                             label = stringResource(notificationActionItem.textResId),
                             icon = { notificationActionItem.icon() },
                             onClick = notificationActionItem.onClick,
-                            modifier = Modifier.weight(2f),
+                            modifier = Modifier.weight(1f),
                         )
+                    }
+                } else if (trailingExclude != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        AppMenuGridButton(
+                            label = stringResource(trailingExclude.textResId),
+                            icon = { trailingExclude.icon() },
+                            onClick = trailingExclude.onClick,
+                            modifier = Modifier.weight(1f),
+                        )
+                        uninstallActionItem?.let { uninstallItem ->
+                            UninstallMenuGridButton(
+                                item = uninstallItem,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                        Spacer(Modifier.weight(1f))
                     }
                 } else actionItems.filter { it.spansTwoColumns }.forEach { item ->
                     Row(
@@ -361,30 +435,7 @@ fun AppItemDropdownMenu(
                         Spacer(Modifier.weight(1f))
                     }
                 }
-            }
 
-            // Uninstall
-            if (showUninstall) {
-                Button(
-                    onClick = { onDismiss(); onUninstallClick() },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.10f),
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Delete,
-                        contentDescription = null,
-                        modifier = Modifier.size(ActionGridIconSize),
-                    )
-                    Spacer(Modifier.width(DesignTokens.SpacingSmall))
-                    Text(
-                        text = stringResource(R.string.action_uninstall_app),
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
             }
         }
     }
@@ -396,6 +447,28 @@ fun AppItemDropdownMenu(
             onDismiss = { showIconPicker.value = false },
         )
     }
+}
+
+@Composable
+private fun UninstallMenuGridButton(
+    item: AppMenuItem,
+    modifier: Modifier = Modifier,
+) {
+    AppMenuGridButton(
+        label = stringResource(item.textResId),
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.72f),
+            )
+        },
+        onClick = item.onClick,
+        containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.10f),
+        contentColor = Color.White,
+        showBorder = false,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -418,18 +491,28 @@ internal fun AppMenuGridButton(
     icon: @Composable () -> Unit,
     onClick: () -> Unit,
     enableMarquee: Boolean = false,
+    containerColor: Color = Color.Transparent,
+    contentColor: Color = AppColors.DialogText,
+    showBorder: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val borderColor = AppColors.OnboardingBubbleBorder
     Surface(
         onClick = onClick,
-        modifier = modifier.border(
-            width = DesignTokens.BorderWidth,
-            color = borderColor,
-            shape = DesignTokens.ShapeSmall,
-        ),
+        modifier =
+            modifier.then(
+                if (showBorder) {
+                    Modifier.border(
+                        width = DesignTokens.BorderWidth,
+                        color = borderColor,
+                        shape = DesignTokens.ShapeSmall,
+                    )
+                } else {
+                    Modifier
+                },
+            ),
         shape = DesignTokens.ShapeSmall,
-        color = Color.Transparent,
+        color = containerColor,
     ) {
         Column(
             modifier = Modifier
@@ -442,7 +525,7 @@ internal fun AppMenuGridButton(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = AppColors.DialogText,
+                color = contentColor,
                 maxLines = 1,
                 textAlign = TextAlign.Center,
                 modifier = if (enableMarquee) Modifier.basicMarquee() else Modifier,

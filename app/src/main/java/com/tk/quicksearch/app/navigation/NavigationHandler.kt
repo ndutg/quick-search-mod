@@ -73,6 +73,32 @@ class NavigationHandler(
         appInfo: AppInfo,
         launchContext: Context,
     ) {
+        launchApp(
+            appInfo = appInfo,
+            launchContext = launchContext,
+            launchAdjacent = false,
+            clearSearchSurfaceAfterLaunch = true,
+        )
+    }
+
+    fun launchAppInSplitScreen(
+        appInfo: AppInfo,
+        launchContext: Context,
+    ) {
+        launchApp(
+            appInfo = appInfo,
+            launchContext = launchContext,
+            launchAdjacent = true,
+            clearSearchSurfaceAfterLaunch = false,
+        )
+    }
+
+    private fun launchApp(
+        appInfo: AppInfo,
+        launchContext: Context,
+        launchAdjacent: Boolean,
+        clearSearchSurfaceAfterLaunch: Boolean,
+    ) {
         if (!appInfo.hasLaunchIntent) {
             IntentHelpers.openAppInfo(application, appInfo.packageName)
             onExternalNavigation()
@@ -80,12 +106,14 @@ class NavigationHandler(
             return
         }
 
-        IntentHelpers.launchApp(launchContext, appInfo) { stringResId, formatArg ->
+        IntentHelpers.launchApp(launchContext, appInfo, launchAdjacent) { stringResId, formatArg ->
             showToastCallback(stringResId, formatArg)
         }
         userPreferences.incrementAppLaunchCount(appInfo.packageName, appInfo.userHandleId)
         userPreferences.addRecentAppLaunch(appInfo.launchCountKey())
-        onClearQuery()
+        if (clearSearchSurfaceAfterLaunch) {
+            onClearQuery()
+        }
         onAppLaunched(appInfo)
     }
 

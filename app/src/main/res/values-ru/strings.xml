@@ -92,6 +92,7 @@
 <string name="action_include_generic">Включить</string>
 <string name="action_more_search_history">Вся история</string>
 <string name="action_open">Открыть</string>
+    <string name="action_open_in_split_screen">Разделённый экран</string>
 <string name="action_open_folder">Открыть папку</string>
 <string name="action_open_keyboard">Открыть клавиатуру</string>
 <string name="action_open_settings">Открыть настройки</string>
