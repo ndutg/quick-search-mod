@@ -1762,8 +1762,8 @@ private fun AppIconSurface(
                                 Modifier
                                         .align(Alignment.TopEnd)
                                         .padding(top = pinnedIndicatorInset, end = pinnedIndicatorInset)
-                                        .size(14.dp),
-                        tint = colorScheme.primary,
+                                        .size(12.dp),
+                        tint = colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
                 )
             }
         }
