@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -151,8 +152,10 @@ fun SearchContentArea(
     onBottomOneHandedOverscrollUp: () -> Unit = {},
     onLauncherOverscrollUp: () -> Unit = {},
     onLauncherOverscrollDown: () -> Unit = {},
+    onHomeDoubleTap: () -> Unit = {},
     selectedTopMatchIndex: Int? = null,
 ) {
+    val currentOnHomeDoubleTap by rememberUpdatedState(onHomeDoubleTap)
     val useOneHandedMode =
         state.oneHandedMode &&
             renderingState.expandedSection == ExpandedSection.NONE &&
@@ -464,12 +467,15 @@ fun SearchContentArea(
                             .clip(TopRoundedShape)
                             .then(edgeFadeModifier)
                             .then(
-                                if (canChangeImageBackground && !hasQuery) {
+                                if (!hasQuery) {
                                     Modifier.pointerInput(Unit) {
                                         detectTapGestures(
+                                            onDoubleTap = { currentOnHomeDoubleTap() },
                                             onLongPress = { pressOffset ->
-                                                backgroundMenuOffset = pressOffset
-                                                showBackgroundMenu = true
+                                                if (canChangeImageBackground) {
+                                                    backgroundMenuOffset = pressOffset
+                                                    showBackgroundMenu = true
+                                                }
                                             },
                                         )
                                     }

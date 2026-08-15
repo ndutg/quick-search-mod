@@ -56,6 +56,12 @@ private enum class SwipeDirection(val titleResId: Int, val defaultAction: SwipeG
     DOWN(R.string.settings_gesture_swipe_down, SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS),
 }
 
+private enum class HomeGesture(val titleResId: Int, val defaultAction: HomeSwipeGestureAction) {
+    SWIPE_UP(R.string.settings_gesture_swipe_up_home, HomeSwipeGestureAction.NONE),
+    SWIPE_DOWN(R.string.settings_gesture_swipe_down_home, HomeSwipeGestureAction.NOTIFICATION_PANEL),
+    DOUBLE_TAP(R.string.settings_gesture_double_tap_home, HomeSwipeGestureAction.NONE),
+}
+
 @Composable
 fun GesturesSettingsSection(
     modifier: Modifier = Modifier,
@@ -70,23 +76,17 @@ fun GesturesSettingsSection(
     var selectedDirection by remember { mutableStateOf<SwipeDirection?>(null) }
     var isLauncherSwipeRightEnabled by remember { mutableStateOf(preferences.isLauncherSwipeRightEnabled()) }
     var customPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
-    var homeCustomPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
+    var homeCustomPickerGesture by remember { mutableStateOf<HomeGesture?>(null) }
     var selectedKeyboardAction by remember { mutableStateOf<SwipeGestureAction?>(null) }
-    var selectedHomeVerticalDirection by remember { mutableStateOf<SwipeDirection?>(null) }
+    var selectedHomeGesture by remember { mutableStateOf<HomeGesture?>(null) }
     var homeActions by remember {
         mutableStateOf(
-            mapOf(
-                SwipeDirection.UP to preferences.homeActionFor(SwipeDirection.UP),
-                SwipeDirection.DOWN to preferences.homeActionFor(SwipeDirection.DOWN),
-            ),
+            HomeGesture.entries.associateWith(preferences::homeActionFor),
         )
     }
     var homeCustomActions by remember {
         mutableStateOf(
-            mapOf(
-                SwipeDirection.UP to preferences.homeCustomActionFor(SwipeDirection.UP),
-                SwipeDirection.DOWN to preferences.homeCustomActionFor(SwipeDirection.DOWN),
-            ),
+            HomeGesture.entries.associateWith(preferences::homeCustomActionFor),
         )
     }
 
@@ -106,12 +106,12 @@ fun GesturesSettingsSection(
                 save(direction, direction.defaultAction)
             }
         }
-        listOf(SwipeDirection.UP, SwipeDirection.DOWN).forEach { direction ->
-            if (homeCustomActions[direction] == actionJson) {
-                preferences.setHomeActionFor(direction, direction.homeDefaultAction)
-                preferences.setHomeCustomActionFor(direction, null)
-                homeActions = homeActions + (direction to direction.homeDefaultAction)
-                homeCustomActions = homeCustomActions + (direction to null)
+        HomeGesture.entries.forEach { gesture ->
+            if (homeCustomActions[gesture] == actionJson) {
+                preferences.setHomeActionFor(gesture, gesture.defaultAction)
+                preferences.setHomeCustomActionFor(gesture, null)
+                homeActions = homeActions + (gesture to gesture.defaultAction)
+                homeCustomActions = homeCustomActions + (gesture to null)
             }
         }
     }
@@ -188,23 +188,23 @@ fun GesturesSettingsSection(
         )
     }
 
-    homeCustomPickerDirection?.let { direction ->
+    homeCustomPickerGesture?.let { gesture ->
         CustomWidgetButtonPickerDialog(
-            currentAction = homeCustomActions[direction]?.let(CustomWidgetButtonAction::fromJson),
+            currentAction = homeCustomActions[gesture]?.let(CustomWidgetButtonAction::fromJson),
             searchState = searchState,
             iconPackPackage = searchState.selectedIconPackPackage,
             onQueryChange = searchViewModel::onQueryChange,
             onDismiss = {
                 searchViewModel.onQueryChange("")
-                homeCustomPickerDirection = null
+                homeCustomPickerGesture = null
             },
             onSelect = { action ->
-                preferences.setHomeActionFor(direction, HomeSwipeGestureAction.CUSTOM)
-                preferences.setHomeCustomActionFor(direction, action.toJson())
-                homeActions = homeActions + (direction to HomeSwipeGestureAction.CUSTOM)
-                homeCustomActions = homeCustomActions + (direction to action.toJson())
+                preferences.setHomeActionFor(gesture, HomeSwipeGestureAction.CUSTOM)
+                preferences.setHomeCustomActionFor(gesture, action.toJson())
+                homeActions = homeActions + (gesture to HomeSwipeGestureAction.CUSTOM)
+                homeCustomActions = homeCustomActions + (gesture to action.toJson())
                 searchViewModel.onQueryChange("")
-                homeCustomPickerDirection = null
+                homeCustomPickerGesture = null
             },
         )
     }
@@ -218,40 +218,41 @@ fun GesturesSettingsSection(
         )
     }
 
-    selectedHomeVerticalDirection?.let { direction ->
+    selectedHomeGesture?.let { gesture ->
         HomeVerticalGestureDialog(
-            direction = direction,
-            selectedAction = homeActions.getValue(direction),
-            selectedCustomActionJson = homeCustomActions[direction],
+            titleResId = gesture.titleResId,
+            allowsNotificationPanel = gesture == HomeGesture.SWIPE_DOWN || gesture == HomeGesture.DOUBLE_TAP,
+            selectedAction = homeActions.getValue(gesture),
+            selectedCustomActionJson = homeCustomActions[gesture],
             customActions = allCustomActions(customActions, homeCustomActions),
             onSelectDefault = { action ->
-                preferences.setHomeActionFor(direction, action)
-                preferences.setHomeCustomActionFor(direction, null)
-                homeActions = homeActions + (direction to action)
-                homeCustomActions = homeCustomActions + (direction to null)
-                selectedHomeVerticalDirection = null
+                preferences.setHomeActionFor(gesture, action)
+                preferences.setHomeCustomActionFor(gesture, null)
+                homeActions = homeActions + (gesture to action)
+                homeCustomActions = homeCustomActions + (gesture to null)
+                selectedHomeGesture = null
             },
             onPickCustom = {
-                selectedHomeVerticalDirection = null
-                homeCustomPickerDirection = direction
+                selectedHomeGesture = null
+                homeCustomPickerGesture = gesture
             },
             onSelectCustom = { action ->
-                preferences.setHomeActionFor(direction, HomeSwipeGestureAction.CUSTOM)
-                preferences.setHomeCustomActionFor(direction, action.toJson())
-                homeActions = homeActions + (direction to HomeSwipeGestureAction.CUSTOM)
-                homeCustomActions = homeCustomActions + (direction to action.toJson())
-                selectedHomeVerticalDirection = null
+                preferences.setHomeActionFor(gesture, HomeSwipeGestureAction.CUSTOM)
+                preferences.setHomeCustomActionFor(gesture, action.toJson())
+                homeActions = homeActions + (gesture to HomeSwipeGestureAction.CUSTOM)
+                homeCustomActions = homeCustomActions + (gesture to action.toJson())
+                selectedHomeGesture = null
             },
             onDeleteCustom = ::deleteCustomAction,
-            onDismiss = { selectedHomeVerticalDirection = null },
+            onDismiss = { selectedHomeGesture = null },
         )
     }
 
     Column(modifier = modifier) {
         SettingsCard(modifier = Modifier.fillMaxWidth().padding(bottom = DesignTokens.SectionTopPadding)) {
             Column {
-                val homeGestureDirections = SwipeDirection.entries
-                homeGestureDirections.forEachIndexed { index, direction ->
+                val gestureDirections = SwipeDirection.entries
+                gestureDirections.forEachIndexed { index, direction ->
                     SettingsNavigationRow(
                         item =
                             SettingsCardItem(
@@ -271,15 +272,16 @@ fun GesturesSettingsSection(
                                             else R.string.settings_gesture_none,
                                         )
                                     } else if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
-                                        homeGestureDescription(homeActions.getValue(direction), homeCustomActions[direction])
+                                        val gesture = if (direction == SwipeDirection.UP) HomeGesture.SWIPE_UP else HomeGesture.SWIPE_DOWN
+                                        homeGestureDescription(homeActions.getValue(gesture), homeCustomActions[gesture])
                                     } else {
                                         gestureDescription(actions.getValue(direction), customActions[direction])
-                                },
+                                    },
                                 actionOnPress = {
-                                    if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
-                                        selectedHomeVerticalDirection = direction
-                                    } else {
-                                        selectedDirection = direction
+                                    when (direction) {
+                                        SwipeDirection.UP -> selectedHomeGesture = HomeGesture.SWIPE_UP
+                                        SwipeDirection.DOWN -> selectedHomeGesture = HomeGesture.SWIPE_DOWN
+                                        else -> selectedDirection = direction
                                     }
                                 },
                             ),
@@ -288,8 +290,24 @@ fun GesturesSettingsSection(
                             vertical = DesignTokens.CardVerticalPadding,
                         ),
                     )
-                    if (index != homeGestureDirections.lastIndex) HorizontalDivider(color = AppColors.SettingsDivider)
+                    HorizontalDivider(color = AppColors.SettingsDivider)
                 }
+                SettingsNavigationRow(
+                    item =
+                        SettingsCardItem(
+                            title = stringResource(HomeGesture.DOUBLE_TAP.titleResId),
+                            icon = HomeGesture.DOUBLE_TAP.icon(),
+                            description = homeGestureDescription(
+                                homeActions.getValue(HomeGesture.DOUBLE_TAP),
+                                homeCustomActions[HomeGesture.DOUBLE_TAP],
+                            ),
+                            actionOnPress = { selectedHomeGesture = HomeGesture.DOUBLE_TAP },
+                        ),
+                    contentPadding = PaddingValues(
+                        horizontal = DesignTokens.CardHorizontalPadding,
+                        vertical = DesignTokens.CardVerticalPadding,
+                    ),
+                )
             }
         }
 
@@ -367,9 +385,18 @@ private fun SwipeDirection.gestureIcon() =
         SwipeDirection.DOWN -> Icons.Rounded.ArrowDownward
     }
 
+private fun HomeGesture.icon() =
+    when (this) {
+        HomeGesture.SWIPE_UP -> Icons.Rounded.ArrowUpward
+        HomeGesture.SWIPE_DOWN,
+        HomeGesture.DOUBLE_TAP,
+        -> Icons.Rounded.ArrowDownward
+    }
+
 @Composable
 private fun HomeVerticalGestureDialog(
-    direction: SwipeDirection,
+    titleResId: Int,
+    allowsNotificationPanel: Boolean,
     selectedAction: HomeSwipeGestureAction,
     selectedCustomActionJson: String?,
     customActions: List<CustomWidgetButtonAction>,
@@ -381,7 +408,7 @@ private fun HomeVerticalGestureDialog(
 ) {
     AppAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(direction.titleResId)) },
+        title = { Text(stringResource(titleResId)) },
         text = {
             Column {
                 GestureActionRow(
@@ -389,7 +416,7 @@ private fun HomeVerticalGestureDialog(
                     selected = selectedAction == HomeSwipeGestureAction.NONE,
                     onClick = { onSelectDefault(HomeSwipeGestureAction.NONE) },
                 )
-                if (direction == SwipeDirection.DOWN) {
+                if (allowsNotificationPanel) {
                     HorizontalDivider(color = AppColors.SettingsDivider)
                     GestureActionRow(
                         label = stringResource(R.string.settings_gesture_notification_panel),
@@ -542,8 +569,8 @@ private fun homeGestureDescription(action: HomeSwipeGestureAction, customActionJ
         ?: stringResource(action.labelResId())
 
 private fun allCustomActions(
-    swipeCustomActions: Map<SwipeDirection, String?>,
-    homeCustomActions: Map<SwipeDirection, String?>,
+    swipeCustomActions: Map<*, String?>,
+    homeCustomActions: Map<*, String?>,
 ): List<CustomWidgetButtonAction> =
     (swipeCustomActions.values + homeCustomActions.values)
         .mapNotNull(CustomWidgetButtonAction::fromJson)
@@ -583,53 +610,35 @@ private fun UserAppPreferences.setCustomActionFor(direction: SwipeDirection, act
     }
 }
 
-private fun UserAppPreferences.homeActionFor(direction: SwipeDirection): HomeSwipeGestureAction =
-    when (direction) {
-        SwipeDirection.UP -> getHomeSwipeUpAction()
-        SwipeDirection.DOWN -> getHomeSwipeDownAction()
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+private fun UserAppPreferences.homeActionFor(gesture: HomeGesture): HomeSwipeGestureAction =
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> getHomeSwipeUpAction()
+        HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAction()
+        HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAction()
     }
 
-private fun UserAppPreferences.setHomeActionFor(direction: SwipeDirection, action: HomeSwipeGestureAction) {
-    when (direction) {
-        SwipeDirection.UP -> setHomeSwipeUpAction(action)
-        SwipeDirection.DOWN -> setHomeSwipeDownAction(action)
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+private fun UserAppPreferences.setHomeActionFor(gesture: HomeGesture, action: HomeSwipeGestureAction) {
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> setHomeSwipeUpAction(action)
+        HomeGesture.SWIPE_DOWN -> setHomeSwipeDownAction(action)
+        HomeGesture.DOUBLE_TAP -> setHomeDoubleTapAction(action)
     }
 }
 
-private fun UserAppPreferences.homeCustomActionFor(direction: SwipeDirection): String? =
-    when (direction) {
-        SwipeDirection.UP -> getHomeSwipeUpCustomAction()
-        SwipeDirection.DOWN -> getHomeSwipeDownCustomAction()
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+private fun UserAppPreferences.homeCustomActionFor(gesture: HomeGesture): String? =
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> getHomeSwipeUpCustomAction()
+        HomeGesture.SWIPE_DOWN -> getHomeSwipeDownCustomAction()
+        HomeGesture.DOUBLE_TAP -> getHomeDoubleTapCustomAction()
     }
 
-private fun UserAppPreferences.setHomeCustomActionFor(direction: SwipeDirection, actionJson: String?) {
-    when (direction) {
-        SwipeDirection.UP -> setHomeSwipeUpCustomAction(actionJson)
-        SwipeDirection.DOWN -> setHomeSwipeDownCustomAction(actionJson)
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+private fun UserAppPreferences.setHomeCustomActionFor(gesture: HomeGesture, actionJson: String?) {
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> setHomeSwipeUpCustomAction(actionJson)
+        HomeGesture.SWIPE_DOWN -> setHomeSwipeDownCustomAction(actionJson)
+        HomeGesture.DOUBLE_TAP -> setHomeDoubleTapCustomAction(actionJson)
     }
 }
-
-private val SwipeDirection.homeDefaultAction: HomeSwipeGestureAction
-    get() =
-        when (this) {
-            SwipeDirection.UP -> HomeSwipeGestureAction.NONE
-            SwipeDirection.DOWN -> HomeSwipeGestureAction.NOTIFICATION_PANEL
-            SwipeDirection.RIGHT,
-            SwipeDirection.LEFT,
-            -> error("Home vertical gestures only support swipe up and down")
-        }
 
 private fun SwipeGestureAction.labelResId(): Int =
     when (this) {

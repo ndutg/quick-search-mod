@@ -451,6 +451,14 @@ class UserAppPreferences(
 
     fun setHomeSwipeDownCustomAction(actionJson: String?) = gesturesPreferences.setHomeSwipeDownCustomAction(actionJson)
 
+    fun getHomeDoubleTapAction(): HomeSwipeGestureAction = gesturesPreferences.getHomeDoubleTapAction()
+
+    fun setHomeDoubleTapAction(action: HomeSwipeGestureAction) = gesturesPreferences.setHomeDoubleTapAction(action)
+
+    fun getHomeDoubleTapCustomAction(): String? = gesturesPreferences.getHomeDoubleTapCustomAction()
+
+    fun setHomeDoubleTapCustomAction(actionJson: String?) = gesturesPreferences.setHomeDoubleTapCustomAction(actionJson)
+
     // ============================================================================
     // App Shortcut Preferences
     // ============================================================================

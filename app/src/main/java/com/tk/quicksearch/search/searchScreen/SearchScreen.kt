@@ -228,6 +228,8 @@ fun SearchScreen(
     homeSwipeDownAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NOTIFICATION_PANEL,
     homeSwipeUpCustomActionJson: String? = null,
     homeSwipeDownCustomActionJson: String? = null,
+    homeDoubleTapAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NONE,
+    homeDoubleTapCustomActionJson: String? = null,
 ) {
     val directAnswerContactName = stringResource(R.string.direct_answer_contact_name)
 
@@ -563,6 +565,8 @@ fun SearchScreen(
             homeSwipeDownAction = homeSwipeDownAction,
             homeSwipeUpCustomActionJson = homeSwipeUpCustomActionJson,
             homeSwipeDownCustomActionJson = homeSwipeDownCustomActionJson,
+            homeDoubleTapAction = homeDoubleTapAction,
+            homeDoubleTapCustomActionJson = homeDoubleTapCustomActionJson,
             getAllTriggerWordsById = getAllTriggerWordsById,
             getAllContactActionTriggers = getAllContactActionTriggers,
             onContactActionTrigger = onContactActionTrigger,

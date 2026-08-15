@@ -94,6 +94,16 @@ class GesturesPreferences(
 
     fun setHomeSwipeDownCustomAction(actionJson: String?) = setCustomAction(KEY_HOME_SWIPE_DOWN_CUSTOM_ACTION, actionJson)
 
+    fun getHomeDoubleTapAction(): HomeSwipeGestureAction =
+        getHomeGestureAction(KEY_HOME_DOUBLE_TAP_ACTION, HomeSwipeGestureAction.NONE)
+
+    fun setHomeDoubleTapAction(action: HomeSwipeGestureAction) =
+        setHomeGestureAction(KEY_HOME_DOUBLE_TAP_ACTION, action)
+
+    fun getHomeDoubleTapCustomAction(): String? = prefs.getString(KEY_HOME_DOUBLE_TAP_CUSTOM_ACTION, null)
+
+    fun setHomeDoubleTapCustomAction(actionJson: String?) = setCustomAction(KEY_HOME_DOUBLE_TAP_CUSTOM_ACTION, actionJson)
+
     private fun getGestureAction(key: String, default: SwipeGestureAction): SwipeGestureAction =
         prefs.getString(key, default.name)
             ?.let { value -> SwipeGestureAction.entries.firstOrNull { it.name == value } }
@@ -117,6 +127,11 @@ class GesturesPreferences(
             HomeSwipeGestureAction.NONE
         }
     }
+
+    private fun getHomeGestureAction(key: String, default: HomeSwipeGestureAction): HomeSwipeGestureAction =
+        prefs.getString(key, default.name)
+            ?.let { value -> HomeSwipeGestureAction.entries.firstOrNull { it.name == value } }
+            ?: default
 
     private fun setHomeGestureAction(key: String, action: HomeSwipeGestureAction) {
         prefs.edit().putString(key, action.name).apply()

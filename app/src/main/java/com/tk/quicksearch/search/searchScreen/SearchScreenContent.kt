@@ -204,6 +204,8 @@ internal fun SearchScreenContent(
         homeSwipeDownAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NOTIFICATION_PANEL,
         homeSwipeUpCustomActionJson: String? = null,
         homeSwipeDownCustomActionJson: String? = null,
+        homeDoubleTapAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NONE,
+        homeDoubleTapCustomActionJson: String? = null,
         getAllTriggerWordsById: () -> Map<String, String> = { emptyMap() },
         getAllContactActionTriggers: () -> Map<com.tk.quicksearch.search.data.preferences.ContactActionTriggerKey, com.tk.quicksearch.search.data.preferences.ResultTrigger> = { emptyMap() },
         onContactActionTrigger: (Long, com.tk.quicksearch.search.contacts.models.ContactCardAction) -> Unit = { _, _ -> },
@@ -1322,6 +1324,9 @@ internal fun SearchScreenContent(
                         isDefaultLauncher ->
                             homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, context)
                     }
+                },
+                onHomeDoubleTap = {
+                    homeDoubleTapAction.performHomeGesture(homeDoubleTapCustomActionJson, context)
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
         )

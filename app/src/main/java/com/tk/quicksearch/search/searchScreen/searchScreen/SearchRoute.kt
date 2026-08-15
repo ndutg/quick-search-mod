@@ -550,11 +550,15 @@ fun SearchRoute(
     var homeSwipeDownAction by remember {
         mutableStateOf(gesturePreferences.getHomeSwipeDownAction())
     }
+    var homeDoubleTapAction by remember {
+        mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
+    }
     var homeCustomSwipeActions by remember {
         mutableStateOf(
             listOf(
                 gesturePreferences.getHomeSwipeUpCustomAction(),
                 gesturePreferences.getHomeSwipeDownCustomAction(),
+                gesturePreferences.getHomeDoubleTapCustomAction(),
             ),
         )
     }
@@ -591,10 +595,12 @@ fun SearchRoute(
                 )
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
             homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction()
+            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             homeCustomSwipeActions =
                 listOf(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
                     gesturePreferences.getHomeSwipeDownCustomAction(),
+                    gesturePreferences.getHomeDoubleTapCustomAction(),
                 )
             isLauncherSwipeRightEnabled = gesturePreferences.isLauncherSwipeRightEnabled()
         }
@@ -959,6 +965,8 @@ fun SearchRoute(
             homeSwipeDownAction = homeSwipeDownAction,
             homeSwipeUpCustomActionJson = homeCustomSwipeActions[0],
             homeSwipeDownCustomActionJson = homeCustomSwipeActions[1],
+            homeDoubleTapAction = homeDoubleTapAction,
+            homeDoubleTapCustomActionJson = homeCustomSwipeActions[2],
             )
         }
 

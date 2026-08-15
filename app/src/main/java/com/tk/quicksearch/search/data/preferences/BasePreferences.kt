@@ -508,6 +508,8 @@ abstract class BasePreferences(
         const val KEY_HOME_SWIPE_DOWN_ACTION = "home_swipe_down_action"
         const val KEY_HOME_SWIPE_UP_CUSTOM_ACTION = "home_swipe_up_custom_action"
         const val KEY_HOME_SWIPE_DOWN_CUSTOM_ACTION = "home_swipe_down_custom_action"
+        const val KEY_HOME_DOUBLE_TAP_ACTION = "home_double_tap_action"
+        const val KEY_HOME_DOUBLE_TAP_CUSTOM_ACTION = "home_double_tap_custom_action"
 
         // App shortcut preferences keys
         const val KEY_PINNED_APP_SHORTCUTS = "pinned_app_shortcuts"
