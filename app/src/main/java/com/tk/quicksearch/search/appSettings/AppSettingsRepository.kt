@@ -31,6 +31,8 @@ class AppSettingsRepository(
                         "font size",
                         "system font",
                         "text size",
+                        "color",
+                        "colour",
                         "icon size",
                         "inline",
                         "compact"

@@ -403,12 +403,6 @@ internal fun SettingsDetailLevel1Screen(
                                     callbacks.onSetMaskUnsupportedIconPackIcons,
                             onRefreshIconPacks = {
                                 callbacks.onRefreshIconPacks()
-                                Toast
-                                    .makeText(
-                                        context,
-                                        context.getString(R.string.settings_refreshing_icon_packs),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
                             },
                             onSearchIconPacks = callbacks.onSearchIconPacks,
                             appIconShape = state.appIconShape,
