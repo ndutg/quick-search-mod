@@ -430,7 +430,7 @@
     <string name="error_whatsapp_video_call_unavailable">వీడియో కాల్స్ కోసం WhatsApp అందుబాటులో లేదు</string>
     <string name="settings_call_permission_title">ఫోన్</string>
     <string name="permissions_background_usage_title">బ్యాక్‌గ్రౌండ్ వినియోగాన్ని అనుమతించు</string>
-    <string name="permissions_background_usage_desc">Quick Search తెరవడానికి సమయం పడుతుంటే, బ్యాటరీ ఆప్టిమైజేషన్‌ని నిలిపివేసి చూడండి.</string>
+    <string name="permissions_background_usage_desc">వేగవంతమైన యాప్ ప్రారంభం కోసం బ్యాక్‌గ్రౌండ్ వినియోగాన్ని అనుమతించండి.</string>
     <string name="settings_calling_card_title">డిఫాల్ట్ కాలింగ్ యాప్</string>
     <string name="settings_calls_texts_title">కాల్స్ &amp; టెక్స్ట్‌లు</string>
     <string name="settings_direct_dial_desc">డయలర్ తెరవకుండానే నేరుగా కాల్స్ చేయండి. </string>

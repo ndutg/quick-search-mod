@@ -430,7 +430,7 @@
     <string name="error_whatsapp_video_call_unavailable">Το WhatsApp δεν είναι διαθέσιμο για βιντεοκλήσεις</string>
     <string name="settings_call_permission_title">Τηλέφωνο</string>
     <string name="permissions_background_usage_title">Να επιτρέπεται η χρήση στο παρασκήνιο</string>
-    <string name="permissions_background_usage_desc">Εάν το Quick Search αργεί να ανοίξει, δοκιμάστε να απενεργοποιήσετε τη βελτιστοποίηση μπαταρίας.</string>
+    <string name="permissions_background_usage_desc">Να επιτρέπεται η χρήση στο παρασκήνιο για ταχύτερη εκκίνηση εφαρμογών.</string>
     <string name="settings_calling_card_title">Προεπιλεγμένη εφαρμογή κλήσεων</string>
     <string name="settings_calls_texts_title">Κλήσεις &amp; Μηνύματα</string>
     <string name="settings_direct_dial_desc">Πραγματοποίηση κλήσεων απευθείας χωρίς το άνοιγμα της εφαρμογής κλήσεων.</string>

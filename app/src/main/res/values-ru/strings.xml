@@ -432,7 +432,7 @@
 <string name="error_whatsapp_video_call_unavailable">WhatsApp недоступен для видеозвонков</string>
 <string name="settings_call_permission_title">Телефон</string>
 <string name="permissions_background_usage_title">Разрешить работу в фоновом режиме</string>
-<string name="permissions_background_usage_desc">Если Quick Search открывается медленно, попробуйте отключить оптимизацию батареи.</string>
+<string name="permissions_background_usage_desc">Разрешите работу в фоновом режиме для более быстрого запуска приложений.</string>
 <string name="settings_calling_card_title">Приложение для звонков по умолчанию</string>
 <string name="settings_calls_texts_title">Звонки и сообщения</string>
 <string name="settings_direct_dial_desc">Совершайте вызовы напрямую без открытия номеронабирателя.</string>

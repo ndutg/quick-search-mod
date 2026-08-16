@@ -430,7 +430,7 @@
     <string name="error_whatsapp_video_call_unavailable">WhatsApp indisponível para videochamadas</string>
     <string name="settings_call_permission_title">Telefone</string>
     <string name="permissions_background_usage_title">Permitir uso em segundo plano</string>
-    <string name="permissions_background_usage_desc">Se o Quick Search estiver lento para abrir, tente desativar a otimização da bateria.</string>
+    <string name="permissions_background_usage_desc">Permita o uso em segundo plano para iniciar os apps mais rapidamente.</string>
     <string name="settings_calling_card_title">App de chamadas padrão</string>
     <string name="settings_calls_texts_title">Chamadas e Mensagens</string>
     <string name="settings_direct_dial_desc">Faça chamadas diretamente sem abrir o discador.</string>

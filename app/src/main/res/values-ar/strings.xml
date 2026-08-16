@@ -431,7 +431,7 @@
     <string name="error_whatsapp_video_call_unavailable">مكالمات فيديو WhatsApp غير متاحة</string>
     <string name="settings_call_permission_title">الهاتف</string>
     <string name="permissions_background_usage_title">السماح بالاستخدام في الخلفية</string>
-    <string name="permissions_background_usage_desc">إذا كان فتح Quick Search بطيئًا، فجرّب إيقاف تحسين البطارية.</string>
+    <string name="permissions_background_usage_desc">السماح بالاستخدام في الخلفية لبدء تشغيل التطبيقات بشكل أسرع.</string>
     <string name="settings_calling_card_title">تطبيق الاتصال الافتراضي</string>
     <string name="settings_calls_texts_title">المكالمات والرسائل النصية</string>
     <string name="settings_direct_dial_desc">إجراء المكالمات مباشرة دون فتح لوحة الاتصال.</string>

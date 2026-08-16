@@ -422,7 +422,7 @@
     <string name="error_whatsapp_video_call_unavailable">WhatsApp not available for video calls</string>
     <string name="settings_call_permission_title">Phone</string>
     <string name="permissions_background_usage_title">Allow Background Usage</string>
-    <string name="permissions_background_usage_desc">If Quick Search is slow to open, try disabling battery optimization.</string>
+    <string name="permissions_background_usage_desc">Allow background usage for faster app startup.</string>
     <string name="settings_calling_card_title">Default Calling App</string>
     <string name="settings_calls_texts_title">Calls &amp; Texts</string>
     <string name="settings_direct_dial_desc">Place calls directly without opening the dialer. </string>

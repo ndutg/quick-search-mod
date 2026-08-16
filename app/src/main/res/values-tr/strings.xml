@@ -429,7 +429,7 @@
 <string name="error_whatsapp_video_call_unavailable">WhatsApp görüntülü aramalar için kullanılamıyor</string>
 <string name="settings_call_permission_title">Telefon</string>
 <string name="permissions_background_usage_title">Arka Planda Kullanıma İzin Ver</string>
-<string name="permissions_background_usage_desc">Quick Search geç açılıyorsa pil optimizasyonunu devre dışı bırakmayı deneyin.</string>
+<string name="permissions_background_usage_desc">Daha hızlı uygulama başlatma için arka plan kullanımına izin verin.</string>
 <string name="settings_calling_card_title">Varsayılan arama uygulaması</string>
 <string name="settings_calls_texts_title">Aramalar &amp; Mesajlar</string>
 <string name="settings_direct_dial_desc">Arama ekranını açmadan doğrudan arama yap.</string>
