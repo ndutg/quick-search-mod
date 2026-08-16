@@ -1,6 +1,7 @@
 package com.tk.quicksearch.app.navigation
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.os.Environment
 import android.widget.Toast
@@ -43,6 +44,7 @@ import com.tk.quicksearch.settings.settingsDetailScreen.level
 import com.tk.quicksearch.settings.settingsDetailScreen.resolveBackDestination
 import com.tk.quicksearch.settings.navigation.SettingsDetailRoute
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.ReviewHelper
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomToolNavigationMemory
 import com.tk.quicksearch.settings.shared.SettingsRoute
@@ -461,14 +463,35 @@ private fun NavigationContent(
     onFinishActivity: () -> Unit,
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showCreateCalendarEventDialog by remember { mutableStateOf(false) }
+    var hasVisitedHomeInThisSession by rememberSaveable {
+        mutableStateOf(destination == RootDestination.Search)
+    }
+    var shouldRequestReviewOnHomeReturn by rememberSaveable { mutableStateOf(false) }
     var rootAnimationDirectionOverride by remember { mutableStateOf<SwipeAnimationDirection?>(null) }
     var settingsDetailAnimationDirectionOverride by
         remember { mutableStateOf<SwipeAnimationDirection?>(null) }
 
     LaunchedEffect(destination) {
         rootAnimationDirectionOverride = null
+
+        when (destination) {
+            RootDestination.Search -> {
+                if (shouldRequestReviewOnHomeReturn) {
+                    shouldRequestReviewOnHomeReturn = false
+                    activity?.let(ReviewHelper::launchInAppReview)
+                }
+                hasVisitedHomeInThisSession = true
+            }
+            RootDestination.Settings,
+            RootDestination.WidgetsPanel -> {
+                if (hasVisitedHomeInThisSession) {
+                    shouldRequestReviewOnHomeReturn = true
+                }
+            }
+        }
     }
 
     LaunchedEffect(settingsDetailType) {

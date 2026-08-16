@@ -140,6 +140,7 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.okhttp)
     "standardImplementation"(libs.play.review.ktx)
+    "standardImplementation"(libs.play.app.update)
     "standardImplementation"(libs.play.app.update.ktx)
     implementation(libs.libphonenumber)
     implementation(libs.reorderable)
