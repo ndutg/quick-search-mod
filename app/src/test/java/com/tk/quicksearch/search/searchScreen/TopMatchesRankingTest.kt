@@ -52,6 +52,33 @@ class TopMatchesRankingTest {
         )
     }
 
+    @Test
+    fun topMatchesWaitForCurrentAppSearchEvenWhenOldResultsRemainVisible() {
+        assertEquals(
+            true,
+            shouldDeferTopMatchesForAppSearch(
+                query = "Te",
+                isAppSearchInProgress = true,
+            ),
+        )
+        assertEquals(
+            false,
+            shouldDeferTopMatchesForAppSearch(
+                query = "Te",
+                isAppSearchInProgress = false,
+            ),
+        )
+    }
+
+    @Test
+    fun topMatchesKeepTheirSettledQueryUntilCurrentAppSearchCompletes() {
+        val stabilizer = TopMatchesQueryStabilizer(initialQuery = "T")
+
+        assertEquals("T", stabilizer.queryFor(query = "Te", deferUpdate = true))
+        assertEquals("Te", stabilizer.queryFor(query = "Te", deferUpdate = false))
+        assertEquals("Te", stabilizer.queryFor(query = "Tes", deferUpdate = true))
+    }
+
     private fun topMatch(
         name: String,
         priority: Int,

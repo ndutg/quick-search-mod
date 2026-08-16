@@ -58,6 +58,8 @@ import com.tk.quicksearch.search.searchScreen.InfoBanner
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
 import com.tk.quicksearch.search.searchScreen.renderSection
 import com.tk.quicksearch.search.searchScreen.rememberTopMatches
+import com.tk.quicksearch.search.searchScreen.rememberStableTopMatchesQuery
+import com.tk.quicksearch.search.searchScreen.shouldDeferTopMatchesForAppSearch
 import com.tk.quicksearch.search.searchScreen.TopMatchesSection
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
 import com.tk.quicksearch.search.searchScreen.FilesSectionParams
@@ -333,9 +335,15 @@ fun ContentLayout(
             renderingState.shouldShowApps &&
             renderingState.expandedSection == ExpandedSection.NONE
     val deferNonAppContentUntilAppsReady =
-        hasQuery &&
-            state.isAppSearchInProgress &&
-            !renderingState.hasAppResults
+        shouldDeferTopMatchesForAppSearch(
+            query = state.query,
+            isAppSearchInProgress = state.isAppSearchInProgress,
+        )
+    val topMatchesQuery =
+        rememberStableTopMatchesQuery(
+            query = state.query,
+            deferUpdate = deferNonAppContentUntilAppsReady,
+        )
     val waitingForSuggestions =
         canDeferOtherContentForSuggestions &&
             state.isInitializing &&
@@ -348,7 +356,7 @@ fun ContentLayout(
     val hideOtherContent = waitingForSuggestions || holdingForAppGridAnimation
     val topMatches =
         rememberTopMatches(
-            query = state.query,
+            query = topMatchesQuery,
             renderingState = renderingState,
             context = sectionContextForRecentHistoryExpansion,
             params = sectionParams,
@@ -358,7 +366,7 @@ fun ContentLayout(
             secondaryRankingSignal = state.secondaryRankingSignal,
             otherSearchItemIds =
                 OtherSearchItemRegistry.visibleSearchItemIds(
-                    query = state.query,
+                    query = topMatchesQuery,
                     pinnedItemOrder = state.pinnedNonAppItemOrder,
                     screenTimeState = state.screenTimeState,
                 ),
@@ -369,7 +377,6 @@ fun ContentLayout(
             !hideResults &&
             !isExpanded &&
             !isSectionAliasMode &&
-            !deferNonAppContentUntilAppsReady &&
             topMatches.isNotEmpty()
     val hasMoreResults =
         hasMoreResults(

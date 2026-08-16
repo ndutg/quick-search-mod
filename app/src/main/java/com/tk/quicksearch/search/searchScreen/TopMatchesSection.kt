@@ -399,6 +399,33 @@ internal fun topMatchSecondaryScore(
         SecondaryRankingSignal.NONE -> 0L
     }
 
+internal fun shouldDeferTopMatchesForAppSearch(
+    query: String,
+    isAppSearchInProgress: Boolean,
+): Boolean = query.isNotBlank() && isAppSearchInProgress
+
+internal class TopMatchesQueryStabilizer(initialQuery: String) {
+    private var settledQuery = initialQuery
+
+    fun queryFor(
+        query: String,
+        deferUpdate: Boolean,
+    ): String {
+        if (!deferUpdate) settledQuery = query
+        return settledQuery
+    }
+}
+
+@Composable
+internal fun rememberStableTopMatchesQuery(
+    query: String,
+    deferUpdate: Boolean,
+): String =
+    remember { TopMatchesQueryStabilizer(query) }.queryFor(
+        query = query,
+        deferUpdate = deferUpdate,
+    )
+
 private fun secondaryScore(
     signal: SecondaryRankingSignal,
     recencyScore: Int?,

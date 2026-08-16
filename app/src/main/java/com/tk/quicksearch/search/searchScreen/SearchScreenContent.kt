@@ -691,9 +691,10 @@ internal fun SearchScreenContent(
                     state.detectedCustomToolId != null
                     || state.detectedTaskerIntentId != null
     val deferTopMatchSubmitUntilAppsReady =
-            state.query.isNotBlank() &&
-                    state.isAppSearchInProgress &&
-                    !renderingState.hasAppResults
+            shouldDeferTopMatchesForAppSearch(
+                    query = state.query,
+                    isAppSearchInProgress = state.isAppSearchInProgress,
+            )
     val topMatchSubmitContext =
             rememberSectionRenderContext(
                     state = state,
