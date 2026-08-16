@@ -45,6 +45,7 @@ import com.tk.quicksearch.settings.settingsDetailScreen.resolveBackDestination
 import com.tk.quicksearch.settings.navigation.SettingsDetailRoute
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.ReviewHelper
+import com.tk.quicksearch.app.UpdateHelper
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomToolNavigationMemory
 import com.tk.quicksearch.settings.shared.SettingsRoute
@@ -714,6 +715,10 @@ private fun SettingsNavigationContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val settingsScrollState = rememberScrollState()
     val detailScrollStates = remember { mutableStateMapOf<SettingsDetailType, androidx.compose.foundation.ScrollState>() }
+
+    LaunchedEffect(Unit) {
+        (context as? Activity)?.let(UpdateHelper::startUpdate)
+    }
 
     LaunchedEffect(settingsDetailType) {
         onSettingsDetailAnimationDirectionConsumed()
