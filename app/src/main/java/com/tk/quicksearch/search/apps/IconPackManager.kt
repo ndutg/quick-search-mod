@@ -25,6 +25,11 @@ import java.io.InputStream
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
+data class IconPackDrawableInfo(
+    val drawableName: String,
+    val targetPackages: Set<String>,
+)
+
 /**
  * Discovers installed icon packs and loads icons from their appfilter definitions.
  */
@@ -150,10 +155,24 @@ object IconPackManager {
         )
     }
 
-    /** Returns the icon names declared by an icon pack's appfilter. */
-    fun getIconDrawableNames(context: Context, iconPackPackage: String): List<String> {
+    /**
+     * Returns icon-pack drawables together with the app packages they are declared for.
+     *
+     * The drawable resource name is often unrelated to the app's display name, so callers that
+     * offer search should use [targetPackages] as well as [drawableName].
+     */
+    fun getIconDrawables(context: Context, iconPackPackage: String): List<IconPackDrawableInfo> {
         val resources = getIconPackResources(context, iconPackPackage) ?: return emptyList()
-        return loadAppFilterRenderData(iconPackPackage, resources).packageMapping.values.distinct().sorted()
+        return loadAppFilterRenderData(iconPackPackage, resources)
+            .packageMapping
+            .entries
+            .groupBy({ it.value }, { it.key })
+            .map { (drawableName, targetPackages) ->
+                IconPackDrawableInfo(
+                    drawableName = drawableName,
+                    targetPackages = targetPackages.toSortedSet(),
+                )
+            }.sortedBy { it.drawableName }
     }
 
     /** Returns true only when the pack explicitly maps the app to a loadable icon. */
@@ -510,6 +529,36 @@ object IconPackManager {
                 .maxOrNull()
         return (maxIntrinsic ?: DEFAULT_FALLBACK_ICON_SIZE).coerceAtMost(MAX_FALLBACK_ICON_SIZE)
     }
+}
+
+internal fun filterIconPackDrawables(
+    iconDrawables: List<IconPackDrawableInfo>,
+    query: String,
+    installedAppLabels: Map<String, String>,
+): List<IconPackDrawableInfo> {
+    val normalizedQuery = query.trim()
+    if (normalizedQuery.isEmpty()) return iconDrawables.sortedBy { it.drawableName }
+
+    fun String.matchesQuery() = contains(normalizedQuery, ignoreCase = true)
+    fun String.startsWithQuery() = startsWith(normalizedQuery, ignoreCase = true)
+
+    return iconDrawables
+        .asSequence()
+        .filter { icon ->
+            icon.drawableName.matchesQuery() ||
+                icon.targetPackages.any { packageName ->
+                    packageName.matchesQuery() || installedAppLabels[packageName]?.matchesQuery() == true
+                }
+        }.sortedWith(
+            compareBy<IconPackDrawableInfo> { icon ->
+                !icon.targetPackages.any { packageName ->
+                    installedAppLabels[packageName]?.startsWithQuery() == true
+                }
+            }.thenBy { icon ->
+                !icon.targetPackages.any { packageName -> packageName.startsWithQuery() }
+            }.thenBy { icon -> !icon.drawableName.startsWithQuery() }
+                .thenBy { it.drawableName },
+        ).toList()
 }
 
 private fun Drawable.toBitmapSafely(): ImageBitmap? =

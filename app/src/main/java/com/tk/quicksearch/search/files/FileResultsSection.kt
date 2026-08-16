@@ -92,6 +92,7 @@ private const val THUMBNAIL_SIZE_DP = 60
 private const val THUMBNAIL_LOAD_SIZE_PX = 160
 private const val THUMBNAIL_CACHE_MAX_SIZE = 60
 private const val THUMBNAIL_FAILURE_RETRY_DELAY_MS = 30_000L
+private const val THUMBNAIL_FADE_IN_DURATION_MS = 100
 private const val EXPAND_BUTTON_TOP_PADDING = 2
 private const val EXPAND_BUTTON_HORIZONTAL_PADDING = 12
 private val FILE_CARD_CONTENT_VERTICAL_PADDING = 4.dp
@@ -601,10 +602,13 @@ private fun FileResultThumbnailOrIcon(
             !deviceFile.isDirectory &&
                     (fileType == FileType.PICTURES || fileType == FileType.VIDEOS)
     val uriString = deviceFile.uri.toString()
+    val cachedThumbnail = remember(uriString) { FileThumbnailCache.get(uriString) }
     var thumbnailBitmap by
-            remember(uriString) { mutableStateOf<ImageBitmap?>(FileThumbnailCache.get(uriString)) }
+            remember(uriString) { mutableStateOf<ImageBitmap?>(cachedThumbnail) }
+    val canShowThumbnail =
+            showThumbnail && iconOverride == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
-    if (showThumbnail && iconOverride == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    if (canShowThumbnail) {
         LaunchedEffect(uriString) {
             if (thumbnailBitmap != null) return@LaunchedEffect
             val imageBitmap =
@@ -627,6 +631,50 @@ private fun FileResultThumbnailOrIcon(
         }
     }
 
+    if (canShowThumbnail) {
+        val thumbnailAlpha =
+                remember(uriString) { Animatable(if (cachedThumbnail != null) 1f else 0f) }
+        LaunchedEffect(uriString, thumbnailBitmap) {
+            if (thumbnailBitmap != null && thumbnailAlpha.value < 1f) {
+                thumbnailAlpha.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(durationMillis = THUMBNAIL_FADE_IN_DURATION_MS),
+                )
+            }
+        }
+        Box(
+                modifier = modifier.size(THUMBNAIL_SIZE_DP.dp),
+                contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                    imageVector = fileResultIcon(deviceFile),
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier =
+                            Modifier.size(FILE_ICON_SIZE.dp)
+                                    .alpha(
+                                            if (thumbnailBitmap == null) {
+                                                1f
+                                            } else {
+                                                1f - thumbnailAlpha.value
+                                            },
+                                    ),
+            )
+            thumbnailBitmap?.let { bitmap ->
+                Image(
+                        bitmap = bitmap,
+                        contentDescription = null,
+                        modifier =
+                                Modifier.size(THUMBNAIL_SIZE_DP.dp)
+                                        .clip(DesignTokens.CardShape)
+                                        .alpha(thumbnailAlpha.value),
+                        contentScale = ContentScale.Crop,
+                )
+            }
+        }
+        return
+    }
+
     val hasCustomFileIcon = customIconSpec != null && customIcon != null
     val iconSize =
             when {
@@ -635,59 +683,32 @@ private fun FileResultThumbnailOrIcon(
                 else -> FILE_ICON_SIZE.dp
             }
 
-    if (thumbnailBitmap != null && iconOverride == null) {
-        val thumbnailAlpha = remember(uriString) { Animatable(0f) }
-        LaunchedEffect(uriString) {
-            thumbnailAlpha.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(durationMillis = 200),
-            )
-        }
-        Box(modifier = modifier.size(THUMBNAIL_SIZE_DP.dp)) {
+    if (hasCustomFileIcon) {
+        val ratio = customIconSpec!!.aspectRatio
+        val (iconWidth, iconHeight) =
+                if (ratio >= 1f) {
+                    Pair(iconSize, iconSize / ratio)
+                } else {
+                    Pair(iconSize * ratio, iconSize)
+                }
+        Box(
+                modifier = modifier.size(iconSize),
+                contentAlignment = Alignment.Center,
+        ) {
             Icon(
-                    imageVector = customIcon ?: fileResultIcon(deviceFile),
+                    imageVector = customIcon!!,
                     contentDescription = null,
-                    tint = iconTint,
-                    modifier = Modifier.size(THUMBNAIL_SIZE_DP.dp).alpha(1f - thumbnailAlpha.value),
-            )
-            Image(
-                    bitmap = thumbnailBitmap!!,
-                    contentDescription = null,
-                    modifier =
-                            Modifier.size(THUMBNAIL_SIZE_DP.dp)
-                                    .clip(DesignTokens.CardShape)
-                                    .alpha(thumbnailAlpha.value),
-                    contentScale = ContentScale.Crop,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(width = iconWidth, height = iconHeight),
             )
         }
     } else {
-        if (hasCustomFileIcon) {
-            val ratio = customIconSpec!!.aspectRatio
-            val (iconWidth, iconHeight) =
-                    if (ratio >= 1f) {
-                        Pair(iconSize, iconSize / ratio)
-                    } else {
-                        Pair(iconSize * ratio, iconSize)
-                    }
-            Box(
-                    modifier = modifier.size(iconSize),
-                    contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                        imageVector = customIcon!!,
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(width = iconWidth, height = iconHeight),
-                )
-            }
-        } else {
-            Icon(
-                    imageVector = iconOverride ?: fileResultIcon(deviceFile),
-                    contentDescription = null,
-                    tint = iconTint,
-                    modifier = modifier.size(iconSize),
-            )
-        }
+        Icon(
+                imageVector = iconOverride ?: fileResultIcon(deviceFile),
+                contentDescription = null,
+                tint = iconTint,
+                modifier = modifier.size(iconSize),
+        )
     }
 }
 

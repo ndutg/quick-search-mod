@@ -66,6 +66,8 @@ sealed class CustomWidgetButtonAction : Parcelable {
     data class App(
         val packageName: String,
         val appName: String,
+        /** Identifies a cloned/work-profile copy that has the same package name. */
+        val userHandleId: Int? = null,
         override val customIconBase64: String? = null,
     ) : CustomWidgetButtonAction() {
         @IgnoredOnParcel
@@ -82,6 +84,7 @@ sealed class CustomWidgetButtonAction : Parcelable {
                 launchCount = 0,
                 firstInstallTime = 0L,
                 isSystemApp = false,
+                userHandleId = userHandleId,
             )
 
         override fun toJson(): String =
@@ -89,6 +92,7 @@ sealed class CustomWidgetButtonAction : Parcelable {
                 .put(KEY_TYPE, type.value)
                 .put(KEY_PACKAGE_NAME, packageName)
                 .put(KEY_APP_NAME, appName)
+                .apply { userHandleId?.let { put(KEY_USER_HANDLE_ID, it) } }
                 .put(KEY_CUSTOM_ICON_BASE64, customIconBase64)
                 .toString()
     }
@@ -319,6 +323,10 @@ sealed class CustomWidgetButtonAction : Parcelable {
                                     .optString(KEY_APP_NAME, packageName)
                                     .nullIfBlankOrLiteralNull()
                                     ?: packageName,
+                            userHandleId =
+                                json
+                                    .takeIf { it.has(KEY_USER_HANDLE_ID) }
+                                    ?.optInt(KEY_USER_HANDLE_ID),
                         )
                     }
 
@@ -440,6 +448,7 @@ private const val KEY_FOLDER_ICON_COLOR_ARGB = "folderIconColorArgb"
 private const val LEGACY_FOLDER_ICON_COLOR_ARGB = 0xFF4F8F74.toInt()
 private const val KEY_PACKAGE_NAME = "packageName"
 private const val KEY_APP_NAME = "appName"
+private const val KEY_USER_HANDLE_ID = "userHandleId"
 private const val KEY_APP_LABEL = "appLabel"
 private const val KEY_CONTACT_ID = "contactId"
 private const val KEY_LOOKUP_KEY = "lookupKey"

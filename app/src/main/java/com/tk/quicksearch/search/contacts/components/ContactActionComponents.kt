@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.models.ContactMethod
+import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.shared.ui.components.AppVoiceCallIcon
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -312,6 +313,30 @@ private fun ContactActionIcon(
         }
 
         is ContactMethod.CustomApp -> {
+            if (method.isWhatsAppBusinessMethod()) {
+                when (method.mimeType) {
+                    ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL ->
+                        AppVoiceCallIcon(
+                            logoPainterRes = R.drawable.whatsapp_call,
+                            size = iconSize,
+                        )
+                    ContactMethodMimeTypes.WHATSAPP_BUSINESS_VIDEO_CALL ->
+                        Icon(
+                            painter = painterResource(id = R.drawable.whatsapp_video_call),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = modifier.size(iconSize),
+                        )
+                    else ->
+                        Icon(
+                            painter = painterResource(id = R.drawable.whatsapp),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = modifier.size(iconSize),
+                        )
+                }
+                return
+            }
             val context = LocalContext.current
             val appIconBitmap =
                 remember(method.packageName) {
@@ -411,10 +436,27 @@ internal fun getActionButtonLabel(method: ContactMethod): String =
         }
 
         is ContactMethod.CustomApp -> {
-            method.displayLabel
+            when (method.mimeType) {
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL ->
+                    stringResource(R.string.contact_method_call_label)
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VIDEO_CALL ->
+                    stringResource(R.string.contacts_action_button_video_call)
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE ->
+                    stringResource(R.string.contact_method_message_label)
+                else -> method.displayLabel
+            }
         }
 
         is ContactMethod.ViewInContactsApp -> {
             stringResource(R.string.contacts_action_button_contacts)
         }
     }
+
+private fun ContactMethod.CustomApp.isWhatsAppBusinessMethod(): Boolean =
+    packageName == "com.whatsapp.w4b" &&
+        mimeType in
+            setOf(
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL,
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE,
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VIDEO_CALL,
+            )

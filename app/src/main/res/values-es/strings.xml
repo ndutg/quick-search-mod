@@ -92,6 +92,7 @@
     <string name="action_include_generic">Incluir</string>
     <string name="action_more_search_history">Más historial</string>
     <string name="action_open">Abrir</string>
+    <string name="action_open_in_split_screen">Pantalla dividida</string>
     <string name="action_open_folder">Abrir carpeta</string>
     <string name="action_open_keyboard">Abrir teclado</string>
     <string name="action_open_settings">Abrir ajustes</string>
@@ -103,7 +104,8 @@
     <string name="settings_gesture_swipe_up">Deslizar hacia arriba</string>
     <string name="settings_gesture_swipe_down">Deslizar hacia abajo</string>
     <string name="settings_gesture_swipe_up_home">Deslizar hacia arriba (Inicio)</string>
-    <string name="settings_gesture_swipe_down_home">Deslizar hacia abajo (Inicio)</string>
+<string name="settings_gesture_swipe_down_home">Deslizar hacia abajo (Inicio)</string>
+<string name="settings_gesture_double_tap_home">Tocar dos veces (Inicio)</string>
     <string name="settings_gesture_settings">Ajustes</string>
     <string name="settings_gesture_close_keyboard_notifications">Cerrar teclado / Abrir notificaciones</string>
     <string name="settings_gesture_close_keyboard">Cerrar teclado</string>
@@ -217,6 +219,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Nuevas/Actualizadas</string>
     <string name="app_suggestions_tab_pinned">Fijadas</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Las aplicaciones fijadas seguirán apareciendo en la pestaña %1$s</string>
     <string name="app_suggestions_tab_recent">Recientes</string>
     <string name="app_suggestions_tabs_dialog_message">Elige qué pestañas de sugerencias de apps aparecen en la pantalla de inicio.</string>
     <string name="app_suggestions_tabs_dialog_title">Pestañas de sugerencias de apps</string>
@@ -386,6 +389,7 @@
     <string name="contact_method_telegram_voice_call_label">Llamada de voz de Telegram</string>
     <string name="contact_method_view_in_contacts_label">Ver en la app de contactos</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">Videollamada de WhatsApp</string>
     <string name="contact_method_whatsapp_voice_call_label">Llamada de voz de WhatsApp</string>
     <string name="contacts_action_button_chat">Chat</string>
@@ -426,7 +430,7 @@
     <string name="error_whatsapp_video_call_unavailable">WhatsApp no está disponible para videollamadas</string>
     <string name="settings_call_permission_title">Teléfono</string>
     <string name="permissions_background_usage_title">Permitir uso en segundo plano</string>
-    <string name="permissions_background_usage_desc">Si Quick Search tarda en abrirse, intenta desactivar la optimización de batería.</string>
+    <string name="permissions_background_usage_desc">Permite el uso en segundo plano para iniciar aplicaciones más rápido.</string>
     <string name="settings_calling_card_title">App de llamadas predeterminada</string>
     <string name="settings_calls_texts_title">Llamadas y mensajes</string>
     <string name="settings_direct_dial_desc">Realiza llamadas directamente sin abrir el teclado de marcación. </string>
@@ -1023,6 +1027,8 @@
     <string name="settings_create_new_tool_button">Crear nueva herramienta</string>
     <string name="settings_custom_tool_alias_hint">Palabra clave para activar esta herramienta</string>
     <string name="settings_custom_tool_alias_label">Alias</string>
+    <string name="settings_home_text_color_title">Color del texto en la pantalla de inicio</string>
+    <string name="settings_home_text_color_desc">Etiquetas de apps, títulos de secciones, etc.</string>
     <string name="settings_custom_tool_delete_button">Eliminar herramienta</string>
     <string name="settings_custom_tool_editor_title">Herramienta personalizada</string>
     <string name="settings_custom_tool_name_label">Nombre de la herramienta</string>
@@ -1066,4 +1072,11 @@
     <string name="settings_more_apps_from_developer_title">Más aplicaciones del desarrollador</string>
     <string name="icon_picker_no_icon_packs">No hay paquetes de iconos instalados para cambiar el icono de la aplicación.</string>
     <string name="icon_picker_download_icon_packs">Descargar</string>
+    <string name="app_menu_usage_today">%1$s hoy · Abierta %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d vez</item><item quantity="other">%d veces</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d h</item><item quantity="other">%d h</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="other">%d min</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s h</string>
+    <string name="other_screen_time_today_title">Tiempo de pantalla de hoy</string>
+    <string name="other_screen_time_hours_minutes">%1$d h %2$d min</string>
 </resources>

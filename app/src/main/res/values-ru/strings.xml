@@ -92,6 +92,7 @@
 <string name="action_include_generic">Включить</string>
 <string name="action_more_search_history">Вся история</string>
 <string name="action_open">Открыть</string>
+    <string name="action_open_in_split_screen">Разделённый экран</string>
 <string name="action_open_folder">Открыть папку</string>
 <string name="action_open_keyboard">Открыть клавиатуру</string>
 <string name="action_open_settings">Открыть настройки</string>
@@ -104,6 +105,7 @@
 <string name="settings_gesture_swipe_down">Смахивание вниз</string>
 <string name="settings_gesture_swipe_up_home">Смахивание вверх (Главный экран)</string>
 <string name="settings_gesture_swipe_down_home">Смахивание вниз (Главный экран)</string>
+<string name="settings_gesture_double_tap_home">Двойное нажатие (Главный экран)</string>
 <string name="settings_gesture_settings">Настройки</string>
 <string name="settings_gesture_close_keyboard_notifications">Закрыть клавиатуру / Открыть уведомления</string>
 <string name="settings_gesture_close_keyboard">Закрыть клавиатуру</string>
@@ -217,6 +219,7 @@
      ============================================================================ -->
 <string name="app_suggestions_tab_new_updated">Новые/Обновленные</string>
 <string name="app_suggestions_tab_pinned">Закрепленные</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Закрепленные приложения по-прежнему будут отображаться на вкладке «%1$s»</string>
 <string name="app_suggestions_tab_recent">Недавние</string>
 <string name="app_suggestions_tabs_dialog_message">Выберите, какие вкладки с подсказками приложений отображать на главном экране.</string>
 <string name="app_suggestions_tabs_dialog_title">Вкладки с подсказками приложений</string>
@@ -388,6 +391,7 @@
 <string name="contact_method_telegram_voice_call_label">Аудиозвонок в Telegram</string>
 <string name="contact_method_view_in_contacts_label">Открыть в «Контактах»</string>
 <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+<string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
 <string name="contact_method_whatsapp_video_call_label">Видеозвонок в WhatsApp</string>
 <string name="contact_method_whatsapp_voice_call_label">Аудиозвонок в WhatsApp</string>
 <string name="contacts_action_button_chat">Чат</string>
@@ -428,7 +432,7 @@
 <string name="error_whatsapp_video_call_unavailable">WhatsApp недоступен для видеозвонков</string>
 <string name="settings_call_permission_title">Телефон</string>
 <string name="permissions_background_usage_title">Разрешить работу в фоновом режиме</string>
-<string name="permissions_background_usage_desc">Если Quick Search открывается медленно, попробуйте отключить оптимизацию батареи.</string>
+<string name="permissions_background_usage_desc">Разрешите работу в фоновом режиме для более быстрого запуска приложений.</string>
 <string name="settings_calling_card_title">Приложение для звонков по умолчанию</string>
 <string name="settings_calls_texts_title">Звонки и сообщения</string>
 <string name="settings_direct_dial_desc">Совершайте вызовы напрямую без открытия номеронабирателя.</string>
@@ -1039,6 +1043,8 @@
 <string name="settings_create_new_tool_button">Создать новый инструмент</string>
 <string name="settings_custom_tool_alias_hint">Ключевое слово для запуска этого инструмента</string>
 <string name="settings_custom_tool_alias_label">Алиас</string>
+<string name="settings_home_text_color_title">Цвет текста на главном экране</string>
+<string name="settings_home_text_color_desc">Названия приложений, заголовки разделов и т. д.</string>
 <string name="settings_custom_tool_delete_button">Удалить инструмент</string>
 <string name="settings_custom_tool_editor_title">Кастомный инструмент</string>
 <string name="settings_custom_tool_name_label">Название инструмента</string>
@@ -1082,4 +1088,11 @@
     <string name="settings_more_apps_from_developer_title">Другие приложения разработчика</string>
 <string name="icon_picker_no_icon_packs">Для изменения значка приложения не установлены пакеты значков.</string>
 <string name="icon_picker_download_icon_packs">Скачать</string>
+    <string name="app_menu_usage_today">%1$s сегодня · Открыто %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d раз</item><item quantity="other">%d раз</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d ч</item><item quantity="other">%d ч</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d мин</item><item quantity="other">%d мин</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s ч</string>
+    <string name="other_screen_time_today_title">Экранное время сегодня</string>
+    <string name="other_screen_time_hours_minutes">%1$d ч %2$d мин</string>
 </resources>

@@ -13,6 +13,7 @@ internal fun homeLayoutOrder(
             add(ItemPriorityConfig.ItemType.ERROR_BANNER)
             add(ItemPriorityConfig.ItemType.APPS_SECTION)
             add(ItemPriorityConfig.ItemType.RECENT_QUERIES)
+            addAll(baseLayoutOrder.filter { it == ItemPriorityConfig.ItemType.OTHER_RESULTS })
             addAll(
                 baseLayoutOrder.filter { itemType ->
                     SearchSectionRegistry.sectionForItemType(itemType)

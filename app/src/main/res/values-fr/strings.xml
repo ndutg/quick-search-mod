@@ -92,6 +92,7 @@
 <string name="action_include_generic">Inclure</string>
 <string name="action_more_search_history">Plus d\'historique</string>
 <string name="action_open">Ouvrir</string>
+    <string name="action_open_in_split_screen">Écran partagé</string>
 <string name="action_open_folder">Ouvrir le dossier</string>
 <string name="action_open_keyboard">Ouvrir le clavier</string>
 <string name="action_open_settings">Ouvrir les paramètres</string>
@@ -104,6 +105,7 @@
 <string name="settings_gesture_swipe_down">Balayer vers le bas</string>
 <string name="settings_gesture_swipe_up_home">Balayer vers le haut (Accueil)</string>
 <string name="settings_gesture_swipe_down_home">Balayer vers le bas (Accueil)</string>
+<string name="settings_gesture_double_tap_home">Appui double (Accueil)</string>
 <string name="settings_gesture_settings">Paramètres</string>
 <string name="settings_gesture_close_keyboard_notifications">Fermer le clavier / Ouvrir les notifications</string>
 <string name="settings_gesture_close_keyboard">Fermer le clavier</string>
@@ -217,6 +219,7 @@
      ============================================================================ -->
 <string name="app_suggestions_tab_new_updated">Nouveautés/Mises à jour</string>
 <string name="app_suggestions_tab_pinned">Épinglées</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Les applications épinglées apparaîtront toujours dans l’onglet %1$s</string>
 <string name="app_suggestions_tab_recent">Récents</string>
 <string name="app_suggestions_tabs_dialog_message">Choisissez les onglets de suggestions d\'applications à afficher sur l\'écran d\'accueil.</string>
 <string name="app_suggestions_tabs_dialog_title">Onglets de suggestions d\'applications</string>
@@ -386,6 +389,7 @@
 <string name="contact_method_telegram_voice_call_label">Appel vocal Telegram</string>
 <string name="contact_method_view_in_contacts_label">Voir dans l\'application Contacts</string>
 <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+<string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
 <string name="contact_method_whatsapp_video_call_label">Appel vidéo WhatsApp</string>
 <string name="contact_method_whatsapp_voice_call_label">Appel vocal WhatsApp</string>
 <string name="contacts_action_button_chat">Discussion</string>
@@ -426,7 +430,7 @@
 <string name="error_whatsapp_video_call_unavailable">WhatsApp n\'est pas disponible pour les appels vidéo</string>
 <string name="settings_call_permission_title">Téléphone</string>
 <string name="permissions_background_usage_title">Autoriser l\'utilisation en arrière-plan</string>
-<string name="permissions_background_usage_desc">Si l\'ouverture de Quick Search est lente, essayez de désactiver l\'optimisation de la batterie.</string>
+<string name="permissions_background_usage_desc">Autorisez l\'utilisation en arrière-plan pour un démarrage plus rapide des applications.</string>
 <string name="settings_calling_card_title">Application d\'appel par défaut</string>
 <string name="settings_calls_texts_title">Appels &amp; SMS</string>
 <string name="settings_direct_dial_desc">Passez des appels directement sans ouvrir le clavier numérique.</string>
@@ -1023,6 +1027,8 @@
 <string name="settings_create_new_tool_button">Créer un nouvel outil</string>
 <string name="settings_custom_tool_alias_hint">Un mot-clé pour déclencher cet outil</string>
 <string name="settings_custom_tool_alias_label">Alias</string>
+<string name="settings_home_text_color_title">Couleur du texte sur l\'écran d\'accueil</string>
+<string name="settings_home_text_color_desc">Noms des applications, titres de sections, etc.</string>
 <string name="settings_custom_tool_delete_button">Supprimer l\'outil</string>
 <string name="settings_custom_tool_editor_title">Outil personnalisé</string>
 <string name="settings_custom_tool_name_label">Nom de l\'outil</string>
@@ -1066,4 +1072,11 @@
     <string name="settings_more_apps_from_developer_title">Plus d’applications du développeur</string>
 <string name="icon_picker_no_icon_packs">Aucun pack d\'icônes n\'est installé pour modifier l\'icône de l\'application.</string>
     <string name="icon_picker_download_icon_packs">Télécharger</string>
+    <string name="app_menu_usage_today">%1$s aujourd’hui · Ouverte %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d fois</item><item quantity="other">%d fois</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d h</item><item quantity="other">%d h</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="other">%d min</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s h</string>
+    <string name="other_screen_time_today_title">Temps d’écran aujourd’hui</string>
+    <string name="other_screen_time_hours_minutes">%1$d h %2$d min</string>
 </resources>

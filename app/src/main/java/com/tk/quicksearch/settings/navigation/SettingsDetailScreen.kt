@@ -314,6 +314,7 @@ internal fun SettingsDetailLevel1Screen(
                             appThemeMode = state.appThemeMode,
                             fontScaleMultiplier = state.fontScaleMultiplier,
                             useSystemFont = state.useSystemFont,
+                            homeTextColorOverride = state.homeTextColorOverride,
                             onSetAppTheme = { theme ->
                                 callbacks.onApplySettingsCommand(
                                     SettingsCommand.AppThemeSetting(theme),
@@ -337,6 +338,11 @@ internal fun SettingsDetailLevel1Screen(
                             onUseSystemFontChange = { enabled ->
                                 callbacks.onApplySettingsCommand(
                                     SettingsCommand.UseSystemFont(enabled),
+                                )
+                            },
+                            onHomeTextColorChange = { color ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.HomeTextColorOverride(color),
                                 )
                             },
                             backgroundSource = state.backgroundSource,
@@ -397,12 +403,6 @@ internal fun SettingsDetailLevel1Screen(
                                     callbacks.onSetMaskUnsupportedIconPackIcons,
                             onRefreshIconPacks = {
                                 callbacks.onRefreshIconPacks()
-                                Toast
-                                    .makeText(
-                                        context,
-                                        context.getString(R.string.settings_refreshing_icon_packs),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
                             },
                             onSearchIconPacks = callbacks.onSearchIconPacks,
                             appIconShape = state.appIconShape,

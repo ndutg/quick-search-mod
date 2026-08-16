@@ -63,6 +63,7 @@ internal fun SearchScreenStateManagement(
     onSettingsClick: () -> Unit,
     onRequestUsagePermission: () -> Unit,
     onAppClick: (AppInfo) -> Unit,
+    onOpenInSplitScreen: (AppInfo) -> Unit,
     onAppInfoClick: (AppInfo) -> Unit,
     onUninstallClick: (AppInfo) -> Unit,
     onHideApp: (AppInfo) -> Unit,
@@ -171,6 +172,7 @@ internal fun SearchScreenStateManagement(
     onDismissSearchHistoryTip: () -> Unit,
     onWelcomeAnimationCompleted: (() -> Unit)?,
     onWallpaperLoaded: (() -> Unit)?,
+    onSystemWallpaperChanged: (() -> Unit)?,
     onCustomAction: (ContactInfo, ContactCardAction) -> Unit,
     getPrimaryContactCardAction: (Long) -> ContactCardAction?,
     getSecondaryContactCardAction: (Long) -> ContactCardAction?,
@@ -362,6 +364,7 @@ internal fun SearchScreenStateManagement(
     val (imageBitmap, useImageBackground, useMonoThemeFallback) = SearchScreenWallpaperLogic(
         state = state,
         onWallpaperLoaded = onWallpaperLoaded,
+        onSystemWallpaperChanged = onSystemWallpaperChanged,
         isOverlayPresentation = isOverlayPresentation,
     )
 
@@ -442,6 +445,7 @@ internal fun SearchScreenStateManagement(
             onOpenAppSettings = onOpenAppSettings,
             onOpenCalendarPermissionSettings = onOpenCalendarPermissionSettings,
             onAppClick = onAppClick,
+            onOpenInSplitScreen = onOpenInSplitScreen,
             onAppInfoClick = onAppInfoClick,
             onUninstallClick = onUninstallClick,
             onHideApp = onHideApp,

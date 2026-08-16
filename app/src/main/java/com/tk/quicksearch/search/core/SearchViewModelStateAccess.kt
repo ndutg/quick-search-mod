@@ -204,6 +204,12 @@ internal class SearchViewModelPreferencesStateAccess(
             state.useSystemFont = value
         }
 
+    override var homeTextColorOverride: HomeTextColor?
+        get() = state.homeTextColorOverride
+        set(value) {
+            state.homeTextColorOverride = value
+        }
+
     override var backgroundSource: BackgroundSource
         get() = state.backgroundSource
         set(value) {

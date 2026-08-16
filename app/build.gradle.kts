@@ -18,8 +18,8 @@ android {
         applicationId = "com.tk.quicksearch"
         minSdk = 24
         targetSdk = 36
-        versionCode = 73
-        versionName = "4.0.1"
+        versionCode = 76
+        versionName = "4.1"
         manifestPlaceholders["profileCaptureExported"] =
             providers.gradleProperty("profileCapture").orElse("false").get().toBoolean()
 
@@ -140,6 +140,7 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.okhttp)
     "standardImplementation"(libs.play.review.ktx)
+    "standardImplementation"(libs.play.app.update)
     "standardImplementation"(libs.play.app.update.ktx)
     implementation(libs.libphonenumber)
     implementation(libs.reorderable)

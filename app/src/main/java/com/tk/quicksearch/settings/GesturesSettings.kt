@@ -1,25 +1,33 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.KeyboardHide
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +46,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.search.core.SearchTarget
+import com.tk.quicksearch.searchEngines.getId
+import com.tk.quicksearch.searchEngines.getDisplayName
+import com.tk.quicksearch.searchEngines.AliasHandler
+import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
@@ -56,6 +71,14 @@ private enum class SwipeDirection(val titleResId: Int, val defaultAction: SwipeG
     DOWN(R.string.settings_gesture_swipe_down, SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS),
 }
 
+private enum class HomeGesture(val titleResId: Int, val defaultAction: HomeSwipeGestureAction) {
+    SWIPE_UP(R.string.settings_gesture_swipe_up_home, HomeSwipeGestureAction.NONE),
+    SWIPE_DOWN(R.string.settings_gesture_swipe_down_home, HomeSwipeGestureAction.NOTIFICATION_PANEL),
+    DOUBLE_TAP(R.string.settings_gesture_double_tap_home, HomeSwipeGestureAction.NONE),
+}
+
+private enum class AliasPickerKind { SEARCH_ENGINE, TOOL }
+
 @Composable
 fun GesturesSettingsSection(
     modifier: Modifier = Modifier,
@@ -67,37 +90,38 @@ fun GesturesSettingsSection(
     val searchState by searchViewModel.uiState.collectAsStateWithLifecycle()
     var actions by remember { mutableStateOf(SwipeDirection.entries.associateWith(preferences::actionFor)) }
     var customActions by remember { mutableStateOf(SwipeDirection.entries.associateWith(preferences::customActionFor)) }
+    var aliasTargets by remember { mutableStateOf(SwipeDirection.entries.associateWith(preferences::aliasTargetFor)) }
     var selectedDirection by remember { mutableStateOf<SwipeDirection?>(null) }
     var isLauncherSwipeRightEnabled by remember { mutableStateOf(preferences.isLauncherSwipeRightEnabled()) }
     var customPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
-    var homeCustomPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
+    var aliasPickerDirection by remember { mutableStateOf<SwipeDirection?>(null) }
+    var aliasPickerHomeGesture by remember { mutableStateOf<HomeGesture?>(null) }
+    var aliasPickerKind by remember { mutableStateOf<AliasPickerKind?>(null) }
+    var homeCustomPickerGesture by remember { mutableStateOf<HomeGesture?>(null) }
     var selectedKeyboardAction by remember { mutableStateOf<SwipeGestureAction?>(null) }
-    var selectedHomeVerticalDirection by remember { mutableStateOf<SwipeDirection?>(null) }
+    var selectedHomeGesture by remember { mutableStateOf<HomeGesture?>(null) }
     var homeActions by remember {
         mutableStateOf(
-            mapOf(
-                SwipeDirection.UP to preferences.homeActionFor(SwipeDirection.UP),
-                SwipeDirection.DOWN to preferences.homeActionFor(SwipeDirection.DOWN),
-            ),
+            HomeGesture.entries.associateWith(preferences::homeActionFor),
         )
     }
     var homeCustomActions by remember {
         mutableStateOf(
-            mapOf(
-                SwipeDirection.UP to preferences.homeCustomActionFor(SwipeDirection.UP),
-                SwipeDirection.DOWN to preferences.homeCustomActionFor(SwipeDirection.DOWN),
-            ),
+            HomeGesture.entries.associateWith(preferences::homeCustomActionFor),
         )
     }
+    var homeAliasTargets by remember { mutableStateOf(HomeGesture.entries.associateWith(preferences::homeAliasTargetFor)) }
 
-    fun save(direction: SwipeDirection, action: SwipeGestureAction, customAction: CustomWidgetButtonAction? = null) {
+    fun save(direction: SwipeDirection, action: SwipeGestureAction, customAction: CustomWidgetButtonAction? = null, aliasTarget: String? = null) {
         preferences.setActionFor(direction, action)
         preferences.setCustomActionFor(direction, customAction?.toJson())
+        preferences.setAliasTargetFor(direction, aliasTarget)
         if (direction == SwipeDirection.LEFT && action != SwipeGestureAction.SETTINGS) {
             searchViewModel.setSettingsIconEnabled(true)
         }
         actions = actions + (direction to action)
         customActions = customActions + (direction to customAction?.toJson())
+        aliasTargets = aliasTargets + (direction to aliasTarget)
     }
 
     fun deleteCustomAction(actionJson: String) {
@@ -106,12 +130,28 @@ fun GesturesSettingsSection(
                 save(direction, direction.defaultAction)
             }
         }
-        listOf(SwipeDirection.UP, SwipeDirection.DOWN).forEach { direction ->
-            if (homeCustomActions[direction] == actionJson) {
-                preferences.setHomeActionFor(direction, direction.homeDefaultAction)
-                preferences.setHomeCustomActionFor(direction, null)
-                homeActions = homeActions + (direction to direction.homeDefaultAction)
-                homeCustomActions = homeCustomActions + (direction to null)
+        HomeGesture.entries.forEach { gesture ->
+            if (homeCustomActions[gesture] == actionJson) {
+                preferences.setHomeActionFor(gesture, gesture.defaultAction)
+                preferences.setHomeCustomActionFor(gesture, null)
+                homeActions = homeActions + (gesture to gesture.defaultAction)
+                homeCustomActions = homeCustomActions + (gesture to null)
+            }
+        }
+    }
+
+    fun deleteAliasTarget(targetId: String) {
+        SwipeDirection.entries.forEach { direction ->
+            if (aliasTargets[direction] == targetId) save(direction, direction.defaultAction)
+        }
+        HomeGesture.entries.forEach { gesture ->
+            if (homeAliasTargets[gesture] == targetId) {
+                preferences.setHomeActionFor(gesture, gesture.defaultAction)
+                preferences.setHomeCustomActionFor(gesture, null)
+                preferences.setHomeAliasTargetFor(gesture, null)
+                homeActions = homeActions + (gesture to gesture.defaultAction)
+                homeCustomActions = homeCustomActions + (gesture to null)
+                homeAliasTargets = homeAliasTargets + (gesture to null)
             }
         }
     }
@@ -152,7 +192,9 @@ fun GesturesSettingsSection(
             direction = direction,
             selectedAction = actions.getValue(direction),
             selectedCustomActionJson = customActions[direction],
+            selectedAliasTarget = aliasTargets[direction],
             customActions = allCustomActions(customActions, homeCustomActions),
+            aliasItems = allGestureAliasItems(searchState, aliasTargets, homeAliasTargets),
             onSelectDefault = { action ->
                 save(direction, action)
                 selectedDirection = null
@@ -161,12 +203,72 @@ fun GesturesSettingsSection(
                 selectedDirection = null
                 customPickerDirection = direction
             },
+            onPickSearchEngine = {
+                selectedDirection = null
+                aliasPickerDirection = direction
+                aliasPickerKind = AliasPickerKind.SEARCH_ENGINE
+            },
+            onPickTool = {
+                selectedDirection = null
+                aliasPickerDirection = direction
+                aliasPickerKind = AliasPickerKind.TOOL
+            },
             onSelectCustom = { action ->
                 save(direction, SwipeGestureAction.CUSTOM, action)
                 selectedDirection = null
             },
+            onSelectAlias = { action, targetId -> save(direction, action, aliasTarget = targetId); selectedDirection = null },
             onDeleteCustom = ::deleteCustomAction,
+            onDeleteAlias = ::deleteAliasTarget,
             onDismiss = { selectedDirection = null },
+        )
+    }
+
+    if (aliasPickerKind == AliasPickerKind.SEARCH_ENGINE) {
+        GestureSearchEnginePickerDialog(
+            targets = searchState.searchTargetsOrder,
+            onDismiss = {
+                selectedDirection = aliasPickerDirection
+                selectedHomeGesture = aliasPickerHomeGesture
+                aliasPickerDirection = null; aliasPickerHomeGesture = null; aliasPickerKind = null
+            },
+            onSelect = { target ->
+                val targetId = target.getId()
+                aliasPickerDirection?.let { save(it, SwipeGestureAction.SEARCH_ENGINE, aliasTarget = targetId) }
+                aliasPickerHomeGesture?.let { gesture ->
+                    preferences.setHomeActionFor(gesture, HomeSwipeGestureAction.SEARCH_ENGINE)
+                    preferences.setHomeCustomActionFor(gesture, null)
+                    preferences.setHomeAliasTargetFor(gesture, targetId)
+                    homeActions = homeActions + (gesture to HomeSwipeGestureAction.SEARCH_ENGINE)
+                    homeCustomActions = homeCustomActions + (gesture to null)
+                    homeAliasTargets = homeAliasTargets + (gesture to targetId)
+                }
+                aliasPickerDirection = null; aliasPickerHomeGesture = null; aliasPickerKind = null
+            },
+        )
+    } else if (aliasPickerKind == AliasPickerKind.TOOL) {
+        GestureToolPickerDialog(
+            state = searchState,
+            onDismiss = {
+                selectedDirection = aliasPickerDirection
+                selectedHomeGesture = aliasPickerHomeGesture
+                aliasPickerDirection = null; aliasPickerHomeGesture = null; aliasPickerKind = null
+            },
+            onSelect = { targetId ->
+                aliasPickerDirection?.let { direction ->
+                    save(direction, SwipeGestureAction.TOOL, aliasTarget = targetId)
+                }
+                aliasPickerHomeGesture?.let { gesture ->
+                    val action = HomeSwipeGestureAction.TOOL
+                    preferences.setHomeActionFor(gesture, action)
+                    preferences.setHomeCustomActionFor(gesture, null)
+                    preferences.setHomeAliasTargetFor(gesture, targetId)
+                    homeActions = homeActions + (gesture to action)
+                    homeCustomActions = homeCustomActions + (gesture to null)
+                    homeAliasTargets = homeAliasTargets + (gesture to targetId)
+                }
+                aliasPickerDirection = null; aliasPickerHomeGesture = null; aliasPickerKind = null
+            },
         )
     }
 
@@ -179,6 +281,7 @@ fun GesturesSettingsSection(
             onDismiss = {
                 searchViewModel.onQueryChange("")
                 customPickerDirection = null
+                selectedDirection = direction
             },
             onSelect = { action ->
                 save(direction, SwipeGestureAction.CUSTOM, action)
@@ -188,23 +291,24 @@ fun GesturesSettingsSection(
         )
     }
 
-    homeCustomPickerDirection?.let { direction ->
+    homeCustomPickerGesture?.let { gesture ->
         CustomWidgetButtonPickerDialog(
-            currentAction = homeCustomActions[direction]?.let(CustomWidgetButtonAction::fromJson),
+            currentAction = homeCustomActions[gesture]?.let(CustomWidgetButtonAction::fromJson),
             searchState = searchState,
             iconPackPackage = searchState.selectedIconPackPackage,
             onQueryChange = searchViewModel::onQueryChange,
             onDismiss = {
                 searchViewModel.onQueryChange("")
-                homeCustomPickerDirection = null
+                homeCustomPickerGesture = null
+                selectedHomeGesture = gesture
             },
             onSelect = { action ->
-                preferences.setHomeActionFor(direction, HomeSwipeGestureAction.CUSTOM)
-                preferences.setHomeCustomActionFor(direction, action.toJson())
-                homeActions = homeActions + (direction to HomeSwipeGestureAction.CUSTOM)
-                homeCustomActions = homeCustomActions + (direction to action.toJson())
+                preferences.setHomeActionFor(gesture, HomeSwipeGestureAction.CUSTOM)
+                preferences.setHomeCustomActionFor(gesture, action.toJson())
+                homeActions = homeActions + (gesture to HomeSwipeGestureAction.CUSTOM)
+                homeCustomActions = homeCustomActions + (gesture to action.toJson())
                 searchViewModel.onQueryChange("")
-                homeCustomPickerDirection = null
+                homeCustomPickerGesture = null
             },
         )
     }
@@ -218,40 +322,63 @@ fun GesturesSettingsSection(
         )
     }
 
-    selectedHomeVerticalDirection?.let { direction ->
+    selectedHomeGesture?.let { gesture ->
         HomeVerticalGestureDialog(
-            direction = direction,
-            selectedAction = homeActions.getValue(direction),
-            selectedCustomActionJson = homeCustomActions[direction],
+            titleResId = gesture.titleResId,
+            allowsNotificationPanel = gesture == HomeGesture.SWIPE_DOWN || gesture == HomeGesture.DOUBLE_TAP,
+            selectedAction = homeActions.getValue(gesture),
+            selectedCustomActionJson = homeCustomActions[gesture],
+            selectedAliasTarget = homeAliasTargets[gesture],
             customActions = allCustomActions(customActions, homeCustomActions),
+            aliasItems = allGestureAliasItems(searchState, aliasTargets, homeAliasTargets),
             onSelectDefault = { action ->
-                preferences.setHomeActionFor(direction, action)
-                preferences.setHomeCustomActionFor(direction, null)
-                homeActions = homeActions + (direction to action)
-                homeCustomActions = homeCustomActions + (direction to null)
-                selectedHomeVerticalDirection = null
+                preferences.setHomeActionFor(gesture, action)
+                preferences.setHomeCustomActionFor(gesture, null)
+                homeActions = homeActions + (gesture to action)
+                homeCustomActions = homeCustomActions + (gesture to null)
+                selectedHomeGesture = null
             },
             onPickCustom = {
-                selectedHomeVerticalDirection = null
-                homeCustomPickerDirection = direction
+                selectedHomeGesture = null
+                homeCustomPickerGesture = gesture
+            },
+            onPickSearchEngine = {
+                selectedHomeGesture = null
+                aliasPickerHomeGesture = gesture
+                aliasPickerKind = AliasPickerKind.SEARCH_ENGINE
+            },
+            onPickTool = {
+                selectedHomeGesture = null
+                aliasPickerHomeGesture = gesture
+                aliasPickerKind = AliasPickerKind.TOOL
             },
             onSelectCustom = { action ->
-                preferences.setHomeActionFor(direction, HomeSwipeGestureAction.CUSTOM)
-                preferences.setHomeCustomActionFor(direction, action.toJson())
-                homeActions = homeActions + (direction to HomeSwipeGestureAction.CUSTOM)
-                homeCustomActions = homeCustomActions + (direction to action.toJson())
-                selectedHomeVerticalDirection = null
+                preferences.setHomeActionFor(gesture, HomeSwipeGestureAction.CUSTOM)
+                preferences.setHomeCustomActionFor(gesture, action.toJson())
+                homeActions = homeActions + (gesture to HomeSwipeGestureAction.CUSTOM)
+                homeCustomActions = homeCustomActions + (gesture to action.toJson())
+                selectedHomeGesture = null
+            },
+            onSelectAlias = { action, targetId ->
+                preferences.setHomeActionFor(gesture, action)
+                preferences.setHomeCustomActionFor(gesture, null)
+                preferences.setHomeAliasTargetFor(gesture, targetId)
+                homeActions = homeActions + (gesture to action)
+                homeCustomActions = homeCustomActions + (gesture to null)
+                homeAliasTargets = homeAliasTargets + (gesture to targetId)
+                selectedHomeGesture = null
             },
             onDeleteCustom = ::deleteCustomAction,
-            onDismiss = { selectedHomeVerticalDirection = null },
+            onDeleteAlias = ::deleteAliasTarget,
+            onDismiss = { selectedHomeGesture = null },
         )
     }
 
     Column(modifier = modifier) {
         SettingsCard(modifier = Modifier.fillMaxWidth().padding(bottom = DesignTokens.SectionTopPadding)) {
             Column {
-                val homeGestureDirections = SwipeDirection.entries
-                homeGestureDirections.forEachIndexed { index, direction ->
+                val gestureDirections = SwipeDirection.entries
+                gestureDirections.forEachIndexed { index, direction ->
                     SettingsNavigationRow(
                         item =
                             SettingsCardItem(
@@ -271,15 +398,16 @@ fun GesturesSettingsSection(
                                             else R.string.settings_gesture_none,
                                         )
                                     } else if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
-                                        homeGestureDescription(homeActions.getValue(direction), homeCustomActions[direction])
+                                        val gesture = if (direction == SwipeDirection.UP) HomeGesture.SWIPE_UP else HomeGesture.SWIPE_DOWN
+                                        homeGestureDescription(homeActions.getValue(gesture), homeCustomActions[gesture], homeAliasTargets[gesture], searchState)
                                     } else {
-                                        gestureDescription(actions.getValue(direction), customActions[direction])
-                                },
+                                        gestureDescription(actions.getValue(direction), customActions[direction], aliasTargets[direction], searchState)
+                                    },
                                 actionOnPress = {
-                                    if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
-                                        selectedHomeVerticalDirection = direction
-                                    } else {
-                                        selectedDirection = direction
+                                    when (direction) {
+                                        SwipeDirection.UP -> selectedHomeGesture = HomeGesture.SWIPE_UP
+                                        SwipeDirection.DOWN -> selectedHomeGesture = HomeGesture.SWIPE_DOWN
+                                        else -> selectedDirection = direction
                                     }
                                 },
                             ),
@@ -288,8 +416,26 @@ fun GesturesSettingsSection(
                             vertical = DesignTokens.CardVerticalPadding,
                         ),
                     )
-                    if (index != homeGestureDirections.lastIndex) HorizontalDivider(color = AppColors.SettingsDivider)
+                    HorizontalDivider(color = AppColors.SettingsDivider)
                 }
+                SettingsNavigationRow(
+                    item =
+                        SettingsCardItem(
+                            title = stringResource(HomeGesture.DOUBLE_TAP.titleResId),
+                            icon = HomeGesture.DOUBLE_TAP.icon(),
+                            description = homeGestureDescription(
+                                homeActions.getValue(HomeGesture.DOUBLE_TAP),
+                                homeCustomActions[HomeGesture.DOUBLE_TAP],
+                                homeAliasTargets[HomeGesture.DOUBLE_TAP],
+                                searchState,
+                            ),
+                            actionOnPress = { selectedHomeGesture = HomeGesture.DOUBLE_TAP },
+                        ),
+                    contentPadding = PaddingValues(
+                        horizontal = DesignTokens.CardHorizontalPadding,
+                        vertical = DesignTokens.CardVerticalPadding,
+                    ),
+                )
             }
         }
 
@@ -367,21 +513,36 @@ private fun SwipeDirection.gestureIcon() =
         SwipeDirection.DOWN -> Icons.Rounded.ArrowDownward
     }
 
+private fun HomeGesture.icon() =
+    when (this) {
+        HomeGesture.SWIPE_UP -> Icons.Rounded.ArrowUpward
+        HomeGesture.SWIPE_DOWN,
+        HomeGesture.DOUBLE_TAP,
+        -> Icons.Rounded.ArrowDownward
+    }
+
 @Composable
 private fun HomeVerticalGestureDialog(
-    direction: SwipeDirection,
+    titleResId: Int,
+    allowsNotificationPanel: Boolean,
     selectedAction: HomeSwipeGestureAction,
     selectedCustomActionJson: String?,
+    selectedAliasTarget: String?,
     customActions: List<CustomWidgetButtonAction>,
+    aliasItems: List<GestureAliasItem>,
     onSelectDefault: (HomeSwipeGestureAction) -> Unit,
     onPickCustom: () -> Unit,
+    onPickSearchEngine: () -> Unit,
+    onPickTool: () -> Unit,
     onSelectCustom: (CustomWidgetButtonAction) -> Unit,
+    onSelectAlias: (HomeSwipeGestureAction, String) -> Unit,
     onDeleteCustom: (String) -> Unit,
+    onDeleteAlias: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     AppAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(direction.titleResId)) },
+        title = { Text(stringResource(titleResId)) },
         text = {
             Column {
                 GestureActionRow(
@@ -389,7 +550,7 @@ private fun HomeVerticalGestureDialog(
                     selected = selectedAction == HomeSwipeGestureAction.NONE,
                     onClick = { onSelectDefault(HomeSwipeGestureAction.NONE) },
                 )
-                if (direction == SwipeDirection.DOWN) {
+                if (allowsNotificationPanel) {
                     HorizontalDivider(color = AppColors.SettingsDivider)
                     GestureActionRow(
                         label = stringResource(R.string.settings_gesture_notification_panel),
@@ -397,12 +558,6 @@ private fun HomeVerticalGestureDialog(
                         onClick = { onSelectDefault(HomeSwipeGestureAction.NOTIFICATION_PANEL) },
                     )
                 }
-                HorizontalDivider(color = AppColors.SettingsDivider)
-                GestureActionRow(
-                    label = stringResource(R.string.settings_gesture_custom),
-                    selected = false,
-                    onClick = onPickCustom,
-                )
                 customActions.forEach { action ->
                     HorizontalDivider(color = AppColors.SettingsDivider)
                     val json = action.toJson()
@@ -413,6 +568,20 @@ private fun HomeVerticalGestureDialog(
                         onDelete = { onDeleteCustom(json) },
                     )
                 }
+                aliasItems.forEach { item ->
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = item.label,
+                        selected = selectedAction == item.homeAction && selectedAliasTarget == item.id,
+                        onClick = { onSelectAlias(item.homeAction, item.id) },
+                        onDelete = { onDeleteAlias(item.id) },
+                    )
+                }
+                GesturePickerActions(
+                    onPickCustom = onPickCustom,
+                    onPickSearchEngine = onPickSearchEngine,
+                    onPickTool = onPickTool,
+                )
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
@@ -459,11 +628,17 @@ private fun GestureActionDialog(
     direction: SwipeDirection,
     selectedAction: SwipeGestureAction,
     selectedCustomActionJson: String?,
+    selectedAliasTarget: String?,
     customActions: List<CustomWidgetButtonAction>,
+    aliasItems: List<GestureAliasItem>,
     onSelectDefault: (SwipeGestureAction) -> Unit,
     onPickCustom: () -> Unit,
+    onPickSearchEngine: () -> Unit,
+    onPickTool: () -> Unit,
     onSelectCustom: (CustomWidgetButtonAction) -> Unit,
+    onSelectAlias: (SwipeGestureAction, String) -> Unit,
     onDeleteCustom: (String) -> Unit,
+    onDeleteAlias: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     AppAlertDialog(
@@ -482,12 +657,6 @@ private fun GestureActionDialog(
                     selected = selectedAction == direction.defaultAction,
                     onClick = { onSelectDefault(direction.defaultAction) },
                 )
-                HorizontalDivider(color = AppColors.SettingsDivider)
-                GestureActionRow(
-                    label = stringResource(R.string.settings_gesture_custom),
-                    selected = false,
-                    onClick = onPickCustom,
-                )
                 customActions.forEach { action ->
                     HorizontalDivider(color = AppColors.SettingsDivider)
                     val json = action.toJson()
@@ -498,6 +667,20 @@ private fun GestureActionDialog(
                         onDelete = { onDeleteCustom(json) },
                     )
                 }
+                aliasItems.forEach { item ->
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = item.label,
+                        selected = selectedAction == item.swipeAction && selectedAliasTarget == item.id,
+                        onClick = { onSelectAlias(item.swipeAction, item.id) },
+                        onDelete = { onDeleteAlias(item.id) },
+                    )
+                }
+                GesturePickerActions(
+                    onPickCustom = onPickCustom,
+                    onPickSearchEngine = onPickSearchEngine,
+                    onPickTool = onPickTool,
+                )
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
@@ -530,24 +713,83 @@ private fun GestureActionRow(
 }
 
 @Composable
-private fun gestureDescription(action: SwipeGestureAction, customActionJson: String?): String =
+private fun GesturePickerActions(
+    onPickCustom: () -> Unit,
+    onPickSearchEngine: () -> Unit,
+    onPickTool: () -> Unit,
+) {
+    Surface(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = DesignTokens.SpacingMedium)
+                .border(
+                    width = DesignTokens.BorderWidth,
+                    color = AppColors.OnboardingBubbleBorder.copy(alpha = 0.18f),
+                    shape = RoundedCornerShape(16.dp),
+                ),
+        shape = RoundedCornerShape(16.dp),
+        color = Color.Transparent,
+    ) {
+        Column {
+            GesturePickerRow(stringResource(R.string.settings_gesture_custom), Icons.Rounded.Add, onPickCustom)
+            HorizontalDivider(color = AppColors.SettingsDivider)
+            GesturePickerRow(stringResource(R.string.settings_app_shortcuts_filter_search_engines), Icons.Rounded.Search, onPickSearchEngine)
+            HorizontalDivider(color = AppColors.SettingsDivider)
+            GesturePickerRow(stringResource(R.string.settings_tools_title), Icons.Rounded.Build, onPickTool)
+        }
+    }
+}
+
+@Composable
+private fun GesturePickerRow(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().height(56.dp).clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp).padding(start = DesignTokens.SpacingMedium),
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
+        )
+    }
+}
+
+@Composable
+private fun gestureDescription(action: SwipeGestureAction, customActionJson: String?, aliasTarget: String?, state: com.tk.quicksearch.search.core.SearchUiState): String =
     customActionJson?.let(CustomWidgetButtonAction::fromJson)?.displayLabel()
         ?.takeIf { action == SwipeGestureAction.CUSTOM }
+        ?: aliasTarget?.takeIf { action == SwipeGestureAction.SEARCH_ENGINE || action == SwipeGestureAction.TOOL }?.let { aliasDisplayName(it, state) }
         ?: stringResource(action.labelResId())
 
 @Composable
-private fun homeGestureDescription(action: HomeSwipeGestureAction, customActionJson: String?): String =
+private fun homeGestureDescription(action: HomeSwipeGestureAction, customActionJson: String?, aliasTarget: String?, state: com.tk.quicksearch.search.core.SearchUiState): String =
     customActionJson?.let(CustomWidgetButtonAction::fromJson)?.displayLabel()
         ?.takeIf { action == HomeSwipeGestureAction.CUSTOM }
+        ?: aliasTarget?.takeIf { action == HomeSwipeGestureAction.SEARCH_ENGINE || action == HomeSwipeGestureAction.TOOL }?.let { aliasDisplayName(it, state) }
         ?: stringResource(action.labelResId())
 
 private fun allCustomActions(
-    swipeCustomActions: Map<SwipeDirection, String?>,
-    homeCustomActions: Map<SwipeDirection, String?>,
+    swipeCustomActions: Map<*, String?>,
+    homeCustomActions: Map<*, String?>,
 ): List<CustomWidgetButtonAction> =
     (swipeCustomActions.values + homeCustomActions.values)
         .mapNotNull(CustomWidgetButtonAction::fromJson)
         .distinctBy { it.toJson() }
+
+@Composable
+private fun aliasDisplayName(
+    targetId: String,
+    state: com.tk.quicksearch.search.core.SearchUiState,
+): String =
+    state.searchTargetsOrder.firstOrNull { it.getId() == targetId }?.getDisplayName()
+        ?: gestureToolItems(state).firstOrNull { it.first == targetId }?.second
+        ?: targetId
 
 private fun UserAppPreferences.actionFor(direction: SwipeDirection): SwipeGestureAction =
     when (direction) {
@@ -583,53 +825,176 @@ private fun UserAppPreferences.setCustomActionFor(direction: SwipeDirection, act
     }
 }
 
-private fun UserAppPreferences.homeActionFor(direction: SwipeDirection): HomeSwipeGestureAction =
+private fun UserAppPreferences.aliasTargetFor(direction: SwipeDirection): String? =
     when (direction) {
-        SwipeDirection.UP -> getHomeSwipeUpAction()
-        SwipeDirection.DOWN -> getHomeSwipeDownAction()
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+        SwipeDirection.RIGHT -> getSwipeRightAliasTarget()
+        SwipeDirection.LEFT -> getSwipeLeftAliasTarget()
+        SwipeDirection.UP -> getSwipeUpAliasTarget()
+        SwipeDirection.DOWN -> getSwipeDownAliasTarget()
     }
 
-private fun UserAppPreferences.setHomeActionFor(direction: SwipeDirection, action: HomeSwipeGestureAction) {
+private fun UserAppPreferences.setAliasTargetFor(direction: SwipeDirection, targetId: String?) {
     when (direction) {
-        SwipeDirection.UP -> setHomeSwipeUpAction(action)
-        SwipeDirection.DOWN -> setHomeSwipeDownAction(action)
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+        SwipeDirection.RIGHT -> setSwipeRightAliasTarget(targetId)
+        SwipeDirection.LEFT -> setSwipeLeftAliasTarget(targetId)
+        SwipeDirection.UP -> setSwipeUpAliasTarget(targetId)
+        SwipeDirection.DOWN -> setSwipeDownAliasTarget(targetId)
     }
 }
 
-private fun UserAppPreferences.homeCustomActionFor(direction: SwipeDirection): String? =
-    when (direction) {
-        SwipeDirection.UP -> getHomeSwipeUpCustomAction()
-        SwipeDirection.DOWN -> getHomeSwipeDownCustomAction()
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+private fun UserAppPreferences.homeActionFor(gesture: HomeGesture): HomeSwipeGestureAction =
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> getHomeSwipeUpAction()
+        HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAction()
+        HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAction()
     }
 
-private fun UserAppPreferences.setHomeCustomActionFor(direction: SwipeDirection, actionJson: String?) {
-    when (direction) {
-        SwipeDirection.UP -> setHomeSwipeUpCustomAction(actionJson)
-        SwipeDirection.DOWN -> setHomeSwipeDownCustomAction(actionJson)
-        SwipeDirection.RIGHT,
-        SwipeDirection.LEFT,
-        -> error("Home vertical gestures only support swipe up and down")
+private fun UserAppPreferences.setHomeActionFor(gesture: HomeGesture, action: HomeSwipeGestureAction) {
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> setHomeSwipeUpAction(action)
+        HomeGesture.SWIPE_DOWN -> setHomeSwipeDownAction(action)
+        HomeGesture.DOUBLE_TAP -> setHomeDoubleTapAction(action)
     }
 }
 
-private val SwipeDirection.homeDefaultAction: HomeSwipeGestureAction
-    get() =
-        when (this) {
-            SwipeDirection.UP -> HomeSwipeGestureAction.NONE
-            SwipeDirection.DOWN -> HomeSwipeGestureAction.NOTIFICATION_PANEL
-            SwipeDirection.RIGHT,
-            SwipeDirection.LEFT,
-            -> error("Home vertical gestures only support swipe up and down")
-        }
+private fun UserAppPreferences.homeCustomActionFor(gesture: HomeGesture): String? =
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> getHomeSwipeUpCustomAction()
+        HomeGesture.SWIPE_DOWN -> getHomeSwipeDownCustomAction()
+        HomeGesture.DOUBLE_TAP -> getHomeDoubleTapCustomAction()
+    }
+
+private fun UserAppPreferences.setHomeCustomActionFor(gesture: HomeGesture, actionJson: String?) {
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> setHomeSwipeUpCustomAction(actionJson)
+        HomeGesture.SWIPE_DOWN -> setHomeSwipeDownCustomAction(actionJson)
+        HomeGesture.DOUBLE_TAP -> setHomeDoubleTapCustomAction(actionJson)
+    }
+}
+
+private fun UserAppPreferences.homeAliasTargetFor(gesture: HomeGesture): String? =
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> getHomeSwipeUpAliasTarget()
+        HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAliasTarget()
+        HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAliasTarget()
+    }
+
+private fun UserAppPreferences.setHomeAliasTargetFor(gesture: HomeGesture, targetId: String?) {
+    when (gesture) {
+        HomeGesture.SWIPE_UP -> setHomeSwipeUpAliasTarget(targetId)
+        HomeGesture.SWIPE_DOWN -> setHomeSwipeDownAliasTarget(targetId)
+        HomeGesture.DOUBLE_TAP -> setHomeDoubleTapAliasTarget(targetId)
+    }
+}
+
+@Composable
+private fun GestureToolPickerDialog(
+    state: com.tk.quicksearch.search.core.SearchUiState,
+    onDismiss: () -> Unit,
+    onSelect: (String) -> Unit,
+) {
+    val tools = ToolSettingsRegistry.definitions.map { GestureToolItem(it.aliasFeatureId, stringResource(it.titleResId), it.icon) } +
+        state.customTools.filterNot { it.id in state.disabledCustomToolIds }.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) } +
+        state.taskerIntentTools.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) }
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_tools_title)) },
+        text = {
+            LazyColumn(modifier = Modifier.height(300.dp)) {
+                items(tools, key = { it.id }) { tool ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(56.dp).clickable { onSelect(tool.id) },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = tool.icon,
+                            contentDescription = null,
+                            modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
+                        )
+                        Text(
+                            text = tool.label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f).padding(start = DesignTokens.SpacingMedium),
+                        )
+                    }
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
+    )
+}
+
+private data class GestureToolItem(
+    val id: String,
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+)
+
+@Composable
+private fun GestureSearchEnginePickerDialog(
+    targets: List<SearchTarget>,
+    onDismiss: () -> Unit,
+    onSelect: (SearchTarget) -> Unit,
+) {
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_app_shortcuts_filter_search_engines)) },
+        text = {
+            LazyColumn(modifier = Modifier.height(300.dp)) {
+                items(targets, key = { it.getId() }) { target ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(56.dp).clickable { onSelect(target) },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        SearchTargetIcon(
+                            target = target,
+                            iconSize = 28.dp,
+                            modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
+                        )
+                        Text(
+                            text = target.getDisplayName(),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f).padding(start = DesignTokens.SpacingMedium),
+                        )
+                    }
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
+    )
+}
+
+private data class GestureAliasItem(
+    val id: String,
+    val label: String,
+    val swipeAction: SwipeGestureAction,
+    val homeAction: HomeSwipeGestureAction,
+)
+
+@Composable
+private fun allGestureAliasItems(
+    state: com.tk.quicksearch.search.core.SearchUiState,
+    swipeTargets: Map<SwipeDirection, String?>,
+    homeTargets: Map<HomeGesture, String?>,
+): List<GestureAliasItem> {
+    val selectedIds = (swipeTargets.values + homeTargets.values).filterNotNull().toSet()
+    val engineNames = state.searchTargetsOrder.associate { it.getId() to it.getDisplayName() }
+    val toolNames = gestureToolItems(state).toMap()
+    return selectedIds.mapNotNull { id ->
+        engineNames[id]?.let { GestureAliasItem(id, it, SwipeGestureAction.SEARCH_ENGINE, HomeSwipeGestureAction.SEARCH_ENGINE) }
+            ?: toolNames[id]?.let { GestureAliasItem(id, it, SwipeGestureAction.TOOL, HomeSwipeGestureAction.TOOL) }
+    }
+}
+
+@Composable
+private fun gestureToolItems(state: com.tk.quicksearch.search.core.SearchUiState): List<Pair<String, String>> =
+    ToolSettingsRegistry.definitions.map { it.aliasFeatureId to stringResource(it.titleResId) } +
+        state.customTools
+            .filterNot { it.id in state.disabledCustomToolIds }
+            .map { it.id to it.name } +
+        state.taskerIntentTools.map { it.id to it.name }
 
 private fun SwipeGestureAction.labelResId(): Int =
     when (this) {
@@ -638,6 +1003,8 @@ private fun SwipeGestureAction.labelResId(): Int =
         SwipeGestureAction.OPEN_KEYBOARD -> R.string.action_open_keyboard
         SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS -> R.string.settings_gesture_close_keyboard_notifications
         SwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
+        SwipeGestureAction.SEARCH_ENGINE -> R.string.settings_app_shortcuts_filter_search_engines
+        SwipeGestureAction.TOOL -> R.string.settings_tools_title
         SwipeGestureAction.NONE -> R.string.settings_gesture_none
     }
 
@@ -645,5 +1012,7 @@ private fun HomeSwipeGestureAction.labelResId(): Int =
     when (this) {
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> R.string.settings_gesture_notification_panel
         HomeSwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
+        HomeSwipeGestureAction.SEARCH_ENGINE -> R.string.settings_app_shortcuts_filter_search_engines
+        HomeSwipeGestureAction.TOOL -> R.string.settings_tools_title
         HomeSwipeGestureAction.NONE -> R.string.settings_gesture_none
     }

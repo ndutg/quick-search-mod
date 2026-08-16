@@ -46,6 +46,9 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.search.other.OtherSearchItemId
+import com.tk.quicksearch.search.other.ScreenTimeRepository
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
@@ -54,6 +57,7 @@ import com.tk.quicksearch.search.webSuggestions.WebSuggestionHandler
 import com.tk.quicksearch.searchEngines.SearchEngineManager
 import com.tk.quicksearch.searchEngines.SecondarySearchOrchestrator
 import com.tk.quicksearch.searchEngines.AliasHandler
+import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.isLowRamDevice
@@ -80,6 +84,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 class SearchViewModel(
         application: Application,
 ) : AndroidViewModel(application),
@@ -115,6 +120,10 @@ class SearchViewModel(
     private val contactRepository by lazy { ContactRepository(appContext) }
     private val fileRepository by lazy { FileSearchRepository(appContext) }
     private val notesRepository by lazy { NotesRepository(appContext) }
+    private val screenTimeRepository by lazy { ScreenTimeRepository(appContext) }
+    private var screenTimeSearchJob: Job? = null
+    @Volatile
+    private var hasScreenTimeResultForCurrentSearch = false
     private val settingsShortcutRepository by lazy {
         DeviceSettingsRepository(appContext)
     }
@@ -411,6 +420,8 @@ class SearchViewModel(
     private var fontScaleMultiplier by legacyPreferenceState::fontScaleMultiplier
     @set:JvmName("setUseSystemFontLegacy")
     private var useSystemFont by legacyPreferenceState::useSystemFont
+    @set:JvmName("setHomeTextColorOverrideLegacy")
+    private var homeTextColorOverride by legacyPreferenceState::homeTextColorOverride
     @set:JvmName("setBackgroundSourceLegacy")
     private var backgroundSource by legacyPreferenceState::backgroundSource
     @set:JvmName("setCustomImageUriLegacy")
@@ -552,6 +563,81 @@ class SearchViewModel(
     fun onQueryChange(newQuery: String) {
         inMemoryRetainedQuery = newQuery
         queryCoordinator.onQueryChange(newQuery)
+        refreshScreenTimeResult(newQuery)
+    }
+
+    private fun refreshScreenTimeResult(query: String) {
+        val pinnedItemOrder = _resultsState.value.pinnedNonAppItemOrder
+        val matchesQuery = OtherSearchItemRegistry.matchesScreenTime(query)
+        if (!matchesQuery) {
+            hasScreenTimeResultForCurrentSearch = false
+        }
+        if (
+            !OtherSearchItemRegistry.shouldLoad(
+                itemId = OtherSearchItemId.SCREEN_TIME,
+                query = query,
+                pinnedItemOrder = pinnedItemOrder,
+            )
+        ) {
+            screenTimeSearchJob?.cancel()
+            _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
+            return
+        }
+        if (!com.tk.quicksearch.search.utils.PermissionUtils.hasUsageStatsPermission(appContext)) {
+            screenTimeSearchJob?.cancel()
+            _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
+            return
+        }
+        val currentState = _resultsState.value.screenTimeState
+        if (currentState == ScreenTimeState.Loading) return
+        if (
+            matchesQuery &&
+                hasScreenTimeResultForCurrentSearch &&
+                currentState is ScreenTimeState.Available
+        ) {
+            return
+        }
+        screenTimeSearchJob?.cancel()
+        _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Loading) }
+        screenTimeSearchJob =
+            viewModelScope.launch(Dispatchers.IO) {
+                val screenTime = screenTimeRepository.getTodayScreenTime()
+                if (
+                    com.tk.quicksearch.search.utils.PermissionUtils.hasUsageStatsPermission(appContext) &&
+                        OtherSearchItemRegistry.shouldLoad(
+                            itemId = OtherSearchItemId.SCREEN_TIME,
+                            query = _resultsState.value.query,
+                            pinnedItemOrder = _resultsState.value.pinnedNonAppItemOrder,
+                        )
+                ) {
+                    _resultsState.update {
+                        it.copy(
+                            screenTimeState =
+                                ScreenTimeState.Available(
+                                    durationMillis = screenTime.durationMillis,
+                                    topApps = screenTime.topApps,
+                                ),
+                            )
+                    }
+                    hasScreenTimeResultForCurrentSearch =
+                        OtherSearchItemRegistry.matchesScreenTime(_resultsState.value.query)
+                }
+            }
+    }
+
+    fun toggleOtherSearchItemPin(itemId: OtherSearchItemId) {
+        _resultsState.update { state ->
+            val key = itemId.pinnedItemKey
+            val updatedOrder =
+                if (key in state.pinnedNonAppItemOrder) {
+                    state.pinnedNonAppItemOrder.filterNot { it == key }
+                } else {
+                    state.pinnedNonAppItemOrder + key
+                }
+            userPreferences.setPinnedNonAppItemOrder(updatedOrder)
+            state.copy(pinnedNonAppItemOrder = updatedOrder)
+        }
+        refreshScreenTimeResult(_resultsState.value.query)
     }
     fun submitAiFollowUp(followUpQuestion: String) {
         val trimmedQuestion = followUpQuestion.trim()
@@ -613,6 +699,11 @@ class SearchViewModel(
     fun deleteTaskerIntentTool(id: String) = taskerIntentDelegate.deleteTaskerIntentTool(id)
     fun activateSearchSectionFilter(section: SearchSection) =
             queryCoordinator.activateSearchSectionFilter(section)
+    fun activateGestureSearchTarget(targetId: String) {
+        _featureState.value.searchTargetsOrder.firstOrNull { it.getId() == targetId }
+            ?.let(queryCoordinator::activateGestureSearchTarget)
+    }
+    fun activateGestureTool(featureId: String) = queryCoordinator.activateGestureTool(featureId)
     fun clearDetectedShortcut() = queryCoordinator.clearDetectedShortcut()
     fun clearQuery() = queryCoordinator.clearQuery()
     fun consumeRetainedQuerySelectionRequest() {

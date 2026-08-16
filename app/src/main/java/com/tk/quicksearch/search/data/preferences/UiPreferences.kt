@@ -175,7 +175,7 @@ class UiPreferences(
     }
 
     fun isTopResultIndicatorEnabled(): Boolean =
-            getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, true)
+            getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, false)
 
     fun setTopResultIndicatorEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, enabled)
@@ -418,6 +418,19 @@ class UiPreferences(
 
     fun setUseSystemFont(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_USE_SYSTEM_FONT, enabled)
+    }
+
+    fun getHomeTextColorOverride(): com.tk.quicksearch.search.core.HomeTextColor? =
+            prefs.getString(UiPreferences.KEY_HOME_TEXT_COLOR_OVERRIDE, null)?.let { value ->
+                runCatching { com.tk.quicksearch.search.core.HomeTextColor.valueOf(value) }.getOrNull()
+            }
+
+    fun setHomeTextColorOverride(color: com.tk.quicksearch.search.core.HomeTextColor) {
+        prefs.edit().putString(UiPreferences.KEY_HOME_TEXT_COLOR_OVERRIDE, color.name).apply()
+    }
+
+    fun clearHomeTextColorOverride() {
+        prefs.edit().remove(UiPreferences.KEY_HOME_TEXT_COLOR_OVERRIDE).apply()
     }
 
     fun getAppLanguageTag(): String? = prefs.getString(BasePreferences.KEY_APP_LANGUAGE_TAG, null)?.takeIf { it.isNotBlank() }
@@ -774,13 +787,23 @@ class UiPreferences(
         tabs: Set<AppSuggestionTabType>,
     ) {
         val normalizedTabs =
-            tabs.ifEmpty { AppSuggestionTabType.DefaultEnabledTabs }
+            tabs
+                .ifEmpty { AppSuggestionTabType.DefaultEnabledTabs }
+                .toMutableSet()
+                .apply {
+                    if (
+                        AppSuggestionTabType.RECENTS !in this &&
+                            AppSuggestionTabType.MOST_USED !in this
+                    ) {
+                        add(AppSuggestionTabType.PINNED)
+                    }
+                }
         editor.putStringSet(
             UiPreferences.KEY_ENABLED_APP_SUGGESTION_TABS,
             normalizedTabs.map { it.name }.toSet(),
         )
         val selectedTab = getSelectedAppSuggestionTab()
-        if (selectedTab !in normalizedTabs && selectedTab != AppSuggestionTabType.PINNED) {
+        if (selectedTab !in normalizedTabs) {
             editor.putString(
                 UiPreferences.KEY_SELECTED_APP_SUGGESTION_TAB,
                 normalizedTabs.firstOrNull()?.name ?: AppSuggestionTabType.RECENTS.name,
@@ -1197,6 +1220,7 @@ class UiPreferences(
         const val KEY_OVERLAY_THEME_INTENSITY = "overlay_theme_intensity"
         const val KEY_FONT_SCALE_MULTIPLIER = "font_scale_multiplier"
         const val KEY_USE_SYSTEM_FONT = "use_system_font"
+        const val KEY_HOME_TEXT_COLOR_OVERRIDE = "home_text_color_override"
         const val KEY_BACKGROUND_SOURCE = "background_source"
         const val KEY_CUSTOM_IMAGE_URI = "custom_image_uri"
         const val KEY_SELECTED_ICON_PACK = "selected_icon_pack"

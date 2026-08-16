@@ -31,6 +31,11 @@ internal interface SearchViewModelNavigationApi {
         launchContext: Context,
     ) = navigationApiDelegate.launchApp(appInfo, launchContext)
 
+    fun launchAppInSplitScreen(
+        appInfo: AppInfo,
+        launchContext: Context,
+    ) = navigationApiDelegate.launchAppInSplitScreen(appInfo, launchContext)
+
     fun openAppInfo(appInfo: AppInfo) = navigationApiDelegate.openAppInfo(appInfo)
 
     fun openAppInfo(packageName: String) = navigationApiDelegate.openAppInfo(packageName)
@@ -101,6 +106,16 @@ class SearchViewModelNavigationApiDelegate internal constructor(
         launchContext: Context,
     ) {
         navigationHandler().launchApp(
+            appInfo,
+            launchContext,
+        )
+    }
+
+    fun launchAppInSplitScreen(
+        appInfo: AppInfo,
+        launchContext: Context,
+    ) {
+        navigationHandler().launchAppInSplitScreen(
             appInfo,
             launchContext,
         )

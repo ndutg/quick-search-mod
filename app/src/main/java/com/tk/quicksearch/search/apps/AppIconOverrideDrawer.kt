@@ -1,6 +1,8 @@
 package com.tk.quicksearch.search.apps
 
 import android.app.Application
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +46,9 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.IntentHelpers
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.managers.IconPackDrawableInfo
 import com.tk.quicksearch.search.managers.IconPackManager
+import com.tk.quicksearch.search.managers.filterIconPackDrawables
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -180,19 +184,34 @@ fun AppIconOverrideDrawer(
             }
         } else {
             val pack = selectedPack
-            val iconNames by produceState(emptyList(), pack.packageName) {
+            val iconDrawables by produceState(emptyList<IconPackDrawableInfo>(), pack.packageName) {
                 value = withContext(Dispatchers.IO) {
-                    IconPackManager.getIconDrawableNames(context, pack.packageName)
+                    IconPackManager.getIconDrawables(context, pack.packageName)
                 }
             }
-            val filteredIconNames = remember(iconNames, query) {
-                val normalizedQuery = query.trim()
-                iconNames
-                    .filter { it.contains(normalizedQuery, ignoreCase = true) }
-                    .sortedWith(
-                        compareBy<String> { !it.startsWith(normalizedQuery, ignoreCase = true) }
-                            .thenBy { it },
-                    )
+            val installedAppLabels by produceState(emptyMap<String, String>(), context) {
+                value = withContext(Dispatchers.IO) {
+                    val packageManager = context.packageManager
+                    val installedApps =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            packageManager.getInstalledApplications(
+                                PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_ALL.toLong()),
+                            )
+                        } else {
+                            @Suppress("DEPRECATION")
+                            packageManager.getInstalledApplications(PackageManager.MATCH_ALL)
+                        }
+                    installedApps.associate { appInfo ->
+                        appInfo.packageName to packageManager.getApplicationLabel(appInfo).toString()
+                    }
+                }
+            }
+            val filteredIconDrawables = remember(iconDrawables, query, installedAppLabels) {
+                filterIconPackDrawables(
+                    iconDrawables = iconDrawables,
+                    query = query,
+                    installedAppLabels = installedAppLabels,
+                )
             }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(4),
@@ -200,15 +219,15 @@ fun AppIconOverrideDrawer(
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             ) {
-                items(filteredIconNames, key = { it }) { drawableName ->
+                items(filteredIconDrawables, key = { it.drawableName }) { icon ->
                     IconPackDrawable(
                         iconPackPackage = pack.packageName,
-                        drawableName = drawableName,
+                        drawableName = icon.drawableName,
                         onClick = {
                             UserAppPreferences(context).setAppIconOverride(
                                 packageName = packageName,
                                 iconPackPackage = pack.packageName,
-                                drawableName = drawableName,
+                                drawableName = icon.drawableName,
                             )
                             invalidateAppIconCache()
                             onDismiss()

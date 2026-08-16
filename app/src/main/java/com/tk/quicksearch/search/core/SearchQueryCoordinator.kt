@@ -139,6 +139,28 @@ internal class SearchQueryCoordinator(
         }
     }
 
+    /** Activates the same locked mode used after a leading alias, without requiring an alias word. */
+    fun activateGestureSearchTarget(target: SearchTarget) {
+        setDetectedAliasMode(shortcutTarget = target, section = null, toolMode = null)
+        refreshGestureAliasMode()
+    }
+
+    /** Activates the same tool mode used after a leading alias, without requiring an alias word. */
+    fun activateGestureTool(featureId: String) {
+        applyFeatureAliasMode(featureId)
+        refreshGestureAliasMode()
+    }
+
+    /**
+     * Alias words always change the query before their mode is applied. Gestures do not, so force
+     * the blank-query alias rendering path to publish the newly locked mode to the UI.
+     */
+    private fun refreshGestureAliasMode() {
+        val query = currentResultsStateProvider().query
+        onQueryChangeInternal(" ", clearShortcutWhenBlank = false)
+        if (query.isNotBlank()) onQueryChangeInternal(query, clearShortcutWhenBlank = false)
+    }
+
     fun clearDetectedShortcut() {
         clearDetectedAliasMode()
         updateUiState {

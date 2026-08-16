@@ -84,6 +84,7 @@
     <string name="action_include_generic">Include</string>
     <string name="action_more_search_history">More History</string>
     <string name="action_open">Open</string>
+    <string name="action_open_in_split_screen">Split Screen</string>
     <string name="action_open_folder">Open Folder</string>
     <string name="action_open_keyboard">Open Keyboard</string>
     <string name="action_open_settings">Open settings</string>
@@ -96,6 +97,7 @@
     <string name="settings_gesture_swipe_down">Swipe Down</string>
     <string name="settings_gesture_swipe_up_home">Swipe Up (Home)</string>
     <string name="settings_gesture_swipe_down_home">Swipe Down (Home)</string>
+    <string name="settings_gesture_double_tap_home">Double Tap (Home)</string>
     <string name="settings_gesture_settings">Settings</string>
     <string name="settings_gesture_close_keyboard_notifications">Close Keyboard / Open Notifications</string>
     <string name="settings_gesture_close_keyboard">Close Keyboard</string>
@@ -209,6 +211,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">New/Updated</string>
     <string name="app_suggestions_tab_pinned">Pinned</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Pinned apps will still appear in %1$s tab</string>
     <string name="app_suggestions_tab_recent">Recents</string>
     <string name="app_suggestions_tabs_dialog_message">Choose which app suggestion tabs appear on the home screen.</string>
     <string name="app_suggestions_tabs_dialog_title">App Suggestion Tabs</string>
@@ -378,6 +381,7 @@
     <string name="contact_method_telegram_voice_call_label">Telegram voice call</string>
     <string name="contact_method_view_in_contacts_label">View in contacts app</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">WhatsApp video call</string>
     <string name="contact_method_whatsapp_voice_call_label">WhatsApp voice call</string>
     <string name="contacts_action_button_chat">Chat</string>
@@ -418,7 +422,7 @@
     <string name="error_whatsapp_video_call_unavailable">WhatsApp not available for video calls</string>
     <string name="settings_call_permission_title">Phone</string>
     <string name="permissions_background_usage_title">Allow Background Usage</string>
-    <string name="permissions_background_usage_desc">If Quick Search is slow to open, try disabling battery optimization.</string>
+    <string name="permissions_background_usage_desc">Allow background usage for faster app startup.</string>
     <string name="settings_calling_card_title">Default Calling App</string>
     <string name="settings_calls_texts_title">Calls &amp; Texts</string>
     <string name="settings_direct_dial_desc">Place calls directly without opening the dialer. </string>
@@ -482,8 +486,16 @@
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
     <string name="calendar_relative_in_format">in %1$s</string>
     <string name="calendar_relative_in_minutes">in %1$d minutes</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
     <string name="calendar_relative_now">Now</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d month</item>
@@ -1022,6 +1034,8 @@
     <string name="settings_create_new_tool_button">Create New Tool</string>
     <string name="settings_custom_tool_alias_hint">A keyword to trigger this tool</string>
     <string name="settings_custom_tool_alias_label">Alias</string>
+    <string name="settings_home_text_color_title">Text Colour in Home</string>
+    <string name="settings_home_text_color_desc">App labels, section titles etc.</string>
     <string name="settings_custom_tool_delete_button">Delete Tool</string>
     <string name="settings_custom_tool_editor_title">Custom Tool</string>
     <string name="settings_custom_tool_name_label">Tool Name</string>
@@ -1055,4 +1069,11 @@
     <string name="tasker_intent_action">Tasker Intent (%1$s)</string>
     <string name="tasker_not_installed">Tasker is not installed</string>
     <string name="tasker_broadcast_failed">Could not send the Tasker broadcast</string>
+    <string name="app_menu_usage_today">Used for %1$s today · %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d open</item><item quantity="other">%d opens</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d hr</item><item quantity="other">%d hr</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="other">%d min</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s hrs</string>
+    <string name="other_screen_time_today_title">Today\'s Screen Time</string>
+    <string name="other_screen_time_hours_minutes">%1$d hr %2$d min</string>
 </resources>

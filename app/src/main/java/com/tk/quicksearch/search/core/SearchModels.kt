@@ -182,6 +182,21 @@ enum class WeatherStatus {
         Error,
 }
 
+sealed interface ScreenTimeState {
+        data object Hidden : ScreenTimeState
+        data object Loading : ScreenTimeState
+        data class Available(
+                val durationMillis: Long,
+                val topApps: List<ScreenTimeAppUsage>,
+        ) : ScreenTimeState
+}
+
+data class ScreenTimeAppUsage(
+        val packageName: String,
+        val appName: String,
+        val durationMillis: Long,
+)
+
 enum class SearchToolType {
         CALCULATOR,
         UNIT_CONVERTER,
@@ -523,7 +538,7 @@ data class SearchUiState(
         val unifiedPinnedItemsEnabled: Boolean = false,
         val searchHintsEnabled: Boolean = true,
         val settingsIconEnabled: Boolean = true,
-        val topResultIndicatorEnabled: Boolean = true,
+        val topResultIndicatorEnabled: Boolean = false,
         val openKeyboardOnLaunch: Boolean = true,
         val clearQueryOnLaunch: Boolean = true,
         val autoCloseOverlay: Boolean = true,
@@ -551,6 +566,7 @@ data class SearchUiState(
         val appThemeMode: AppThemeMode = AppThemeMode.SYSTEM,
         val fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER,
         val useSystemFont: Boolean = false,
+        val homeTextColorOverride: HomeTextColor? = null,
         val backgroundSource: BackgroundSource = BackgroundSource.THEME,
         val wallpaperAccentEnabled: Boolean = true,
         val customImageUri: String? = null,
@@ -614,6 +630,7 @@ data class SearchUiState(
         val worldClockState: WorldClockState = WorldClockState(),
         val dictionaryState: DictionaryState = DictionaryState(),
         val weatherState: WeatherState = WeatherState(),
+        val screenTimeState: ScreenTimeState = ScreenTimeState.Hidden,
         val webSuggestions: List<String> = emptyList(),
         val webSuggestionsLoading: Boolean = false,
         val isAppSearchInProgress: Boolean = false,
@@ -660,6 +677,12 @@ data class SearchUiState(
         val contactActionsVersion: Int = 0,
         val nicknameUpdateVersion: Int = 0,
 )
+
+/** Explicit text colour for Home content. A null preference keeps wallpaper-aware colouring. */
+enum class HomeTextColor {
+        WHITE,
+        BLACK,
+}
 
 // ---------------------------------------------------------------------------
 // Factory function: assembles a SearchUiState from the 4 focused sub-states.
@@ -722,6 +745,7 @@ fun SearchUiState(
                 worldClockState = results.worldClockState,
                 dictionaryState = results.dictionaryState,
                 weatherState = results.weatherState,
+                screenTimeState = results.screenTimeState,
                 AiSearchState = results.AiSearchState,
                 webSuggestions = results.webSuggestions,
                 webSuggestionsLoading = results.webSuggestionsLoading,
@@ -843,6 +867,7 @@ fun SearchUiState(
                 restoreSearchKeyboard = config.restoreSearchKeyboard,
                 fontScaleMultiplier = config.fontScaleMultiplier,
                 useSystemFont = config.useSystemFont,
+                homeTextColorOverride = config.homeTextColorOverride,
                 showAppLabels = config.showAppLabels,
                 phoneAppGridColumns = config.phoneAppGridColumns,
                 appIconSizeStep = config.appIconSizeStep,

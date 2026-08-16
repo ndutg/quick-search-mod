@@ -1,7 +1,6 @@
-- Pin search results to notification panel by long-pressing
-- Rank search results based on whether they are recently opened or most opened
-- Improved today's agenda experience (requires calendar permission)
-- New search engine: Kagi
-- Option to allow two app rows in search results
-- Performance optimisations
-- Smaller app size and bug fixes
+- Long-press any app to open it in split screen
+- Search “Screen Time” to check your daily phone usage. Long-press an app to view its individual screen time
+- New Double Tap gesture. You can now trigger search engines and tools with gestures too
+- Customize text colours on Home (App labels, section titles etc.)
+- Option to disable Pinned Apps tab in app suggestions
+- Bug fixes and improvements

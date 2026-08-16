@@ -18,7 +18,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var unifiedPinnedItemsEnabled: Boolean = false
     var searchHintsEnabled: Boolean = true
     var settingsIconEnabled: Boolean = true
-    var topResultIndicatorEnabled: Boolean = true
+    var topResultIndicatorEnabled: Boolean = false
     var wallpaperAccentEnabled: Boolean = true
     var openKeyboardOnLaunch: Boolean = true
     var overlayModeEnabled: Boolean = false
@@ -42,6 +42,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var overlayThemeIntensity: Float = UiPreferences.DEFAULT_OVERLAY_THEME_INTENSITY
     var fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER
     var useSystemFont: Boolean = false
+    var homeTextColorOverride: HomeTextColor? = null
     var backgroundSource: BackgroundSource = BackgroundSource.THEME
     var customImageUri: String? = null
     var lockedShortcutTarget: SearchTarget? = null

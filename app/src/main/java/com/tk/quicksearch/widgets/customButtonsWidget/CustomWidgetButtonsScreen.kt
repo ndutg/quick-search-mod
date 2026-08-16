@@ -827,6 +827,7 @@ private sealed class CustomWidgetSearchResult {
                 CustomWidgetButtonAction.App(
                     packageName = app.packageName,
                     appName = app.appName,
+                    userHandleId = app.userHandleId,
                 )
             }
 
@@ -929,7 +930,11 @@ private sealed class CustomWidgetSearchResult {
                 CustomWidgetButtonAction.App(
                     packageName = app.packageName,
                     appName = app.appName,
-                    customIconBase64 = loadAppIconBase64(context, app.packageName),
+                    userHandleId = app.userHandleId,
+                    // A package-only bitmap would turn a cloned app back into the original icon.
+                    // The live icon loader can apply the profile badge for this case instead.
+                    customIconBase64 =
+                        if (app.userHandleId == null) loadAppIconBase64(context, app.packageName) else null,
                 )
             }
 
@@ -996,7 +1001,9 @@ private fun buildCustomWidgetSearchResults(state: SearchUiState): List<CustomWid
 private fun CustomWidgetButtonAction.matchesResult(result: CustomWidgetSearchResult): Boolean =
     when (result) {
         is CustomWidgetSearchResult.App -> {
-            this is CustomWidgetButtonAction.App && packageName == result.app.packageName
+            this is CustomWidgetButtonAction.App &&
+                packageName == result.app.packageName &&
+                userHandleId == result.app.userHandleId
         }
 
         is CustomWidgetSearchResult.AppShortcut -> {

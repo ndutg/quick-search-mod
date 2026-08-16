@@ -13,6 +13,7 @@ import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.search.utils.PermissionUtils
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE
 import java.util.Collections
 import java.util.Locale
 
@@ -619,6 +620,18 @@ class ContactRepository(
                     ContactMethod.WhatsAppVideoCall(whatsAppVideoCallLabel, data1, dataId, isPrimary)
                 }
 
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL,
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE,
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VIDEO_CALL,
+                -> {
+                    parseWhatsAppBusinessMethod(
+                        mimeType = mimeType,
+                        data = data1,
+                        dataId = dataId,
+                        isPrimary = isPrimary,
+                    )
+                }
+
                 ContactMethodMimeTypes.TELEGRAM_MESSAGE -> {
                     ContactMethod.TelegramMessage(telegramMessageLabel, data1, dataId, isPrimary)
                 }
@@ -819,6 +832,30 @@ class ContactRepository(
             data = data,
             mimeType = mimeType,
             packageName = packageName,
+            dataId = dataId,
+            isPrimary = isPrimary,
+        )
+    }
+
+    private fun parseWhatsAppBusinessMethod(
+        mimeType: String,
+        data: String,
+        dataId: Long,
+        isPrimary: Boolean,
+    ): ContactMethod.CustomApp {
+        val actionLabel =
+            when (mimeType) {
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL ->
+                    context.getString(R.string.contacts_action_button_voice_call)
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VIDEO_CALL ->
+                    context.getString(R.string.contacts_action_button_video_call)
+                else -> context.getString(R.string.contacts_action_button_chat)
+            }
+        return ContactMethod.CustomApp(
+            displayLabel = "${resolveCustomAppDisplayLabel(WHATSAPP_BUSINESS_PACKAGE)} $actionLabel",
+            data = data,
+            mimeType = mimeType,
+            packageName = WHATSAPP_BUSINESS_PACKAGE,
             dataId = dataId,
             isPrimary = isPrimary,
         )

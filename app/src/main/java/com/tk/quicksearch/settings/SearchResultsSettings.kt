@@ -50,7 +50,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -87,6 +86,7 @@ import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
@@ -706,9 +706,18 @@ private fun AppSuggestionTabsDialog(
     onTabEnabledChange: (AppSuggestionTabType, Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val context = LocalView.current.context
-    val lastTabError = stringResource(R.string.app_suggestions_tab_required_toast)
     val tabLabels = rememberAppSuggestionTabLabels()
+    val pinnedAppsFallbackTab =
+        if (AppSuggestionTabType.RECENTS in enabledTabs) {
+            requireNotNull(tabLabels[AppSuggestionTabType.RECENTS])
+        } else {
+            requireNotNull(tabLabels[AppSuggestionTabType.MOST_USED])
+        }
+    val pinnedTabDisabledDescription =
+        stringResource(
+            R.string.app_suggestions_tab_pinned_disabled_description,
+            pinnedAppsFallbackTab,
+        )
     val configurableTabs =
         remember(tabLabels) {
             listOf(
@@ -729,22 +738,23 @@ private fun AppSuggestionTabsDialog(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (AppSuggestionTabType.PINNED !in enabledTabs) {
+                    TipBanner(
+                        text = pinnedTabDisabledDescription,
+                        showDismissButton = false,
+                        modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
+                    )
+                }
                 configurableTabs.forEachIndexed { index, (tab, title) ->
                     if (index > 0) {
                         HorizontalDivider(color = AppColors.SettingsDivider)
                     }
-                    val isPinnedTab = tab == AppSuggestionTabType.PINNED
+                    val isEnabled = tab in enabledTabs
                     AppSuggestionTabCheckboxItem(
                         title = title,
-                        checked = isPinnedTab || tab in enabledTabs,
-                        isLocked = isPinnedTab,
-                        onCheckedChange = { enabled ->
-                            if (!enabled && enabledTabs.size == 1 && tab in enabledTabs) {
-                                Toast.makeText(context, lastTabError, Toast.LENGTH_SHORT).show()
-                            } else {
-                                onTabEnabledChange(tab, enabled)
-                            }
-                        },
+                        subtitle = null,
+                        checked = isEnabled,
+                        onCheckedChange = { enabled -> onTabEnabledChange(tab, enabled) },
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -780,7 +790,7 @@ private fun buildAppSuggestionTabsSummary(
         )
 
     return orderedTabs
-        .filter { tab -> tab == AppSuggestionTabType.PINNED || tab in enabledTabs }
+        .filter { it in enabledTabs }
         .mapNotNull(labels::get)
         .joinToString(separator = ", ")
 }
@@ -788,19 +798,15 @@ private fun buildAppSuggestionTabsSummary(
 @Composable
 private fun AppSuggestionTabCheckboxItem(
     title: String,
+    subtitle: String?,
     checked: Boolean,
-    isLocked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val lockedColor = AppColors.SettingsDivider
-    val contentColor =
-        if (isLocked) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.62f) else MaterialTheme.colorScheme.onSurfaceVariant
-
     Row(
         modifier =
             modifier
-                .clickable { if (!isLocked) onCheckedChange(!checked) }
+                .clickable { onCheckedChange(!checked) }
                 .padding(
                     vertical = DesignTokens.SpacingXSmall,
                 ),
@@ -809,24 +815,23 @@ private fun AppSuggestionTabCheckboxItem(
     ) {
         Checkbox(
             checked = checked,
-            onCheckedChange = { if (!isLocked) onCheckedChange(it) },
-            colors =
-                if (isLocked) {
-                    CheckboxDefaults.colors(
-                        checkedColor = lockedColor,
-                        uncheckedColor = lockedColor,
-                        checkmarkColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
-                    )
-                } else {
-                    CheckboxDefaults.colors()
-                },
+            onCheckedChange = onCheckedChange,
             modifier = Modifier.scale(0.82f),
         )
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyMedium,
-            color = contentColor,
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            subtitle?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
 

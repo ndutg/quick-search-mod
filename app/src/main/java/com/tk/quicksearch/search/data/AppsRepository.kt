@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.data
 
 import android.app.usage.UsageStats
+import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.BroadcastReceiver
@@ -23,7 +24,13 @@ import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.utils.PermissionUtils
 import java.util.Locale
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
+
+data class TodayAppUsage(
+    val openedCount: Int,
+    val foregroundTimeMillis: Long,
+)
 
 /**
  * Central data source that surfaces launchable apps together with their latest usage metadata.
@@ -53,6 +60,42 @@ class AppsRepository(
     // ==================== Public API ====================
 
     fun hasUsageAccess(): Boolean = PermissionUtils.hasUsageStatsPermission(context)
+
+    /** Returns today's launches and foreground time for an app, or null without Usage Access. */
+    fun getTodayAppUsage(packageName: String): TodayAppUsage? {
+        if (!hasUsageAccess()) return null
+        val manager = usageStatsManager ?: return null
+        val now = System.currentTimeMillis()
+        val startOfToday =
+            Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+
+        return runCatching {
+            val foregroundTime =
+                manager
+                    .queryUsageStats(UsageStatsManager.INTERVAL_DAILY, startOfToday, now)
+                    .firstOrNull { it.packageName == packageName }
+                    ?.totalTimeInForeground
+                    ?: 0L
+            val events = manager.queryEvents(startOfToday, now)
+            val event = UsageEvents.Event()
+            var openedCount = 0
+            while (events.hasNextEvent()) {
+                events.getNextEvent(event)
+                if (
+                    event.packageName == packageName &&
+                        event.eventType == UsageEvents.Event.ACTIVITY_RESUMED
+                ) {
+                    openedCount++
+                }
+            }
+            TodayAppUsage(openedCount, foregroundTime)
+        }.getOrNull()
+    }
 
     /**
      * Loads app list from cache if available.

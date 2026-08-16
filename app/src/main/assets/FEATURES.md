@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.0 (Updated August 9 2026)
+**Version**: 4.0 (Updated August 15 2026)
 
 ### Search
 
@@ -16,6 +16,7 @@ This document highlights all the available features. It also includes details ab
 - **App Settings Search** - Find and access Quick Search app settings directly by searching
 - **App Suggestions** - Shows suggested apps when no search query is entered. Swipe left or right on the suggestions row to switch between **New & Updated**, **Pinned**, and **Most Used** apps. You can also choose to hide app suggestions completely. This feature requires usage access permission. If permission is not granted, the app shows suggestions based on apps you recently opened from within the app.
 - **View All Apps** - A button below app suggestions lets you browse all installed apps at once. Enable it in settings.
+- **Screen Time** - Search **Screen Time** to check your daily phone usage. Long-press an app to view its individual screen time.
 
 ---
 
@@ -105,6 +106,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Add to Home Screen** - Add apps, app shortcuts, contacts, files, and device settings directly to your home screen as shortcuts for one-tap access.
 - **Edit Icons for App Shortcuts** - Option to add custom icons for app shortcuts.
 - **App Info / Uninstall / Hide** - For apps, open system app info, uninstall supported apps, or hide them from suggestions/results using the long-press menu on the app icon.
+- **Open in Split Screen** - Long-press any app to open it in split screen.
 - **File-Specific Options** - For files, long-press to share, open the containing folder, exclude all files with the same extension, or view a detailed file info dialog (type, size, path, last modified, etc.).
 
 ---
@@ -127,6 +129,7 @@ Long-press on most results to open a context menu with quick actions.
 - **App Result Rows** - Choose whether search results show one or two rows of apps.
 - **App Icon Size** - Adjust the size of app icons displayed in results and suggestions.
 - **App Labels** - You can choose to hide app labels.
+- **Home Text Colours** - Customize text colours on Home, including app labels and section titles.
 - **Circular App icons** - Option to force circular app icons
 - **Icon Packs** - Select an installed icon pack. If none of them are installed, tapping on the card will open the Play Store and search for icon packs. Once installed, come back to the app and hit the refresh button on the icon packs option to refresh the icon packs list.
 - **Individual App Icons** - Change an individual app's icon by using the change app icon long press menu option. Requires third-party icon packs to be installed.
@@ -240,7 +243,11 @@ Long-press on most results to open a context menu with quick actions.
 
 ### Gestures Settings
 
-- **Customizable Swipe Gestures** - Customize actions for left, right, up, and down gestures, including separate up/down actions from the home screen.
+- **Swipe Left/Right** - Customize swipe left and right actions. By default, swipe right opens Quick Note and swipe left opens Settings; you can disable either gesture or assign a custom action, search engine, or tool instead.
+- **Home Screen Swipe Up/Down** - Customize swipe up and swipe down on Home. Assign a custom action, search engine, or tool, or disable the gesture. Swipe down can also open the notification panel.
+- **Double Tap Gesture** - Double-tap on an empty area in Home to trigger a custom action, search engine, or tool, or disable it if you do not need it.
+- **Keyboard Gestures** - Choose which swipe opens the keyboard and which swipe closes it. These are available on Home only when there is no scrollable content, so normal scrolling always takes priority.
+- **Launcher Swipe Right** - When Quick Search is set as your launcher, swipe right can open the Widget Panel.
 
 ---
 

@@ -269,7 +269,7 @@ fun CalendarEventsSettingsSection(
                         CalendarEventManagementRow(
                             title = eventGroup.title,
                             dateLabel = formatCalendarEventDate(eventGroup.nearestInstance),
-                            relativeLabel = calendarRelativeDateLabel(eventGroup.nearestInstance.startMillis),
+                            relativeLabel = calendarRelativeDateLabel(eventGroup.nearestInstance),
                             recurrenceLabel = recurrenceLabel,
                             onClick = {
                                 if (eventGroup.eventId < 0) {

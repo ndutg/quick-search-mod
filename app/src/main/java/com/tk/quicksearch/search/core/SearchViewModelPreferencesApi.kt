@@ -132,6 +132,12 @@ internal interface SearchViewModelPreferencesApi {
     fun setUseSystemFont(enabled: Boolean) =
         preferencesApiDelegate.setUseSystemFont(enabled)
 
+    fun setHomeTextColorOverride(color: HomeTextColor) =
+        preferencesApiDelegate.setHomeTextColorOverride(color)
+
+    fun resetHomeTextColorForNewWallpaper() =
+        preferencesApiDelegate.resetHomeTextColorForNewWallpaper()
+
     fun setBackgroundSource(source: BackgroundSource) =
         preferencesApiDelegate.setBackgroundSource(source)
 
@@ -394,6 +400,12 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setUseSystemFont(enabled: Boolean) =
         preferencesDelegate.setUseSystemFont(enabled)
+
+    fun setHomeTextColorOverride(color: HomeTextColor) =
+        preferencesDelegate.setHomeTextColorOverride(color)
+
+    fun resetHomeTextColorForNewWallpaper() =
+        preferencesDelegate.resetHomeTextColorForNewWallpaper()
 
     fun setBackgroundSource(source: BackgroundSource) = preferencesDelegate.setBackgroundSource(source)
 

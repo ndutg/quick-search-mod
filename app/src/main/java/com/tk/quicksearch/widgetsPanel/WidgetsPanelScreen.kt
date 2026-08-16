@@ -284,6 +284,7 @@ fun WidgetsPanelScreen(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     appWidgetManager.bindAppWidgetIdIfAllowed(
                         appWidgetId,
+                        provider.profile,
                         provider.provider,
                         widgetOptions,
                     )
@@ -301,6 +302,7 @@ fun WidgetsPanelScreen(
                 Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider.provider)
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE, provider.profile)
                     .putExtra(AppWidgetManager.EXTRA_APPWIDGET_OPTIONS, widgetOptions)
             val launchFailed =
                 runCatching { bindLauncher.launch(intent) }

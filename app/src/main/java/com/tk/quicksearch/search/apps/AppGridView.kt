@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -107,6 +108,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
+import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.shared.ui.theme.LocalIsSystemWallpaperActive
 import com.tk.quicksearch.shared.ui.theme.LocalWallpaperDynamicAccentActive
 import com.tk.quicksearch.shared.util.getAppGridColumns
@@ -168,6 +170,7 @@ private data class AppActions(
         val onNicknameClick: () -> Unit,
         val onTriggerClick: () -> Unit,
         val onAddToHome: () -> Unit,
+        val onOpenInSplitScreen: () -> Unit,
 )
 
 /** Data class containing app state information to reduce parameter count in composables. */
@@ -205,6 +208,7 @@ fun AppGridView(
         onReorderPinnedApps: (List<AppInfo>) -> Unit,
         onNicknameClick: (AppInfo) -> Unit,
         onTriggerClick: (AppInfo) -> Unit,
+        onOpenInSplitScreen: (AppInfo) -> Unit,
         getAppNickname: (String) -> String?,
         getAppTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
         pinnedPackageNames: Set<String>,
@@ -233,6 +237,8 @@ fun AppGridView(
     val newUpdatedTitle = stringResource(R.string.app_suggestions_tab_new_updated)
     val mostUsedTitle = stringResource(R.string.common_most_used)
     val allAppsTitle = stringResource(R.string.settings_app_shortcuts_filter_all_apps)
+    val suggestionSlotCount =
+            (rowCount * getAppGridColumns(phoneColumnOverride)).coerceAtLeast(1)
     val alphabeticalApps =
             remember(allApps) {
                 allApps.sortedWith(
@@ -254,8 +260,32 @@ fun AppGridView(
                     pinnedAndRecentApps,
                     mostUsedApps,
                     enabledSuggestionTabs,
+                    suggestionSlotCount,
             ) {
                 if (isSearching) return@remember emptyList()
+                val recentsApps =
+                    if (AppSuggestionTabType.PINNED !in enabledSuggestionTabs) {
+                        replaceSuggestionAppsWithPinned(
+                                pinnedApps = pinnedApps,
+                                suggestedApps = pinnedAndRecentApps,
+                                slotCount = suggestionSlotCount,
+                        )
+                    } else {
+                        pinnedAndRecentApps
+                    }
+                val mostUsedAppsWithPinned =
+                    if (
+                        AppSuggestionTabType.PINNED !in enabledSuggestionTabs &&
+                            AppSuggestionTabType.RECENTS !in enabledSuggestionTabs
+                    ) {
+                        replaceSuggestionAppsWithPinned(
+                                pinnedApps = pinnedApps,
+                                suggestedApps = mostUsedApps,
+                                slotCount = suggestionSlotCount,
+                        )
+                    } else {
+                        mostUsedApps
+                    }
                 if (hasUsagePermission) {
                     buildList {
                         if (AppSuggestionTabType.NEW_UPDATED in enabledSuggestionTabs) {
@@ -265,10 +295,10 @@ fun AppGridView(
                             add(AppSuggestionTab(AppSuggestionTabType.PINNED, pinnedTitle, pinnedApps))
                         }
                         if (AppSuggestionTabType.RECENTS in enabledSuggestionTabs) {
-                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, pinnedAndRecentApps))
+                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, recentsApps))
                         }
                         if (AppSuggestionTabType.MOST_USED in enabledSuggestionTabs) {
-                            add(AppSuggestionTab(AppSuggestionTabType.MOST_USED, mostUsedTitle, mostUsedApps))
+                            add(AppSuggestionTab(AppSuggestionTabType.MOST_USED, mostUsedTitle, mostUsedAppsWithPinned))
                         }
                     }
                 } else {
@@ -277,7 +307,7 @@ fun AppGridView(
                             add(AppSuggestionTab(AppSuggestionTabType.PINNED, pinnedTitle, pinnedApps))
                         }
                         if (AppSuggestionTabType.RECENTS in enabledSuggestionTabs) {
-                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, pinnedAndRecentApps))
+                            add(AppSuggestionTab(AppSuggestionTabType.RECENTS, recentsTitle, recentsApps))
                         }
                     }
                 }
@@ -298,7 +328,7 @@ fun AppGridView(
             onSuggestionTabSelected(tab.type)
         }
     }
-    val minSuggestionGridItems = (rowCount * getAppGridColumns(phoneColumnOverride)).coerceAtLeast(1)
+    val minSuggestionGridItems = suggestionSlotCount
     val suggestionFallbackApps = remember(pinnedAndRecentApps, apps) { pinnedAndRecentApps + apps }
     val selectedSuggestionTabType = suggestionTabs.getOrNull(selectedSuggestionTabIndex)?.type
     val selectedSuggestionTabItem = suggestionTabs.getOrNull(selectedSuggestionTabIndex)
@@ -473,6 +503,7 @@ fun AppGridView(
                                 onReorderPinnedApps = onReorderPinnedApps,
                                 onNicknameClick = onNicknameClick,
                                 onTriggerClick = onTriggerClick,
+                                onOpenInSplitScreen = onOpenInSplitScreen,
                                 getAppNickname = getAppNickname,
                                 getAppTrigger = getAppTrigger,
                                 pinnedPackageNames = pinnedPackageNames,
@@ -489,6 +520,8 @@ fun AppGridView(
                                 appIconShape = appIconShape,
                                 themedIconsEnabled = themedIconsEnabled,
                                 showWallpaperBackground = showWallpaperBackground,
+                                showPinnedIndicators =
+                                        AppSuggestionTabType.PINNED !in enabledSuggestionTabs,
                                 reorderPinnedApps = selectedTab.type == AppSuggestionTabType.PINNED,
                         )
                     }
@@ -505,6 +538,7 @@ fun AppGridView(
                             onReorderPinnedApps = onReorderPinnedApps,
                             onNicknameClick = onNicknameClick,
                             onTriggerClick = onTriggerClick,
+                            onOpenInSplitScreen = onOpenInSplitScreen,
                             getAppNickname = getAppNickname,
                             getAppTrigger = getAppTrigger,
                             pinnedPackageNames = pinnedPackageNames,
@@ -521,6 +555,9 @@ fun AppGridView(
                             appIconShape = appIconShape,
                             themedIconsEnabled = themedIconsEnabled,
                             showWallpaperBackground = showWallpaperBackground,
+                            showPinnedIndicators =
+                                    !isSearching &&
+                                            AppSuggestionTabType.PINNED !in enabledSuggestionTabs,
                             reorderPinnedApps =
                                     selectedSuggestionTabType == AppSuggestionTabType.PINNED,
                     )
@@ -564,6 +601,7 @@ fun AppGridView(
                 onUnpinApp = onUnpinApp,
                 onNicknameClick = onNicknameClick,
                 onTriggerClick = onTriggerClick,
+                onOpenInSplitScreen = onOpenInSplitScreen,
                 getAppNickname = getAppNickname,
                 getAppTrigger = getAppTrigger,
                 pinnedPackageNames = pinnedPackageNames,
@@ -589,6 +627,7 @@ private fun AllAppsDialog(
         onUnpinApp: (AppInfo) -> Unit,
         onNicknameClick: (AppInfo) -> Unit,
         onTriggerClick: (AppInfo) -> Unit,
+        onOpenInSplitScreen: (AppInfo) -> Unit,
         getAppNickname: (String) -> String?,
         getAppTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
         pinnedPackageNames: Set<String>,
@@ -648,6 +687,7 @@ private fun AllAppsDialog(
                                                     onNicknameClick = { onNicknameClick(app) },
                                                     onTriggerClick = { onTriggerClick(app) },
                                                     onAddToHome = { addToHomeHandler.addAppToHome(app) },
+                                                    onOpenInSplitScreen = { onOpenInSplitScreen(app) },
                                             ),
                                     appState =
                                             AppState(
@@ -779,6 +819,7 @@ private fun AllAppsDialogGridItem(
                 onNicknameClick = appActions.onNicknameClick,
                 onTriggerClick = appActions.onTriggerClick,
                 onAddToHome = appActions.onAddToHome,
+                onOpenInSplitScreen = appActions.onOpenInSplitScreen,
         )
     }
 }
@@ -789,8 +830,8 @@ private fun AppSuggestionTabStrip(
         selectedIndex: Int,
         onSelectedIndexChange: (Int) -> Unit,
 ) {
-    val activeColor = MaterialTheme.colorScheme.onSurface
-    val inactiveColor = MaterialTheme.colorScheme.onSurface.copy(alpha = SuggestionTabInactiveAlpha)
+    val activeColor = homeTextColor()
+    val inactiveColor = activeColor.copy(alpha = SuggestionTabInactiveAlpha)
     val leftTab = tabs.getOrNull(selectedIndex - 1)
     val rightTab = tabs.getOrNull(selectedIndex + 1)
 
@@ -873,6 +914,19 @@ private fun fillSuggestionGridApps(
     return result
 }
 
+private fun replaceSuggestionAppsWithPinned(
+        pinnedApps: List<AppInfo>,
+        suggestedApps: List<AppInfo>,
+        slotCount: Int,
+): List<AppInfo> {
+    val seen = LinkedHashSet<String>(slotCount)
+    return (pinnedApps + suggestedApps)
+            .asSequence()
+            .filter { seen.add(it.launchCountKey()) }
+            .take(slotCount)
+            .toList()
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AppGrid(
@@ -888,6 +942,7 @@ private fun AppGrid(
         onReorderPinnedApps: (List<AppInfo>) -> Unit,
         onNicknameClick: (AppInfo) -> Unit,
         onTriggerClick: (AppInfo) -> Unit,
+        onOpenInSplitScreen: (AppInfo) -> Unit,
         getAppNickname: (String) -> String?,
         getAppTrigger: (String) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
         pinnedPackageNames: Set<String>,
@@ -904,6 +959,7 @@ private fun AppGrid(
         appIconShape: AppIconShape,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
+        showPinnedIndicators: Boolean = false,
         reorderPinnedApps: Boolean = false,
         scrollableRowCount: Int? = null,
 ) {
@@ -1049,6 +1105,7 @@ private fun AppGrid(
                         onUnpinApp,
                         onNicknameClick,
                         onTriggerClick,
+                        onOpenInSplitScreen,
                         addToHomeHandler
                 ) {
                     { app: AppInfo ->
@@ -1062,6 +1119,7 @@ private fun AppGrid(
                                 onNicknameClick = { onNicknameClick(app) },
                                 onTriggerClick = { onTriggerClick(app) },
                                 onAddToHome = { addToHomeHandler.addAppToHome(app) },
+                                onOpenInSplitScreen = { onOpenInSplitScreen(app) },
                         )
                     }
                 }
@@ -1167,6 +1225,7 @@ private fun AppGrid(
                             appIconShape = appIconShape,
                             themedIconsEnabled = themedIconsEnabled,
                             showWallpaperBackground = showWallpaperBackground,
+                            showPinnedIndicators = showPinnedIndicators,
                             onItemMeasured = { height ->
                                 measuredItemHeightPx = height.toFloat()
                             },
@@ -1197,6 +1256,7 @@ private fun AppGrid(
                                 appIconShape = appIconShape,
                                 themedIconsEnabled = themedIconsEnabled,
                                 showWallpaperBackground = showWallpaperBackground,
+                                showPinnedIndicators = showPinnedIndicators,
                                 isDragging = isThisDragging,
                                 dragOffset =
                                         if (isThisDragging) {
@@ -1240,6 +1300,7 @@ private fun AppGridItem(
         appIconShape: AppIconShape = AppIconShape.DEFAULT,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
+        showPinnedIndicators: Boolean = false,
         isDragging: Boolean = false,
         dragOffset: IntOffset? = null,
         onItemMeasured: (Int) -> Unit = {},
@@ -1424,6 +1485,7 @@ private fun AppGridItem(
                     oneHandedMode = oneHandedMode,
                     themedIconsEnabled = themedIconsEnabled,
                     showWallpaperBackground = showWallpaperBackground,
+                    showPinnedIndicator = showPinnedIndicators && appState.isPinned,
             )
             if (appState.showAppLabel) {
                 AppLabelText(
@@ -1453,6 +1515,7 @@ private fun AppGridItem(
                 onNicknameClick = appActions.onNicknameClick,
                 onTriggerClick = appActions.onTriggerClick,
                 onAddToHome = appActions.onAddToHome,
+                onOpenInSplitScreen = appActions.onOpenInSplitScreen,
         )
     }
 }
@@ -1475,6 +1538,7 @@ private fun AppIconSurface(
         oneHandedMode: Boolean = false,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
+        showPinnedIndicator: Boolean = false,
 ) {
     val view = LocalView.current
     val context = LocalContext.current
@@ -1524,6 +1588,7 @@ private fun AppIconSurface(
                 colorScheme.primary
             }
     val themedIconContainerShape = CircleShape
+    val pinnedIndicatorInset = (appIconSurfaceSize - appIconSize) / 2
 
     Surface(
             modifier = Modifier.requiredSize(appIconSurfaceSize).then(gestureModifier),
@@ -1689,6 +1754,18 @@ private fun AppIconSurface(
                                         ),
                 )
             }
+            if (showPinnedIndicator) {
+                Icon(
+                        imageVector = Icons.Rounded.PushPin,
+                        contentDescription = null,
+                        modifier =
+                                Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = pinnedIndicatorInset, end = pinnedIndicatorInset)
+                                        .size(12.dp),
+                        tint = colorScheme.onSurfaceVariant.copy(alpha = 0.65f),
+                )
+            }
         }
     }
 }
@@ -1698,12 +1775,7 @@ private fun AppLabelText(
         appName: String,
         isOverlayPresentation: Boolean,
 ) {
-    val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
-    val labelColor = when (imageBackgroundIsDark) {
-        true -> Color.White
-        false -> Color.Black
-        null -> MaterialTheme.colorScheme.onSurface
-    }
+    val labelColor = homeTextColor()
     Spacer(
             modifier =
                     Modifier.height(

@@ -40,6 +40,7 @@ class StartupCoordinator(
         private const val TRACE_BACKGROUND_PRELOAD = "QS.Startup.BackgroundPreload"
         private const val TRACE_NON_CRITICAL = "QS.Startup.NonCritical"
         private const val POST_FIRST_FRAME_PERMISSION_SYNC_DELAY_MS = 250L
+        private const val UPDATE_CHECK_DELAY_MS = 3_000L
         private const val NON_CRITICAL_STARTUP_DELAY_MS = 15_000L
     }
 
@@ -105,24 +106,31 @@ class StartupCoordinator(
         }
 
         scheduleBackgroundPreload()
+        scheduleUpdateCheck()
 
         lifecycleScope.launch {
             delay(NON_CRITICAL_STARTUP_DELAY_MS)
-            while (viewModel.uiState.value.query.isNotBlank()) {
-                delay(1_000L)
-            }
             Trace.beginSection(TRACE_NON_CRITICAL)
             try {
                 userPreferences.recordFirstAppOpenTime()
                 userPreferences.incrementAppOpenCount()
                 onUsageTrackingUpdated?.invoke()
-                userPreferences.resetUpdateCheckSession()
-
-                val targetActivity = activity ?: return@launch
-                UpdateHelper.checkForUpdates(targetActivity, userPreferences, viewModel::onUpdateAvailable)
             } finally {
                 Trace.endSection()
             }
+        }
+    }
+
+    /**
+     * Check shortly after the first frame so an available Play update can be represented by the
+     * Home card without waiting for unrelated deferred startup work or an empty search query.
+     */
+    private fun scheduleUpdateCheck() {
+        lifecycleScope.launch {
+            delay(UPDATE_CHECK_DELAY_MS)
+            val targetActivity = activity ?: return@launch
+            userPreferences.resetUpdateCheckSession()
+            UpdateHelper.checkForUpdates(targetActivity, userPreferences, viewModel::onUpdateAvailable)
         }
     }
 

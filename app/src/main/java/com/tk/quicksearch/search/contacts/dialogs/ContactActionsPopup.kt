@@ -53,6 +53,8 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
+import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE
+import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_PACKAGE
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 
 internal sealed interface ContactActionsPopupState {
@@ -137,10 +139,21 @@ internal fun ContactActionsPopup(
             context,
             hasMultipleNumbers = hasMultipleNumbers,
         )
-    val normalizedMethodsForSelectedNumber =
+    val normalizedContactMethods =
         remember(methodsForSelectedNumber) {
             remapSignalMessageToMollyCustomMethod(methodsForSelectedNumber)
         }
+    val isRegularWhatsAppInstalled =
+        remember(context) { context.isPackageInstalled(WHATSAPP_PACKAGE) }
+    val isWhatsAppBusinessInstalled =
+        remember(context) { context.isPackageInstalled(WHATSAPP_BUSINESS_PACKAGE) }
+    val normalizedMethodsForSelectedNumber = normalizedContactMethods
+    val whatsAppBusinessMethods =
+        normalizedMethodsForSelectedNumber.filter { method ->
+            isWhatsAppBusinessInstalled && method.isWhatsAppBusinessMethod()
+        }
+    val showWhatsAppBusinessAsActions =
+        whatsAppBusinessMethods.isNotEmpty() && !isRegularWhatsAppInstalled
     val firstRowMethods = mutableListOf<ContactMethod>()
     normalizedMethodsForSelectedNumber.find { it is ContactMethod.Phone }?.let { firstRowMethods.add(it) }
     normalizedMethodsForSelectedNumber.find { it is ContactMethod.Sms }?.let { firstRowMethods.add(it) }
@@ -148,7 +161,12 @@ internal fun ContactActionsPopup(
     val remainingMethods =
         normalizedMethodsForSelectedNumber
             .filterNot { it.isConfiguredPopupMethod() }
+            .filterNot {
+                it.isWhatsAppBusinessMethod() && !isWhatsAppBusinessInstalled
+            }
+            .filterNot { showWhatsAppBusinessAsActions && it.isWhatsAppBusinessMethod() }
             .filter { method -> method.hasDisplayNameAfterSanitization() }
+            .sortedWith(compareBy<ContactMethod> { !it.isEmailOrWhatsAppBusinessMethod() })
             .distinctBy { method ->
                 "${method::class.java.name}:${method.dataId}:${method.data}:${method.displayLabel}"
             }
@@ -350,6 +368,23 @@ internal fun ContactActionsPopup(
                     onContactActionTriggerClick = state.onContactActionTriggerClick,
                 )
 
+                if (showWhatsAppBusinessAsActions) {
+                    ContactActionMethodRow(
+                        methods = whatsAppBusinessMethods,
+                        methodTypes = listOf(ContactMethod.CustomApp::class),
+                        onMethodClick = { method ->
+                            state.onContactMethodClick(contactInfo, method)
+                            onDismiss()
+                        },
+                        contactInfo = contactInfo,
+                        selectedPhoneNumber = selectedPhoneNumber,
+                        addToHomeHandler = addToHomeHandler,
+                        getContactActionTrigger = state.getContactActionTrigger,
+                        showTriggerAction = state.enableContactActionTriggers,
+                        onContactActionTriggerClick = state.onContactActionTriggerClick,
+                    )
+                }
+
                 ContactActionMethodRow(
                     methods = normalizedMethodsForSelectedNumber,
                     methodTypes =
@@ -450,6 +485,13 @@ internal fun ContactActionsPopup(
                         ),
                     onMethodClick = onMethodClick,
                 )
+                if (showWhatsAppBusinessAsActions) {
+                    renderMethodRow(
+                        methods = whatsAppBusinessMethods,
+                        methodTypes = listOf(ContactMethod.CustomApp::class),
+                        onMethodClick = onMethodClick,
+                    )
+                }
                 renderMethodRow(
                     methods = normalizedMethodsForSelectedNumber,
                     methodTypes =
@@ -547,11 +589,26 @@ private fun RemainingMethodsList(
                         iconSize = 20.dp,
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = getRemainingMethodLabel(method),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                    if (method.isWhatsAppBusinessMethod()) {
+                        Column {
+                            Text(
+                                text = getActionButtonLabel(method),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            Text(
+                                text = stringResource(R.string.contact_method_whatsapp_business_label),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = getRemainingMethodLabel(method),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
                     if (
                         contactInfo != null &&
                         addToHomeHandler != null &&
@@ -820,3 +877,21 @@ private fun ContactMethod.CustomApp.sanitizedDisplayLabel(): String =
         .replace(ORPHAN_BRACKETS_REGEX, "")
         .replace("\\s+".toRegex(), " ")
         .trim()
+
+private fun ContactMethod.isWhatsAppBusinessMethod(): Boolean =
+    this is ContactMethod.CustomApp &&
+        packageName == WHATSAPP_BUSINESS_PACKAGE &&
+        mimeType in
+            setOf(
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL,
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE,
+                ContactMethodMimeTypes.WHATSAPP_BUSINESS_VIDEO_CALL,
+            )
+
+private fun ContactMethod.isEmailOrWhatsAppBusinessMethod(): Boolean =
+    this is ContactMethod.Email || isWhatsAppBusinessMethod()
+
+private fun android.content.Context.isPackageInstalled(packageName: String): Boolean =
+    runCatching {
+        packageManager.getApplicationInfo(packageName, 0)
+    }.isSuccess

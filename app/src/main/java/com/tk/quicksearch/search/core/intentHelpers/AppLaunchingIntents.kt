@@ -18,6 +18,7 @@ internal object AppLaunchingIntents {
     fun launchApp(
         context: Context,
         appInfo: AppInfo,
+        launchAdjacent: Boolean = false,
         onShowToast: ((Int, String?) -> Unit)? = null,
     ) {
         if (appInfo.userHandleId != null) {
@@ -45,6 +46,9 @@ internal object AppLaunchingIntents {
         launchIntent.addFlags(
             Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
         )
+        if (launchAdjacent) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT)
+        }
         runCatching { context.startActivity(launchIntent) }
             .onFailure { throwable ->
                 Log.w(TAG, "Failed to launch ${appInfo.packageName}", throwable)

@@ -46,6 +46,7 @@ import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.searchEngines.compact.NoResultsSearchEngineCards
 import com.tk.quicksearch.search.webSuggestions.WebSuggestionsSection
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.tools.aiSearch.CurrencyConverterResult
 import com.tk.quicksearch.tools.aiSearch.CalculatorResult
 import com.tk.quicksearch.tools.aiSearch.DictionaryResult
@@ -56,7 +57,11 @@ import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.InfoBanner
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
 import com.tk.quicksearch.search.searchScreen.renderSection
+import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSectionContext
+import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSearchRenderingState
+import com.tk.quicksearch.search.searchScreen.rememberSettledTopMatches
 import com.tk.quicksearch.search.searchScreen.rememberTopMatches
+import com.tk.quicksearch.search.searchScreen.shouldDeferTopMatchesForLocalSearch
 import com.tk.quicksearch.search.searchScreen.TopMatchesSection
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
 import com.tk.quicksearch.search.searchScreen.FilesSectionParams
@@ -69,6 +74,9 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.PinnedNonAppItemsSection
 import com.tk.quicksearch.search.searchScreen.components.SectionPermissionResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
+import com.tk.quicksearch.search.other.OtherSearchItemId
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.search.other.OtherSearchResults
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.startup.StartupTrace
 
@@ -88,6 +96,7 @@ fun ContentLayout(
     predictedTarget: PredictedSubmitTarget? = null,
     isPhysicalKeyboardConnected: Boolean,
     onRequestUsagePermission: () -> Unit,
+    onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
     minContentHeight: Dp,
     expandedCardMaxHeight: Dp,
     isReversed: Boolean,
@@ -154,6 +163,18 @@ fun ContentLayout(
             expandedCardMaxHeight = expandedCardMaxHeight,
         )
     val hasQuery = state.query.isNotBlank()
+    val isLocalSearchRefreshing =
+        shouldDeferTopMatchesForLocalSearch(
+            query = state.query,
+            isAppSearchInProgress = state.isAppSearchInProgress,
+            isSecondarySearchInProgress = state.isSecondarySearchInProgress,
+        )
+    val regularRenderingState =
+        rememberSettledRegularSearchRenderingState(
+            query = state.query,
+            currentState = renderingState,
+            isSearchRefreshing = isLocalSearchRefreshing,
+        )
     // The overlay already animates its full surface on entry. In one-handed mode, layering every
     // async Home section height animation on top of that bottom-anchored surface makes early
     // content briefly reflow in the opposite direction. App suggestions are the exception: they
@@ -174,6 +195,15 @@ fun ContentLayout(
         // subsequent recompositions keep the settled grid fully visible.
         suppressSuggestionsEnterAnimation = suggestionsAppGridHasAppeared,
     )
+    val regularAppsParams =
+        if (hasQuery) {
+            effectiveAppsParams.copy(
+                apps = regularRenderingState.displayApps,
+                hasAppResults = regularRenderingState.hasAppResults,
+            )
+        } else {
+            effectiveAppsParams
+        }
 
     // 1. Determine Layout Order based on ItemPriorityConfig
     val queryLength = state.query.trim().length
@@ -191,32 +221,38 @@ fun ContentLayout(
 
     // 3. Prepare Shared Rendering Context and Params
     // We reuse the extracted logic to determine visibility and expansion states
-    val sectionContext =
+    val currentSectionContext =
         rememberSectionRenderContext(
             state = state,
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             filesParams = effectiveFilesParams,
             contactsParams = effectiveContactsParams,
             settingsParams = effectiveSettingsParams,
             calendarParams = effectiveCalendarParams,
             notesParams = effectiveNotesParams,
             appShortcutsParams = effectiveAppShortcutsParams,
-            appsParams = effectiveAppsParams,
+            appsParams = regularAppsParams,
             isSearching = hasQuery,
             oneHandedMode =
                 state.oneHandedMode, // This affects list reversal inside helpers
         )
+    val sectionContext =
+        rememberSettledRegularSectionContext(
+            query = state.query,
+            currentContext = currentSectionContext,
+            isSearchRefreshing = isLocalSearchRefreshing,
+        )
 
     val sectionParams =
         SectionRenderParams(
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             contactsParams = effectiveContactsParams,
             filesParams = effectiveFilesParams,
             appShortcutsParams = effectiveAppShortcutsParams,
             settingsParams = effectiveSettingsParams,
             calendarParams = effectiveCalendarParams,
             notesParams = effectiveNotesParams,
-            appsParams = effectiveAppsParams,
+            appsParams = regularAppsParams,
             isReversed = isReversed,
         )
 
@@ -327,10 +363,6 @@ fun ContentLayout(
             !isSectionAliasMode &&
             renderingState.shouldShowApps &&
             renderingState.expandedSection == ExpandedSection.NONE
-    val deferNonAppContentUntilAppsReady =
-        hasQuery &&
-            state.isAppSearchInProgress &&
-            !renderingState.hasAppResults
     val waitingForSuggestions =
         canDeferOtherContentForSuggestions &&
             state.isInitializing &&
@@ -344,13 +376,26 @@ fun ContentLayout(
     val topMatches =
         rememberTopMatches(
             query = state.query,
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             context = sectionContextForRecentHistoryExpansion,
             params = sectionParams,
             limit = state.topMatchesLimit,
             topMatchesSectionOrder = state.topMatchesSectionOrder,
             disabledTopMatchesSections = state.disabledTopMatchesSections,
             secondaryRankingSignal = state.secondaryRankingSignal,
+            filterStaleCandidates = isLocalSearchRefreshing,
+            otherSearchItemIds =
+                OtherSearchItemRegistry.visibleSearchItemIds(
+                    query = state.query,
+                    pinnedItemOrder = state.pinnedNonAppItemOrder,
+                    screenTimeState = state.screenTimeState,
+                ),
+        )
+    val displayedTopMatches =
+        rememberSettledTopMatches(
+            query = state.query,
+            currentMatches = topMatches,
+            isSearchRefreshing = isLocalSearchRefreshing,
         )
     val showTopMatches =
         state.topMatchesEnabled &&
@@ -358,11 +403,10 @@ fun ContentLayout(
             !hideResults &&
             !isExpanded &&
             !isSectionAliasMode &&
-            !deferNonAppContentUntilAppsReady &&
-            topMatches.isNotEmpty()
+            displayedTopMatches.isNotEmpty()
     val hasMoreResults =
         hasMoreResults(
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             sectionContext = sectionContextForRecentHistoryExpansion,
         )
     val regularSectionParams =
@@ -484,14 +528,14 @@ fun ContentLayout(
                         Icon(
                             imageVector = sectionIcon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = homeTextColor(),
                             modifier = Modifier.size(DesignTokens.IconSizeSmall),
                         )
                     }
                     Text(
                         text = stringResource(metadata.sectionLabelRes),
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = homeTextColor(),
                     )
                 }
                 Icon(
@@ -584,7 +628,7 @@ fun ContentLayout(
                     Text(
                         text = stringResource(R.string.recent_queries_toggle_title),
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = homeTextColor(),
                         modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
                     )
                 }
@@ -689,12 +733,17 @@ fun ContentLayout(
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         if (showTopMatches && !isReversed) {
             TopMatchesSection(
-                matches = topMatches,
+                matches = displayedTopMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+                showTopResultIndicator =
+                    state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
                 selectedMatchIndex = selectedTopMatchIndex,
                 reverseOrder = false,
+                screenTimeState = state.screenTimeState,
+                pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
+                iconPackPackage = state.selectedIconPackPackage,
+                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (hasMoreResults) {
@@ -727,7 +776,6 @@ fun ContentLayout(
                 if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
                 if (!shouldRenderSection(section)) return@forEach
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
-                if (deferNonAppContentUntilAppsReady && section != SearchSection.APPS) return@forEach
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
                 if (
                     !hasQuery &&
@@ -913,12 +961,6 @@ fun ContentLayout(
                 return@forEach
             }
 
-            if (
-                deferNonAppContentUntilAppsReady &&
-                    itemType != ItemPriorityConfig.ItemType.SEARCH_ENGINES_INLINE
-            ) {
-                return@forEach
-            }
             if (hideOtherContent) return@forEach
 
             when (itemType) {
@@ -985,6 +1027,19 @@ fun ContentLayout(
                                 ?: state.aiSearchLlmProviderId,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
                             onGeminiModelInfoClick = onGeminiModelInfoClick,
+                        )
+                    }
+                }
+
+                ItemPriorityConfig.ItemType.OTHER_RESULTS -> {
+                    if (!hasQuery || !state.topMatchesEnabled) {
+                        OtherSearchResults(
+                            query = state.query,
+                            pinnedItemOrder = state.pinnedNonAppItemOrder,
+                            state = state.screenTimeState,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            iconPackPackage = state.selectedIconPackPackage,
+                            onTogglePin = onToggleOtherSearchItemPin,
                         )
                     }
                 }
@@ -1102,12 +1157,17 @@ fun ContentLayout(
 
         if (showTopMatches && isReversed) {
             TopMatchesSection(
-                matches = topMatches,
+                matches = displayedTopMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+                showTopResultIndicator =
+                    state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
                 selectedMatchIndex = selectedTopMatchIndex,
                 reverseOrder = true,
+                screenTimeState = state.screenTimeState,
+                pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
+                iconPackPackage = state.selectedIconPackPackage,
+                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -1230,7 +1290,7 @@ private fun UnifiedPinnedItemsBlock(
             Text(
                 text = stringResource(R.string.app_suggestions_tab_pinned),
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = homeTextColor(),
             )
             Icon(
                 imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
