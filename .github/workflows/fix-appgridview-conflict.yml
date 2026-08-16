@@ -1,0 +1,99 @@
+name: Fix AppGridView Conflict
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch upstream main
+        run: git fetch origin main
+
+      - name: Take upstream AppGridView.kt
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          git checkout origin/main -- "$FILE"
+          echo "Took upstream version"
+
+      - name: Show current AppLabelText function
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          echo "=== AppLabelText function ==="
+          grep -n -A 15 "private fun AppLabelText" "$FILE"
+
+          echo ""
+          echo "=== Lines with imageBackgroundIsDark / labelColor ==="
+          grep -n "imageBackgroundIsDark\|labelColor\|Color.Black\|Color.White\|LocalImageBackgroundIsDark" "$FILE"
+
+      - name: Apply white label patch (flexible)
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          with open(file_path, "r") as f:
+              content = f.read()
+
+          if "scrim makes background dark" in content:
+              print("Patch already present")
+          else:
+              # Try several known variants of the false branch
+              variants = [
+                  "false -> Color.Black",
+                  "false -> Color.Black,",
+                  "false -> androidx.compose.ui.graphics.Color.Black",
+              ]
+              applied = False
+              for v in variants:
+                  if v in content:
+                      content = content.replace(v, "false -> Color.White // scrim makes background dark")
+                      applied = True
+                      print(f"Applied patch by replacing: {v}")
+                      break
+
+              if not applied:
+                  print("Could not find false-branch anchor. Dumping AppLabelText for manual inspection:")
+                  import re
+                  m = re.search(r'private fun AppLabelText.*?\n\}', content, re.DOTALL)
+                  if m:
+                      print(m.group(0)[:1200])
+
+              with open(file_path, "w") as f:
+                  f.write(content)
+          PYEOF
+
+      - name: Verify
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          echo -n "White label patch present: "
+          grep -q "scrim makes background dark" "$FILE" && echo "OK" || echo "MISSING"
+          echo -n "onOpenInSplitScreen present: "
+          grep -q "onOpenInSplitScreen" "$FILE" && echo "OK" || echo "MISSING"
+
+      - name: Commit and push if patched
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit (nothing patched)"
+          else
+            git commit -m "fix: take upstream AppGridView.kt and re-apply white label patch"
+            git push origin restore-wallpaper-feature
+            echo "Pushed"
+          fi
