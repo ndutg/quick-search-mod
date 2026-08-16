@@ -1,0 +1,71 @@
+name: Fix AppGridView Conflict
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch upstream main
+        run: git fetch origin main
+
+      - name: Take upstream AppGridView.kt then re-apply white label patch
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+
+          echo "=== Taking upstream version of AppGridView.kt ==="
+          git checkout origin/main -- "$FILE"
+
+          echo "=== Re-applying white label patch ==="
+          sed -i 's|false -> Color.Black|false -> Color.White  // scrim makes background dark|' "$FILE"
+
+          echo "=== Verification ==="
+          echo -n "White label patch present: "
+          grep -q "scrim makes background dark" "$FILE" && echo "OK" || echo "MISSING"
+
+          echo -n "onOpenInSplitScreen present (upstream code): "
+          grep -q "onOpenInSplitScreen" "$FILE" && echo "OK" || echo "MISSING"
+
+          echo ""
+          echo "=== Context around white label change ==="
+          grep -B 2 -A 2 "scrim makes background dark" "$FILE"
+
+      - name: Verify all 3 patches
+        run: |
+          echo "=== Custom patches check ==="
+          echo -n "READ_MEDIA_IMAGES: "
+          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
+          echo -n "Dark scrim: "
+          grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "MISSING"
+          echo -n "White label: "
+          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --cached --stat
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "fix: take upstream AppGridView.kt and re-apply white label patch (fixes onOpenInSplitScreen compile error)"
+            git push origin restore-wallpaper-feature
+            echo "Fix pushed - build will auto-trigger"
+          fi
