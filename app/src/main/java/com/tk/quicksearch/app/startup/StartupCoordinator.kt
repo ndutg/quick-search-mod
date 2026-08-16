@@ -40,7 +40,7 @@ class StartupCoordinator(
         private const val TRACE_BACKGROUND_PRELOAD = "QS.Startup.BackgroundPreload"
         private const val TRACE_NON_CRITICAL = "QS.Startup.NonCritical"
         private const val POST_FIRST_FRAME_PERMISSION_SYNC_DELAY_MS = 250L
-        private const val UPDATE_CHECK_DELAY_MS = 1_000L
+        private const val UPDATE_CHECK_DELAY_MS = 3_000L
         private const val NON_CRITICAL_STARTUP_DELAY_MS = 15_000L
     }
 
