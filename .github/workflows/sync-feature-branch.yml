@@ -149,7 +149,3 @@ jobs:
           echo ""
           echo "restore-wallpaper-feature synced and pushed"
           echo "APK build will auto-trigger"
-          git push origin restore-wallpaper-feature
-          echo ""
-          echo "restore-wallpaper-feature synced and pushed"
-          echo "APK build will auto-trigger"
