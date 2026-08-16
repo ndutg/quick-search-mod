@@ -65,7 +65,7 @@ internal fun Modifier.predictedSubmitHighlight(
             }
         val (fillAlpha, borderAlpha) =
             if (opaqueCardTopResultBorder) {
-                0.055f to 0.42f
+                0.055f to 0.36f
             } else {
                 0.08f to 0.22f
             }

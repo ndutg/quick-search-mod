@@ -17,7 +17,7 @@ internal data class SearchPreferenceCache(
     val unifiedPinnedItemsEnabled: Boolean = false,
     val searchHintsEnabled: Boolean = true,
     val settingsIconEnabled: Boolean = true,
-    val topResultIndicatorEnabled: Boolean = true,
+    val topResultIndicatorEnabled: Boolean = false,
     val wallpaperAccentEnabled: Boolean = true,
     val openKeyboardOnLaunch: Boolean = true,
     val overlayModeEnabled: Boolean = false,

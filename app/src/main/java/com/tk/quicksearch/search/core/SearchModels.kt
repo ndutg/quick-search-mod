@@ -538,7 +538,7 @@ data class SearchUiState(
         val unifiedPinnedItemsEnabled: Boolean = false,
         val searchHintsEnabled: Boolean = true,
         val settingsIconEnabled: Boolean = true,
-        val topResultIndicatorEnabled: Boolean = true,
+        val topResultIndicatorEnabled: Boolean = false,
         val openKeyboardOnLaunch: Boolean = true,
         val clearQueryOnLaunch: Boolean = true,
         val autoCloseOverlay: Boolean = true,

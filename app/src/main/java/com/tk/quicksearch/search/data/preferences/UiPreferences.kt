@@ -175,7 +175,7 @@ class UiPreferences(
     }
 
     fun isTopResultIndicatorEnabled(): Boolean =
-            getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, true)
+            getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, false)
 
     fun setTopResultIndicatorEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, enabled)

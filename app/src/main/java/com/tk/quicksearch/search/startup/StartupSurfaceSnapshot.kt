@@ -198,7 +198,7 @@ internal object StartupSurfaceSnapshotJson {
                 startupBackgroundPreviewPath = root.optString(KEY_PREVIEW_PATH).takeIf { it.isNotBlank() },
                 oneHandedMode = root.optBoolean(KEY_ONE_HANDED, false),
                 bottomSearchBarEnabled = root.optBoolean(KEY_BOTTOM_SEARCH_BAR, false),
-                topResultIndicatorEnabled = root.optBoolean(KEY_TOP_RESULT_INDICATOR, true),
+                topResultIndicatorEnabled = root.optBoolean(KEY_TOP_RESULT_INDICATOR, false),
                 openKeyboardOnLaunch = root.optBoolean(KEY_OPEN_KEYBOARD_ON_LAUNCH, true),
                 fontScaleMultiplier = root.optDouble(KEY_FONT_SCALE, 1.0).toFloat(),
                 useSystemFont = root.optBoolean(KEY_USE_SYSTEM_FONT, false),

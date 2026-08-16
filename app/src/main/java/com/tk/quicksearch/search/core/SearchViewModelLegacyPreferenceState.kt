@@ -18,7 +18,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var unifiedPinnedItemsEnabled: Boolean = false
     var searchHintsEnabled: Boolean = true
     var settingsIconEnabled: Boolean = true
-    var topResultIndicatorEnabled: Boolean = true
+    var topResultIndicatorEnabled: Boolean = false
     var wallpaperAccentEnabled: Boolean = true
     var openKeyboardOnLaunch: Boolean = true
     var overlayModeEnabled: Boolean = false
