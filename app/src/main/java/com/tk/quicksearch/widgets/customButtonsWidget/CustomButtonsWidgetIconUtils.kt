@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.contacts.contactInitials
+import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -134,11 +135,25 @@ private fun loadAppIconBitmap(
     iconPackPackage: String?,
     userHandleId: Int? = null,
 ): Bitmap? {
+    // Keep widget app icons in sync with search results: an individually selected
+    // icon always wins over the currently applied icon pack.
+    val iconOverride = UserAppPreferences(context).getAppIconOverride(packageName)
     val iconPackBitmap =
-        iconPackPackage?.let { pack ->
+        iconOverride?.let { override ->
+            IconPackManager.loadDrawableBitmap(
+                context = context,
+                iconPackPackage = override.iconPackPackage,
+                drawableName = override.drawableName,
+            )
+        } ?: iconPackPackage?.let { pack ->
             IconPackManager.loadIconBitmap(context, pack, packageName)
         }
-    if (iconPackBitmap != null) {
+    val hasExplicitIconPackIcon =
+        iconOverride != null ||
+            iconPackPackage?.let { pack ->
+                IconPackManager.hasExplicitIcon(context, pack, packageName)
+            } == true
+    if (iconPackBitmap != null && (userHandleId == null || hasExplicitIconPackIcon)) {
         val androidBitmap = iconPackBitmap.asAndroidBitmap()
         return Bitmap.createScaledBitmap(
             androidBitmap,
