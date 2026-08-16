@@ -22,6 +22,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.contacts.contactInitials
 import com.tk.quicksearch.search.managers.IconPackManager
+import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.shared.ui.theme.AppColors
 
 data class WidgetButtonIcon(
@@ -54,7 +55,14 @@ fun rememberWidgetButtonIcon(
 
     return when (action) {
         is CustomWidgetButtonAction.App -> {
-            val bitmap = loadAppIconBitmap(context, action.packageName, iconSizePx, iconPackPackage)
+            val bitmap =
+                loadAppIconBitmap(
+                    context,
+                    action.packageName,
+                    iconSizePx,
+                    iconPackPackage,
+                    action.userHandleId,
+                )
             bitmap?.let { WidgetButtonIcon(bitmap = it, shouldTint = false) }
                 ?: WidgetButtonIcon(drawableResId = R.drawable.ic_widget_search, shouldTint = true)
         }
@@ -124,6 +132,7 @@ private fun loadAppIconBitmap(
     packageName: String,
     iconSizePx: Int,
     iconPackPackage: String?,
+    userHandleId: Int? = null,
 ): Bitmap? {
     val iconPackBitmap =
         iconPackPackage?.let { pack ->
@@ -138,7 +147,21 @@ private fun loadAppIconBitmap(
             true,
         )
     }
-    val drawable = runCatching { context.packageManager.getApplicationIcon(packageName) }.getOrNull()
+    val drawable =
+        runCatching { context.packageManager.getApplicationIcon(packageName) }
+            .getOrNull()
+            ?.let { icon ->
+                val profile =
+                    userHandleId?.let { UserHandleUtils.of(it) }
+                        ?: context.getSystemService(android.os.UserManager::class.java)
+                            ?.userProfiles
+                            ?.firstOrNull { UserHandleUtils.getIdentifier(it) == userHandleId }
+                if (profile == null) {
+                    icon
+                } else {
+                    runCatching { context.packageManager.getUserBadgedIcon(icon, profile) }.getOrDefault(icon)
+                }
+            }
     return drawable?.toBitmap(
         width = iconSizePx.coerceAtLeast(1),
         height = iconSizePx.coerceAtLeast(1),

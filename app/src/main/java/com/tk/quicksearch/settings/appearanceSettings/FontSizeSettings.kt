@@ -25,6 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.core.HomeTextColor
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -36,6 +38,10 @@ fun FontSizeCard(
         onFontScaleMultiplierChange: (Float) -> Unit,
         useSystemFont: Boolean,
         onUseSystemFontChange: (Boolean) -> Unit,
+        homeTextColorOverride: HomeTextColor?,
+        onHomeTextColorChange: (HomeTextColor) -> Unit,
+        backgroundSource: BackgroundSource,
+        customImageUri: String?,
         modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
@@ -56,6 +62,18 @@ fun FontSizeCard(
                     leadingIcon = Icons.Rounded.TextFields,
                     horizontalPadding = 4.dp,
                     showDivider = false,
+            )
+
+            HorizontalDivider(
+                    color = AppColors.SettingsDivider,
+                    modifier = Modifier.padding(start = 4.dp, top = 1.dp, end = 4.dp, bottom = 4.dp),
+            )
+
+            HomeTextColorOptions(
+                    selectedColor = homeTextColorOverride,
+                    onColorSelected = onHomeTextColorChange,
+                    backgroundSource = backgroundSource,
+                    customImageUri = customImageUri,
             )
 
             HorizontalDivider(

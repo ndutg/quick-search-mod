@@ -38,9 +38,10 @@ object IntentHelpers {
     fun launchApp(
         context: Context,
         appInfo: AppInfo,
+        launchAdjacent: Boolean = false,
         onShowToast: ((Int, String?) -> Unit)? = null,
     ) {
-        AppLaunchingIntents.launchApp(context, appInfo, onShowToast)
+        AppLaunchingIntents.launchApp(context, appInfo, launchAdjacent, onShowToast)
     }
 
     /** Requests uninstall for an app. */

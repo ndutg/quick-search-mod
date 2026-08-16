@@ -92,6 +92,7 @@
     <string name="action_include_generic">शामिल करें</string>
     <string name="action_more_search_history">अधिक इतिहास</string>
     <string name="action_open">खोलें</string>
+    <string name="action_open_in_split_screen">स्प्लिट स्क्रीन</string>
     <string name="action_open_folder">फोल्डर खोलें</string>
     <string name="action_open_keyboard">कीबोर्ड खोलें</string>
     <string name="action_open_settings">सेटिंग्स खोलें</string>
@@ -103,7 +104,8 @@
     <string name="settings_gesture_swipe_up">ऊपर स्वाइप करें</string>
     <string name="settings_gesture_swipe_down">नीचे स्वाइप करें</string>
     <string name="settings_gesture_swipe_up_home">ऊपर स्वाइप करें (होम)</string>
-    <string name="settings_gesture_swipe_down_home">नीचे स्वाइप करें (होम)</string>
+<string name="settings_gesture_swipe_down_home">नीचे स्वाइप करें (होम)</string>
+<string name="settings_gesture_double_tap_home">डबल टैप (होम)</string>
     <string name="settings_gesture_settings">सेटिंग्स</string>
     <string name="settings_gesture_close_keyboard_notifications">कीबोर्ड बंद करें / नोटिफिकेशन खोलें</string>
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
@@ -217,6 +219,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">नए/अपडेटेड</string>
     <string name="app_suggestions_tab_pinned">पिन किए गए</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">पिन किए गए ऐप्स %1$s टैब में दिखाई देते रहेंगे</string>
     <string name="app_suggestions_tab_recent">हाल के</string>
     <string name="app_suggestions_tabs_dialog_message">चुनें कि होम स्क्रीन पर कौन से ऐप सुझाव टैब दिखाई दें।</string>
     <string name="app_suggestions_tabs_dialog_title">ऐप सुझाव टैब</string>
@@ -386,6 +389,7 @@
     <string name="contact_method_telegram_voice_call_label">Telegram वॉइस कॉल</string>
     <string name="contact_method_view_in_contacts_label">कॉन्टैक्ट्स ऐप में देखें</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">WhatsApp वीडियो कॉल</string>
     <string name="contact_method_whatsapp_voice_call_label">WhatsApp वॉइस कॉल</string>
     <string name="contacts_action_button_chat">चैट</string>
@@ -426,7 +430,7 @@
     <string name="error_whatsapp_video_call_unavailable">WhatsApp पर वीडियो कॉल उपलब्ध नहीं है</string>
     <string name="settings_call_permission_title">फोन</string>
     <string name="permissions_background_usage_title">बैकग्राउंड में उपयोग की अनुमति दें</string>
-    <string name="permissions_background_usage_desc">यदि Quick Search खुलने में धीमा है, तो बैटरी ऑप्टिमाइज़ेशन को अक्षम करने का प्रयास करें।</string>
+    <string name="permissions_background_usage_desc">तेज़ ऐप स्टार्टअप के लिए बैकग्राउंड उपयोग की अनुमति दें।</string>
     <string name="settings_calling_card_title">डिफ़ॉल्ट कॉलिंग ऐप</string>
     <string name="settings_calls_texts_title">कॉल्स और टेक्स्ट्स</string>
     <string name="settings_direct_dial_desc">डायलर खोले बिना सीधे कॉल करें। </string>
@@ -1023,6 +1027,8 @@
     <string name="settings_create_new_tool_button">नया टूल बनाएं</string>
     <string name="settings_custom_tool_alias_hint">इस टूल को ट्रिगर करने के लिए एक कीवर्ड</string>
     <string name="settings_custom_tool_alias_label">उपनाम</string>
+    <string name="settings_home_text_color_title">होम में टेक्स्ट का रंग</string>
+    <string name="settings_home_text_color_desc">ऐप लेबल, सेक्शन शीर्षक आदि</string>
     <string name="settings_custom_tool_delete_button">टूल हटाएं</string>
     <string name="settings_custom_tool_editor_title">कस्टम टूल</string>
     <string name="settings_custom_tool_name_label">टूल नाम</string>
@@ -1066,4 +1072,11 @@
     <string name="settings_more_apps_from_developer_title">डेवलपर के और ऐप्स</string>
     <string name="icon_picker_no_icon_packs">ऐप आइकन बदलने के लिए कोई आइकन पैक इंस्टॉल नहीं है।</string>
     <string name="icon_picker_download_icon_packs">डाउनलोड करें</string>
+    <string name="app_menu_usage_today">आज %1$s इस्तेमाल किया · %2$s बार खोला</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d बार</item><item quantity="other">%d बार</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d घंटा</item><item quantity="other">%d घंटे</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d मिनट</item><item quantity="other">%d मिनट</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s घंटे</string>
+    <string name="other_screen_time_today_title">आज का स्क्रीन टाइम</string>
+    <string name="other_screen_time_hours_minutes">%1$d घंटा %2$d मिनट</string>
 </resources>

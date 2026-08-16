@@ -55,12 +55,14 @@ fun AppearanceSettingsSection(
         overlayThemeIntensity: Float,
         fontScaleMultiplier: Float,
         useSystemFont: Boolean,
+        homeTextColorOverride: com.tk.quicksearch.search.core.HomeTextColor?,
         onSetAppTheme: (AppTheme) -> Unit,
         onOverlayThemeIntensityChange: (Float) -> Unit,
         appThemeMode: com.tk.quicksearch.search.core.AppThemeMode,
         onSetAppThemeMode: (com.tk.quicksearch.search.core.AppThemeMode) -> Unit,
         onFontScaleMultiplierChange: (Float) -> Unit,
         onUseSystemFontChange: (Boolean) -> Unit,
+        onHomeTextColorChange: (com.tk.quicksearch.search.core.HomeTextColor) -> Unit,
         backgroundSource: BackgroundSource,
         customImageUri: String?,
         onSetBackgroundSource: (BackgroundSource) -> Unit,
@@ -134,6 +136,10 @@ fun AppearanceSettingsSection(
                 onFontScaleMultiplierChange = onFontScaleMultiplierChange,
                 useSystemFont = useSystemFont,
                 onUseSystemFontChange = onUseSystemFontChange,
+                homeTextColorOverride = homeTextColorOverride,
+                onHomeTextColorChange = onHomeTextColorChange,
+                backgroundSource = backgroundSource,
+                customImageUri = customImageUri,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

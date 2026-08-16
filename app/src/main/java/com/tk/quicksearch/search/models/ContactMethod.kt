@@ -136,6 +136,9 @@ object ContactMethodMimeTypes {
     const val WHATSAPP_VOICE_CALL = "vnd.android.cursor.item/vnd.com.whatsapp.voip.call"
     const val WHATSAPP_MESSAGE = "vnd.android.cursor.item/vnd.com.whatsapp.profile"
     const val WHATSAPP_VIDEO_CALL = "vnd.android.cursor.item/vnd.com.whatsapp.video.call"
+    const val WHATSAPP_BUSINESS_VOICE_CALL = "vnd.android.cursor.item/vnd.com.whatsapp.w4b.voip.call"
+    const val WHATSAPP_BUSINESS_MESSAGE = "vnd.android.cursor.item/vnd.com.whatsapp.w4b.profile"
+    const val WHATSAPP_BUSINESS_VIDEO_CALL = "vnd.android.cursor.item/vnd.com.whatsapp.w4b.video.call"
 
     const val TELEGRAM_MESSAGE = "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"
     const val TELEGRAM_CALL = "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call"

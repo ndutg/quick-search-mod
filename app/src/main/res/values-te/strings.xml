@@ -92,6 +92,7 @@
     <string name="action_include_generic">చేర్చు</string>
     <string name="action_more_search_history">మరింత చరిత్ర</string>
     <string name="action_open">తెరువు</string>
+    <string name="action_open_in_split_screen">స్ప్లిట్ స్క్రీన్</string>
     <string name="action_open_folder">ఫోల్డర్ తెరువు</string>
     <string name="action_open_keyboard">కీబోర్డ్ తెరువు</string>
     <string name="action_open_settings">సెట్టింగ్‌లను తెరువు</string>
@@ -104,6 +105,7 @@
     <string name="settings_gesture_swipe_down">క్రిందికి స్వైప్ చేయండి</string>
     <string name="settings_gesture_swipe_up_home">పైకి స్వైప్ చేయండి (హోమ్)</string>
     <string name="settings_gesture_swipe_down_home">క్రిందికి స్వైప్ చేయండి (హోమ్)</string>
+    <string name="settings_gesture_double_tap_home">రెండుసార్లు నొక్కండి (హోమ్)</string>
     <string name="settings_gesture_settings">సెట్టింగులు</string>
     <string name="settings_gesture_close_keyboard_notifications">కీబోర్డ్ మూసివేయి / నోటిఫికేషన్‌లను తెరవండి</string>
     <string name="settings_gesture_close_keyboard">కీబోర్డ్ మూసివేయి</string>
@@ -217,6 +219,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">కొత్తవి/నవీకరించబడినవి</string>
     <string name="app_suggestions_tab_pinned">పిన్ చేసినవి</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">పిన్ చేసిన యాప్‌లు %1$s ట్యాబ్‌లో కనిపిస్తూనే ఉంటాయి</string>
     <string name="app_suggestions_tab_recent">ఇటీవలివి</string>
     <string name="app_suggestions_tabs_dialog_message">హోమ్ స్క్రీన్‌పై ఏ యాప్ సూచన ట్యాబ్‌లు కనిపించాలో ఎంచుకోండి.</string>
     <string name="app_suggestions_tabs_dialog_title">యాప్ సూచన ట్యాబ్‌లు</string>
@@ -386,6 +389,7 @@
     <string name="contact_method_telegram_voice_call_label">Telegram వాయిస్ కాల్</string>
     <string name="contact_method_view_in_contacts_label">పరిచయాల యాప్‌లో చూడండి</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">WhatsApp వీడియో కాల్</string>
     <string name="contact_method_whatsapp_voice_call_label">WhatsApp వాయిస్ కాల్</string>
     <string name="contacts_action_button_chat">చాట్</string>
@@ -426,7 +430,7 @@
     <string name="error_whatsapp_video_call_unavailable">వీడియో కాల్స్ కోసం WhatsApp అందుబాటులో లేదు</string>
     <string name="settings_call_permission_title">ఫోన్</string>
     <string name="permissions_background_usage_title">బ్యాక్‌గ్రౌండ్ వినియోగాన్ని అనుమతించు</string>
-    <string name="permissions_background_usage_desc">Quick Search తెరవడానికి సమయం పడుతుంటే, బ్యాటరీ ఆప్టిమైజేషన్‌ని నిలిపివేసి చూడండి.</string>
+    <string name="permissions_background_usage_desc">వేగవంతమైన యాప్ ప్రారంభం కోసం బ్యాక్‌గ్రౌండ్ వినియోగాన్ని అనుమతించండి.</string>
     <string name="settings_calling_card_title">డిఫాల్ట్ కాలింగ్ యాప్</string>
     <string name="settings_calls_texts_title">కాల్స్ &amp; టెక్స్ట్‌లు</string>
     <string name="settings_direct_dial_desc">డయలర్ తెరవకుండానే నేరుగా కాల్స్ చేయండి. </string>
@@ -1023,6 +1027,8 @@
     <string name="settings_create_new_tool_button">కొత్త సాధనాన్ని సృష్టించు</string>
     <string name="settings_custom_tool_alias_hint">ఈ సాధనాన్ని ట్రిగ్గర్ చేయడానికి ఒక కీలక పదం</string>
     <string name="settings_custom_tool_alias_label">అలియాస్</string>
+    <string name="settings_home_text_color_title">హోమ్‌లో టెక్స్ట్ రంగు</string>
+    <string name="settings_home_text_color_desc">యాప్ లేబుల్‌లు, విభాగం శీర్షికలు మొదలైనవి.</string>
     <string name="settings_custom_tool_delete_button">సాధనాన్ని తొలగించు</string>
     <string name="settings_custom_tool_editor_title">కస్టమ్ సాధనం</string>
     <string name="settings_custom_tool_name_label">సాధనం పేరు</string>
@@ -1066,4 +1072,11 @@
     <string name="settings_more_apps_from_developer_title">డెవలపర్ నుండి మరిన్ని యాప్‌లు</string>
     <string name="icon_picker_no_icon_packs">యాప్ ఐకాన్‌ను మార్చడానికి ఐకాన్ ప్యాక్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు.</string>
     <string name="icon_picker_download_icon_packs">డౌన్‌లోడ్ చేయండి</string>
+    <string name="app_menu_usage_today">ఈరోజు %1$s ఉపయోగించారు · %2$s సార్లు తెరిచారు</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d సారి</item><item quantity="other">%d సార్లు</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d గం.</item><item quantity="other">%d గం.</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d ని.</item><item quantity="other">%d ని.</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s గం.</string>
+    <string name="other_screen_time_today_title">ఈ రోజు స్క్రీన్ టైమ్</string>
+    <string name="other_screen_time_hours_minutes">%1$d గం %2$d నిమి</string>
 </resources>

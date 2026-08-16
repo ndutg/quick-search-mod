@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
+import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.DirectDialOption
@@ -36,6 +37,7 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.other.OtherSearchItemId
 // import com.tk.quicksearch.search.searchScreen.SearchEngineOnboardingOverlay
 import com.tk.quicksearch.search.searchScreen.SearchScreenBackground
 import com.tk.quicksearch.search.searchScreen.SearchScreenContent
@@ -62,7 +64,9 @@ fun SearchScreen(
     onClearQuery: () -> Unit,
     onSettingsClick: () -> Unit,
     onRequestUsagePermission: () -> Unit,
+    onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
     onAppClick: (AppInfo) -> Unit,
+    onOpenInSplitScreen: (AppInfo) -> Unit,
     onAppInfoClick: (AppInfo) -> Unit,
     onUninstallClick: (AppInfo) -> Unit,
     onHideApp: (AppInfo) -> Unit,
@@ -134,6 +138,7 @@ fun SearchScreen(
     onRefreshAvailableGeminiModels: () -> Unit = {},
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
     onWallpaperLoaded: (() -> Unit)? = null,
+    onSystemWallpaperChanged: (() -> Unit)? = null,
     isOverlayPresentation: Boolean = false,
     onOpenAppSettings: () -> Unit,
     onOpenCalendarPermissionSettings: () -> Unit,
@@ -219,10 +224,18 @@ fun SearchScreen(
     swipeDownAction: com.tk.quicksearch.search.data.preferences.SwipeGestureAction = com.tk.quicksearch.search.data.preferences.SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS,
     swipeUpCustomActionJson: String? = null,
     swipeDownCustomActionJson: String? = null,
+    swipeUpAliasTarget: String? = null,
+    swipeDownAliasTarget: String? = null,
     homeSwipeUpAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NONE,
     homeSwipeDownAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NOTIFICATION_PANEL,
     homeSwipeUpCustomActionJson: String? = null,
     homeSwipeDownCustomActionJson: String? = null,
+    homeDoubleTapAction: com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction = com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction.NONE,
+    homeDoubleTapCustomActionJson: String? = null,
+    homeSwipeUpAliasTarget: String? = null,
+    homeSwipeDownAliasTarget: String? = null,
+    homeDoubleTapAliasTarget: String? = null,
+    onGestureAliasTarget: (Enum<*>, String) -> Unit = { _, _ -> },
 ) {
     val directAnswerContactName = stringResource(R.string.direct_answer_contact_name)
 
@@ -233,6 +246,7 @@ fun SearchScreen(
         onSettingsClick = onSettingsClick,
         onRequestUsagePermission = onRequestUsagePermission,
         onAppClick = onAppClick,
+        onOpenInSplitScreen = onOpenInSplitScreen,
         onAppInfoClick = onAppInfoClick,
         onUninstallClick = onUninstallClick,
         onHideApp = onHideApp,
@@ -341,6 +355,7 @@ fun SearchScreen(
         onDismissSearchHistoryTip = onDismissSearchHistoryTip,
         onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
         onWallpaperLoaded = onWallpaperLoaded,
+        onSystemWallpaperChanged = onSystemWallpaperChanged,
         onCustomAction = onCustomAction,
         getPrimaryContactCardAction = getPrimaryContactCardAction,
         getSecondaryContactCardAction = getSecondaryContactCardAction,
@@ -430,7 +445,10 @@ fun SearchScreen(
         }
     }
 
-    CompositionLocalProvider(LocalImageBackgroundIsDark provides imageBackgroundIsDark) {
+    CompositionLocalProvider(
+        LocalImageBackgroundIsDark provides imageBackgroundIsDark,
+        LocalHomeTextColorOverride provides state.homeTextColorOverride,
+    ) {
     Box(modifier = screenModifier) {
         if (!isOverlayPresentation) {
             SearchScreenBackground(
@@ -485,6 +503,7 @@ fun SearchScreen(
             onSettingsClick = onSettingsClick,
             onAppClick = onAppClick,
             onRequestUsagePermission = onRequestUsagePermission,
+            onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
             onSearchTargetClick = onSearchTargetClick,
             onSearchEngineLongPress = onSearchEngineLongPress,
             onAiSearchEmailClick = onAiSearchEmailClick,
@@ -548,10 +567,18 @@ fun SearchScreen(
             swipeDownAction = swipeDownAction,
             swipeUpCustomActionJson = swipeUpCustomActionJson,
             swipeDownCustomActionJson = swipeDownCustomActionJson,
+            swipeUpAliasTarget = swipeUpAliasTarget,
+            swipeDownAliasTarget = swipeDownAliasTarget,
             homeSwipeUpAction = homeSwipeUpAction,
             homeSwipeDownAction = homeSwipeDownAction,
             homeSwipeUpCustomActionJson = homeSwipeUpCustomActionJson,
             homeSwipeDownCustomActionJson = homeSwipeDownCustomActionJson,
+            homeDoubleTapAction = homeDoubleTapAction,
+            homeDoubleTapCustomActionJson = homeDoubleTapCustomActionJson,
+            homeSwipeUpAliasTarget = homeSwipeUpAliasTarget,
+            homeSwipeDownAliasTarget = homeSwipeDownAliasTarget,
+            homeDoubleTapAliasTarget = homeDoubleTapAliasTarget,
+            onGestureAliasTarget = onGestureAliasTarget,
             getAllTriggerWordsById = getAllTriggerWordsById,
             getAllContactActionTriggers = getAllContactActionTriggers,
             onContactActionTrigger = onContactActionTrigger,

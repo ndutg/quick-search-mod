@@ -39,6 +39,7 @@ object ItemPriorityConfig {
         WORD_CLOCK_RESULT,
         DICTIONARY_RESULT,
         WEATHER_RESULT,
+        OTHER_RESULTS,
         AI_SEARCH_RESULT,
 
         // Section groups (contain multiple search results)
@@ -88,6 +89,7 @@ object ItemPriorityConfig {
             add(ItemType.WORD_CLOCK_RESULT)
             add(ItemType.DICTIONARY_RESULT)
             add(ItemType.WEATHER_RESULT)
+            add(ItemType.OTHER_RESULTS)
             add(ItemType.AI_SEARCH_RESULT)
             addAll(sectionItemTypes)
             add(ItemType.WEB_SUGGESTIONS)
@@ -110,6 +112,7 @@ object ItemPriorityConfig {
         buildList {
             add(ItemType.ERROR_BANNER)
             addAll(sectionItemTypes)
+            add(ItemType.OTHER_RESULTS)
             add(ItemType.RECENT_QUERIES)
         }
 

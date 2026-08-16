@@ -249,11 +249,16 @@ private fun AddCustomProviderCard(
                             baseUrlInput.trim(),
                             apiKeyInput.trim(),
                         )
-                        baseUrlInput = ""
-                        apiKeyInput = ""
                     },
                 ) {
-                    Text(text = stringResource(R.string.dialog_save))
+                    Text(
+                        text =
+                            if (isSaving) {
+                                stringResource(R.string.settings_gemini_api_key_saving)
+                            } else {
+                                stringResource(R.string.dialog_save)
+                            },
+                    )
                 }
             }
         }
@@ -419,8 +424,6 @@ private fun ProviderApiKeyCard(
                             enabled = !isSavingApiKey,
                             onClick = {
                                 onSetApiKey(providerId, trimmedKey)
-                                inputByProvider.remove(providerId)
-                                apiKeyInput = ""
                             },
                         ) {
                             Text(

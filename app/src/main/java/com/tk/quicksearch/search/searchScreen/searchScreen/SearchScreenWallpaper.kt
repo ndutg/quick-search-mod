@@ -26,6 +26,7 @@ import com.tk.quicksearch.shared.util.WallpaperUtils
 internal fun SearchScreenWallpaperLogic(
     state: SearchUiState,
     onWallpaperLoaded: (() -> Unit)? = null,
+    onSystemWallpaperChanged: (() -> Unit)? = null,
     isOverlayPresentation: Boolean = false,
 ): Triple<ImageBitmap?, Boolean, Boolean> {
     val context = LocalContext.current
@@ -48,6 +49,7 @@ internal fun SearchScreenWallpaperLogic(
                         if (intent?.action != wallpaperChangedAction) return
                         WallpaperUtils.invalidateWallpaperCache()
                         wallpaperChangeVersion++
+                        onSystemWallpaperChanged?.invoke()
                     }
                 }
             val filter = IntentFilter(wallpaperChangedAction)

@@ -544,20 +544,26 @@ fun SearchRoute(
             ),
         )
     }
+    var swipeAliasTargets by remember { mutableStateOf(listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())) }
     var homeSwipeUpAction by remember {
         mutableStateOf(gesturePreferences.getHomeSwipeUpAction())
     }
     var homeSwipeDownAction by remember {
         mutableStateOf(gesturePreferences.getHomeSwipeDownAction())
     }
+    var homeDoubleTapAction by remember {
+        mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
+    }
     var homeCustomSwipeActions by remember {
         mutableStateOf(
             listOf(
                 gesturePreferences.getHomeSwipeUpCustomAction(),
                 gesturePreferences.getHomeSwipeDownCustomAction(),
+                gesturePreferences.getHomeDoubleTapCustomAction(),
             ),
         )
     }
+    var homeAliasTargets by remember { mutableStateOf(listOf(gesturePreferences.getHomeSwipeUpAliasTarget(), gesturePreferences.getHomeSwipeDownAliasTarget(), gesturePreferences.getHomeDoubleTapAliasTarget())) }
     var isLauncherSwipeRightEnabled by remember { mutableStateOf(gesturePreferences.isLauncherSwipeRightEnabled()) }
     DisposableEffect(lifecycleOwner, notesPreferences) {
         val observer = LifecycleEventObserver { _, event ->
@@ -589,13 +595,17 @@ fun SearchRoute(
                     gesturePreferences.getSwipeUpCustomAction(),
                     gesturePreferences.getSwipeDownCustomAction(),
                 )
+            swipeAliasTargets = listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
             homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction()
+            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             homeCustomSwipeActions =
                 listOf(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
                     gesturePreferences.getHomeSwipeDownCustomAction(),
+                    gesturePreferences.getHomeDoubleTapCustomAction(),
                 )
+            homeAliasTargets = listOf(gesturePreferences.getHomeSwipeUpAliasTarget(), gesturePreferences.getHomeSwipeDownAliasTarget(), gesturePreferences.getHomeDoubleTapAliasTarget())
             isLauncherSwipeRightEnabled = gesturePreferences.isLauncherSwipeRightEnabled()
         }
         preferences.registerOnSharedPreferenceChangeListener(listener)
@@ -624,6 +634,8 @@ fun SearchRoute(
                                 .fromJson(customSwipeActions[0])
                                 ?.let { action -> context.startActivity(com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity.createIntent(context, action)) }
                         }
+                        SwipeGestureAction.SEARCH_ENGINE -> swipeAliasTargets[0]?.let(viewModel::activateGestureSearchTarget)
+                        SwipeGestureAction.TOOL -> swipeAliasTargets[0]?.let(viewModel::activateGestureTool)
                         else -> Unit
                     }
                 }
@@ -636,6 +648,8 @@ fun SearchRoute(
                             .fromJson(customSwipeActions[1])
                             ?.let { action -> context.startActivity(com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity.createIntent(context, action)) }
                     }
+                    SwipeGestureAction.SEARCH_ENGINE -> swipeAliasTargets[1]?.let(viewModel::activateGestureSearchTarget)
+                    SwipeGestureAction.TOOL -> swipeAliasTargets[1]?.let(viewModel::activateGestureTool)
                     else -> Unit
                 }
             }
@@ -693,9 +707,13 @@ fun SearchRoute(
             onStartupKeyboardVisible = viewModel::notifyStartupKeyboardVisible,
             onClearQuery = viewModel::clearQuery,
             onRequestUsagePermission = { viewModel.openUsageAccessSettings() },
+            onToggleOtherSearchItemPin = viewModel::toggleOtherSearchItemPin,
             onSettingsClick = onSettingsClick,
             onAppClick = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.launchApp(app, context)
+            },
+            onOpenInSplitScreen = { app: com.tk.quicksearch.search.models.AppInfo ->
+                viewModel.launchAppInSplitScreen(app, context)
             },
             onAppInfoClick = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.openAppInfo(app)
@@ -935,6 +953,7 @@ fun SearchRoute(
             onSavePrimaryContactCardAction = viewModel::setPrimaryContactCardAction,
             onSaveSecondaryContactCardAction = viewModel::setSecondaryContactCardAction,
             onWallpaperLoaded = onWallpaperLoaded,
+            onSystemWallpaperChanged = viewModel::resetHomeTextColorForNewWallpaper,
             isOverlayPresentation = isOverlayPresentation,
             onOverlayExpandRequest = onOverlayExpandRequest,
             isOverlayExpanded = isOverlayExpanded,
@@ -950,10 +969,24 @@ fun SearchRoute(
             swipeDownAction = swipeActions[3],
             swipeUpCustomActionJson = customSwipeActions[2],
             swipeDownCustomActionJson = customSwipeActions[3],
+            swipeUpAliasTarget = swipeAliasTargets[2],
+            swipeDownAliasTarget = swipeAliasTargets[3],
             homeSwipeUpAction = homeSwipeUpAction,
             homeSwipeDownAction = homeSwipeDownAction,
             homeSwipeUpCustomActionJson = homeCustomSwipeActions[0],
             homeSwipeDownCustomActionJson = homeCustomSwipeActions[1],
+            homeDoubleTapAction = homeDoubleTapAction,
+            homeDoubleTapCustomActionJson = homeCustomSwipeActions[2],
+            homeSwipeUpAliasTarget = homeAliasTargets[0],
+            homeSwipeDownAliasTarget = homeAliasTargets[1],
+            homeDoubleTapAliasTarget = homeAliasTargets[2],
+            onGestureAliasTarget = { action, targetId ->
+                when (action) {
+                    SwipeGestureAction.SEARCH_ENGINE, HomeSwipeGestureAction.SEARCH_ENGINE -> viewModel.activateGestureSearchTarget(targetId)
+                    SwipeGestureAction.TOOL, HomeSwipeGestureAction.TOOL -> viewModel.activateGestureTool(targetId)
+                    else -> Unit
+                }
+            },
             )
         }
 

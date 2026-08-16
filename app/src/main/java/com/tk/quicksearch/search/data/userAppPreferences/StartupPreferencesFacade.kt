@@ -218,7 +218,7 @@ class StartupPreferencesFacade(
                                         .KEY_TOP_RESULT_INDICATOR_ENABLED,
                         ] as?
                                 Boolean
-                                ?: true,
+                                ?: false,
                 openKeyboardOnLaunch =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -642,7 +642,7 @@ class StartupPreferencesFacade(
                                                 .KEY_TOP_RESULT_INDICATOR_ENABLED,
                                 ] as?
                                         Boolean
-                                        ?: true,
+                                        ?: false,
                         openKeyboardOnLaunch =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences

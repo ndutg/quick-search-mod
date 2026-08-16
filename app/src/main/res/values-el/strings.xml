@@ -92,6 +92,7 @@
     <string name="action_include_generic">Συμπερίληψη</string>
     <string name="action_more_search_history">Περισσότερο ιστορικό</string>
     <string name="action_open">Άνοιγμα</string>
+    <string name="action_open_in_split_screen">Διαιρεμένη οθόνη</string>
     <string name="action_open_folder">Άνοιγμα φακέλου</string>
     <string name="action_open_keyboard">Άνοιγμα πληκτρολογίου</string>
     <string name="action_open_settings">Άνοιγμα ρυθμίσεων</string>
@@ -103,7 +104,8 @@
     <string name="settings_gesture_swipe_up">Σάρωση προς τα πάνω</string>
     <string name="settings_gesture_swipe_down">Σάρωση προς τα κάτω</string>
     <string name="settings_gesture_swipe_up_home">Σάρωση προς τα πάνω (Αρχική)</string>
-    <string name="settings_gesture_swipe_down_home">Σάρωση προς τα κάτω (Αρχική)</string>
+<string name="settings_gesture_swipe_down_home">Σάρωση προς τα κάτω (Αρχική)</string>
+<string name="settings_gesture_double_tap_home">Διπλό πάτημα (Αρχική)</string>
     <string name="settings_gesture_settings">Ρυθμίσεις</string>
     <string name="settings_gesture_close_keyboard_notifications">Κλείσιμο πληκτρολογίου / Άνοιγμα ειδοποιήσεων</string>
     <string name="settings_gesture_close_keyboard">Κλείσιμο πληκτρολογίου</string>
@@ -217,6 +219,7 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Νέες/Ενημερωμένες</string>
     <string name="app_suggestions_tab_pinned">Καρφιτσωμένες</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Οι καρφιτσωμένες εφαρμογές θα εμφανίζονται ακόμα στην καρτέλα %1$s</string>
     <string name="app_suggestions_tab_recent">Πρόσφατες</string>
     <string name="app_suggestions_tabs_dialog_message">Επιλέξτε ποιες καρτέλες προτάσεων εφαρμογών θα εμφανίζονται στην αρχική οθόνη.</string>
     <string name="app_suggestions_tabs_dialog_title">Καρτέλες προτάσεων εφαρμογών</string>
@@ -386,6 +389,7 @@
     <string name="contact_method_telegram_voice_call_label">Φωνητική κλήση Telegram</string>
     <string name="contact_method_view_in_contacts_label">Προβολή στην εφαρμογή επαφών</string>
     <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">Βιντεοκλήση WhatsApp</string>
     <string name="contact_method_whatsapp_voice_call_label">Φωνητική κλήση WhatsApp</string>
     <string name="contacts_action_button_chat">Συνομιλία</string>
@@ -426,7 +430,7 @@
     <string name="error_whatsapp_video_call_unavailable">Το WhatsApp δεν είναι διαθέσιμο για βιντεοκλήσεις</string>
     <string name="settings_call_permission_title">Τηλέφωνο</string>
     <string name="permissions_background_usage_title">Να επιτρέπεται η χρήση στο παρασκήνιο</string>
-    <string name="permissions_background_usage_desc">Εάν το Quick Search αργεί να ανοίξει, δοκιμάστε να απενεργοποιήσετε τη βελτιστοποίηση μπαταρίας.</string>
+    <string name="permissions_background_usage_desc">Να επιτρέπεται η χρήση στο παρασκήνιο για ταχύτερη εκκίνηση εφαρμογών.</string>
     <string name="settings_calling_card_title">Προεπιλεγμένη εφαρμογή κλήσεων</string>
     <string name="settings_calls_texts_title">Κλήσεις &amp; Μηνύματα</string>
     <string name="settings_direct_dial_desc">Πραγματοποίηση κλήσεων απευθείας χωρίς το άνοιγμα της εφαρμογής κλήσεων.</string>
@@ -1023,6 +1027,8 @@
     <string name="settings_create_new_tool_button">Δημιουργία νέου εργαλείου</string>
     <string name="settings_custom_tool_alias_hint">Μια λέξη-κλειδί για την ενεργοποίηση αυτού του εργαλείου</string>
     <string name="settings_custom_tool_alias_label">Συντομογραφία</string>
+    <string name="settings_home_text_color_title">Χρώμα κειμένου στην αρχική οθόνη</string>
+    <string name="settings_home_text_color_desc">Ετικέτες εφαρμογών, τίτλοι ενοτήτων κ.λπ.</string>
     <string name="settings_custom_tool_delete_button">Διαγραφή εργαλείου</string>
     <string name="settings_custom_tool_editor_title">Προσαρμοσμένο εργαλείο</string>
     <string name="settings_custom_tool_name_label">Όνομα εργαλείου</string>
@@ -1066,4 +1072,11 @@
     <string name="settings_more_apps_from_developer_title">Περισσότερες εφαρμογές από τον προγραμματιστή</string>
     <string name="icon_picker_no_icon_packs">Δεν έχουν εγκατασταθεί πακέτα εικονιδίων για αλλαγή του εικονιδίου της εφαρμογής.</string>
     <string name="icon_picker_download_icon_packs">Λήψη</string>
+    <string name="app_menu_usage_today">%1$s σήμερα · Άνοιξε %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d φορά</item><item quantity="other">%d φορές</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d ωρ.</item><item quantity="other">%d ώρ.</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d λ.</item><item quantity="other">%d λ.</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s ώρ.</string>
+    <string name="other_screen_time_today_title">Σημερινός χρόνος οθόνης</string>
+    <string name="other_screen_time_hours_minutes">%1$d ώ. %2$d λ.</string>
 </resources>

@@ -15,6 +15,7 @@ class ContentLayoutPolicyTest {
                 ItemPriorityConfig.ItemType.ERROR_BANNER,
                 ItemPriorityConfig.ItemType.APPS_SECTION,
                 ItemPriorityConfig.ItemType.RECENT_QUERIES,
+                ItemPriorityConfig.ItemType.OTHER_RESULTS,
                 ItemPriorityConfig.ItemType.APP_SHORTCUTS_SECTION,
                 ItemPriorityConfig.ItemType.CONTACTS_SECTION,
                 ItemPriorityConfig.ItemType.FILES_SECTION,
