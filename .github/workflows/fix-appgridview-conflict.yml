@@ -26,46 +26,74 @@ jobs:
       - name: Fetch upstream main
         run: git fetch origin main
 
-      - name: Take upstream AppGridView.kt then re-apply white label patch
+      - name: Take upstream AppGridView.kt
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          git checkout origin/main -- "$FILE"
+          echo "Took upstream version"
+
+      - name: Show current AppLabelText function
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          echo "=== AppLabelText function ==="
+          grep -n -A 15 "private fun AppLabelText" "$FILE"
+
+          echo ""
+          echo "=== Lines with imageBackgroundIsDark / labelColor ==="
+          grep -n "imageBackgroundIsDark\|labelColor\|Color.Black\|Color.White\|LocalImageBackgroundIsDark" "$FILE"
+
+      - name: Apply white label patch (flexible)
         run: |
           FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
 
-          echo "=== Taking upstream version of AppGridView.kt ==="
-          git checkout origin/main -- "$FILE"
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
+          with open(file_path, "r") as f:
+              content = f.read()
 
-          echo "=== Re-applying white label patch ==="
-          sed -i 's|false -> Color.Black|false -> Color.White  // scrim makes background dark|' "$FILE"
+          if "scrim makes background dark" in content:
+              print("Patch already present")
+          else:
+              # Try several known variants of the false branch
+              variants = [
+                  "false -> Color.Black",
+                  "false -> Color.Black,",
+                  "false -> androidx.compose.ui.graphics.Color.Black",
+              ]
+              applied = False
+              for v in variants:
+                  if v in content:
+                      content = content.replace(v, "false -> Color.White // scrim makes background dark")
+                      applied = True
+                      print(f"Applied patch by replacing: {v}")
+                      break
 
-          echo "=== Verification ==="
+              if not applied:
+                  print("Could not find false-branch anchor. Dumping AppLabelText for manual inspection:")
+                  import re
+                  m = re.search(r'private fun AppLabelText.*?\n\}', content, re.DOTALL)
+                  if m:
+                      print(m.group(0)[:1200])
+
+              with open(file_path, "w") as f:
+                  f.write(content)
+          PYEOF
+
+      - name: Verify
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt"
           echo -n "White label patch present: "
           grep -q "scrim makes background dark" "$FILE" && echo "OK" || echo "MISSING"
-
-          echo -n "onOpenInSplitScreen present (upstream code): "
+          echo -n "onOpenInSplitScreen present: "
           grep -q "onOpenInSplitScreen" "$FILE" && echo "OK" || echo "MISSING"
 
-          echo ""
-          echo "=== Context around white label change ==="
-          grep -B 2 -A 2 "scrim makes background dark" "$FILE"
-
-      - name: Verify all 3 patches
-        run: |
-          echo "=== Custom patches check ==="
-          echo -n "READ_MEDIA_IMAGES: "
-          grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml && echo "OK" || echo "MISSING"
-          echo -n "Dark scrim: "
-          grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "MISSING"
-          echo -n "White label: "
-          grep -q "scrim makes background dark" app/src/main/java/com/tk/quicksearch/search/apps/AppGridView.kt && echo "OK" || echo "MISSING"
-
-      - name: Commit and push
+      - name: Commit and push if patched
         run: |
           git add -A
-          git diff --cached --stat
-
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No changes to commit (nothing patched)"
           else
-            git commit -m "fix: take upstream AppGridView.kt and re-apply white label patch (fixes onOpenInSplitScreen compile error)"
+            git commit -m "fix: take upstream AppGridView.kt and re-apply white label patch"
             git push origin restore-wallpaper-feature
-            echo "Fix pushed - build will auto-trigger"
+            echo "Pushed"
           fi
