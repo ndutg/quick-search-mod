@@ -58,8 +58,7 @@ import com.tk.quicksearch.search.searchScreen.InfoBanner
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
 import com.tk.quicksearch.search.searchScreen.renderSection
 import com.tk.quicksearch.search.searchScreen.rememberTopMatches
-import com.tk.quicksearch.search.searchScreen.rememberStableTopMatchesQuery
-import com.tk.quicksearch.search.searchScreen.shouldDeferTopMatchesForAppSearch
+import com.tk.quicksearch.search.searchScreen.shouldDeferTopMatchesForLocalSearch
 import com.tk.quicksearch.search.searchScreen.TopMatchesSection
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
 import com.tk.quicksearch.search.searchScreen.FilesSectionParams
@@ -334,16 +333,14 @@ fun ContentLayout(
             !isSectionAliasMode &&
             renderingState.shouldShowApps &&
             renderingState.expandedSection == ExpandedSection.NONE
-    val deferNonAppContentUntilAppsReady =
-        shouldDeferTopMatchesForAppSearch(
+    val isLocalSearchRefreshing =
+        shouldDeferTopMatchesForLocalSearch(
             query = state.query,
             isAppSearchInProgress = state.isAppSearchInProgress,
+            isSecondarySearchInProgress = state.isSecondarySearchInProgress,
         )
-    val topMatchesQuery =
-        rememberStableTopMatchesQuery(
-            query = state.query,
-            deferUpdate = deferNonAppContentUntilAppsReady,
-        )
+    val deferSecondarySectionsUntilReady =
+        state.query.isNotBlank() && state.isSecondarySearchInProgress
     val waitingForSuggestions =
         canDeferOtherContentForSuggestions &&
             state.isInitializing &&
@@ -356,7 +353,7 @@ fun ContentLayout(
     val hideOtherContent = waitingForSuggestions || holdingForAppGridAnimation
     val topMatches =
         rememberTopMatches(
-            query = topMatchesQuery,
+            query = state.query,
             renderingState = renderingState,
             context = sectionContextForRecentHistoryExpansion,
             params = sectionParams,
@@ -364,9 +361,10 @@ fun ContentLayout(
             topMatchesSectionOrder = state.topMatchesSectionOrder,
             disabledTopMatchesSections = state.disabledTopMatchesSections,
             secondaryRankingSignal = state.secondaryRankingSignal,
+            filterStaleCandidates = isLocalSearchRefreshing,
             otherSearchItemIds =
                 OtherSearchItemRegistry.visibleSearchItemIds(
-                    query = topMatchesQuery,
+                    query = state.query,
                     pinnedItemOrder = state.pinnedNonAppItemOrder,
                     screenTimeState = state.screenTimeState,
                 ),
@@ -750,7 +748,9 @@ fun ContentLayout(
                 if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
                 if (!shouldRenderSection(section)) return@forEach
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
-                if (deferNonAppContentUntilAppsReady && section != SearchSection.APPS) return@forEach
+                if (deferSecondarySectionsUntilReady && section != SearchSection.APPS) {
+                    return@forEach
+                }
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
                 if (
                     !hasQuery &&
@@ -936,12 +936,6 @@ fun ContentLayout(
                 return@forEach
             }
 
-            if (
-                deferNonAppContentUntilAppsReady &&
-                    itemType != ItemPriorityConfig.ItemType.SEARCH_ENGINES_INLINE
-            ) {
-                return@forEach
-            }
             if (hideOtherContent) return@forEach
 
             when (itemType) {

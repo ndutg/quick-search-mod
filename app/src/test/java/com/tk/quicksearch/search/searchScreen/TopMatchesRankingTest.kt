@@ -3,7 +3,10 @@ package com.tk.quicksearch.search.searchScreen
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.other.OtherSearchItemId
+import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchRankingUtils
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class TopMatchesRankingTest {
@@ -53,30 +56,75 @@ class TopMatchesRankingTest {
     }
 
     @Test
-    fun topMatchesWaitForCurrentAppSearchEvenWhenOldResultsRemainVisible() {
+    fun topMatchesWaitUntilBothLocalSearchBatchesAreSettled() {
         assertEquals(
             true,
-            shouldDeferTopMatchesForAppSearch(
-                query = "Te",
+            shouldDeferTopMatchesForLocalSearch(
+                query = "Gm",
                 isAppSearchInProgress = true,
+                isSecondarySearchInProgress = false,
+            ),
+        )
+        assertEquals(
+            true,
+            shouldDeferTopMatchesForLocalSearch(
+                query = "Gm",
+                isAppSearchInProgress = false,
+                isSecondarySearchInProgress = true,
             ),
         )
         assertEquals(
             false,
-            shouldDeferTopMatchesForAppSearch(
-                query = "Te",
+            shouldDeferTopMatchesForLocalSearch(
+                query = "Gm",
                 isAppSearchInProgress = false,
+                isSecondarySearchInProgress = false,
             ),
         )
     }
 
     @Test
-    fun topMatchesKeepTheirSettledQueryUntilCurrentAppSearchCompletes() {
-        val stabilizer = TopMatchesQueryStabilizer(initialQuery = "T")
+    fun refreshingTopMatchesKeepCurrentMatchesAndDropStaleOnes() {
+        val currentMatch = topMatch("Gmail", priority = 0, secondaryScore = 0L, index = 0)
+        val staleMatch = topMatch("Old shortcut", priority = 4, secondaryScore = 0L, index = 1)
 
-        assertEquals("T", stabilizer.queryFor(query = "Te", deferUpdate = true))
-        assertEquals("Te", stabilizer.queryFor(query = "Te", deferUpdate = false))
-        assertEquals("Te", stabilizer.queryFor(query = "Tes", deferUpdate = true))
+        assertEquals(
+            listOf(currentMatch),
+            filterTopMatchesForActiveQuery(
+                matches = listOf(currentMatch, staleMatch),
+                filterStaleCandidates = true,
+            ),
+        )
+        assertEquals(
+            listOf(currentMatch, staleMatch),
+            filterTopMatchesForActiveQuery(
+                matches = listOf(currentMatch, staleMatch),
+                filterStaleCandidates = false,
+            ),
+        )
+    }
+
+    @Test
+    fun appInitialsRemainAValidTopMatchWhileResultsRefresh() {
+        val googleMaps =
+            AppInfo(
+                appName = "Google Maps",
+                packageName = "com.google.android.apps.maps",
+                lastUsedTime = 0L,
+                totalTimeInForeground = 0L,
+                launchCount = 0,
+                firstInstallTime = 0L,
+                isSystemApp = false,
+            )
+
+        val priority =
+            appTopMatchPriority(
+                app = googleMaps,
+                nickname = null,
+                query = SearchQueryContext.fromRawQuery("Gm"),
+            )
+
+        assertFalse(SearchRankingUtils.isOtherMatch(priority))
     }
 
     private fun topMatch(

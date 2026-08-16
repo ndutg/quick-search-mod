@@ -690,10 +690,11 @@ internal fun SearchScreenContent(
                     state.isWeatherAliasMode ||
                     state.detectedCustomToolId != null
                     || state.detectedTaskerIntentId != null
-    val deferTopMatchSubmitUntilAppsReady =
-            shouldDeferTopMatchesForAppSearch(
+    val deferTopMatchSubmitUntilLocalSearchReady =
+            shouldDeferTopMatchesForLocalSearch(
                     query = state.query,
                     isAppSearchInProgress = state.isAppSearchInProgress,
+                    isSecondarySearchInProgress = state.isSecondarySearchInProgress,
             )
     val topMatchSubmitContext =
             rememberSectionRenderContext(
@@ -744,7 +745,7 @@ internal fun SearchScreenContent(
                     !hideResultsForTopMatchSubmit &&
                     expandedSection == ExpandedSection.NONE &&
                     !isSearchHistoryExpanded &&
-                    !deferTopMatchSubmitUntilAppsReady &&
+            !deferTopMatchSubmitUntilLocalSearchReady &&
                     topMatchesForSubmit.isNotEmpty()
     val keyboardNavigableTopMatches =
             if (state.oneHandedMode) {

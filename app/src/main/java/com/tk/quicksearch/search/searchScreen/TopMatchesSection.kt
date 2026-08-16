@@ -32,7 +32,10 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultRow
 import com.tk.quicksearch.search.appShortcuts.AppShortcutRow
+import com.tk.quicksearch.search.appShortcuts.AppShortcutSearchPolicy
 import com.tk.quicksearch.search.apps.AppItemDropdownMenu
+import com.tk.quicksearch.search.apps.AppSearchInitials
+import com.tk.quicksearch.search.apps.AppSearchPolicy
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.calendar.CalendarEventRow
 import com.tk.quicksearch.search.common.AddToHomeHandler
@@ -67,6 +70,7 @@ import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderin
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
 import com.tk.quicksearch.search.utils.SearchRankingUtils
+import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -164,6 +168,7 @@ internal fun rememberTopMatches(
     disabledTopMatchesSections: Set<SearchSection>,
     secondaryRankingSignal: SecondaryRankingSignal,
     otherSearchItemIds: List<OtherSearchItemId> = emptyList(),
+    filterStaleCandidates: Boolean = false,
 ): List<TopMatchItem> =
     remember(
         query,
@@ -175,6 +180,7 @@ internal fun rememberTopMatches(
         disabledTopMatchesSections,
         secondaryRankingSignal,
         otherSearchItemIds,
+        filterStaleCandidates,
     ) {
         if (query.isBlank() || limit <= 0) {
             emptyList()
@@ -189,6 +195,7 @@ internal fun rememberTopMatches(
                 disabledTopMatchesSections = disabledTopMatchesSections,
                 secondaryRankingSignal = secondaryRankingSignal,
                 otherSearchItemIds = otherSearchItemIds,
+                filterStaleCandidates = filterStaleCandidates,
             )
         }
     }
@@ -203,6 +210,7 @@ private fun buildTopMatches(
     disabledTopMatchesSections: Set<SearchSection>,
     secondaryRankingSignal: SecondaryRankingSignal,
     otherSearchItemIds: List<OtherSearchItemId>,
+    filterStaleCandidates: Boolean,
 ): List<TopMatchItem> {
     val sectionOrder =
         topMatchesSectionOrder.mapIndexed { index, section -> section to index }.toMap()
@@ -211,6 +219,7 @@ private fun buildTopMatches(
         section !in disabledTopMatchesSections && section in sectionOrder
     fun priority(text: String, nickname: String? = null): Int =
         SearchRankingUtils.calculateMatchPriorityWithNickname(text, nickname, query)
+    val queryContext = SearchQueryContext.fromRawQuery(query)
     val recencyIndex = context.recentResultRecencyIndex
 
     val matches = mutableListOf<TopMatchItem>()
@@ -228,7 +237,12 @@ private fun buildTopMatches(
         renderingState.displayApps.forEachIndexed { index, app ->
             matches += TopMatchItem.App(
                 app = app,
-                priority = priority(app.appName, params.appsParams?.getAppNickname?.invoke(app.packageName)),
+                priority =
+                    appTopMatchPriority(
+                        app = app,
+                        nickname = params.appsParams?.getAppNickname?.invoke(app.packageName),
+                        query = queryContext,
+                    ),
                 sectionOrder = order(SearchSection.APPS),
                 secondaryScore = topMatchSecondaryScore(
                     secondaryRankingSignal,
@@ -244,9 +258,10 @@ private fun buildTopMatches(
             val id = shortcutKey(shortcut)
             matches += TopMatchItem.AppShortcut(
                 shortcut = shortcut,
-                priority = priority(
-                    shortcutDisplayName(shortcut),
-                    params.appShortcutsParams?.getShortcutNickname?.invoke(id),
+                priority = appShortcutTopMatchPriority(
+                    shortcut = shortcut,
+                    nickname = params.appShortcutsParams?.getShortcutNickname?.invoke(id),
+                    query = queryContext,
                 ),
                 sectionOrder = order(SearchSection.APP_SHORTCUTS),
                 secondaryScore = secondaryScore(
@@ -364,8 +379,45 @@ private fun buildTopMatches(
         }
     }
 
-    return rankTopMatches(matches, limit)
+    return rankTopMatches(
+        matches = filterTopMatchesForActiveQuery(matches, filterStaleCandidates),
+        limit = limit,
+    )
 }
+
+internal fun appTopMatchPriority(
+    app: AppInfo,
+    nickname: String?,
+    query: SearchQueryContext,
+): Int =
+    AppSearchPolicy.matchPriority(
+        appName = app.appName,
+        nickname = nickname,
+        query = query,
+        initials = AppSearchInitials.initialsFor(app),
+    )
+
+internal fun appShortcutTopMatchPriority(
+    shortcut: StaticShortcut,
+    nickname: String?,
+    query: SearchQueryContext,
+): Int =
+    AppShortcutSearchPolicy.matchPriority(
+        displayName = shortcutDisplayName(shortcut),
+        appLabel = shortcut.appLabel,
+        nickname = nickname,
+        query = query,
+    )
+
+internal fun filterTopMatchesForActiveQuery(
+    matches: List<TopMatchItem>,
+    filterStaleCandidates: Boolean,
+): List<TopMatchItem> =
+    if (filterStaleCandidates) {
+        matches.filterNot { SearchRankingUtils.isOtherMatch(it.priority) }
+    } else {
+        matches
+    }
 
 internal fun otherSearchItemMatchPriority(
     itemId: OtherSearchItemId,
@@ -399,32 +451,13 @@ internal fun topMatchSecondaryScore(
         SecondaryRankingSignal.NONE -> 0L
     }
 
-internal fun shouldDeferTopMatchesForAppSearch(
+internal fun shouldDeferTopMatchesForLocalSearch(
     query: String,
     isAppSearchInProgress: Boolean,
-): Boolean = query.isNotBlank() && isAppSearchInProgress
-
-internal class TopMatchesQueryStabilizer(initialQuery: String) {
-    private var settledQuery = initialQuery
-
-    fun queryFor(
-        query: String,
-        deferUpdate: Boolean,
-    ): String {
-        if (!deferUpdate) settledQuery = query
-        return settledQuery
-    }
-}
-
-@Composable
-internal fun rememberStableTopMatchesQuery(
-    query: String,
-    deferUpdate: Boolean,
-): String =
-    remember { TopMatchesQueryStabilizer(query) }.queryFor(
-        query = query,
-        deferUpdate = deferUpdate,
-    )
+    isSecondarySearchInProgress: Boolean,
+): Boolean =
+    query.isNotBlank() &&
+        (isAppSearchInProgress || isSecondarySearchInProgress)
 
 private fun secondaryScore(
     signal: SecondaryRankingSignal,
