@@ -57,6 +57,9 @@ import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.InfoBanner
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
 import com.tk.quicksearch.search.searchScreen.renderSection
+import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSectionContext
+import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSearchRenderingState
+import com.tk.quicksearch.search.searchScreen.rememberSettledTopMatches
 import com.tk.quicksearch.search.searchScreen.rememberTopMatches
 import com.tk.quicksearch.search.searchScreen.shouldDeferTopMatchesForLocalSearch
 import com.tk.quicksearch.search.searchScreen.TopMatchesSection
@@ -160,6 +163,18 @@ fun ContentLayout(
             expandedCardMaxHeight = expandedCardMaxHeight,
         )
     val hasQuery = state.query.isNotBlank()
+    val isLocalSearchRefreshing =
+        shouldDeferTopMatchesForLocalSearch(
+            query = state.query,
+            isAppSearchInProgress = state.isAppSearchInProgress,
+            isSecondarySearchInProgress = state.isSecondarySearchInProgress,
+        )
+    val regularRenderingState =
+        rememberSettledRegularSearchRenderingState(
+            query = state.query,
+            currentState = renderingState,
+            isSearchRefreshing = isLocalSearchRefreshing,
+        )
     // The overlay already animates its full surface on entry. In one-handed mode, layering every
     // async Home section height animation on top of that bottom-anchored surface makes early
     // content briefly reflow in the opposite direction. App suggestions are the exception: they
@@ -180,6 +195,15 @@ fun ContentLayout(
         // subsequent recompositions keep the settled grid fully visible.
         suppressSuggestionsEnterAnimation = suggestionsAppGridHasAppeared,
     )
+    val regularAppsParams =
+        if (hasQuery) {
+            effectiveAppsParams.copy(
+                apps = regularRenderingState.displayApps,
+                hasAppResults = regularRenderingState.hasAppResults,
+            )
+        } else {
+            effectiveAppsParams
+        }
 
     // 1. Determine Layout Order based on ItemPriorityConfig
     val queryLength = state.query.trim().length
@@ -197,32 +221,38 @@ fun ContentLayout(
 
     // 3. Prepare Shared Rendering Context and Params
     // We reuse the extracted logic to determine visibility and expansion states
-    val sectionContext =
+    val currentSectionContext =
         rememberSectionRenderContext(
             state = state,
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             filesParams = effectiveFilesParams,
             contactsParams = effectiveContactsParams,
             settingsParams = effectiveSettingsParams,
             calendarParams = effectiveCalendarParams,
             notesParams = effectiveNotesParams,
             appShortcutsParams = effectiveAppShortcutsParams,
-            appsParams = effectiveAppsParams,
+            appsParams = regularAppsParams,
             isSearching = hasQuery,
             oneHandedMode =
                 state.oneHandedMode, // This affects list reversal inside helpers
         )
+    val sectionContext =
+        rememberSettledRegularSectionContext(
+            query = state.query,
+            currentContext = currentSectionContext,
+            isSearchRefreshing = isLocalSearchRefreshing,
+        )
 
     val sectionParams =
         SectionRenderParams(
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             contactsParams = effectiveContactsParams,
             filesParams = effectiveFilesParams,
             appShortcutsParams = effectiveAppShortcutsParams,
             settingsParams = effectiveSettingsParams,
             calendarParams = effectiveCalendarParams,
             notesParams = effectiveNotesParams,
-            appsParams = effectiveAppsParams,
+            appsParams = regularAppsParams,
             isReversed = isReversed,
         )
 
@@ -333,14 +363,6 @@ fun ContentLayout(
             !isSectionAliasMode &&
             renderingState.shouldShowApps &&
             renderingState.expandedSection == ExpandedSection.NONE
-    val isLocalSearchRefreshing =
-        shouldDeferTopMatchesForLocalSearch(
-            query = state.query,
-            isAppSearchInProgress = state.isAppSearchInProgress,
-            isSecondarySearchInProgress = state.isSecondarySearchInProgress,
-        )
-    val deferSecondarySectionsUntilReady =
-        state.query.isNotBlank() && state.isSecondarySearchInProgress
     val waitingForSuggestions =
         canDeferOtherContentForSuggestions &&
             state.isInitializing &&
@@ -354,7 +376,7 @@ fun ContentLayout(
     val topMatches =
         rememberTopMatches(
             query = state.query,
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             context = sectionContextForRecentHistoryExpansion,
             params = sectionParams,
             limit = state.topMatchesLimit,
@@ -369,16 +391,22 @@ fun ContentLayout(
                     screenTimeState = state.screenTimeState,
                 ),
         )
+    val displayedTopMatches =
+        rememberSettledTopMatches(
+            query = state.query,
+            currentMatches = topMatches,
+            isSearchRefreshing = isLocalSearchRefreshing,
+        )
     val showTopMatches =
         state.topMatchesEnabled &&
             hasQuery &&
             !hideResults &&
             !isExpanded &&
             !isSectionAliasMode &&
-            topMatches.isNotEmpty()
+            displayedTopMatches.isNotEmpty()
     val hasMoreResults =
         hasMoreResults(
-            renderingState = renderingState,
+            renderingState = regularRenderingState,
             sectionContext = sectionContextForRecentHistoryExpansion,
         )
     val regularSectionParams =
@@ -705,7 +733,7 @@ fun ContentLayout(
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         if (showTopMatches && !isReversed) {
             TopMatchesSection(
-                matches = topMatches,
+                matches = displayedTopMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
                 showTopResultIndicator =
@@ -748,9 +776,6 @@ fun ContentLayout(
                 if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
                 if (!shouldRenderSection(section)) return@forEach
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
-                if (deferSecondarySectionsUntilReady && section != SearchSection.APPS) {
-                    return@forEach
-                }
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
                 if (
                     !hasQuery &&
@@ -1132,7 +1157,7 @@ fun ContentLayout(
 
         if (showTopMatches && isReversed) {
             TopMatchesSection(
-                matches = topMatches,
+                matches = displayedTopMatches,
                 params = sectionParams,
                 showWallpaperBackground = effectiveShowWallpaperBackground,
                 showTopResultIndicator =

@@ -56,7 +56,7 @@ class TopMatchesRankingTest {
     }
 
     @Test
-    fun topMatchesWaitUntilBothLocalSearchBatchesAreSettled() {
+    fun topMatchesDeferUpdatesUntilBothLocalSearchBatchesAreSettled() {
         assertEquals(
             true,
             shouldDeferTopMatchesForLocalSearch(
@@ -81,6 +81,39 @@ class TopMatchesRankingTest {
                 isSecondarySearchInProgress = false,
             ),
         )
+    }
+
+    @Test
+    fun topMatchesKeepLastSettledResultsUntilTheNewSearchFinishes() {
+        val oldMatches = listOf(topMatch("Teams", priority = 0, secondaryScore = 0L, index = 0))
+        val partialMatches = listOf(topMatch("Telegram", priority = 0, secondaryScore = 0L, index = 0))
+        val newMatches = listOf(topMatch("Tesla", priority = 0, secondaryScore = 0L, index = 0))
+        val buffer = SettledSearchResultsBuffer(emptyList<TopMatchItem>())
+
+        assertEquals(oldMatches, buffer.displayedValue("T", oldMatches, isSearchRefreshing = false))
+        assertEquals(oldMatches, buffer.displayedValue("Te", partialMatches, isSearchRefreshing = true))
+        assertEquals(newMatches, buffer.displayedValue("Te", newMatches, isSearchRefreshing = false))
+    }
+
+    @Test
+    fun firstSearchDoesNotReuseHomeOrClearedResults() {
+        val buffer = SettledSearchResultsBuffer(emptyList<String>())
+
+        assertEquals(emptyList<String>(), buffer.displayedValue("", listOf("Home"), false))
+        assertEquals(emptyList<String>(), buffer.displayedValue("T", listOf("Partial"), true))
+        assertEquals(listOf("Teams"), buffer.displayedValue("T", listOf("Teams"), false))
+    }
+
+    @Test
+    fun regularResultsKeepTheWholePreviousSnapshotUntilAllSearchesFinish() {
+        val oldResults = listOf("app:Teams", "contact:Teja")
+        val appOnlyPartialResults = listOf("app:Telegram")
+        val newResults = listOf("app:Telegram", "file:Template")
+        val buffer = SettledSearchResultsBuffer(emptyList<String>())
+
+        assertEquals(oldResults, buffer.displayedValue("T", oldResults, false))
+        assertEquals(oldResults, buffer.displayedValue("Te", appOnlyPartialResults, true))
+        assertEquals(newResults, buffer.displayedValue("Te", newResults, false))
     }
 
     @Test
