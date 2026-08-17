@@ -1,0 +1,15 @@
+name: Check Patch 3
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: restore-wallpaper-feature
+      - name: Show package handlers
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
+          echo "=== onPackage handlers ==="
+          grep -n -A 2 "onPackageChanged\|onPackagesAvailable\|onPackageAdded" "$FILE"
