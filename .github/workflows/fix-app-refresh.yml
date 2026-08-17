@@ -1,0 +1,84 @@
+name: Fix App Refresh on Unfreeze
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Write patch script
+        run: |
+          mkdir -p /tmp/patch
+          cat > /tmp/patch/patch_refresh.py << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
+          with open(file_path, "r") as f:
+              content = f.read()
+
+          changes = 0
+
+          old_changed = "override fun onPackageChanged(packageName: String, user: UserHandle) = Unit"
+          new_changed = (
+              "override fun onPackageChanged(packageName: String, user: UserHandle) =\n"
+              "                    invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))"
+          )
+          if old_changed in content:
+              content = content.replace(old_changed, new_changed)
+              changes += 1
+              print("Patched onPackageChanged")
+          else:
+              print("WARNING: onPackageChanged anchor not found")
+
+          old_avail = "override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = Unit"
+          new_avail = (
+              "override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) =\n"
+              "                    packageNames.forEach { invalidate(AppCatalogChange.forPackage(it, user, isRemoval = false)) }"
+          )
+          if old_avail in content:
+              content = content.replace(old_avail, new_avail)
+              changes += 1
+              print("Patched onPackagesAvailable")
+          else:
+              print("WARNING: onPackagesAvailable anchor not found")
+
+          with open(file_path, "w") as f:
+              f.write(content)
+
+          print("Total changes:", changes)
+          PYEOF
+
+      - name: Run patch
+        run: python3 /tmp/patch/patch_refresh.py
+
+      - name: Verify patched handlers
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
+          echo "=== Patched handlers ==="
+          grep -n -A 1 "onPackageChanged\|onPackagesAvailable" "$FILE"
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --cached --stat
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: refresh app catalog on package change/availability (fixes unfreeze not detected)"
+            git push origin restore-wallpaper-feature
+            echo "Pushed - build will auto-trigger"
+          fi
