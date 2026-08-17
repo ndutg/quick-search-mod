@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout restore-wallpaper-feature
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: restore-wallpaper-feature
           fetch-depth: 0
@@ -45,17 +45,6 @@ jobs:
             done
             git commit --no-edit
             echo "Merge completed - all conflicts resolved to upstream"
-          fi
-          
-      - name: Keep feature-branch workflow files (avoid workflow-scope push error)
-        run: |
-          git checkout origin/restore-wallpaper-feature -- .github/ 2>/dev/null || true
-          git add .github/ 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "No workflow file changes to revert"
-          else
-            git commit -m "chore: keep feature-branch workflow files during sync"
-            echo "Reverted workflow files to feature-branch versions"
           fi
 
       - name: Re-apply patch 1 - READ_MEDIA_IMAGES in manifest
