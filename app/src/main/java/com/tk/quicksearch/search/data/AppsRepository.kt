@@ -169,9 +169,11 @@ class AppsRepository(
                 override fun onPackageRemoved(packageName: String, user: UserHandle) =
                     invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = true))
 
-                override fun onPackageChanged(packageName: String, user: UserHandle) = Unit
+                override fun onPackageChanged(packageName: String, user: UserHandle) =
+                    invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))
 
-                override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = Unit
+                override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) =
+                    packageNames.forEach { invalidate(AppCatalogChange.forPackage(it, user, isRemoval = false)) }
 
                 override fun onPackagesUnavailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = Unit
             }
