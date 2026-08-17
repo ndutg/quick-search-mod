@@ -1,0 +1,73 @@
+name: Find App Refresh Code
+
+on:
+  workflow_dispatch:
+
+jobs:
+  find:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+
+      - name: Find the refresh/reload apps function
+        run: |
+          echo "=== Files mentioning refresh/reload apps ==="
+          grep -rln "refreshApps\|reloadApps\|forceRefresh\|refreshData\|manualRefresh\|invalidateApps\|reloadAppList" \
+            app/src/main/java/ --include="*.kt" | head -20
+
+      - name: Show refresh function definitions
+        run: |
+          echo "=== Refresh function definitions ==="
+          grep -rn "fun refreshApps\|fun reloadApps\|fun forceRefresh\|fun refreshData\|fun manualRefresh\|fun refreshAppList\|fun reloadAppList\|fun invalidateApps" \
+            app/src/main/java/ --include="*.kt"
+
+      - name: Find the Settings refresh button handler
+        run: |
+          echo "=== Settings refresh button / onRefresh handlers ==="
+          grep -rn "Refresh\|refresh" app/src/main/java/com/tk/quicksearch/settings/ --include="*.kt" | grep -i "app\|onClick\|onRefresh\|reload" | head -30
+
+      - name: Find AppsRepository refresh methods
+        run: |
+          echo "=== AppsRepository.kt refresh methods ==="
+          grep -n "fun \|refresh\|reload\|load\|invalidate\|clearCache" app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt | head -40
+
+      - name: Find PACKAGE_ADDED / PACKAGE_CHANGED receivers
+        run: |
+          echo "=== Existing package change receivers ==="
+          grep -rn "PACKAGE_ADDED\|PACKAGE_CHANGED\|PACKAGE_REMOVED\|ACTION_PACKAGE\|BroadcastReceiver" \
+            app/src/main/java/ --include="*.kt" | head -30
+
+      - name: Show existing receivers in manifest
+        run: |
+          echo "=== Existing receivers in AndroidManifest.xml ==="
+          grep -n -A 8 "<receiver" app/src/main/AndroidManifest.xml
+
+      - name: Find AppCache and how apps are loaded
+        run: |
+          echo "=== AppCache.kt ==="
+          find app/src/main/java -name "AppCache.kt"
+          echo ""
+          grep -rn "fun \|refresh\|reload\|invalidate\|clear" $(find app/src/main/java -name "AppCache.kt") 2>/dev/null | head -30
+
+      - name: Find how ViewModel exposes refresh
+        run: |
+          echo "=== SearchViewModel refresh methods ==="
+          grep -rn "refresh\|reload\|forceReload\|refreshApps" \
+            app/src/main/java/com/tk/quicksearch/search/core/SearchViewModel*.kt --include="*.kt" | head -30
+
+      - name: Find AppSearchManager refresh
+        run: |
+          echo "=== AppSearchManager.kt ==="
+          grep -n "fun \|refresh\|reload\|invalidate\|loadApps" app/src/main/java/com/tk/quicksearch/search/apps/AppSearchManager.kt 2>/dev/null | head -30
+
+      - name: Find the Application class
+        run: |
+          echo "=== Application class ==="
+          grep -rln "Application()" app/src/main/java/ --include="*.kt"
+          echo ""
+          echo "=== Manifest application name ==="
+          grep -n "android:name" app/src/main/AndroidManifest.xml | head -5
