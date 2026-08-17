@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 import com.tk.quicksearch.widgets.customButtonsWidget.rememberWidgetButtonIcon
@@ -130,7 +131,16 @@ object PinnedNotifications {
         showLabels: Boolean,
     ): RemoteViews {
         val iconSize = (context.resources.displayMetrics.density * 32).toInt()
-        val icon = rememberWidgetButtonIcon(context, action, iconSize, Color.White, null)
+        val iconPackPackage =
+            UserAppPreferences(context).uiPreferences.getSelectedIconPackPackage()
+        val icon =
+            rememberWidgetButtonIcon(
+                context = context,
+                action = action,
+                iconSizePx = iconSize,
+                textIconColor = Color.White,
+                iconPackPackage = iconPackPackage,
+            )
         return RemoteViews(context.packageName, R.layout.notification_pinned_item).apply {
             notificationIconBitmap(context, action, icon.bitmap, icon.drawableResId, iconSize)?.let {
                 setImageViewBitmap(R.id.pinned_notification_icon, it)
