@@ -140,6 +140,7 @@ class AppsRepository(
             IntentFilter().apply {
                 addAction(Intent.ACTION_PACKAGE_ADDED)
                 addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addAction(Intent.ACTION_PACKAGE_CHANGED)
                 addDataScheme("package")
             }
         runCatching {
@@ -169,11 +170,42 @@ class AppsRepository(
                 override fun onPackageRemoved(packageName: String, user: UserHandle) =
                     invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = true))
 
-                override fun onPackageChanged(packageName: String, user: UserHandle) = Unit
+                override fun onPackageChanged(packageName: String, user: UserHandle) =
+                    invalidate(
+                        AppCatalogChange.forPackage(
+                            packageName,
+                            user,
+                            isRemoval = false,
+                            isAvailabilityChange = true,
+                        ),
+                    )
 
-                override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = Unit
+                override fun onPackagesAvailable(
+                    packageNames: Array<out String>,
+                    user: UserHandle,
+                    replacing: Boolean,
+                ) {
+                    packageNames.forEach { packageName ->
+                        invalidate(
+                            AppCatalogChange.forPackage(
+                                packageName,
+                                user,
+                                isRemoval = false,
+                                isAvailabilityChange = true,
+                            ),
+                        )
+                    }
+                }
 
-                override fun onPackagesUnavailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = Unit
+                override fun onPackagesUnavailable(
+                    packageNames: Array<out String>,
+                    user: UserHandle,
+                    replacing: Boolean,
+                ) {
+                    packageNames.forEach { packageName ->
+                        invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = true))
+                    }
+                }
             }
         launcherAppsCallback = callback
         runCatching { service.registerCallback(callback, Handler(Looper.getMainLooper())) }
