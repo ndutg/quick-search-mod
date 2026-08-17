@@ -14,9 +14,10 @@ internal data class AppCatalogChange(
     val userHandleId: Int?,
     val isRemoval: Boolean,
     val isInstallation: Boolean = false,
+    val isAvailabilityChange: Boolean = false,
 ) {
     val requiresCatalogReconciliation: Boolean
-        get() = isRemoval || isInstallation
+        get() = isRemoval || isInstallation || isAvailabilityChange
 
     fun appKey(currentUserHandleId: Int): String? {
         val packageName = packageName?.takeIf { it.isNotBlank() } ?: return null
@@ -58,6 +59,7 @@ internal data class AppCatalogChange(
                 userHandleId = userHandleId,
                 isRemoval = action == Intent.ACTION_PACKAGE_REMOVED && !replacing,
                 isInstallation = action == Intent.ACTION_PACKAGE_ADDED && !replacing,
+                isAvailabilityChange = action == Intent.ACTION_PACKAGE_CHANGED,
             )
 
         fun forPackage(
@@ -65,12 +67,14 @@ internal data class AppCatalogChange(
             userHandle: android.os.UserHandle,
             isRemoval: Boolean,
             isInstallation: Boolean = false,
+            isAvailabilityChange: Boolean = false,
         ): AppCatalogChange =
             AppCatalogChange(
                 packageName = packageName,
                 userHandleId = UserHandleUtils.getIdentifier(userHandle),
                 isRemoval = isRemoval,
                 isInstallation = isInstallation,
+                isAvailabilityChange = isAvailabilityChange,
             )
 
         private const val EXTRA_USER_HANDLE = "android.intent.extra.user_handle"
