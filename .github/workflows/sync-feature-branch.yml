@@ -9,7 +9,6 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout restore-wallpaper-feature
         uses: actions/checkout@v4
@@ -35,17 +34,15 @@ jobs:
           if git merge origin/main --no-edit; then
             echo "Merge completed cleanly"
           else
-            echo "Conflicts detected - resolving by taking upstream for all files..."
+            echo "Conflicts detected - taking upstream for all conflicted files..."
             CONFLICTED=$(git diff --name-only --diff-filter=U)
             echo "Conflicted files:"
             echo "$CONFLICTED"
-
             for f in $CONFLICTED; do
               echo "  Taking upstream version of: $f"
               git checkout --theirs "$f"
               git add "$f"
             done
-
             git commit --no-edit
             echo "Merge completed - all conflicts resolved to upstream"
           fi
@@ -72,7 +69,6 @@ jobs:
           if "Dark scrim for text readability" in content:
               print("Scrim already present")
           else:
-              # Add Color import if missing
               if "import androidx.compose.ui.graphics.Color" not in content:
                   content = content.replace(
                       "import com.tk.quicksearch.shared.ui.theme.DesignTokens",
@@ -80,7 +76,6 @@ jobs:
                   )
                   print("Added Color import")
 
-              # Insert scrim before the tint overlay
               anchor = "                // Tint overlay (dark mode: darken, light mode: lighten)"
               scrim = """                // Dark scrim for text readability over any wallpaper
                 Box(
@@ -103,9 +98,47 @@ jobs:
               with open(file_path, "w") as f:
                   f.write(content)
           PYEOF
-
           echo -n "Verification: "
           grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt && echo "OK" || echo "NEEDS MANUAL CHECK"
+
+      - name: Re-apply patch 3 - App refresh on unfreeze
+        run: |
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
+          with open(file_path, "r") as f:
+              content = f.read()
+
+          old_changed = "override fun onPackageChanged(packageName: String, user: UserHandle) = Unit"
+          new_changed = (
+              "override fun onPackageChanged(packageName: String, user: UserHandle) =\n"
+              "                    invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))"
+          )
+          if old_changed in content:
+              content = content.replace(old_changed, new_changed)
+              print("Re-applied onPackageChanged patch")
+          elif "isRemoval = false))" in content and "onPackageChanged" in content:
+              print("onPackageChanged already patched")
+          else:
+              print("WARNING: onPackageChanged anchor not found - upstream may have changed it")
+
+          old_avail = "override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = Unit"
+          new_avail = (
+              "override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) =\n"
+              "                    packageNames.forEach { invalidate(AppCatalogChange.forPackage(it, user, isRemoval = false)) }"
+          )
+          if old_avail in content:
+              content = content.replace(old_avail, new_avail)
+              print("Re-applied onPackagesAvailable patch")
+          elif "packageNames.forEach { invalidate" in content:
+              print("onPackagesAvailable already patched")
+          else:
+              print("WARNING: onPackagesAvailable anchor not found - upstream may have changed it")
+
+          with open(file_path, "w") as f:
+              f.write(content)
+          PYEOF
+          echo -n "Verification: "
+          grep -q "packageNames.forEach { invalidate" app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt && echo "OK" || echo "NEEDS MANUAL CHECK"
 
       - name: Commit re-applied patches
         run: |
@@ -113,7 +146,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No patch re-application needed (patches survived merge)"
           else
-            git commit -m "chore: re-apply wallpaper patches after upstream sync"
+            git commit -m "chore: re-apply mod patches after upstream sync"
             echo "Re-applied patches committed"
           fi
 
@@ -122,23 +155,30 @@ jobs:
           echo "=== Custom patches check ==="
           FAIL=0
 
-          echo -n "READ_MEDIA_IMAGES in manifest: "
+          echo -n "Patch 1 - READ_MEDIA_IMAGES in manifest: "
           if grep -q "READ_MEDIA_IMAGES" app/src/main/AndroidManifest.xml; then
             echo "OK"
           else
             echo "MISSING"; FAIL=1
           fi
 
-          echo -n "Dark scrim in SearchScreenBackground.kt: "
+          echo -n "Patch 2 - Dark scrim in SearchScreenBackground.kt: "
           if grep -q "Dark scrim for text readability" app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt; then
             echo "OK"
           else
-            echo "MISSING (may need manual check if upstream refactored the file)"; FAIL=1
+            echo "MISSING (upstream may have refactored the file)"; FAIL=1
+          fi
+
+          echo -n "Patch 3 - App refresh on unfreeze: "
+          if grep -q "packageNames.forEach { invalidate" app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt; then
+            echo "OK"
+          else
+            echo "MISSING (upstream may have refactored the file)"; FAIL=1
           fi
 
           echo ""
           if [ "$FAIL" = "0" ]; then
-            echo "All patches present"
+            echo "All 3 patches present"
           else
             echo "WARNING: One or more patches missing - review before relying on the build"
           fi
