@@ -22,17 +22,48 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Show current package callback handlers
+      - name: Write patch script
         run: |
-          FILE="app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
-          echo "=== Current handlers ==="
-          grep -n "onPackageChanged\|onPackagesAvailable\|onPackagesUnavailable\|onPackageAdded\|onPackageRemoved" "$FILE"
-          echo ""
-          echo "=== Context lines 155-180 ==="
-          sed -n '155,180p' "$FILE"
+          mkdir -p /tmp/patch
+          cat > /tmp/patch/patch_refresh.py << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
+          with open(file_path, "r") as f:
+              content = f.read()
 
-      - name: Patch handlers with Python
-        run: python3 .github/scripts/patch_refresh.py
+          changes = 0
+
+          old_changed = "override fun onPackageChanged(packageName: String, user: UserHandle) = Unit"
+          new_changed = (
+              "override fun onPackageChanged(packageName: String, user: UserHandle) =\n"
+              "                    invalidate(AppCatalogChange.forPackage(packageName, user, isRemoval = false))"
+          )
+          if old_changed in content:
+              content = content.replace(old_changed, new_changed)
+              changes += 1
+              print("Patched onPackageChanged")
+          else:
+              print("WARNING: onPackageChanged anchor not found")
+
+          old_avail = "override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) = Unit"
+          new_avail = (
+              "override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) =\n"
+              "                    packageNames.forEach { invalidate(AppCatalogChange.forPackage(it, user, isRemoval = false)) }"
+          )
+          if old_avail in content:
+              content = content.replace(old_avail, new_avail)
+              changes += 1
+              print("Patched onPackagesAvailable")
+          else:
+              print("WARNING: onPackagesAvailable anchor not found")
+
+          with open(file_path, "w") as f:
+              f.write(content)
+
+          print("Total changes:", changes)
+          PYEOF
+
+      - name: Run patch
+        run: python3 /tmp/patch/patch_refresh.py
 
       - name: Verify patched handlers
         run: |
