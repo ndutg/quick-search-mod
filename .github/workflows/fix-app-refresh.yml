@@ -1,0 +1,53 @@
+name: Fix App Refresh on Unfreeze
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v4
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Show current package callback handlers
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
+          echo "=== Current handlers ==="
+          grep -n "onPackageChanged\|onPackagesAvailable\|onPackagesUnavailable\|onPackageAdded\|onPackageRemoved" "$FILE"
+          echo ""
+          echo "=== Context lines 155-180 ==="
+          sed -n '155,180p' "$FILE"
+
+      - name: Patch handlers with Python
+        run: python3 .github/scripts/patch_refresh.py
+
+      - name: Verify patched handlers
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/data/AppsRepository.kt"
+          echo "=== Patched handlers ==="
+          grep -n -A 1 "onPackageChanged\|onPackagesAvailable" "$FILE"
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --cached --stat
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: refresh app catalog on package change/availability (fixes unfreeze not detected)"
+            git push origin restore-wallpaper-feature
+            echo "Pushed - build will auto-trigger"
+          fi
