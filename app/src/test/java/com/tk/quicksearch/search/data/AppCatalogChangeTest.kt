@@ -82,6 +82,22 @@ class AppCatalogChangeTest {
     }
 
     @Test
+    fun packageChangeRequiresCatalogReconciliation() {
+        val change =
+            AppCatalogChange.fromPackageEvent(
+                action = Intent.ACTION_PACKAGE_CHANGED,
+                packageName = "com.example.enabled",
+                userHandleId = 0,
+                replacing = false,
+            )
+
+        assertFalse(change.isRemoval)
+        assertFalse(change.isInstallation)
+        assertTrue(change.isAvailabilityChange)
+        assertTrue(change.requiresCatalogReconciliation)
+    }
+
+    @Test
     fun liveRemovalPrunesOnlyTheMatchingCatalogEntry() {
         val personal = app("com.example.shared")
         val work = app("com.example.shared", userHandleId = 10)
