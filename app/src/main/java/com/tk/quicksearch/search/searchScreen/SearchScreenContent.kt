@@ -1320,7 +1320,7 @@ internal fun SearchScreenContent(
                         }
                         swipeUpAction == SwipeGestureAction.SEARCH_ENGINE || swipeUpAction == SwipeGestureAction.TOOL ->
                             swipeUpAliasTarget?.let { onGestureAliasTarget(swipeUpAction, it) }
-                        isDefaultLauncher ->
+                        else ->
                             homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, homeSwipeUpAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
                     }
                 },
@@ -1335,7 +1335,7 @@ internal fun SearchScreenContent(
                         }
                         swipeDownAction == SwipeGestureAction.SEARCH_ENGINE || swipeDownAction == SwipeGestureAction.TOOL ->
                             swipeDownAliasTarget?.let { onGestureAliasTarget(swipeDownAction, it) }
-                        isDefaultLauncher ->
+                        else ->
                             homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, homeSwipeDownAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
                     }
                 },

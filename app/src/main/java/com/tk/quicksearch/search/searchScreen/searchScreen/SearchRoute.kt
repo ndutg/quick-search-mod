@@ -524,6 +524,7 @@ fun SearchRoute(
     val gesturePreferences = remember(context.applicationContext) {
         UserAppPreferences(context.applicationContext)
     }
+    var isDefaultLauncher by remember { mutableStateOf(context.cachedDefaultHomeAppStatus()) }
     var swipeActions by remember {
         mutableStateOf(
             listOf(
@@ -549,7 +550,7 @@ fun SearchRoute(
         mutableStateOf(gesturePreferences.getHomeSwipeUpAction())
     }
     var homeSwipeDownAction by remember {
-        mutableStateOf(gesturePreferences.getHomeSwipeDownAction())
+        mutableStateOf(gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher))
     }
     var homeDoubleTapAction by remember {
         mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
@@ -597,7 +598,7 @@ fun SearchRoute(
                 )
             swipeAliasTargets = listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
-            homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction()
+            homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
             homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             homeCustomSwipeActions =
                 listOf(
@@ -611,11 +612,11 @@ fun SearchRoute(
         preferences.registerOnSharedPreferenceChangeListener(listener)
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
-    var isDefaultLauncher by remember { mutableStateOf(context.cachedDefaultHomeAppStatus()) }
     DisposableEffect(lifecycleOwner, context) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 isDefaultLauncher = context.isDefaultHomeApp()
+                homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
