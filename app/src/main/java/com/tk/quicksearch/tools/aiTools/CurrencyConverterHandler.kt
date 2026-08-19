@@ -1,128 +1,117 @@
 package com.tk.quicksearch.tools.aiTools
 
 import android.content.Context
+import android.util.Xml
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.data.UserAppPreferences
-import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
-import com.tk.quicksearch.tools.aiSearch.LlmRequest
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.Currency
+import java.util.Locale
 import org.json.JSONObject
+import org.xmlpull.v1.XmlPullParser
 
-class CurrencyNotRecognizedException : Exception()
-
-private const val CURRENCY_SYSTEM_INSTRUCTION =
-        "You convert currencies using current market rates. " +
-                "Respond with ONLY a single JSON object (no markdown, no code fences). " +
-                "Schema: {\"from_currency\":\"USD\",\"to_currency\":\"INR\",\"from_amount\":\"100\",\"converted_amount\":\"<string>\",\"to_currency_name\":\"<English name>\"}. " +
-                "Use ISO 4217 for from_currency and to_currency. " +
-                "from_amount must echo the user's amount as a decimal string. " +
-                "converted_amount is the result as a decimal string. " +
-                "If the user query is not a currency conversion, respond exactly: {\"error\":\"not_currency\"}."
+private const val ECB_RATES_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
+private const val RATES_PREFERENCES = "currency_exchange_rates"
+private const val RATES_JSON_KEY = "rates_json"
+private const val RATES_FETCHED_AT_KEY = "rates_fetched_at"
+private const val CACHE_DURATION_MS = 4 * 60 * 60 * 1000L
+private val CALCULATION_CONTEXT = MathContext(16, RoundingMode.HALF_UP)
 
 class CurrencyConverterHandler(
         private val context: Context,
-        private val userPreferences: UserAppPreferences,
 ) {
-    fun parseModelResponse(raw: String): Result<CurrencyConversionModelResult> {
-        val trimmed =
-                raw.trim().removePrefix("```json").removePrefix("```").removeSuffix("```").trim()
-        return runCatching {
-            val obj = JSONObject(trimmed)
-            if (obj.optString("error") == "not_currency") {
-                throw CurrencyNotRecognizedException()
+    private val preferences = context.getSharedPreferences(RATES_PREFERENCES, Context.MODE_PRIVATE)
+
+    /** Fetches one complete ECB rate snapshot on demand, then reuses it for four hours. */
+    suspend fun convert(confirmed: ConfirmedCurrencyQuery): Result<CurrencyConversionModelResult> =
+            runCatching {
+                val rates = loadRates()
+                val sourceRate = rates[confirmed.fromCurrency]
+                        ?: error("Unsupported currency: ${confirmed.fromCurrency}")
+                val targetRate = rates[confirmed.toCurrency]
+                        ?: error("Unsupported currency: ${confirmed.toCurrency}")
+                val converted = confirmed.amount.toBigDecimal()
+                        .multiply(targetRate, CALCULATION_CONTEXT)
+                        .divide(sourceRate, CALCULATION_CONTEXT)
+                CurrencyConversionModelResult(
+                        convertedAmount = converted.stripTrailingZeros().toPlainString(),
+                        targetCurrencyCode = confirmed.toCurrency,
+                        targetCurrencyName = currencyDisplayName(confirmed.toCurrency),
+                        sourceAmount = confirmed.amount,
+                        sourceCurrencyCode = confirmed.fromCurrency,
+                )
             }
-            val converted = obj.getString("converted_amount").trim()
-            val toCode = obj.getString("to_currency").trim().uppercase()
-            val toName = obj.optString("to_currency_name").trim().ifBlank { toCode }
-            val fromAmount = obj.optString("from_amount").trim()
-            val fromCode = obj.optString("from_currency").trim().uppercase()
-            if (converted.isBlank() || toCode.length != 3) error("invalid")
-            CurrencyConversionModelResult(
-                    convertedAmount = converted,
-                    targetCurrencyCode = toCode,
-                    targetCurrencyName = toName,
-                    sourceAmount = fromAmount,
-                    sourceCurrencyCode = fromCode,
-            )
+
+    private fun loadRates(): Map<String, BigDecimal> {
+        readCachedRates()?.takeIf { it.fetchedAtMillis + CACHE_DURATION_MS > System.currentTimeMillis() }
+                ?.let { return it.rates }
+        return fetchRates().also(::saveRates)
+    }
+
+    private fun fetchRates(): Map<String, BigDecimal> {
+        var connection: HttpURLConnection? = null
+        try {
+            connection = (URL(ECB_RATES_URL).openConnection() as HttpURLConnection).apply {
+                connectTimeout = 10_000
+                readTimeout = 10_000
+                requestMethod = "GET"
+                setRequestProperty("Accept", "application/xml")
+            }
+            check(connection.responseCode in 200..299) {
+                context.getString(R.string.direct_search_error_generic)
+            }
+            val rates = mutableMapOf("EUR" to BigDecimal.ONE)
+            connection.inputStream.use { input ->
+                val parser = Xml.newPullParser().apply { setInput(input, null) }
+                while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                    if (parser.eventType != XmlPullParser.START_TAG || parser.name != "Cube") continue
+                    val code = parser.getAttributeValue(null, "currency")?.uppercase(Locale.ROOT)
+                    val rate = parser.getAttributeValue(null, "rate")?.toBigDecimalOrNull()
+                    if (code != null && code.length == 3 && rate != null && rate > BigDecimal.ZERO) {
+                        rates[code] = rate
+                    }
+                }
+            }
+            check(rates.size > 1) { context.getString(R.string.direct_search_error_generic) }
+            return rates
+        } finally {
+            connection?.disconnect()
         }
     }
 
-    suspend fun convert(confirmed: ConfirmedCurrencyQuery): Result<Pair<CurrencyConversionModelResult, String>> {
-        val providerId = userPreferences.getCurrencyConverterProviderId()
-        val provider = AiSearchLlmProviderRegistry.get(providerId, context)
-        val apiKey = userPreferences.getLlmApiKey(providerId)?.trim().orEmpty()
-        if (apiKey.isEmpty()) {
-            return Result.failure(IllegalStateException(context.getString(R.string.direct_search_error_no_key)))
-        }
-        val modelId =
-                userPreferences.getCurrencyConverterModel().trim().ifBlank {
-                    provider.defaultModelId
+    private fun readCachedRates(): CachedRates? = runCatching {
+        val fetchedAtMillis = preferences.getLong(RATES_FETCHED_AT_KEY, 0L)
+        val rawRates = preferences.getString(RATES_JSON_KEY, null) ?: return null
+        val json = JSONObject(rawRates)
+        val rates = buildMap {
+            json.keys().forEach { code ->
+                json.optString(code).toBigDecimalOrNull()?.takeIf { it > BigDecimal.ZERO }?.let {
+                    put(code, it)
                 }
-        val groundingEnabled = userPreferences.isCurrencyConverterGroundingEnabled()
-        val thinkingEnabled = userPreferences.isCurrencyConverterThinkingEnabled()
-        val advancedPayload = userPreferences.getCurrencyConverterAdvancedPayload()
-        val userMessage =
-                "Convert ${confirmed.amount} ${confirmed.fromCurrency} to ${confirmed.toCurrency}. " +
-                        "Original user query: ${confirmed.originalQuery}"
-        val result =
-                provider.fetchAnswer(
-                        apiKey = apiKey,
-                        context = context,
-                        request =
-                                LlmRequest(
-                                        query = userMessage,
-                                        personalContext = null,
-                                        modelId = modelId,
-                                        useGroundingWithGoogleSearch = groundingEnabled,
-                                        thinkingEnabled = thinkingEnabled,
-                                        useSystemInstruction = true,
-                                        systemInstruction = CURRENCY_SYSTEM_INSTRUCTION,
-                                        responseMimeType = "application/json",
-                                        advancedPayloadJson = advancedPayload.second.takeIf { advancedPayload.first },
-                                ),
-                )
-        return result.mapCatching { response ->
-            val parsed = parseModelResponse(response.text).getOrElse { throw it }
-            parsed to modelId
+            }
         }
+        if (fetchedAtMillis <= 0L || rates["EUR"] != BigDecimal.ONE || rates.size <= 1) null
+        else CachedRates(fetchedAtMillis, rates)
+    }.getOrNull()
+
+    private fun saveRates(rates: Map<String, BigDecimal>) {
+        val json = JSONObject().apply {
+            rates.forEach { (code, rate) -> put(code, rate.toPlainString()) }
+        }
+        preferences.edit().putString(RATES_JSON_KEY, json.toString())
+                .putLong(RATES_FETCHED_AT_KEY, System.currentTimeMillis()).apply()
     }
 
-    /** Used in alias mode — sends the raw query to the AI without pre-parsing. */
-    suspend fun convertRaw(rawQuery: String): Result<Pair<CurrencyConversionModelResult, String>> {
-        val providerId = userPreferences.getCurrencyConverterProviderId()
-        val provider = AiSearchLlmProviderRegistry.get(providerId, context)
-        val apiKey = userPreferences.getLlmApiKey(providerId)?.trim().orEmpty()
-        if (apiKey.isEmpty()) {
-            return Result.failure(IllegalStateException(context.getString(R.string.direct_search_error_no_key)))
-        }
-        val modelId =
-                userPreferences.getCurrencyConverterModel().trim().ifBlank {
-                    provider.defaultModelId
-                }
-        val groundingEnabled = userPreferences.isCurrencyConverterGroundingEnabled()
-        val thinkingEnabled = userPreferences.isCurrencyConverterThinkingEnabled()
-        val advancedPayload = userPreferences.getCurrencyConverterAdvancedPayload()
-        val result =
-                provider.fetchAnswer(
-                        apiKey = apiKey,
-                        context = context,
-                        request =
-                                LlmRequest(
-                                        query = "Currency conversion: $rawQuery",
-                                        personalContext = null,
-                                        modelId = modelId,
-                                        useGroundingWithGoogleSearch = groundingEnabled,
-                                        thinkingEnabled = thinkingEnabled,
-                                        useSystemInstruction = true,
-                                        systemInstruction = CURRENCY_SYSTEM_INSTRUCTION,
-                                        responseMimeType = "application/json",
-                                        advancedPayloadJson = advancedPayload.second.takeIf { advancedPayload.first },
-                                ),
-                )
-        return result.mapCatching { response ->
-            val parsed = parseModelResponse(response.text).getOrElse { throw it }
-            parsed to modelId
-        }
-    }
+    private fun currencyDisplayName(code: String): String =
+            runCatching { Currency.getInstance(code).getDisplayName(Locale.getDefault()) }.getOrDefault(code)
+
+    private data class CachedRates(
+            val fetchedAtMillis: Long,
+            val rates: Map<String, BigDecimal>,
+    )
 }
 
 data class CurrencyConversionModelResult(

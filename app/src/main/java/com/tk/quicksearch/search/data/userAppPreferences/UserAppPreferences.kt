@@ -453,7 +453,8 @@ class UserAppPreferences(
     fun getHomeSwipeUpAliasTarget(): String? = gesturesPreferences.getHomeSwipeUpAliasTarget()
     fun setHomeSwipeUpAliasTarget(targetId: String?) = gesturesPreferences.setHomeSwipeUpAliasTarget(targetId)
 
-    fun getHomeSwipeDownAction(): HomeSwipeGestureAction = gesturesPreferences.getHomeSwipeDownAction()
+    fun getHomeSwipeDownAction(isDefaultLauncher: Boolean = true): HomeSwipeGestureAction =
+        gesturesPreferences.getHomeSwipeDownAction(isDefaultLauncher)
 
     fun setHomeSwipeDownAction(action: HomeSwipeGestureAction) = gesturesPreferences.setHomeSwipeDownAction(action)
 

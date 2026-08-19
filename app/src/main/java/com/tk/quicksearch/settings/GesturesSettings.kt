@@ -102,7 +102,9 @@ fun GesturesSettingsSection(
     var selectedHomeGesture by remember { mutableStateOf<HomeGesture?>(null) }
     var homeActions by remember {
         mutableStateOf(
-            HomeGesture.entries.associateWith(preferences::homeActionFor),
+            HomeGesture.entries.associateWith { gesture ->
+                preferences.homeActionFor(gesture, isDefaultLauncher)
+            },
         )
     }
     var homeCustomActions by remember {
@@ -842,10 +844,13 @@ private fun UserAppPreferences.setAliasTargetFor(direction: SwipeDirection, targ
     }
 }
 
-private fun UserAppPreferences.homeActionFor(gesture: HomeGesture): HomeSwipeGestureAction =
+private fun UserAppPreferences.homeActionFor(
+    gesture: HomeGesture,
+    isDefaultLauncher: Boolean,
+): HomeSwipeGestureAction =
     when (gesture) {
         HomeGesture.SWIPE_UP -> getHomeSwipeUpAction()
-        HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAction()
+        HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAction(isDefaultLauncher)
         HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAction()
     }
 

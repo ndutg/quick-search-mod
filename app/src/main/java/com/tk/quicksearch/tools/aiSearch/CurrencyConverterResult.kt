@@ -21,15 +21,9 @@ import java.util.Locale
 @Composable
 fun CurrencyConverterResult(
         currencyConverterState: CurrencyConverterState,
-        llmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         showWallpaperBackground: Boolean = false,
-        onGeminiModelInfoClick: () -> Unit = {},
 ) {
     if (currencyConverterState.status == CurrencyConverterStatus.Idle) return
-
-    val showAttribution =
-            currencyConverterState.status == CurrencyConverterStatus.Success &&
-                    !currencyConverterState.convertedAmount.isNullOrBlank()
 
     val copyText =
             if (currencyConverterState.status == CurrencyConverterStatus.Success) {
@@ -42,11 +36,8 @@ fun CurrencyConverterResult(
 
     GeminiResultCard(
             showWallpaperBackground = showWallpaperBackground,
-            showAttribution = showAttribution,
-            usedModelId = currencyConverterState.usedModelId,
-            llmProviderId = llmProviderId,
-            isAttributionClickable = true,
-            onGeminiModelInfoClick = onGeminiModelInfoClick,
+            showAttribution = false,
+            usedModelId = null,
             copyText = copyText,
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {

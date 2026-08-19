@@ -344,7 +344,7 @@ internal fun SearchScreenContent(
             cycleHints[3] to (SearchSection.APPS !in state.disabledSections),
             cycleHints[4] to (SearchSection.APP_SHORTCUTS !in state.disabledSections),
             cycleHints[5] to (SearchSection.SETTINGS !in state.disabledSections),
-            cycleHints[6] to (state.currencyConverterEnabled && state.hasApiKey),
+            cycleHints[6] to state.currencyConverterEnabled,
             cycleHints[7] to state.unitConverterEnabled,
             cycleHints[8] to state.dateCalculatorEnabled,
             cycleHints[9] to state.calculatorEnabled,
@@ -418,7 +418,6 @@ internal fun SearchScreenContent(
     val trimmedQuery = state.query.trim()
     val showCurrencyConverterSearchCard =
             (state.currencyConverterEnabled || isCurrencyConverterAliasMode) &&
-                    state.hasApiKey &&
                     !showCalculatorResult &&
                     !showCurrencyConverter &&
                     !showWorldClock &&
@@ -1320,7 +1319,7 @@ internal fun SearchScreenContent(
                         }
                         swipeUpAction == SwipeGestureAction.SEARCH_ENGINE || swipeUpAction == SwipeGestureAction.TOOL ->
                             swipeUpAliasTarget?.let { onGestureAliasTarget(swipeUpAction, it) }
-                        isDefaultLauncher ->
+                        else ->
                             homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, homeSwipeUpAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
                     }
                 },
@@ -1335,7 +1334,7 @@ internal fun SearchScreenContent(
                         }
                         swipeDownAction == SwipeGestureAction.SEARCH_ENGINE || swipeDownAction == SwipeGestureAction.TOOL ->
                             swipeDownAliasTarget?.let { onGestureAliasTarget(swipeDownAction, it) }
-                        isDefaultLauncher ->
+                        else ->
                             homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, homeSwipeDownAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
                     }
                 },

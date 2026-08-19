@@ -75,10 +75,7 @@ object ToolSettingsRegistry {
                 aliasFeatureId = AliasHandler.CURRENCY_CONVERTER_ALIAS_FEATURE_ID,
                 titleResId = R.string.currency_converter_toggle_title,
                 defaultDescriptionResId = R.string.currency_converter_toggle_desc,
-                requiresGeminiApiKey = true,
-                requiresGeminiDescriptionResId = R.string.currency_converter_requires_gemini_key,
                 icon = Icons.Rounded.CurrencyExchange,
-                aiBackedModelConfigurable = true,
             ),
             ToolSettingDefinition(
                 id = ToolSettingId.WORD_CLOCK,

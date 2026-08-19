@@ -6,7 +6,6 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.tools.aiTools.ConfirmedDictionaryQuery
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.CurrencyConverterHandler
-import com.tk.quicksearch.tools.aiTools.CurrencyNotRecognizedException
 import com.tk.quicksearch.tools.aiTools.DictionaryHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryNotRecognizedException
@@ -142,11 +141,7 @@ internal class SearchToolCoordinator(
         currencyConversionJob?.cancel()
         val aliasState = toolAliasStateProvider()
         val lockedCurrencyConverterAlias = aliasState.lockedCurrencyConverterAlias
-        val hasApiKey = hasApiKeyProvider()
-
-        if ((!userPreferences.isCurrencyConverterEnabled() && !lockedCurrencyConverterAlias) ||
-            !hasApiKey
-        ) {
+        if (!userPreferences.isCurrencyConverterEnabled() && !lockedCurrencyConverterAlias) {
             updateResultsState { s ->
                 if (s.currencyConverterState.status == CurrencyConverterStatus.Idle) {
                     s
@@ -189,9 +184,7 @@ internal class SearchToolCoordinator(
         if (trimmedQuery.isBlank()) return
 
         val aliasState = toolAliasStateProvider()
-        if ((!userPreferences.isCurrencyConverterEnabled() && !aliasState.lockedCurrencyConverterAlias) ||
-            !hasApiKeyProvider()
-        ) {
+        if (!userPreferences.isCurrencyConverterEnabled() && !aliasState.lockedCurrencyConverterAlias) {
             return
         }
 
@@ -220,7 +213,7 @@ internal class SearchToolCoordinator(
                 if (version != currencyConversionQueryVersion) return@launch
                 if (currentQueryProvider().trim() != trimmedQuery) return@launch
                 apiResult.fold(
-                    onSuccess = { (parsed, modelId) ->
+                    onSuccess = { parsed ->
                         updateResultsState { s ->
                             s.copy(
                                 currencyConverterState =
@@ -232,18 +225,11 @@ internal class SearchToolCoordinator(
                                         sourceAmount = parsed.sourceAmount,
                                         sourceCurrencyCode = parsed.sourceCurrencyCode,
                                         activeQuery = trimmedQuery,
-                                        usedModelId = modelId,
                                     ),
                             )
                         }
                     },
                     onFailure = { e ->
-                        if (e is CurrencyNotRecognizedException) {
-                            updateResultsState { s ->
-                                s.copy(currencyConverterState = CurrencyConverterState())
-                            }
-                            return@launch
-                        }
                         val msg = e.message ?: appContext.getString(R.string.direct_search_error_generic)
                         updateResultsState { s ->
                             s.copy(

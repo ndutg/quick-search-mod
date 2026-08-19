@@ -180,20 +180,6 @@ fun WidgetsPanelScreen(
         persistWidgets(next.filterNot { it.isQuickNoteWidget() })
     }
 
-    LaunchedEffect(widgets) {
-        val available =
-            widgets.filter { appWidgetManager.getAppWidgetInfo(it.appWidgetId) != null }
-        if (available.size != widgets.size) {
-            widgets
-                .filterNot { available.any { kept -> kept.appWidgetId == it.appWidgetId } }
-                .forEach { stale -> appWidgetHost.deleteAppWidgetId(stale.appWidgetId) }
-            persistWidgets(available)
-            if (editingWidgetId != null && available.none { it.appWidgetId == editingWidgetId }) {
-                editingWidgetId = null
-            }
-        }
-    }
-
     fun finalizeAddWidget(request: PendingWidgetRequest) {
         val provider = request.provider
         val (columnSpan, rowSpan) = initialSpanFor(provider)
