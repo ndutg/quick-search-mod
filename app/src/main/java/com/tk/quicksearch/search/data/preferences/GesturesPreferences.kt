@@ -94,11 +94,16 @@ class GesturesPreferences(
     fun getHomeSwipeUpAliasTarget(): String? = prefs.getString(KEY_HOME_SWIPE_UP_ALIAS_TARGET, null)
     fun setHomeSwipeUpAliasTarget(targetId: String?) = setCustomAction(KEY_HOME_SWIPE_UP_ALIAS_TARGET, targetId)
 
-    fun getHomeSwipeDownAction(): HomeSwipeGestureAction =
+    fun getHomeSwipeDownAction(isDefaultLauncher: Boolean = true): HomeSwipeGestureAction =
         getHomeGestureAction(
             key = KEY_HOME_SWIPE_DOWN_ACTION,
             legacyNotificationKey = KEY_HOME_SWIPE_DOWN_NOTIFICATION_ENABLED,
-            default = HomeSwipeGestureAction.NOTIFICATION_PANEL,
+            default =
+                if (isDefaultLauncher) {
+                    HomeSwipeGestureAction.NOTIFICATION_PANEL
+                } else {
+                    HomeSwipeGestureAction.NONE
+                },
         )
 
     fun setHomeSwipeDownAction(action: HomeSwipeGestureAction) =

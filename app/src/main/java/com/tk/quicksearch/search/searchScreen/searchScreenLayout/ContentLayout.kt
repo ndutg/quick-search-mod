@@ -990,9 +990,7 @@ fun ContentLayout(
                     if (showCurrencyConverter) {
                         CurrencyConverterResult(
                                 currencyConverterState = state.currencyConverterState,
-                                llmProviderId = state.aiSearchLlmProviderId,
                                 showWallpaperBackground = effectiveShowWallpaperBackground,
-                                onGeminiModelInfoClick = onGeminiModelInfoClick,
                         )
                     }
                 }

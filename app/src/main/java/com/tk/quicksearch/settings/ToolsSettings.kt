@@ -141,13 +141,20 @@ fun ToolsSettingsSection(
                                         },
                                         existingShortcuts = existingShortcuts,
                                         aliasFeatureId = definition.aliasFeatureId,
-                                        onRowClick = {
-                                            if (definition.aiBackedModelConfigurable) {
-                                                onToolConfigureClick(definition.id)
-                                            } else if (definition.infoDestination != null) {
-                                                onToolInfoClick(definition.id)
-                                            }
-                                        },
+                                        onRowClick =
+                                                if (definition.aiBackedModelConfigurable ||
+                                                                definition.infoDestination != null
+                                                ) {
+                                                    {
+                                                        if (definition.aiBackedModelConfigurable) {
+                                                            onToolConfigureClick(definition.id)
+                                                        } else {
+                                                            onToolInfoClick(definition.id)
+                                                        }
+                                                    }
+                                                } else {
+                                                    null
+                                                },
                                 )
                             },
             )
