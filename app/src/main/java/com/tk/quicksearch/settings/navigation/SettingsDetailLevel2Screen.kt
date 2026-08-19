@@ -391,10 +391,6 @@ internal fun SettingsDetailLevel2Screen(
                             },
                             onToolConfigureClick = { toolId ->
                                 when (toolId) {
-                                    ToolSettingId.CURRENCY_CONVERTER -> {
-                                        CustomToolNavigationMemory.setPendingAiBackedTool(AiBackedToolConfigId.CURRENCY_CONVERTER)
-                                        onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)
-                                    }
                                     ToolSettingId.WORD_CLOCK -> {
                                         CustomToolNavigationMemory.setPendingAiBackedTool(AiBackedToolConfigId.WORD_CLOCK)
                                         onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)

@@ -824,9 +824,7 @@ fun SearchRoute(
             onDismissPhoneNumberSelection = viewModel::dismissPhoneNumberSelection,
             onSearchTargetClick = { query: String, target: SearchTarget ->
                 val trimmedQuery = query.trim()
-                if (target is SearchTarget.Engine &&
-                    target.engine == SearchEngine.DIRECT_SEARCH &&
-                    uiState.hasApiKey) {
+                if (target is SearchTarget.Engine && target.engine == SearchEngine.DIRECT_SEARCH) {
                     when {
                         uiState.currencyConverterEnabled &&
                                 CurrencyConversionIntentParser.parseConfirmed(trimmedQuery) != null ->

@@ -179,7 +179,7 @@ internal class SearchHandlerContainer(
     }
 
     val currencyConverterHandler by lazy {
-        CurrencyConverterHandler(appContext, userPreferences)
+        CurrencyConverterHandler(appContext)
     }
 
     val worldClockHandler by lazy { WorldClockHandler(appContext, userPreferences) }
