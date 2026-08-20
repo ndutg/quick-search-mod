@@ -31,7 +31,7 @@ data class IconPackDrawableInfo(
 )
 
 /**
- * Discovers installed icon packs and loads icons from their appfilter definitions.
+ * Discovers installed icon packs and loads icons from their appfilter and drawable catalogs.
  */
 object IconPackManager {
     private const val TAG = "IconPackManager"
@@ -65,6 +65,7 @@ object IconPackManager {
         )
 
     private val renderDataCache = ConcurrentHashMap<String, IconPackRenderData>()
+    private val drawableCatalogCache = ConcurrentHashMap<String, Set<String>>()
     private val resourcesCache = ConcurrentHashMap<String, Resources>()
 
     /**
@@ -163,16 +164,10 @@ object IconPackManager {
      */
     fun getIconDrawables(context: Context, iconPackPackage: String): List<IconPackDrawableInfo> {
         val resources = getIconPackResources(context, iconPackPackage) ?: return emptyList()
-        return loadAppFilterRenderData(iconPackPackage, resources)
-            .packageMapping
-            .entries
-            .groupBy({ it.value }, { it.key })
-            .map { (drawableName, targetPackages) ->
-                IconPackDrawableInfo(
-                    drawableName = drawableName,
-                    targetPackages = targetPackages.toSortedSet(),
-                )
-            }.sortedBy { it.drawableName }
+        return mergeIconPackDrawables(
+            packageMapping = loadAppFilterRenderData(iconPackPackage, resources).packageMapping,
+            catalogDrawableNames = loadDrawableCatalog(iconPackPackage, resources),
+        )
     }
 
     /** Returns true only when the pack explicitly maps the app to a loadable icon. */
@@ -200,6 +195,7 @@ object IconPackManager {
 
     fun clearAllCaches() {
         renderDataCache.clear()
+        drawableCatalogCache.clear()
         resourcesCache.clear()
     }
 
@@ -261,6 +257,61 @@ object IconPackManager {
         val renderData = parseAppFilter(resources, iconPackPackage)
         renderDataCache[iconPackPackage] = renderData
         return renderData
+    }
+
+    /** Loads the complete icon list exposed by standard icon-pack drawable.xml catalogs. */
+    private fun loadDrawableCatalog(
+        iconPackPackage: String,
+        resources: Resources,
+    ): Set<String> =
+        drawableCatalogCache.getOrPut(iconPackPackage) {
+            getDrawableCatalogFromAssets(resources).takeIf { it.isNotEmpty() }
+                ?: getDrawableCatalogFromResources(resources, iconPackPackage)
+        }
+
+    private fun getDrawableCatalogFromAssets(resources: Resources): Set<String> =
+        runCatching { resources.assets.open("drawable.xml") }
+            .getOrNull()
+            ?.use(::parseDrawableCatalog)
+            .orEmpty()
+
+    private fun getDrawableCatalogFromResources(
+        resources: Resources,
+        packageName: String,
+    ): Set<String> {
+        val xmlResId = resources.getIdentifier("drawable", "xml", packageName)
+        if (xmlResId == 0) return emptySet()
+
+        return runCatching {
+            parseDrawableCatalog(resources.getXml(xmlResId))
+        }.onFailure {
+            Log.w(TAG, "Failed to parse drawable.xml from resources for $packageName", it)
+        }.getOrDefault(emptySet())
+    }
+
+    private fun parseDrawableCatalog(stream: InputStream): Set<String> =
+        runCatching {
+            val parser = Xml.newPullParser()
+            parser.setInput(stream, null)
+            parseDrawableCatalog(parser)
+        }.onFailure {
+            Log.w(TAG, "Failed to parse drawable.xml from assets", it)
+        }.getOrDefault(emptySet())
+
+    private fun parseDrawableCatalog(parser: XmlPullParser): Set<String> {
+        val drawableNames = linkedSetOf<String>()
+        var eventType = parser.eventType
+
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG && parser.name.equals("item", ignoreCase = true)) {
+                parser.getAttributeValue(null, "drawable")
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let(drawableNames::add)
+            }
+            eventType = parser.next()
+        }
+        return drawableNames
     }
 
     /**
@@ -561,6 +612,24 @@ internal fun filterIconPackDrawables(
         ).toList()
 }
 
+internal fun mergeIconPackDrawables(
+    packageMapping: Map<String, String>,
+    catalogDrawableNames: Set<String>,
+): List<IconPackDrawableInfo> {
+    val targetPackagesByDrawable =
+        packageMapping.entries
+            .filter { it.value.isNotBlank() }
+            .groupBy({ it.value }, { it.key })
+
+    return (targetPackagesByDrawable.keys + catalogDrawableNames.filter { it.isNotBlank() })
+        .map { drawableName ->
+            IconPackDrawableInfo(
+                drawableName = drawableName,
+                targetPackages = targetPackagesByDrawable[drawableName].orEmpty().toSortedSet(),
+            )
+        }.sortedBy { it.drawableName }
+}
+
 private fun Drawable.toBitmapSafely(): ImageBitmap? =
     runCatching {
         when (this) {
@@ -576,5 +645,20 @@ private fun Drawable.toBitmapSafely(): ImageBitmap? =
 private fun Bitmap.toStableImageBitmap(): ImageBitmap? {
     if (isRecycled || width <= 0 || height <= 0) return null
     val stableBitmap = copy(Bitmap.Config.ARGB_8888, false) ?: return null
+    if (!stableBitmap.hasVisiblePixels()) {
+        stableBitmap.recycle()
+        return null
+    }
     return stableBitmap.asImageBitmap()
+}
+
+private fun Bitmap.hasVisiblePixels(): Boolean {
+    if (!hasAlpha()) return true
+
+    val rowPixels = IntArray(width)
+    repeat(height) { row ->
+        getPixels(rowPixels, 0, width, 0, row, width, 1)
+        if (rowPixels.any { pixel -> pixel ushr 24 != 0 }) return true
+    }
+    return false
 }
