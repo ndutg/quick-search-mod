@@ -49,6 +49,7 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -262,7 +263,7 @@ internal fun AppSettingResultRow(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
-                text = setting.title,
+                text = rememberQueryHighlightedText(setting.title),
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (isBlockedByLauncher) {
                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
@@ -274,7 +275,7 @@ internal fun AppSettingResultRow(
             )
             effectiveDescription?.takeIf { it.isNotBlank() }?.let { description ->
                 Text(
-                    text = description,
+                    text = rememberQueryHighlightedText(description),
                     style = MaterialTheme.typography.bodySmall,
                     color = if (isBlockedByLauncher) {
                         MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)

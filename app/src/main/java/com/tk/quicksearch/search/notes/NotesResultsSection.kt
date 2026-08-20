@@ -53,6 +53,8 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandButton
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -190,6 +192,7 @@ internal fun NoteRow(
     var showDeleteConfirm by remember { mutableStateOf(false) }
     val rowView = LocalView.current
     val context = LocalContext.current
+    val query = LocalSearchResultQuery.current
     val title = note.title.ifBlank { stringResource(R.string.notes_untitled) }
     val notificationAction =
         CustomWidgetButtonAction.Note(
@@ -198,7 +201,15 @@ internal fun NoteRow(
             markdownContent = note.markdownContent,
         )
     val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
-    val preview = NotesTextUtils.firstLinesPreview(note.markdownContent)
+    val matchingPreview =
+        remember(note.markdownContent, query) {
+            NotesTextUtils.matchCenteredPreview(note.markdownContent, query)
+        }
+    val preview =
+        matchingPreview
+            ?: remember(note.markdownContent) {
+                NotesTextUtils.firstLinesPreview(note.markdownContent)
+            }
     val subtitle =
         if (preview.isNotBlank()) {
             preview
@@ -234,17 +245,17 @@ internal fun NoteRow(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = title,
+                    text = rememberQueryHighlightedText(title, query),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = subtitle,
+                    text = rememberQueryHighlightedText(subtitle, query),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 3,
+                    maxLines = if (matchingPreview != null) 5 else 3,
                     overflow = TextOverflow.Ellipsis,
                 )
             }

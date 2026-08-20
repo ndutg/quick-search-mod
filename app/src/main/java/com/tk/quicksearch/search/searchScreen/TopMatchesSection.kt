@@ -66,6 +66,7 @@ import com.tk.quicksearch.search.core.ScreenTimeState
 import com.tk.quicksearch.search.searchScreen.components.predictedSubmitHighlight
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
@@ -792,7 +793,7 @@ private fun TopMatchAppRow(
             }
 
             Text(
-                text = app.appName,
+                text = rememberQueryHighlightedText(app.appName),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,

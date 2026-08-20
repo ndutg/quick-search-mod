@@ -75,6 +75,7 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -375,7 +376,7 @@ internal fun AppShortcutRow(
                                         null
                                 }
                         Text(
-                                text = displayName,
+                                text = rememberQueryHighlightedText(displayName),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 1,
@@ -383,7 +384,7 @@ internal fun AppShortcutRow(
                         )
                         if (!secondaryText.isNullOrBlank()) {
                                 Text(
-                                        text = secondaryText,
+                                        text = rememberQueryHighlightedText(secondaryText),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,

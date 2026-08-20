@@ -86,6 +86,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SearchContentArea
+import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
 import com.tk.quicksearch.search.searchScreen.appThemeActionColor
 import com.tk.quicksearch.search.searchScreen.appThemeDividerColor
 import com.tk.quicksearch.search.searchScreen.appThemeResultCardColor
@@ -1251,7 +1252,10 @@ internal fun SearchScreenContent(
         )
     }
 
-    CompositionLocalProvider(LocalSearchColorTheme provides searchColorTheme) {
+    CompositionLocalProvider(
+        LocalSearchColorTheme provides searchColorTheme,
+        LocalSearchResultQuery provides state.query.trim(),
+    ) {
     Column(modifier = contentModifier, verticalArrangement = Arrangement.Top) {
         if (showSearchField && !showBottomSearchBar) {
             // Fixed search bar at the top

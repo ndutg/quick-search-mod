@@ -38,6 +38,7 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -247,7 +248,7 @@ internal fun SettingResultRow(
                         verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                         Text(
-                                text = shortcut.title,
+                                text = rememberQueryHighlightedText(shortcut.title),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 2,
@@ -257,7 +258,7 @@ internal fun SettingResultRow(
                                 shortcut.description?.takeIf { it.isNotBlank() }?.let { description
                                         ->
                                         Text(
-                                                text = description,
+                                                text = rememberQueryHighlightedText(description),
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 maxLines = 2,
