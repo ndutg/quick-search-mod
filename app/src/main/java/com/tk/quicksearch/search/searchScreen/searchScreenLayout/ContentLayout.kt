@@ -411,13 +411,14 @@ fun ContentLayout(
             !isExpanded &&
             !isSectionAliasMode &&
             displayedTopMatches.isNotEmpty()
+    val appGridOwnsTopResult = hasQuery && regularRenderingState.displayApps.isNotEmpty()
     val hasMoreResults =
         hasMoreResults(
             renderingState = regularRenderingState,
             sectionContext = sectionContextForRecentHistoryExpansion,
         )
     val regularSectionParams =
-        if (showTopMatches) {
+        if (showTopMatches && !appGridOwnsTopResult) {
             sectionParams.copy(
                 contactsParams = sectionParams.contactsParams.copy(predictedTarget = null),
                 filesParams = sectionParams.filesParams.copy(predictedTarget = null),
@@ -745,7 +746,8 @@ fun ContentLayout(
             params = sectionParams,
             showWallpaperBackground = effectiveShowWallpaperBackground,
             showTopResultIndicator =
-                state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+                !appGridOwnsTopResult &&
+                    (state.topResultIndicatorEnabled || isPhysicalKeyboardConnected),
             selectedMatchIndex = selectedTopMatchIndex,
             reverseOrder = isReversed,
             screenTimeState = state.screenTimeState,
