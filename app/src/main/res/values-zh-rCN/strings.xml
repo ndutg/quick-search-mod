@@ -1071,4 +1071,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s 小时</string>
     <string name="other_screen_time_today_title">今日屏幕使用时间</string>
     <string name="other_screen_time_hours_minutes">%1$d 小时 %2$d 分钟</string>
+    <string name="pin_notification_dialog_title">固定到通知</string>
+    <string name="pin_notification_with_other_items">与其他项目一起固定</string>
+    <string name="pin_notification_separately">单独固定</string>
 </resources>

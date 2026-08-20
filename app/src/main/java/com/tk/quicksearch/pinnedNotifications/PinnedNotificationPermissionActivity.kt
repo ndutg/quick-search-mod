@@ -23,7 +23,13 @@ class PinnedNotificationPermissionActivity : Activity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == RequestCode) {
             CustomWidgetButtonAction.fromJson(intent.getStringExtra(ExtraAction))?.let {
-                PinnedNotifications.completePermissionRequest(this, it)
+                PinnedNotifications.completePermissionRequest(
+                    this,
+                    it,
+                    intent.getStringExtra(ExtraMode)
+                        ?.let(PinnedNotifications.PinMode::valueOf)
+                        ?: PinnedNotifications.PinMode.WITH_OTHER_ITEMS,
+                )
             }
             finish()
         }
@@ -31,11 +37,17 @@ class PinnedNotificationPermissionActivity : Activity() {
 
     companion object {
         private const val ExtraAction = "pinned_notification_action"
+        private const val ExtraMode = "pinned_notification_mode"
         private const val RequestCode = 7330
 
-        fun createIntent(context: Context, action: CustomWidgetButtonAction): Intent =
+        fun createIntent(
+            context: Context,
+            action: CustomWidgetButtonAction,
+            mode: PinnedNotifications.PinMode,
+        ): Intent =
             Intent(context, PinnedNotificationPermissionActivity::class.java)
                 .putExtra(ExtraAction, action.toJson())
+                .putExtra(ExtraMode, mode.name)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 }

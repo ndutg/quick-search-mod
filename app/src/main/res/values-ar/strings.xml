@@ -1081,4 +1081,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s س</string>
     <string name="other_screen_time_today_title">وقت استخدام الشاشة اليوم</string>
     <string name="other_screen_time_hours_minutes">%1$d س %2$d د</string>
+    <string name="pin_notification_dialog_title">تثبيت في الإشعارات</string>
+    <string name="pin_notification_with_other_items">تثبيت مع العناصر الأخرى</string>
+    <string name="pin_notification_separately">تثبيت بشكل منفصل</string>
 </resources>

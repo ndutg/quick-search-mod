@@ -1079,4 +1079,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s ώρ.</string>
     <string name="other_screen_time_today_title">Σημερινός χρόνος οθόνης</string>
     <string name="other_screen_time_hours_minutes">%1$d ώ. %2$d λ.</string>
+    <string name="pin_notification_dialog_title">Καρφίτσωμα σε ειδοποίηση</string>
+    <string name="pin_notification_with_other_items">Καρφίτσωμα μαζί με άλλα στοιχεία</string>
+    <string name="pin_notification_separately">Καρφίτσωμα ξεχωριστά</string>
 </resources>

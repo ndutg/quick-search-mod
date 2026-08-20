@@ -190,9 +190,14 @@ internal fun NoteRow(
     var showDeleteConfirm by remember { mutableStateOf(false) }
     val rowView = LocalView.current
     val context = LocalContext.current
-    val notificationAction = CustomWidgetButtonAction.Note(note.noteId, note.title)
-    val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     val title = note.title.ifBlank { stringResource(R.string.notes_untitled) }
+    val notificationAction =
+        CustomWidgetButtonAction.Note(
+            noteId = note.noteId,
+            title = title,
+            markdownContent = note.markdownContent,
+        )
+    val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     val preview = NotesTextUtils.firstLinesPreview(note.markdownContent)
     val subtitle =
         if (preview.isNotBlank()) {

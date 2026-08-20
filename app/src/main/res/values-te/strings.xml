@@ -1079,4 +1079,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s గం.</string>
     <string name="other_screen_time_today_title">ఈ రోజు స్క్రీన్ టైమ్</string>
     <string name="other_screen_time_hours_minutes">%1$d గం %2$d నిమి</string>
+    <string name="pin_notification_dialog_title">నోటిఫికేషన్‌లో పిన్ చేయి</string>
+    <string name="pin_notification_with_other_items">ఇతర అంశాలతో పాటు పిన్ చేయి</string>
+    <string name="pin_notification_separately">విడిగా పిన్ చేయి</string>
 </resources>

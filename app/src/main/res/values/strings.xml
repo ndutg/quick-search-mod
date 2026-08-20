@@ -1076,4 +1076,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s hrs</string>
     <string name="other_screen_time_today_title">Today\'s Screen Time</string>
     <string name="other_screen_time_hours_minutes">%1$d hr %2$d min</string>
+    <string name="pin_notification_dialog_title">Pin to Notification</string>
+    <string name="pin_notification_with_other_items">Pin along with other items</string>
+    <string name="pin_notification_separately">Pin separately</string>
 </resources>

@@ -1095,4 +1095,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s ч</string>
     <string name="other_screen_time_today_title">Экранное время сегодня</string>
     <string name="other_screen_time_hours_minutes">%1$d ч %2$d мин</string>
+    <string name="pin_notification_dialog_title">Закрепить в уведомлении</string>
+    <string name="pin_notification_with_other_items">Закрепить вместе с другими элементами</string>
+    <string name="pin_notification_separately">Закрепить отдельно</string>
 </resources>

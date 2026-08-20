@@ -25,33 +25,44 @@ import org.json.JSONArray
 object PinnedNotifications {
     private const val PreferencesName = "pinned_notification_items"
     private const val ActionsKey = "actions_json"
+    private const val SeparateActionsKey = "separate_actions_json"
     private const val ChannelId = "pinned_shortcuts"
     private const val NotificationId = 7_300
     private const val ItemsPerRow = 4
 
-    fun pin(context: Context, action: CustomWidgetButtonAction) {
+    enum class PinMode {
+        WITH_OTHER_ITEMS,
+        SEPARATELY,
+    }
+
+    fun pin(context: Context, action: CustomWidgetButtonAction, mode: PinMode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
-            context.startActivity(PinnedNotificationPermissionActivity.createIntent(context, action))
+            context.startActivity(PinnedNotificationPermissionActivity.createIntent(context, action, mode))
             return
         }
-        save(context, actions(context) + action)
+        savePin(context, action, mode)
         show(context)
     }
 
     fun isPinned(context: Context, action: CustomWidgetButtonAction): Boolean =
-        actions(context).any { it.toJson() == action.toJson() }
+        actions(context).any { it.matches(action) } || separateActions(context).any { it.matches(action) }
 
     fun pinnedItems(context: Context): List<CustomWidgetButtonAction> = actions(context)
 
     fun remove(context: Context, action: CustomWidgetButtonAction) {
-        save(context, actions(context).filterNot { it.toJson() == action.toJson() })
+        saveActions(context, actions(context).filterNot { it.matches(action) })
+        val separateItem = separateActions(context).firstOrNull { it.matches(action) }
+        saveSeparateActions(context, separateActions(context).filterNot { it.matches(action) })
+        separateItem?.let {
+            NotificationManagerCompat.from(context).cancel(separateNotificationId(it))
+        }
         show(context)
     }
 
     fun reorder(context: Context, actions: List<CustomWidgetButtonAction>) {
-        save(context, actions)
+        saveActions(context, actions)
         show(context)
     }
 
@@ -59,15 +70,15 @@ object PinnedNotifications {
         if (isPinned(context, action)) {
             remove(context, action)
         } else {
-            pin(context, action)
+            context.startActivity(PinnedNotificationChoiceActivity.createIntent(context, action))
         }
     }
 
-    fun completePermissionRequest(context: Context, action: CustomWidgetButtonAction) {
+    fun completePermissionRequest(context: Context, action: CustomWidgetButtonAction, mode: PinMode) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         ) {
-            save(context, actions(context) + action)
+            savePin(context, action, mode)
             show(context)
         }
     }
@@ -76,30 +87,82 @@ object PinnedNotifications {
         val actions = actions(context)
         if (actions.isEmpty()) {
             NotificationManagerCompat.from(context).cancel(NotificationId)
-            return
+        } else {
+            createChannel(context)
+            val compact = buildRemoteViews(context, actions.take(ItemsPerRow), showLabels = false)
+            val expanded = buildRemoteViews(context, actions, showLabels = true)
+            val notification = NotificationCompat.Builder(context, ChannelId)
+                .setSmallIcon(R.drawable.ic_pin)
+                .setContentTitle(context.getString(R.string.pinned_notifications_title))
+                .setOngoing(true)
+                .setAutoCancel(false)
+                .setOnlyAlertOnce(true)
+                .setCategory(NotificationCompat.CATEGORY_STATUS)
+                .setDeleteIntent(restorePendingIntent(context, NotificationId))
+                .setCustomContentView(compact)
+                .setCustomBigContentView(expanded)
+                .build()
+            NotificationManagerCompat.from(context).notify(NotificationId, notification)
         }
         createChannel(context)
-        val compact = buildRemoteViews(context, actions.take(ItemsPerRow), showLabels = false)
-        val expanded = buildRemoteViews(context, actions, showLabels = true)
-        val notification = NotificationCompat.Builder(context, ChannelId)
+        separateActions(context).forEach { action -> showSeparate(context, action) }
+    }
+
+    private fun showSeparate(context: Context, action: CustomWidgetButtonAction) {
+        val notificationId = separateNotificationId(action)
+        val iconSize = (context.resources.displayMetrics.density * 48).toInt()
+        val iconPackPackage = UserAppPreferences(context).uiPreferences.getSelectedIconPackPackage()
+        val icon = rememberWidgetButtonIcon(
+            context = context,
+            action = action,
+            iconSizePx = iconSize,
+            textIconColor = Color.White,
+            iconPackPackage = iconPackPackage,
+        )
+        val largeIcon = notificationIconBitmap(context, action, icon.bitmap, icon.drawableResId, iconSize)
+            ?: icon.drawableResId?.let { drawableResId ->
+                ContextCompat.getDrawable(context, drawableResId)?.toBitmap(width = iconSize, height = iconSize)
+            }
+        val launchIntent = WidgetActionActivity.createIntent(context, action).apply {
+            data = android.net.Uri.parse("quicksearch://separate-pinned-notification/${action.stableKey().hashCode()}")
+        }
+        val contentIntent = PendingIntent.getActivity(
+            context,
+            notificationId,
+            launchIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val unpinIntent = Intent(context, PinnedNotificationUnpinReceiver::class.java)
+            .putExtra(PinnedNotificationUnpinReceiver.ExtraAction, action.toJson())
+            .setData(android.net.Uri.parse("quicksearch://unpin/${action.stableKey().hashCode()}"))
+        val unpinPendingIntent = PendingIntent.getBroadcast(
+            context,
+            notificationId,
+            unpinIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val builder = NotificationCompat.Builder(context, ChannelId)
             .setSmallIcon(R.drawable.ic_pin)
-            .setContentTitle(context.getString(R.string.pinned_notifications_title))
+            .setContentTitle(action.displayLabel())
+            .setContentIntent(contentIntent)
             .setOngoing(true)
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
+            .setShowWhen(false)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
-            .setDeleteIntent(
-                PendingIntent.getBroadcast(
-                    context,
-                    NotificationId,
-                    Intent(context, PinnedNotificationRestoreReceiver::class.java),
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-                ),
-            )
-            .setCustomContentView(compact)
-            .setCustomBigContentView(expanded)
-            .build()
-        NotificationManagerCompat.from(context).notify(NotificationId, notification)
+            .setDeleteIntent(restorePendingIntent(context, notificationId))
+            .addAction(R.drawable.ic_unpin, context.getString(R.string.action_unpin_app), unpinPendingIntent)
+        largeIcon?.let(builder::setLargeIcon)
+        if (action is CustomWidgetButtonAction.Note && action.markdownContent.isNotBlank()) {
+            val noteContent = action.markdownContent.normalizedNotificationText()
+            builder
+                .setContentText(noteContent.compactNotePreview())
+                .setStyle(
+                    NotificationCompat.BigTextStyle()
+                        .bigText(noteContent.take(MaxExpandedNoteCharacters)),
+                )
+        }
+        NotificationManagerCompat.from(context).notify(notificationId, builder.build())
     }
 
     private fun buildRemoteViews(
@@ -183,19 +246,83 @@ object PinnedNotifications {
     }
 
     private fun actions(context: Context): List<CustomWidgetButtonAction> =
+        readActions(context, ActionsKey)
+
+    private fun separateActions(context: Context): List<CustomWidgetButtonAction> =
+        readActions(context, SeparateActionsKey)
+
+    private fun readActions(context: Context, key: String): List<CustomWidgetButtonAction> =
         context.getSharedPreferences(PreferencesName, Context.MODE_PRIVATE)
-            .getString(ActionsKey, null)
+            .getString(key, null)
             ?.let { raw -> runCatching { JSONArray(raw) }.getOrNull() }
             ?.let { array -> List(array.length()) { index -> CustomWidgetButtonAction.fromJson(array.optString(index)) } }
             ?.filterNotNull()
             .orEmpty()
 
-    private fun save(context: Context, actions: List<CustomWidgetButtonAction>) {
+    private fun saveActions(context: Context, actions: List<CustomWidgetButtonAction>) {
+        save(context, ActionsKey, actions)
+    }
+
+    private fun saveSeparateActions(context: Context, actions: List<CustomWidgetButtonAction>) {
+        save(context, SeparateActionsKey, actions)
+    }
+
+    private fun save(context: Context, key: String, actions: List<CustomWidgetButtonAction>) {
         context.getSharedPreferences(PreferencesName, Context.MODE_PRIVATE)
             .edit()
-            .putString(ActionsKey, JSONArray(actions.map { it.toJson() }).toString())
+            .putString(key, JSONArray(actions.map { it.toJson() }).toString())
             .apply()
     }
+
+    private fun savePin(context: Context, action: CustomWidgetButtonAction, mode: PinMode) {
+        val existingCombined = actions(context).filterNot { it.matches(action) }
+        val existingSeparate = separateActions(context).filterNot { it.matches(action) }
+        when (mode) {
+            PinMode.WITH_OTHER_ITEMS -> {
+                saveActions(context, existingCombined + action)
+                saveSeparateActions(context, existingSeparate)
+                NotificationManagerCompat.from(context).cancel(separateNotificationId(action))
+            }
+            PinMode.SEPARATELY -> {
+                saveActions(context, existingCombined)
+                saveSeparateActions(context, existingSeparate + action)
+            }
+        }
+    }
+
+    private fun restorePendingIntent(context: Context, notificationId: Int): PendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            notificationId,
+            Intent(context, PinnedNotificationRestoreReceiver::class.java)
+                .setData(android.net.Uri.parse("quicksearch://restore/$notificationId")),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+    private fun separateNotificationId(action: CustomWidgetButtonAction): Int =
+        0x40000000 or (action.stableKey().hashCode() and 0x3fffffff)
+
+    private fun CustomWidgetButtonAction.matches(other: CustomWidgetButtonAction): Boolean =
+        stableKey() == other.stableKey()
+
+    private fun CustomWidgetButtonAction.stableKey(): String =
+        when (this) {
+            is CustomWidgetButtonAction.App -> "app:$packageName:${userHandleId ?: -1}"
+            is CustomWidgetButtonAction.Contact -> "contact:$contactId:${serializedAction.orEmpty()}"
+            is CustomWidgetButtonAction.File -> "file:$uri"
+            is CustomWidgetButtonAction.Setting -> "setting:$id"
+            is CustomWidgetButtonAction.AppShortcut -> "shortcut:$packageName:$id"
+            is CustomWidgetButtonAction.Note -> "note:$noteId"
+        }
+
+    private fun String.normalizedNotificationText(): String =
+        replace("\r\n", "\n").replace('\r', '\n').trim()
+
+    private fun String.compactNotePreview(): String =
+        lineSequence()
+            .take(CompactNotePreviewLines)
+            .joinToString("\n")
+            .take(CompactNotePreviewCharacters)
 
     private fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -207,4 +334,8 @@ object PinnedNotifications {
             context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
     }
+
+    private const val CompactNotePreviewLines = 3
+    private const val CompactNotePreviewCharacters = 240
+    private const val MaxExpandedNoteCharacters = 5_000
 }

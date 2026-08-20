@@ -1079,4 +1079,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s Std.</string>
     <string name="other_screen_time_today_title">Heutige Bildschirmzeit</string>
     <string name="other_screen_time_hours_minutes">%1$d Std. %2$d Min.</string>
+    <string name="pin_notification_dialog_title">In Benachrichtigung anheften</string>
+    <string name="pin_notification_with_other_items">Mit anderen Elementen anheften</string>
+    <string name="pin_notification_separately">Separat anheften</string>
 </resources>

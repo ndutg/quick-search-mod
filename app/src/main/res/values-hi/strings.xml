@@ -1079,4 +1079,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s घंटे</string>
     <string name="other_screen_time_today_title">आज का स्क्रीन टाइम</string>
     <string name="other_screen_time_hours_minutes">%1$d घंटा %2$d मिनट</string>
+    <string name="pin_notification_dialog_title">सूचना में पिन करें</string>
+    <string name="pin_notification_with_other_items">अन्य आइटम के साथ पिन करें</string>
+    <string name="pin_notification_separately">अलग से पिन करें</string>
 </resources>
