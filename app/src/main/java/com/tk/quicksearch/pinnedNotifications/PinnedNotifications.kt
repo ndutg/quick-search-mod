@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 import com.tk.quicksearch.widgets.customButtonsWidget.rememberWidgetButtonIcon
@@ -50,6 +51,34 @@ object PinnedNotifications {
         actions(context).any { it.matches(action) } || separateActions(context).any { it.matches(action) }
 
     fun pinnedItems(context: Context): List<CustomWidgetButtonAction> = actions(context)
+
+    fun updatePinnedNote(context: Context, note: NoteInfo) {
+        val updatedTitle = note.title.ifBlank { context.getString(R.string.notes_untitled) }
+        fun update(actions: List<CustomWidgetButtonAction>): Pair<List<CustomWidgetButtonAction>, Boolean> {
+            var changed = false
+            val updatedActions =
+                actions.map { action ->
+                    if (action is CustomWidgetButtonAction.Note && action.noteId == note.noteId) {
+                        changed = changed ||
+                            action.title != updatedTitle || action.markdownContent != note.markdownContent
+                        action.copy(
+                            title = updatedTitle,
+                            markdownContent = note.markdownContent,
+                        )
+                    } else {
+                        action
+                    }
+                }
+            return updatedActions to changed
+        }
+
+        val (updatedCombined, combinedChanged) = update(actions(context))
+        val (updatedSeparate, separateChanged) = update(separateActions(context))
+        if (!combinedChanged && !separateChanged) return
+        if (combinedChanged) saveActions(context, updatedCombined)
+        if (separateChanged) saveSeparateActions(context, updatedSeparate)
+        show(context)
+    }
 
     fun remove(context: Context, action: CustomWidgetButtonAction) {
         saveActions(context, actions(context).filterNot { it.matches(action) })

@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.data
 
 import android.content.Context
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.search.data.notes.NotesRoomStore
 import com.tk.quicksearch.search.data.preferences.TriggerPreferences
@@ -15,6 +16,7 @@ import java.util.Locale
 class NotesRepository(
     context: Context,
 ) {
+    private val appContext = context.applicationContext
     private val notesPreferences = NotesPreferences(context)
     private val notesStore = NotesRoomStore(context)
     private val triggerPreferences = TriggerPreferences(context)
@@ -125,6 +127,7 @@ class NotesRepository(
             )
         notes[index] = updated
         writeNotes(notes)
+        PinnedNotifications.updatePinnedNote(appContext, updated)
         return updated
     }
 
