@@ -275,7 +275,7 @@
     <string name="top_matches_priority_dialog_info">长按并拖动以更改优先级，利用开关可以启用或停用某些特定的结果类型。</string>
     <string name="top_matches_priority_title">管理最佳匹配</string>
     <string name="top_matches_title">最佳匹配</string>
-    <string name="top_matches_toggle_desc">在顶部展示跨越所有类型的最佳匹配结果。</string>
+    <string name="top_matches_toggle_desc">在统一列表中显示最匹配的非应用结果。</string>
     <string name="top_result_indicator_toggle_desc">高亮显示可通过键盘直接打开的最佳结果。</string>
     <string name="top_result_indicator_toggle_title">最佳结果指示器</string>
     <string name="include_non_launchable_apps_toggle_title">不可启动的应用</string>

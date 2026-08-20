@@ -275,7 +275,7 @@
 <string name="top_matches_priority_dialog_info">Maintenez et glissez pour modifier la priorité, et utilisez le bouton pour activer ou désactiver certains types de résultats.</string>
 <string name="top_matches_priority_title">Gérer les meilleurs résultats</string>
 <string name="top_matches_title">Meilleurs résultats</string>
-<string name="top_matches_toggle_desc">Afficher les meilleurs résultats de tous les types en haut de la page.</string>
+<string name="top_matches_toggle_desc">Afficher les résultats hors applications les mieux correspondants dans une liste unifiée.</string>
 <string name="top_result_indicator_toggle_desc">Mettre en surbrillance le premier résultat qui peut être ouvert avec le clavier.</string>
 <string name="top_result_indicator_toggle_title">Indicateur du premier résultat</string>
 <string name="include_non_launchable_apps_toggle_title">Applications non lançables</string>

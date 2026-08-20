@@ -275,7 +275,7 @@
     <string name="top_matches_priority_dialog_info">प्राथमिकता बदलने के लिए दबाकर खींचें, और कुछ परिणाम प्रकार सक्षम या अक्षम करने के लिए टॉगल का उपयोग करें।</string>
     <string name="top_matches_priority_title">टॉप मैच प्रबंधित करें</string>
     <string name="top_matches_title">टॉप मैच</string>
-    <string name="top_matches_toggle_desc">सभी प्रकार के शीर्ष मिलान वाले परिणाम सबसे ऊपर दिखाएं।</string>
+    <string name="top_matches_toggle_desc">सर्वश्रेष्ठ मिलान वाले गैर-ऐप परिणामों को एकीकृत सूची में दिखाएं।</string>
     <string name="top_result_indicator_toggle_desc">कीबोर्ड से खोले जा सकने वाले शीर्ष परिणाम को हाइलाइट करें।</string>
     <string name="top_result_indicator_toggle_title">टॉप परिणाम संकेतक</string>
     <string name="include_non_launchable_apps_toggle_title">लॉन्च न होने वाले ऐप्स</string>

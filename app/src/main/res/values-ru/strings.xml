@@ -275,7 +275,7 @@
 <string name="top_matches_priority_dialog_info">Удерживайте и перетаскивайте элементы, чтобы изменить приоритет. Используйте переключатели для включения или отключения определенных типов результатов.</string>
 <string name="top_matches_priority_title">Управление лучшими совпадениями</string>
 <string name="top_matches_title">Лучшие совпадения</string>
-<string name="top_matches_toggle_desc">Показывать самые точные совпадения среди всех категорий в самом верху.</string>
+<string name="top_matches_toggle_desc">Показывать наиболее подходящие результаты, не связанные с приложениями, в едином списке.</string>
 <string name="top_result_indicator_toggle_desc">Выделять главный результат, который можно открыть сразу с клавиатуры.</string>
 <string name="top_result_indicator_toggle_title">Индикатор лучшего результата</string>
 <string name="include_non_launchable_apps_toggle_title">Не запускаемые приложения</string>
