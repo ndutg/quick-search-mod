@@ -233,26 +233,6 @@ private fun buildTopMatches(
                 index = index,
             )
     }
-    if (isTopMatchesSectionEnabled(SearchSection.APPS)) {
-        renderingState.displayApps.forEachIndexed { index, app ->
-            matches += TopMatchItem.App(
-                app = app,
-                priority =
-                    appTopMatchPriority(
-                        app = app,
-                        nickname = params.appsParams?.getAppNickname?.invoke(app.packageName),
-                        query = queryContext,
-                    ),
-                sectionOrder = order(SearchSection.APPS),
-                secondaryScore = topMatchSecondaryScore(
-                    secondaryRankingSignal,
-                    recencyScore = app.lastUsedTime,
-                    openCount = app.launchCount.toLong(),
-                ),
-                index = index,
-            )
-        }
-    }
     if (isTopMatchesSectionEnabled(SearchSection.APP_SHORTCUTS)) {
         context.appShortcutsList.forEachIndexed { index, shortcut ->
             val id = shortcutKey(shortcut)
