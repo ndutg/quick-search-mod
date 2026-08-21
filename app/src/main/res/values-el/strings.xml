@@ -275,7 +275,7 @@
     <string name="top_matches_priority_dialog_info">Κρατήστε πατημένο και σύρετε για να αλλάξετε προτεραιότητα, και χρησιμοποιήστε τον διακόπτη για να ενεργοποιήσετε ή να απενεργοποιήσετε συγκεκριμένους τύπους αποτελεσμάτων.</string>
     <string name="top_matches_priority_title">Διαχείριση κορυφαίων αποτελεσμάτων</string>
     <string name="top_matches_title">Κορυφαία αποτελέσματα</string>
-    <string name="top_matches_toggle_desc">Εμφάνιση των κορυφαίων αποτελεσμάτων από όλους τους τύπους στο πάνω μέρος.</string>
+    <string name="top_matches_toggle_desc">Εμφάνιση των καλύτερων αντιστοιχισμένων αποτελεσμάτων εκτός εφαρμογών σε μια ενοποιημένη λίστα.</string>
     <string name="top_result_indicator_toggle_desc">Επισήμανση του κορυφαίου αποτελέσματος που μπορεί να ανοίξει με το πληκτρολόγιο.</string>
     <string name="top_result_indicator_toggle_title">Δείκτης κορυφαίου αποτελέσματος</string>
     <string name="include_non_launchable_apps_toggle_title">Μη εκκινήσιμες εφαρμογές</string>
@@ -1079,4 +1079,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s ώρ.</string>
     <string name="other_screen_time_today_title">Σημερινός χρόνος οθόνης</string>
     <string name="other_screen_time_hours_minutes">%1$d ώ. %2$d λ.</string>
+    <string name="pin_notification_dialog_title">Καρφίτσωμα σε ειδοποίηση</string>
+    <string name="pin_notification_with_other_items">Καρφίτσωμα μαζί με άλλα στοιχεία</string>
+    <string name="pin_notification_separately">Καρφίτσωμα ξεχωριστά</string>
 </resources>

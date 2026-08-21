@@ -38,6 +38,7 @@ import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.core.ScreenTimeAppUsage
 import com.tk.quicksearch.search.core.ScreenTimeState
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
@@ -113,7 +114,10 @@ internal fun ScreenTimeResultCard(
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
                 ) {
                     Text(
-                        text = stringResource(R.string.other_screen_time_today_title),
+                        text =
+                            rememberQueryHighlightedText(
+                                stringResource(R.string.other_screen_time_today_title),
+                            ),
                         style = MaterialTheme.typography.labelLarge,
                         color = homeTextColor().copy(alpha = 0.7f),
                         maxLines = 2,

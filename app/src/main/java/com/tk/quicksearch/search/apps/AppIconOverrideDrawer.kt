@@ -67,6 +67,9 @@ fun AppIconOverrideDrawer(
     val appliedIconPackPackage = remember(context) {
         UserAppPreferences(context).getSelectedIconPackPackage()
     }
+    val hasIconOverride = remember(context, packageName) {
+        UserAppPreferences(context).getAppIconOverride(packageName) != null
+    }
     val iconPacks by produceState(emptyList(), context) {
         value = withContext(Dispatchers.IO) { IconPackManager.findInstalledIconPacks(context) }
     }
@@ -151,89 +154,118 @@ fun AppIconOverrideDrawer(
             }
         },
     ) {
-        if (selectedPack == null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXLarge),
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+        ) {
+            if (selectedPack == null) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = stringResource(R.string.icon_picker_no_icon_packs),
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                    )
-                    Button(
-                        onClick = {
-                            onDismiss()
-                            IntentHelpers.openSearchUrl(
-                                context = context.applicationContext as Application,
-                                query = context.getString(R.string.settings_icon_pack_search_query),
-                                searchEngine = SearchEngine.GOOGLE_PLAY,
-                            )
-                        },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXLarge),
                     ) {
-                        Text(stringResource(R.string.icon_picker_download_icon_packs))
-                    }
-                }
-            }
-        } else {
-            val pack = selectedPack
-            val iconDrawables by produceState(emptyList<IconPackDrawableInfo>(), pack.packageName) {
-                value = withContext(Dispatchers.IO) {
-                    IconPackManager.getIconDrawables(context, pack.packageName)
-                }
-            }
-            val installedAppLabels by produceState(emptyMap<String, String>(), context) {
-                value = withContext(Dispatchers.IO) {
-                    val packageManager = context.packageManager
-                    val installedApps =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            packageManager.getInstalledApplications(
-                                PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_ALL.toLong()),
-                            )
-                        } else {
-                            @Suppress("DEPRECATION")
-                            packageManager.getInstalledApplications(PackageManager.MATCH_ALL)
+                        Text(
+                            text = stringResource(R.string.icon_picker_no_icon_packs),
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = TextAlign.Center,
+                        )
+                        Button(
+                            onClick = {
+                                onDismiss()
+                                IntentHelpers.openSearchUrl(
+                                    context = context.applicationContext as Application,
+                                    query = context.getString(R.string.settings_icon_pack_search_query),
+                                    searchEngine = SearchEngine.GOOGLE_PLAY,
+                                )
+                            },
+                        ) {
+                            Text(stringResource(R.string.icon_picker_download_icon_packs))
                         }
-                    installedApps.associate { appInfo ->
-                        appInfo.packageName to packageManager.getApplicationLabel(appInfo).toString()
+                    }
+                }
+            } else {
+                val pack = selectedPack
+                val iconDrawables by produceState(emptyList<IconPackDrawableInfo>(), pack.packageName) {
+                    value = withContext(Dispatchers.IO) {
+                        IconPackManager.getIconDrawables(context, pack.packageName)
+                    }
+                }
+                val installedAppLabels by produceState(emptyMap<String, String>(), context) {
+                    value = withContext(Dispatchers.IO) {
+                        val packageManager = context.packageManager
+                        val installedApps =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                packageManager.getInstalledApplications(
+                                    PackageManager.ApplicationInfoFlags.of(PackageManager.MATCH_ALL.toLong()),
+                                )
+                            } else {
+                                @Suppress("DEPRECATION")
+                                packageManager.getInstalledApplications(PackageManager.MATCH_ALL)
+                            }
+                        installedApps.associate { appInfo ->
+                            appInfo.packageName to packageManager.getApplicationLabel(appInfo).toString()
+                        }
+                    }
+                }
+                var unavailableDrawableNames by remember(pack.packageName) {
+                    mutableStateOf(emptySet<String>())
+                }
+                val filteredIconDrawables = remember(
+                    iconDrawables,
+                    query,
+                    installedAppLabels,
+                    unavailableDrawableNames,
+                ) {
+                    filterIconPackDrawables(
+                        iconDrawables = iconDrawables,
+                        query = query,
+                        installedAppLabels = installedAppLabels,
+                    ).filterNot { it.drawableName in unavailableDrawableNames }
+                }
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                ) {
+                    items(filteredIconDrawables, key = { it.drawableName }) { icon ->
+                        IconPackDrawable(
+                            iconPackPackage = pack.packageName,
+                            drawableName = icon.drawableName,
+                            onUnavailable = {
+                                unavailableDrawableNames += icon.drawableName
+                            },
+                            onClick = {
+                                UserAppPreferences(context).setAppIconOverride(
+                                    packageName = packageName,
+                                    iconPackPackage = pack.packageName,
+                                    drawableName = icon.drawableName,
+                                )
+                                invalidateAppIconCache()
+                                onDismiss()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
             }
-            val filteredIconDrawables = remember(iconDrawables, query, installedAppLabels) {
-                filterIconPackDrawables(
-                    iconDrawables = iconDrawables,
-                    query = query,
-                    installedAppLabels = installedAppLabels,
-                )
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-            ) {
-                items(filteredIconDrawables, key = { it.drawableName }) { icon ->
-                    IconPackDrawable(
-                        iconPackPackage = pack.packageName,
-                        drawableName = icon.drawableName,
-                        onClick = {
-                            UserAppPreferences(context).setAppIconOverride(
-                                packageName = packageName,
-                                iconPackPackage = pack.packageName,
-                                drawableName = icon.drawableName,
-                            )
-                            invalidateAppIconCache()
-                            onDismiss()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+
+            if (hasIconOverride) {
+                Button(
+                    onClick = {
+                        UserAppPreferences(context).clearAppIconOverrides(listOf(packageName))
+                        invalidateAppIconCache()
+                        onDismiss()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(R.string.settings_launcher_icon_reset_default))
                 }
             }
         }
@@ -244,14 +276,17 @@ fun AppIconOverrideDrawer(
 private fun IconPackDrawable(
     iconPackPackage: String,
     drawableName: String,
+    onUnavailable: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val icon by produceState<androidx.compose.ui.graphics.ImageBitmap?>(null, iconPackPackage, drawableName) {
-        value = withContext(Dispatchers.IO) {
+        val loadedIcon = withContext(Dispatchers.IO) {
             IconPackManager.loadDrawableBitmap(context, iconPackPackage, drawableName)
         }
+        value = loadedIcon
+        if (loadedIcon == null) onUnavailable()
     }
     Surface(
         onClick = onClick,

@@ -33,6 +33,38 @@ internal object NotesTextUtils {
         return lines.take(maxLines).joinToString("\n")
     }
 
+    /** Returns the matching line with up to [contextLines] lines on either side. */
+    fun matchCenteredPreview(
+        text: String,
+        query: String,
+        contextLines: Int = 2,
+    ): String? {
+        if (text.isEmpty() || query.isBlank() || contextLines < 0) return null
+        val normalizedQuery = normalize(query)
+        if (normalizedQuery.isEmpty()) return null
+        val normalizedBody = normalize(toSearchablePlainText(text))
+        if (!normalizedBody.contains(normalizedQuery)) return null
+
+        val normalizedText = text.replace("\r\n", "\n").replace('\r', '\n')
+        val lines = normalizedText.split('\n')
+        var matchedLine =
+            lines.indexOfFirst { line ->
+                normalize(toSearchablePlainText(line)).contains(normalizedQuery)
+            }
+        if (matchedLine < 0) {
+            val firstToken = normalizedQuery.substringBefore(' ')
+            matchedLine =
+                lines.indexOfFirst { line ->
+                    normalize(toSearchablePlainText(line)).contains(firstToken)
+                }
+        }
+        if (matchedLine < 0) matchedLine = 0
+
+        val start = (matchedLine - contextLines).coerceAtLeast(0)
+        val endExclusive = (matchedLine + contextLines + 1).coerceAtMost(lines.size)
+        return lines.subList(start, endExclusive).joinToString("\n").trimEnd()
+    }
+
     fun normalize(value: String): String = SearchTextNormalizer.normalizeForSearch(value.trim())
 
     fun buildLinkHighlightedAnnotatedString(

@@ -45,6 +45,7 @@ sealed interface PredictedSubmitTarget {
 
 internal fun resolvePredictedSubmitTarget(
     query: String,
+    firstApp: AppInfo?,
     renderingState: SectionRenderingState,
     enabledTargets: List<SearchTarget>,
     detectedShortcutTarget: SearchTarget?,
@@ -52,19 +53,18 @@ internal fun resolvePredictedSubmitTarget(
     defaultBrowserPackage: String?,
 ): PredictedSubmitTarget? {
     val trimmedQuery = query.trim()
-    if (trimmedQuery.isNotBlank() && isLikelyWebUrl(trimmedQuery)) {
-        val browserTarget = defaultBrowserTarget(searchTargetsOrder, defaultBrowserPackage)
-        if (browserTarget != null) {
-            return PredictedSubmitTarget.SearchTarget(browserTarget.getId())
-        }
-    }
-
-    val firstApp = renderingState.displayApps.firstOrNull()
     if (firstApp != null) {
         return PredictedSubmitTarget.App(
             packageName = firstApp.packageName,
             userHandleId = firstApp.userHandleId,
         )
+    }
+
+    if (trimmedQuery.isNotBlank() && isLikelyWebUrl(trimmedQuery)) {
+        val browserTarget = defaultBrowserTarget(searchTargetsOrder, defaultBrowserPackage)
+        if (browserTarget != null) {
+            return PredictedSubmitTarget.SearchTarget(browserTarget.getId())
+        }
     }
 
     val firstShortcut = renderingState.appShortcutResults.firstOrNull()
@@ -115,6 +115,47 @@ internal fun resolvePredictedSubmitTarget(
 
     val firstEnabledTarget = enabledTargets.firstOrNull() ?: return null
     return PredictedSubmitTarget.SearchTarget(firstEnabledTarget.getId())
+}
+
+/** The app that occupies the first visible grid position and can be opened with Done. */
+internal fun AppsSectionParams.firstSubmittableGridApp(): AppInfo? {
+    if (isSearching) return apps.firstOrNull()
+
+    return when (activeHomeSuggestionTab()) {
+        // New and updated apps are informational suggestions, not a keyboard submit target.
+        AppSuggestionTabType.NEW_UPDATED -> null
+        AppSuggestionTabType.PINNED -> pinnedApps.firstOrNull()
+        AppSuggestionTabType.RECENTS -> pinnedAndRecentApps.firstOrNull() ?: apps.firstOrNull()
+        AppSuggestionTabType.MOST_USED ->
+            mostUsedApps.firstOrNull() ?: pinnedAndRecentApps.firstOrNull() ?: apps.firstOrNull()
+        null -> null
+    }
+}
+
+internal fun AppsSectionParams.isNonSubmittableSuggestionsTab(): Boolean =
+    !isSearching && activeHomeSuggestionTab() == AppSuggestionTabType.NEW_UPDATED
+
+private fun AppsSectionParams.activeHomeSuggestionTab(): AppSuggestionTabType? {
+    if (isSearching) return null
+
+    val visibleTabs =
+        buildList {
+            if (hasUsagePermission && AppSuggestionTabType.NEW_UPDATED in enabledSuggestionTabs) {
+                add(AppSuggestionTabType.NEW_UPDATED)
+            }
+            if (pinnedApps.isNotEmpty() && AppSuggestionTabType.PINNED in enabledSuggestionTabs) {
+                add(AppSuggestionTabType.PINNED)
+            }
+            if (AppSuggestionTabType.RECENTS in enabledSuggestionTabs) {
+                add(AppSuggestionTabType.RECENTS)
+            }
+            if (hasUsagePermission && AppSuggestionTabType.MOST_USED in enabledSuggestionTabs) {
+                add(AppSuggestionTabType.MOST_USED)
+            }
+        }
+    return selectedSuggestionTab.takeIf { it in visibleTabs }
+        ?: visibleTabs.firstOrNull { it == AppSuggestionTabType.RECENTS }
+        ?: visibleTabs.firstOrNull()
 }
 
 internal fun detectSuffixSearchTargetAlias(

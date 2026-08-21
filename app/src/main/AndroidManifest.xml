@@ -359,8 +359,19 @@
             android:noHistory="true"
             android:theme="@style/Theme.QuickSearch" />
 
+        <activity
+            android:name=".pinnedNotifications.PinnedNotificationChoiceActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.QuickSearch" />
+
         <receiver
             android:name=".pinnedNotifications.PinnedNotificationRestoreReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".pinnedNotifications.PinnedNotificationUnpinReceiver"
             android:exported="false" />
 
         <!-- Widget Receivers -->

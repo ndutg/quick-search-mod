@@ -209,14 +209,21 @@ fun ContentLayout(
     val queryLength = state.query.trim().length
     val isUrlQuery = remember(state.query) { isLikelyWebUrl(state.query) }
     val baseLayoutOrder = ItemPriorityConfig.getLayoutOrder(hasQuery)
+    val appsFirstLayoutOrder =
+        if (hasQuery) {
+            listOf(ItemPriorityConfig.ItemType.APPS_SECTION) +
+                baseLayoutOrder.filterNot { it == ItemPriorityConfig.ItemType.APPS_SECTION }
+        } else {
+            baseLayoutOrder
+        }
     // reverseScrolling anchors content to the bottom but does not reverse child placement.
     val finalLayoutOrder =
         if (!hasQuery) {
-            homeLayoutOrder(baseLayoutOrder, isReversed)
+            homeLayoutOrder(appsFirstLayoutOrder, isReversed)
         } else if (isReversed) {
-            baseLayoutOrder.reversed()
+            appsFirstLayoutOrder.reversed()
         } else {
-            baseLayoutOrder
+            appsFirstLayoutOrder
         }
 
     // 3. Prepare Shared Rendering Context and Params
@@ -404,13 +411,14 @@ fun ContentLayout(
             !isExpanded &&
             !isSectionAliasMode &&
             displayedTopMatches.isNotEmpty()
+    val appGridOwnsTopResult = hasQuery && regularRenderingState.displayApps.isNotEmpty()
     val hasMoreResults =
         hasMoreResults(
             renderingState = regularRenderingState,
             sectionContext = sectionContextForRecentHistoryExpansion,
         )
     val regularSectionParams =
-        if (showTopMatches) {
+        if (showTopMatches && !appGridOwnsTopResult) {
             sectionParams.copy(
                 contactsParams = sectionParams.contactsParams.copy(predictedTarget = null),
                 filesParams = sectionParams.filesParams.copy(predictedTarget = null),
@@ -730,36 +738,39 @@ fun ContentLayout(
         }
     }
 
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        if (showTopMatches && !isReversed) {
-            TopMatchesSection(
-                matches = displayedTopMatches,
-                params = sectionParams,
-                showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator =
-                    state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
-                selectedMatchIndex = selectedTopMatchIndex,
-                reverseOrder = false,
-                screenTimeState = state.screenTimeState,
-                pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
-                iconPackPackage = state.selectedIconPackPackage,
-                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
-                modifier = Modifier.fillMaxWidth(),
+    @Composable
+    fun renderTopMatches() {
+        if (!showTopMatches) return
+        TopMatchesSection(
+            matches = displayedTopMatches,
+            params = sectionParams,
+            showWallpaperBackground = effectiveShowWallpaperBackground,
+            showTopResultIndicator =
+                !appGridOwnsTopResult &&
+                    (state.topResultIndicatorEnabled || isPhysicalKeyboardConnected),
+            selectedMatchIndex = selectedTopMatchIndex,
+            reverseOrder = isReversed,
+            screenTimeState = state.screenTimeState,
+            pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
+            iconPackPackage = state.selectedIconPackPackage,
+            onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        if (hasMoreResults && !isReversed) {
+            Text(
+                text = stringResource(R.string.more_results_title),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier =
+                    Modifier.padding(
+                        horizontal = DesignTokens.SpacingLarge,
+                        vertical = DesignTokens.SpacingXSmall,
+                    ),
             )
-            if (hasMoreResults) {
-                Text(
-                    text = stringResource(R.string.more_results_title),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier =
-                        Modifier.padding(
-                            horizontal = DesignTokens.SpacingLarge,
-                            vertical = DesignTokens.SpacingXSmall,
-                        ),
-                )
-            }
         }
+    }
 
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         finalLayoutOrder.forEach { itemType ->
             val section = itemType.toSearchSectionOrNull()
             val isSectionItem = section != null
@@ -913,6 +924,12 @@ fun ContentLayout(
                                         effectiveAppsParams.showAllAppsButton && effectiveAppsParams.allApps.isNotEmpty()
                                 )
                         )
+                // Apps own the first result slot. Emit Top Matches immediately beside that slot
+                // without allowing it to displace the grid; reverse the emission order for
+                // bottom-anchored layouts to preserve the visual order.
+                if (hasQuery && section == SearchSection.APPS && isReversed) {
+                    renderTopMatches()
+                }
                 if (homeSectionContentReady) {
                     HomeLoadingAnimatedContent(
                         animationKey = "home-section-${section.name}",
@@ -927,6 +944,9 @@ fun ContentLayout(
                             renderSection(section, regularSectionParams, sectionContext)
                         }
                     }
+                }
+                if (hasQuery && section == SearchSection.APPS && !isReversed) {
+                    renderTopMatches()
                 }
                 if (
                     !isReversed &&
@@ -1153,22 +1173,6 @@ fun ContentLayout(
             deferredSearchHistoryRendered = true
         }
 
-        if (showTopMatches && isReversed) {
-            TopMatchesSection(
-                matches = displayedTopMatches,
-                params = sectionParams,
-                showWallpaperBackground = effectiveShowWallpaperBackground,
-                showTopResultIndicator =
-                    state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
-                selectedMatchIndex = selectedTopMatchIndex,
-                reverseOrder = true,
-                screenTimeState = state.screenTimeState,
-                pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
-                iconPackPackage = state.selectedIconPackPackage,
-                onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
     }
 }
 

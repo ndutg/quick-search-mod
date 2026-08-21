@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.apps
 
 import com.tk.quicksearch.search.managers.IconPackDrawableInfo
 import com.tk.quicksearch.search.managers.filterIconPackDrawables
+import com.tk.quicksearch.search.managers.mergeIconPackDrawables
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -33,5 +34,41 @@ class IconPackDrawableSearchTest {
             )
 
         assertEquals(listOf(mappedIcon), results)
+    }
+
+    @Test
+    fun `includes catalog-only icons while preserving app mappings`() {
+        val results =
+            mergeIconPackDrawables(
+                packageMapping = mapOf("com.google.android.apps.maps" to "google_maps"),
+                catalogDrawableNames = setOf("google_maps", "google_maps_go", "system_ac_maps"),
+            )
+
+        assertEquals(
+            listOf(
+                IconPackDrawableInfo("google_maps", setOf("com.google.android.apps.maps")),
+                IconPackDrawableInfo("google_maps_go", emptySet()),
+                IconPackDrawableInfo("system_ac_maps", emptySet()),
+            ),
+            results,
+        )
+    }
+
+    @Test
+    fun `search returns matching catalog-only icons`() {
+        val iconDrawables =
+            mergeIconPackDrawables(
+                packageMapping = emptyMap(),
+                catalogDrawableNames = setOf("google_maps", "google_maps_go", "google_photos"),
+            )
+
+        val results =
+            filterIconPackDrawables(
+                iconDrawables = iconDrawables,
+                query = "maps",
+                installedAppLabels = emptyMap(),
+            )
+
+        assertEquals(listOf("google_maps", "google_maps_go"), results.map { it.drawableName })
     }
 }

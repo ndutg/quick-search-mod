@@ -371,6 +371,9 @@ class UnifiedSearchHandler(
                                                                                         recencyIndex.noteScores,
                                                                                         recencyIndex.noteOpenCounts,
                                                                                         secondaryRankingSignal,
+                                                                                        includeContent =
+                                                                                                aliasSection ==
+                                                                                                        SearchSection.NOTES,
                                                                                 ),
                                                                         )
                                                                 },

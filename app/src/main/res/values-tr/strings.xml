@@ -274,7 +274,7 @@
 <string name="top_matches_priority_dialog_info">Önceliği değiştirmek için basılı tutup sürükle; belirli sonuç türlerini etkinleştirmek veya devre dışı bırakmak için anahtarı kullan.</string>
 <string name="top_matches_priority_title">En iyi eşleşmeleri yönet</string>
 <string name="top_matches_title">En iyi eşleşmeler</string>
-<string name="top_matches_toggle_desc">Tüm türlerdeki en iyi eşleşen sonuçları en üstte göster.</string>
+<string name="top_matches_toggle_desc">En iyi eşleşen uygulama dışı sonuçları birleşik bir listede göster.</string>
 <string name="top_result_indicator_toggle_desc">Klavye ile açılabilecek en üstteki sonucu vurgula.</string>
 <string name="top_result_indicator_toggle_title">En iyi sonuç göstergesi</string>
 <string name="include_non_launchable_apps_toggle_title">Başlatılamayan Uygulamalar</string>
@@ -1078,4 +1078,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s sa.</string>
     <string name="other_screen_time_today_title">Bugünkü ekran süresi</string>
     <string name="other_screen_time_hours_minutes">%1$d sa %2$d dk</string>
+    <string name="pin_notification_dialog_title">Bildirime sabitle</string>
+    <string name="pin_notification_with_other_items">Diğer öğelerle birlikte sabitle</string>
+    <string name="pin_notification_separately">Ayrı olarak sabitle</string>
 </resources>

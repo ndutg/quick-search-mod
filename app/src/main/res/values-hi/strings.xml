@@ -275,7 +275,7 @@
     <string name="top_matches_priority_dialog_info">प्राथमिकता बदलने के लिए दबाकर खींचें, और कुछ परिणाम प्रकार सक्षम या अक्षम करने के लिए टॉगल का उपयोग करें।</string>
     <string name="top_matches_priority_title">टॉप मैच प्रबंधित करें</string>
     <string name="top_matches_title">टॉप मैच</string>
-    <string name="top_matches_toggle_desc">सभी प्रकार के शीर्ष मिलान वाले परिणाम सबसे ऊपर दिखाएं।</string>
+    <string name="top_matches_toggle_desc">सर्वश्रेष्ठ मिलान वाले गैर-ऐप परिणामों को एकीकृत सूची में दिखाएं।</string>
     <string name="top_result_indicator_toggle_desc">कीबोर्ड से खोले जा सकने वाले शीर्ष परिणाम को हाइलाइट करें।</string>
     <string name="top_result_indicator_toggle_title">टॉप परिणाम संकेतक</string>
     <string name="include_non_launchable_apps_toggle_title">लॉन्च न होने वाले ऐप्स</string>
@@ -1079,4 +1079,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s घंटे</string>
     <string name="other_screen_time_today_title">आज का स्क्रीन टाइम</string>
     <string name="other_screen_time_hours_minutes">%1$d घंटा %2$d मिनट</string>
+    <string name="pin_notification_dialog_title">सूचना में पिन करें</string>
+    <string name="pin_notification_with_other_items">अन्य आइटम के साथ पिन करें</string>
+    <string name="pin_notification_separately">अलग से पिन करें</string>
 </resources>

@@ -86,6 +86,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SearchContentArea
+import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
 import com.tk.quicksearch.search.searchScreen.appThemeActionColor
 import com.tk.quicksearch.search.searchScreen.appThemeDividerColor
 import com.tk.quicksearch.search.searchScreen.appThemeResultCardColor
@@ -598,11 +599,23 @@ internal fun SearchScreenContent(
     val shouldShowPhoneCallAction =
             keyboardSwitchText != null && state.query.isPhoneNumberQuery()
     val shouldShowPredictedHighlight = isImeVisible
+    val isNonSubmittableSuggestionsTab = appsParams.isNonSubmittableSuggestionsTab()
+    val firstSubmittableGridApp =
+            remember(
+                    appsParams.isSearching,
+                    appsParams.selectedSuggestionTab,
+                    appsParams.apps,
+                    appsParams.pinnedApps,
+                    appsParams.pinnedAndRecentApps,
+                    appsParams.mostUsedApps,
+            ) {
+                appsParams.firstSubmittableGridApp()
+            }
     val predictedTarget =
             remember(
                     shouldShowPredictedHighlight,
                     state.query,
-                    renderingState.displayApps,
+                    firstSubmittableGridApp,
                     renderingState.appShortcutResults,
                     renderingState.contactResults,
                     renderingState.fileResults,
@@ -624,6 +637,7 @@ internal fun SearchScreenContent(
                             }
                     resolvePredictedSubmitTarget(
                             query = state.query,
+                            firstApp = firstSubmittableGridApp,
                             renderingState = renderingState,
                             enabledTargets = enabledTargets,
                             detectedShortcutTarget = state.detectedShortcutTarget,
@@ -662,6 +676,7 @@ internal fun SearchScreenContent(
     val shouldShowTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected
     val predictedTargetForIndicator =
             if (shouldShowTopResultIndicator &&
+                    !isNonSubmittableSuggestionsTab &&
                     !isOtherSearchResultVisible &&
                     !showCurrencyConverterSearchCard &&
                     !showDictionarySearchCard &&
@@ -1074,6 +1089,9 @@ internal fun SearchScreenContent(
                 onMoveTopResultSelectionUp = { moveSelectedTopMatch(-1) },
                 onMoveTopResultSelectionDown = { moveSelectedTopMatch(1) },
                 onSearchAction = {
+                    if (isNonSubmittableSuggestionsTab) {
+                        return@PersistentSearchBar true
+                    }
                     if (isOtherSearchResultVisible && !state.topMatchesEnabled) {
                         return@PersistentSearchBar true
                     }
@@ -1105,6 +1123,14 @@ internal fun SearchScreenContent(
                         return@PersistentSearchBar true // keep keyboard open
                     }
 
+                    // The app grid is the primary result surface. Done follows its visible
+                    // ordering before considering the cross-section Top Matches fallback.
+                    val firstApp = firstSubmittableGridApp
+                    if (firstApp != null) {
+                        onAppClick(firstApp)
+                        return@PersistentSearchBar false
+                    }
+
                     if (shouldSubmitTopMatch) {
                         openTopMatch(
                                 item = topMatchesForSubmit.getOrNull(selectedTopMatchIndex ?: 0) ?: topMatchesForSubmit.first(),
@@ -1134,12 +1160,6 @@ internal fun SearchScreenContent(
                             onSearchTargetClick(trimmedQuery, browserTarget)
                             return@PersistentSearchBar false
                         }
-                    }
-
-                    val firstApp = renderingState.displayApps.firstOrNull()
-                    if (firstApp != null) {
-                        onAppClick(firstApp)
-                        return@PersistentSearchBar false
                     }
 
                     val firstAppShortcut = renderingState.appShortcutResults.firstOrNull()
@@ -1232,7 +1252,10 @@ internal fun SearchScreenContent(
         )
     }
 
-    CompositionLocalProvider(LocalSearchColorTheme provides searchColorTheme) {
+    CompositionLocalProvider(
+        LocalSearchColorTheme provides searchColorTheme,
+        LocalSearchResultQuery provides state.query.trim(),
+    ) {
     Column(modifier = contentModifier, verticalArrangement = Arrangement.Top) {
         if (showSearchField && !showBottomSearchBar) {
             // Fixed search bar at the top
