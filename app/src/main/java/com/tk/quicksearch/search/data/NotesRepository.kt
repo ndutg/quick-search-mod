@@ -45,6 +45,7 @@ class NotesRepository(
         recentNoteScores: Map<Long, Int> = emptyMap(),
         noteOpenCounts: Map<Long, Int> = emptyMap(),
         secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
+        includeContent: Boolean = false,
     ): List<NoteInfo> {
         val quickNoteId = ensureQuickNoteExists().noteId
         val normalizedQuery = NotesTextUtils.normalize(query)
@@ -55,14 +56,17 @@ class NotesRepository(
         return readNotes()
             .mapNotNull { note ->
                 val normalizedTitle = NotesTextUtils.normalize(note.title)
-                val normalizedBody = NotesTextUtils.normalize(
-                    NotesTextUtils.toSearchablePlainText(note.markdownContent),
-                )
                 val titleStartsWith = normalizedTitle.startsWith(normalizedQuery)
                 val titleContains = normalizedTitle.contains(normalizedQuery)
-                val bodyContains = normalizedBody.contains(normalizedQuery)
+                val bodyContains =
+                    includeContent &&
+                        NotesTextUtils.normalize(
+                            NotesTextUtils.toSearchablePlainText(note.markdownContent),
+                        ).contains(normalizedQuery)
                 val triggerMatches = triggerMatchingIds.contains(note.noteId)
-                if (!titleContains && !bodyContains && !triggerMatches) return@mapNotNull null
+                if (!titleContains && !bodyContains && !triggerMatches) {
+                    return@mapNotNull null
+                }
                 val score =
                     when {
                         triggerMatches -> 500
