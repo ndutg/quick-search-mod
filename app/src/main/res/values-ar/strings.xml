@@ -276,7 +276,7 @@
     <string name="top_matches_priority_dialog_info">اضغط مع الاستمرار ثم اسحب لتغيير الأولوية، واستخدم مفتاح التبديل لتفعيل أو تعطيل أنواع نتائج معينة.</string>
     <string name="top_matches_priority_title">إدارة أفضل التطابقات</string>
     <string name="top_matches_title">أفضل التطابقات</string>
-    <string name="top_matches_toggle_desc">إظهار أفضل النتائج المطابقة من جميع الأنواع في الأعلى.</string>
+    <string name="top_matches_toggle_desc">إظهار أفضل النتائج المطابقة غير التابعة للتطبيقات في قائمة موحّدة.</string>
     <string name="top_result_indicator_toggle_desc">تمييز أفضل نتيجة يمكن فتحها باستخدام لوحة المفاتيح.</string>
     <string name="top_result_indicator_toggle_title">مؤشر أفضل نتيجة</string>
     <string name="include_non_launchable_apps_toggle_title">تطبيقات غير قابلة للتشغيل</string>
@@ -1081,4 +1081,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s س</string>
     <string name="other_screen_time_today_title">وقت استخدام الشاشة اليوم</string>
     <string name="other_screen_time_hours_minutes">%1$d س %2$d د</string>
+    <string name="pin_notification_dialog_title">تثبيت في الإشعارات</string>
+    <string name="pin_notification_with_other_items">تثبيت مع العناصر الأخرى</string>
+    <string name="pin_notification_separately">تثبيت بشكل منفصل</string>
 </resources>

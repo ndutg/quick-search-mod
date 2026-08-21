@@ -665,7 +665,6 @@ internal class SearchStartupLifecycleDelegate(
             packageRefreshJob?.cancel()
             packageRefreshJob =
                 scope.launch(startupDispatcher) {
-                    delay(PACKAGE_CHANGE_DEBOUNCE_MS)
                     loadApps()
                 }
         }
@@ -1195,7 +1194,6 @@ internal class SearchStartupLifecycleDelegate(
         private const val OPTIONAL_STARTUP_QUERY_RECHECK_MS = 1_000L
         private const val APP_RECONCILIATION_FRESHNESS_MS = 24L * 60L * 60L * 1_000L
         private const val PERMISSION_SNAPSHOT_DEDUP_WINDOW_MS = 1_500L
-        private const val PACKAGE_CHANGE_DEBOUNCE_MS = 750L
         private const val MAX_STARTUP_SEARCH_TARGETS_TO_PREFETCH = 14
         private const val MAX_STARTUP_SEARCH_TARGET_ICON_PACKAGES = 30
     }

@@ -70,6 +70,7 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppTheme
@@ -772,7 +773,7 @@ internal fun FileResultRow(
                 )
 
                 Text(
-                        text = deviceFile.displayName,
+                        text = rememberQueryHighlightedText(deviceFile.displayName),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f),

@@ -274,7 +274,7 @@
     <string name="top_matches_priority_dialog_info">Tieni premuto e trascina per modificare la priorità, e usa l\u2019interruttore per attivare o disattivare determinati tipi di risultati.</string>
     <string name="top_matches_priority_title">Gestisci migliori corrispondenze</string>
     <string name="top_matches_title">Migliori corrispondenze</string>
-    <string name="top_matches_toggle_desc">Mostra in alto i risultati con la migliore corrispondenza tra tutte le categorie.</string>
+    <string name="top_matches_toggle_desc">Mostra i risultati non relativi alle app con la migliore corrispondenza in un elenco unificato.</string>
     <string name="top_result_indicator_toggle_desc">Evidenzia il primo risultato che può essere aperto direttamente con la tastiera.</string>
     <string name="top_result_indicator_toggle_title">Indicatore miglior risultato</string>
     <string name="include_non_launchable_apps_toggle_title">App non avviabili</string>
@@ -1078,4 +1078,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s h</string>
     <string name="other_screen_time_today_title">Tempo di utilizzo di oggi</string>
     <string name="other_screen_time_hours_minutes">%1$d h %2$d min</string>
+    <string name="pin_notification_dialog_title">Fissa nella notifica</string>
+    <string name="pin_notification_with_other_items">Fissa insieme agli altri elementi</string>
+    <string name="pin_notification_separately">Fissa separatamente</string>
 </resources>

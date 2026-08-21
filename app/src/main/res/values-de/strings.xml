@@ -275,7 +275,7 @@
     <string name="top_matches_priority_dialog_info">Halten und ziehen, um die Priorität zu ändern. Schalter verwenden, um bestimmte Ergebnistypen zu aktivieren oder zu deaktivieren.</string>
     <string name="top_matches_priority_title">Top-Ergebnisse verwalten</string>
     <string name="top_matches_title">Top-Ergebnisse</string>
-    <string name="top_matches_toggle_desc">Die besten Ergebnisse aller Typen oben anzeigen.</string>
+    <string name="top_matches_toggle_desc">Die besten passenden Nicht-App-Ergebnisse in einer einheitlichen Liste anzeigen.</string>
     <string name="top_result_indicator_toggle_desc">Das beste Ergebnis hervorheben, das per Tastatur geöffnet werden kann.</string>
     <string name="top_result_indicator_toggle_title">Anzeige des Top-Ergebnisses</string>
     <string name="include_non_launchable_apps_toggle_title">Nicht startbare Apps</string>
@@ -1079,4 +1079,7 @@
     <string name="app_menu_usage_hours_decimal">%1$s Std.</string>
     <string name="other_screen_time_today_title">Heutige Bildschirmzeit</string>
     <string name="other_screen_time_hours_minutes">%1$d Std. %2$d Min.</string>
+    <string name="pin_notification_dialog_title">In Benachrichtigung anheften</string>
+    <string name="pin_notification_with_other_items">Mit anderen Elementen anheften</string>
+    <string name="pin_notification_separately">Separat anheften</string>
 </resources>

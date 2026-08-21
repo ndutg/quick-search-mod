@@ -66,6 +66,7 @@ import com.tk.quicksearch.search.core.ScreenTimeState
 import com.tk.quicksearch.search.searchScreen.components.predictedSubmitHighlight
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
@@ -232,26 +233,6 @@ private fun buildTopMatches(
                 secondaryScore = 0L,
                 index = index,
             )
-    }
-    if (isTopMatchesSectionEnabled(SearchSection.APPS)) {
-        renderingState.displayApps.forEachIndexed { index, app ->
-            matches += TopMatchItem.App(
-                app = app,
-                priority =
-                    appTopMatchPriority(
-                        app = app,
-                        nickname = params.appsParams?.getAppNickname?.invoke(app.packageName),
-                        query = queryContext,
-                    ),
-                sectionOrder = order(SearchSection.APPS),
-                secondaryScore = topMatchSecondaryScore(
-                    secondaryRankingSignal,
-                    recencyScore = app.lastUsedTime,
-                    openCount = app.launchCount.toLong(),
-                ),
-                index = index,
-            )
-        }
     }
     if (isTopMatchesSectionEnabled(SearchSection.APP_SHORTCUTS)) {
         context.appShortcutsList.forEachIndexed { index, shortcut ->
@@ -812,7 +793,7 @@ private fun TopMatchAppRow(
             }
 
             Text(
-                text = app.appName,
+                text = rememberQueryHighlightedText(app.appName),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,

@@ -54,6 +54,7 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandButton
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.delay
@@ -321,7 +322,7 @@ internal fun CalendarEventRow(
         ) {
             val recurrenceLabel = calendarRecurrenceLabel(recurrenceRule = event.recurrenceRule)
             Text(
-                text = event.title,
+                text = rememberQueryHighlightedText(event.title),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,

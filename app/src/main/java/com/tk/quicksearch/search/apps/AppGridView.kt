@@ -103,6 +103,7 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
@@ -1787,7 +1788,7 @@ private fun AppLabelText(
                     ),
     )
     Text(
-            text = appName,
+            text = rememberQueryHighlightedText(appName),
             style = MaterialTheme.typography.labelSmall,
             color = labelColor,
             maxLines = 1,

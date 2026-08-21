@@ -904,7 +904,11 @@ class SearchViewModelManagementApiDelegate internal constructor(
                 if (state.query.isBlank()) {
                     allNotes
                 } else {
-                    repository.searchNotes(state.query)
+                    repository.searchNotes(
+                        query = state.query,
+                        includeContent =
+                            state.detectedAliasSearchSection == SearchSection.NOTES,
+                    )
                 }
             state.copy(
                 noteResults = refreshedResults,

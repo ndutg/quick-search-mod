@@ -282,6 +282,7 @@ sealed class CustomWidgetButtonAction : Parcelable {
     data class Note(
         val noteId: Long,
         val title: String,
+        val markdownContent: String = "",
         override val customIconBase64: String? = null,
     ) : CustomWidgetButtonAction() {
         @IgnoredOnParcel
@@ -293,7 +294,7 @@ sealed class CustomWidgetButtonAction : Parcelable {
             NoteInfo(
                 noteId = noteId,
                 title = title,
-                markdownContent = "",
+                markdownContent = markdownContent,
                 createdAtMillis = 0L,
                 updatedAtMillis = 0L,
             )
@@ -303,6 +304,7 @@ sealed class CustomWidgetButtonAction : Parcelable {
                 .put(KEY_TYPE, type.value)
                 .put(KEY_NOTE_ID, noteId)
                 .put(KEY_TITLE, title)
+                .put(KEY_MARKDOWN_CONTENT, markdownContent)
                 .put(KEY_CUSTOM_ICON_BASE64, customIconBase64)
                 .toString()
     }
@@ -428,6 +430,7 @@ sealed class CustomWidgetButtonAction : Parcelable {
                                     .optString(KEY_TITLE, noteId.toString())
                                     .nullIfBlankOrLiteralNull()
                                     ?: noteId.toString(),
+                            markdownContent = json.optString(KEY_MARKDOWN_CONTENT).orEmpty(),
                         )
                     }
 
@@ -479,6 +482,7 @@ private const val KEY_ICON_BASE64 = "iconBase64"
 private const val KEY_ENABLED = "enabled"
 private const val KEY_INTENTS = "intents"
 private const val KEY_NOTE_ID = "noteId"
+private const val KEY_MARKDOWN_CONTENT = "markdownContent"
 
 private const val KEY_INTENT_ACTION = "action"
 private const val KEY_INTENT_TARGET_PACKAGE = "targetPackage"
