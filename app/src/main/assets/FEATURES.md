@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.0 (Updated August 15 2026)
+**Version**: 4.1.1 (Updated August 23 2026)
 
 ### Search
 
@@ -60,7 +60,7 @@ This document highlights all the available features. It also includes details ab
   - **Time offset from a time** — e.g. 3 hours after 5pm, 30 minutes before 9am, 1 hour after 14:00
 - **Dictionary** - Example usage: "define serendipity" or "serendipity meaning", to see search dictionary card, tapping on which will show dictionary result. This requires Gemini API key configuration.
 - **World Clock** - Check the current time across different time zones. Search for city names to see their current time instantly.
-- **Currency Converter** - Convert between currencies directly from the search bar. Example: "100 USD to EUR" to see the converted amount with the current exchange rate.
+- **Currency Converter** - Convert between currencies directly from the search bar without an API key. Example: "100 USD to EUR" to see the converted amount with the current exchange rate.
 - **Weather** - See current weather information of a particular location directly in search.
 - **Custom AI Tools** - Create your own tools for AI Search. This feature requires an API key to be configured. The current system time can be added in system prompt by using {time} modifier.
 - **Tasker Integration** - Create Tasker actions with broadcast intents and trigger them from Quick Search using aliases. The current query is sent to Tasker as an extra.
@@ -100,7 +100,7 @@ Long-press on most results to open a context menu with quick actions.
 
 - **Triggers** - Long-press a result to add a trigger phrase. When you type that trigger and press space, Quick Search opens that result automatically.
 - **Pin / Unpin** - Pin or unpin apps, app shortcuts, contacts, files, and device settings so that they stay on your home screen when you open the app. Hold and drag any pinned item to reorder it. You can also long-press a pinned item and tap **Move Up** or **Move Down** to reorder it. On the home screen, tap a pinned section header to expand or collapse its items.
-- **Pin to Notification Panel** - Long-press a search result to pin it to the notification panel for quick access.
+- **Pin to Notification Panel** - Long-press a search result to pin it to the notification panel for quick access. Choose whether to pin it with other items or in its own notification.
 - **Add / Edit Nickname** - Add or edit nicknames for apps, app shortcuts, contacts, files, and device settings so you can search them using custom names.
 - **Exclude / Include** - Exclude individual contacts, app shortcuts, files, and device settings from results. You can include them again later by clearing them from Excluded Items list in Search Results settings.
 - **Add to Home Screen** - Add apps, app shortcuts, contacts, files, and device settings directly to your home screen as shortcuts for one-tap access.
@@ -132,14 +132,14 @@ Long-press on most results to open a context menu with quick actions.
 - **Home Text Colours** - Customize text colours on Home, including app labels and section titles.
 - **Circular App icons** - Option to force circular app icons
 - **Icon Packs** - Select an installed icon pack. If none of them are installed, tapping on the card will open the Play Store and search for icon packs. Once installed, come back to the app and hit the refresh button on the icon packs option to refresh the icon packs list.
-- **Individual App Icons** - Change an individual app's icon by using the change app icon long press menu option. Requires third-party icon packs to be installed.
+- **Individual App Icons** - Change an individual app's icon by using the change app icon long press menu option. Requires third-party icon packs to be installed. Choose a launcher icon for Quick Search and reset it to the default icon anytime.
 
 ---
 
 ### Search Results Settings
 
 - **Search Sections Management** - Enable/disable individual result sections (apps, app shortcuts, contacts, files, device settings, history, etc.), and assign alias shortcuts to each section. Tap on the search type options to navigate to their respective screen, which offers additional options.
-- **Top Matches** - Turn on Top Matches to show the best results for your query across enabled categories. You can include or exclude categories and reorder them to control priority.
+- **Top Matches** - Turn on Top Matches to show the best non-app results for your query below the app grid. You can include or exclude categories and reorder them to control priority. Matching app results always appear first in a single row.
 - **App Suggestions** - You can choose to disable app suggestions if you want a cleaner home screen. Toggle the suggestion tabs (New & Updated, Pinned, Most Used) to show only the ones you want.
 - **Fuzzy Search** - Turn fuzzy search on or off to find results even when your search contains a typo.
 - **Web Search Suggestions** - Turn web suggestions on or off and control how many suggestions (1–5) appear under the search bar.
