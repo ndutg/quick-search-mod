@@ -222,6 +222,7 @@ data class CurrencyConverterState(
         val targetCurrencyName: String? = null,
         val sourceAmount: String? = null,
         val sourceCurrencyCode: String? = null,
+        val ratesFetchedAtMillis: Long? = null,
         val activeQuery: String? = null,
         val usedModelId: String? = null,
         val errorMessage: String? = null,

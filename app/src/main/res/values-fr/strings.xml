@@ -839,7 +839,8 @@
 <string name="currency_converter_invalid_input">Saisie de conversion de devise non valide</string>
 <string name="currency_converter_requires_gemini_key">Nécessite une clé API d\'un fournisseur AI</string>
 <string name="currency_converter_toggle_desc">Exemple : 100 USD to INR</string>
-<string name="currency_converter_toggle_title">Convertisseur de devises</string>
+    <string name="currency_converter_toggle_title">Convertisseur de devises</string>
+    <string name="currency_converter_updated">Mis à jour %1$s</string>
 <string name="date_calculator_category_absolute_time">Heure absolue</string>
 <string name="date_calculator_category_date_differences">Différences de dates</string>
 <string name="date_calculator_category_named_dates">Dates nommées</string>

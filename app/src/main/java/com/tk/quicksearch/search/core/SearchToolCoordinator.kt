@@ -224,6 +224,7 @@ internal class SearchToolCoordinator(
                                         targetCurrencyName = parsed.targetCurrencyName,
                                         sourceAmount = parsed.sourceAmount,
                                         sourceCurrencyCode = parsed.sourceCurrencyCode,
+                                        ratesFetchedAtMillis = parsed.ratesFetchedAtMillis,
                                         activeQuery = trimmedQuery,
                                     ),
                             )
