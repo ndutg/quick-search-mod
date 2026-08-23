@@ -840,6 +840,7 @@
     <string name="currency_converter_requires_gemini_key">Απαιτείται ένα κλειδί API παρόχου AI</string>
     <string name="currency_converter_toggle_desc">Παράδειγμα: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>
+    <string name="currency_converter_updated">Ενημερώθηκε %1$s</string>
     <string name="date_calculator_category_absolute_time">Απόλυτος χρόνος</string>
     <string name="date_calculator_category_date_differences">Διαφορές ημερομηνιών</string>
     <string name="date_calculator_category_named_dates">Ονομαστικές ημερομηνίες</string>

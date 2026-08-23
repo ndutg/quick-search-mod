@@ -1,6 +1,5 @@
-- Long-press any app to open it in split screen
-- Search “Screen Time” to check your daily phone usage. Long-press an app to view its individual screen time
-- New Double Tap gesture. You can now trigger search engines and tools with gestures too
-- Customize text colours on Home (App labels, section titles etc.)
-- Option to disable Pinned Apps tab in app suggestions
+- Currency conversion now works without an API key
+- Option to pin items to notifications separately
+- Option to reset the app icon
+- App results now always appear at the top in a single row, even with Top Matches enabled
 - Bug fixes and improvements

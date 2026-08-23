@@ -840,6 +840,7 @@
     <string name="currency_converter_requires_gemini_key">Requiere una clave API de un AI Provider</string>
     <string name="currency_converter_toggle_desc">Ejemplo: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Conversor de divisas</string>
+    <string name="currency_converter_updated">Actualizado %1$s</string>
     <string name="date_calculator_category_absolute_time">Hora absoluta</string>
     <string name="date_calculator_category_date_differences">Diferencias de fechas</string>
     <string name="date_calculator_category_named_dates">Fechas señaladas</string>

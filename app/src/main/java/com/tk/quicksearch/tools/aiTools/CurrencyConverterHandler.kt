@@ -28,10 +28,10 @@ class CurrencyConverterHandler(
     /** Fetches one complete ECB rate snapshot on demand, then reuses it for four hours. */
     suspend fun convert(confirmed: ConfirmedCurrencyQuery): Result<CurrencyConversionModelResult> =
             runCatching {
-                val rates = loadRates()
-                val sourceRate = rates[confirmed.fromCurrency]
+                val ratesSnapshot = loadRates()
+                val sourceRate = ratesSnapshot.rates[confirmed.fromCurrency]
                         ?: error("Unsupported currency: ${confirmed.fromCurrency}")
-                val targetRate = rates[confirmed.toCurrency]
+                val targetRate = ratesSnapshot.rates[confirmed.toCurrency]
                         ?: error("Unsupported currency: ${confirmed.toCurrency}")
                 val converted = confirmed.amount.toBigDecimal()
                         .multiply(targetRate, CALCULATION_CONTEXT)
@@ -42,13 +42,14 @@ class CurrencyConverterHandler(
                         targetCurrencyName = currencyDisplayName(confirmed.toCurrency),
                         sourceAmount = confirmed.amount,
                         sourceCurrencyCode = confirmed.fromCurrency,
+                        ratesFetchedAtMillis = ratesSnapshot.fetchedAtMillis,
                 )
             }
 
-    private fun loadRates(): Map<String, BigDecimal> {
+    private fun loadRates(): CachedRates {
         readCachedRates()?.takeIf { it.fetchedAtMillis + CACHE_DURATION_MS > System.currentTimeMillis() }
-                ?.let { return it.rates }
-        return fetchRates().also(::saveRates)
+                ?.let { return it }
+        return saveRates(fetchRates())
     }
 
     private fun fetchRates(): Map<String, BigDecimal> {
@@ -97,12 +98,14 @@ class CurrencyConverterHandler(
         else CachedRates(fetchedAtMillis, rates)
     }.getOrNull()
 
-    private fun saveRates(rates: Map<String, BigDecimal>) {
+    private fun saveRates(rates: Map<String, BigDecimal>): CachedRates {
+        val fetchedAtMillis = System.currentTimeMillis()
         val json = JSONObject().apply {
             rates.forEach { (code, rate) -> put(code, rate.toPlainString()) }
         }
         preferences.edit().putString(RATES_JSON_KEY, json.toString())
-                .putLong(RATES_FETCHED_AT_KEY, System.currentTimeMillis()).apply()
+                .putLong(RATES_FETCHED_AT_KEY, fetchedAtMillis).apply()
+        return CachedRates(fetchedAtMillis, rates)
     }
 
     private fun currencyDisplayName(code: String): String =
@@ -120,4 +123,5 @@ data class CurrencyConversionModelResult(
         val targetCurrencyName: String,
         val sourceAmount: String,
         val sourceCurrencyCode: String,
+        val ratesFetchedAtMillis: Long,
 )

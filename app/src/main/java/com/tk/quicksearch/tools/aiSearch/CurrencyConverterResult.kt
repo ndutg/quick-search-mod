@@ -3,20 +3,25 @@ package com.tk.quicksearch.tools.aiSearch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CurrencyConverterState
 import com.tk.quicksearch.search.core.CurrencyConverterStatus
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import java.math.RoundingMode
 import java.util.Currency
 import java.util.Locale
+import java.text.NumberFormat
+import java.math.RoundingMode
 
 @Composable
 fun CurrencyConverterResult(
@@ -57,26 +62,49 @@ fun CurrencyConverterResult(
                         val code = currencyConverterState.targetCurrencyCode.orEmpty()
                         val name = currencyConverterState.targetCurrencyName.orEmpty()
                         val symbol = getCurrencySymbolForCode(code)
-                        val line1 = "$amount $code"
-                        val subtitle =
+                        val line1 = listOfNotNull(symbol, amount).joinToString(separator = " ")
+                        val currencyDescription =
                                 if (name.isNotBlank() && !name.equals(code, ignoreCase = true)) {
-                                    if (symbol != null) "$name ($symbol)" else name
+                                    "$name ($code)"
+                                } else {
+                                    code.takeIf { it.isNotBlank() }
+                                }
+                        val updatedAt = currencyConverterState.ratesFetchedAtMillis
+                        val freshness =
+                                if (updatedAt != null) {
+                                    stringResource(
+                                            R.string.currency_converter_updated,
+                                            formatCurrencyFreshness(updatedAt),
+                                    )
                                 } else {
                                     null
                                 }
-                        Column(
-                                modifier = Modifier.fillMaxWidth(),
+                        Box(
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 143.dp),
                         ) {
-                            Text(
-                                    text = line1,
-                                    style = MaterialTheme.typography.displaySmall,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                            )
-                            if (subtitle != null) {
+                            Column {
                                 Text(
-                                        text = subtitle,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        text = line1,
+                                        style = MaterialTheme.typography.displaySmall,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                )
+                                if (currencyDescription != null) {
+                                    Text(
+                                            text = currencyDescription,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                            if (freshness != null) {
+                                Text(
+                                        text = freshness,
+                                        modifier =
+                                                Modifier.fillMaxWidth()
+                                                        .align(Alignment.BottomCenter),
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 )
                             }
                         }
@@ -97,10 +125,22 @@ fun CurrencyConverterResult(
     }
 }
 
+private fun formatCurrencyFreshness(fetchedAtMillis: Long): String {
+    val elapsedMillis = (System.currentTimeMillis() - fetchedAtMillis).coerceAtLeast(0L)
+    val elapsedMinutes = elapsedMillis / 60_000L
+    if (elapsedMinutes < 60L) return "$elapsedMinutes min ago"
+
+    val elapsedHours = elapsedMillis / 3_600_000L
+    return "$elapsedHours ${if (elapsedHours == 1L) "hour" else "hours"} ago"
+}
+
 private fun formatCurrencyAmountForDisplay(raw: String): String {
-    val normalized = raw.trim().replace(",", ".")
-    val bd = normalized.toBigDecimalOrNull() ?: return raw.trim()
-    return bd.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
+    val amount = raw.trim().toBigDecimalOrNull() ?: return raw.trim()
+    return NumberFormat.getNumberInstance(Locale.getDefault()).apply {
+        minimumFractionDigits = 0
+        maximumFractionDigits = 2
+        roundingMode = RoundingMode.HALF_UP
+    }.format(amount)
 }
 
 private fun getCurrencySymbolForCode(code: String): String? {
