@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -243,6 +244,57 @@ fun SearchContentArea(
         } else {
             null
         }
+    val keyboardGesturesEnabled = scrollState.maxValue == 0
+    val launcherOverscrollUpEnabled =
+        keyboardGesturesEnabled &&
+            hasQuery.not() &&
+            renderingState.expandedSection == ExpandedSection.NONE
+    // A keyboard-open search can already contain text. Keep the downward
+    // overscroll active in that state so the configured close-keyboard action
+    // still receives the gesture before the notification panel does.
+    val launcherOverscrollDownEnabled = keyboardGesturesEnabled
+    val bottomOneHandedOverscrollEnabled =
+        state.bottomSearchBarEnabled && useOneHandedMode && alignResultsToBottom
+    val bottomOneHandedOverscrollConnection =
+        remember(
+            bottomOneHandedOverscrollEnabled,
+            launcherOverscrollUpEnabled,
+            launcherOverscrollDownEnabled,
+            onBottomOneHandedOverscrollUp,
+            onLauncherOverscrollUp,
+            onLauncherOverscrollDown,
+        ) {
+            object : NestedScrollConnection {
+                override fun onPostScroll(
+                    consumed: Offset,
+                    available: Offset,
+                    source: NestedScrollSource,
+                ): Offset {
+                    if (
+                        bottomOneHandedOverscrollEnabled &&
+                            source == NestedScrollSource.UserInput &&
+                            available.y < -OVERSCROLL_FOCUS_THRESHOLD_PX
+                    ) {
+                        onBottomOneHandedOverscrollUp()
+                    }
+                    if (
+                        launcherOverscrollUpEnabled &&
+                            source == NestedScrollSource.UserInput &&
+                            available.y < -OVERSCROLL_FOCUS_THRESHOLD_PX
+                    ) {
+                        onLauncherOverscrollUp()
+                    }
+                    if (
+                        launcherOverscrollDownEnabled &&
+                            source == NestedScrollSource.UserInput &&
+                            available.y > OVERSCROLL_FOCUS_THRESHOLD_PX
+                    ) {
+                        onLauncherOverscrollDown()
+                    }
+                    return Offset.Zero
+                }
+            }
+        }
     var searchHistorySelectedTab by rememberSaveable { mutableStateOf(SearchHistoryTab.SEARCHES) }
     val canSwitchSearchHistoryTabs =
         state.recentItems.any { it is RecentSearchItem.Query } &&
@@ -270,6 +322,57 @@ fun SearchContentArea(
             modifier =
                 modifier
                     .fillMaxWidth()
+                    // Overlay content may be shorter than its weighted slot. Keep the
+                    // overscroll listener on that slot so the visible blank area above
+                    // Open Keyboard receives the same Home gestures as regular mode.
+                    .nestedScroll(bottomOneHandedOverscrollConnection)
+                    // A short overlay has no scrollable child in its unused weighted space,
+                    // so nested scroll alone never observes a drag that starts there.
+                    .then(
+                        if (isOverlayPresentation && keyboardGesturesEnabled) {
+                            Modifier.pointerInput(
+                                bottomOneHandedOverscrollEnabled,
+                                launcherOverscrollUpEnabled,
+                                launcherOverscrollDownEnabled,
+                            ) {
+                                var accumulatedDragY = 0f
+                                var gestureHandled = false
+                                detectVerticalDragGestures(
+                                    onVerticalDrag = { _, dragAmount ->
+                                        if (gestureHandled) return@detectVerticalDragGestures
+                                        accumulatedDragY += dragAmount
+                                        when {
+                                            accumulatedDragY < -OVERSCROLL_FOCUS_THRESHOLD_PX -> {
+                                                if (bottomOneHandedOverscrollEnabled) {
+                                                    onBottomOneHandedOverscrollUp()
+                                                }
+                                                if (launcherOverscrollUpEnabled) {
+                                                    onLauncherOverscrollUp()
+                                                }
+                                                gestureHandled = true
+                                            }
+                                            accumulatedDragY > OVERSCROLL_FOCUS_THRESHOLD_PX -> {
+                                                if (launcherOverscrollDownEnabled) {
+                                                    onLauncherOverscrollDown()
+                                                }
+                                                gestureHandled = true
+                                            }
+                                        }
+                                    },
+                                    onDragEnd = {
+                                        accumulatedDragY = 0f
+                                        gestureHandled = false
+                                    },
+                                    onDragCancel = {
+                                        accumulatedDragY = 0f
+                                        gestureHandled = false
+                                    },
+                                )
+                            }
+                        } else {
+                            Modifier
+                        },
+                    )
                     .searchHistoryExpandedTabSwipe(
                         enabled = isSearchHistoryExpanded,
                         canSwitchTabs = canSwitchSearchHistoryTabs,
@@ -322,57 +425,6 @@ fun SearchContentArea(
 
             val needsEdgeFade =
                 !shouldHideScrollView && scrollState.maxValue > 0
-            val bottomOneHandedOverscrollEnabled =
-                state.bottomSearchBarEnabled && useOneHandedMode && alignResultsToBottom
-            val keyboardGesturesEnabled = scrollState.maxValue == 0
-            val launcherOverscrollUpEnabled =
-                keyboardGesturesEnabled &&
-                    hasQuery.not() &&
-                    renderingState.expandedSection == ExpandedSection.NONE
-            // A keyboard-open search can already contain text. Keep the downward
-            // overscroll active in that state so the configured close-keyboard action
-            // still receives the gesture before the notification panel does.
-            val launcherOverscrollDownEnabled = keyboardGesturesEnabled
-            val bottomOneHandedOverscrollConnection =
-                remember(
-                    bottomOneHandedOverscrollEnabled,
-                    launcherOverscrollUpEnabled,
-                    launcherOverscrollDownEnabled,
-                    onBottomOneHandedOverscrollUp,
-                    onLauncherOverscrollUp,
-                    onLauncherOverscrollDown,
-                ) {
-                    object : NestedScrollConnection {
-                        override fun onPostScroll(
-                            consumed: Offset,
-                            available: Offset,
-                            source: NestedScrollSource,
-                        ): Offset {
-                            if (
-                                bottomOneHandedOverscrollEnabled &&
-                                    source == NestedScrollSource.UserInput &&
-                                    available.y < -OVERSCROLL_FOCUS_THRESHOLD_PX
-                            ) {
-                                onBottomOneHandedOverscrollUp()
-                            }
-                            if (
-                                launcherOverscrollUpEnabled &&
-                                    source == NestedScrollSource.UserInput &&
-                                    available.y < -OVERSCROLL_FOCUS_THRESHOLD_PX
-                            ) {
-                                onLauncherOverscrollUp()
-                            }
-                            if (
-                                launcherOverscrollDownEnabled &&
-                                    source == NestedScrollSource.UserInput &&
-                                    available.y > OVERSCROLL_FOCUS_THRESHOLD_PX
-                            ) {
-                                onLauncherOverscrollDown()
-                            }
-                            return Offset.Zero
-                        }
-                    }
-                }
             val edgeFadeModifier =
                 if (needsEdgeFade) {
                     Modifier
@@ -490,7 +542,6 @@ fun SearchContentArea(
                                     )
                                 } else {
                                     Modifier
-                                        .nestedScroll(bottomOneHandedOverscrollConnection)
                                         .verticalScroll(
                                             scrollState,
                                             reverseScrolling =

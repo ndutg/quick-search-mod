@@ -855,7 +855,8 @@
 <string name="currency_converter_invalid_input">Некорректный ввод для конвертации валют</string>
 <string name="currency_converter_requires_gemini_key">Требуется API-ключ AI-провайдера</string>
 <string name="currency_converter_toggle_desc">Пример: 100 USD в INR</string>
-<string name="currency_converter_toggle_title">Конвертер валют</string>
+    <string name="currency_converter_toggle_title">Конвертер валют</string>
+    <string name="currency_converter_updated">Обновлено %1$s</string>
 <string name="date_calculator_category_absolute_time">Абсолютное время</string>
 <string name="date_calculator_category_date_differences">Разница между датами</string>
 <string name="date_calculator_category_named_dates">Именованные даты</string>
