@@ -276,7 +276,7 @@
     <string name="top_matches_priority_dialog_info">اضغط مع الاستمرار ثم اسحب لتغيير الأولوية، واستخدم مفتاح التبديل لتفعيل أو تعطيل أنواع نتائج معينة.</string>
     <string name="top_matches_priority_title">إدارة أفضل التطابقات</string>
     <string name="top_matches_title">أفضل التطابقات</string>
-    <string name="top_matches_toggle_desc">إظهار أفضل النتائج المطابقة غير التابعة للتطبيقات في قائمة موحّدة.</string>
+    <string name="top_matches_toggle_desc">إظهار أفضل النتائج المطابقة عبر جميع الأنواع في قائمة واحدة.</string>
     <string name="top_result_indicator_toggle_desc">تمييز أفضل نتيجة يمكن فتحها باستخدام لوحة المفاتيح.</string>
     <string name="top_result_indicator_toggle_title">مؤشر أفضل نتيجة</string>
     <string name="include_non_launchable_apps_toggle_title">تطبيقات غير قابلة للتشغيل</string>
