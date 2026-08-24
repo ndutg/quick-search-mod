@@ -373,6 +373,7 @@ internal fun appTopMatchPriority(
 ): Int =
     AppSearchPolicy.matchPriority(
         appName = app.appName,
+        searchAliases = app.searchAliases,
         nickname = nickname,
         query = query,
         initials = AppSearchInitials.initialsFor(app),

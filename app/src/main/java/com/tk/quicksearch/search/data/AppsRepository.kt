@@ -5,6 +5,7 @@ import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.BroadcastReceiver
+import android.content.res.Configuration
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
@@ -23,6 +24,7 @@ import androidx.core.content.ContextCompat
 import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.utils.PermissionUtils
+import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import java.util.Locale
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -423,6 +425,18 @@ class AppsRepository(
         val lastUpdateTime = getLastUpdateTime(packageName)
         val appInfo = info.applicationInfo
         val isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+        val activityInfo =
+            runCatching {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    packageManager.getActivityInfo(
+                        info.componentName,
+                        PackageManager.ComponentInfoFlags.of(0),
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageManager.getActivityInfo(info.componentName, 0)
+                }
+            }.getOrNull()
 
         return AppInfo(
             appName = label,
@@ -432,6 +446,17 @@ class AppsRepository(
             launchCount = launchCount,
             firstInstallTime = firstInstallTime,
             isSystemApp = isSystemApp,
+            searchAliases =
+                resolveSearchAliases(
+                    displayLabel = label,
+                    packageName = packageName,
+                    labelResourceIds = listOf(activityInfo?.labelRes ?: 0, appInfo.labelRes),
+                    nonLocalizedLabels =
+                        listOf(
+                            activityInfo?.nonLocalizedLabel,
+                            appInfo.nonLocalizedLabel,
+                        ),
+                ),
             hasLaunchIntent = true,
             userHandleId = userHandleId,
             componentName = info.componentName.flattenToString(),
@@ -466,6 +491,21 @@ class AppsRepository(
             launchCount = launchCount,
             firstInstallTime = firstInstallTime,
             isSystemApp = isSystemApp,
+            searchAliases =
+                resolveSearchAliases(
+                    displayLabel = label,
+                    packageName = packageName,
+                    labelResourceIds =
+                        listOf(
+                            resolveInfo.activityInfo.labelRes,
+                            resolveInfo.activityInfo.applicationInfo.labelRes,
+                        ),
+                    nonLocalizedLabels =
+                        listOf(
+                            resolveInfo.activityInfo.nonLocalizedLabel,
+                            resolveInfo.activityInfo.applicationInfo.nonLocalizedLabel,
+                        ),
+                ),
             hasLaunchIntent = true,
             userHandleId = null,
             componentName = "${resolveInfo.activityInfo.packageName}/${resolveInfo.activityInfo.name}",
@@ -503,6 +543,13 @@ class AppsRepository(
             launchCount = launchCount,
             firstInstallTime = firstInstallTime,
             isSystemApp = isSystemApp,
+            searchAliases =
+                resolveSearchAliases(
+                    displayLabel = label,
+                    packageName = packageName,
+                    labelResourceIds = listOf(applicationInfo.labelRes),
+                    nonLocalizedLabels = listOf(applicationInfo.nonLocalizedLabel),
+                ),
             hasLaunchIntent = false,
             userHandleId = null,
             componentName = null,
@@ -541,6 +588,52 @@ class AppsRepository(
         packageName
             .substringAfterLast(".")
             .replaceFirstChar { it.titlecase(Locale.getDefault()) }
+
+    /**
+     * Resolves a bounded set of alternate package-provided labels while rebuilding the catalog.
+     * This keeps PackageManager and Resources work off the query path.
+     */
+    private fun resolveSearchAliases(
+        displayLabel: String,
+        packageName: String,
+        labelResourceIds: List<Int>,
+        nonLocalizedLabels: List<CharSequence?>,
+    ): List<String> {
+        val displayKey = SearchTextNormalizer.normalizeForSearch(displayLabel)
+        return buildList {
+            labelResourceIds
+                .asSequence()
+                .filter { it != 0 }
+                .distinct()
+                .mapNotNull { resolveEnglishLabel(packageName, it) }
+                .forEach(::add)
+            nonLocalizedLabels.forEach { label -> label?.toString()?.let(::add) }
+        }
+            .asSequence()
+            .map(String::trim)
+            .filter { it.isNotBlank() }
+            .distinctBy(SearchTextNormalizer::normalizeForSearch)
+            .filter { SearchTextNormalizer.normalizeForSearch(it) != displayKey }
+            .take(MAX_SEARCH_ALIASES)
+            .toList()
+    }
+
+    private fun resolveEnglishLabel(
+        packageName: String,
+        labelResourceId: Int,
+    ): String? =
+        runCatching {
+            val packageContext = context.createPackageContext(packageName, 0)
+            val englishConfiguration =
+                Configuration(packageContext.resources.configuration).apply {
+                    setLocale(Locale.ENGLISH)
+                }
+            packageContext
+                .createConfigurationContext(englishConfiguration)
+                .getText(labelResourceId)
+                .toString()
+                .takeIf { it.isNotBlank() }
+        }.getOrNull()
 
     private fun queryUsageStatsMap(): Map<String, UsageStats> {
         val manager = usageStatsManager ?: return emptyMap()
@@ -585,6 +678,8 @@ class AppsRepository(
         }.getOrDefault(getFirstInstallTime(packageName))
 
     companion object {
+        private const val MAX_SEARCH_ALIASES = 2
+
         private val AppLaunchCountGetter by lazy(LazyThreadSafetyMode.PUBLICATION) {
             runCatching { UsageStats::class.java.getMethod("getAppLaunchCount") }.getOrNull()
         }
