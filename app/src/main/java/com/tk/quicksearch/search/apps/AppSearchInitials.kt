@@ -5,8 +5,11 @@ import java.util.Locale
 
 object AppSearchInitials {
     fun initialsFor(app: AppInfo): List<String> {
-        val initials = computeInitials(app.appName) ?: return emptyList()
-        return listOf(initials)
+        return sequenceOf(app.appName)
+            .plus(app.searchAliases.asSequence())
+            .mapNotNull(::computeInitials)
+            .distinct()
+            .toList()
     }
 
     private fun computeInitials(appName: String): String? {

@@ -1,5 +1,5 @@
 - Currency conversion now works without an API key
 - Option to pin items to notifications separately
 - Option to reset the app icon
-- App results now always appear at the top in a single row, even with Top Matches enabled
+- In Top Matches, app results will now appear in a single row
 - Bug fixes and improvements

@@ -209,21 +209,14 @@ fun ContentLayout(
     val queryLength = state.query.trim().length
     val isUrlQuery = remember(state.query) { isLikelyWebUrl(state.query) }
     val baseLayoutOrder = ItemPriorityConfig.getLayoutOrder(hasQuery)
-    val appsFirstLayoutOrder =
-        if (hasQuery) {
-            listOf(ItemPriorityConfig.ItemType.APPS_SECTION) +
-                baseLayoutOrder.filterNot { it == ItemPriorityConfig.ItemType.APPS_SECTION }
-        } else {
-            baseLayoutOrder
-        }
     // reverseScrolling anchors content to the bottom but does not reverse child placement.
     val finalLayoutOrder =
         if (!hasQuery) {
-            homeLayoutOrder(appsFirstLayoutOrder, isReversed)
+            homeLayoutOrder(baseLayoutOrder, isReversed)
         } else if (isReversed) {
-            appsFirstLayoutOrder.reversed()
+            baseLayoutOrder.reversed()
         } else {
-            appsFirstLayoutOrder
+            baseLayoutOrder
         }
 
     // 3. Prepare Shared Rendering Context and Params
@@ -411,14 +404,13 @@ fun ContentLayout(
             !isExpanded &&
             !isSectionAliasMode &&
             displayedTopMatches.isNotEmpty()
-    val appGridOwnsTopResult = hasQuery && regularRenderingState.displayApps.isNotEmpty()
     val hasMoreResults =
         hasMoreResults(
             renderingState = regularRenderingState,
             sectionContext = sectionContextForRecentHistoryExpansion,
         )
     val regularSectionParams =
-        if (showTopMatches && !appGridOwnsTopResult) {
+        if (showTopMatches) {
             sectionParams.copy(
                 contactsParams = sectionParams.contactsParams.copy(predictedTarget = null),
                 filesParams = sectionParams.filesParams.copy(predictedTarget = null),
@@ -746,8 +738,7 @@ fun ContentLayout(
             params = sectionParams,
             showWallpaperBackground = effectiveShowWallpaperBackground,
             showTopResultIndicator =
-                !appGridOwnsTopResult &&
-                    (state.topResultIndicatorEnabled || isPhysicalKeyboardConnected),
+                state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
             selectedMatchIndex = selectedTopMatchIndex,
             reverseOrder = isReversed,
             screenTimeState = state.screenTimeState,
@@ -771,6 +762,9 @@ fun ContentLayout(
     }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        if (showTopMatches && !isReversed) {
+            renderTopMatches()
+        }
         finalLayoutOrder.forEach { itemType ->
             val section = itemType.toSearchSectionOrNull()
             val isSectionItem = section != null
@@ -924,12 +918,6 @@ fun ContentLayout(
                                         effectiveAppsParams.showAllAppsButton && effectiveAppsParams.allApps.isNotEmpty()
                                 )
                         )
-                // Apps own the first result slot. Emit Top Matches immediately beside that slot
-                // without allowing it to displace the grid; reverse the emission order for
-                // bottom-anchored layouts to preserve the visual order.
-                if (hasQuery && section == SearchSection.APPS && isReversed) {
-                    renderTopMatches()
-                }
                 if (homeSectionContentReady) {
                     HomeLoadingAnimatedContent(
                         animationKey = "home-section-${section.name}",
@@ -944,9 +932,6 @@ fun ContentLayout(
                             renderSection(section, regularSectionParams, sectionContext)
                         }
                     }
-                }
-                if (hasQuery && section == SearchSection.APPS && !isReversed) {
-                    renderTopMatches()
                 }
                 if (
                     !isReversed &&
@@ -1173,6 +1158,9 @@ fun ContentLayout(
             deferredSearchHistoryRendered = true
         }
 
+        if (showTopMatches && isReversed) {
+            renderTopMatches()
+        }
     }
 }
 

@@ -45,6 +45,13 @@ private var appIconCacheEpoch by mutableLongStateOf(0L)
 private const val CircularAdaptiveIconContentScale = 1.42f
 
 /**
+ * App icons are rendered at a small on-screen size. Keeping an APK's original icon bitmap can
+ * exceed the hardware canvas texture limit on some devices, causing Compose to crash while it
+ * records the draw pass.
+ */
+private const val MaxAppIconBitmapSize = 512
+
+/**
  * In-memory cache for app icons to avoid repeated loading.
  */
 private object AppIconCache {
@@ -156,13 +163,13 @@ fun rememberAppIcon(
             val entry =
                 withContext(Dispatchers.IO) {
                     val iconPackBitmap =
-                        iconOverride?.let { override ->
+                        iconOverride?.takeUnless { it.useSystemDefault }?.let { override ->
                             IconPackManager.loadDrawableBitmap(
                                 context = context,
-                                iconPackPackage = override.iconPackPackage,
-                                drawableName = override.drawableName,
+                                iconPackPackage = requireNotNull(override.iconPackPackage),
+                                drawableName = requireNotNull(override.drawableName),
                             )
-                        } ?: iconPackPackage?.let { pack ->
+                        } ?: iconPackPackage?.takeUnless { iconOverride?.useSystemDefault == true }?.let { pack ->
                             IconPackManager.loadIconBitmap(
                                 context = context,
                                 iconPackPackage = pack,
@@ -170,7 +177,7 @@ fun rememberAppIcon(
                             )
                         }
                     val hasExplicitIconPackIcon =
-                        iconOverride != null ||
+                        iconOverride?.useSystemDefault == false ||
                             iconPackPackage?.let { pack ->
                                 IconPackManager.hasExplicitIcon(context, pack, packageName)
                             } == true
@@ -246,7 +253,7 @@ private fun loadSystemAppIcon(
             } else null
             AppIconEntry(bitmap, isLegacy = false, monochromeData = monochromeData)
         } else {
-            val bitmap = drawable.toBitmap().asImageBitmap()
+            val bitmap = drawable.toBoundedBitmap().asImageBitmap()
             AppIconEntry(bitmap, isLegacy = Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
         }
     }.getOrNull()
@@ -278,7 +285,7 @@ private fun loadWorkProfileBadgedIcon(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
                 adaptiveToBitmap(drawable = drawable, forceCircularMask = forceCircularMask).asImageBitmap()
             } else {
-                drawable.toBitmap().asImageBitmap()
+                drawable.toBoundedBitmap().asImageBitmap()
             }
         AppIconEntry(bitmap, isLegacy)
     }.getOrNull()
@@ -289,7 +296,9 @@ private fun adaptiveToBitmap(
     drawable: AdaptiveIconDrawable,
     forceCircularMask: Boolean,
 ): Bitmap {
-    val targetSize = maxOf(drawable.intrinsicWidth, drawable.intrinsicHeight).coerceAtLeast(1)
+    val targetSize =
+        maxOf(drawable.intrinsicWidth, drawable.intrinsicHeight)
+            .coerceIn(1, MaxAppIconBitmapSize)
     if (!forceCircularMask) {
         return drawable.toBitmap(width = targetSize, height = targetSize)
     }
@@ -324,6 +333,13 @@ private fun adaptiveToBitmap(
     composed.recycle()
 
     return output
+}
+
+private fun android.graphics.drawable.Drawable.toBoundedBitmap(): Bitmap {
+    val targetSize =
+        maxOf(intrinsicWidth, intrinsicHeight)
+            .coerceIn(1, MaxAppIconBitmapSize)
+    return toBitmap(width = targetSize, height = targetSize)
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -385,13 +401,13 @@ suspend fun prefetchAppIcons(
     withContext(Dispatchers.IO) {
         packagesToLoad.forEach { (packageName, cacheKey, iconOverride) ->
             val iconPackBitmap =
-                iconOverride?.let { override ->
+                iconOverride?.takeUnless { it.useSystemDefault }?.let { override ->
                     IconPackManager.loadDrawableBitmap(
                         context = context,
-                        iconPackPackage = override.iconPackPackage,
-                        drawableName = override.drawableName,
+                        iconPackPackage = requireNotNull(override.iconPackPackage),
+                        drawableName = requireNotNull(override.drawableName),
                     )
-                } ?: iconPackPackage?.let { pack ->
+                } ?: iconPackPackage?.takeUnless { iconOverride?.useSystemDefault == true }?.let { pack ->
                     IconPackManager.loadIconBitmap(
                         context = context,
                         iconPackPackage = pack,
@@ -416,7 +432,7 @@ suspend fun prefetchAppIcons(
                             } else null
                             AppIconEntry(bitmap, isLegacy = false, monochromeData = monochromeData)
                         } else {
-                            val bitmap = drawable.toBitmap().asImageBitmap()
+                            val bitmap = drawable.toBoundedBitmap().asImageBitmap()
                             AppIconEntry(bitmap, isLegacy = Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
                         }
                     }.getOrNull()

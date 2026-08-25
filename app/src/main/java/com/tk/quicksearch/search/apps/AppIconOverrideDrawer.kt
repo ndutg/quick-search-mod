@@ -67,9 +67,24 @@ fun AppIconOverrideDrawer(
     val appliedIconPackPackage = remember(context) {
         UserAppPreferences(context).getSelectedIconPackPackage()
     }
-    val hasIconOverride = remember(context, packageName) {
-        UserAppPreferences(context).getAppIconOverride(packageName) != null
+    val iconOverride = remember(context, packageName) {
+        UserAppPreferences(context).getAppIconOverride(packageName)
     }
+    val hasAppliedIconPackIcon by produceState(
+        initialValue = false,
+        appliedIconPackPackage,
+        packageName,
+        iconOverride,
+    ) {
+        value =
+            withContext(Dispatchers.IO) {
+                appliedIconPackPackage != null &&
+                    iconOverride?.useSystemDefault != true &&
+                    IconPackManager.hasExplicitIcon(context, appliedIconPackPackage, packageName)
+            }
+    }
+    val canResetToDefault = iconOverride?.useSystemDefault != true &&
+        (iconOverride != null || hasAppliedIconPackIcon)
     val iconPacks by produceState(emptyList(), context) {
         value = withContext(Dispatchers.IO) { IconPackManager.findInstalledIconPacks(context) }
     }
@@ -256,10 +271,10 @@ fun AppIconOverrideDrawer(
                 }
             }
 
-            if (hasIconOverride) {
+            if (canResetToDefault) {
                 Button(
                     onClick = {
-                        UserAppPreferences(context).clearAppIconOverrides(listOf(packageName))
+                        UserAppPreferences(context).setAppIconToSystemDefault(packageName)
                         invalidateAppIconCache()
                         onDismiss()
                     },

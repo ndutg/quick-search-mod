@@ -101,6 +101,23 @@ class AppSearchAlgorithmTest {
     }
 
     @Test
+    fun localizedAppLabelMatchesItsCachedEnglishAlias() {
+        val whatsapp = app("واتساب", "whatsapp", searchAliases = listOf("WhatsApp"))
+
+        val matches =
+            AppSearchAlgorithm.findMatches(
+                query = "whatsapp",
+                source = listOf(whatsapp),
+                limit = 10,
+                fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
+                appNicknames = emptyMap(),
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
+            )
+
+        assertEquals(listOf(whatsapp), matches)
+    }
+
+    @Test
     fun disabledFuzzySearchDoesNotReturnTypoOnlyMatches() {
         val settings = app("Settings", "settings")
 
@@ -212,6 +229,7 @@ class AppSearchAlgorithmTest {
     private fun app(
         appName: String,
         packageSuffix: String,
+        searchAliases: List<String> = emptyList(),
         launchCount: Int = 0,
         lastUsedTime: Long = 0L,
     ): AppInfo =
@@ -223,5 +241,6 @@ class AppSearchAlgorithmTest {
             launchCount = launchCount,
             firstInstallTime = 0L,
             isSystemApp = false,
+            searchAliases = searchAliases,
         )
 }
