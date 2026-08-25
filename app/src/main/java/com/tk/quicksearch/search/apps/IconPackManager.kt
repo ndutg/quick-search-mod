@@ -25,6 +25,8 @@ import java.io.InputStream
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
+private const val MAX_ICON_BITMAP_SIZE = 512
+
 data class IconPackDrawableInfo(
     val drawableName: String,
     val targetPackages: Set<String>,
@@ -39,7 +41,7 @@ object IconPackManager {
     private const val MIN_MASK_SCALE_FACTOR = 0.4f
     private const val MAX_MASK_SCALE_FACTOR = 1.6f
     private const val DEFAULT_FALLBACK_ICON_SIZE = 192
-    private const val MAX_FALLBACK_ICON_SIZE = 512
+    private const val MAX_FALLBACK_ICON_SIZE = MAX_ICON_BITMAP_SIZE
 
     private data class IconPackRenderData(
         val packageMapping: Map<String, String>,
@@ -644,7 +646,20 @@ private fun Drawable.toBitmapSafely(): ImageBitmap? =
 
 private fun Bitmap.toStableImageBitmap(): ImageBitmap? {
     if (isRecycled || width <= 0 || height <= 0) return null
-    val stableBitmap = copy(Bitmap.Config.ARGB_8888, false) ?: return null
+    val scale = minOf(1f, MAX_ICON_BITMAP_SIZE.toFloat() / maxOf(width, height))
+    val boundedBitmap =
+        if (scale < 1f) {
+            Bitmap.createScaledBitmap(
+                this,
+                (width * scale).toInt().coerceAtLeast(1),
+                (height * scale).toInt().coerceAtLeast(1),
+                true,
+            )
+        } else {
+            this
+        }
+    val stableBitmap = boundedBitmap.copy(Bitmap.Config.ARGB_8888, false) ?: return null
+    if (boundedBitmap !== this) boundedBitmap.recycle()
     if (!stableBitmap.hasVisiblePixels()) {
         stableBitmap.recycle()
         return null
