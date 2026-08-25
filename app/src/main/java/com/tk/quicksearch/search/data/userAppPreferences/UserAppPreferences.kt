@@ -138,6 +138,9 @@ class UserAppPreferences(
         drawableName: String,
     ) = appPreferences.setAppIconOverride(packageName, iconPackPackage, drawableName)
 
+    fun setAppIconToSystemDefault(packageName: String) =
+            appPreferences.setAppIconToSystemDefault(packageName)
+
     fun getAppIconOverridePackageNames(): Set<String> =
             appPreferences.getAppIconOverridePackageNames()
 
