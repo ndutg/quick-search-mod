@@ -177,10 +177,11 @@ class AppCache(
         private const val KEY_CATALOG_INVALIDATED = "catalog_invalidated"
         private const val KEY_REMOVED_APP_KEYS = "removed_app_keys"
         private const val CACHE_FILE_NAME = "app_cache_v1.bin"
-        private const val CACHE_FILE_VERSION = 3
+        private const val CACHE_FILE_VERSION = 4
 
         // JSON field names
         private const val FIELD_APP_NAME = "appName"
+        private const val FIELD_SEARCH_ALIASES = "searchAliases"
         private const val FIELD_PACKAGE_NAME = "packageName"
         private const val FIELD_LAST_USED_TIME = "lastUsedTime"
         private const val FIELD_TOTAL_TIME_IN_FOREGROUND = "totalTimeInForeground"
@@ -199,6 +200,14 @@ class AppCache(
                     jsonObject.optInt(FIELD_USER_HANDLE_ID, -1).takeIf { it >= 0 }
                 AppInfo(
                     appName = jsonObject.getString(FIELD_APP_NAME),
+                    searchAliases =
+                        jsonObject
+                            .optJSONArray(FIELD_SEARCH_ALIASES)
+                            ?.let { aliases ->
+                                List(aliases.length()) { index -> aliases.optString(index) }
+                                    .filter { it.isNotBlank() }
+                            }
+                            .orEmpty(),
                     packageName = jsonObject.getString(FIELD_PACKAGE_NAME),
                     lastUsedTime = jsonObject.getLong(FIELD_LAST_USED_TIME),
                     totalTimeInForeground = jsonObject.optLong(FIELD_TOTAL_TIME_IN_FOREGROUND, 0L),
@@ -228,8 +237,10 @@ class AppCache(
             val userHandleId = readNullableInt()
             val componentName = readNullableString()
             val lastUpdateTime = if (version >= 2) readLong() else firstInstallTime
+            val searchAliases = if (version >= 4) readStringList() else emptyList()
             return AppInfo(
                 appName = appName,
+                searchAliases = searchAliases,
                 packageName = packageName,
                 lastUsedTime = lastUsedTime,
                 totalTimeInForeground = totalTimeInForeground,
@@ -255,6 +266,7 @@ class AppCache(
             writeNullableInt(app.userHandleId)
             writeNullableString(app.componentName)
             writeLong(app.lastUpdateTime)
+            writeStringList(app.searchAliases)
         }
 
         private fun DataInputStream.readNullableInt(): Int? =
@@ -272,5 +284,19 @@ class AppCache(
             writeBoolean(value != null)
             if (value != null) writeUTF(value)
         }
+
+        private fun DataInputStream.readStringList(): List<String> {
+            val size = readInt()
+            require(size in 0..MAX_SEARCH_ALIASES) { "Invalid search alias count: $size" }
+            return List(size) { readUTF() }
+        }
+
+        private fun DataOutputStream.writeStringList(values: List<String>) {
+            val boundedValues = values.take(MAX_SEARCH_ALIASES)
+            writeInt(boundedValues.size)
+            boundedValues.forEach(::writeUTF)
+        }
+
+        private const val MAX_SEARCH_ALIASES = 2
     }
 }

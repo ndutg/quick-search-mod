@@ -18,6 +18,11 @@ data class AppInfo(
     val userHandleId: Int? = null,
     val componentName: String? = null,
     val lastUpdateTime: Long = firstInstallTime,
+    /**
+     * Additional labels supplied by the app package, used for search only. The localized
+     * [appName] remains the label shown in the UI.
+     */
+    val searchAliases: List<String> = emptyList(),
 ) {
     fun launchCountKey(): String =
         if (userHandleId == null) packageName else "$packageName:$userHandleId"

@@ -139,17 +139,17 @@ private fun loadAppIconBitmap(
     // icon always wins over the currently applied icon pack.
     val iconOverride = UserAppPreferences(context).getAppIconOverride(packageName)
     val iconPackBitmap =
-        iconOverride?.let { override ->
+        iconOverride?.takeUnless { it.useSystemDefault }?.let { override ->
             IconPackManager.loadDrawableBitmap(
                 context = context,
-                iconPackPackage = override.iconPackPackage,
-                drawableName = override.drawableName,
+                iconPackPackage = requireNotNull(override.iconPackPackage),
+                drawableName = requireNotNull(override.drawableName),
             )
-        } ?: iconPackPackage?.let { pack ->
+        } ?: iconPackPackage?.takeUnless { iconOverride?.useSystemDefault == true }?.let { pack ->
             IconPackManager.loadIconBitmap(context, pack, packageName)
         }
     val hasExplicitIconPackIcon =
-        iconOverride != null ||
+        iconOverride?.useSystemDefault == false ||
             iconPackPackage?.let { pack ->
                 IconPackManager.hasExplicitIcon(context, pack, packageName)
             } == true

@@ -33,6 +33,7 @@ import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultRow
 import com.tk.quicksearch.search.appShortcuts.AppShortcutRow
 import com.tk.quicksearch.search.appShortcuts.AppShortcutSearchPolicy
+import com.tk.quicksearch.search.apps.AppGridView
 import com.tk.quicksearch.search.apps.AppItemDropdownMenu
 import com.tk.quicksearch.search.apps.AppSearchInitials
 import com.tk.quicksearch.search.apps.AppSearchPolicy
@@ -87,6 +88,14 @@ internal sealed interface TopMatchItem {
 
     data class App(
         val app: AppInfo,
+        override val priority: Int,
+        override val sectionOrder: Int,
+        override val secondaryScore: Long,
+        override val index: Int,
+    ) : TopMatchItem
+
+    data class AppGrid(
+        val apps: List<AppInfo>,
         override val priority: Int,
         override val sectionOrder: Int,
         override val secondaryScore: Long,
@@ -234,6 +243,28 @@ private fun buildTopMatches(
                 index = index,
             )
     }
+    if (isTopMatchesSectionEnabled(SearchSection.APPS)) {
+        renderingState.displayApps.firstOrNull()?.let { topApp ->
+            matches +=
+                TopMatchItem.AppGrid(
+                    apps = renderingState.displayApps,
+                    priority =
+                        appTopMatchPriority(
+                            app = topApp,
+                            nickname = params.appsParams?.getAppNickname?.invoke(topApp.packageName),
+                            query = queryContext,
+                        ),
+                    sectionOrder = order(SearchSection.APPS),
+                    secondaryScore =
+                        topMatchSecondaryScore(
+                            secondaryRankingSignal,
+                            recencyScore = topApp.lastUsedTime,
+                            openCount = topApp.launchCount.toLong(),
+                        ),
+                    index = 0,
+                )
+        }
+    }
     if (isTopMatchesSectionEnabled(SearchSection.APP_SHORTCUTS)) {
         context.appShortcutsList.forEachIndexed { index, shortcut ->
             val id = shortcutKey(shortcut)
@@ -373,6 +404,7 @@ internal fun appTopMatchPriority(
 ): Int =
     AppSearchPolicy.matchPriority(
         appName = app.appName,
+        searchAliases = app.searchAliases,
         nickname = nickname,
         query = query,
         initials = AppSearchInitials.initialsFor(app),
@@ -500,6 +532,14 @@ internal fun TopMatchesSection(
 
         displayedMatches.forEach { item ->
             val isTopPredicted = showTopResultIndicator && item == highlightedMatch
+            if (item is TopMatchItem.AppGrid) {
+                TopMatchAppGrid(
+                    apps = item.apps,
+                    params = params.appsParams,
+                    isPredicted = isTopPredicted,
+                )
+                return@forEach
+            }
             if (item is TopMatchItem.Other) {
                 when (item.itemId) {
                     OtherSearchItemId.SCREEN_TIME ->
@@ -560,6 +600,11 @@ internal fun openTopMatch(
 ): Boolean? {
     when (item) {
         is TopMatchItem.App -> params.appsParams?.onAppClick?.invoke(item.app) ?: return null
+        is TopMatchItem.AppGrid -> {
+            val app = item.apps.firstOrNull() ?: return null
+            val onAppClick = params.appsParams?.onAppClick ?: return null
+            onAppClick(app)
+        }
         is TopMatchItem.AppShortcut ->
             params.appShortcutsParams?.onShortcutClick?.invoke(item.shortcut) ?: return null
         is TopMatchItem.Contact -> {
@@ -601,6 +646,8 @@ private fun TopMatchRow(
             params = params.appsParams,
             isPredicted = isPredicted,
         )
+
+        is TopMatchItem.AppGrid -> Unit
 
         is TopMatchItem.AppShortcut -> params.appShortcutsParams?.let { appShortcutsParams ->
             val id = shortcutKey(item.shortcut)
@@ -725,6 +772,59 @@ private fun TopMatchRow(
 
         is TopMatchItem.Other -> Unit
     }
+}
+
+@Composable
+private fun TopMatchAppGrid(
+    apps: List<AppInfo>,
+    params: AppsSectionParams?,
+    isPredicted: Boolean,
+) {
+    if (params == null || apps.isEmpty()) return
+    AppGridView(
+        apps = apps,
+        allApps = apps,
+        pinnedAndRecentApps = emptyList(),
+        pinnedApps = emptyList(),
+        newOrUpdatedApps = emptyList(),
+        mostUsedApps = emptyList(),
+        appShortcuts = params.appShortcuts,
+        isSearching = true,
+        hasUsagePermission = params.hasUsagePermission,
+        selectedSuggestionTab = params.selectedSuggestionTab,
+        enabledSuggestionTabs = params.enabledSuggestionTabs,
+        onSuggestionTabSelected = params.onSuggestionTabSelected,
+        hasAppResults = true,
+        showAllAppsButton = false,
+        onAppClick = params.onAppClick,
+        onAppInfoClick = params.onAppInfoClick,
+        onUninstallClick = params.onUninstallClick,
+        onHideApp = params.onHideApp,
+        onPinApp = params.onPinApp,
+        onUnpinApp = params.onUnpinApp,
+        onReorderPinnedApps = params.onReorderPinnedApps,
+        onNicknameClick = params.onNicknameClick,
+        onTriggerClick = params.onTriggerClick,
+        onOpenInSplitScreen = params.onOpenInSplitScreen,
+        getAppNickname = params.getAppNickname,
+        getAppTrigger = params.getAppTrigger,
+        pinnedPackageNames = params.pinnedPackageNames,
+        disabledShortcutIds = params.disabledAppShortcutIds,
+        rowCount = params.rowCount,
+        phoneColumnOverride = params.phoneColumnOverride,
+        appIconSizeStep = params.appIconSizeStep,
+        iconPackPackage = params.iconPackPackage,
+        appIconShape = params.appIconShape,
+        themedIconsEnabled = params.themedIconsEnabled,
+        showAppLabels = params.showAppLabels,
+        oneHandedMode = params.oneHandedMode,
+        isInitializing = false,
+        startupPhase = params.startupPhase,
+        isOverlayPresentation = params.isOverlayPresentation,
+        predictedTarget = if (isPredicted) params.predictedTarget else null,
+        suppressTopResultIndicator = !isPredicted,
+        showWallpaperBackground = params.showWallpaperBackground,
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)

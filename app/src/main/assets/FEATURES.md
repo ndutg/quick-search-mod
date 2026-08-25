@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.1.1 (Updated August 23 2026)
+**Version**: 4.1.1 (Updated August 24 2026)
 
 ### Search
 
@@ -139,7 +139,7 @@ Long-press on most results to open a context menu with quick actions.
 ### Search Results Settings
 
 - **Search Sections Management** - Enable/disable individual result sections (apps, app shortcuts, contacts, files, device settings, history, etc.), and assign alias shortcuts to each section. Tap on the search type options to navigate to their respective screen, which offers additional options.
-- **Top Matches** - Turn on Top Matches to show the best non-app results for your query below the app grid. You can include or exclude categories and reorder them to control priority. Matching app results always appear first in a single row.
+- **Top Matches** - Turn on Top Matches to show the best non-app results for your query below the app grid. You can include or exclude categories and reorder them to control priority.
 - **App Suggestions** - You can choose to disable app suggestions if you want a cleaner home screen. Toggle the suggestion tabs (New & Updated, Pinned, Most Used) to show only the ones you want.
 - **Fuzzy Search** - Turn fuzzy search on or off to find results even when your search contains a typo.
 - **Web Search Suggestions** - Turn web suggestions on or off and control how many suggestions (1–5) appear under the search bar.

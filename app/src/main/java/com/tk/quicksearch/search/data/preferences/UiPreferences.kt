@@ -1245,7 +1245,7 @@ class UiPreferences(
         const val DEFAULT_TOP_MATCHES_LIMIT = 3
         val TOP_MATCHES_LIMIT_OPTIONS = listOf(1, 3, 5, 7, 10)
         val DEFAULT_TOP_MATCHES_SECTION_ORDER: List<SearchSection>
-            get() = SearchSectionRegistry.orderedSections.filterNot { it == SearchSection.APPS }
+            get() = SearchSectionRegistry.orderedSections
         const val TOP_MATCHES_SECTION_ORDER_SEPARATOR = ","
         const val KEY_LAST_SEEN_VERSION = "last_seen_version"
         const val KEY_LAST_SEEN_VERSION_CODE = "last_seen_version_code"

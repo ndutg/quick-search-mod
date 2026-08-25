@@ -86,7 +86,13 @@ class AppPreferences(
             ?.split('|', limit = 2)
             ?.takeIf { it.size == 2 && it.all(String::isNotBlank) }
             ?.let { (iconPackPackage, drawableName) ->
-                AppIconOverride(iconPackPackage = iconPackPackage, drawableName = drawableName)
+                if (iconPackPackage == SYSTEM_DEFAULT_ICON_OVERRIDE_VALUE &&
+                    drawableName == SYSTEM_DEFAULT_ICON_OVERRIDE_VALUE
+                ) {
+                    AppIconOverride(useSystemDefault = true)
+                } else {
+                    AppIconOverride(iconPackPackage = iconPackPackage, drawableName = drawableName)
+                }
             }
 
     fun setAppIconOverride(
@@ -98,6 +104,15 @@ class AppPreferences(
             .putString(
                 "${BasePreferences.KEY_APP_ICON_OVERRIDE_PREFIX}$packageName",
                 "$iconPackPackage|$drawableName",
+            )
+            .apply()
+    }
+
+    fun setAppIconToSystemDefault(packageName: String) {
+        prefs.edit()
+            .putString(
+                "${BasePreferences.KEY_APP_ICON_OVERRIDE_PREFIX}$packageName",
+                "$SYSTEM_DEFAULT_ICON_OVERRIDE_VALUE|$SYSTEM_DEFAULT_ICON_OVERRIDE_VALUE",
             )
             .apply()
     }
@@ -186,6 +201,7 @@ class AppPreferences(
     companion object {
         private const val LAUNCH_COUNTS_PREFS_NAME = "app_launch_counts"
         private const val MAX_RECENT_APP_LAUNCHES = 10
+        private const val SYSTEM_DEFAULT_ICON_OVERRIDE_VALUE = "__system_default__"
     }
 
     // ============================================================================
@@ -195,6 +211,11 @@ class AppPreferences(
 }
 
 data class AppIconOverride(
-    val iconPackPackage: String,
-    val drawableName: String,
-)
+    val iconPackPackage: String? = null,
+    val drawableName: String? = null,
+    val useSystemDefault: Boolean = false,
+) {
+    init {
+        require(useSystemDefault || (!iconPackPackage.isNullOrBlank() && !drawableName.isNullOrBlank()))
+    }
+}
