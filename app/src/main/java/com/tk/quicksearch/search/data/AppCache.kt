@@ -141,9 +141,15 @@ class AppCache(
                 val appCount = input.readInt()
                 if (appCount <= 0) return null
 
-                List(appCount) {
+                val apps = List(appCount) {
                     input.readAppInfo(version)
                 }
+                // A catalog written before aliases were available can still render immediately,
+                // but must be reconciled in the background before it is used for app search.
+                if (version < CACHE_FILE_VERSION) {
+                    prefs.edit().putBoolean(KEY_CATALOG_INVALIDATED, true).apply()
+                }
+                apps
             }
         }.onFailure { exception ->
             Log.e(TAG, "Failed to load cached apps", exception)
@@ -177,7 +183,7 @@ class AppCache(
         private const val KEY_CATALOG_INVALIDATED = "catalog_invalidated"
         private const val KEY_REMOVED_APP_KEYS = "removed_app_keys"
         private const val CACHE_FILE_NAME = "app_cache_v1.bin"
-        private const val CACHE_FILE_VERSION = 4
+        private const val CACHE_FILE_VERSION = 5
 
         // JSON field names
         private const val FIELD_APP_NAME = "appName"
