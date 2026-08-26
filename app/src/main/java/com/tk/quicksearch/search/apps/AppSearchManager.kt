@@ -26,6 +26,11 @@ class AppSearchManager(
     private val isLowRamDevice: Boolean = false,
     initialFuzzyConfig: FuzzySearchConfig = FuzzySearchConfig.DEFAULT_APP_CONFIG,
 ) {
+    private data class AppSearchLabels(
+        val displayName: String,
+        val aliases: List<String>,
+    )
+
     private val currentPackageName = repository.getCurrentPackageName()
     private val defaultLauncherPackageName by lazy { repository.getDefaultLauncherPackageName() }
 
@@ -86,8 +91,24 @@ class AppSearchManager(
                 val currentUsageMap = cachedApps.associate { it.launchCountKey() to it.launchCount }
                 val newUsageMap = apps.associate { it.launchCountKey() to it.launchCount }
                 val usageStatsChanged = currentUsageMap != newUsageMap
+                val currentSearchLabels =
+                    cachedApps.associate { app ->
+                        app.launchCountKey() to AppSearchLabels(app.appName, app.searchAliases)
+                    }
+                val newSearchLabels =
+                    apps.associate { app ->
+                        app.launchCountKey() to AppSearchLabels(app.appName, app.searchAliases)
+                    }
+                val searchLabelsChanged = currentSearchLabels != newSearchLabels
 
-                if (showToast || cachedApps.isEmpty() || appSetChanged || usageStatsChanged || forceUiUpdate) {
+                if (
+                    showToast ||
+                        cachedApps.isEmpty() ||
+                        appSetChanged ||
+                        usageStatsChanged ||
+                        searchLabelsChanged ||
+                        forceUiUpdate
+                ) {
                     cachedApps = apps
                     noMatchPrefix = null
                     onAppsUpdated()
