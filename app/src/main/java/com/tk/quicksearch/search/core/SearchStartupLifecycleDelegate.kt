@@ -8,6 +8,7 @@ import com.tk.quicksearch.search.data.StartupPreferencesFacade
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.apps.prefetchAppIcons
 import com.tk.quicksearch.searchEngines.getAppPackageCandidates
 import com.tk.quicksearch.shared.permissions.PermissionHelper
@@ -369,6 +370,8 @@ internal class SearchStartupLifecycleDelegate(
 
     fun launchDeferredInitialization() {
         scope.launch(startupDispatcher) {
+            val startupStartedAtElapsedMs = SystemClock.elapsedRealtime()
+            AppSearchPerformanceLogger.log { "startupDeferredInitializationStarted" }
             startPackageChangeMonitoring()
 
             withContext(Dispatchers.Main.immediate) {
@@ -417,6 +420,15 @@ internal class SearchStartupLifecycleDelegate(
             // its final startup order instead of visibly rearranging.
             val reconcileAppsInBackground =
                 shouldReconcileAppsAtStartup() && appSearchManager.cachedApps.isNotEmpty()
+            val catalogReconciliationStartedAtElapsedMs = SystemClock.elapsedRealtime()
+            AppSearchPerformanceLogger.log {
+                "startupCatalogReconciliation decision=" +
+                    when {
+                        reconcileAppsInBackground -> "refreshCachedCatalog"
+                        appSearchManager.cachedApps.isEmpty() -> "loadEmptyCatalog"
+                        else -> "reuseFreshCatalog"
+                    } + " cachedApps=${appSearchManager.cachedApps.size}"
+            }
             if (reconcileAppsInBackground) {
                 packageRefreshJob?.cancel()
                 packageRefreshJob = launch(startupDispatcher) { loadApps() }
@@ -424,8 +436,23 @@ internal class SearchStartupLifecycleDelegate(
             } else if (appSearchManager.cachedApps.isEmpty()) {
                 loadApps()
             }
+            AppSearchPerformanceLogger.logTiming(
+                event = "startupCatalogReady",
+                elapsedMs = SystemClock.elapsedRealtime() - catalogReconciliationStartedAtElapsedMs,
+                slowThresholdMs = 500L,
+            ) {
+                "apps=${appSearchManager.cachedApps.size} reconciled=$reconcileAppsInBackground"
+            }
+            val suggestionsStartedAtElapsedMs = SystemClock.elapsedRealtime()
             refreshAppSuggestions()
             publishStartupAppSuggestions()
+            AppSearchPerformanceLogger.logTiming(
+                event = "startupSuggestionsPublished",
+                elapsedMs = SystemClock.elapsedRealtime() - suggestionsStartedAtElapsedMs,
+                slowThresholdMs = 100L,
+            ) {
+                "recents=${resultsStateProvider().recentApps.size} pinned=${resultsStateProvider().pinnedApps.size}"
+            }
 
             val packageNames = appSearchManager.cachedApps.map { it.packageName }.toSet()
             val messagingInfo = getMessagingAppInfo(packageNames)
@@ -652,6 +679,13 @@ internal class SearchStartupLifecycleDelegate(
             // derived state here so the visible app grid does not change after first display.
             withContext(Dispatchers.Default) { refreshPostStartupState() }
             StartupTrace.mark("QS.Startup.PhasedInitializationComplete")
+            AppSearchPerformanceLogger.logTiming(
+                event = "startupDeferredInitializationComplete",
+                elapsedMs = SystemClock.elapsedRealtime() - startupStartedAtElapsedMs,
+                slowThresholdMs = 1_500L,
+            ) {
+                "apps=${appSearchManager.cachedApps.size}"
+            }
             saveStartupSurfaceSnapshotAsync(true, false)
         }
     }
@@ -691,6 +725,7 @@ internal class SearchStartupLifecycleDelegate(
     }
 
     suspend fun loadCacheAndMinimalPrefs() {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         val startupConfig = userPreferences.loadStartupConfig()
         setPrefCache(
             SearchPreferenceCache.from(
@@ -783,9 +818,17 @@ internal class SearchStartupLifecycleDelegate(
             }
             searchableAppsWarmupJob.join()
         }
+        AppSearchPerformanceLogger.logTiming(
+            event = "startupCacheAndMinimalPrefsReady",
+            elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+            slowThresholdMs = 250L,
+        ) {
+            "cachedApps=${cachedAppsList?.size ?: 0} usagePermission=$hasUsagePermission"
+        }
     }
 
     suspend fun loadRemainingStartupPreferences(applyStartupPreferences: (StartupPreferencesFacade.StartupPreferences) -> Unit) {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         val startupPrefs =
             getStartupConfig()?.startupPreferences
                 ?: userPreferences.getStartupPreferences()
@@ -799,6 +842,11 @@ internal class SearchStartupLifecycleDelegate(
                 ?: repository.cacheLastUpdatedMillis()
         withContext(Dispatchers.Default) { refreshDerivedState(lastUpdated, false) }
         withContext(Dispatchers.Main) { updateConfigState { it.copy(isInitializing = false) } }
+        AppSearchPerformanceLogger.logTiming(
+            event = "startupRemainingPreferencesReady",
+            elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+            slowThresholdMs = 250L,
+        )
     }
 
     fun applyStartupPreferences(prefs: StartupPreferencesFacade.StartupPreferences) {
