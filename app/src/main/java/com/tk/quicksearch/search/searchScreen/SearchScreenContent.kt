@@ -673,7 +673,9 @@ internal fun SearchScreenContent(
             pinnedItemOrder = state.pinnedNonAppItemOrder,
             screenTimeState = state.screenTimeState,
         )
-    val shouldShowTopResultIndicator = state.topResultIndicatorEnabled || isPhysicalKeyboardConnected
+    val shouldShowTopResultIndicator =
+            state.openTopResultUsingKeyboardEnabled &&
+                (state.topResultIndicatorEnabled || isPhysicalKeyboardConnected)
     val predictedTargetForIndicator =
             if (shouldShowTopResultIndicator &&
                     !isNonSubmittableSuggestionsTab &&
@@ -1094,6 +1096,14 @@ internal fun SearchScreenContent(
                     }
                     if (isOtherSearchResultVisible && !state.topMatchesEnabled) {
                         return@PersistentSearchBar true
+                    }
+
+                    if (!state.openTopResultUsingKeyboardEnabled) {
+                        val query = state.query.trim()
+                        enabledTargets.firstOrNull()?.let { target ->
+                            if (query.isNotBlank()) onSearchTargetClick(query, target)
+                        }
+                        return@PersistentSearchBar false
                     }
 
                     // Tool prompt cards take priority: Done triggers the card action.

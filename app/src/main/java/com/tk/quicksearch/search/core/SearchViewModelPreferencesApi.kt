@@ -204,6 +204,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setTopResultIndicatorEnabled(enabled: Boolean) =
         preferencesApiDelegate.setTopResultIndicatorEnabled(enabled)
 
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setOpenTopResultUsingKeyboardEnabled(enabled)
+
     fun setWallpaperAccentEnabled(enabled: Boolean) =
         preferencesApiDelegate.setWallpaperAccentEnabled(enabled)
 
@@ -471,6 +474,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setTopResultIndicatorEnabled(enabled: Boolean) =
         preferencesDelegate.setTopResultIndicatorEnabled(enabled)
+
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) =
+        preferencesDelegate.setOpenTopResultUsingKeyboardEnabled(enabled)
 
     fun setTopMatchesEnabled(enabled: Boolean) = preferencesDelegate.setTopMatchesEnabled(enabled)
 

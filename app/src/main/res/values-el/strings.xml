@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">Εμφάνιση των καλύτερων αντιστοιχισμένων αποτελεσμάτων όλων των τύπων σε μία λίστα.</string>
     <string name="top_result_indicator_toggle_desc">Επισήμανση του κορυφαίου αποτελέσματος που μπορεί να ανοίξει με το πληκτρολόγιο.</string>
     <string name="top_result_indicator_toggle_title">Δείκτης κορυφαίου αποτελέσματος</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Άνοιγμα κορυφαίου αποτελέσματος με πληκτρολόγιο</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Το πλήκτρο Enter/Τέλος ανοίγει το κορυφαίο αποτέλεσμα</string>
     <string name="include_non_launchable_apps_toggle_title">Μη εκκινήσιμες εφαρμογές</string>
     <string name="include_non_launchable_apps_toggle_desc">Συμπερίληψη εφαρμογών που δεν έχουν δραστηριότητα εκκίνησης στα αποτελέσματα αναζήτησης.</string>
     <string name="web_search_suggestions_title">Προτάσεις ιστού</string>

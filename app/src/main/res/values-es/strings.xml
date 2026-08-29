@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">Muestra los resultados con mejor coincidencia de todos los tipos en una sola lista.</string>
     <string name="top_result_indicator_toggle_desc">Destaca el primer resultado que se puede abrir directamente con el teclado.</string>
     <string name="top_result_indicator_toggle_title">Indicador de mejor resultado</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Abrir mejor resultado con el teclado</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">La tecla Intro/Listo abrirá el mejor resultado</string>
     <string name="include_non_launchable_apps_toggle_title">Aplicaciones no ejecutables</string>
     <string name="include_non_launchable_apps_toggle_desc">Incluir aplicaciones que no tienen una actividad de inicio en los resultados de búsqueda.</string>
     <string name="web_search_suggestions_title">Sugerencias web</string>

@@ -177,8 +177,22 @@ class UiPreferences(
     fun isTopResultIndicatorEnabled(): Boolean =
             getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, false)
 
+    fun isOpenTopResultUsingKeyboardEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED, true)
+
+    fun isTopResultIndicatorManuallyDisabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_MANUALLY_DISABLED, false)
+
     fun setTopResultIndicatorEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, enabled)
+    }
+
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED, enabled)
+    }
+
+    fun setTopResultIndicatorManuallyDisabled(disabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_MANUALLY_DISABLED, disabled)
     }
 
     fun isTopMatchesEnabled(): Boolean =
@@ -1200,6 +1214,8 @@ class UiPreferences(
         const val KEY_DEFAULT_LAUNCHER_AUTO_ENABLED_APP_SUGGESTION_TABS =
             "default_launcher_auto_enabled_app_suggestion_tabs"
         const val KEY_TOP_RESULT_INDICATOR_ENABLED = "top_result_indicator_enabled"
+        const val KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED = "open_top_result_using_keyboard_enabled"
+        const val KEY_TOP_RESULT_INDICATOR_MANUALLY_DISABLED = "top_result_indicator_manually_disabled"
         const val KEY_TOP_MATCHES_ENABLED = "top_matches_enabled"
         const val KEY_TOP_MATCHES_LIMIT = "top_matches_limit"
         const val KEY_TOP_MATCHES_SECTION_ORDER = "top_matches_section_order"

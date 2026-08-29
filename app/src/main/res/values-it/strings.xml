@@ -277,6 +277,8 @@
     <string name="top_matches_toggle_desc">Mostra i risultati più pertinenti di tutti i tipi in un unico elenco.</string>
     <string name="top_result_indicator_toggle_desc">Evidenzia il primo risultato che può essere aperto direttamente con la tastiera.</string>
     <string name="top_result_indicator_toggle_title">Indicatore miglior risultato</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Apri il miglior risultato con la tastiera</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Il tasto Invio/Fine della tastiera aprirà il miglior risultato</string>
     <string name="include_non_launchable_apps_toggle_title">App non avviabili</string>
     <string name="include_non_launchable_apps_toggle_desc">Includi le app che non hanno un\'attività di avvio nei risultati di ricerca.</string>
     <string name="web_search_suggestions_title">Suggerimenti web</string>

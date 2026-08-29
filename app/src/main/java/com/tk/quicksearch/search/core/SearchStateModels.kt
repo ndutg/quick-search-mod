@@ -254,6 +254,7 @@ data class SearchUiConfigState(
         val searchHintsEnabled: Boolean = true,
         val settingsIconEnabled: Boolean = true,
         val topResultIndicatorEnabled: Boolean = false,
+        val openTopResultUsingKeyboardEnabled: Boolean = true,
         val openKeyboardOnLaunch: Boolean = true,
         val clearQueryOnLaunch: Boolean = true,
         val autoCloseOverlay: Boolean = true,

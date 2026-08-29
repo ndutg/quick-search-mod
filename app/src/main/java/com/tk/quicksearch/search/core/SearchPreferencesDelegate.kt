@@ -29,6 +29,7 @@ internal interface SearchPreferencesStateAccess {
     var unifiedPinnedItemsEnabled: Boolean
     var settingsIconEnabled: Boolean
     var topResultIndicatorEnabled: Boolean
+    var openTopResultUsingKeyboardEnabled: Boolean
     var wallpaperAccentEnabled: Boolean
     var openKeyboardOnLaunch: Boolean
     var overlayModeEnabled: Boolean
@@ -804,15 +805,38 @@ internal class SearchPreferencesDelegate(
         if (!enabled && userPreferences.isPhysicalKeyboardConnected()) {
             return
         }
-        updateBooleanPreference(
-            value = enabled,
-            preferenceSetter = userPreferences::setTopResultIndicatorEnabled,
-            stateUpdater = {
-                stateAccess.topResultIndicatorEnabled = it
-                updateUiState { state -> state.copy(topResultIndicatorEnabled = it) }
-                stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
-            },
-        )
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.topResultIndicatorEnabled == enabled) return@launch
+            userPreferences.setTopResultIndicatorEnabled(enabled)
+            userPreferences.setTopResultIndicatorManuallyDisabled(!enabled)
+            stateAccess.topResultIndicatorEnabled = enabled
+            updateUiState { state -> state.copy(topResultIndicatorEnabled = enabled) }
+            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+        }
+    }
+
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.openTopResultUsingKeyboardEnabled == enabled) return@launch
+
+            userPreferences.setOpenTopResultUsingKeyboardEnabled(enabled)
+            val restoreTopResultIndicator =
+                enabled && !userPreferences.isTopResultIndicatorManuallyDisabled()
+            if (!enabled || restoreTopResultIndicator) {
+                userPreferences.setTopResultIndicatorEnabled(enabled)
+            }
+
+            stateAccess.openTopResultUsingKeyboardEnabled = enabled
+            stateAccess.topResultIndicatorEnabled = if (!enabled) false else restoreTopResultIndicator || stateAccess.topResultIndicatorEnabled
+            updateUiState { state ->
+                state.copy(
+                    openTopResultUsingKeyboardEnabled = enabled,
+                    topResultIndicatorEnabled =
+                        if (!enabled) false else restoreTopResultIndicator || state.topResultIndicatorEnabled,
+                )
+            }
+            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+        }
     }
 
     fun setWallpaperAccentEnabled(enabled: Boolean) {

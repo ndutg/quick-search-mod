@@ -174,6 +174,7 @@ internal object SearchStateExtractor {
             searchHintsEnabled = s.searchHintsEnabled,
             settingsIconEnabled = s.settingsIconEnabled,
             topResultIndicatorEnabled = s.topResultIndicatorEnabled,
+            openTopResultUsingKeyboardEnabled = s.openTopResultUsingKeyboardEnabled,
             wallpaperAccentEnabled = s.wallpaperAccentEnabled,
             openKeyboardOnLaunch = s.openKeyboardOnLaunch,
             clearQueryOnLaunch = s.clearQueryOnLaunch,

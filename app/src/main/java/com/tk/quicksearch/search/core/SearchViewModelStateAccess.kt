@@ -84,6 +84,12 @@ internal class SearchViewModelPreferencesStateAccess(
             state.topResultIndicatorEnabled = value
         }
 
+    override var openTopResultUsingKeyboardEnabled: Boolean
+        get() = state.openTopResultUsingKeyboardEnabled
+        set(value) {
+            state.openTopResultUsingKeyboardEnabled = value
+        }
+
     override var wallpaperAccentEnabled: Boolean
         get() = state.wallpaperAccentEnabled
         set(value) {

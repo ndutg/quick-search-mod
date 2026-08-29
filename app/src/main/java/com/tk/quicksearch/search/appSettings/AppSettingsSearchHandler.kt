@@ -88,7 +88,8 @@ class AppSettingsSearchHandler(
                     backgroundSource == BackgroundSource.THEME
             val shouldHideTopResultIndicator =
                 setting.toggleKey == AppSettingsToggleKey.TOP_RESULT_INDICATOR &&
-                    userPreferences.isPhysicalKeyboardConnected()
+                    (userPreferences.isPhysicalKeyboardConnected() ||
+                        !userPreferences.isOpenTopResultUsingKeyboardEnabled())
             val shouldHideFuzzySearch =
                 setting.toggleKey == AppSettingsToggleKey.FUZZY_SEARCH &&
                     isLowRamDevice

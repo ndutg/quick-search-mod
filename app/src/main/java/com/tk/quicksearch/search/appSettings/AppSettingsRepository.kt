@@ -478,6 +478,13 @@ class AppSettingsRepository(
                 keywords = listOf("ranking", "recency", "most opened", "sort", "order"),
             )
             addToggle(
+                id = "app_toggle_open_top_result_using_keyboard",
+                titleRes = R.string.open_top_result_using_keyboard_toggle_title,
+                descriptionRes = R.string.open_top_result_using_keyboard_toggle_desc,
+                toggleKey = AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD,
+                keywords = listOf("keyboard", "enter", "done", "top result"),
+            )
+            addToggle(
                 id = "app_toggle_top_result_indicator",
                 titleRes = R.string.top_result_indicator_toggle_title,
                 descriptionRes = R.string.top_result_indicator_toggle_desc,

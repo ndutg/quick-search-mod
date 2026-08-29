@@ -110,6 +110,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.TOP_MATCHES -> setTopMatchesEnabled(command.enabled)
                 AppSettingsToggleKey.TOP_RESULT_INDICATOR ->
                     setTopResultIndicatorEnabled(command.enabled)
+                AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD ->
+                    setOpenTopResultUsingKeyboardEnabled(command.enabled)
                 AppSettingsToggleKey.OPEN_KEYBOARD -> setOpenKeyboardOnLaunchEnabled(command.enabled)
                 AppSettingsToggleKey.CLEAR_QUERY -> setClearQueryOnLaunchEnabled(command.enabled)
                 AppSettingsToggleKey.AUTO_CLOSE_OVERLAY ->
@@ -208,6 +210,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.FUZZY_SEARCH -> fuzzySearchEnabled
         AppSettingsToggleKey.TOP_MATCHES -> topMatchesEnabled
         AppSettingsToggleKey.TOP_RESULT_INDICATOR -> topResultIndicatorEnabled
+        AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD -> openTopResultUsingKeyboardEnabled
         AppSettingsToggleKey.OPEN_KEYBOARD -> openKeyboardOnLaunch
         AppSettingsToggleKey.CLEAR_QUERY -> clearQueryOnLaunch
         AppSettingsToggleKey.AUTO_CLOSE_OVERLAY -> autoCloseOverlay

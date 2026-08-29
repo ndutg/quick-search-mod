@@ -1073,6 +1073,18 @@ class UserAppPreferences(
     fun setTopResultIndicatorEnabled(enabled: Boolean) =
             uiPreferences.setTopResultIndicatorEnabled(enabled)
 
+    fun isOpenTopResultUsingKeyboardEnabled(): Boolean =
+            uiPreferences.isOpenTopResultUsingKeyboardEnabled()
+
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) =
+            uiPreferences.setOpenTopResultUsingKeyboardEnabled(enabled)
+
+    fun isTopResultIndicatorManuallyDisabled(): Boolean =
+            uiPreferences.isTopResultIndicatorManuallyDisabled()
+
+    fun setTopResultIndicatorManuallyDisabled(disabled: Boolean) =
+            uiPreferences.setTopResultIndicatorManuallyDisabled(disabled)
+
     fun isPhysicalKeyboardConnected(): Boolean = context.isPhysicalKeyboardConnected()
 
     fun isTopMatchesEnabled(): Boolean = uiPreferences.isTopMatchesEnabled()

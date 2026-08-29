@@ -279,6 +279,8 @@
     <string name="top_matches_toggle_desc">إظهار أفضل النتائج المطابقة عبر جميع الأنواع في قائمة واحدة.</string>
     <string name="top_result_indicator_toggle_desc">تمييز أفضل نتيجة يمكن فتحها باستخدام لوحة المفاتيح.</string>
     <string name="top_result_indicator_toggle_title">مؤشر أفضل نتيجة</string>
+    <string name="open_top_result_using_keyboard_toggle_title">فتح أفضل نتيجة باستخدام لوحة المفاتيح</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">سيؤدي مفتاح الإدخال/تم في لوحة المفاتيح إلى فتح أفضل نتيجة</string>
     <string name="include_non_launchable_apps_toggle_title">تطبيقات غير قابلة للتشغيل</string>
     <string name="include_non_launchable_apps_toggle_desc">تضمين التطبيقات التي لا تحتوي على نشاط تشغيل في نتائج البحث.</string>
     <string name="web_search_suggestions_title">اقتراحات الويب</string>

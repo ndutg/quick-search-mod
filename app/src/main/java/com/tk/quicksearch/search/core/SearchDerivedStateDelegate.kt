@@ -361,6 +361,7 @@ internal class SearchDerivedStateDelegate(
                     oneHandedMode = config.oneHandedMode,
                     bottomSearchBarEnabled = config.bottomSearchBarEnabled,
                     topResultIndicatorEnabled = config.topResultIndicatorEnabled,
+                    openTopResultUsingKeyboardEnabled = config.openTopResultUsingKeyboardEnabled,
                     openKeyboardOnLaunch = config.openKeyboardOnLaunch,
                     fontScaleMultiplier = config.fontScaleMultiplier,
                     useSystemFont = config.useSystemFont,

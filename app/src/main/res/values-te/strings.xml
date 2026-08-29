@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">అన్ని రకాలలో అత్యుత్తమంగా సరిపోలిన ఫలితాలను ఒకే జాబితాలో చూపించు.</string>
     <string name="top_result_indicator_toggle_desc">కీబోర్డ్‌తో తెరవగల అగ్ర ఫలితాన్ని హైలైట్ చేయి.</string>
     <string name="top_result_indicator_toggle_title">అగ్ర ఫలిత సూచిక</string>
+    <string name="open_top_result_using_keyboard_toggle_title">కీబోర్డ్‌తో అగ్ర ఫలితాన్ని తెరవండి</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">కీబోర్డ్ Enter/Done కీ అగ్ర ఫలితాన్ని తెరుస్తుంది</string>
     <string name="include_non_launchable_apps_toggle_title">ప్రారంభించలేని యాప్‌లు</string>
     <string name="include_non_launchable_apps_toggle_desc">సెర్చ్ ఫలితాలలో లాంచ్ యాక్టివిటీ లేని యాప్‌లను చేర్చండి.</string>
     <string name="web_search_suggestions_title">వెబ్ సూచనలు</string>

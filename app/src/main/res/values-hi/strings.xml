@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">सभी प्रकारों के सबसे उपयुक्त परिणामों को एक ही सूची में दिखाएं।</string>
     <string name="top_result_indicator_toggle_desc">कीबोर्ड से खोले जा सकने वाले शीर्ष परिणाम को हाइलाइट करें।</string>
     <string name="top_result_indicator_toggle_title">टॉप परिणाम संकेतक</string>
+    <string name="open_top_result_using_keyboard_toggle_title">कीबोर्ड से शीर्ष परिणाम खोलें</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">कीबोर्ड की Enter/Done कुंजी शीर्ष परिणाम खोलेगी</string>
     <string name="include_non_launchable_apps_toggle_title">लॉन्च न होने वाले ऐप्स</string>
     <string name="include_non_launchable_apps_toggle_desc">खोज परिणामों में उन ऐप्स को शामिल करें जिनमें कोई लॉन्च गतिविधि नहीं है।</string>
     <string name="web_search_suggestions_title">वेब सुझाव</string>

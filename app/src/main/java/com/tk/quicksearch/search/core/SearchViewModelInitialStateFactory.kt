@@ -156,6 +156,8 @@ internal object SearchViewModelInitialStateFactory {
                 topResultIndicatorEnabled =
                     startupSnapshot?.topResultIndicatorEnabled
                         ?: startupPreferencesReader.isTopResultIndicatorEnabled(),
+                openTopResultUsingKeyboardEnabled =
+                    startupPreferencesReader.isOpenTopResultUsingKeyboardEnabled(),
                 openKeyboardOnLaunch = startupPreferencesReader.isOpenKeyboardOnLaunchEnabled(),
                 clearQueryOnLaunch = clearQueryOnLaunch,
                 autoCloseOverlay = startupPreferencesReader.isAutoCloseOverlayEnabled(),

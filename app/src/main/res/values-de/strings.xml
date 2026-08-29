@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">Die besten passenden Ergebnisse aller Typen in einer einzigen Liste anzeigen.</string>
     <string name="top_result_indicator_toggle_desc">Das beste Ergebnis hervorheben, das per Tastatur geöffnet werden kann.</string>
     <string name="top_result_indicator_toggle_title">Anzeige des Top-Ergebnisses</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Top-Ergebnis mit Tastatur öffnen</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Die Eingabe-/Fertig-Taste öffnet das Top-Ergebnis</string>
     <string name="include_non_launchable_apps_toggle_title">Nicht startbare Apps</string>
     <string name="include_non_launchable_apps_toggle_desc">Apps ohne Start-Aktivität in den Suchergebnissen anzeigen.</string>
     <string name="web_search_suggestions_title">Web-Vorschläge</string>

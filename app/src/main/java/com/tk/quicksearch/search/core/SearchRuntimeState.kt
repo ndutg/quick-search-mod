@@ -27,6 +27,7 @@ internal data class SearchRuntimeState(
     var searchHintsEnabled: Boolean = true,
     var settingsIconEnabled: Boolean = true,
     var topResultIndicatorEnabled: Boolean = false,
+    var openTopResultUsingKeyboardEnabled: Boolean = true,
     var wallpaperAccentEnabled: Boolean = true,
     var openKeyboardOnLaunch: Boolean = true,
     var overlayModeEnabled: Boolean = false,
