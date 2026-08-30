@@ -83,6 +83,7 @@ fun AppearanceSettingsSection(
         appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
         onSetAppIconSizeStep: (Int) -> Unit = {},
         onSelectIconPack: (String?) -> Unit,
+        onResetAllIcons: () -> Unit,
         onSetMaskUnsupportedIconPackIcons: (Boolean) -> Unit,
         onRefreshIconPacks: () -> Unit,
         onSearchIconPacks: () -> Unit,
@@ -298,6 +299,7 @@ fun AppearanceSettingsSection(
                 },
                 onMaskUnsupportedIconsChange = onSetMaskUnsupportedIconPackIcons,
                 onDownloadIconPacks = onSearchIconPacks,
+                onResetAllIcons = onResetAllIcons,
                 onDismiss = { showIconPackDialog = false },
         )
     }

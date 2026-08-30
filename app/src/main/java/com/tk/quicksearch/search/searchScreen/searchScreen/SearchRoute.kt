@@ -1060,6 +1060,7 @@ fun SearchRoute(
                 },
                 onMaskUnsupportedIconsChange = viewModel::setIconPackUnsupportedIconMaskEnabled,
                 onDownloadIconPacks = viewModel::searchIconPacks,
+                onResetAllIcons = viewModel::resetAllAppIconsToDefault,
                 onDismiss = { showIconPackDialog = false },
             )
         }

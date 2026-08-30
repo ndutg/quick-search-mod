@@ -671,6 +671,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">تطبيق قناع على الأيقونات غير المدعومة</string>
     <string name="settings_icon_pack_option_system">أيقونات النظام</string>
     <string name="settings_icon_pack_picker_title">اختر حزمة الأيقونات</string>
+    <string name="settings_icon_pack_reset_all_icons">إعادة تعيين جميع الأيقونات</string>
     <string name="settings_icon_pack_search_query">أيقونات مجانية</string>
     <string name="settings_icon_pack_title">حزمة الأيقونات</string>
     <string name="settings_icon_title">أيقونة الإعدادات</string>

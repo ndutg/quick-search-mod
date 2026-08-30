@@ -670,6 +670,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">Enmascarar iconos no compatibles</string>
     <string name="settings_icon_pack_option_system">Iconos del sistema</string>
     <string name="settings_icon_pack_picker_title">Elegir paquete de iconos</string>
+    <string name="settings_icon_pack_reset_all_icons">Restablecer todos los iconos</string>
     <string name="settings_icon_pack_search_query">Free icon packs</string>
     <string name="settings_icon_pack_title">Paquete de iconos</string>
     <string name="settings_icon_title">Icono de ajustes</string>

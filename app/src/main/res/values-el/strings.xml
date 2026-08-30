@@ -670,6 +670,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">Μάσκα μη υποστηριζόμενων εικονιδίων</string>
     <string name="settings_icon_pack_option_system">Εικονίδια συστήματος</string>
     <string name="settings_icon_pack_picker_title">Επιλογή πακέτου εικονιδίων</string>
+    <string name="settings_icon_pack_reset_all_icons">Επαναφορά όλων των εικονιδίων</string>
     <string name="settings_icon_pack_search_query">Free icon packs</string>
     <string name="settings_icon_pack_title">Πακέτο εικονιδίων</string>
     <string name="settings_icon_title">Εικονίδιο ρυθμίσεων</string>

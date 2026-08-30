@@ -668,7 +668,8 @@
 <string name="settings_icon_pack_description_no_packs">Uygulama simgeleri için bir simge paketi ayarlayın.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Desteklenmeyen simgeleri maskele</string>
 <string name="settings_icon_pack_option_system">Sistem simgeleri</string>
-<string name="settings_icon_pack_picker_title">Simge paketi seç</string>
+    <string name="settings_icon_pack_picker_title">Simge paketi seç</string>
+    <string name="settings_icon_pack_reset_all_icons">Tüm simgeleri sıfırla</string>
 <string name="settings_icon_pack_search_query">Ücretsiz simge paketleri</string>
 <string name="settings_icon_pack_title">Simge paketi</string>
 <string name="settings_icon_title">Ayarlar simgesi</string>

@@ -399,6 +399,9 @@ internal fun SettingsDetailLevel1Screen(
                                     SettingsCommand.IconPackPackageSetting(packageName),
                                 )
                             },
+                            onResetAllIcons = {
+                                callbacks.onApplySettingsCommand(SettingsCommand.ResetAllAppIcons)
+                            },
                             onSetMaskUnsupportedIconPackIcons =
                                     callbacks.onSetMaskUnsupportedIconPackIcons,
                             onRefreshIconPacks = {

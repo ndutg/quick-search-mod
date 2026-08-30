@@ -662,6 +662,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">为不支持的图标添加蒙版</string>
     <string name="settings_icon_pack_option_system">系统默认图标</string>
     <string name="settings_icon_pack_picker_title">选择图标包</string>
+    <string name="settings_icon_pack_reset_all_icons">重置所有图标</string>
     <string name="settings_icon_pack_search_query">免费图标包</string>
     <string name="settings_icon_pack_title">图标包</string>
     <string name="settings_icon_title">设置图标</string>

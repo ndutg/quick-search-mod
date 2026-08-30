@@ -686,6 +686,7 @@
 <string name="settings_icon_pack_mask_unsupported_icons">Маскировать неподдерживаемые значки</string>
 <string name="settings_icon_pack_option_system">Системные значки</string>
 <string name="settings_icon_pack_picker_title">Выберите пакет значков</string>
+    <string name="settings_icon_pack_reset_all_icons">Сбросить все значки</string>
 <string name="settings_icon_pack_search_query">Бесплатные пакеты значков</string>
 <string name="settings_icon_pack_title">Пакет значков</string>
 <string name="settings_icon_title">Значок настроек</string>

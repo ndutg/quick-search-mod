@@ -669,6 +669,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">Maschera icone non supportate</string>
     <string name="settings_icon_pack_option_system">Icone di sistema</string>
     <string name="settings_icon_pack_picker_title">Scegli pacchetto icone</string>
+    <string name="settings_icon_pack_reset_all_icons">Reimposta tutte le icone</string>
     <string name="settings_icon_pack_search_query">Icon pack gratuiti</string>
     <string name="settings_icon_pack_title">Pacchetto icone</string>
     <string name="settings_icon_title">Icona impostazioni</string>

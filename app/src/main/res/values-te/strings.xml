@@ -670,6 +670,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">మద్దతు లేని ఐకాన్‌లను మాస్క్ చేయి</string>
     <string name="settings_icon_pack_option_system">సిస్టమ్ ఐకాన్‌లు</string>
     <string name="settings_icon_pack_picker_title">ఐకాన్ ప్యాక్‌ను ఎంచుకోండి</string>
+    <string name="settings_icon_pack_reset_all_icons">అన్ని ఐకాన్‌లను రీసెట్ చేయండి</string>
     <string name="settings_icon_pack_search_query">ఉచిత ఐకాన్ ప్యాక్‌లు</string>
     <string name="settings_icon_pack_title">ఐకాన్ ప్యాక్</string>
     <string name="settings_icon_title">సెట్టింగ్‌ల ఐకాన్</string>

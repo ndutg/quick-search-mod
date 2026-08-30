@@ -670,6 +670,7 @@
 <string name="settings_icon_pack_mask_unsupported_icons">Masquer les icônes non prises en charge</string>
 <string name="settings_icon_pack_option_system">Icônes système</string>
 <string name="settings_icon_pack_picker_title">Choisir un pack d\'icônes</string>
+    <string name="settings_icon_pack_reset_all_icons">Réinitialiser toutes les icônes</string>
 <string name="settings_icon_pack_search_query">Packs d\'icônes gratuits</string>
 <string name="settings_icon_pack_title">Pack d\'icônes</string>
 <string name="settings_icon_title">Icône des paramètres</string>

@@ -670,6 +670,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">असमर्थित आइकनों को मास्क करें</string>
     <string name="settings_icon_pack_option_system">सिस्टम आइकन</string>
     <string name="settings_icon_pack_picker_title">आइकन पैक चुनें</string>
+    <string name="settings_icon_pack_reset_all_icons">सभी आइकन रीसेट करें</string>
     <string name="settings_icon_pack_search_query">मुफ्त आइकन पैक</string>
     <string name="settings_icon_pack_title">आइकन पैक</string>
     <string name="settings_icon_title">सेटिंग्स आइकन</string>

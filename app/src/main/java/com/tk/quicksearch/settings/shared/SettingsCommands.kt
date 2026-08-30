@@ -75,6 +75,8 @@ sealed interface SettingsCommand {
 
     data class IconPackPackageSetting(val packageName: String?) : SettingsCommand
 
+    data object ResetAllAppIcons : SettingsCommand
+
     data class AppIconShapeSetting(val shape: AppIconShape) : SettingsCommand
 
     data class LauncherAppIconSetting(val icon: LauncherAppIcon) : SettingsCommand
@@ -182,6 +184,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         is SettingsCommand.CustomAccentColorSetting -> setCustomAccentColorArgb(command.argb)
         is SettingsCommand.CustomImageUriSetting -> setCustomImageUri(command.uri)
         is SettingsCommand.IconPackPackageSetting -> setIconPackPackage(command.packageName)
+        is SettingsCommand.ResetAllAppIcons -> resetAllAppIconsToDefault()
         is SettingsCommand.AppIconShapeSetting -> setAppIconShape(command.shape)
         is SettingsCommand.LauncherAppIconSetting -> setLauncherAppIcon(command.icon)
     }
