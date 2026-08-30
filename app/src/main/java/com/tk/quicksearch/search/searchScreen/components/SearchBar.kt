@@ -179,6 +179,7 @@ internal fun PersistentSearchBar(
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
     onPressWhileKeyboardClosed: () -> Unit = {},
     focusRequester: FocusRequester? = null,
+    transparentBackground: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = focusRequester ?: remember { FocusRequester() }
@@ -187,7 +188,9 @@ internal fun PersistentSearchBar(
     val view = LocalView.current
 
     val searchBarBackground =
-        if (opaqueBackground) {
+        if (transparentBackground) {
+            Color.Transparent
+        } else if (opaqueBackground) {
             AppColors.DialogBackground
         } else {
             AppColors.getSearchBarBackground(showWallpaperBackground)

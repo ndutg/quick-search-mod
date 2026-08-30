@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
@@ -54,6 +53,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringArrayResource
@@ -81,9 +81,7 @@ import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.searchEngines.resolveDefaultBrowserPackage
 import com.tk.quicksearch.searchEngines.inline.SearchEngineIconsSection
 import com.tk.quicksearch.searchEngines.inline.AiFollowUpInputSection
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SearchContentArea
 import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
@@ -120,6 +118,9 @@ private const val ONE_HANDED_COMPACT_ENGINES_REFLOW_DURATION_MS = 280
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DURATION_MS = 180
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DELAY_MS = 40
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS = 130
+
+/** Assumed bottom search bar height until the bar reports its measured one. */
+private val INSET_ENGINE_STRIP_FALLBACK_OVERLAP = 56.dp
 
 private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, aliasTarget: String?, context: android.content.Context, onAliasTarget: (HomeSwipeGestureAction, String) -> Unit) {
     when (this) {
@@ -894,7 +895,11 @@ internal fun SearchScreenContent(
             }
 
     val searchEnginesModifier =
-            if (isOverlayPresentation || shouldRenderInlineNumberKeyboardOperators) {
+            if (
+                    isOverlayPresentation ||
+                            shouldRenderInlineNumberKeyboardOperators ||
+                            showBottomSearchBar
+            ) {
                 Modifier
             } else {
                 Modifier.imePadding()
@@ -1020,6 +1025,10 @@ internal fun SearchScreenContent(
         }
     }
 
+    // The inset engine strip paints the shared background, so it has to reach the bottom of the
+    // search bar once the bar goes transparent. Measure the bar instead of assuming its height.
+    var bottomSearchBarHeight by remember { mutableStateOf(INSET_ENGINE_STRIP_FALLBACK_OVERLAP) }
+
     val searchFieldModifier =
             if (showBottomSearchBar) {
                 Modifier.padding(
@@ -1030,7 +1039,12 @@ internal fun SearchScreenContent(
                                     0.dp
                                 },
                         bottom = DesignTokens.SpacingMedium,
-                )
+                ).onSizeChanged { size ->
+                    val measured = with(density) { size.height.toDp() }
+                    if (measured > 0.dp && measured != bottomSearchBarHeight) {
+                        bottomSearchBarHeight = measured
+                    }
+                }
             } else {
                 Modifier.padding(
                         bottom =
@@ -1041,6 +1055,17 @@ internal fun SearchScreenContent(
                                 }) + DesignTokens.SpacingXXSmall,
                 )
             }
+
+    // With the bottom search bar, the compact engine strip becomes a rounded container attached to
+    // the top of the search bar instead of a full-bleed band behind it. It tucks behind the bar so
+    // the two read as one shape.
+    val useInsetEngineStrip =
+            showBottomSearchBar &&
+                    state.isSearchEngineCompactMode &&
+                    expandedSection == ExpandedSection.NONE &&
+                    !isSearchHistoryExpanded &&
+                    state.detectedShortcutTarget == null &&
+                    state.detectedAliasSearchSection == null
 
     val searchFieldContent: @Composable () -> Unit = {
         PersistentSearchBar(
@@ -1087,6 +1112,7 @@ internal fun SearchScreenContent(
                 },
                 focusRequester = searchFocusRequester,
                 forceRestingOutline = showBottomSearchBar,
+                transparentBackground = useInsetEngineStrip,
                 modifier = searchFieldModifier,
                 onMoveTopResultSelectionUp = { moveSelectedTopMatch(-1) },
                 onMoveTopResultSelectionDown = { moveSelectedTopMatch(1) },
@@ -1438,6 +1464,8 @@ internal fun SearchScreenContent(
                                     }
                                 },
                                 showWallpaperBackground = state.showWallpaperBackground,
+                                useInsetContainer = useInsetEngineStrip,
+                                insetOverlap = bottomSearchBarHeight,
                                 modifier = searchEnginesModifier,
                         )
                     } else {
@@ -1534,6 +1562,8 @@ internal fun SearchScreenContent(
                                         toolActionAppIconPackage = activeToolCardConfig?.appIconPackage,
                                         onToolActionClick = activeToolCardConfig?.onClick,
                                         showOnlyToolAction = showOnlyToolActionInCompactSection,
+                                        useInsetContainer = useInsetEngineStrip,
+                                        insetOverlap = bottomSearchBarHeight,
                                 )
                             },
                             fullContent = {
@@ -1589,6 +1619,8 @@ internal fun SearchScreenContent(
                                             toolActionAppIconPackage = activeToolCardConfig.appIconPackage,
                                             onToolActionClick = activeToolCardConfig.onClick,
                                             showOnlyToolAction = true,
+                                            useInsetContainer = useInsetEngineStrip,
+                                            insetOverlap = bottomSearchBarHeight,
                                     )
                                 } else {
                                     // Add padding when search engines are hidden to prevent keyboard from
@@ -1633,51 +1665,10 @@ internal fun SearchScreenContent(
         }
 
         if (showSearchField && showBottomSearchBar) {
-            val shouldShowCompactBottomBarBackground =
-                    expandedSection == ExpandedSection.NONE &&
-                    state.isSearchEngineCompactMode &&
-                            !isSearchHistoryExpanded &&
-                            state.detectedShortcutTarget == null &&
-                            state.detectedAliasSearchSection == null
-
-            Box(
-                    modifier =
-                            Modifier
-                                    .fillMaxWidth()
-                                    .then(
-                                            if (shouldShowCompactBottomBarBackground) {
-                                                val compactBackground =
-                                                        AppColors.getCompactSectionBackground(
-                                                                state.showWallpaperBackground
-                                                        )
-                                                val compactBackgroundColor =
-                                                        if (state.showWallpaperBackground && LocalDeviceDynamicColorsActive.current) {
-                                                            compactBackground
-                                                        } else {
-                                                            compactBackground.copy(alpha = 0.9f)
-                                                        }
-                                                Modifier
-                                                        .extendToScreenEdges()
-                                                        .background(compactBackgroundColor)
-                                            } else {
-                                                Modifier
-                                            }
-                                    )
-            ) {
-                Box(
-                        modifier =
-                                Modifier
-                                        .fillMaxWidth()
-                                        .then(
-                                                if (shouldShowCompactBottomBarBackground) {
-                                                    Modifier.padding(horizontal = DesignTokens.SpacingXLarge)
-                                                } else {
-                                                    Modifier
-                                                }
-                                        )
-                ) {
-                    searchFieldContent()
-                }
+            // The compact engine strip carries its own rounded background, so the search bar
+            // stays transparent over the wallpaper instead of sitting on a full-bleed band.
+            Box(modifier = Modifier.fillMaxWidth()) {
+                searchFieldContent()
             }
 
             Box(modifier = Modifier.fillMaxWidth().extendToScreenEdges()) {

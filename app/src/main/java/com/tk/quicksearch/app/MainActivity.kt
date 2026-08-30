@@ -182,6 +182,16 @@ open class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Handles Back once the search surface has no more in-app state to dismiss.
+     *
+     * Regular Quick Search launches return to the task underneath. The launcher
+     * entry point overrides this so Back at Home remains on the Home surface.
+     */
+    protected open fun handleSearchBackPressed() {
+        moveTaskToBack(true)
+    }
+
     override fun onStop() {
         super.onStop()
         searchViewModel.handleOnStop()
@@ -374,7 +384,7 @@ open class MainActivity : ComponentActivity() {
                         userPreferences = userPreferences,
                         searchViewModel = searchViewModel,
                         isFirstLaunch = isFirstLaunchAtActivityStart,
-                        onSearchBackPressed = { moveTaskToBack(true) },
+                        onSearchBackPressed = ::handleSearchBackPressed,
                         navigationRequest = navigationRequest.value,
                         onNavigationRequestHandled = { navigationRequest.value = null },
                         onFinishActivity = {

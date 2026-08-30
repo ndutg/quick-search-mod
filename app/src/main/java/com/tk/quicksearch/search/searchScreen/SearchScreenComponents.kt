@@ -99,6 +99,7 @@ internal fun PersistentSearchBar(
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
     onPressWhileKeyboardClosed: () -> Unit = {},
     focusRequester: androidx.compose.ui.focus.FocusRequester? = null,
+    transparentBackground: Boolean = false,
     modifier: Modifier = Modifier,
 ) = com.tk.quicksearch.search.searchScreen.components.PersistentSearchBar(
     query = query,
@@ -143,6 +144,7 @@ internal fun PersistentSearchBar(
     onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
     onPressWhileKeyboardClosed = onPressWhileKeyboardClosed,
     focusRequester = focusRequester,
+    transparentBackground = transparentBackground,
     modifier = modifier,
 )
 
