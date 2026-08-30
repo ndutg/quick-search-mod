@@ -36,6 +36,7 @@ object AppSearchPolicy {
 
     fun areAllQueryTokensCovered(
         query: SearchQueryContext,
+        preparedTokens: Map<String, PreparedAppFuzzyQuery>,
         appName: String,
         searchAliases: List<String> = emptyList(),
         nickname: String?,
@@ -45,7 +46,7 @@ object AppSearchPolicy {
         if (query.tokens.size <= 1) return true
         return query.tokens.all { token ->
             fuzzySearchStrategy.isTokenCoveredByApp(
-                token = token,
+                preparedToken = preparedTokens.getValue(token),
                 appName = appName,
                 searchAliases = searchAliases,
                 nickname = nickname,

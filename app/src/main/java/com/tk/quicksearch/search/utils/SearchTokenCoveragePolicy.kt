@@ -16,6 +16,40 @@ object SearchTokenCoveragePolicy {
                 ?.takeIf { it.isNotBlank() }
                 ?.let(SearchTextNormalizer::normalizeForSearch)
 
+        return areAllTokensCoveredNormalized(
+            query = query,
+            normalizedPrimary = normalizedPrimary,
+            normalizedSupporting = normalizedSupporting,
+            fuzzyMinScore = fuzzyMinScore,
+            fuzzyMaxEditDistance = fuzzyMaxEditDistance,
+        )
+    }
+
+    fun areAllTokensCovered(
+        query: SearchQueryContext,
+        primaryText: PreparedSearchText,
+        supportingText: PreparedSearchText?,
+        fuzzyMinScore: Int,
+        fuzzyMaxEditDistance: Int,
+    ): Boolean {
+        if (query.tokens.size <= 1) return true
+
+        return areAllTokensCoveredNormalized(
+            query = query,
+            normalizedPrimary = primaryText.normalized,
+            normalizedSupporting = supportingText?.normalized,
+            fuzzyMinScore = fuzzyMinScore,
+            fuzzyMaxEditDistance = fuzzyMaxEditDistance,
+        )
+    }
+
+    private fun areAllTokensCoveredNormalized(
+        query: SearchQueryContext,
+        normalizedPrimary: String,
+        normalizedSupporting: String?,
+        fuzzyMinScore: Int,
+        fuzzyMaxEditDistance: Int,
+    ): Boolean {
         return query.tokens.all { token ->
             normalizedPrimary.contains(token) ||
                 (!normalizedSupporting.isNullOrBlank() && normalizedSupporting.contains(token)) ||

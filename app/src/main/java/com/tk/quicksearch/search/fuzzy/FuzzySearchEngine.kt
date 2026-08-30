@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.fuzzy
 
 import com.tk.quicksearch.search.utils.FuzzyMatcher
+import com.tk.quicksearch.search.utils.PreparedSearchText
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 
 /**
@@ -14,9 +15,6 @@ class FuzzySearchEngine {
         private const val SHORT_QUERY_TYPO_MAX_LENGTH = 5
         private const val SHORT_QUERY_PREFIX_MAX_EDIT_DISTANCE = 1
         private const val SHORT_QUERY_PREFIX_TYPO_SCORE = 82
-        private val WHITESPACE_REGEX = "\\s+".toRegex()
-        private val NON_ALPHANUMERIC_REGEX = "[^\\p{L}\\p{N}]+".toRegex()
-        private val CAMEL_CASE_REGEX = "([a-z])([A-Z])".toRegex()
     }
 
     /**
@@ -35,31 +33,48 @@ class FuzzySearchEngine {
         minQueryLength: Int = 3,
     ): Int {
         val trimmedQuery = query.trim()
-        val normalizedQuery = SearchTextNormalizer.normalizeForSearch(trimmedQuery)
+        val preparedQuery = SearchTextNormalizer.prepareForSearch(trimmedQuery)
+        val preparedTarget = SearchTextNormalizer.prepareForSearch(targetText)
+        val preparedNickname = targetNickname?.let(SearchTextNormalizer::prepareForSearch)
+
+        return computeScore(
+            query = preparedQuery,
+            queryLength = trimmedQuery.length,
+            target = preparedTarget,
+            nickname = preparedNickname,
+            minQueryLength = minQueryLength,
+        )
+    }
+
+    fun computeScore(
+        query: PreparedSearchText,
+        queryLength: Int,
+        target: PreparedSearchText,
+        nickname: PreparedSearchText? = null,
+        minQueryLength: Int = 3,
+    ): Int {
+        val normalizedQuery = query.normalized
 
         // Acronym matching for short queries (2-4 characters)
-        if (trimmedQuery.length in 2..ACRONYM_MAX_LENGTH) {
-            val acronymScore = computeAcronymScore(normalizedQuery, targetText, targetNickname)
+        if (queryLength in 2..ACRONYM_MAX_LENGTH) {
+            val acronymScore = computeAcronymScore(normalizedQuery, target, nickname)
             if (acronymScore > 0) return acronymScore
         }
 
-        if (trimmedQuery.length < minQueryLength) return 0
+        if (queryLength < minQueryLength) return 0
 
-        val normalizedTarget = SearchTextNormalizer.normalizeForSearch(targetText)
-
-        var bestScore = FuzzyMatcher.score(normalizedQuery, normalizedTarget)
-        bestScore = maxOf(bestScore, computeShortQueryPrefixTypoScore(normalizedQuery, normalizedTarget))
+        var bestScore = FuzzyMatcher.score(normalizedQuery, target.normalized)
+        bestScore = maxOf(bestScore, computeShortQueryPrefixTypoScore(normalizedQuery, target))
 
         // Check nickname if available
-        targetNickname?.let { nickname ->
-            val normalizedNickname = SearchTextNormalizer.normalizeForSearch(nickname)
+        nickname?.let { preparedNickname ->
             val nicknameScore =
                 FuzzyMatcher.score(
                     normalizedQuery,
-                    normalizedNickname,
+                    preparedNickname.normalized,
                 )
             val nicknamePrefixTypoScore =
-                computeShortQueryPrefixTypoScore(normalizedQuery, normalizedNickname)
+                computeShortQueryPrefixTypoScore(normalizedQuery, preparedNickname)
             bestScore = maxOf(bestScore, nicknameScore, nicknamePrefixTypoScore)
         }
 
@@ -68,16 +83,12 @@ class FuzzySearchEngine {
 
     private fun computeShortQueryPrefixTypoScore(
         normalizedQuery: String,
-        normalizedTarget: String,
+        target: PreparedSearchText,
     ): Int {
         val queryLength = normalizedQuery.length
         if (queryLength !in SHORT_QUERY_TYPO_MIN_LENGTH..SHORT_QUERY_TYPO_MAX_LENGTH) return 0
 
-        val tokens =
-            normalizedTarget
-                .split(WHITESPACE_REGEX)
-                .flatMap { it.split(NON_ALPHANUMERIC_REGEX) }
-                .filter { it.isNotBlank() }
+        val tokens = target.fuzzyTokens
 
         if (tokens.isEmpty()) return 0
 
@@ -100,39 +111,16 @@ class FuzzySearchEngine {
      */
     private fun computeAcronymScore(
         query: String,
-        targetText: String,
-        nickname: String?,
+        targetText: PreparedSearchText,
+        nickname: PreparedSearchText?,
     ): Int {
-        val targetAcronym = buildAcronym(targetText)
-        if (targetAcronym == query) return 100
+        if (targetText.acronym == query) return 100
 
-        nickname?.let { nick ->
-            val nicknameAcronym = buildAcronym(nick)
-            if (nicknameAcronym == query) return 100
+        nickname?.let { preparedNickname ->
+            if (preparedNickname.acronym == query) return 100
         }
 
         return 0
-    }
-
-    /**
-     * Builds acronym from text (e.g., "YouTube" -> "yt", "YouTube Music" -> "ytm").
-     */
-    private fun buildAcronym(text: String): String {
-        if (text.isBlank()) return ""
-
-        val separated = SearchTextNormalizer.normalizeForSearch(text).replace(CAMEL_CASE_REGEX, "$1 $2")
-        val tokens = separated.split(WHITESPACE_REGEX).flatMap { it.split(NON_ALPHANUMERIC_REGEX) }.filter { it.isNotBlank() }
-
-        if (tokens.isEmpty()) return ""
-
-        val builder = StringBuilder()
-        for (token in tokens) {
-            if (token.isNotEmpty()) {
-                builder.append(token[0].lowercaseChar())
-            }
-        }
-
-        return builder.toString()
     }
 
     private fun levenshteinDistance(

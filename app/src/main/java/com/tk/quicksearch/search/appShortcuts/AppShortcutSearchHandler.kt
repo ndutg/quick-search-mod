@@ -7,7 +7,9 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.isUserCreatedShortcu
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
+import com.tk.quicksearch.search.utils.CachedSearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchTextCache
 import java.util.Locale
 
 private const val MIN_QUERY_LENGTH = 2
@@ -27,18 +29,22 @@ class AppShortcutSearchHandler(
     private val isLowRamDevice: Boolean = false,
 ) {
     private var availableShortcuts: List<StaticShortcut> = emptyList()
+    private val searchTextCache = SearchTextCache()
+    private val searchMatcher = CachedSearchMatcher(searchTextCache)
 
     fun getAvailableShortcuts(): List<StaticShortcut> = mergeIconOverrides(availableShortcuts)
 
     suspend fun loadCachedShortcutsOnly(): Boolean {
         val cached = repository.loadCachedShortcuts() ?: return false
         availableShortcuts = normalizeShortcuts(cached)
+        searchTextCache.clear()
         return true
     }
 
     suspend fun refreshShortcutsFromSystem(): Boolean {
         val loaded = runCatching { repository.loadStaticShortcuts() }.getOrNull() ?: return false
         availableShortcuts = normalizeShortcuts(loaded)
+        searchTextCache.clear()
         return true
     }
 
@@ -64,6 +70,7 @@ class AppShortcutSearchHandler(
         val cached = repository.loadCachedShortcuts()
         if (cached != null) {
             availableShortcuts = normalizeShortcuts(cached)
+            searchTextCache.clear()
         }
 
         val pinnedIds = userPreferences.getPinnedAppShortcutIds()
@@ -178,6 +185,8 @@ class AppShortcutSearchHandler(
                 resultLimit = RESULT_LIMIT,
                 enableFuzzyMatching = enableFuzzyMatching,
                 isLowRamDevice = isLowRamDevice,
+                matcher = searchMatcher,
+                textCache = searchTextCache,
             ),
         )
 

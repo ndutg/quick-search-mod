@@ -7,7 +7,9 @@ import com.tk.quicksearch.search.appSettings.AppSettingsDestination.EXCLUDED_ITE
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.NICKNAMES
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.TRIGGERS
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
+import com.tk.quicksearch.search.utils.CachedSearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchTextCache
 import java.util.Locale
 
 private const val RESULT_LIMIT = 25
@@ -18,9 +20,12 @@ class AppSettingsSearchHandler(
     private val isLowRamDevice: Boolean = false,
 ) {
     private var availableSettings: List<AppSettingResult> = emptyList()
+    private val searchTextCache = SearchTextCache()
+    private val searchMatcher = CachedSearchMatcher(searchTextCache)
 
     fun loadSettings() {
         availableSettings = repository.loadSettings()
+        searchTextCache.clear()
     }
 
     fun getSettingsByIds(ids: Set<String>): Map<String, AppSettingResult> {
@@ -55,12 +60,15 @@ class AppSettingsSearchHandler(
                 resultLimit = RESULT_LIMIT,
                 enableFuzzyMatching = enableFuzzyMatching,
                 isLowRamDevice = isLowRamDevice,
+                matcher = searchMatcher,
+                textCache = searchTextCache,
             )
     }
 
     private fun ensureLoaded() {
         if (availableSettings.isEmpty()) {
             availableSettings = repository.loadSettings()
+            searchTextCache.clear()
         }
     }
 

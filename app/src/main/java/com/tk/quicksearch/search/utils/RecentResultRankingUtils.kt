@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.utils
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import java.util.Locale
+import java.util.IdentityHashMap
 
 object RecentResultRankingUtils {
     data class RecencyIndex(
@@ -104,6 +105,7 @@ object RecentResultRankingUtils {
         keySelector: (T) -> K,
         labelSelector: (T) -> String,
     ): Comparator<Pair<T, Int>> {
+        val alphabeticalKeys = IdentityHashMap<T, String>()
         var comparator = compareBy<Pair<T, Int>> { it.second }
         comparator =
             when (secondaryRankingSignal) {
@@ -113,6 +115,10 @@ object RecentResultRankingUtils {
                     comparator.thenByDescending { openCounts[keySelector(it.first)] ?: 0 }
                 SecondaryRankingSignal.NONE -> comparator
             }
-        return comparator.thenBy { labelSelector(it.first).lowercase(Locale.getDefault()) }
+        return comparator.thenBy {
+            alphabeticalKeys.getOrPut(it.first) {
+                labelSelector(it.first).lowercase(Locale.getDefault())
+            }
+        }
     }
 }

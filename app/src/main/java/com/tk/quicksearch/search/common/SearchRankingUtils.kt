@@ -52,10 +52,50 @@ object SearchRankingUtils {
         if (normalizedQuery.isBlank()) return PRIORITY_NO_MATCH
 
         val normalizedText = SearchTextNormalizer.normalizeForSearch(text)
-        val compactText = SearchTextNormalizer.compactForSearch(normalizedText)
+        return calculateMatchPriority(
+            normalizedText = normalizedText,
+            compactText = SearchTextNormalizer.compactForSearch(normalizedText),
+            textWords = normalizedText.split(WHITESPACE_REGEX),
+            normalizedQuery = normalizedQuery,
+            queryTokens = queryTokens,
+            compactQuery = compactQuery,
+        )
+    }
+
+    fun calculateMatchPriority(
+        text: PreparedSearchText,
+        query: SearchQueryContext,
+    ): Int =
+        calculateMatchPriority(text, query.normalizedQuery, query.tokens, query.compactQuery)
+
+    fun calculateMatchPriority(
+        text: PreparedSearchText,
+        normalizedQuery: String,
+        queryTokens: List<String>,
+        compactQuery: String,
+    ): Int {
+        if (normalizedQuery.isBlank()) return PRIORITY_NO_MATCH
+
+        return calculateMatchPriority(
+            normalizedText = text.normalized,
+            compactText = text.compact,
+            textWords = text.words,
+            normalizedQuery = normalizedQuery,
+            queryTokens = queryTokens,
+            compactQuery = compactQuery,
+        )
+    }
+
+    private fun calculateMatchPriority(
+        normalizedText: String,
+        compactText: String,
+        textWords: List<String>,
+        normalizedQuery: String,
+        queryTokens: List<String>,
+        compactQuery: String,
+    ): Int {
         val isMultiWord = queryTokens.size > 1
         val primaryToken = queryTokens.lastOrNull() ?: normalizedQuery
-        val textWords = normalizedText.split(WHITESPACE_REGEX)
 
         // Multi-word matching:
         // 1) exact phrase at start, then 2) all tokens match word starts (order-agnostic),
@@ -195,6 +235,18 @@ object SearchRankingUtils {
         val nicknamePriority =
             nickname?.let { calculateMatchPriority(it, normalizedQuery, queryTokens, compactQuery) }
                 ?: PRIORITY_NO_MATCH
+        return minOf(primaryPriority, nicknamePriority)
+    }
+
+    fun calculateMatchPriorityWithNickname(
+        primaryText: PreparedSearchText,
+        nickname: PreparedSearchText?,
+        query: SearchQueryContext,
+    ): Int {
+        if (query.normalizedQuery.isBlank()) return PRIORITY_NO_MATCH
+
+        val primaryPriority = calculateMatchPriority(primaryText, query)
+        val nicknamePriority = nickname?.let { calculateMatchPriority(it, query) } ?: PRIORITY_NO_MATCH
         return minOf(primaryPriority, nicknamePriority)
     }
 

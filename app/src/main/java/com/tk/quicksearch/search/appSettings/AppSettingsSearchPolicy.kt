@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.appSettings
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchTextCache
 import com.tk.quicksearch.search.utils.SearchTokenCoveragePolicy
 
 object AppSettingsSearchPolicy {
@@ -45,11 +46,22 @@ object AppSettingsSearchPolicy {
         keywords: List<String>,
         fuzzyMinScore: Int,
         fuzzyMaxEditDistance: Int,
+        textCache: SearchTextCache? = null,
     ): Boolean {
+        val supportingText = listOfNotNull(description, keywords.joinToString(" ")).joinToString(" ")
+        if (textCache != null) {
+            return SearchTokenCoveragePolicy.areAllTokensCovered(
+                query = query,
+                primaryText = textCache.prepare(title),
+                supportingText = supportingText.takeIf { it.isNotBlank() }?.let(textCache::prepare),
+                fuzzyMinScore = fuzzyMinScore,
+                fuzzyMaxEditDistance = fuzzyMaxEditDistance,
+            )
+        }
         return SearchTokenCoveragePolicy.areAllTokensCovered(
             query = query,
             primaryText = title,
-            supportingText = listOfNotNull(description, keywords.joinToString(" ")).joinToString(" "),
+            supportingText = supportingText,
             fuzzyMinScore = fuzzyMinScore,
             fuzzyMaxEditDistance = fuzzyMaxEditDistance,
         )

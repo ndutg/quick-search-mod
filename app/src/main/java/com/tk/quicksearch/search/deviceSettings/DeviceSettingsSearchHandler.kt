@@ -5,7 +5,9 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
+import com.tk.quicksearch.search.utils.CachedSearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchTextCache
 import java.util.Locale
 
 private const val RESULT_LIMIT = 25
@@ -24,15 +26,19 @@ class DeviceSettingsSearchHandler(
     private val isLowRamDevice: Boolean = false,
 ) {
     private var availableSettings: List<DeviceSetting> = emptyList()
+    private val searchTextCache = SearchTextCache()
+    private val searchMatcher = CachedSearchMatcher(searchTextCache)
 
     suspend fun loadShortcuts() {
         availableSettings = repository.loadShortcuts()
+        searchTextCache.clear()
     }
 
     suspend fun getSettingsByIds(ids: Set<String>): Map<String, DeviceSetting> {
         if (ids.isEmpty()) return emptyMap()
         if (availableSettings.isEmpty()) {
             availableSettings = repository.loadShortcuts()
+            searchTextCache.clear()
         }
         return availableSettings
             .filter { ids.contains(it.id) }
@@ -45,6 +51,7 @@ class DeviceSettingsSearchHandler(
     suspend fun getPinnedAndExcludedOnly(): DeviceSettingsSearchResults {
         if (availableSettings.isEmpty()) {
             availableSettings = repository.loadShortcuts()
+            searchTextCache.clear()
         }
 
         val pinnedIds = userPreferences.getPinnedSettingIds()
@@ -113,6 +120,7 @@ class DeviceSettingsSearchHandler(
         // relevant query rather than during generic app startup.
         if (availableSettings.isEmpty()) {
             availableSettings = repository.loadShortcuts()
+            searchTextCache.clear()
         }
         return searchSettingsInternal(
             queryContext = queryContext,
@@ -155,6 +163,8 @@ class DeviceSettingsSearchHandler(
             resultLimit = RESULT_LIMIT,
             enableFuzzyMatching = enableFuzzyMatching,
             isLowRamDevice = isLowRamDevice,
+            matcher = searchMatcher,
+            textCache = searchTextCache,
         )
     }
 
