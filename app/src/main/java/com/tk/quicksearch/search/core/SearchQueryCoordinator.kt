@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.core
 
+import android.os.SystemClock
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import com.tk.quicksearch.searchEngines.AliasHandler
@@ -730,15 +732,31 @@ internal class SearchQueryCoordinator(
         if (
             shouldRunAppSearch
         ) {
+            val submittedAtElapsedMs = SystemClock.elapsedRealtime()
+            AppSearchPerformanceLogger.log {
+                "querySearchSubmitted queryLength=${normalizedQuery.length} debounceMs=$appSearchDebounceMs"
+            }
             appSearchRunner.submit(
                 compute = {
+                    val computationStartedAtElapsedMs = SystemClock.elapsedRealtime()
                     val appsSnapshot = getSearchableAppsSnapshot()
                     val gridLimit = getGridItemCount()
-                    appSearchManager.deriveMatches(
+                    val results = appSearchManager.deriveMatches(
                         queryContext,
                         appsSnapshot,
                         gridLimit,
                     )
+                    val computationElapsedMs = SystemClock.elapsedRealtime() - computationStartedAtElapsedMs
+                    AppSearchPerformanceLogger.logTiming(
+                        event = "querySearchComputed",
+                        elapsedMs = computationElapsedMs,
+                        slowThresholdMs = 50L,
+                    ) {
+                        "queueMs=${computationStartedAtElapsedMs - submittedAtElapsedMs} " +
+                            "queryLength=${normalizedQuery.length} candidates=${appsSnapshot.size} " +
+                            "limit=$gridLimit results=${results.size}"
+                    }
+                    results
                 },
                 publish = { results ->
                     if (results.isEmpty() && normalizedQuery.length > 1) {
@@ -753,6 +771,13 @@ internal class SearchQueryCoordinator(
                             pendingSearchResults = null,
                             isAppSearchInProgress = false,
                         )
+                    }
+                    AppSearchPerformanceLogger.logTiming(
+                        event = "querySearchPublished",
+                        elapsedMs = SystemClock.elapsedRealtime() - submittedAtElapsedMs,
+                        slowThresholdMs = appSearchDebounceMs + 100L,
+                    ) {
+                            "queryLength=${normalizedQuery.length} results=${results.size}"
                     }
                 },
             )

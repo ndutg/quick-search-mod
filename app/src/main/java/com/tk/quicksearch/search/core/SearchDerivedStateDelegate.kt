@@ -2,6 +2,8 @@ package com.tk.quicksearch.search.core
 
 import android.app.Application
 import android.content.Context
+import android.os.SystemClock
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.startup.StartupSurfaceSnapshot
@@ -71,6 +73,7 @@ internal class SearchDerivedStateDelegate(
         lastUpdated: Long? = null,
         isLoading: Boolean? = null,
     ) {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         appSearchManager.refreshNicknames()
 
         val apps = appSearchManager.cachedApps
@@ -139,6 +142,7 @@ internal class SearchDerivedStateDelegate(
             } else {
                 emptyList()
             }
+        val suggestionsSelectedAtElapsedMs = SystemClock.elapsedRealtime()
         val currentResultsState = resultsStateProvider()
         val recents =
             stabilizeVisibleSuggestions(
@@ -167,6 +171,7 @@ internal class SearchDerivedStateDelegate(
             } else {
                 appSearchManager.deriveMatches(trimmedQuery, allSearchableApps, getGridItemCount())
             }
+        val searchResultsDerivedAtElapsedMs = SystemClock.elapsedRealtime()
         val suggestionHiddenAppList =
             apps.filter { suggestionHiddenPackages.contains(it.launchCountKey()) }.sortedBy {
                 it.appName.lowercase(Locale.getDefault())
@@ -200,6 +205,22 @@ internal class SearchDerivedStateDelegate(
             recents = recents,
             searchResults = searchResults,
         )
+
+        val totalElapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs
+        AppSearchPerformanceLogger.logTiming(
+            event = "suggestionsRefresh",
+            elapsedMs = totalElapsedMs,
+            slowThresholdMs = 50L,
+        ) {
+            "selectionMs=${suggestionsSelectedAtElapsedMs - startedAtElapsedMs} " +
+                "queryResultsMs=${searchResultsDerivedAtElapsedMs - suggestionsSelectedAtElapsedMs} " +
+                "postProcessMs=${SystemClock.elapsedRealtime() - searchResultsDerivedAtElapsedMs} " +
+                "apps=${apps.size} visible=${visibleAppList.size} limit=${getGridItemCount()} " +
+                "suggestionsEnabled=$suggestionsEnabled usagePermission=$hasUsagePermission " +
+                "pinned=${pinnedAppsForSuggestions.size} recents=${recents.size} " +
+                "newOrUpdated=${newOrUpdatedApps.size} mostUsed=${mostUsedApps.size} " +
+                "queryLength=${trimmedQuery.length} queryResults=${searchResults.size}"
+        }
 
         val hasStartupSuggestions = pinnedAppsForSuggestions.isNotEmpty() || recents.isNotEmpty()
         if (hasStartupSuggestions && !configStateProvider().isStartupCoreSurfaceReady) {

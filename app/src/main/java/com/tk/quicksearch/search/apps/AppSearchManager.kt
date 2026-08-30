@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.apps
 
 import android.content.Context
+import android.os.SystemClock
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.AppCatalogChange
 import com.tk.quicksearch.search.data.AppsRepository
@@ -73,11 +74,13 @@ class AppSearchManager(
         showToast: Boolean = false,
         forceUiUpdate: Boolean = false,
     ) {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         if (cachedApps.isEmpty()) {
             onLoadingStateChanged(true, null)
         }
 
         val launchCounts = userPreferences.getAllAppLaunchCounts()
+        val launchCountsLoadedAtElapsedMs = SystemClock.elapsedRealtime()
         runCatching {
             repository.loadLaunchableApps(
                 includeNonLaunchableApps = userPreferences.shouldIncludeNonLaunchableAppsInSearch(),
@@ -85,6 +88,7 @@ class AppSearchManager(
             )
         }
             .onSuccess { apps ->
+                val appsLoadedAtElapsedMs = SystemClock.elapsedRealtime()
                 val currentPackageSet = cachedApps.map { it.launchCountKey() }.toSet()
                 val newPackageSet = apps.map { it.launchCountKey() }.toSet()
                 val appSetChanged = currentPackageSet != newPackageSet
@@ -101,14 +105,14 @@ class AppSearchManager(
                     }
                 val searchLabelsChanged = currentSearchLabels != newSearchLabels
 
-                if (
+                val shouldPublish =
                     showToast ||
                         cachedApps.isEmpty() ||
                         appSetChanged ||
                         usageStatsChanged ||
                         searchLabelsChanged ||
                         forceUiUpdate
-                ) {
+                if (shouldPublish) {
                     cachedApps = apps
                     noMatchPrefix = null
                     onAppsUpdated()
@@ -123,7 +127,24 @@ class AppSearchManager(
                         showToastCallback(R.string.apps_refreshed_successfully)
                     }
                 }
+
+                AppSearchPerformanceLogger.logTiming(
+                    event = "catalogRefresh",
+                    elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+                    slowThresholdMs = 500L,
+                ) {
+                    "launchCountsMs=${launchCountsLoadedAtElapsedMs - startedAtElapsedMs} " +
+                        "repositoryMs=${appsLoadedAtElapsedMs - launchCountsLoadedAtElapsedMs} " +
+                        "publishMs=${SystemClock.elapsedRealtime() - appsLoadedAtElapsedMs} " +
+                        "apps=${apps.size} cachedApps=${cachedApps.size} " +
+                        "includeNonLaunchable=${userPreferences.shouldIncludeNonLaunchableAppsInSearch()} " +
+                        "updated=$shouldPublish"
+                }
             }.onFailure { error ->
+                AppSearchPerformanceLogger.log {
+                    "catalogRefresh failed totalMs=${SystemClock.elapsedRealtime() - startedAtElapsedMs} " +
+                        "error=${error.javaClass.simpleName}"
+                }
                 val fallbackMessage = context.getString(R.string.error_loading_user_apps)
                 onLoadingStateChanged(false, error.localizedMessage ?: fallbackMessage)
 

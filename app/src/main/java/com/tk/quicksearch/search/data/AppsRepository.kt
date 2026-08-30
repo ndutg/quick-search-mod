@@ -19,11 +19,13 @@ import android.os.Build
 import android.os.Process
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.os.UserHandle
 import android.os.UserManager
 import androidx.core.content.ContextCompat
 import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.search.models.AppInfo
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.utils.PermissionUtils
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import java.util.Locale
@@ -240,15 +242,22 @@ class AppsRepository(
         includeNonLaunchableApps: Boolean = false,
         launchCounts: Map<String, Int> = emptyMap(),
     ): List<AppInfo> {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         val usageMap = queryUsageStatsMap()
+        val usageLoadedAtElapsedMs = SystemClock.elapsedRealtime()
+        val profileApps = queryLaunchableAppsFromAllProfiles()
+        val launcherAppsQueriedAtElapsedMs = SystemClock.elapsedRealtime()
         val launchableApps =
-            queryLaunchableAppsFromAllProfiles()
-                .takeIf { it.isNotEmpty() }
-                ?.distinctBy { "${it.applicationInfo.packageName}_${UserHandleUtils.getIdentifier(it.user)}" }
-                ?.map { createAppInfo(it, usageMap, launchCounts) }
-                ?: queryLaunchableAppsLegacy()
+            if (profileApps.isNotEmpty()) {
+                profileApps
+                    .distinctBy { "${it.applicationInfo.packageName}_${UserHandleUtils.getIdentifier(it.user)}" }
+                    .map { createAppInfo(it, usageMap, launchCounts) }
+            } else {
+                queryLaunchableAppsLegacy()
                     .distinctBy { it.activityInfo.packageName }
                     .map { createAppInfo(it, usageMap, launchCounts) }
+            }
+        val appInfoCreatedAtElapsedMs = SystemClock.elapsedRealtime()
         val nonLaunchableApps =
             if (includeNonLaunchableApps) {
                 val launchablePackageNames = launchableApps.map { it.packageName }.toSet()
@@ -260,6 +269,7 @@ class AppsRepository(
             } else {
                 emptyList()
             }
+        val nonLaunchableAppsLoadedAtElapsedMs = SystemClock.elapsedRealtime()
         val apps = launchableApps + nonLaunchableApps
 
         // LauncherApps can briefly return a removed package immediately after an uninstall.
@@ -269,6 +279,20 @@ class AppsRepository(
         val sortedApps = filterRemovedApps(apps.sortedWith(AppInfoComparator), removedAppKeys)
         if (appCache.loadCachedApps() != sortedApps || removedAppKeys.isNotEmpty()) {
             appCache.saveApps(sortedApps)
+        }
+        AppSearchPerformanceLogger.logTiming(
+            event = "catalogRepositoryLoad",
+            elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+            slowThresholdMs = 500L,
+        ) {
+            "usageStatsMs=${usageLoadedAtElapsedMs - startedAtElapsedMs} " +
+                "launcherQueryMs=${launcherAppsQueriedAtElapsedMs - usageLoadedAtElapsedMs} " +
+                "appInfoMs=${appInfoCreatedAtElapsedMs - launcherAppsQueriedAtElapsedMs} " +
+                "nonLaunchableMs=${nonLaunchableAppsLoadedAtElapsedMs - appInfoCreatedAtElapsedMs} " +
+                "cacheAndSortMs=${SystemClock.elapsedRealtime() - nonLaunchableAppsLoadedAtElapsedMs} " +
+                "source=${if (profileApps.isNotEmpty()) "launcherApps" else "legacyIntent"} " +
+                "launchable=${launchableApps.size} nonLaunchable=${nonLaunchableApps.size} " +
+                "removed=${removedAppKeys.size}"
         }
         appCatalogInvalidated = false
         appCache.clearCatalogInvalidation()
