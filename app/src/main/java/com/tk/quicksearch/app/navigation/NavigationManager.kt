@@ -576,13 +576,6 @@ private fun NavigationContent(
                     onSettingsDetailTypeChange(detailType)
                     leaveSearchSurface()
                 }
-                val navigateToQuickNoteFromSwipeRight: (Long) -> Unit = { _ ->
-                    rootAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
-                    settingsDetailAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
-                    onDestinationChange(RootDestination.Settings)
-                    onSettingsDetailTypeChangeFromSearch(SettingsDetailType.NOTE_EDITOR)
-                    leaveSearchSurface()
-                }
                 val navigateToWidgetsPanelFromSwipeRight: () -> Unit = {
                     rootAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
                     onDestinationChange(RootDestination.WidgetsPanel)
@@ -649,7 +642,6 @@ private fun NavigationContent(
                             navigateToSettings(destination)
                         }
                     },
-                    onOpenQuickNoteFromSwipe = navigateToQuickNoteFromSwipeRight,
                     onOpenWidgetsPanelFromSwipe = navigateToWidgetsPanelFromSwipeRight,
                     onSearchEngineLongPress = {
                         navigateToSettings(SettingsDetailType.SEARCH_ENGINES)

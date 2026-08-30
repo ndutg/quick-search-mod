@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -386,6 +387,7 @@ fun WidgetsPanelScreen(
                     Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
+                        .imePadding()
                         .padding(horizontal = DesignTokens.ContentHorizontalPadding)
                         .padding(bottom = DesignTokens.SpacingLarge),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
@@ -397,54 +399,62 @@ fun WidgetsPanelScreen(
                     onExitEditMode = { editingWidgetId = null },
                 )
 
-                Column(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .onGloballyPositioned { coordinates ->
-                                scrollViewportTopPx = coordinates.positionInWindow().y
-                                scrollViewportHeightPx = coordinates.size.height
+                val isQuickNoteSolo = isQuickNoteEnabled && widgets.isEmpty()
+                if (isQuickNoteSolo) {
+                    CompactQuickNoteWidget(
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        fillAvailableSpace = true,
+                    )
+                } else {
+                    Column(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .onGloballyPositioned { coordinates ->
+                                    scrollViewportTopPx = coordinates.positionInWindow().y
+                                    scrollViewportHeightPx = coordinates.size.height
+                                }
+                                .verticalScroll(panelScrollState),
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
+                    ) {
+                        val panelItems =
+                            buildList {
+                                if (isQuickNoteEnabled) add(quickNoteWidget)
+                                addAll(widgets)
                             }
-                            .verticalScroll(panelScrollState),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
-                ) {
-                    val panelItems =
-                        buildList {
-                            if (isQuickNoteEnabled) add(quickNoteWidget)
-                            addAll(widgets)
+                        if (panelItems.isNotEmpty()) {
+                            WidgetPanelGrid(
+                                widgets = panelItems,
+                                appWidgetManager = appWidgetManager,
+                                appWidgetHost = appWidgetHost,
+                                editingWidgetId = editingWidgetId,
+                                density = density,
+                                panelScrollState = panelScrollState,
+                                viewportTopPx = scrollViewportTopPx,
+                                viewportHeightPx = scrollViewportHeightPx,
+                                onPersist = ::persistPanelItems,
+                                onSetEditingWidgetId = { id -> editingWidgetId = id },
+                                onRemoveWidget = { widget ->
+                                    if (widget.isQuickNoteWidget()) return@WidgetPanelGrid
+                                    appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
+                                    persistWidgets(
+                                        preferences.removeWidget(widget.appWidgetId),
+                                    )
+                                    editingWidgetId = null
+                                },
+                                onConfigureWidget = { _, configureIntent ->
+                                    runCatching { configureExistingLauncher.launch(configureIntent) }
+                                    editingWidgetId = null
+                                },
+                                packageManager = packageManager,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
                         }
-                    if (panelItems.isNotEmpty()) {
-                        WidgetPanelGrid(
-                            widgets = panelItems,
-                            appWidgetManager = appWidgetManager,
-                            appWidgetHost = appWidgetHost,
-                            editingWidgetId = editingWidgetId,
-                            density = density,
-                            panelScrollState = panelScrollState,
-                            viewportTopPx = scrollViewportTopPx,
-                            viewportHeightPx = scrollViewportHeightPx,
-                            onPersist = ::persistPanelItems,
-                            onSetEditingWidgetId = { id -> editingWidgetId = id },
-                            onRemoveWidget = { widget ->
-                                if (widget.isQuickNoteWidget()) return@WidgetPanelGrid
-                                appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
-                                persistWidgets(
-                                    preferences.removeWidget(widget.appWidgetId),
-                                )
-                                editingWidgetId = null
-                            },
-                            onConfigureWidget = { _, configureIntent ->
-                                runCatching { configureExistingLauncher.launch(configureIntent) }
-                                editingWidgetId = null
-                            },
-                            packageManager = packageManager,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    } else {
-                        Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall))
-                    }
 
-                    Spacer(modifier = Modifier.height(WidgetPanelBottomScrollSpace))
+                        Spacer(modifier = Modifier.height(WidgetPanelBottomScrollSpace))
+                    }
                 }
             }
 

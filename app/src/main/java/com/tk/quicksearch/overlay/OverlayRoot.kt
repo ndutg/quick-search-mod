@@ -500,6 +500,13 @@ fun OverlayRoot(
                                                         )
                                                         handleClose()
                                                 },
+                                                onOpenWidgetsPanelFromSwipe = {
+                                                        OverlayModeController.openMainActivity(
+                                                                context,
+                                                                openWidgetsPanel = true,
+                                                        )
+                                                        handleClose()
+                                                },
                                                 onSearchEngineLongPress = {
                                                         OverlayModeController.openMainActivity(
                                                                 context,

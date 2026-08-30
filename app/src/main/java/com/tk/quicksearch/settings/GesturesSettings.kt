@@ -65,7 +65,7 @@ import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonPickerDialog
 
 private enum class SwipeDirection(val titleResId: Int, val defaultAction: SwipeGestureAction) {
-    RIGHT(R.string.settings_gesture_swipe_right, SwipeGestureAction.QUICK_NOTE),
+    RIGHT(R.string.settings_gesture_swipe_right, SwipeGestureAction.WIDGETS_PANEL),
     LEFT(R.string.settings_gesture_swipe_left, SwipeGestureAction.SETTINGS),
     UP(R.string.settings_gesture_swipe_up, SwipeGestureAction.OPEN_KEYBOARD),
     DOWN(R.string.settings_gesture_swipe_down, SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS),
@@ -1003,7 +1003,7 @@ private fun gestureToolItems(state: com.tk.quicksearch.search.core.SearchUiState
 
 private fun SwipeGestureAction.labelResId(): Int =
     when (this) {
-        SwipeGestureAction.QUICK_NOTE -> R.string.notes_quick_note_title
+        SwipeGestureAction.WIDGETS_PANEL -> R.string.settings_gesture_widget_panel
         SwipeGestureAction.SETTINGS -> R.string.settings_gesture_settings
         SwipeGestureAction.OPEN_KEYBOARD -> R.string.action_open_keyboard
         SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS -> R.string.settings_gesture_close_keyboard_notifications

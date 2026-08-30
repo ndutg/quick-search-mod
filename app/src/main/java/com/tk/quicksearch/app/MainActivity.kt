@@ -513,6 +513,11 @@ open class MainActivity : ComponentActivity() {
             intent.removeExtra(OverlayModeController.EXTRA_OPEN_SETTINGS_DETAIL)
             intent.removeExtra(OverlayModeController.EXTRA_OPEN_NOTE_ID)
         }
+        if (intent?.getBooleanExtra(OverlayModeController.EXTRA_OPEN_WIDGETS_PANEL, false) == true) {
+            navigationRequest.value =
+                NavigationRequest(destination = RootDestination.WidgetsPanel)
+            intent.removeExtra(OverlayModeController.EXTRA_OPEN_WIDGETS_PANEL)
+        }
         val contactActionIntent = intent
         if (contactActionIntent?.getBooleanExtra(
                 EXTRA_CONTACT_ACTION_PICKER,
