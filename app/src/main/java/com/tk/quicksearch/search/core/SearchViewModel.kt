@@ -582,12 +582,12 @@ class SearchViewModel(
             )
         ) {
             screenTimeSearchJob?.cancel()
-            _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
+            updateResultsState { it.copy(screenTimeState = ScreenTimeState.Hidden) }
             return
         }
         if (!com.tk.quicksearch.search.utils.PermissionUtils.hasUsageStatsPermission(appContext)) {
             screenTimeSearchJob?.cancel()
-            _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Hidden) }
+            updateResultsState { it.copy(screenTimeState = ScreenTimeState.Hidden) }
             return
         }
         val currentState = _resultsState.value.screenTimeState
@@ -600,7 +600,7 @@ class SearchViewModel(
             return
         }
         screenTimeSearchJob?.cancel()
-        _resultsState.update { it.copy(screenTimeState = ScreenTimeState.Loading) }
+        updateResultsState { it.copy(screenTimeState = ScreenTimeState.Loading) }
         screenTimeSearchJob =
             viewModelScope.launch(Dispatchers.IO) {
                 val screenTime = screenTimeRepository.getTodayScreenTime()
@@ -612,7 +612,7 @@ class SearchViewModel(
                             pinnedItemOrder = _resultsState.value.pinnedNonAppItemOrder,
                         )
                 ) {
-                    _resultsState.update {
+                    updateResultsState {
                         it.copy(
                             screenTimeState =
                                 ScreenTimeState.Available(
@@ -628,14 +628,12 @@ class SearchViewModel(
     }
 
     fun toggleOtherSearchItemPin(itemId: OtherSearchItemId) {
-        _resultsState.update { state ->
-            val key = itemId.pinnedItemKey
+        updateResultsState { state ->
             val updatedOrder =
-                if (key in state.pinnedNonAppItemOrder) {
-                    state.pinnedNonAppItemOrder.filterNot { it == key }
-                } else {
-                    state.pinnedNonAppItemOrder + key
-                }
+                OtherSearchItemRegistry.togglePin(
+                    itemId = itemId,
+                    pinnedItemOrder = state.pinnedNonAppItemOrder,
+                )
             userPreferences.setPinnedNonAppItemOrder(updatedOrder)
             state.copy(pinnedNonAppItemOrder = updatedOrder)
         }

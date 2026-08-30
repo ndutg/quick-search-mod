@@ -1,13 +1,10 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.oss.licenses)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.baselineprofile)
-    id("kotlin-parcelize")
 }
 
 android {
@@ -56,26 +53,20 @@ android {
         }
     }
 
-    adbOptions {
-        installOptions("--user", "0")
+    installation {
+        installOptions.addAll(listOf("--user", "0"))
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
-    }
-
     androidResources {
         localeFilters +=
             listOf(
@@ -96,16 +87,6 @@ android {
     }
 }
 
-android {
-    applicationVariants.all {
-        if (name == "standardRelease") {
-            outputs.all {
-                (this as BaseVariantOutputImpl).outputFileName = "app-release.apk"
-            }
-        }
-    }
-}
-
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
@@ -116,6 +97,25 @@ baselineProfile {
     filter {
         include("com.tk.quicksearch.**")
     }
+}
+
+// AGP 9 removed the legacy variant API that renamed APK outputs in place. Keep the
+// existing release artifact name as a compatibility copy for release automation.
+val copyStandardReleaseApk = tasks.register("copyStandardReleaseApk") {
+    val sourceApk = layout.buildDirectory.file("outputs/apk/standard/release/app-standard-release.apk")
+    val compatibilityApk = layout.buildDirectory.file("outputs/apk/standard/release/app-release.apk")
+
+    dependsOn("packageStandardRelease")
+    inputs.file(sourceApk)
+    outputs.file(compatibilityApk)
+
+    doLast {
+        sourceApk.get().asFile.copyTo(compatibilityApk.get().asFile, overwrite = true)
+    }
+}
+
+tasks.matching { it.name == "assembleStandardRelease" }.configureEach {
+    finalizedBy(copyStandardReleaseApk)
 }
 
 dependencies {
@@ -147,6 +147,7 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.kotlin.parcelize.runtime)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
