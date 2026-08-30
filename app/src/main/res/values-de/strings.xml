@@ -652,6 +652,8 @@
     <string name="settings_default_assistant_title">Standard-Assistent</string>
     <string name="settings_default_launcher_desc">Diese App als Standard-Startseiten-App festlegen.</string>
     <string name="settings_default_launcher_title">Standard-Launcher</string>
+    <string name="settings_amoled_theme_desc">Echten Schwarz-Hintergrund für das Mono-Design verwenden</string>
+    <string name="settings_amoled_theme_title">AMOLED-Design</string>
     <string name="settings_device_theme_blocked_toast">Deaktiviert, solange das Material You-Design aktiv ist</string>
     <string name="settings_device_theme_desc">Dynamische Farbpalette des Geräts als App-Design verwenden</string>
     <string name="settings_device_theme_title">Material You</string>

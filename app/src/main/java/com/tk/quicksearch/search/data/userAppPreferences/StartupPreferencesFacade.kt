@@ -65,6 +65,7 @@ class StartupPreferencesFacade(
             val launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT,
             val themedIconsEnabled: Boolean = true,
             val deviceThemeEnabled: Boolean = false,
+            val amoledThemeEnabled: Boolean = false,
             val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
             val customAccentColorArgb: Int =
                     com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
@@ -494,6 +495,13 @@ class StartupPreferencesFacade(
                         ] as?
                                 Boolean
                                 ?: false,
+                amoledThemeEnabled =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_AMOLED_THEME_ENABLED,
+                        ] as?
+                                Boolean
+                                ?: false,
                 accentColorMode = accentColorModeFromPrefs(allPrefs),
                 customAccentColorArgb = customAccentColorArgbFromPrefs(allPrefs),
                 maskUnsupportedIconPackIcons =
@@ -920,6 +928,13 @@ class StartupPreferencesFacade(
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences
                                                 .KEY_DEVICE_THEME_ENABLED,
+                                ] as?
+                                        Boolean
+                                        ?: false,
+                        amoledThemeEnabled =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_AMOLED_THEME_ENABLED,
                                 ] as?
                                         Boolean
                                         ?: false,

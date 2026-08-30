@@ -540,6 +540,12 @@ class UiPreferences(
         setBooleanPref(KEY_DEVICE_THEME_ENABLED, enabled)
     }
 
+    fun isAmoledThemeEnabled(): Boolean = getBooleanPref(KEY_AMOLED_THEME_ENABLED, false)
+
+    fun setAmoledThemeEnabled(enabled: Boolean) {
+        setBooleanPref(KEY_AMOLED_THEME_ENABLED, enabled)
+    }
+
     fun isWallpaperAccentEnabled(): Boolean =
             getAccentColorMode() == AccentColorMode.FROM_WALLPAPER
 
@@ -1270,6 +1276,7 @@ class UiPreferences(
         const val KEY_LAUNCHER_APP_ICON = "launcher_app_icon"
         const val KEY_THEMED_ICONS_ENABLED = "themed_icons_enabled"
         const val KEY_DEVICE_THEME_ENABLED = "device_theme_enabled"
+        const val KEY_AMOLED_THEME_ENABLED = "amoled_theme_enabled"
         const val KEY_WALLPAPER_ACCENT_ENABLED = "wallpaper_accent_enabled"
         const val KEY_ACCENT_COLOR_MODE = "accent_color_mode"
         const val KEY_CUSTOM_ACCENT_COLOR_ARGB = "custom_accent_color_argb"

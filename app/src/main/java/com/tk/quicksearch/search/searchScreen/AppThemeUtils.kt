@@ -14,6 +14,19 @@ import com.tk.quicksearch.shared.ui.theme.SearchColorTheme
 private const val NEUTRAL_APP_THEME_INTENSITY = 0.5f
 private const val MAX_APP_THEME_TONE_SHIFT = 0.38f
 
+internal fun isAmoledSurfaceTheme(
+    amoledThemeEnabled: Boolean,
+    theme: AppTheme,
+    isDarkMode: Boolean,
+    deviceThemeEnabled: Boolean = false,
+    backgroundSource: BackgroundSource = BackgroundSource.THEME,
+): Boolean =
+    amoledThemeEnabled &&
+        isDarkMode &&
+        !deviceThemeEnabled &&
+        theme == AppTheme.MONOCHROME &&
+        backgroundSource == BackgroundSource.THEME
+
 internal fun AppThemeColors(
     theme: AppTheme,
     isDarkMode: Boolean,
@@ -55,7 +68,11 @@ internal fun appThemeResultCardColor(
     theme: AppTheme,
     isDarkMode: Boolean,
     intensity: Float = NEUTRAL_APP_THEME_INTENSITY,
+    amoledThemeEnabled: Boolean = false,
 ): Color {
+    if (isAmoledSurfaceTheme(amoledThemeEnabled = amoledThemeEnabled, theme = theme, isDarkMode = isDarkMode)) {
+        return AppColors.AmoledCardBackground
+    }
     val palette = AppThemeColors(theme = theme, isDarkMode = isDarkMode, intensity = intensity)
     return if (isDarkMode) {
         palette[1]
@@ -104,11 +121,18 @@ internal fun resolveSearchColorTheme(
     backgroundSource: BackgroundSource,
     isDarkMode: Boolean,
     intensity: Float = NEUTRAL_APP_THEME_INTENSITY,
+    amoledThemeEnabled: Boolean = false,
 ): SearchColorTheme =
     when (backgroundSource) {
         BackgroundSource.THEME -> {
             val gradientColors = AppThemeColors(theme, isDarkMode, intensity = intensity)
-            val cardBg = appThemeResultCardColor(theme, isDarkMode, intensity)
+            val cardBg =
+                appThemeResultCardColor(
+                    theme = theme,
+                    isDarkMode = isDarkMode,
+                    intensity = intensity,
+                    amoledThemeEnabled = amoledThemeEnabled,
+                )
             SearchColorTheme(
                 background = gradientColors[0],
                 cardBackground = cardBg,

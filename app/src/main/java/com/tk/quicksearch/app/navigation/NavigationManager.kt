@@ -535,6 +535,7 @@ private fun NavigationContent(
                     appTheme = uiState.appTheme,
                     overlayThemeIntensity = uiState.overlayThemeIntensity,
                     deviceThemeEnabled = uiState.deviceThemeEnabled,
+                    amoledThemeEnabled = uiState.amoledThemeEnabled,
                 )
             }
 

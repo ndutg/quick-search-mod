@@ -272,6 +272,7 @@ data class SearchUiConfigState(
         val launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT,
         val themedIconsEnabled: Boolean = true,
         val deviceThemeEnabled: Boolean = false,
+        val amoledThemeEnabled: Boolean = false,
         val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
         val customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
         val appSuggestionsEnabled: Boolean = true,

@@ -95,6 +95,8 @@ fun AppearanceSettingsSection(
         onThemedIconsToggle: (Boolean) -> Unit,
         deviceThemeEnabled: Boolean,
         onDeviceThemeToggle: (Boolean) -> Unit,
+        amoledThemeEnabled: Boolean,
+        onAmoledThemeToggle: (Boolean) -> Unit,
         accentColorMode: com.tk.quicksearch.search.core.AccentColorMode,
         customAccentColorArgb: Int,
         onAccentColorModeChange: (com.tk.quicksearch.search.core.AccentColorMode) -> Unit,
@@ -161,6 +163,8 @@ fun AppearanceSettingsSection(
                 onThemedIconsToggle = onThemedIconsToggle,
                 deviceThemeEnabled = deviceThemeEnabled,
                 onDeviceThemeToggle = onDeviceThemeToggle,
+                amoledThemeEnabled = amoledThemeEnabled,
+                onAmoledThemeToggle = onAmoledThemeToggle,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

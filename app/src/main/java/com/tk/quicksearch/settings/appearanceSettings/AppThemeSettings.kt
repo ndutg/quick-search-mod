@@ -98,6 +98,8 @@ fun AppThemeCard(
         onThemedIconsToggle: (Boolean) -> Unit,
         deviceThemeEnabled: Boolean,
         onDeviceThemeToggle: (Boolean) -> Unit,
+        amoledThemeEnabled: Boolean,
+        onAmoledThemeToggle: (Boolean) -> Unit,
         modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
@@ -111,6 +113,13 @@ fun AppThemeCard(
     val effectiveSelectedTheme =
             if (useMonoThemeFallback) AppTheme.MONOCHROME else selectedTheme
     val isThemeSourceSelected = effectiveBackgroundSource == BackgroundSource.THEME
+    val showThemedIconsToggle = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+    val showMaterialYouToggle = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val showAmoledThemeToggle =
+            appThemeMode == AppThemeMode.DARK &&
+                    !deviceThemeEnabled &&
+                    isThemeSourceSelected &&
+                    effectiveSelectedTheme == AppTheme.MONOCHROME
 
     val minIntensity = UiPreferences.MIN_OVERLAY_THEME_INTENSITY
     val maxIntensity = UiPreferences.MAX_OVERLAY_THEME_INTENSITY
@@ -236,11 +245,24 @@ fun AppThemeCard(
                                                         .background(
                                                                 Brush.linearGradient(
                                                                         colors =
-                                                                                AppThemeColors(
-                                                                                        theme = option.theme,
-                                                                                        isDarkMode = isDarkMode,
-                                                                                        intensity = overlayThemeIntensity,
-                                                                                ),
+                                                                                if (
+                                                                                        amoledThemeEnabled &&
+                                                                                                option.theme == AppTheme.MONOCHROME &&
+                                                                                                isDarkMode
+                                                                                ) {
+                                                                                    listOf(
+                                                                                            Color.Black,
+                                                                                            Color.Black,
+                                                                                            Color.Black,
+                                                                                            Color.Black,
+                                                                                    )
+                                                                                } else {
+                                                                                    AppThemeColors(
+                                                                                            theme = option.theme,
+                                                                                            isDarkMode = isDarkMode,
+                                                                                            intensity = overlayThemeIntensity,
+                                                                                    )
+                                                                                },
                                                                 ),
                                                         )
                                                         .border(
@@ -327,19 +349,32 @@ fun AppThemeCard(
 
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (showMaterialYouToggle) {
                 SettingsToggleRow(
                         title = stringResource(R.string.settings_device_theme_title),
                         subtitle = stringResource(R.string.settings_device_theme_desc),
                         checked = deviceThemeEnabled,
                         onCheckedChange = onDeviceThemeToggle,
                         horizontalPadding = DesignTokens.SpacingSmall,
-                        isLastItem = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU,
-                        showDivider = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU,
+                        isLastItem = !showAmoledThemeToggle && !showThemedIconsToggle,
+                        showDivider = showAmoledThemeToggle || showThemedIconsToggle,
                 )
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (showAmoledThemeToggle) {
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_amoled_theme_title),
+                        subtitle = stringResource(R.string.settings_amoled_theme_desc),
+                        checked = amoledThemeEnabled,
+                        onCheckedChange = onAmoledThemeToggle,
+                        horizontalPadding = DesignTokens.SpacingSmall,
+                        extraVerticalPadding = (-4).dp,
+                        isLastItem = !showThemedIconsToggle,
+                        showDivider = showThemedIconsToggle,
+                )
+            }
+
+            if (showThemedIconsToggle) {
                 SettingsToggleRow(
                         title = stringResource(R.string.settings_themed_icons_title),
                         subtitle = stringResource(R.string.settings_themed_icons_desc),

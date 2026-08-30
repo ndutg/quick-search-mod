@@ -180,6 +180,7 @@ internal object SearchViewModelInitialStateFactory {
                 appIconShape = startupPreferencesReader.getAppIconShape(),
                 themedIconsEnabled = startupPreferencesReader.isThemedIconsEnabled(),
                 deviceThemeEnabled = startupPreferencesReader.isDeviceThemeEnabled(),
+                amoledThemeEnabled = startupPreferencesReader.isAmoledThemeEnabled(),
                 maskUnsupportedIconPackIcons =
                     startupPreferencesReader.isIconPackUnsupportedIconMaskEnabled(),
                 appSuggestionsEnabled =

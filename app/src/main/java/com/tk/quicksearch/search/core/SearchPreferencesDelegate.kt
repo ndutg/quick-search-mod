@@ -44,6 +44,7 @@ internal interface SearchPreferencesStateAccess {
     var launcherAppIcon: LauncherAppIcon
     var themedIconsEnabled: Boolean
     var deviceThemeEnabled: Boolean
+    var amoledThemeEnabled: Boolean
     var maskUnsupportedIconPackIcons: Boolean
     var wallpaperBackgroundAlpha: Float
     var wallpaperBlurRadius: Float
@@ -647,6 +648,15 @@ internal class SearchPreferencesDelegate(
                 forcePreviewRefresh = shouldSwitchFromCustomToWallpaper,
                 allowDuringQuery = true,
             )
+        }
+    }
+
+    fun setAmoledThemeEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.amoledThemeEnabled == enabled) return@launch
+            userPreferences.setAmoledThemeEnabled(enabled)
+            stateAccess.amoledThemeEnabled = enabled
+            updateConfigState { it.copy(amoledThemeEnabled = enabled) }
         }
     }
 

@@ -133,6 +133,7 @@ fun WidgetsPanelScreen(
     appTheme: AppTheme,
     overlayThemeIntensity: Float,
     deviceThemeEnabled: Boolean,
+    amoledThemeEnabled: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -369,6 +370,7 @@ fun WidgetsPanelScreen(
         appTheme = appTheme,
         overlayThemeIntensity = overlayThemeIntensity,
         deviceThemeEnabled = deviceThemeEnabled,
+        amoledThemeEnabled = amoledThemeEnabled,
         modifier = modifier.fillMaxSize(),
     ) {
         Box(

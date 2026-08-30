@@ -651,6 +651,8 @@
     <string name="settings_default_assistant_title">Assistente predefinito</string>
     <string name="settings_default_launcher_desc">Imposta questa app come launcher predefinito.</string>
     <string name="settings_default_launcher_title">Launcher predefinito</string>
+    <string name="settings_amoled_theme_desc">Usa uno sfondo nero puro per il tema Mono</string>
+    <string name="settings_amoled_theme_title">Tema AMOLED</string>
     <string name="settings_device_theme_blocked_toast">Disattivato quando il tema Material You è attivo</string>
     <string name="settings_device_theme_desc">Usa la tavolozza dei colori dinamici del dispositivo come tema dell\u2019app</string>
     <string name="settings_device_theme_title">Material You</string>

@@ -89,7 +89,9 @@ import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
 import com.tk.quicksearch.search.searchScreen.appThemeActionColor
 import com.tk.quicksearch.search.searchScreen.appThemeDividerColor
 import com.tk.quicksearch.search.searchScreen.appThemeResultCardColor
+import com.tk.quicksearch.search.searchScreen.isAmoledSurfaceTheme
 import com.tk.quicksearch.search.searchScreen.resolveSearchColorTheme
+import com.tk.quicksearch.shared.ui.theme.LocalAmoledThemeActive
 import com.tk.quicksearch.shared.ui.theme.LocalSearchColorTheme
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
@@ -512,6 +514,14 @@ internal fun SearchScreenContent(
     val showBottomSearchBar = showSearchField && state.bottomSearchBarEnabled
     val useOverlayThemeTints = !state.deviceThemeEnabled && state.backgroundSource == com.tk.quicksearch.search.core.BackgroundSource.THEME
     val isDarkMode = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val amoledSurfacesActive =
+            isAmoledSurfaceTheme(
+                    amoledThemeEnabled = state.amoledThemeEnabled,
+                    theme = state.appTheme,
+                    isDarkMode = isDarkMode,
+                    deviceThemeEnabled = state.deviceThemeEnabled,
+                    backgroundSource = state.backgroundSource,
+            )
     val searchColorTheme =
             if (state.deviceThemeEnabled) {
                 null
@@ -521,6 +531,7 @@ internal fun SearchScreenContent(
                         backgroundSource = state.backgroundSource,
                         isDarkMode = isDarkMode,
                         intensity = state.overlayThemeIntensity,
+                        amoledThemeEnabled = state.amoledThemeEnabled,
                 )
             }
     val overlayCardColor =
@@ -529,6 +540,7 @@ internal fun SearchScreenContent(
                         theme = state.appTheme,
                         isDarkMode = isDarkMode,
                         intensity = state.overlayThemeIntensity,
+                        amoledThemeEnabled = state.amoledThemeEnabled,
                 )
             } else {
                 null
@@ -1314,6 +1326,7 @@ internal fun SearchScreenContent(
 
     CompositionLocalProvider(
         LocalSearchColorTheme provides searchColorTheme,
+        LocalAmoledThemeActive provides amoledSurfacesActive,
         LocalSearchResultQuery provides state.query.trim(),
     ) {
     Column(modifier = contentModifier, verticalArrangement = Arrangement.Top) {

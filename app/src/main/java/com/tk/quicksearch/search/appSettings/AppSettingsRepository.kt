@@ -539,6 +539,13 @@ class AppSettingsRepository(
                     keywords = listOf("material you", "dynamic color", "palette", "theme"),
                 )
             }
+            addToggle(
+                id = "app_toggle_amoled_theme",
+                titleRes = R.string.settings_amoled_theme_title,
+                descriptionRes = R.string.settings_amoled_theme_desc,
+                toggleKey = AppSettingsToggleKey.AMOLED_THEME,
+                keywords = listOf("amoled", "true black", "oled", "mono", "dark"),
+            )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 addToggle(
                     id = "app_toggle_themed_icons",

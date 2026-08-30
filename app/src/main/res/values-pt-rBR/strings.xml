@@ -652,6 +652,8 @@
     <string name="settings_default_assistant_title">Assistente padrão</string>
     <string name="settings_default_launcher_desc">Defina este app como seu inicializador (launcher) padrão.</string>
     <string name="settings_default_launcher_title">Launcher padrão</string>
+    <string name="settings_amoled_theme_desc">Usar fundo preto puro no tema Mono</string>
+    <string name="settings_amoled_theme_title">Tema AMOLED</string>
     <string name="settings_device_theme_blocked_toast">Desativado enquanto o tema Material You estiver ativo</string>
     <string name="settings_device_theme_desc">Usar a paleta de cores dinâmicas do seu dispositivo como tema do app</string>
     <string name="settings_device_theme_title">Material You</string>

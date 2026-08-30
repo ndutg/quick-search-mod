@@ -447,6 +447,7 @@ fun OverlayRoot(
                                                         },
                                                 overlayThemeIntensity =
                                                         uiState.overlayThemeIntensity,
+                                                amoledThemeEnabled = uiState.amoledThemeEnabled,
                                                 modifier = Modifier.fillMaxSize(),
                                         )
 

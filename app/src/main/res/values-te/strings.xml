@@ -652,6 +652,8 @@
     <string name="settings_default_assistant_title">డిఫాల్ట్ అసిస్టెంట్</string>
     <string name="settings_default_launcher_desc">ఈ యాప్‌ను మీ డిఫాల్ట్ హోమ్ యాప్‌గా సెట్ చేయండి.</string>
     <string name="settings_default_launcher_title">డిఫాల్ట్ లాంచర్</string>
+    <string name="settings_amoled_theme_desc">Mono థీమ్ కోసం నిజమైన నలుపు నేపథ్యం ఉపయోగించండి</string>
+    <string name="settings_amoled_theme_title">AMOLED థీమ్</string>
     <string name="settings_device_theme_blocked_toast">Material You థీమ్ సక్రియంగా ఉన్నప్పుడు నిలిపివేయబడుతుంది</string>
     <string name="settings_device_theme_desc">మీ పరికరం యొక్క డైనమిక్ రంగుల ప్యాలెట్‌ను యాప్ థీమ్‌గా ఉపయోగించండి</string>
     <string name="settings_device_theme_title">Material You</string>

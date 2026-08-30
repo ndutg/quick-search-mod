@@ -475,6 +475,7 @@ fun SearchScreen(
                         (effectiveBackgroundSource == com.tk.quicksearch.search.core.BackgroundSource.THEME || stateResult.useMonoThemeFallback),
                 appTheme = effectiveAppTheme,
                 overlayThemeIntensity = state.overlayThemeIntensity,
+                amoledThemeEnabled = state.amoledThemeEnabled,
             )
         }
 

@@ -99,12 +99,23 @@ class AppSettingsSearchHandler(
             val shouldHideAppResultRows =
                 setting.toggleKey == AppSettingsToggleKey.APP_RESULT_ROWS &&
                     SearchSection.APPS.name in userPreferences.getDisabledSections()
+            val shouldHideAmoledTheme =
+                setting.toggleKey == AppSettingsToggleKey.AMOLED_THEME &&
+                    (
+                        userPreferences.getAppTheme() != com.tk.quicksearch.search.core.AppTheme.MONOCHROME ||
+                            userPreferences.getAppThemeMode() !=
+                                com.tk.quicksearch.search.core.AppThemeMode.DARK ||
+                            userPreferences.isDeviceThemeEnabled() ||
+                            userPreferences.getBackgroundSource() !=
+                                com.tk.quicksearch.search.core.BackgroundSource.THEME
+                    )
             !shouldHideExcludedItems &&
                 !shouldHideNicknames &&
                 !shouldHideTriggers &&
                 !shouldHideTopResultIndicator &&
                 !shouldHideFuzzySearch &&
-                !shouldHideAppResultRows
+                !shouldHideAppResultRows &&
+                !shouldHideAmoledTheme
         }
     }
 

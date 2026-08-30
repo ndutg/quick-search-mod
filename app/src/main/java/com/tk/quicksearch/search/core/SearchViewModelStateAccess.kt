@@ -174,6 +174,12 @@ internal class SearchViewModelPreferencesStateAccess(
             state.deviceThemeEnabled = value
         }
 
+    override var amoledThemeEnabled: Boolean
+        get() = state.amoledThemeEnabled
+        set(value) {
+            state.amoledThemeEnabled = value
+        }
+
     override var maskUnsupportedIconPackIcons: Boolean
         get() = state.maskUnsupportedIconPackIcons
         set(value) {

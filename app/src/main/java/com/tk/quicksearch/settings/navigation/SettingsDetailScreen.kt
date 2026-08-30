@@ -103,6 +103,7 @@ internal fun SettingsDetailLevel1Screen(
         appTheme = effectiveAppTheme,
         overlayThemeIntensity = state.overlayThemeIntensity,
         deviceThemeEnabled = effectiveDeviceThemeEnabled,
+        amoledThemeEnabled = state.amoledThemeEnabled,
         modifier = modifier,
     ) {
     MonoThemeWrapper(
@@ -434,6 +435,15 @@ internal fun SettingsDetailLevel1Screen(
                                 callbacks.onApplySettingsCommand(
                                     SettingsCommand.Toggle(
                                         key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.DEVICE_THEME,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
+                            amoledThemeEnabled = state.amoledThemeEnabled,
+                            onAmoledThemeToggle = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.AMOLED_THEME,
                                         enabled = enabled,
                                     ),
                                 )

@@ -668,6 +668,8 @@
 <string name="settings_default_assistant_title">Помощник по умолчанию</string>
 <string name="settings_default_launcher_desc">Установить это приложение в качестве главного экрана по умолчанию.</string>
 <string name="settings_default_launcher_title">Главный экран по умолчанию</string>
+<string name="settings_amoled_theme_desc">Использовать абсолютно чёрный фон для темы Mono</string>
+<string name="settings_amoled_theme_title">Тема AMOLED</string>
 <string name="settings_device_theme_blocked_toast">Недоступно, пока включена тема Material You</string>
 <string name="settings_device_theme_desc">Использовать динамическую цветовую палитру устройства для темы приложения</string>
 <string name="settings_device_theme_title">Material You</string>

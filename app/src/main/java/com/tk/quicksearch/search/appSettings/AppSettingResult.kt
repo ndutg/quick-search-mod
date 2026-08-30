@@ -95,6 +95,7 @@ enum class AppSettingsToggleKey {
     ASSISTANT_LAUNCH_VOICE_MODE,
     THEMED_ICONS,
     DEVICE_THEME,
+    AMOLED_THEME,
     USE_SYSTEM_FONT,
     APPS_PER_ROW,
     APP_RESULT_ROWS,

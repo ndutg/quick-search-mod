@@ -140,6 +140,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                     setAssistantLaunchVoiceModeEnabled(command.enabled)
                 AppSettingsToggleKey.THEMED_ICONS -> setThemedIconsEnabled(command.enabled)
                 AppSettingsToggleKey.DEVICE_THEME -> setDeviceThemeEnabled(command.enabled)
+                AppSettingsToggleKey.AMOLED_THEME -> setAmoledThemeEnabled(command.enabled)
                 AppSettingsToggleKey.USE_SYSTEM_FONT -> setUseSystemFont(command.enabled)
                 AppSettingsToggleKey.DICTIONARY -> setDictionaryEnabled(command.enabled)
                 AppSettingsToggleKey.WEATHER -> setWeatherEnabled(command.enabled)
@@ -231,6 +232,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.ASSISTANT_LAUNCH_VOICE_MODE -> assistantLaunchVoiceModeEnabled
         AppSettingsToggleKey.THEMED_ICONS -> themedIconsEnabled
         AppSettingsToggleKey.DEVICE_THEME -> deviceThemeEnabled
+        AppSettingsToggleKey.AMOLED_THEME -> amoledThemeEnabled
         AppSettingsToggleKey.USE_SYSTEM_FONT -> useSystemFont
         AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled
         AppSettingsToggleKey.WEATHER -> weatherEnabled

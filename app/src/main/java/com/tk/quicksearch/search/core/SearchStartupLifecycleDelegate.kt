@@ -60,6 +60,7 @@ internal data class SearchStartupPreferencesSnapshot(
     val launcherAppIcon: LauncherAppIcon,
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean,
+    val amoledThemeEnabled: Boolean,
     val maskUnsupportedIconPackIcons: Boolean,
     val customImageUri: String?,
 )
@@ -89,6 +90,7 @@ internal data class SearchLoadedPreferencesSnapshot(
     val launcherAppIcon: LauncherAppIcon,
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean,
+    val amoledThemeEnabled: Boolean,
     val maskUnsupportedIconPackIcons: Boolean,
     val backgroundSource: BackgroundSource,
     val wallpaperBackgroundAlpha: Float,
@@ -780,6 +782,7 @@ internal class SearchStartupLifecycleDelegate(
                     launcherAppIcon = startupSnapshot.launcherAppIcon,
                     themedIconsEnabled = startupSnapshot.themedIconsEnabled,
                     deviceThemeEnabled = startupSnapshot.deviceThemeEnabled,
+                    amoledThemeEnabled = startupSnapshot.amoledThemeEnabled,
                     maskUnsupportedIconPackIcons = startupSnapshot.maskUnsupportedIconPackIcons,
                     isInitializing = true,
                 )
@@ -891,6 +894,7 @@ internal class SearchStartupLifecycleDelegate(
                 launcherAppIcon = snapshot.launcherAppIcon,
                 themedIconsEnabled = snapshot.themedIconsEnabled,
                 deviceThemeEnabled = snapshot.deviceThemeEnabled,
+                amoledThemeEnabled = snapshot.amoledThemeEnabled,
                 maskUnsupportedIconPackIcons = snapshot.maskUnsupportedIconPackIcons,
                 showWallpaperBackground = snapshot.backgroundSource != BackgroundSource.THEME,
                 wallpaperBackgroundAlpha = snapshot.wallpaperBackgroundAlpha,

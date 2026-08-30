@@ -651,6 +651,8 @@
 <string name="settings_default_assistant_title">Varsayılan asistan</string>
 <string name="settings_default_launcher_desc">Bu uygulamayı varsayılan ana ekran uygulaman olarak ayarla.</string>
 <string name="settings_default_launcher_title">Varsayılan başlatıcı</string>
+<string name="settings_amoled_theme_desc">Mono teması için gerçek siyah arka plan kullan</string>
+<string name="settings_amoled_theme_title">AMOLED Teması</string>
 <string name="settings_device_theme_blocked_toast">Material You teması etkinken devre dışı</string>
 <string name="settings_device_theme_desc">Cihazının dinamik renk paletini uygulama teması olarak kullan</string>
 <string name="settings_device_theme_title">Material You</string>

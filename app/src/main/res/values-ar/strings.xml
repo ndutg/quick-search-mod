@@ -653,6 +653,8 @@
     <string name="settings_default_assistant_title">المساعد الافتراضي</string>
     <string name="settings_default_launcher_desc">تعيين هذا التطبيق كمشغل افتراضي للشاشة الرئيسية.</string>
     <string name="settings_default_launcher_title">المشغل الافتراضي</string>
+    <string name="settings_amoled_theme_desc">استخدم خلفية سوداء حقيقية لسمة Mono</string>
+    <string name="settings_amoled_theme_title">سمة AMOLED</string>
     <string name="settings_device_theme_blocked_toast">معطل عند تفعيل سمة Material You</string>
     <string name="settings_device_theme_desc">استخدام الألوان الديناميكية لجهازك كسمة للتطبيق</string>
     <string name="settings_device_theme_title">Material You</string>
