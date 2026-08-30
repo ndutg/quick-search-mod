@@ -6,6 +6,7 @@ import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.BroadcastReceiver
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
@@ -601,12 +602,17 @@ class AppsRepository(
     ): List<String> {
         val displayKey = SearchTextNormalizer.normalizeForSearch(displayLabel)
         return buildList {
-            labelResourceIds
-                .asSequence()
-                .filter { it != 0 }
-                .distinct()
-                .mapNotNull { resolveEnglishLabel(packageName, it) }
-                .forEach(::add)
+            // The visible label already comes from the current package resources. On an
+            // English device, resolving the same resources again cannot add a useful alias.
+            // Skipping it also avoids expensive package-resource work during catalog startup.
+            if (!isCurrentLocaleEnglish()) {
+                labelResourceIds
+                    .asSequence()
+                    .filter { it != 0 }
+                    .distinct()
+                    .mapNotNull { resolveEnglishLabel(packageName, it) }
+                    .forEach(::add)
+            }
             nonLocalizedLabels.forEach { label -> label?.toString()?.let(::add) }
         }
             .asSequence()
@@ -618,18 +624,27 @@ class AppsRepository(
             .toList()
     }
 
+    private fun isCurrentLocaleEnglish(): Boolean =
+        context.resources.configuration.locales[0]?.language == Locale.ENGLISH.language
+
     private fun resolveEnglishLabel(
         packageName: String,
         labelResourceId: Int,
     ): String? =
         runCatching {
-            val packageContext = context.createPackageContext(packageName, 0)
+            val packageResources = packageManager.getResourcesForApplication(packageName)
             val englishConfiguration =
-                Configuration(packageContext.resources.configuration).apply {
+                Configuration(packageResources.configuration).apply {
                     setLocale(Locale.ENGLISH)
                 }
-            packageContext
-                .createConfigurationContext(englishConfiguration)
+            // Do not create a package Context here. Android parses an app's locale-config while
+            // doing so, and malformed third-party manifests can make every label lookup slow.
+            @Suppress("DEPRECATION")
+            Resources(
+                packageResources.assets,
+                packageResources.displayMetrics,
+                englishConfiguration,
+            )
                 .getText(labelResourceId)
                 .toString()
                 .takeIf { it.isNotBlank() }
