@@ -103,6 +103,7 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.rememberPredictedSubmitIndicatorAlpha
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -1361,7 +1362,8 @@ private fun AppGridItem(
                     DesignTokens.AppIconSize * sizeScale
                 }
             }
-    val indicatorAlpha = if (isPredicted) 1f else 0f
+    val indicatorAlpha by rememberPredictedSubmitIndicatorAlpha(isPredicted)
+    val showTopResultIndicator = indicatorAlpha > 0f
     var isLocalDragging by remember { mutableStateOf(false) }
     val showDraggedPresentation = isDragging || isLocalDragging
     val dragScale by animateFloatAsState(
@@ -1463,8 +1465,8 @@ private fun AppGridItem(
                     .padding(
                         top = TopResultIndicatorTopPadding,
                         bottom = TopResultIndicatorBottomPadding,
-                        start = if (isPredicted) TopResultIndicatorHorizontalPadding else 0.dp,
-                        end = if (isPredicted) TopResultIndicatorHorizontalPadding else 0.dp,
+                        start = if (showTopResultIndicator) TopResultIndicatorHorizontalPadding else 0.dp,
+                        end = if (showTopResultIndicator) TopResultIndicatorHorizontalPadding else 0.dp,
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
