@@ -420,11 +420,12 @@ internal class SearchStartupLifecycleDelegate(
             if (appSearchManager.cachedApps.isNotEmpty() && permissionStateProvider().hasUsagePermission) {
                 appSearchManager.refreshUsageMetadataNow()
             }
-            // Finish any required catalog reconciliation before suggestions become visible. The
-            // rest of the startup UI remains independent, but the app grid is published once in
-            // its final startup order instead of visibly rearranging.
+            // A persisted catalog is already safe to render. Publish its suggestions before any
+            // required reconciliation so slow PackageManager metadata reads cannot hold the app
+            // grid in its loading state. A missing catalog still has to be loaded first.
+            val hasCachedApps = appSearchManager.cachedApps.isNotEmpty()
             val reconcileAppsInBackground =
-                shouldReconcileAppsAtStartup() && appSearchManager.cachedApps.isNotEmpty()
+                shouldReconcileAppsAtStartup() && hasCachedApps
             val catalogReconciliationStartedAtElapsedMs = SystemClock.elapsedRealtime()
             AppSearchPerformanceLogger.log {
                 "startupCatalogReconciliation decision=" +
@@ -434,11 +435,14 @@ internal class SearchStartupLifecycleDelegate(
                         else -> "reuseFreshCatalog"
                     } + " cachedApps=${appSearchManager.cachedApps.size}"
             }
+            if (hasCachedApps) {
+                publishCurrentStartupAppSuggestions()
+            }
             if (reconcileAppsInBackground) {
                 packageRefreshJob?.cancel()
                 packageRefreshJob = launch(startupDispatcher) { loadApps() }
                 packageRefreshJob?.join()
-            } else if (appSearchManager.cachedApps.isEmpty()) {
+            } else if (!hasCachedApps) {
                 loadApps()
             }
             AppSearchPerformanceLogger.logTiming(
@@ -448,15 +452,8 @@ internal class SearchStartupLifecycleDelegate(
             ) {
                 "apps=${appSearchManager.cachedApps.size} reconciled=$reconcileAppsInBackground"
             }
-            val suggestionsStartedAtElapsedMs = SystemClock.elapsedRealtime()
-            refreshAppSuggestions()
-            publishStartupAppSuggestions()
-            AppSearchPerformanceLogger.logTiming(
-                event = "startupSuggestionsPublished",
-                elapsedMs = SystemClock.elapsedRealtime() - suggestionsStartedAtElapsedMs,
-                slowThresholdMs = 100L,
-            ) {
-                "recents=${resultsStateProvider().recentApps.size} pinned=${resultsStateProvider().pinnedApps.size}"
+            if (!hasCachedApps) {
+                publishCurrentStartupAppSuggestions()
             }
 
             val packageNames = appSearchManager.cachedApps.map { it.packageName }.toSet()
@@ -1112,6 +1109,19 @@ internal class SearchStartupLifecycleDelegate(
             )
         }
         saveStartupSurfaceSnapshotAsync(false, false)
+    }
+
+    private suspend fun publishCurrentStartupAppSuggestions() {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
+        refreshAppSuggestions()
+        publishStartupAppSuggestions()
+        AppSearchPerformanceLogger.logTiming(
+            event = "startupSuggestionsPublished",
+            elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+            slowThresholdMs = 100L,
+        ) {
+            "recents=${resultsStateProvider().recentApps.size} pinned=${resultsStateProvider().pinnedApps.size}"
+        }
     }
 
     private suspend fun publishStartupAppSuggestions() {
