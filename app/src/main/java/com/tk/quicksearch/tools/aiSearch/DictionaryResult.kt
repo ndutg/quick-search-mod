@@ -36,12 +36,13 @@ fun DictionaryResult(
             } else {
                 null
             }
+    val effectiveProviderId = dictionaryState.llmProviderId ?: llmProviderId
 
     GeminiResultCard(
             showWallpaperBackground = showWallpaperBackground,
             showAttribution = showAttribution,
             usedModelId = dictionaryState.usedModelId,
-            llmProviderId = llmProviderId,
+            llmProviderId = effectiveProviderId,
             isAttributionClickable = true,
             onGeminiModelInfoClick = onGeminiModelInfoClick,
             copyText = copyText,

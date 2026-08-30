@@ -1001,7 +1001,8 @@ fun ContentLayout(
                     if (showWorldClock) {
                         WorldClockResult(
                                 worldClockState = state.worldClockState,
-                                llmProviderId = state.aiSearchLlmProviderId,
+                                llmProviderId = state.worldClockState.llmProviderId
+                                        ?: state.aiSearchLlmProviderId,
                                 showWallpaperBackground = effectiveShowWallpaperBackground,
                                 onGeminiModelInfoClick = onGeminiModelInfoClick,
                         )
@@ -1012,7 +1013,8 @@ fun ContentLayout(
                     if (showDictionary) {
                         DictionaryResult(
                                 dictionaryState = state.dictionaryState,
-                                llmProviderId = state.aiSearchLlmProviderId,
+                                llmProviderId = state.dictionaryState.llmProviderId
+                                        ?: state.aiSearchLlmProviderId,
                                 showWallpaperBackground = effectiveShowWallpaperBackground,
                                 onGeminiModelInfoClick = onGeminiModelInfoClick,
                         )

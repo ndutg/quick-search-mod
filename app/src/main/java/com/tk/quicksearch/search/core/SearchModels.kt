@@ -242,6 +242,7 @@ data class WorldClockState(
         val timeZoneText: String? = null,
         val activeQuery: String? = null,
         val usedModelId: String? = null,
+        val llmProviderId: AiSearchLlmProviderId? = null,
         val errorMessage: String? = null,
 )
 
@@ -254,6 +255,7 @@ data class DictionaryState(
         val synonyms: List<String> = emptyList(),
         val activeQuery: String? = null,
         val usedModelId: String? = null,
+        val llmProviderId: AiSearchLlmProviderId? = null,
         val errorMessage: String? = null,
 )
 
