@@ -1,6 +1,5 @@
 package com.tk.quicksearch.search.appSettings
 
-import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.EXCLUDED_ITEMS
@@ -83,7 +82,6 @@ class AppSettingsSearchHandler(
             .appSettingOpenCounts
 
     private fun getVisibleSettings(): List<AppSettingResult> {
-        val backgroundSource = userPreferences.getBackgroundSource()
         return availableSettings.filter { setting ->
             val shouldHideExcludedItems =
                 !hasExcludedItems() && setting.destination == EXCLUDED_ITEMS
@@ -91,9 +89,6 @@ class AppSettingsSearchHandler(
                 !userPreferences.hasAnyNicknameItems() && setting.destination == NICKNAMES
             val shouldHideTriggers =
                 !userPreferences.hasAnyTriggerItems() && setting.destination == TRIGGERS
-            val shouldHideWallpaperAccent =
-                setting.toggleKey == AppSettingsToggleKey.WALLPAPER_ACCENT &&
-                    backgroundSource == BackgroundSource.THEME
             val shouldHideTopResultIndicator =
                 setting.toggleKey == AppSettingsToggleKey.TOP_RESULT_INDICATOR &&
                     (userPreferences.isPhysicalKeyboardConnected() ||
@@ -107,7 +102,6 @@ class AppSettingsSearchHandler(
             !shouldHideExcludedItems &&
                 !shouldHideNicknames &&
                 !shouldHideTriggers &&
-                !shouldHideWallpaperAccent &&
                 !shouldHideTopResultIndicator &&
                 !shouldHideFuzzySearch &&
                 !shouldHideAppResultRows

@@ -727,8 +727,12 @@
     <string name="settings_tools_title">الأدوات</string>
     <string name="settings_use_system_font_desc">اتباع خط النظام الافتراضي للجهاز</string>
     <string name="settings_use_system_font_title">استخدام خط النظام</string>
-    <string name="settings_wallpaper_accent_desc">استخراج ألوان السمة من صورة خلفية الشاشة</string>
-    <string name="settings_wallpaper_accent_title">الألوان المستخرجة</string>
+    <string name="settings_accent_color_from_wallpaper">الخلفية</string>
+    <string name="settings_accent_color_none">بدون</string>
+    <string name="settings_accent_color_picker_title">لون السمة</string>
+    <string name="settings_accent_color_wallpaper_required_toast">أعد خلفية الشاشة أولاً</string>
+    <string name="settings_wallpaper_accent_desc">اشتقاق لون السمة من الخلفية أو اختيار لون مخصص</string>
+    <string name="settings_wallpaper_accent_title">لون السمة</string>
     <string name="settings_wallpaper_blur_label">تمويه</string>
     <string name="settings_wallpaper_card_title">خلفية الشاشة</string>
     <string name="settings_wallpaper_transparency_label">الشفافية</string>

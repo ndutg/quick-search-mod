@@ -726,8 +726,12 @@
     <string name="settings_tools_title">Tools</string>
     <string name="settings_use_system_font_desc">Schriftstil des Geräts übernehmen</string>
     <string name="settings_use_system_font_title">Systemschrift verwenden</string>
-    <string name="settings_wallpaper_accent_desc">Akzentfarben vom Hintergrundbild ableiten</string>
-    <string name="settings_wallpaper_accent_title">Akzentfarben</string>
+    <string name="settings_accent_color_from_wallpaper">Hintergrundbild</string>
+    <string name="settings_accent_color_none">Keine</string>
+    <string name="settings_accent_color_picker_title">Akzentfarbe</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Richten Sie zuerst den Hintergrund ein</string>
+    <string name="settings_wallpaper_accent_desc">Akzentfarbe vom Hintergrundbild ableiten oder eine eigene Farbe wählen</string>
+    <string name="settings_wallpaper_accent_title">Akzentfarbe</string>
     <string name="settings_wallpaper_blur_label">Unschärfe</string>
     <string name="settings_wallpaper_card_title">Hintergrundbild</string>
     <string name="settings_wallpaper_transparency_label">Transparenz</string>

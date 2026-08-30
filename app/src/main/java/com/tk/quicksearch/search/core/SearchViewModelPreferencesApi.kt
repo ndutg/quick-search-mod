@@ -207,8 +207,11 @@ internal interface SearchViewModelPreferencesApi {
     fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) =
         preferencesApiDelegate.setOpenTopResultUsingKeyboardEnabled(enabled)
 
-    fun setWallpaperAccentEnabled(enabled: Boolean) =
-        preferencesApiDelegate.setWallpaperAccentEnabled(enabled)
+    fun setAccentColorMode(mode: AccentColorMode) =
+        preferencesApiDelegate.setAccentColorMode(mode)
+
+    fun setCustomAccentColorArgb(argb: Int) =
+        preferencesApiDelegate.setCustomAccentColorArgb(argb)
 
     fun setClearQueryOnLaunchEnabled(enabled: Boolean) =
         preferencesApiDelegate.setClearQueryOnLaunchEnabled(enabled)
@@ -488,8 +491,11 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) =
         preferencesDelegate.setTopMatchesSectionEnabled(section, enabled)
 
-    fun setWallpaperAccentEnabled(enabled: Boolean) =
-        preferencesDelegate.setWallpaperAccentEnabled(enabled)
+    fun setAccentColorMode(mode: AccentColorMode) =
+        preferencesDelegate.setAccentColorMode(mode)
+
+    fun setCustomAccentColorArgb(argb: Int) =
+        preferencesDelegate.setCustomAccentColorArgb(argb)
 
     fun setClearQueryOnLaunchEnabled(enabled: Boolean) =
         preferencesDelegate.setClearQueryOnLaunchEnabled(enabled)

@@ -726,8 +726,12 @@
     <string name="settings_tools_title">Ferramentas</string>
     <string name="settings_use_system_font_desc">Seguir o estilo de fonte do seu dispositivo</string>
     <string name="settings_use_system_font_title">Usar fonte do sistema</string>
-    <string name="settings_wallpaper_accent_desc">Derivar cores de destaque a partir da imagem de fundo</string>
-    <string name="settings_wallpaper_accent_title">Cores de destaque</string>
+    <string name="settings_accent_color_from_wallpaper">Papel de parede</string>
+    <string name="settings_accent_color_none">Nenhum</string>
+    <string name="settings_accent_color_picker_title">Cor de destaque</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Configure primeiro um fundo de papel de parede</string>
+    <string name="settings_wallpaper_accent_desc">Obtenha a cor de destaque do papel de parede ou escolha uma cor personalizada</string>
+    <string name="settings_wallpaper_accent_title">Cor de destaque</string>
     <string name="settings_wallpaper_blur_label">Desfoque</string>
     <string name="settings_wallpaper_card_title">Fundo do papel de parede</string>
     <string name="settings_wallpaper_transparency_label">Transparência</string>

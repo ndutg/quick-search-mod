@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.shared
 
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AppTheme
@@ -65,6 +66,10 @@ sealed interface SettingsCommand {
     data class AppThemeModeSetting(val mode: AppThemeMode) : SettingsCommand
 
     data class BackgroundSourceSetting(val source: BackgroundSource) : SettingsCommand
+
+    data class AccentColorModeSetting(val mode: AccentColorMode) : SettingsCommand
+
+    data class CustomAccentColorSetting(val argb: Int) : SettingsCommand
 
     data class CustomImageUriSetting(val uri: String?) : SettingsCommand
 
@@ -131,8 +136,6 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.NUMBER_SEARCH -> setNumberSearchEnabled(command.enabled)
                 AppSettingsToggleKey.ASSISTANT_LAUNCH_VOICE_MODE ->
                     setAssistantLaunchVoiceModeEnabled(command.enabled)
-                AppSettingsToggleKey.WALLPAPER_ACCENT ->
-                    setWallpaperAccentEnabled(command.enabled)
                 AppSettingsToggleKey.THEMED_ICONS -> setThemedIconsEnabled(command.enabled)
                 AppSettingsToggleKey.DEVICE_THEME -> setDeviceThemeEnabled(command.enabled)
                 AppSettingsToggleKey.USE_SYSTEM_FONT -> setUseSystemFont(command.enabled)
@@ -175,6 +178,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         is SettingsCommand.AppThemeSetting -> setAppTheme(command.theme)
         is SettingsCommand.AppThemeModeSetting -> setAppThemeMode(command.mode)
         is SettingsCommand.BackgroundSourceSetting -> setBackgroundSource(command.source)
+        is SettingsCommand.AccentColorModeSetting -> setAccentColorMode(command.mode)
+        is SettingsCommand.CustomAccentColorSetting -> setCustomAccentColorArgb(command.argb)
         is SettingsCommand.CustomImageUriSetting -> setCustomImageUri(command.uri)
         is SettingsCommand.IconPackPackageSetting -> setIconPackPackage(command.packageName)
         is SettingsCommand.AppIconShapeSetting -> setAppIconShape(command.shape)
@@ -221,7 +226,6 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.DIRECT_DIAL -> directDialEnabled
         AppSettingsToggleKey.NUMBER_SEARCH -> numberSearchEnabled
         AppSettingsToggleKey.ASSISTANT_LAUNCH_VOICE_MODE -> assistantLaunchVoiceModeEnabled
-        AppSettingsToggleKey.WALLPAPER_ACCENT -> wallpaperAccentEnabled
         AppSettingsToggleKey.THEMED_ICONS -> themedIconsEnabled
         AppSettingsToggleKey.DEVICE_THEME -> deviceThemeEnabled
         AppSettingsToggleKey.USE_SYSTEM_FONT -> useSystemFont

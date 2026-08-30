@@ -725,8 +725,12 @@
     <string name="settings_tools_title">Strumenti</string>
     <string name="settings_use_system_font_desc">Usa lo stile del carattere del dispositivo</string>
     <string name="settings_use_system_font_title">Usa carattere di sistema</string>
-    <string name="settings_wallpaper_accent_desc">Ricava i colori di accento dall\u2019immagine di sfondo</string>
-    <string name="settings_wallpaper_accent_title">Colori di accento</string>
+    <string name="settings_accent_color_from_wallpaper">Sfondo</string>
+    <string name="settings_accent_color_none">Nessuno</string>
+    <string name="settings_accent_color_picker_title">Colore di accento</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Imposta prima uno sfondo</string>
+    <string name="settings_wallpaper_accent_desc">Ricava il colore di accento dallo sfondo o scegli un colore personalizzato</string>
+    <string name="settings_wallpaper_accent_title">Colore di accento</string>
     <string name="settings_wallpaper_blur_label">Sfocatura</string>
     <string name="settings_wallpaper_card_title">Sfondo</string>
     <string name="settings_wallpaper_transparency_label">Trasparenza</string>

@@ -30,7 +30,8 @@ internal interface SearchPreferencesStateAccess {
     var settingsIconEnabled: Boolean
     var topResultIndicatorEnabled: Boolean
     var openTopResultUsingKeyboardEnabled: Boolean
-    var wallpaperAccentEnabled: Boolean
+    var accentColorMode: AccentColorMode
+    var customAccentColorArgb: Int
     var openKeyboardOnLaunch: Boolean
     var overlayModeEnabled: Boolean
     var autoCloseOverlay: Boolean
@@ -839,12 +840,22 @@ internal class SearchPreferencesDelegate(
         }
     }
 
-    fun setWallpaperAccentEnabled(enabled: Boolean) {
+    fun setAccentColorMode(mode: AccentColorMode) {
         scope.launch(Dispatchers.IO) {
-            if (stateAccess.wallpaperAccentEnabled == enabled) return@launch
-            userPreferences.setWallpaperAccentEnabled(enabled)
-            stateAccess.wallpaperAccentEnabled = enabled
-            updateConfigState { it.copy(wallpaperAccentEnabled = enabled) }
+            if (stateAccess.accentColorMode == mode) return@launch
+            userPreferences.setAccentColorMode(mode)
+            stateAccess.accentColorMode = mode
+            updateConfigState { it.copy(accentColorMode = mode) }
+            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+        }
+    }
+
+    fun setCustomAccentColorArgb(argb: Int) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.customAccentColorArgb == argb) return@launch
+            userPreferences.setCustomAccentColorArgb(argb)
+            stateAccess.customAccentColorArgb = argb
+            updateConfigState { it.copy(customAccentColorArgb = argb) }
             stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
         }
     }

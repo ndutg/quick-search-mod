@@ -742,8 +742,12 @@
 <string name="settings_tools_title">Инструменты</string>
 <string name="settings_use_system_font_desc">Использовать системный стиль шрифта вашего устройства</string>
 <string name="settings_use_system_font_title">Системный шрифт</string>
-<string name="settings_wallpaper_accent_desc">Подбирать акцентные цвета на основе фонового изображения</string>
-<string name="settings_wallpaper_accent_title">Акцентные цвета</string>
+<string name="settings_accent_color_from_wallpaper">Обои</string>
+<string name="settings_accent_color_none">Нет</string>
+<string name="settings_accent_color_picker_title">Цвет акцента</string>
+<string name="settings_accent_color_wallpaper_required_toast">Сначала настройте фон из обоев</string>
+<string name="settings_wallpaper_accent_desc">Брать акцентный цвет с обоев или выбрать свой</string>
+<string name="settings_wallpaper_accent_title">Акцентный цвет</string>
 <string name="settings_wallpaper_blur_label">Размытие</string>
 <string name="settings_wallpaper_card_title">Фон обоев</string>
 <string name="settings_wallpaper_transparency_label">Прозрачность</string>

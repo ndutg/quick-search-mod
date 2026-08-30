@@ -30,6 +30,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import me.tatarka.google.material.palettes.CorePalette
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.shared.util.ImageAppearance
 import com.tk.quicksearch.shared.util.WallpaperUtils
@@ -187,8 +188,8 @@ private fun withImageAccent(
  * QuickSearch application theme composable.
  *
  * Provides Material 3 color schemes and app-specific semantic color tokens.
- * When image backgrounds are active and wallpaper accent is enabled, accents are derived
- * directly from the current wallpaper/custom image.
+ * When image backgrounds are active and accent mode is From Wallpaper, accents are derived
+ * directly from the current wallpaper/custom image. Custom mode uses a user-picked color.
  *
  * @param content The composable content to be themed.
  */
@@ -200,7 +201,8 @@ fun QuickSearchTheme(
     appThemeMode: com.tk.quicksearch.search.core.AppThemeMode = com.tk.quicksearch.search.core.AppThemeMode.SYSTEM,
     backgroundSource: com.tk.quicksearch.search.core.BackgroundSource = com.tk.quicksearch.search.core.BackgroundSource.THEME,
     customImageUri: String? = null,
-    wallpaperAccentEnabled: Boolean = true,
+    accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
+    customAccentColorArgb: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
     deviceThemeEnabled: Boolean = false,
     content: @Composable () -> Unit,
 ) {
@@ -222,12 +224,18 @@ fun QuickSearchTheme(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val useDeviceDynamicColors = deviceThemeEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val useImageDerivedAccent =
-        !useDeviceDynamicColors && wallpaperAccentEnabled && backgroundSource != BackgroundSource.THEME
+    val useWallpaperDerivedAccent =
+        !useDeviceDynamicColors &&
+            accentColorMode == AccentColorMode.FROM_WALLPAPER &&
+            backgroundSource != BackgroundSource.THEME
+    val useCustomAccent =
+        !useDeviceDynamicColors &&
+            accentColorMode == AccentColorMode.CUSTOM &&
+            backgroundSource != BackgroundSource.THEME
 
     var wallpaperChangeVersion by remember { mutableIntStateOf(0) }
-    DisposableEffect(context, backgroundSource, wallpaperAccentEnabled) {
-        if (!useImageDerivedAccent || backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
+    DisposableEffect(context, backgroundSource, accentColorMode) {
+        if (!useWallpaperDerivedAccent || backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
             onDispose { }
         } else {
             val appContext = context.applicationContext
@@ -257,8 +265,8 @@ fun QuickSearchTheme(
         }
     }
 
-    DisposableEffect(lifecycleOwner, backgroundSource, wallpaperAccentEnabled) {
-        if (!useImageDerivedAccent || backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
+    DisposableEffect(lifecycleOwner, backgroundSource, accentColorMode) {
+        if (!useWallpaperDerivedAccent || backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
             onDispose { }
         } else {
             val observer =
@@ -279,11 +287,11 @@ fun QuickSearchTheme(
             null,
             backgroundSource,
             customImageUri,
-            wallpaperAccentEnabled,
+            accentColorMode,
             wallpaperChangeVersion,
         ) {
             value =
-                if (useImageDerivedAccent) {
+                if (useWallpaperDerivedAccent) {
                     WallpaperUtils.getBackgroundAppearance(
                         context = context,
                         backgroundSource = backgroundSource,
@@ -295,11 +303,19 @@ fun QuickSearchTheme(
         }
 
     val imageAccentSlots =
-        imageAppearance?.let { appearance ->
-            resolveImageAccentSlots(
-                baseColorArgb = appearance.accentColorArgb,
-                useDarkTheme = useDarkTheme,
-            )
+        when {
+            useCustomAccent ->
+                resolveImageAccentSlots(
+                    baseColorArgb = customAccentColorArgb,
+                    useDarkTheme = useDarkTheme,
+                )
+            else ->
+                imageAppearance?.let { appearance ->
+                    resolveImageAccentSlots(
+                        baseColorArgb = appearance.accentColorArgb,
+                        useDarkTheme = useDarkTheme,
+                    )
+                }
         }
 
     val colorScheme =

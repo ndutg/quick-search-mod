@@ -726,7 +726,11 @@
     <string name="settings_tools_title">टूल्स</string>
     <string name="settings_use_system_font_desc">अपने डिवाइस की फ़ॉन्ट शैली का पालन करें</string>
     <string name="settings_use_system_font_title">सिस्टम फ़ॉन्ट उपयोग करें</string>
-    <string name="settings_wallpaper_accent_desc">पृष्ठभूमि छवि से एक्सेंट रंग प्राप्त करें</string>
+    <string name="settings_accent_color_from_wallpaper">वॉलपेपर</string>
+    <string name="settings_accent_color_none">कोई नहीं</string>
+    <string name="settings_accent_color_picker_title">एक्सेंट रंग</string>
+    <string name="settings_accent_color_wallpaper_required_toast">पहले वॉलपेपर बैकग्राउंड सेट करें</string>
+    <string name="settings_wallpaper_accent_desc">वॉलपेपर से एक्सेंट रंग प्राप्त करें या कस्टम रंग चुनें</string>
     <string name="settings_wallpaper_accent_title">एक्सेंट रंग</string>
     <string name="settings_wallpaper_blur_label">ब्लर</string>
     <string name="settings_wallpaper_card_title">वॉलपेपर पृष्ठभूमि</string>

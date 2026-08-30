@@ -94,8 +94,10 @@ fun AppearanceSettingsSection(
         onThemedIconsToggle: (Boolean) -> Unit,
         deviceThemeEnabled: Boolean,
         onDeviceThemeToggle: (Boolean) -> Unit,
-        wallpaperAccentEnabled: Boolean,
-        onWallpaperAccentToggle: (Boolean) -> Unit,
+        accentColorMode: com.tk.quicksearch.search.core.AccentColorMode,
+        customAccentColorArgb: Int,
+        onAccentColorModeChange: (com.tk.quicksearch.search.core.AccentColorMode) -> Unit,
+        onCustomAccentColorChange: (Int) -> Unit,
         hasWallpaperPermission: Boolean = true,
         modifier: Modifier = Modifier,
 ) {
@@ -173,8 +175,10 @@ fun AppearanceSettingsSection(
                 onPickCustomImage = onPickCustomImage,
                 hasWallpaperPermission = hasWallpaperPermission,
                 onRequestWallpaperPermission = onRequestWallpaperPermission,
-                wallpaperAccentEnabled = wallpaperAccentEnabled,
-                onWallpaperAccentToggle = onWallpaperAccentToggle,
+                accentColorMode = accentColorMode,
+                customAccentColorArgb = customAccentColorArgb,
+                onAccentColorModeChange = onAccentColorModeChange,
+                onCustomAccentColorChange = onCustomAccentColorChange,
                 deviceThemeEnabled = deviceThemeEnabled,
         )
 

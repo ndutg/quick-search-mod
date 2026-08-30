@@ -300,7 +300,8 @@ open class MainActivity : ComponentActivity() {
                 appThemeMode = uiState.appThemeMode,
                 backgroundSource = uiState.backgroundSource,
                 customImageUri = uiState.customImageUri,
-                wallpaperAccentEnabled = uiState.wallpaperAccentEnabled,
+                accentColorMode = uiState.accentColorMode,
+                customAccentColorArgb = uiState.customAccentColorArgb,
                 deviceThemeEnabled = uiState.deviceThemeEnabled,
             ) {
                 Box(

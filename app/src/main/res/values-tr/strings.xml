@@ -725,8 +725,12 @@
 <string name="settings_tools_title">Araçlar</string>
 <string name="settings_use_system_font_desc">Cihazının yazı tipi stilini takip et</string>
 <string name="settings_use_system_font_title">Sistem yazı tipini kullan</string>
-<string name="settings_wallpaper_accent_desc">Vurgu renklerini arka plan görselinden türet</string>
-<string name="settings_wallpaper_accent_title">Vurgu renkleri</string>
+<string name="settings_accent_color_from_wallpaper">Duvar kağıdı</string>
+<string name="settings_accent_color_none">Yok</string>
+<string name="settings_accent_color_picker_title">Vurgu rengi</string>
+<string name="settings_accent_color_wallpaper_required_toast">Önce duvar kağıdı arka planını ayarlayın</string>
+<string name="settings_wallpaper_accent_desc">Vurgu rengini duvar kağıdından türetin veya özel bir renk seçin</string>
+<string name="settings_wallpaper_accent_title">Vurgu rengi</string>
 <string name="settings_wallpaper_blur_label">Bulanıklık</string>
 <string name="settings_wallpaper_card_title">Duvar kağıdı arka planı</string>
 <string name="settings_wallpaper_transparency_label">Şeffaflık</string>

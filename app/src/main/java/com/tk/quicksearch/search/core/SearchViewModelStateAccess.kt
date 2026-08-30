@@ -90,10 +90,16 @@ internal class SearchViewModelPreferencesStateAccess(
             state.openTopResultUsingKeyboardEnabled = value
         }
 
-    override var wallpaperAccentEnabled: Boolean
-        get() = state.wallpaperAccentEnabled
+    override var accentColorMode: AccentColorMode
+        get() = state.accentColorMode
         set(value) {
-            state.wallpaperAccentEnabled = value
+            state.accentColorMode = value
+        }
+
+    override var customAccentColorArgb: Int
+        get() = state.customAccentColorArgb
+        set(value) {
+            state.customAccentColorArgb = value
         }
 
     override var openKeyboardOnLaunch: Boolean

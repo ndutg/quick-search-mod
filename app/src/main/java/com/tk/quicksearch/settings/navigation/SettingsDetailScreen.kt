@@ -435,13 +435,16 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
-                            wallpaperAccentEnabled = state.wallpaperAccentEnabled,
-                            onWallpaperAccentToggle = { enabled ->
+                            accentColorMode = state.accentColorMode,
+                            customAccentColorArgb = state.customAccentColorArgb,
+                            onAccentColorModeChange = { mode ->
                                 callbacks.onApplySettingsCommand(
-                                    SettingsCommand.Toggle(
-                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.WALLPAPER_ACCENT,
-                                        enabled = enabled,
-                                    ),
+                                    SettingsCommand.AccentColorModeSetting(mode),
+                                )
+                            },
+                            onCustomAccentColorChange = { argb ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.CustomAccentColorSetting(argb),
                                 )
                             },
                             hasWallpaperPermission = state.hasWallpaperPermission,

@@ -729,8 +729,12 @@
     <string name="settings_tools_title">Tools</string>
     <string name="settings_use_system_font_desc">Follow your device font style</string>
     <string name="settings_use_system_font_title">Use System Font</string>
-    <string name="settings_wallpaper_accent_desc">Derive accent colors from background image</string>
-    <string name="settings_wallpaper_accent_title">Accent Colors</string>
+    <string name="settings_accent_color_from_wallpaper">Wallpaper</string>
+    <string name="settings_accent_color_none">None</string>
+    <string name="settings_accent_color_picker_title">Accent color</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Setup wallpaper background first</string>
+    <string name="settings_wallpaper_accent_desc">Derive accent color from wallpaper or pick a custom color</string>
+    <string name="settings_wallpaper_accent_title">Accent Color</string>
     <string name="settings_wallpaper_blur_label">Blur</string>
     <string name="settings_wallpaper_card_title">Wallpaper Background</string>
     <string name="settings_wallpaper_transparency_label">Transparency</string>

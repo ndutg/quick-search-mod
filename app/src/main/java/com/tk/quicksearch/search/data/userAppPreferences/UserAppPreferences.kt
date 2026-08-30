@@ -1223,6 +1223,16 @@ class UserAppPreferences(
 
     fun setWallpaperAccentEnabled(enabled: Boolean) = uiPreferences.setWallpaperAccentEnabled(enabled)
 
+    fun getAccentColorMode(): com.tk.quicksearch.search.core.AccentColorMode =
+            uiPreferences.getAccentColorMode()
+
+    fun setAccentColorMode(mode: com.tk.quicksearch.search.core.AccentColorMode) =
+            uiPreferences.setAccentColorMode(mode)
+
+    fun getCustomAccentColorArgb(): Int = uiPreferences.getCustomAccentColorArgb()
+
+    fun setCustomAccentColorArgb(argb: Int) = uiPreferences.setCustomAccentColorArgb(argb)
+
     fun isAiSearchSetupExpanded(): Boolean = uiPreferences.isAiSearchSetupExpanded()
 
     fun setAiSearchSetupExpanded(expanded: Boolean) =

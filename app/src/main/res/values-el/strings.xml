@@ -726,8 +726,12 @@
     <string name="settings_tools_title">Εργαλεία</string>
     <string name="settings_use_system_font_desc">Χρήση του στυλ γραμματοσειράς της συσκευής</string>
     <string name="settings_use_system_font_title">Χρήση γραμματοσειράς συστήματος</string>
-    <string name="settings_wallpaper_accent_desc">Εξαγωγή χρωμάτων έμφασης από την εικόνα φόντου</string>
-    <string name="settings_wallpaper_accent_title">Χρώματα έμφασης</string>
+    <string name="settings_accent_color_from_wallpaper">Ταπετσαρία</string>
+    <string name="settings_accent_color_none">Καμία</string>
+    <string name="settings_accent_color_picker_title">Χρώμα έμφασης</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Ρυθμίστε πρώτα το φόντο ταπετσαρίας</string>
+    <string name="settings_wallpaper_accent_desc">Προκύπτει το χρώμα έμφασης από την ταπετσαρία ή επιλέξτε προσαρμοσμένο χρώμα</string>
+    <string name="settings_wallpaper_accent_title">Χρώμα έμφασης</string>
     <string name="settings_wallpaper_blur_label">Θόλωση</string>
     <string name="settings_wallpaper_card_title">Φόντο ταπετσαρίας</string>
     <string name="settings_wallpaper_transparency_label">Διαφάνεια</string>

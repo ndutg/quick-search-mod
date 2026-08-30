@@ -523,12 +523,12 @@ class AppSettingsRepository(
                 keywords = listOf("call"),
             )
             addSearchSectionToggles()
-            addToggle(
+            addNavigation(
                 id = "app_toggle_wallpaper_accent",
                 titleRes = R.string.settings_wallpaper_accent_title,
                 descriptionRes = R.string.settings_wallpaper_accent_desc,
-                toggleKey = AppSettingsToggleKey.WALLPAPER_ACCENT,
-                keywords = listOf("wallpaper", "background"),
+                destination = AppSettingsDestination.APPEARANCE,
+                keywords = listOf("wallpaper", "background", "accent", "custom color"),
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 addToggle(

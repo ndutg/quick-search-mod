@@ -726,8 +726,12 @@
 <string name="settings_tools_title">Outils</string>
 <string name="settings_use_system_font_desc">Suivre le style de police de votre appareil</string>
 <string name="settings_use_system_font_title">Utiliser la police système</string>
-<string name="settings_wallpaper_accent_desc">Déduire les couleurs d\'accentuation de l\'image de fond d\'écran</string>
-<string name="settings_wallpaper_accent_title">Couleurs d\'accentuation</string>
+<string name="settings_accent_color_from_wallpaper">Fond d\'écran</string>
+<string name="settings_accent_color_none">Aucune</string>
+<string name="settings_accent_color_picker_title">Couleur d\'accentuation</string>
+<string name="settings_accent_color_wallpaper_required_toast">Configurez d\'abord un fond d\'écran</string>
+<string name="settings_wallpaper_accent_desc">Dériver la couleur d\'accentuation du fond d\'écran ou choisir une couleur personnalisée</string>
+<string name="settings_wallpaper_accent_title">Couleur d\'accentuation</string>
 <string name="settings_wallpaper_blur_label">Flou</string>
 <string name="settings_wallpaper_card_title">Arrière-plan du fond d\'écran</string>
 <string name="settings_wallpaper_transparency_label">Transparence</string>

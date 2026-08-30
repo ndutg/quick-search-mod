@@ -45,7 +45,7 @@ private val HueBarHeight = 28.dp
 private val ColorPreviewSize = 32.dp
 
 @Composable
-internal fun WidgetColorPickerDialog(
+fun WidgetColorPickerDialog(
     initialColor: Color,
     onDismiss: () -> Unit,
     onConfirm: (Color) -> Unit,

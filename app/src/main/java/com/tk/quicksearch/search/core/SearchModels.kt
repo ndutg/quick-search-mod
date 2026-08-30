@@ -134,6 +134,12 @@ enum class BackgroundSource {
         CUSTOM_IMAGE,
 }
 
+enum class AccentColorMode {
+        NONE,
+        FROM_WALLPAPER,
+        CUSTOM,
+}
+
 enum class AppThemeMode {
         LIGHT,
         DARK,
@@ -570,7 +576,8 @@ data class SearchUiState(
         val useSystemFont: Boolean = false,
         val homeTextColorOverride: HomeTextColor? = null,
         val backgroundSource: BackgroundSource = BackgroundSource.THEME,
-        val wallpaperAccentEnabled: Boolean = true,
+        val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
+        val customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
         val customImageUri: String? = null,
         val startupBackgroundPreviewPath: String? = null,
         // Icon pack
@@ -864,7 +871,8 @@ fun SearchUiState(
                 settingsIconEnabled = config.settingsIconEnabled,
                 topResultIndicatorEnabled = config.topResultIndicatorEnabled,
                 openTopResultUsingKeyboardEnabled = config.openTopResultUsingKeyboardEnabled,
-                wallpaperAccentEnabled = config.wallpaperAccentEnabled,
+                accentColorMode = config.accentColorMode,
+                customAccentColorArgb = config.customAccentColorArgb,
                 openKeyboardOnLaunch = config.openKeyboardOnLaunch,
                 clearQueryOnLaunch = config.clearQueryOnLaunch,
                 autoCloseOverlay = config.autoCloseOverlay,

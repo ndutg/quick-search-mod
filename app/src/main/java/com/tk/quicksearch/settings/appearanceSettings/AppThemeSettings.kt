@@ -24,11 +24,14 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +54,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -58,8 +63,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.AppTheme
@@ -72,6 +80,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.shared.util.hapticToggle
+import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetColorPickerDialog
 import kotlin.math.roundToInt
 
 @Composable
@@ -358,8 +367,10 @@ fun WallpaperCard(
         onPickCustomImage: () -> Unit,
         hasWallpaperPermission: Boolean,
         onRequestWallpaperPermission: () -> Unit,
-        wallpaperAccentEnabled: Boolean,
-        onWallpaperAccentToggle: (Boolean) -> Unit,
+        accentColorMode: AccentColorMode,
+        customAccentColorArgb: Int,
+        onAccentColorModeChange: (AccentColorMode) -> Unit,
+        onCustomAccentColorChange: (Int) -> Unit,
         deviceThemeEnabled: Boolean = false,
         modifier: Modifier = Modifier,
 ) {
@@ -401,6 +412,34 @@ fun WallpaperCard(
                         .roundToInt()
                         .coerceIn(0, 7),
         )
+    }
+    var showCustomAccentPicker by rememberSaveable { mutableStateOf(false) }
+
+    val selectAccentMode: (AccentColorMode) -> Unit = { mode ->
+        val wallpaperAccentAvailable = isWallpaperSourceSelected || isCustomSourceSelected
+        val requiresOverride = mode != AccentColorMode.NONE
+        if (mode == AccentColorMode.FROM_WALLPAPER && !wallpaperAccentAvailable) {
+            Toast.makeText(
+                            context,
+                            context.getString(R.string.settings_accent_color_wallpaper_required_toast),
+                            Toast.LENGTH_SHORT,
+                    )
+                    .show()
+        } else if (requiresOverride && deviceThemeEnabled) {
+            Toast.makeText(
+                            context,
+                            context.getString(R.string.settings_device_theme_blocked_toast),
+                            Toast.LENGTH_SHORT,
+                    )
+                    .show()
+        } else {
+            hapticToggle(view)()
+            if (mode == AccentColorMode.CUSTOM) {
+                showCustomAccentPicker = true
+            } else if (accentColorMode != mode) {
+                onAccentColorModeChange(mode)
+            }
+        }
     }
 
     SettingsCard(
@@ -639,30 +678,79 @@ fun WallpaperCard(
                     )
                 }
 
-                if (isWallpaperSourceSelected || isCustomSourceSelected) {
-                    SettingsToggleRow(
-                            title = stringResource(R.string.settings_wallpaper_accent_title),
-                            subtitle = stringResource(R.string.settings_wallpaper_accent_desc),
-                            checked = wallpaperAccentEnabled,
-                            onCheckedChange = { enabled ->
-                                if (enabled && deviceThemeEnabled) {
-                                    Toast.makeText(
-                                            context,
-                                            context.getString(R.string.settings_device_theme_blocked_toast),
-                                            Toast.LENGTH_SHORT,
-                                    ).show()
-                                } else {
-                                    onWallpaperAccentToggle(enabled)
-                                }
-                            },
-                            horizontalPadding = DesignTokens.SpacingSmall,
-                            isLastItem = true,
-                            showDivider = false,
+            }
+
+            Column(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = DesignTokens.SpacingSmall),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+            ) {
+                Text(
+                        text = stringResource(R.string.settings_wallpaper_accent_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                        text = stringResource(R.string.settings_wallpaper_accent_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                        modifier = Modifier.fillMaxWidth().selectableGroup(),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    AppModeOption(
+                            label = stringResource(R.string.settings_accent_color_none),
+                            icon = Icons.Rounded.Block,
+                            selected = accentColorMode == AccentColorMode.NONE,
+                            onClick = { selectAccentMode(AccentColorMode.NONE) },
+                            iconLabelSpacing = DesignTokens.SpacingSmall,
+                            compactLabel = true,
+                            modifier = Modifier.weight(1f),
+                    )
+                    AppModeOption(
+                            label = stringResource(R.string.settings_accent_color_from_wallpaper),
+                            icon = Icons.Rounded.Image,
+                            selected = accentColorMode == AccentColorMode.FROM_WALLPAPER,
+                            onClick = { selectAccentMode(AccentColorMode.FROM_WALLPAPER) },
+                            enabled = isWallpaperSourceSelected || isCustomSourceSelected,
+                            iconLabelSpacing = DesignTokens.SpacingSmall,
+                            compactLabel = true,
+                            modifier = Modifier.weight(1f),
+                    )
+                    AppModeOption(
+                            label = stringResource(R.string.common_custom),
+                            icon = Icons.Rounded.Palette,
+                            selected = accentColorMode == AccentColorMode.CUSTOM,
+                            onClick = { selectAccentMode(AccentColorMode.CUSTOM) },
+                            iconLabelSpacing = DesignTokens.SpacingSmall,
+                            compactLabel = true,
+                            swatchColor =
+                                    if (accentColorMode == AccentColorMode.CUSTOM) {
+                                        Color(customAccentColorArgb)
+                                    } else {
+                                        null
+                                    },
+                            modifier = Modifier.weight(1f),
                     )
                 }
-
             }
         }
+    }
+
+    if (showCustomAccentPicker) {
+        WidgetColorPickerDialog(
+                initialColor = Color(customAccentColorArgb),
+                onDismiss = { showCustomAccentPicker = false },
+                onConfirm = { color ->
+                    onCustomAccentColorChange(color.toArgb())
+                    if (accentColorMode != AccentColorMode.CUSTOM) {
+                        onAccentColorModeChange(AccentColorMode.CUSTOM)
+                    }
+                    showCustomAccentPicker = false
+                },
+                title = stringResource(R.string.settings_accent_color_picker_title),
+        )
     }
 }
 
@@ -673,7 +761,12 @@ private fun AppModeOption(
         selected: Boolean,
         onClick: () -> Unit,
         modifier: Modifier = Modifier,
+        swatchColor: Color? = null,
+        iconLabelSpacing: Dp = DesignTokens.SpacingXSmall,
+        compactLabel: Boolean = false,
+        enabled: Boolean = true,
 ) {
+    val contentAlpha = if (enabled) 1f else 0.5f
     val borderColor =
             if (selected) MaterialTheme.colorScheme.primary
             else AppColors.SettingsDivider
@@ -699,18 +792,38 @@ private fun AppModeOption(
                             .padding(
                                     horizontal = DesignTokens.ChipHorizontalPadding,
                                     vertical = DesignTokens.ChipVerticalPadding,
-                            ),
+                            )
+                            .alpha(contentAlpha),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
+            verticalArrangement = Arrangement.spacedBy(iconLabelSpacing),
     ) {
-        Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (swatchColor != null) {
+            Box(
+                    modifier =
+                            Modifier.size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(swatchColor)
+                                    .border(
+                                            width = 1.dp,
+                                            color = MaterialTheme.colorScheme.outline,
+                                            shape = CircleShape,
+                                    ),
+            )
+        } else {
+            Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Text(
                 text = label,
-                style = MaterialTheme.typography.labelSmall,
+                style =
+                        if (compactLabel) {
+                            MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp)
+                        } else {
+                            MaterialTheme.typography.labelSmall
+                        },
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

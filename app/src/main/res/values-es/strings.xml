@@ -726,8 +726,12 @@
     <string name="settings_tools_title">Herramientas</string>
     <string name="settings_use_system_font_desc">Usa el estilo de fuente de tu dispositivo</string>
     <string name="settings_use_system_font_title">Usar fuente del sistema</string>
-    <string name="settings_wallpaper_accent_desc">Extrae colores de acento basados en la imagen de fondo</string>
-    <string name="settings_wallpaper_accent_title">Colores de acento</string>
+    <string name="settings_accent_color_from_wallpaper">Fondo de pantalla</string>
+    <string name="settings_accent_color_none">Ninguno</string>
+    <string name="settings_accent_color_picker_title">Color de acento</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Configura primero un fondo de pantalla</string>
+    <string name="settings_wallpaper_accent_desc">Obtén el color de acento del fondo de pantalla o elige un color personalizado</string>
+    <string name="settings_wallpaper_accent_title">Color de acento</string>
     <string name="settings_wallpaper_blur_label">Desenfoque</string>
     <string name="settings_wallpaper_card_title">Fondo de pantalla</string>
     <string name="settings_wallpaper_transparency_label">Transparencia</string>

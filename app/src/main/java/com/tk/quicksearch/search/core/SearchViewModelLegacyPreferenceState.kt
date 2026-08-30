@@ -20,7 +20,8 @@ internal class SearchViewModelLegacyPreferenceState(
     var settingsIconEnabled: Boolean = true
     var topResultIndicatorEnabled: Boolean = false
     var openTopResultUsingKeyboardEnabled: Boolean = true
-    var wallpaperAccentEnabled: Boolean = true
+    var accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER
+    var customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB
     var openKeyboardOnLaunch: Boolean = true
     var overlayModeEnabled: Boolean = false
     var autoCloseOverlay: Boolean = true
@@ -73,7 +74,8 @@ internal class SearchViewModelLegacyPreferenceState(
         settingsIconEnabled = prefCache.settingsIconEnabled
         topResultIndicatorEnabled = prefCache.topResultIndicatorEnabled
         openTopResultUsingKeyboardEnabled = prefCache.openTopResultUsingKeyboardEnabled
-        wallpaperAccentEnabled = prefCache.wallpaperAccentEnabled
+        accentColorMode = prefCache.accentColorMode
+        customAccentColorArgb = prefCache.customAccentColorArgb
         openKeyboardOnLaunch = prefCache.openKeyboardOnLaunch
         overlayModeEnabled = prefCache.overlayModeEnabled
         autoCloseOverlay = prefCache.autoCloseOverlay
