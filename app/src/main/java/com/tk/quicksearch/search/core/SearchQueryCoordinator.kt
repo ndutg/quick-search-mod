@@ -707,6 +707,12 @@ internal class SearchQueryCoordinator(
                     } else {
                         false
                     },
+                secondarySearchSectionsInProgress =
+                    if (shouldRunSecondarySearchBatch) {
+                        state.secondarySearchSectionsInProgress
+                    } else {
+                        emptySet()
+                    },
                 detectedShortcutTarget = detectedTarget,
                 detectedAliasSearchSection = detectedAliasSearchSection,
                 isCurrencyConverterAliasMode = aliasState.lockedCurrencyConverterAlias,

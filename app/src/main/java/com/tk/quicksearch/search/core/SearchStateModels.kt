@@ -107,6 +107,7 @@ data class SearchResultsState(
         val webSuggestionWasSelected: Boolean = false,
         val isAppSearchInProgress: Boolean = false,
         val isSecondarySearchInProgress: Boolean = false,
+        val secondarySearchSectionsInProgress: Set<SearchSection> = emptySet(),
         val detectedShortcutTarget: SearchTarget? = null,
         val detectedAliasSearchSection: SearchSection? = null,
         val isCurrencyConverterAliasMode: Boolean = false,

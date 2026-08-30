@@ -58,6 +58,7 @@ internal object SearchStateExtractor {
             webSuggestionWasSelected = s.webSuggestionWasSelected,
             isAppSearchInProgress = s.isAppSearchInProgress,
             isSecondarySearchInProgress = s.isSecondarySearchInProgress,
+            secondarySearchSectionsInProgress = s.secondarySearchSectionsInProgress,
             detectedShortcutTarget = s.detectedShortcutTarget,
             detectedAliasSearchSection = s.detectedAliasSearchSection,
             isCurrencyConverterAliasMode = s.isCurrencyConverterAliasMode,

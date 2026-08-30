@@ -672,6 +672,7 @@ class SearchViewModel(
                 webSuggestionWasSelected = false,
                 isAppSearchInProgress = false,
                 isSecondarySearchInProgress = false,
+                secondarySearchSectionsInProgress = emptySet(),
             )
         }
         handlers.aiSearchHandler.requestAiFollowUp(

@@ -4,10 +4,12 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.UnifiedSearchResults
+import com.tk.quicksearch.search.core.UnifiedSectionSearchResult
 import com.tk.quicksearch.search.core.UnifiedSectionSearchConfig
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -25,7 +27,7 @@ import org.junit.Test
 
 class SecondarySearchOrchestratorTest {
     @Test
-    fun `rapid query changes execute only the latest debounced search`() = runTest {
+    fun `rapid query changes publish the latest search`() = runTest {
         val harness = Harness(this)
 
         harness.search("first")
@@ -33,14 +35,18 @@ class SecondarySearchOrchestratorTest {
         harness.search("second")
         advanceUntilIdle()
 
-        assertEquals(listOf("second"), harness.dataSource.queries)
+        assertEquals(listOf("first", "second"), harness.dataSource.queries)
         assertFalse(harness.state.isSecondarySearchInProgress)
     }
 
     @Test
     fun `late non-cancellable result cannot overwrite the latest query`() = runTest {
         val harness =
-            Harness(this) { query ->
+            Harness(
+                scope = this,
+                disabledSections = allSecondarySections - SearchSection.CONTACTS,
+                initialState = SearchUiState(hasContactPermission = true),
+            ) { query ->
                 withContext(NonCancellable) {
                     delay(if (query == "old") 400 else 50)
                 }
@@ -132,7 +138,7 @@ class SecondarySearchOrchestratorTest {
         harness.search("")
         advanceUntilIdle()
 
-        assertTrue(harness.dataSource.queries.isEmpty())
+        assertEquals(listOf("query"), harness.dataSource.queries)
         assertTrue(harness.state.contactResults.isEmpty())
         assertTrue(harness.state.searchResults.isEmpty())
         assertNull(harness.state.pendingSearchResults)
@@ -180,10 +186,32 @@ class SecondarySearchOrchestratorTest {
             showFolders: Boolean,
             showSystemFiles: Boolean,
             aliasSection: SearchSection?,
+            sectionSearchDelayMillis: Map<SearchSection, Long>,
+            onSectionResult: suspend (
+                result: UnifiedSectionSearchResult,
+                recencyIndex: RecentResultRankingUtils.RecencyIndex,
+            ) -> Unit,
         ): UnifiedSearchResults {
             queries += query
             configs += sectionSearchConfig
-            return responder(query)
+            val results = responder(query)
+            sectionSearchConfig.filterValues { it.shouldSearch }.keys.forEach { section ->
+                val result =
+                    when (section) {
+                        SearchSection.CONTACTS -> UnifiedSectionSearchResult.Contacts(results.contactResults)
+                        SearchSection.FILES -> UnifiedSectionSearchResult.Files(results.fileResults)
+                        SearchSection.SETTINGS -> UnifiedSectionSearchResult.Settings(results.settingResults)
+                        SearchSection.CALENDAR -> UnifiedSectionSearchResult.Calendar(results.calendarEvents)
+                        SearchSection.NOTES -> UnifiedSectionSearchResult.Notes(results.noteResults)
+                        SearchSection.APP_SETTINGS ->
+                            UnifiedSectionSearchResult.AppSettings(results.appSettingResults)
+                        SearchSection.APP_SHORTCUTS ->
+                            UnifiedSectionSearchResult.AppShortcuts(results.appShortcutResults)
+                        SearchSection.APPS -> UnifiedSectionSearchResult.Skipped(section)
+                    }
+                onSectionResult(result, results.recencyIndex)
+            }
+            return results
         }
     }
 

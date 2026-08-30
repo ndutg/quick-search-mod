@@ -1,9 +1,11 @@
 package com.tk.quicksearch.search.core
 
 import android.content.Context
+import android.os.SystemClock
 import com.tk.quicksearch.search.appShortcuts.AppShortcutSearchHandler
 import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingsSearchHandler
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.contacts.ContactSearchPolicy
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.CalendarRepository
@@ -35,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import com.tk.quicksearch.searchEngines.SecondarySearchDataSource
 
@@ -55,6 +58,42 @@ data class UnifiedSectionSearchConfig(
         val shouldSearch: Boolean = false,
         val enableFuzzyMatching: Boolean = false,
 )
+
+sealed interface UnifiedSectionSearchResult {
+        val section: SearchSection
+
+        data class Skipped(override val section: SearchSection) : UnifiedSectionSearchResult
+
+        data class Contacts(val results: List<ContactInfo>) : UnifiedSectionSearchResult {
+                override val section = SearchSection.CONTACTS
+        }
+
+        data class Files(val results: List<DeviceFile>) : UnifiedSectionSearchResult {
+                override val section = SearchSection.FILES
+        }
+
+        data class Settings(
+                val results: List<com.tk.quicksearch.search.deviceSettings.DeviceSetting>,
+        ) : UnifiedSectionSearchResult {
+                override val section = SearchSection.SETTINGS
+        }
+
+        data class Calendar(val results: List<CalendarEventInfo>) : UnifiedSectionSearchResult {
+                override val section = SearchSection.CALENDAR
+        }
+
+        data class Notes(val results: List<NoteInfo>) : UnifiedSectionSearchResult {
+                override val section = SearchSection.NOTES
+        }
+
+        data class AppSettings(val results: List<AppSettingResult>) : UnifiedSectionSearchResult {
+                override val section = SearchSection.APP_SETTINGS
+        }
+
+        data class AppShortcuts(val results: List<StaticShortcut>) : UnifiedSectionSearchResult {
+                override val section = SearchSection.APP_SHORTCUTS
+        }
+}
 
 class UnifiedSearchHandler(
         private val context: Context,
@@ -89,8 +128,14 @@ class UnifiedSearchHandler(
                 showFolders: Boolean,
                 showSystemFiles: Boolean,
                 aliasSection: SearchSection?,
+                sectionSearchDelayMillis: Map<SearchSection, Long>,
+                onSectionResult: suspend (
+                        result: UnifiedSectionSearchResult,
+                        recencyIndex: RecentResultRankingUtils.RecencyIndex,
+                ) -> Unit,
         ): UnifiedSearchResults =
                 withContext(Dispatchers.IO) {
+                        val searchStartedAt = SystemClock.elapsedRealtime()
                         val trimmedQuery = query.trim()
                         if (shouldSkipSearch(trimmedQuery)) {
                                 return@withContext UnifiedSearchResults()
@@ -207,6 +252,14 @@ class UnifiedSearchHandler(
                                 )
                         val secondaryRankingSignal = userPreferences.getSecondaryRankingSignal()
 
+                        AppSearchPerformanceLogger.logTiming(
+                                event = "secondarySearchPrepared",
+                                elapsedMs = SystemClock.elapsedRealtime() - searchStartedAt,
+                                slowThresholdMs = 25L,
+                        ) {
+                                "queryLength=${trimmedQuery.length} sections=${sectionSearchConfig.count { it.value.shouldSearch }}"
+                        }
+
                         var contactResults: List<ContactInfo> = emptyList()
                         var fileResults: List<DeviceFile> = emptyList()
                         var settingsMatches: List<com.tk.quicksearch.search.deviceSettings.DeviceSetting> =
@@ -240,8 +293,37 @@ class UnifiedSearchHandler(
                                                                 },
                                                                 applyResult = { payload ->
                                                                         if (payload is SectionSearchResultPayload.Contacts) {
+                                                                                val nicknameResults =
+                                                                                        findNicknameOnlyContacts(
+                                                                                                payload.results,
+                                                                                                queryContext,
+                                                                                                canSearchContacts,
+                                                                                                excludedContactIds,
+                                                                                        )
+                                                                                val filteredResults =
+                                                                                        filterAndRankContacts(
+                                                                                                payload.results + nicknameResults,
+                                                                                                queryContext,
+                                                                                                recencyIndex.contactScores,
+                                                                                                recencyIndex.contactOpenCounts,
+                                                                                                secondaryRankingSignal,
+                                                                                                useFuzzyContactSearch,
+                                                                                                contactFuzzyPolicy.minimumScore,
+                                                                                                contactFuzzyPolicy.maximumEditDistance,
+                                                                                                contactResultLimit,
+                                                                                                allowNumberSearch,
+                                                                                        )
                                                                                 contactResults =
-                                                                                        payload.results
+                                                                                        contactRepository.hydrateContactsForDisplay(
+                                                                                                filteredResults
+                                                                                        )
+                                                                                UnifiedSectionSearchResult.Contacts(
+                                                                                        contactResults
+                                                                                )
+                                                                        } else {
+                                                                                UnifiedSectionSearchResult.Skipped(
+                                                                                        SearchSection.CONTACTS
+                                                                                )
                                                                         }
                                                                 },
                                                         ),
@@ -274,8 +356,39 @@ class UnifiedSearchHandler(
                                                                 },
                                                                 applyResult = { payload ->
                                                                         if (payload is SectionSearchResultPayload.Files) {
+                                                                                val nicknameResults =
+                                                                                        findNicknameOnlyFiles(
+                                                                                                payload.results,
+                                                                                                queryContext,
+                                                                                                enabledFileTypes,
+                                                                                                canSearchFiles,
+                                                                                                excludedFileUris,
+                                                                                                excludedFileExtensions,
+                                                                                                folderWhitelistPatterns,
+                                                                                                folderBlacklistPatterns,
+                                                                                                showFolders,
+                                                                                                showSystemFiles,
+                                                                                                nicknameOnlyFileUriHydrationLimit,
+                                                                                        )
                                                                                 fileResults =
-                                                                                        payload.results
+                                                                                        filterAndRankFiles(
+                                                                                                payload.results + nicknameResults,
+                                                                                                queryContext,
+                                                                                                recencyIndex.fileScores,
+                                                                                                recencyIndex.fileOpenCounts,
+                                                                                                secondaryRankingSignal,
+                                                                                                canUseFileFuzzySearch,
+                                                                                                fileFuzzyPolicy.minimumScore,
+                                                                                                fileFuzzyPolicy.maximumEditDistance,
+                                                                                                fileResultLimit,
+                                                                                        )
+                                                                                UnifiedSectionSearchResult.Files(
+                                                                                        fileResults
+                                                                                )
+                                                                        } else {
+                                                                                UnifiedSectionSearchResult.Skipped(
+                                                                                        SearchSection.FILES
+                                                                                )
                                                                         }
                                                                 },
                                                         ),
@@ -299,6 +412,13 @@ class UnifiedSearchHandler(
                                                                         if (payload is SectionSearchResultPayload.Settings) {
                                                                                 settingsMatches =
                                                                                         payload.results
+                                                                                UnifiedSectionSearchResult.Settings(
+                                                                                        settingsMatches
+                                                                                )
+                                                                        } else {
+                                                                                UnifiedSectionSearchResult.Skipped(
+                                                                                        SearchSection.SETTINGS
+                                                                                )
                                                                         }
                                                                 },
                                                         ),
@@ -328,8 +448,28 @@ class UnifiedSearchHandler(
                                                                 },
                                                                 applyResult = { payload ->
                                                                         if (payload is SectionSearchResultPayload.Calendar) {
+                                                                                val nicknameResults =
+                                                                                        findNicknameOnlyCalendarEvents(
+                                                                                                displayNameEvents = payload.results,
+                                                                                                queryContext = queryContext,
+                                                                                                canSearchCalendar = canSearchCalendar,
+                                                                                                excludedCalendarEventIds = excludedCalendarEventIds,
+                                                                                        )
                                                                                 calendarMatches =
-                                                                                        payload.results
+                                                                                        filterAndRankCalendarEvents(
+                                                                                                events = payload.results + nicknameResults,
+                                                                                                queryContext = queryContext,
+                                                                                                recencyIndex = recencyIndex,
+                                                                                                secondaryRankingSignal = secondaryRankingSignal,
+                                                                                                resultLimit = calendarResultLimit,
+                                                                                        )
+                                                                                UnifiedSectionSearchResult.Calendar(
+                                                                                        calendarMatches
+                                                                                )
+                                                                        } else {
+                                                                                UnifiedSectionSearchResult.Skipped(
+                                                                                        SearchSection.CALENDAR
+                                                                                )
                                                                         }
                                                                 },
                                                         ),
@@ -357,6 +497,13 @@ class UnifiedSearchHandler(
                                                                         if (payload is SectionSearchResultPayload.AppSettings) {
                                                                                 appSettingsMatches =
                                                                                         payload.results
+                                                                                UnifiedSectionSearchResult.AppSettings(
+                                                                                        appSettingsMatches
+                                                                                )
+                                                                        } else {
+                                                                                UnifiedSectionSearchResult.Skipped(
+                                                                                        SearchSection.APP_SETTINGS
+                                                                                )
                                                                         }
                                                                 },
                                                         ),
@@ -381,6 +528,13 @@ class UnifiedSearchHandler(
                                                                         if (payload is SectionSearchResultPayload.Notes) {
                                                                                 noteMatches =
                                                                                         payload.results
+                                                                                UnifiedSectionSearchResult.Notes(
+                                                                                        noteMatches
+                                                                                )
+                                                                        } else {
+                                                                                UnifiedSectionSearchResult.Skipped(
+                                                                                        SearchSection.NOTES
+                                                                                )
                                                                         }
                                                                 },
                                                         ),
@@ -404,6 +558,13 @@ class UnifiedSearchHandler(
                                                                         if (payload is SectionSearchResultPayload.AppShortcuts) {
                                                                                 appShortcutMatches =
                                                                                         payload.results
+                                                                                UnifiedSectionSearchResult.AppShortcuts(
+                                                                                        appShortcutMatches
+                                                                                )
+                                                                        } else {
+                                                                                UnifiedSectionSearchResult.Skipped(
+                                                                                        SearchSection.APP_SHORTCUTS
+                                                                                )
                                                                         }
                                                                 },
                                                         ),
@@ -417,90 +578,44 @@ class UnifiedSearchHandler(
                                 sectionSearchSpecs
                                         .map { spec ->
                                                 async {
-                                                        spec to
+                                                        val delayMillis =
+                                                                sectionSearchDelayMillis[spec.section] ?: 0L
+                                                        if (spec.shouldSearch && delayMillis > 0L) {
+                                                                delay(delayMillis)
+                                                        }
+                                                        val sectionStartedAt = SystemClock.elapsedRealtime()
+                                                        val payload =
                                                                 if (spec.shouldSearch) spec.search()
                                                                 else SectionSearchResultPayload.Skipped
+                                                        val result = spec.applyResult(payload)
+                                                        AppSearchPerformanceLogger.logTiming(
+                                                                event = "secondarySectionReady",
+                                                                elapsedMs =
+                                                                        SystemClock.elapsedRealtime() - sectionStartedAt,
+                                                                slowThresholdMs = 100L,
+                                                        ) {
+                                                                "section=${spec.section} debounceMs=$delayMillis results=${result.resultCount()}"
+                                                        }
+                                                        onSectionResult(result, recencyIndex)
+                                                        result
                                                 }
                                         }
                                         .awaitAll()
-                                        .forEach { (spec, payload) ->
-                                                spec.applyResult(payload)
-                                        }
                         }
 
-                        // Add nickname matches that weren't found by display name
-                        val nicknameContacts =
-                                findNicknameOnlyContacts(
-                                        contactResults,
-                                        queryContext,
-                                        canSearchContacts,
-                                        excludedContactIds,
-                                )
-                        val nicknameFiles =
-                                findNicknameOnlyFiles(
-                                        fileResults,
-                                        queryContext,
-                                        enabledFileTypes,
-                                        canSearchFiles,
-                                        excludedFileUris,
-                                        excludedFileExtensions,
-                                        folderWhitelistPatterns,
-                                        folderBlacklistPatterns,
-                                        showFolders,
-                                        showSystemFiles,
-                                        nicknameOnlyFileUriHydrationLimit,
-                                )
-                        val nicknameCalendarEvents =
-                                findNicknameOnlyCalendarEvents(
-                                        displayNameEvents = calendarMatches,
-                                        queryContext = queryContext,
-                                        canSearchCalendar = canSearchCalendar,
-                                        excludedCalendarEventIds = excludedCalendarEventIds,
-                                )
-
-                        // Combine and filter results
-                        val filteredContacts =
-                                filterAndRankContacts(
-                                        contactResults + nicknameContacts,
-                                        queryContext,
-                                        recencyIndex.contactScores,
-                                        recencyIndex.contactOpenCounts,
-                                        secondaryRankingSignal,
-                                        useFuzzyContactSearch,
-                                        contactFuzzyPolicy.minimumScore,
-                                        contactFuzzyPolicy.maximumEditDistance,
-                                        contactResultLimit,
-                                        allowNumberSearch,
-                                )
-                        val filteredFiles =
-                                filterAndRankFiles(
-                                        fileResults + nicknameFiles,
-                                        queryContext,
-                                        recencyIndex.fileScores,
-                                        recencyIndex.fileOpenCounts,
-                                        secondaryRankingSignal,
-                                        canUseFileFuzzySearch,
-                                        fileFuzzyPolicy.minimumScore,
-                                        fileFuzzyPolicy.maximumEditDistance,
-                                        fileResultLimit,
-                                )
-                        val filteredCalendarEvents =
-                                filterAndRankCalendarEvents(
-                                        events = calendarMatches + nicknameCalendarEvents,
-                                        queryContext = queryContext,
-                                        recencyIndex = recencyIndex,
-                                        secondaryRankingSignal = secondaryRankingSignal,
-                                        resultLimit = calendarResultLimit,
-                                )
-
-                        val hydratedContacts =
-                                contactRepository.hydrateContactsForDisplay(filteredContacts)
+                        AppSearchPerformanceLogger.logTiming(
+                                event = "secondarySearchCompleted",
+                                elapsedMs = SystemClock.elapsedRealtime() - searchStartedAt,
+                                slowThresholdMs = 250L,
+                        ) {
+                                "queryLength=${trimmedQuery.length} sections=${sectionSearchConfig.count { it.value.shouldSearch }}"
+                        }
 
                         return@withContext UnifiedSearchResults(
-                                contactResults = hydratedContacts,
-                                fileResults = filteredFiles,
+                                contactResults = contactResults,
+                                fileResults = fileResults,
                                 settingResults = settingsMatches,
-                                calendarEvents = filteredCalendarEvents,
+                                calendarEvents = calendarMatches,
                                 noteResults = noteMatches,
                                 appSettingResults = appSettingsMatches,
                                 appShortcutResults = appShortcutMatches,
@@ -514,8 +629,20 @@ class UnifiedSearchHandler(
                 val section: SearchSection,
                 val shouldSearch: Boolean,
                 val search: suspend () -> SectionSearchResultPayload,
-                val applyResult: (SectionSearchResultPayload) -> Unit,
+                val applyResult: suspend (SectionSearchResultPayload) -> UnifiedSectionSearchResult,
         )
+
+        private fun UnifiedSectionSearchResult.resultCount(): Int =
+                when (this) {
+                        is UnifiedSectionSearchResult.Skipped -> 0
+                        is UnifiedSectionSearchResult.Contacts -> results.size
+                        is UnifiedSectionSearchResult.Files -> results.size
+                        is UnifiedSectionSearchResult.Settings -> results.size
+                        is UnifiedSectionSearchResult.Calendar -> results.size
+                        is UnifiedSectionSearchResult.Notes -> results.size
+                        is UnifiedSectionSearchResult.AppSettings -> results.size
+                        is UnifiedSectionSearchResult.AppShortcuts -> results.size
+                }
 
         private sealed interface SectionSearchResultPayload {
                 data object Skipped : SectionSearchResultPayload

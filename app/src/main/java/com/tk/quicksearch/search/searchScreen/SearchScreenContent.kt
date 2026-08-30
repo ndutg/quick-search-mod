@@ -707,7 +707,7 @@ internal fun SearchScreenContent(
                     state.isWeatherAliasMode ||
                     state.detectedCustomToolId != null
                     || state.detectedTaskerIntentId != null
-    val deferTopMatchSubmitUntilLocalSearchReady =
+    val isLocalSearchRefreshing =
             shouldDeferTopMatchesForLocalSearch(
                     query = state.query,
                     isAppSearchInProgress = state.isAppSearchInProgress,
@@ -739,7 +739,7 @@ internal fun SearchScreenContent(
                     appsParams = appsParams,
                     isReversed = state.oneHandedMode,
             )
-    val topMatchesForSubmit =
+    val currentTopMatchesForSubmit =
             rememberTopMatches(
                     query = state.query,
                     renderingState = renderingState,
@@ -749,6 +749,7 @@ internal fun SearchScreenContent(
                     topMatchesSectionOrder = state.topMatchesSectionOrder,
                     disabledTopMatchesSections = state.disabledTopMatchesSections,
                     secondaryRankingSignal = state.secondaryRankingSignal,
+                    filterStaleCandidates = isLocalSearchRefreshing,
                     otherSearchItemIds =
                         OtherSearchItemRegistry.visibleSearchItemIds(
                             query = state.query,
@@ -756,13 +757,21 @@ internal fun SearchScreenContent(
                             screenTimeState = state.screenTimeState,
                         ),
                 )
+    val settledTopMatchesForSubmit =
+            rememberSettledTopMatches(
+                    query = state.query,
+                    currentMatches = currentTopMatchesForSubmit,
+                    isSearchRefreshing = isLocalSearchRefreshing,
+                    limit = state.topMatchesLimit,
+            )
+    val topMatchesForSubmit = settledTopMatchesForSubmit.matches
     val shouldSubmitTopMatch =
             state.topMatchesEnabled &&
                     state.query.isNotBlank() &&
                     !hideResultsForTopMatchSubmit &&
                     expandedSection == ExpandedSection.NONE &&
                     !isSearchHistoryExpanded &&
-            !deferTopMatchSubmitUntilLocalSearchReady &&
+                    settledTopMatchesForSubmit.isReady &&
                     topMatchesForSubmit.isNotEmpty()
     val keyboardNavigableTopMatches =
             if (state.oneHandedMode) {
