@@ -19,6 +19,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -42,8 +43,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
@@ -654,16 +657,26 @@ private fun AllAppsDialog(
                 )
             },
             text = {
-                Column(
+                val gridState = rememberLazyGridState()
+                var isScrollbarDragging by remember { mutableStateOf(false) }
+                Box(
                         modifier =
                                 Modifier
                                         .fillMaxWidth()
                                         .heightIn(max = 520.dp),
-                        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                 ) {
                     LazyVerticalGrid(
+                            state = gridState,
                             columns = GridCells.Fixed(dialogColumns),
-                            modifier = Modifier.fillMaxWidth().heightIn(max = 520.dp),
+                            modifier =
+                                    Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(max = 520.dp)
+                                            .padding(
+                                                    end =
+                                                            (LazyGridScrollbarTouchWidth - AllAppsDialogSeekEdgeNudge)
+                                                                    .coerceAtLeast(DesignTokens.SpacingSmall),
+                                            ),
                             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                             verticalArrangement = Arrangement.spacedBy(AllAppsDialogRowSpacing),
                     ) {
@@ -714,6 +727,19 @@ private fun AllAppsDialog(
                             )
                         }
                     }
+                    AllAppsScrollLetterPopup(
+                            apps = apps,
+                            gridState = gridState,
+                            isScrollbarDragging = isScrollbarDragging,
+                    )
+                    LazyGridVerticalScrollbar(
+                            state = gridState,
+                            modifier =
+                                    Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .offset(x = AllAppsDialogSeekEdgeNudge),
+                            onDraggingChange = { isScrollbarDragging = it },
+                    )
                 }
             },
             confirmButton = {
