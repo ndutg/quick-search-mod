@@ -52,8 +52,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringArrayResource
@@ -77,6 +77,7 @@ import com.tk.quicksearch.search.core.rememberSectionRenderContext
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.searchEngines.defaultBrowserTarget
 import com.tk.quicksearch.searchEngines.extendToScreenEdges
+import com.tk.quicksearch.searchEngines.inline.InsetSearchBarGeometry
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.searchEngines.resolveDefaultBrowserPackage
 import com.tk.quicksearch.searchEngines.inline.SearchEngineIconsSection
@@ -118,9 +119,6 @@ private const val ONE_HANDED_COMPACT_ENGINES_REFLOW_DURATION_MS = 280
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DURATION_MS = 180
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DELAY_MS = 40
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS = 130
-
-/** Assumed bottom search bar height until the bar reports its measured one. */
-private val INSET_ENGINE_STRIP_FALLBACK_OVERLAP = 56.dp
 
 private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, aliasTarget: String?, context: android.content.Context, onAliasTarget: (HomeSwipeGestureAction, String) -> Unit) {
     when (this) {
@@ -1034,37 +1032,6 @@ internal fun SearchScreenContent(
         }
     }
 
-    // The inset engine strip paints the shared background, so it has to reach the bottom of the
-    // search bar once the bar goes transparent. Measure the bar instead of assuming its height.
-    var bottomSearchBarHeight by remember { mutableStateOf(INSET_ENGINE_STRIP_FALLBACK_OVERLAP) }
-
-    val searchFieldModifier =
-            if (showBottomSearchBar) {
-                Modifier.padding(
-                        top =
-                                if (state.oneHandedMode) {
-                                    DesignTokens.SpacingXSmall
-                                } else {
-                                    0.dp
-                                },
-                        bottom = DesignTokens.SpacingMedium,
-                ).onSizeChanged { size ->
-                    val measured = with(density) { size.height.toDp() }
-                    if (measured > 0.dp && measured != bottomSearchBarHeight) {
-                        bottomSearchBarHeight = measured
-                    }
-                }
-            } else {
-                Modifier.padding(
-                        bottom =
-                                (if (state.oneHandedMode) {
-                                    DesignTokens.SpacingMedium
-                                } else {
-                                    DesignTokens.SpacingXSmall
-                                }) + DesignTokens.SpacingXXSmall,
-                )
-            }
-
     // With the bottom search bar, the compact engine strip becomes a rounded container attached to
     // the top of the search bar instead of a full-bleed band behind it. It tucks behind the bar so
     // the two read as one shape.
@@ -1075,6 +1042,48 @@ internal fun SearchScreenContent(
                     !isSearchHistoryExpanded &&
                     state.detectedShortcutTarget == null &&
                     state.detectedAliasSearchSection == null
+
+    // The strip paints the card behind a transparent bar, so it has to reach past the bar's bottom
+    // edge; falling short would draw its own outline inside the bar. The derived overlap assumes a
+    // default-height field, so track the measured height and keep whichever is taller.
+    var measuredSearchBarHeight by remember { mutableStateOf(0.dp) }
+    val insetEngineStripOverlap = InsetSearchBarGeometry.overlapFor(measuredSearchBarHeight)
+
+    val searchFieldModifier =
+            if (useInsetEngineStrip) {
+                // Inset on every side by the same amount so the bar sits centred inside the card
+                // the strip paints; the strip reaches down by exactly these spacings plus the bar.
+                Modifier.padding(
+                        start = InsetSearchBarGeometry.BarHorizontalInset,
+                        end = InsetSearchBarGeometry.BarHorizontalInset,
+                        top = InsetSearchBarGeometry.BarTopSpacing,
+                        bottom = InsetSearchBarGeometry.BarBottomSpacing,
+                ).onSizeChanged { size ->
+                    val measured = with(density) { size.height.toDp() }
+                    if (measured > 0.dp && measured != measuredSearchBarHeight) {
+                        measuredSearchBarHeight = measured
+                    }
+                }
+            } else if (showBottomSearchBar) {
+                Modifier.padding(
+                        top =
+                                if (state.oneHandedMode) {
+                                    DesignTokens.SpacingXSmall
+                                } else {
+                                    0.dp
+                                },
+                        bottom = DesignTokens.SpacingMedium,
+                )
+            } else {
+                Modifier.padding(
+                        bottom =
+                                (if (state.oneHandedMode) {
+                                    DesignTokens.SpacingMedium
+                                } else {
+                                    DesignTokens.SpacingXSmall
+                                }) + DesignTokens.SpacingXXSmall,
+                )
+            }
 
     val searchFieldContent: @Composable () -> Unit = {
         PersistentSearchBar(
@@ -1122,6 +1131,12 @@ internal fun SearchScreenContent(
                 focusRequester = searchFocusRequester,
                 forceRestingOutline = showBottomSearchBar,
                 transparentBackground = useInsetEngineStrip,
+                cornerRadius =
+                        if (useInsetEngineStrip) {
+                            InsetSearchBarGeometry.BarCornerRadius
+                        } else {
+                            DesignTokens.Spacing28
+                        },
                 modifier = searchFieldModifier,
                 onMoveTopResultSelectionUp = { moveSelectedTopMatch(-1) },
                 onMoveTopResultSelectionDown = { moveSelectedTopMatch(1) },
@@ -1474,7 +1489,7 @@ internal fun SearchScreenContent(
                                 },
                                 showWallpaperBackground = state.showWallpaperBackground,
                                 useInsetContainer = useInsetEngineStrip,
-                                insetOverlap = bottomSearchBarHeight,
+                                insetOverlap = insetEngineStripOverlap,
                                 modifier = searchEnginesModifier,
                         )
                     } else {
@@ -1572,7 +1587,7 @@ internal fun SearchScreenContent(
                                         onToolActionClick = activeToolCardConfig?.onClick,
                                         showOnlyToolAction = showOnlyToolActionInCompactSection,
                                         useInsetContainer = useInsetEngineStrip,
-                                        insetOverlap = bottomSearchBarHeight,
+                                        insetOverlap = insetEngineStripOverlap,
                                 )
                             },
                             fullContent = {
@@ -1629,7 +1644,7 @@ internal fun SearchScreenContent(
                                             onToolActionClick = activeToolCardConfig.onClick,
                                             showOnlyToolAction = true,
                                             useInsetContainer = useInsetEngineStrip,
-                                            insetOverlap = bottomSearchBarHeight,
+                                            insetOverlap = insetEngineStripOverlap,
                                     )
                                 } else {
                                     // Add padding when search engines are hidden to prevent keyboard from
@@ -1678,6 +1693,10 @@ internal fun SearchScreenContent(
             // stays transparent over the wallpaper instead of sitting on a full-bleed band.
             Box(modifier = Modifier.fillMaxWidth()) {
                 searchFieldContent()
+            }
+            if (useInsetEngineStrip) {
+                // Keeps the pills below from sitting flush against the card's bottom edge.
+                Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
             }
 
             Box(modifier = Modifier.fillMaxWidth().extendToScreenEdges()) {

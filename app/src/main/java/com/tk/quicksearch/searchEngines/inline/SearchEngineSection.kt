@@ -82,6 +82,41 @@ import com.tk.quicksearch.shared.util.hapticConfirm
 /** Corner radius shared by the inset strip and the bottom search bar it attaches to. */
 private val INSET_CORNER_RADIUS = 28.dp
 
+/**
+ * Geometry shared by the bottom search bar and the inset engine strip that wraps around it. The
+ * strip paints the card both of them live in, so the bar's insets and the distance the strip has to
+ * reach down behind it are derived from the same numbers instead of being tuned separately.
+ */
+object InsetSearchBarGeometry {
+    /**
+     * Matches `TextFieldDefaults.MinHeight`. Only a starting point: a large font scale grows the
+     * bar past it, and an overlap that falls short leaves the container's bottom edge drawing a
+     * hairline inside the bar, so callers pass a measured overlap once the bar has been laid out.
+     */
+    private val BarHeight = 56.dp
+
+    /** Lets the card sit slightly outside the regular content inset. */
+    val ContainerHorizontalExtension = DesignTokens.SpacingXSmall
+
+    /** Pulls the bar in from the card's side edges. */
+    val BarHorizontalInset = DesignTokens.SpacingSmall
+
+    /** Gap between the engine row and the top of the bar. */
+    val BarTopSpacing = DesignTokens.SpacingSmall
+
+    /** Gap between the bottom of the bar and the bottom of the card. */
+    val BarBottomSpacing = DesignTokens.SpacingMedium
+
+    val ContainerOverlap = overlapFor(BarHeight)
+
+    /** The distance the container has to reach down to cover a bar of [barHeight]. */
+    fun overlapFor(barHeight: Dp): Dp =
+        BarTopSpacing + barHeight.coerceAtLeast(BarHeight) + BarBottomSpacing
+
+    /** Keeps the inset search bar as rounded as the standalone search bar. */
+    val BarCornerRadius = DesignTokens.Spacing28
+}
+
 private object SearchEngineSectionConstants {
     val ICON_SIZE = SearchTargetConstants.DEFAULT_ICON_SIZE
     val SPACING = 20.dp
@@ -106,23 +141,34 @@ private object SearchEngineSectionConstants {
      */
     val INSET_CONTAINER_SHAPE = RoundedCornerShape(INSET_CORNER_RADIUS)
 
-    /** Fallback overlap used until the search bar reports its measured height. */
-    val INSET_CONTAINER_OVERLAP = INSET_CORNER_RADIUS * 2
+    /** How far the container reaches down behind the bar it is attached to. */
+    val INSET_CONTAINER_OVERLAP = InsetSearchBarGeometry.ContainerOverlap
+
+    /** Lets the attached background sit slightly outside the regular content inset. */
+    val INSET_HORIZONTAL_EXTENSION = InsetSearchBarGeometry.ContainerHorizontalExtension
 
     /** Trimmed row padding so the full engine row still fits inside the narrower inset strip. */
     val INSET_HORIZONTAL_PADDING = DesignTokens.SpacingSmall
 }
 
-/**
- * Extends the composable [overlap] further down while reporting the smaller height to the parent, so
- * the next sibling draws on top of the overlapping region.
- */
-private fun Modifier.overlapBottom(overlap: Dp): Modifier =
+/** Draws the inset container wider and behind the search bar without changing sibling placement. */
+private fun Modifier.attachToBottomSearchBar(
+    overlap: Dp,
+    horizontalExtension: Dp,
+): Modifier =
     layout { measurable, constraints ->
-        val placeable = measurable.measure(constraints)
+        val horizontalExtensionPx = horizontalExtension.roundToPx()
+        val attachedWidth = constraints.maxWidth + (horizontalExtensionPx * 2)
+        val placeable =
+            measurable.measure(
+                constraints.copy(
+                    minWidth = attachedWidth,
+                    maxWidth = attachedWidth,
+                ),
+            )
         val overlapPx = overlap.roundToPx()
-        layout(placeable.width, (placeable.height - overlapPx).coerceAtLeast(0)) {
-            placeable.placeRelative(0, 0)
+        layout(constraints.maxWidth, (placeable.height - overlapPx).coerceAtLeast(0)) {
+            placeable.placeRelative(-horizontalExtensionPx, 0)
         }
     }
 
@@ -193,7 +239,6 @@ fun SearchEngineIconsSection(
         } else {
             AppColors.getSearchEngineSectionBackground(showWallpaperBackground)
         }
-
     if (detectedShortcutTarget != null) {
         // Check if query starts with the shortcut and remove it
         // The shortcut corresponds to the detected engine
@@ -232,7 +277,11 @@ fun SearchEngineIconsSection(
                 modifier
                     .then(
                         if (useInsetContainer) {
-                            Modifier.overlapBottom(insetOverlap)
+                            Modifier.attachToBottomSearchBar(
+                                overlap = insetOverlap,
+                                horizontalExtension =
+                                    SearchEngineSectionConstants.INSET_HORIZONTAL_EXTENSION,
+                            )
                         } else {
                             Modifier.extendToScreenEdges()
                         },
@@ -486,7 +535,11 @@ internal fun AiFollowUpInputSection(
         modifier =
             modifier.then(
                 if (useInsetContainer) {
-                    Modifier.overlapBottom(insetOverlap)
+                    Modifier.attachToBottomSearchBar(
+                        overlap = insetOverlap,
+                        horizontalExtension =
+                            SearchEngineSectionConstants.INSET_HORIZONTAL_EXTENSION,
+                    )
                 } else {
                     Modifier.extendToScreenEdges()
                 },
