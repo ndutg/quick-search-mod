@@ -5,6 +5,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.LlmRequest
+import com.tk.quicksearch.tools.aiSearch.LlmResponseText
 import org.json.JSONObject
 import java.time.Instant
 import java.time.ZoneId
@@ -40,10 +41,10 @@ class WorldClockHandler(
             DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.ENGLISH)
 
     fun parseModelResponse(raw: String): Result<WorldClockModelResult> {
-        val trimmed =
-                raw.trim().removePrefix("```json").removePrefix("```").removeSuffix("```").trim()
+        val payload = LlmResponseText.extractJsonObjectPayload(raw)
         return runCatching {
-            val obj = JSONObject(trimmed)
+            check(payload.startsWith("{")) { "invalid" }
+            val obj = JSONObject(payload)
             if (obj.optString("error") == "not_world_clock") {
                 throw WorldClockNotRecognizedException()
             }
