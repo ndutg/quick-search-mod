@@ -204,7 +204,10 @@ fun WidgetsPanelScreen(
             ActivityResultContracts.StartActivityForResult(),
         ) { result: ActivityResult ->
             val request = pendingRequest ?: return@rememberLauncherForActivityResult
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (
+                result.resultCode == Activity.RESULT_OK ||
+                isWidgetConfigurationOptional(request.provider)
+            ) {
                 finalizeAddWidget(request)
             } else {
                 appWidgetHost.deleteAppWidgetId(request.appWidgetId)
@@ -1357,6 +1360,12 @@ private fun Bundle.applySamsungHostCompatExtras(
     putInt("hsCurrentOrientation", if (orientation == Configuration.ORIENTATION_LANDSCAPE) 2 else 1)
     putInt("hsForcedOrientation", 0)
     return this
+}
+
+private fun isWidgetConfigurationOptional(provider: AppWidgetProviderInfo): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false
+    return provider.widgetFeatures and
+        AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL != 0
 }
 
 private fun isWidgetConfigureActivityAccessible(
