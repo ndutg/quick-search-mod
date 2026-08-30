@@ -101,21 +101,27 @@ baselineProfile {
 
 // AGP 9 removed the legacy variant API that renamed APK outputs in place. Keep the
 // existing release artifact name as a compatibility copy for release automation.
-val copyStandardReleaseApk = tasks.register("copyStandardReleaseApk") {
-    val sourceApk = layout.buildDirectory.file("outputs/apk/standard/release/app-standard-release.apk")
-    val compatibilityApk = layout.buildDirectory.file("outputs/apk/standard/release/app-release.apk")
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        if (variant.name == "standardRelease") {
+            val apkDirectory = variant.artifacts.get(com.android.build.api.artifact.SingleArtifact.APK)
+            val sourceApk = apkDirectory.map { it.file("app-standard-release.apk") }
+            val compatibilityApk =
+                layout.buildDirectory.file("outputs/apk/standard/release/app-release.apk")
+            val copyStandardReleaseApk = tasks.register("copyStandardReleaseApk") {
+                inputs.file(sourceApk).withPropertyName("sourceApk")
+                outputs.file(compatibilityApk)
 
-    dependsOn("packageStandardRelease")
-    inputs.file(sourceApk)
-    outputs.file(compatibilityApk)
+                doLast {
+                    sourceApk.get().asFile.copyTo(compatibilityApk.get().asFile, overwrite = true)
+                }
+            }
 
-    doLast {
-        sourceApk.get().asFile.copyTo(compatibilityApk.get().asFile, overwrite = true)
+            tasks.matching { it.name == "assembleStandardRelease" }.configureEach {
+                finalizedBy(copyStandardReleaseApk)
+            }
+        }
     }
-}
-
-tasks.matching { it.name == "assembleStandardRelease" }.configureEach {
-    finalizedBy(copyStandardReleaseApk)
 }
 
 dependencies {
