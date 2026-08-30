@@ -27,3 +27,13 @@
 -dontwarn com.google.errorprone.annotations.CheckReturnValue
 -dontwarn com.google.errorprone.annotations.Immutable
 -dontwarn com.google.errorprone.annotations.RestrictedApi
+
+# WorkManager instantiates input mergers by their persisted class name. AGP 9/R8 can remove
+# their no-arg constructors even though WorkManager's consumer rules preserve the classes,
+# causing Glance widget update work to fail before rendering the saved configuration.
+-keep class androidx.work.OverwritingInputMerger {
+    public <init>();
+}
+-keep class androidx.work.ArrayCreatingInputMerger {
+    public <init>();
+}
