@@ -494,8 +494,16 @@
         <item quantity="one">%d दिन</item>
         <item quantity="other">%d दिन</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d घंटा</item>
+        <item quantity="other">%d घंटे</item>
+    </plurals>
     <string name="calendar_relative_in_format">%1$s में</string>
     <string name="calendar_relative_in_minutes">%1$d मिनट में</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d मिनट</item>
+        <item quantity="other">%d मिनट</item>
+    </plurals>
     <string name="calendar_relative_now">अभी</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d महीना</item>

@@ -493,8 +493,16 @@
     <item quantity="one">%d gün</item>
     <item quantity="other">%d gün</item>
 </plurals>
+<plurals name="calendar_relative_hours">
+    <item quantity="one">%d saat</item>
+    <item quantity="other">%d saat</item>
+</plurals>
 <string name="calendar_relative_in_format">%1$s içinde</string>
 <string name="calendar_relative_in_minutes">%1$d dakika içinde</string>
+<plurals name="calendar_relative_minutes">
+    <item quantity="one">%d dakika</item>
+    <item quantity="other">%d dakika</item>
+</plurals>
 <string name="calendar_relative_now">Şimdi</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d ay</item>

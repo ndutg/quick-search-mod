@@ -495,8 +495,16 @@
         <item quantity="one">%d يوم</item>
         <item quantity="other">%d أيام</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d ساعة</item>
+        <item quantity="other">%d ساعات</item>
+    </plurals>
     <string name="calendar_relative_in_format">بعد %1$s</string>
     <string name="calendar_relative_in_minutes">بعد %1$d دقيقة</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d دقيقة</item>
+        <item quantity="other">%d دقائق</item>
+    </plurals>
     <string name="calendar_relative_now">الآن</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d شهر</item>

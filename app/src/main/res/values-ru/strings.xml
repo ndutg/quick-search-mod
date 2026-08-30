@@ -498,8 +498,20 @@
     <item quantity="many">%d дней</item>
     <item quantity="other">%d дня</item>
 </plurals>
+<plurals name="calendar_relative_hours">
+    <item quantity="one">%d час</item>
+    <item quantity="few">%d часа</item>
+    <item quantity="many">%d часов</item>
+    <item quantity="other">%d часа</item>
+</plurals>
 <string name="calendar_relative_in_format">через %1$s</string>
 <string name="calendar_relative_in_minutes">через %1$d минут</string>
+<plurals name="calendar_relative_minutes">
+    <item quantity="one">%d минута</item>
+    <item quantity="few">%d минуты</item>
+    <item quantity="many">%d минут</item>
+    <item quantity="other">%d минуты</item>
+</plurals>
 <string name="calendar_relative_now">Сейчас</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d месяц</item>

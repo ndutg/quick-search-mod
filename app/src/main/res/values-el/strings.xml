@@ -494,8 +494,16 @@
         <item quantity="one">%d ημέρα</item>
         <item quantity="other">%d ημέρες</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d ώρα</item>
+        <item quantity="other">%d ώρες</item>
+    </plurals>
     <string name="calendar_relative_in_format">σε %1$s</string>
     <string name="calendar_relative_in_minutes">σε %1$d λεπτά</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d λεπτό</item>
+        <item quantity="other">%d λεπτά</item>
+    </plurals>
     <string name="calendar_relative_now">Τώρα</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d μήνας</item>

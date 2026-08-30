@@ -494,8 +494,16 @@
         <item quantity="one">%d రోజు</item>
         <item quantity="other">%d రోజులు</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d గంట</item>
+        <item quantity="other">%d గంటలు</item>
+    </plurals>
     <string name="calendar_relative_in_format">%1$s లో</string>
     <string name="calendar_relative_in_minutes">%1$d నిమిషాల్లో</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d నిమిషం</item>
+        <item quantity="other">%d నిమిషాలు</item>
+    </plurals>
     <string name="calendar_relative_now">ఇప్పుడు</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d నెల</item>

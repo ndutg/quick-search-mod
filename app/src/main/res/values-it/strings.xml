@@ -493,8 +493,16 @@
         <item quantity="one">%d giorno</item>
         <item quantity="other">%d giorni</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d ora</item>
+        <item quantity="other">%d ore</item>
+    </plurals>
     <string name="calendar_relative_in_format">tra %1$s</string>
     <string name="calendar_relative_in_minutes">tra %1$d minuti</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="other">%d minuti</item>
+    </plurals>
     <string name="calendar_relative_now">Ora</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d mese</item>

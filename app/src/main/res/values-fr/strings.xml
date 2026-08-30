@@ -494,8 +494,16 @@
     <item quantity="one">%d jour</item>
     <item quantity="other">%d jours</item>
 </plurals>
+<plurals name="calendar_relative_hours">
+    <item quantity="one">%d heure</item>
+    <item quantity="other">%d heures</item>
+</plurals>
 <string name="calendar_relative_in_format">dans %1$s</string>
 <string name="calendar_relative_in_minutes">dans %1$d minutes</string>
+<plurals name="calendar_relative_minutes">
+    <item quantity="one">%d minute</item>
+    <item quantity="other">%d minutes</item>
+</plurals>
 <string name="calendar_relative_now">Maintenant</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d mois</item>

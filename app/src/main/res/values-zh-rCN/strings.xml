@@ -492,8 +492,14 @@
     <plurals name="calendar_relative_days">
         <item quantity="other">%d 天</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="other">%d 小时</item>
+    </plurals>
     <string name="calendar_relative_in_format">%1$s后</string>
     <string name="calendar_relative_in_minutes">%1$d 分钟后</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="other">%d 分钟</item>
+    </plurals>
     <string name="calendar_relative_now">现在</string>
     <plurals name="calendar_relative_months">
         <item quantity="other">%d 个月</item>
