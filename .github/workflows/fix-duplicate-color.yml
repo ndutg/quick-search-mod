@@ -1,0 +1,77 @@
+name: Fix Duplicate Color Import
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout restore-wallpaper-feature
+        uses: actions/checkout@v5
+        with:
+          ref: restore-wallpaper-feature
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Show current Color imports
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
+          echo "=== All Color import lines ==="
+          grep -n "import.*graphics.Color" "$FILE"
+
+      - name: Remove duplicate Color import
+        run: |
+          python3 << 'PYEOF'
+          file_path = "app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
+          with open(file_path, "r") as f:
+              lines = f.readlines()
+
+          seen_color_import = False
+          new_lines = []
+          removed = 0
+
+          for line in lines:
+              # Match the exact Color import (not ColorFilter, etc.)
+              if line.strip() == "import androidx.compose.ui.graphics.Color":
+                  if seen_color_import:
+                      removed += 1
+                      print(f"Removing duplicate: {line.strip()}")
+                      continue
+                  seen_color_import = True
+              new_lines.append(line)
+
+          with open(file_path, "w") as f:
+              f.writelines(new_lines)
+
+          print(f"Removed {removed} duplicate Color import(s)")
+          PYEOF
+
+      - name: Verify only one Color import remains
+        run: |
+          FILE="app/src/main/java/com/tk/quicksearch/search/searchScreen/SearchScreenBackground.kt"
+          COUNT=$(grep -c "^import androidx.compose.ui.graphics.Color$" "$FILE")
+          echo "Color import count: $COUNT (should be 1)"
+          echo ""
+          echo "=== Remaining Color imports ==="
+          grep -n "import.*graphics.Color" "$FILE"
+
+      - name: Commit and push
+        run: |
+          git add -A
+          git diff --cached --stat
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "fix: remove duplicate Color import in SearchScreenBackground.kt"
+            git push origin restore-wallpaper-feature
+            echo "Pushed - build will auto-trigger"
+          fi
