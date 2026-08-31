@@ -1073,6 +1073,18 @@ class UserAppPreferences(
     fun setTopResultIndicatorEnabled(enabled: Boolean) =
             uiPreferences.setTopResultIndicatorEnabled(enabled)
 
+    fun isOpenTopResultUsingKeyboardEnabled(): Boolean =
+            uiPreferences.isOpenTopResultUsingKeyboardEnabled()
+
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) =
+            uiPreferences.setOpenTopResultUsingKeyboardEnabled(enabled)
+
+    fun isTopResultIndicatorManuallyDisabled(): Boolean =
+            uiPreferences.isTopResultIndicatorManuallyDisabled()
+
+    fun setTopResultIndicatorManuallyDisabled(disabled: Boolean) =
+            uiPreferences.setTopResultIndicatorManuallyDisabled(disabled)
+
     fun isPhysicalKeyboardConnected(): Boolean = context.isPhysicalKeyboardConnected()
 
     fun isTopMatchesEnabled(): Boolean = uiPreferences.isTopMatchesEnabled()
@@ -1207,9 +1219,23 @@ class UserAppPreferences(
 
     fun setDeviceThemeEnabled(enabled: Boolean) = uiPreferences.setDeviceThemeEnabled(enabled)
 
+    fun isAmoledThemeEnabled(): Boolean = uiPreferences.isAmoledThemeEnabled()
+
+    fun setAmoledThemeEnabled(enabled: Boolean) = uiPreferences.setAmoledThemeEnabled(enabled)
+
     fun isWallpaperAccentEnabled(): Boolean = uiPreferences.isWallpaperAccentEnabled()
 
     fun setWallpaperAccentEnabled(enabled: Boolean) = uiPreferences.setWallpaperAccentEnabled(enabled)
+
+    fun getAccentColorMode(): com.tk.quicksearch.search.core.AccentColorMode =
+            uiPreferences.getAccentColorMode()
+
+    fun setAccentColorMode(mode: com.tk.quicksearch.search.core.AccentColorMode) =
+            uiPreferences.setAccentColorMode(mode)
+
+    fun getCustomAccentColorArgb(): Int = uiPreferences.getCustomAccentColorArgb()
+
+    fun setCustomAccentColorArgb(argb: Int) = uiPreferences.setCustomAccentColorArgb(argb)
 
     fun isAiSearchSetupExpanded(): Boolean = uiPreferences.isAiSearchSetupExpanded()
 

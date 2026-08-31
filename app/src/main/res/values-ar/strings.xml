@@ -279,6 +279,8 @@
     <string name="top_matches_toggle_desc">إظهار أفضل النتائج المطابقة عبر جميع الأنواع في قائمة واحدة.</string>
     <string name="top_result_indicator_toggle_desc">تمييز أفضل نتيجة يمكن فتحها باستخدام لوحة المفاتيح.</string>
     <string name="top_result_indicator_toggle_title">مؤشر أفضل نتيجة</string>
+    <string name="open_top_result_using_keyboard_toggle_title">فتح أفضل نتيجة باستخدام لوحة المفاتيح</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">سيؤدي مفتاح الإدخال/تم في لوحة المفاتيح إلى فتح أفضل نتيجة</string>
     <string name="include_non_launchable_apps_toggle_title">تطبيقات غير قابلة للتشغيل</string>
     <string name="include_non_launchable_apps_toggle_desc">تضمين التطبيقات التي لا تحتوي على نشاط تشغيل في نتائج البحث.</string>
     <string name="web_search_suggestions_title">اقتراحات الويب</string>
@@ -493,8 +495,16 @@
         <item quantity="one">%d يوم</item>
         <item quantity="other">%d أيام</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d ساعة</item>
+        <item quantity="other">%d ساعات</item>
+    </plurals>
     <string name="calendar_relative_in_format">بعد %1$s</string>
     <string name="calendar_relative_in_minutes">بعد %1$d دقيقة</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d دقيقة</item>
+        <item quantity="other">%d دقائق</item>
+    </plurals>
     <string name="calendar_relative_now">الآن</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d شهر</item>
@@ -651,6 +661,8 @@
     <string name="settings_default_assistant_title">المساعد الافتراضي</string>
     <string name="settings_default_launcher_desc">تعيين هذا التطبيق كمشغل افتراضي للشاشة الرئيسية.</string>
     <string name="settings_default_launcher_title">المشغل الافتراضي</string>
+    <string name="settings_amoled_theme_desc">استخدم خلفية سوداء حقيقية لسمة Mono</string>
+    <string name="settings_amoled_theme_title">سمة AMOLED</string>
     <string name="settings_device_theme_blocked_toast">معطل عند تفعيل سمة Material You</string>
     <string name="settings_device_theme_desc">استخدام الألوان الديناميكية لجهازك كسمة للتطبيق</string>
     <string name="settings_device_theme_title">Material You</string>
@@ -669,6 +681,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">تطبيق قناع على الأيقونات غير المدعومة</string>
     <string name="settings_icon_pack_option_system">أيقونات النظام</string>
     <string name="settings_icon_pack_picker_title">اختر حزمة الأيقونات</string>
+    <string name="settings_icon_pack_reset_all_icons">إعادة تعيين جميع الأيقونات</string>
     <string name="settings_icon_pack_search_query">أيقونات مجانية</string>
     <string name="settings_icon_pack_title">حزمة الأيقونات</string>
     <string name="settings_icon_title">أيقونة الإعدادات</string>
@@ -725,8 +738,12 @@
     <string name="settings_tools_title">الأدوات</string>
     <string name="settings_use_system_font_desc">اتباع خط النظام الافتراضي للجهاز</string>
     <string name="settings_use_system_font_title">استخدام خط النظام</string>
-    <string name="settings_wallpaper_accent_desc">استخراج ألوان السمة من صورة خلفية الشاشة</string>
-    <string name="settings_wallpaper_accent_title">الألوان المستخرجة</string>
+    <string name="settings_accent_color_from_wallpaper">الخلفية</string>
+    <string name="settings_accent_color_none">بدون</string>
+    <string name="settings_accent_color_picker_title">لون السمة</string>
+    <string name="settings_accent_color_wallpaper_required_toast">أعد خلفية الشاشة أولاً</string>
+    <string name="settings_wallpaper_accent_desc">اشتقاق لون السمة من الخلفية أو اختيار لون مخصص</string>
+    <string name="settings_wallpaper_accent_title">لون السمة</string>
     <string name="settings_wallpaper_blur_label">تمويه</string>
     <string name="settings_wallpaper_card_title">خلفية الشاشة</string>
     <string name="settings_wallpaper_transparency_label">الشفافية</string>

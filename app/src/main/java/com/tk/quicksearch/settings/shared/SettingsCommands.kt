@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.shared
 
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AppTheme
@@ -66,9 +67,15 @@ sealed interface SettingsCommand {
 
     data class BackgroundSourceSetting(val source: BackgroundSource) : SettingsCommand
 
+    data class AccentColorModeSetting(val mode: AccentColorMode) : SettingsCommand
+
+    data class CustomAccentColorSetting(val argb: Int) : SettingsCommand
+
     data class CustomImageUriSetting(val uri: String?) : SettingsCommand
 
     data class IconPackPackageSetting(val packageName: String?) : SettingsCommand
+
+    data object ResetAllAppIcons : SettingsCommand
 
     data class AppIconShapeSetting(val shape: AppIconShape) : SettingsCommand
 
@@ -110,6 +117,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.TOP_MATCHES -> setTopMatchesEnabled(command.enabled)
                 AppSettingsToggleKey.TOP_RESULT_INDICATOR ->
                     setTopResultIndicatorEnabled(command.enabled)
+                AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD ->
+                    setOpenTopResultUsingKeyboardEnabled(command.enabled)
                 AppSettingsToggleKey.OPEN_KEYBOARD -> setOpenKeyboardOnLaunchEnabled(command.enabled)
                 AppSettingsToggleKey.CLEAR_QUERY -> setClearQueryOnLaunchEnabled(command.enabled)
                 AppSettingsToggleKey.AUTO_CLOSE_OVERLAY ->
@@ -129,10 +138,9 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.NUMBER_SEARCH -> setNumberSearchEnabled(command.enabled)
                 AppSettingsToggleKey.ASSISTANT_LAUNCH_VOICE_MODE ->
                     setAssistantLaunchVoiceModeEnabled(command.enabled)
-                AppSettingsToggleKey.WALLPAPER_ACCENT ->
-                    setWallpaperAccentEnabled(command.enabled)
                 AppSettingsToggleKey.THEMED_ICONS -> setThemedIconsEnabled(command.enabled)
                 AppSettingsToggleKey.DEVICE_THEME -> setDeviceThemeEnabled(command.enabled)
+                AppSettingsToggleKey.AMOLED_THEME -> setAmoledThemeEnabled(command.enabled)
                 AppSettingsToggleKey.USE_SYSTEM_FONT -> setUseSystemFont(command.enabled)
                 AppSettingsToggleKey.DICTIONARY -> setDictionaryEnabled(command.enabled)
                 AppSettingsToggleKey.WEATHER -> setWeatherEnabled(command.enabled)
@@ -173,8 +181,11 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         is SettingsCommand.AppThemeSetting -> setAppTheme(command.theme)
         is SettingsCommand.AppThemeModeSetting -> setAppThemeMode(command.mode)
         is SettingsCommand.BackgroundSourceSetting -> setBackgroundSource(command.source)
+        is SettingsCommand.AccentColorModeSetting -> setAccentColorMode(command.mode)
+        is SettingsCommand.CustomAccentColorSetting -> setCustomAccentColorArgb(command.argb)
         is SettingsCommand.CustomImageUriSetting -> setCustomImageUri(command.uri)
         is SettingsCommand.IconPackPackageSetting -> setIconPackPackage(command.packageName)
+        is SettingsCommand.ResetAllAppIcons -> resetAllAppIconsToDefault()
         is SettingsCommand.AppIconShapeSetting -> setAppIconShape(command.shape)
         is SettingsCommand.LauncherAppIconSetting -> setLauncherAppIcon(command.icon)
     }
@@ -208,6 +219,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.FUZZY_SEARCH -> fuzzySearchEnabled
         AppSettingsToggleKey.TOP_MATCHES -> topMatchesEnabled
         AppSettingsToggleKey.TOP_RESULT_INDICATOR -> topResultIndicatorEnabled
+        AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD -> openTopResultUsingKeyboardEnabled
         AppSettingsToggleKey.OPEN_KEYBOARD -> openKeyboardOnLaunch
         AppSettingsToggleKey.CLEAR_QUERY -> clearQueryOnLaunch
         AppSettingsToggleKey.AUTO_CLOSE_OVERLAY -> autoCloseOverlay
@@ -218,9 +230,9 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.DIRECT_DIAL -> directDialEnabled
         AppSettingsToggleKey.NUMBER_SEARCH -> numberSearchEnabled
         AppSettingsToggleKey.ASSISTANT_LAUNCH_VOICE_MODE -> assistantLaunchVoiceModeEnabled
-        AppSettingsToggleKey.WALLPAPER_ACCENT -> wallpaperAccentEnabled
         AppSettingsToggleKey.THEMED_ICONS -> themedIconsEnabled
         AppSettingsToggleKey.DEVICE_THEME -> deviceThemeEnabled
+        AppSettingsToggleKey.AMOLED_THEME -> amoledThemeEnabled
         AppSettingsToggleKey.USE_SYSTEM_FONT -> useSystemFont
         AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled
         AppSettingsToggleKey.WEATHER -> weatherEnabled

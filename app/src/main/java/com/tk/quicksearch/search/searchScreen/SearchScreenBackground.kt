@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -40,6 +41,7 @@ internal fun SearchScreenBackground(
     useGradientFallback: Boolean = false,
     appTheme: AppTheme = AppTheme.MONOCHROME,
     overlayThemeIntensity: Float = UiPreferences.DEFAULT_OVERLAY_THEME_INTENSITY,
+    amoledThemeEnabled: Boolean = false,
     wallpaperFixedHeight: Dp? = null,
     modifier: Modifier = Modifier,
 ) {
@@ -96,26 +98,32 @@ internal fun SearchScreenBackground(
     Box(modifier = modifier.fillMaxSize()) {
         val fallbackModifier =
             if (useGradientFallback) {
-                val fallbackGradientBrush =
-                    Brush.linearGradient(
-                        colors =
-                            AppThemeColors(
-                                theme = appTheme,
-                                isDarkMode = isDarkMode,
-                                alpha = fallbackAlpha,
-                                intensity = overlayThemeIntensity,
-                            ),
-                        start = Offset.Zero,
-                        end = Offset(1800f, 2200f),
-                    )
-                Modifier
-                    .fillMaxSize()
-                    .background(fallbackGradientBrush)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = AppColors.ThemeFallbackGradientScrimColors,
+                val useAmoledMonoBackground =
+                    amoledThemeEnabled && isDarkMode && appTheme == AppTheme.MONOCHROME
+                if (useAmoledMonoBackground) {
+                    Modifier.fillMaxSize().background(Color.Black)
+                } else {
+                    val fallbackGradientBrush =
+                        Brush.linearGradient(
+                            colors =
+                                AppThemeColors(
+                                    theme = appTheme,
+                                    isDarkMode = isDarkMode,
+                                    alpha = fallbackAlpha,
+                                    intensity = overlayThemeIntensity,
+                                ),
+                            start = Offset.Zero,
+                            end = Offset(1800f, 2200f),
                         )
-                    )
+                    Modifier
+                        .fillMaxSize()
+                        .background(fallbackGradientBrush)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = AppColors.ThemeFallbackGradientScrimColors,
+                            )
+                        )
+                }
             } else {
                 Modifier
                     .fillMaxSize()

@@ -1,13 +1,14 @@
 package com.tk.quicksearch.search.appSettings
 
-import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.EXCLUDED_ITEMS
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.NICKNAMES
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination.TRIGGERS
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
+import com.tk.quicksearch.search.utils.CachedSearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchTextCache
 import java.util.Locale
 
 private const val RESULT_LIMIT = 25
@@ -18,9 +19,12 @@ class AppSettingsSearchHandler(
     private val isLowRamDevice: Boolean = false,
 ) {
     private var availableSettings: List<AppSettingResult> = emptyList()
+    private val searchTextCache = SearchTextCache()
+    private val searchMatcher = CachedSearchMatcher(searchTextCache)
 
     fun loadSettings() {
         availableSettings = repository.loadSettings()
+        searchTextCache.clear()
     }
 
     fun getSettingsByIds(ids: Set<String>): Map<String, AppSettingResult> {
@@ -55,12 +59,15 @@ class AppSettingsSearchHandler(
                 resultLimit = RESULT_LIMIT,
                 enableFuzzyMatching = enableFuzzyMatching,
                 isLowRamDevice = isLowRamDevice,
+                matcher = searchMatcher,
+                textCache = searchTextCache,
             )
     }
 
     private fun ensureLoaded() {
         if (availableSettings.isEmpty()) {
             availableSettings = repository.loadSettings()
+            searchTextCache.clear()
         }
     }
 
@@ -75,7 +82,6 @@ class AppSettingsSearchHandler(
             .appSettingOpenCounts
 
     private fun getVisibleSettings(): List<AppSettingResult> {
-        val backgroundSource = userPreferences.getBackgroundSource()
         return availableSettings.filter { setting ->
             val shouldHideExcludedItems =
                 !hasExcludedItems() && setting.destination == EXCLUDED_ITEMS
@@ -83,25 +89,33 @@ class AppSettingsSearchHandler(
                 !userPreferences.hasAnyNicknameItems() && setting.destination == NICKNAMES
             val shouldHideTriggers =
                 !userPreferences.hasAnyTriggerItems() && setting.destination == TRIGGERS
-            val shouldHideWallpaperAccent =
-                setting.toggleKey == AppSettingsToggleKey.WALLPAPER_ACCENT &&
-                    backgroundSource == BackgroundSource.THEME
             val shouldHideTopResultIndicator =
                 setting.toggleKey == AppSettingsToggleKey.TOP_RESULT_INDICATOR &&
-                    userPreferences.isPhysicalKeyboardConnected()
+                    (userPreferences.isPhysicalKeyboardConnected() ||
+                        !userPreferences.isOpenTopResultUsingKeyboardEnabled())
             val shouldHideFuzzySearch =
                 setting.toggleKey == AppSettingsToggleKey.FUZZY_SEARCH &&
                     isLowRamDevice
             val shouldHideAppResultRows =
                 setting.toggleKey == AppSettingsToggleKey.APP_RESULT_ROWS &&
                     SearchSection.APPS.name in userPreferences.getDisabledSections()
+            val shouldHideAmoledTheme =
+                setting.toggleKey == AppSettingsToggleKey.AMOLED_THEME &&
+                    (
+                        userPreferences.getAppTheme() != com.tk.quicksearch.search.core.AppTheme.MONOCHROME ||
+                            userPreferences.getAppThemeMode() !=
+                                com.tk.quicksearch.search.core.AppThemeMode.DARK ||
+                            userPreferences.isDeviceThemeEnabled() ||
+                            userPreferences.getBackgroundSource() !=
+                                com.tk.quicksearch.search.core.BackgroundSource.THEME
+                    )
             !shouldHideExcludedItems &&
                 !shouldHideNicknames &&
                 !shouldHideTriggers &&
-                !shouldHideWallpaperAccent &&
                 !shouldHideTopResultIndicator &&
                 !shouldHideFuzzySearch &&
-                !shouldHideAppResultRows
+                !shouldHideAppResultRows &&
+                !shouldHideAmoledTheme
         }
     }
 

@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.apps
 
 import android.content.Context
+import android.os.SystemClock
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.AppCatalogChange
 import com.tk.quicksearch.search.data.AppsRepository
@@ -8,7 +9,9 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.applyCatalogRemoval
 import com.tk.quicksearch.search.fuzzy.FuzzySearchConfig
 import com.tk.quicksearch.search.models.AppInfo
+import com.tk.quicksearch.search.utils.CachedSearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchTextCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,16 +41,24 @@ class AppSearchManager(
         private set
 
     private var noMatchPrefix: String? = null
+    private val searchTextCache = SearchTextCache()
+    private val searchMatcher = CachedSearchMatcher(searchTextCache)
+    @Volatile private var preparedAppSearchData: Map<String, PreparedAppSearchData> = emptyMap()
 
     private var fuzzySearchStrategy =
         FuzzyAppSearchStrategy(
             config = initialFuzzyConfig,
             isLowRamDevice = isLowRamDevice,
             isFuzzySearchEnabled = userPreferences::isFuzzySearchEnabled,
+            textCache = searchTextCache,
         )
 
     fun initCache(initialApps: List<AppInfo>) {
         cachedApps = initialApps
+        preparedAppSearchData = emptyMap()
+        scope.launch(Dispatchers.Default) {
+            rebuildPreparedAppSearchData(initialApps)
+        }
     }
 
     fun loadApps() {
@@ -73,11 +84,13 @@ class AppSearchManager(
         showToast: Boolean = false,
         forceUiUpdate: Boolean = false,
     ) {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         if (cachedApps.isEmpty()) {
             onLoadingStateChanged(true, null)
         }
 
         val launchCounts = userPreferences.getAllAppLaunchCounts()
+        val launchCountsLoadedAtElapsedMs = SystemClock.elapsedRealtime()
         runCatching {
             repository.loadLaunchableApps(
                 includeNonLaunchableApps = userPreferences.shouldIncludeNonLaunchableAppsInSearch(),
@@ -85,6 +98,7 @@ class AppSearchManager(
             )
         }
             .onSuccess { apps ->
+                val appsLoadedAtElapsedMs = SystemClock.elapsedRealtime()
                 val currentPackageSet = cachedApps.map { it.launchCountKey() }.toSet()
                 val newPackageSet = apps.map { it.launchCountKey() }.toSet()
                 val appSetChanged = currentPackageSet != newPackageSet
@@ -101,15 +115,18 @@ class AppSearchManager(
                     }
                 val searchLabelsChanged = currentSearchLabels != newSearchLabels
 
-                if (
+                val shouldPublish =
                     showToast ||
                         cachedApps.isEmpty() ||
                         appSetChanged ||
                         usageStatsChanged ||
                         searchLabelsChanged ||
                         forceUiUpdate
-                ) {
+                if (shouldPublish) {
                     cachedApps = apps
+                    if (appSetChanged || searchLabelsChanged || preparedAppSearchData.isEmpty()) {
+                        rebuildPreparedAppSearchData(apps)
+                    }
                     noMatchPrefix = null
                     onAppsUpdated()
                 }
@@ -123,7 +140,24 @@ class AppSearchManager(
                         showToastCallback(R.string.apps_refreshed_successfully)
                     }
                 }
+
+                AppSearchPerformanceLogger.logTiming(
+                    event = "catalogRefresh",
+                    elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+                    slowThresholdMs = 500L,
+                ) {
+                    "launchCountsMs=${launchCountsLoadedAtElapsedMs - startedAtElapsedMs} " +
+                        "repositoryMs=${appsLoadedAtElapsedMs - launchCountsLoadedAtElapsedMs} " +
+                        "publishMs=${SystemClock.elapsedRealtime() - appsLoadedAtElapsedMs} " +
+                        "apps=${apps.size} cachedApps=${cachedApps.size} " +
+                        "includeNonLaunchable=${userPreferences.shouldIncludeNonLaunchableAppsInSearch()} " +
+                        "updated=$shouldPublish"
+                }
             }.onFailure { error ->
+                AppSearchPerformanceLogger.log {
+                    "catalogRefresh failed totalMs=${SystemClock.elapsedRealtime() - startedAtElapsedMs} " +
+                        "error=${error.javaClass.simpleName}"
+                }
                 val fallbackMessage = context.getString(R.string.error_loading_user_apps)
                 onLoadingStateChanged(false, error.localizedMessage ?: fallbackMessage)
 
@@ -139,6 +173,8 @@ class AppSearchManager(
         scope.launch(Dispatchers.IO) {
             repository.clearCache()
             cachedApps = emptyList()
+            preparedAppSearchData = emptyMap()
+            searchTextCache.clear()
             noMatchPrefix = null
             // We need to notify VM to clear its state
             onLoadingStateChanged(true, null)
@@ -163,6 +199,8 @@ class AppSearchManager(
         if (remainingApps.size == cachedApps.size) return false
 
         cachedApps = remainingApps
+        val remainingKeys = remainingApps.mapTo(mutableSetOf()) { it.launchCountKey() }
+        preparedAppSearchData = preparedAppSearchData.filterKeys(remainingKeys::contains)
         noMatchPrefix = null
         onAppsUpdated()
         return true
@@ -282,6 +320,8 @@ class AppSearchManager(
             fuzzySearchStrategy = fuzzySearchStrategy,
             appNicknames = cachedAppNicknames,
             secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
+            matcher = searchMatcher,
+            preparedAppData = preparedAppSearchData,
         )
 
     fun deriveMatches(
@@ -296,7 +336,24 @@ class AppSearchManager(
             fuzzySearchStrategy = fuzzySearchStrategy,
             appNicknames = cachedAppNicknames,
             secondaryRankingSignal = userPreferences.getSecondaryRankingSignal(),
+            matcher = searchMatcher,
+            preparedAppData = preparedAppSearchData,
         )
+
+    private fun rebuildPreparedAppSearchData(apps: List<AppInfo>) {
+        searchTextCache.clear()
+        apps.forEach { app ->
+            searchTextCache.prepare(app.appName)
+            app.searchAliases.forEach(searchTextCache::prepare)
+        }
+        val prepared = apps.associate { app -> app.launchCountKey() to PreparedAppSearchData.from(app) }
+        val preparedLabels = apps.associate { app -> app.launchCountKey() to AppSearchLabels(app.appName, app.searchAliases) }
+        val currentLabels =
+            cachedApps.associate { app -> app.launchCountKey() to AppSearchLabels(app.appName, app.searchAliases) }
+        if (preparedLabels == currentLabels) {
+            preparedAppSearchData = prepared
+        }
+    }
 
     internal companion object {
         internal fun shouldSkipDueToNoMatchPrefix(

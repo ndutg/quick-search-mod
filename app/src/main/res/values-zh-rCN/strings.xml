@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">在单个列表中显示所有类型中最匹配的结果。</string>
     <string name="top_result_indicator_toggle_desc">高亮显示可通过键盘直接打开的最佳结果。</string>
     <string name="top_result_indicator_toggle_title">最佳结果指示器</string>
+    <string name="open_top_result_using_keyboard_toggle_title">使用键盘打开最佳结果</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">键盘回车/完成键将打开最佳结果</string>
     <string name="include_non_launchable_apps_toggle_title">不可启动的应用</string>
     <string name="include_non_launchable_apps_toggle_desc">在搜索结果中包含没有启动 Activity 的应用。</string>
     <string name="web_search_suggestions_title">网络联想建议</string>
@@ -490,8 +492,14 @@
     <plurals name="calendar_relative_days">
         <item quantity="other">%d 天</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="other">%d 小时</item>
+    </plurals>
     <string name="calendar_relative_in_format">%1$s后</string>
     <string name="calendar_relative_in_minutes">%1$d 分钟后</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="other">%d 分钟</item>
+    </plurals>
     <string name="calendar_relative_now">现在</string>
     <plurals name="calendar_relative_months">
         <item quantity="other">%d 个月</item>
@@ -642,6 +650,8 @@
     <string name="settings_default_assistant_title">默认助理</string>
     <string name="settings_default_launcher_desc">将此应用设置为您的默认启动器。</string>
     <string name="settings_default_launcher_title">默认启动器</string>
+    <string name="settings_amoled_theme_desc">为 Mono 主题使用纯黑背景</string>
+    <string name="settings_amoled_theme_title">AMOLED 主题</string>
     <string name="settings_device_theme_blocked_toast">当 Material You 主题启用时此项已被禁用</string>
     <string name="settings_device_theme_desc">将设备的动态调色板应用为应用自身的主题色彩</string>
     <string name="settings_device_theme_title">Material You</string>
@@ -660,6 +670,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">为不支持的图标添加蒙版</string>
     <string name="settings_icon_pack_option_system">系统默认图标</string>
     <string name="settings_icon_pack_picker_title">选择图标包</string>
+    <string name="settings_icon_pack_reset_all_icons">重置所有图标</string>
     <string name="settings_icon_pack_search_query">免费图标包</string>
     <string name="settings_icon_pack_title">图标包</string>
     <string name="settings_icon_title">设置图标</string>
@@ -716,7 +727,11 @@
     <string name="settings_tools_title">实用工具</string>
     <string name="settings_use_system_font_desc">匹配并跟随您设备的系统字体样式</string>
     <string name="settings_use_system_font_title">使用系统字体</string>
-    <string name="settings_wallpaper_accent_desc">从背景图片中自动提取出强调色</string>
+    <string name="settings_accent_color_from_wallpaper">壁纸</string>
+    <string name="settings_accent_color_none">无</string>
+    <string name="settings_accent_color_picker_title">强调色</string>
+    <string name="settings_accent_color_wallpaper_required_toast">请先设置壁纸背景</string>
+    <string name="settings_wallpaper_accent_desc">从壁纸提取强调色或选择自定义颜色</string>
     <string name="settings_wallpaper_accent_title">强调色</string>
     <string name="settings_wallpaper_blur_label">模糊度</string>
     <string name="settings_wallpaper_card_title">壁纸背景</string>

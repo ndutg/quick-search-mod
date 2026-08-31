@@ -44,6 +44,7 @@ fun IconPackPickerDialog(
         onSelect: (String?) -> Unit,
         onMaskUnsupportedIconsChange: (Boolean) -> Unit,
         onDownloadIconPacks: () -> Unit = {},
+        onResetAllIcons: () -> Unit,
         onDismiss: () -> Unit,
 ) {
     AppAlertDialog(
@@ -122,10 +123,18 @@ fun IconPackPickerDialog(
                 }
             },
             confirmButton = {
-                TextButton(onClick = onDismiss, modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(
-                            androidx.compose.ui.res.stringResource(R.string.dialog_done),
-                    )
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.dialog_done))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                        onClick = {
+                            onResetAllIcons()
+                            onDismiss()
+                        },
+                ) {
+                    Text(stringResource(R.string.settings_icon_pack_reset_all_icons))
                 }
             },
     )

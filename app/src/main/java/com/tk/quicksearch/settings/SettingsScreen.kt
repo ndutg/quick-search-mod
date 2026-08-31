@@ -238,6 +238,7 @@ fun SettingsScreen(
         appTheme = state.appTheme,
         overlayThemeIntensity = state.overlayThemeIntensity,
         deviceThemeEnabled = state.deviceThemeEnabled,
+        amoledThemeEnabled = state.amoledThemeEnabled,
         modifier = modifier,
     ) {
     Column(

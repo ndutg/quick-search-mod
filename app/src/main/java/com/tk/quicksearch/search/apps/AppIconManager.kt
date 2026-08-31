@@ -15,10 +15,9 @@ import android.os.Build
 import android.util.LruCache
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -28,6 +27,8 @@ import com.tk.quicksearch.search.common.UserHandleUtils
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.managers.IconPackManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 private data class AppIconEntry(
@@ -36,7 +37,10 @@ private data class AppIconEntry(
     val monochromeData: ImageBitmap? = null,
 )
 
-private var appIconCacheEpoch by mutableLongStateOf(0L)
+// This process-wide value can be initialized by any surface while another surface is already
+// recomposing. Keep it outside Compose's snapshot system so its first access cannot leak state
+// created in one snapshot into another composition.
+private val appIconCacheEpoch = MutableStateFlow(0L)
 
 /**
  * Zoom factor when rasterizing adaptive icons for a circular mask. Keep this slightly above 1.0
@@ -90,7 +94,7 @@ private object AppIconCache {
 
 fun invalidateAppIconCache() {
     AppIconCache.clear()
-    appIconCacheEpoch++
+    appIconCacheEpoch.update { it + 1 }
 }
 
 /**
@@ -129,7 +133,7 @@ fun rememberAppIcon(
         if (iconPackPackage == null) false
         else UserAppPreferences(context).isIconPackUnsupportedIconMaskEnabled()
     val iconOverride = UserAppPreferences(context).getAppIconOverride(packageName)
-    val cacheEpoch = appIconCacheEpoch
+    val cacheEpoch by appIconCacheEpoch.collectAsState()
     val cacheKey =
         buildCacheKey(
             packageName = packageName,
@@ -451,7 +455,7 @@ private fun buildCacheKey(
     iconOverride: com.tk.quicksearch.search.data.preferences.AppIconOverride? = null,
     maskUnsupportedIconPackIcons: Boolean = false,
     userHandleId: Int? = null,
-    cacheEpoch: Long = appIconCacheEpoch,
+    cacheEpoch: Long = appIconCacheEpoch.value,
     forceCircularMask: Boolean = false,
 ): String {
     val prefix = iconPackPackage ?: "system"

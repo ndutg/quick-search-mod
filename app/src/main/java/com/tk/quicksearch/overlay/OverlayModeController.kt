@@ -11,6 +11,7 @@ object OverlayModeController {
     const val EXTRA_OPEN_SETTINGS = "overlay_open_settings"
     const val EXTRA_OPEN_SETTINGS_DETAIL = "overlay_open_settings_detail"
     const val EXTRA_OPEN_NOTE_ID = "overlay_open_note_id"
+    const val EXTRA_OPEN_WIDGETS_PANEL = "overlay_open_widgets_panel"
     const val EXTRA_CLOSE_OVERLAY = "overlay_close"
     const val EXTRA_START_VOICE_SEARCH = "overlay_start_voice_search"
     const val EXTRA_MIC_ACTION = "overlay_mic_action"
@@ -53,12 +54,14 @@ object OverlayModeController {
         settingsDetailType: SettingsDetailType? = null,
         noteId: Long? = null,
         initialQuery: String? = null,
+        openWidgetsPanel: Boolean = false,
     ) {
         val intent =
             Intent(context, MainActivity::class.java).apply {
                 action = Intent.ACTION_MAIN
                 putExtra(EXTRA_FORCE_NORMAL_LAUNCH, true)
                 putExtra(EXTRA_OPEN_SETTINGS, openSettings)
+                putExtra(EXTRA_OPEN_WIDGETS_PANEL, openWidgetsPanel)
                 settingsDetailType?.let { putExtra(EXTRA_OPEN_SETTINGS_DETAIL, it.name) }
                 noteId?.let { putExtra(EXTRA_OPEN_NOTE_ID, it) }
                 initialQuery?.takeIf { it.isNotBlank() }?.let { putExtra("query", it) }

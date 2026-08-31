@@ -3,6 +3,8 @@ package com.tk.quicksearch.search.apps
 import com.tk.quicksearch.search.fuzzy.FuzzySearchConfig
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
+import com.tk.quicksearch.search.utils.CachedSearchMatcher
+import com.tk.quicksearch.search.utils.SearchTextCache
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -224,6 +226,76 @@ class AppSearchAlgorithmTest {
             )
 
         assertTrue(matches.contains(github))
+    }
+
+    @Test
+    fun preparedCatalogPathProducesTheSameResultsAsTheUncachedPath() {
+        val apps =
+            listOf(
+                app("Settings", "settings", launchCount = 3),
+                app("Settlings", "settlings", launchCount = 8),
+                app("واتساب", "whatsapp", searchAliases = listOf("WhatsApp")),
+                app("F-Droid", "fdroid"),
+                app("Passport Office", "passport"),
+            )
+        val nicknames = mapOf("com.example.passport" to "Bala Guna Teja")
+        val textCache = SearchTextCache()
+        val cachedStrategy =
+            FuzzyAppSearchStrategy(
+                config = FuzzySearchConfig.DEFAULT_APP_CONFIG,
+                textCache = textCache,
+            )
+        val preparedData = apps.associate { it.launchCountKey() to PreparedAppSearchData.from(it) }
+
+        listOf("settings", "setings", "whatsapp", "fdroi", "balagunateja", "missing").forEach { query ->
+            val uncached =
+                AppSearchAlgorithm.findMatches(
+                    query = query,
+                    source = apps,
+                    limit = 10,
+                    fuzzySearchStrategy = FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG),
+                    appNicknames = nicknames,
+                    secondaryRankingSignal = SecondaryRankingSignal.MOST_OPENED,
+                )
+            val cached =
+                AppSearchAlgorithm.findMatches(
+                    query = query,
+                    source = apps,
+                    limit = 10,
+                    fuzzySearchStrategy = cachedStrategy,
+                    appNicknames = nicknames,
+                    secondaryRankingSignal = SecondaryRankingSignal.MOST_OPENED,
+                    matcher = CachedSearchMatcher(textCache),
+                    preparedAppData = preparedData,
+                )
+
+            assertEquals("Unexpected prepared-path results for $query", uncached, cached)
+        }
+    }
+
+    @Test
+    fun fuzzyPreferenceIsReadOncePerPreparedQueryAndToken() {
+        var preferenceReads = 0
+        val strategy =
+            FuzzyAppSearchStrategy(
+                config = FuzzySearchConfig.DEFAULT_APP_CONFIG,
+                isFuzzySearchEnabled = {
+                    preferenceReads += 1
+                    true
+                },
+            )
+        val apps = (1..100).map { app("Settings Search $it", "settings$it") }
+
+        AppSearchAlgorithm.findMatches(
+            query = "settings search",
+            source = apps,
+            limit = 10,
+            fuzzySearchStrategy = strategy,
+            appNicknames = emptyMap(),
+            secondaryRankingSignal = SecondaryRankingSignal.NONE,
+        )
+
+        assertEquals(3, preferenceReads)
     }
 
     private fun app(

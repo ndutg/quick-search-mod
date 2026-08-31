@@ -343,6 +343,7 @@ internal class SearchToolCoordinator(
                                         timeZoneText = parsed.timeZoneText,
                                         activeQuery = trimmedQuery,
                                         usedModelId = modelId,
+                                        llmProviderId = userPreferences.getWorldClockProviderId(),
                                     ),
                             )
                         }
@@ -478,6 +479,7 @@ internal class SearchToolCoordinator(
                                         synonyms = parsed.synonyms,
                                         activeQuery = trimmedQuery,
                                         usedModelId = modelId,
+                                        llmProviderId = userPreferences.getDictionaryProviderId(),
                                     ),
                             )
                         }

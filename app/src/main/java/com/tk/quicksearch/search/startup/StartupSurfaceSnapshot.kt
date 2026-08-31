@@ -29,6 +29,7 @@ data class StartupSurfaceSnapshot(
     val oneHandedMode: Boolean,
     val bottomSearchBarEnabled: Boolean,
     val topResultIndicatorEnabled: Boolean,
+    val openTopResultUsingKeyboardEnabled: Boolean = true,
     val openKeyboardOnLaunch: Boolean,
     val fontScaleMultiplier: Float,
     val useSystemFont: Boolean = false,
@@ -57,6 +58,7 @@ internal object StartupSurfaceSnapshotJson {
     private const val KEY_ONE_HANDED = "oneHandedMode"
     private const val KEY_BOTTOM_SEARCH_BAR = "bottomSearchBarEnabled"
     private const val KEY_TOP_RESULT_INDICATOR = "topResultIndicatorEnabled"
+    private const val KEY_OPEN_TOP_RESULT_USING_KEYBOARD = "openTopResultUsingKeyboardEnabled"
     private const val KEY_OPEN_KEYBOARD_ON_LAUNCH = "openKeyboardOnLaunch"
     private const val KEY_FONT_SCALE = "fontScaleMultiplier"
     private const val KEY_USE_SYSTEM_FONT = "useSystemFont"
@@ -108,6 +110,7 @@ internal object StartupSurfaceSnapshotJson {
                 put(KEY_ONE_HANDED, snapshot.oneHandedMode)
                 put(KEY_BOTTOM_SEARCH_BAR, snapshot.bottomSearchBarEnabled)
                 put(KEY_TOP_RESULT_INDICATOR, snapshot.topResultIndicatorEnabled)
+                put(KEY_OPEN_TOP_RESULT_USING_KEYBOARD, snapshot.openTopResultUsingKeyboardEnabled)
                 put(KEY_OPEN_KEYBOARD_ON_LAUNCH, snapshot.openKeyboardOnLaunch)
                 put(KEY_FONT_SCALE, snapshot.fontScaleMultiplier.toDouble())
                 put(KEY_USE_SYSTEM_FONT, snapshot.useSystemFont)
@@ -199,6 +202,7 @@ internal object StartupSurfaceSnapshotJson {
                 oneHandedMode = root.optBoolean(KEY_ONE_HANDED, false),
                 bottomSearchBarEnabled = root.optBoolean(KEY_BOTTOM_SEARCH_BAR, false),
                 topResultIndicatorEnabled = root.optBoolean(KEY_TOP_RESULT_INDICATOR, false),
+                openTopResultUsingKeyboardEnabled = root.optBoolean(KEY_OPEN_TOP_RESULT_USING_KEYBOARD, true),
                 openKeyboardOnLaunch = root.optBoolean(KEY_OPEN_KEYBOARD_ON_LAUNCH, true),
                 fontScaleMultiplier = root.optDouble(KEY_FONT_SCALE, 1.0).toFloat(),
                 useSystemFont = root.optBoolean(KEY_USE_SYSTEM_FONT, false),

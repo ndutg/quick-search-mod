@@ -19,6 +19,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -42,8 +43,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
@@ -103,6 +106,7 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.rememberPredictedSubmitIndicatorAlpha
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -653,16 +657,26 @@ private fun AllAppsDialog(
                 )
             },
             text = {
-                Column(
+                val gridState = rememberLazyGridState()
+                var isScrollbarDragging by remember { mutableStateOf(false) }
+                Box(
                         modifier =
                                 Modifier
                                         .fillMaxWidth()
                                         .heightIn(max = 520.dp),
-                        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                 ) {
                     LazyVerticalGrid(
+                            state = gridState,
                             columns = GridCells.Fixed(dialogColumns),
-                            modifier = Modifier.fillMaxWidth().heightIn(max = 520.dp),
+                            modifier =
+                                    Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(max = 520.dp)
+                                            .padding(
+                                                    end =
+                                                            (LazyGridScrollbarTouchWidth - AllAppsDialogSeekEdgeNudge)
+                                                                    .coerceAtLeast(DesignTokens.SpacingSmall),
+                                            ),
                             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                             verticalArrangement = Arrangement.spacedBy(AllAppsDialogRowSpacing),
                     ) {
@@ -713,6 +727,19 @@ private fun AllAppsDialog(
                             )
                         }
                     }
+                    AllAppsScrollLetterPopup(
+                            apps = apps,
+                            gridState = gridState,
+                            isScrollbarDragging = isScrollbarDragging,
+                    )
+                    LazyGridVerticalScrollbar(
+                            state = gridState,
+                            modifier =
+                                    Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .offset(x = AllAppsDialogSeekEdgeNudge),
+                            onDraggingChange = { isScrollbarDragging = it },
+                    )
                 }
             },
             confirmButton = {
@@ -1361,7 +1388,8 @@ private fun AppGridItem(
                     DesignTokens.AppIconSize * sizeScale
                 }
             }
-    val indicatorAlpha = if (isPredicted) 1f else 0f
+    val indicatorAlpha by rememberPredictedSubmitIndicatorAlpha(isPredicted)
+    val showTopResultIndicator = indicatorAlpha > 0f
     var isLocalDragging by remember { mutableStateOf(false) }
     val showDraggedPresentation = isDragging || isLocalDragging
     val dragScale by animateFloatAsState(
@@ -1463,8 +1491,8 @@ private fun AppGridItem(
                     .padding(
                         top = TopResultIndicatorTopPadding,
                         bottom = TopResultIndicatorBottomPadding,
-                        start = if (isPredicted) TopResultIndicatorHorizontalPadding else 0.dp,
-                        end = if (isPredicted) TopResultIndicatorHorizontalPadding else 0.dp,
+                        start = if (showTopResultIndicator) TopResultIndicatorHorizontalPadding else 0.dp,
+                        end = if (showTopResultIndicator) TopResultIndicatorHorizontalPadding else 0.dp,
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,

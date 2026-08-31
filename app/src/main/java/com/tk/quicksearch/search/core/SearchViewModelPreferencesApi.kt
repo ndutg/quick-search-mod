@@ -148,6 +148,8 @@ internal interface SearchViewModelPreferencesApi {
     fun setIconPackPackage(packageName: String?) =
         preferencesApiDelegate.setIconPackPackage(packageName)
 
+    fun resetAllAppIconsToDefault() = preferencesApiDelegate.resetAllAppIconsToDefault()
+
     fun setIconPackUnsupportedIconMaskEnabled(enabled: Boolean) =
         preferencesApiDelegate.setIconPackUnsupportedIconMaskEnabled(enabled)
 
@@ -162,6 +164,8 @@ internal interface SearchViewModelPreferencesApi {
     fun setThemedIconsEnabled(enabled: Boolean) = preferencesApiDelegate.setThemedIconsEnabled(enabled)
 
     fun setDeviceThemeEnabled(enabled: Boolean) = preferencesApiDelegate.setDeviceThemeEnabled(enabled)
+
+    fun setAmoledThemeEnabled(enabled: Boolean) = preferencesApiDelegate.setAmoledThemeEnabled(enabled)
 
     fun setSearchEngineAliasSuffixEnabled(enabled: Boolean) =
         preferencesApiDelegate.setSearchEngineAliasSuffixEnabled(enabled)
@@ -204,8 +208,14 @@ internal interface SearchViewModelPreferencesApi {
     fun setTopResultIndicatorEnabled(enabled: Boolean) =
         preferencesApiDelegate.setTopResultIndicatorEnabled(enabled)
 
-    fun setWallpaperAccentEnabled(enabled: Boolean) =
-        preferencesApiDelegate.setWallpaperAccentEnabled(enabled)
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setOpenTopResultUsingKeyboardEnabled(enabled)
+
+    fun setAccentColorMode(mode: AccentColorMode) =
+        preferencesApiDelegate.setAccentColorMode(mode)
+
+    fun setCustomAccentColorArgb(argb: Int) =
+        preferencesApiDelegate.setCustomAccentColorArgb(argb)
 
     fun setClearQueryOnLaunchEnabled(enabled: Boolean) =
         preferencesApiDelegate.setClearQueryOnLaunchEnabled(enabled)
@@ -415,6 +425,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setIconPackPackage(packageName: String?) = preferencesDelegate.setIconPackPackage(packageName)
 
+    fun resetAllAppIconsToDefault() = iconPackHandler.resetAllAppIconsToDefault()
+
     fun setIconPackUnsupportedIconMaskEnabled(enabled: Boolean) =
         preferencesDelegate.setIconPackUnsupportedIconMaskEnabled(enabled)
 
@@ -430,6 +442,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setThemedIconsEnabled(enabled: Boolean) = preferencesDelegate.setThemedIconsEnabled(enabled)
 
     fun setDeviceThemeEnabled(enabled: Boolean) = preferencesDelegate.setDeviceThemeEnabled(enabled)
+
+    fun setAmoledThemeEnabled(enabled: Boolean) = preferencesDelegate.setAmoledThemeEnabled(enabled)
 
     fun setSearchEngineAliasSuffixEnabled(enabled: Boolean) =
         preferencesDelegate.setSearchEngineAliasSuffixEnabled(enabled)
@@ -472,6 +486,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setTopResultIndicatorEnabled(enabled: Boolean) =
         preferencesDelegate.setTopResultIndicatorEnabled(enabled)
 
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) =
+        preferencesDelegate.setOpenTopResultUsingKeyboardEnabled(enabled)
+
     fun setTopMatchesEnabled(enabled: Boolean) = preferencesDelegate.setTopMatchesEnabled(enabled)
 
     fun setTopMatchesLimit(limit: Int) = preferencesDelegate.setTopMatchesLimit(limit)
@@ -482,8 +499,11 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) =
         preferencesDelegate.setTopMatchesSectionEnabled(section, enabled)
 
-    fun setWallpaperAccentEnabled(enabled: Boolean) =
-        preferencesDelegate.setWallpaperAccentEnabled(enabled)
+    fun setAccentColorMode(mode: AccentColorMode) =
+        preferencesDelegate.setAccentColorMode(mode)
+
+    fun setCustomAccentColorArgb(argb: Int) =
+        preferencesDelegate.setCustomAccentColorArgb(argb)
 
     fun setClearQueryOnLaunchEnabled(enabled: Boolean) =
         preferencesDelegate.setClearQueryOnLaunchEnabled(enabled)

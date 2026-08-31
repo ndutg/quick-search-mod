@@ -4,8 +4,21 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPerformanceLogger
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
+import com.tk.quicksearch.search.utils.DefaultSearchMatcher
+import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import java.util.Locale
+
+data class PreparedAppSearchData(
+    val initials: List<String>,
+) {
+    companion object {
+        fun from(app: AppInfo): PreparedAppSearchData =
+            PreparedAppSearchData(
+                initials = AppSearchInitials.initialsFor(app),
+            )
+    }
+}
 
 object AppSearchAlgorithm {
     fun findMatches(
@@ -15,6 +28,8 @@ object AppSearchAlgorithm {
         fuzzySearchStrategy: FuzzyAppSearchStrategy,
         appNicknames: Map<String, String>,
         secondaryRankingSignal: SecondaryRankingSignal,
+        matcher: SearchMatcher = DefaultSearchMatcher,
+        preparedAppData: Map<String, PreparedAppSearchData> = emptyMap(),
     ): List<AppInfo> {
         if (query.isBlank()) return emptyList()
         return findMatches(
@@ -24,6 +39,8 @@ object AppSearchAlgorithm {
             fuzzySearchStrategy = fuzzySearchStrategy,
             appNicknames = appNicknames,
             secondaryRankingSignal = secondaryRankingSignal,
+            matcher = matcher,
+            preparedAppData = preparedAppData,
         )
     }
 
@@ -34,11 +51,18 @@ object AppSearchAlgorithm {
         fuzzySearchStrategy: FuzzyAppSearchStrategy,
         appNicknames: Map<String, String>,
         secondaryRankingSignal: SecondaryRankingSignal,
+        matcher: SearchMatcher = DefaultSearchMatcher,
+        preparedAppData: Map<String, PreparedAppSearchData> = emptyMap(),
     ): List<AppInfo> {
         if (queryContext.normalizedQuery.isBlank()) return emptyList()
 
-        val preparedFuzzyQuery =
-            fuzzySearchStrategy.prepareQuery(queryContext.normalizedQuery)
+        val preparedFuzzyQuery = fuzzySearchStrategy.prepareQuery(queryContext)
+        val preparedTokenQueries =
+            if (queryContext.tokens.size > 1) {
+                queryContext.tokens.associateWith(fuzzySearchStrategy::prepareNormalizedToken)
+            } else {
+                emptyMap()
+            }
         val canUseFuzzySearch = preparedFuzzyQuery.policy.enabled
         val fuzzyCandidateLimit =
             if (canUseFuzzySearch) {
@@ -57,7 +81,11 @@ object AppSearchAlgorithm {
                         queryContext = queryContext,
                         fuzzySearchStrategy = fuzzySearchStrategy,
                         preparedFuzzyQuery = preparedFuzzyQuery,
+                        preparedTokenQueries = preparedTokenQueries,
                         appNicknames = appNicknames,
+                        matcher = matcher,
+                        preparedAppData =
+                            preparedAppData[app.launchCountKey()] ?: PreparedAppSearchData.from(app),
                         canScoreFuzzyCandidate = {
                             if (fuzzyCandidatesScored >= fuzzyCandidateLimit) {
                                 false
@@ -88,6 +116,7 @@ object AppSearchAlgorithm {
         val priority: Int,
         val fuzzyScore: Int,
         val isFuzzy: Boolean,
+        val alphabeticalKey: String,
     )
 
     private fun calculateAppMatch(
@@ -95,11 +124,14 @@ object AppSearchAlgorithm {
         queryContext: SearchQueryContext,
         fuzzySearchStrategy: FuzzyAppSearchStrategy,
         preparedFuzzyQuery: PreparedAppFuzzyQuery,
+        preparedTokenQueries: Map<String, PreparedAppFuzzyQuery>,
         appNicknames: Map<String, String>,
+        matcher: SearchMatcher,
+        preparedAppData: PreparedAppSearchData,
         canScoreFuzzyCandidate: () -> Boolean,
     ): AppMatch? {
         val nickname = appNicknames[app.packageName]
-        val initials = AppSearchInitials.initialsFor(app)
+        val initials = preparedAppData.initials
         val priority =
             AppSearchPolicy.matchPriority(
                 appName = app.appName,
@@ -107,11 +139,13 @@ object AppSearchAlgorithm {
                 nickname = nickname,
                 query = queryContext,
                 initials = initials,
+                matcher = matcher,
             )
         if (AppSearchPolicy.hasMatch(priority)) {
             if (
                 !AppSearchPolicy.areAllQueryTokensCovered(
                     queryContext,
+                    preparedTokenQueries,
                     app.appName,
                     app.searchAliases,
                     nickname,
@@ -121,7 +155,7 @@ object AppSearchAlgorithm {
             ) {
                 return null
             }
-            return AppMatch(app, priority, 0, false)
+            return AppMatch(app, priority, 0, false, app.appName.lowercase(Locale.getDefault()))
         }
 
         if (
@@ -151,6 +185,7 @@ object AppSearchAlgorithm {
             if (
                 !AppSearchPolicy.areAllQueryTokensCovered(
                     queryContext,
+                    preparedTokenQueries,
                     app.appName,
                     app.searchAliases,
                     nickname,
@@ -160,7 +195,7 @@ object AppSearchAlgorithm {
             ) {
                 return null
             }
-            AppMatch(app, it.priority, it.score, true)
+            AppMatch(app, it.priority, it.score, true, app.appName.lowercase(Locale.getDefault()))
         }
     }
 
@@ -175,31 +210,29 @@ object AppSearchAlgorithm {
                 if (priorityCompare != 0) {
                     return@Comparator priorityCompare
                 }
-                return@Comparator compareBySecondarySignalOrName(first.app, second.app, secondaryRankingSignal)
+                return@Comparator compareBySecondarySignalOrName(first, second, secondaryRankingSignal)
             }
 
             val fuzzyCompare = second.fuzzyScore.compareTo(first.fuzzyScore)
             if (fuzzyCompare != 0) {
                 return@Comparator fuzzyCompare
             }
-            compareBySecondarySignalOrName(first.app, second.app, secondaryRankingSignal)
+            compareBySecondarySignalOrName(first, second, secondaryRankingSignal)
         }
     }
 
     private fun compareBySecondarySignalOrName(
-        first: AppInfo,
-        second: AppInfo,
+        first: AppMatch,
+        second: AppMatch,
         secondaryRankingSignal: SecondaryRankingSignal,
     ): Int {
         val secondaryCompare =
             when (secondaryRankingSignal) {
-                SecondaryRankingSignal.RECENCY -> second.lastUsedTime.compareTo(first.lastUsedTime)
-                SecondaryRankingSignal.MOST_OPENED -> second.launchCount.compareTo(first.launchCount)
+                SecondaryRankingSignal.RECENCY -> second.app.lastUsedTime.compareTo(first.app.lastUsedTime)
+                SecondaryRankingSignal.MOST_OPENED -> second.app.launchCount.compareTo(first.app.launchCount)
                 SecondaryRankingSignal.NONE -> 0
             }
         return secondaryCompare.takeIf { it != 0 }
-            ?: first.appName
-                .lowercase(Locale.getDefault())
-                .compareTo(second.appName.lowercase(Locale.getDefault()))
+            ?: first.alphabeticalKey.compareTo(second.alphabeticalKey)
     }
 }

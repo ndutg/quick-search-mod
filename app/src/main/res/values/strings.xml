@@ -270,6 +270,8 @@
     <string name="top_matches_toggle_desc">Show top matched results across all types in a single list</string>
     <string name="top_result_indicator_toggle_desc">Highlight the top result that can be opened with the keyboard.</string>
     <string name="top_result_indicator_toggle_title">Top Result Indicator</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Open Top Result using Keyboard</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Keyboard enter/done key will open top result</string>
     <string name="include_non_launchable_apps_toggle_title">Non-Launchable Apps</string>
     <string name="include_non_launchable_apps_toggle_desc">Include apps that don’t have a launch activity in search results.</string>
     <string name="web_search_suggestions_title">Web Suggestions</string>
@@ -653,6 +655,8 @@
     <string name="settings_default_assistant_title">Default Assistant</string>
     <string name="settings_default_launcher_desc">Set this app as your default home app.</string>
     <string name="settings_default_launcher_title">Default Launcher</string>
+    <string name="settings_amoled_theme_desc">Use True Black background for Mono Theme</string>
+    <string name="settings_amoled_theme_title">AMOLED Theme</string>
     <string name="settings_device_theme_blocked_toast">Disabled while Material You theme is enabled</string>
     <string name="settings_device_theme_desc">Use your device\'s dynamic color palette as the app theme</string>
     <string name="settings_device_theme_title">Material You</string>
@@ -671,6 +675,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">Mask unsupported icons</string>
     <string name="settings_icon_pack_option_system">System icons</string>
     <string name="settings_icon_pack_picker_title">Choose Icon Pack</string>
+    <string name="settings_icon_pack_reset_all_icons">Reset all icons</string>
     <string name="settings_icon_pack_search_query">Free icon packs</string>
     <string name="settings_icon_pack_title">Icon Pack</string>
     <string name="settings_icon_title">Settings Icon</string>
@@ -727,8 +732,12 @@
     <string name="settings_tools_title">Tools</string>
     <string name="settings_use_system_font_desc">Follow your device font style</string>
     <string name="settings_use_system_font_title">Use System Font</string>
-    <string name="settings_wallpaper_accent_desc">Derive accent colors from background image</string>
-    <string name="settings_wallpaper_accent_title">Accent Colors</string>
+    <string name="settings_accent_color_from_wallpaper">Wallpaper</string>
+    <string name="settings_accent_color_none">None</string>
+    <string name="settings_accent_color_picker_title">Accent color</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Setup wallpaper background first</string>
+    <string name="settings_wallpaper_accent_desc">Derive accent color from wallpaper or pick a custom color</string>
+    <string name="settings_wallpaper_accent_title">Accent Color</string>
     <string name="settings_wallpaper_blur_label">Blur</string>
     <string name="settings_wallpaper_card_title">Wallpaper Background</string>
     <string name="settings_wallpaper_transparency_label">Transparency</string>

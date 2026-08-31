@@ -84,10 +84,22 @@ internal class SearchViewModelPreferencesStateAccess(
             state.topResultIndicatorEnabled = value
         }
 
-    override var wallpaperAccentEnabled: Boolean
-        get() = state.wallpaperAccentEnabled
+    override var openTopResultUsingKeyboardEnabled: Boolean
+        get() = state.openTopResultUsingKeyboardEnabled
         set(value) {
-            state.wallpaperAccentEnabled = value
+            state.openTopResultUsingKeyboardEnabled = value
+        }
+
+    override var accentColorMode: AccentColorMode
+        get() = state.accentColorMode
+        set(value) {
+            state.accentColorMode = value
+        }
+
+    override var customAccentColorArgb: Int
+        get() = state.customAccentColorArgb
+        set(value) {
+            state.customAccentColorArgb = value
         }
 
     override var openKeyboardOnLaunch: Boolean
@@ -160,6 +172,12 @@ internal class SearchViewModelPreferencesStateAccess(
         get() = state.deviceThemeEnabled
         set(value) {
             state.deviceThemeEnabled = value
+        }
+
+    override var amoledThemeEnabled: Boolean
+        get() = state.amoledThemeEnabled
+        set(value) {
+            state.amoledThemeEnabled = value
         }
 
     override var maskUnsupportedIconPackIcons: Boolean

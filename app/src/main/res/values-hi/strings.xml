@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">सभी प्रकारों के सबसे उपयुक्त परिणामों को एक ही सूची में दिखाएं।</string>
     <string name="top_result_indicator_toggle_desc">कीबोर्ड से खोले जा सकने वाले शीर्ष परिणाम को हाइलाइट करें।</string>
     <string name="top_result_indicator_toggle_title">टॉप परिणाम संकेतक</string>
+    <string name="open_top_result_using_keyboard_toggle_title">कीबोर्ड से शीर्ष परिणाम खोलें</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">कीबोर्ड की Enter/Done कुंजी शीर्ष परिणाम खोलेगी</string>
     <string name="include_non_launchable_apps_toggle_title">लॉन्च न होने वाले ऐप्स</string>
     <string name="include_non_launchable_apps_toggle_desc">खोज परिणामों में उन ऐप्स को शामिल करें जिनमें कोई लॉन्च गतिविधि नहीं है।</string>
     <string name="web_search_suggestions_title">वेब सुझाव</string>
@@ -492,8 +494,16 @@
         <item quantity="one">%d दिन</item>
         <item quantity="other">%d दिन</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d घंटा</item>
+        <item quantity="other">%d घंटे</item>
+    </plurals>
     <string name="calendar_relative_in_format">%1$s में</string>
     <string name="calendar_relative_in_minutes">%1$d मिनट में</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d मिनट</item>
+        <item quantity="other">%d मिनट</item>
+    </plurals>
     <string name="calendar_relative_now">अभी</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d महीना</item>
@@ -650,6 +660,8 @@
     <string name="settings_default_assistant_title">डिफ़ॉल्ट असिस्टेंट</string>
     <string name="settings_default_launcher_desc">इस ऐप को अपना डिफ़ॉल्ट होम ऐप बनाएं।</string>
     <string name="settings_default_launcher_title">डिफ़ॉल्ट लॉन्चर</string>
+    <string name="settings_amoled_theme_desc">Mono थीम के लिए ट्रू ब्लैक बैकग्राउंड इस्तेमाल करें</string>
+    <string name="settings_amoled_theme_title">AMOLED थीम</string>
     <string name="settings_device_theme_blocked_toast">Material You थीम चालू होने पर बंद</string>
     <string name="settings_device_theme_desc">ऐप थीम के रूप में अपने डिवाइस का डायनैमिक रंग पैलेट इस्तेमाल करें</string>
     <string name="settings_device_theme_title">Material You</string>
@@ -668,6 +680,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">असमर्थित आइकनों को मास्क करें</string>
     <string name="settings_icon_pack_option_system">सिस्टम आइकन</string>
     <string name="settings_icon_pack_picker_title">आइकन पैक चुनें</string>
+    <string name="settings_icon_pack_reset_all_icons">सभी आइकन रीसेट करें</string>
     <string name="settings_icon_pack_search_query">मुफ्त आइकन पैक</string>
     <string name="settings_icon_pack_title">आइकन पैक</string>
     <string name="settings_icon_title">सेटिंग्स आइकन</string>
@@ -724,7 +737,11 @@
     <string name="settings_tools_title">टूल्स</string>
     <string name="settings_use_system_font_desc">अपने डिवाइस की फ़ॉन्ट शैली का पालन करें</string>
     <string name="settings_use_system_font_title">सिस्टम फ़ॉन्ट उपयोग करें</string>
-    <string name="settings_wallpaper_accent_desc">पृष्ठभूमि छवि से एक्सेंट रंग प्राप्त करें</string>
+    <string name="settings_accent_color_from_wallpaper">वॉलपेपर</string>
+    <string name="settings_accent_color_none">कोई नहीं</string>
+    <string name="settings_accent_color_picker_title">एक्सेंट रंग</string>
+    <string name="settings_accent_color_wallpaper_required_toast">पहले वॉलपेपर बैकग्राउंड सेट करें</string>
+    <string name="settings_wallpaper_accent_desc">वॉलपेपर से एक्सेंट रंग प्राप्त करें या कस्टम रंग चुनें</string>
     <string name="settings_wallpaper_accent_title">एक्सेंट रंग</string>
     <string name="settings_wallpaper_blur_label">ब्लर</string>
     <string name="settings_wallpaper_card_title">वॉलपेपर पृष्ठभूमि</string>

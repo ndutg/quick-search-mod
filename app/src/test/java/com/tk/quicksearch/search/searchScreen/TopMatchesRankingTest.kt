@@ -117,6 +117,122 @@ class TopMatchesRankingTest {
     }
 
     @Test
+    fun unrelatedQueryDoesNotReuseSettledResults() {
+        val buffer = SettledSearchResultsBuffer(emptyList<String>())
+
+        assertEquals(listOf("Gmail"), buffer.displayedValue("gm", listOf("Gmail"), false))
+        assertEquals(emptyList<String>(), buffer.displayedValue("weather", listOf("Gmail"), true))
+    }
+
+    @Test
+    fun backspaceKeepsSettledSectionResultsUntilBroaderSearchFinishes() {
+        val narrowResults = listOf("Template")
+        val broaderResults = listOf("Teams", "Template")
+        val buffer = SettledSearchResultsBuffer(emptyList<String>())
+
+        assertEquals(narrowResults, buffer.displayedValue("tem", narrowResults, false))
+        assertEquals(narrowResults, buffer.displayedValue("te", emptyList(), true))
+        assertEquals(broaderResults, buffer.displayedValue("te", broaderResults, false))
+    }
+
+    @Test
+    fun topMatchesSettleAtDeadlineAndAppendLateMatchesOnceSearchCompletes() {
+        val first = topMatch("first", priority = 1, secondaryScore = 0L, index = 0)
+        val betterLate = topMatch("late", priority = 0, secondaryScore = 0L, index = 0)
+        val buffer = StableTopMatchesBuffer()
+
+        assertFalse(
+            buffer.displayedValue("te", listOf(first), true, deadlineReached = false, limit = 3)
+                .isReady,
+        )
+        assertEquals(
+            listOf(first),
+            buffer.displayedValue("te", listOf(first), true, deadlineReached = true, limit = 3)
+                .matches,
+        )
+        assertEquals(
+            listOf(first),
+            buffer.displayedValue(
+                "te",
+                listOf(betterLate, first),
+                true,
+                deadlineReached = true,
+                limit = 3,
+            ).matches,
+        )
+        assertEquals(
+            listOf(first, betterLate),
+            buffer.displayedValue(
+                "te",
+                listOf(betterLate, first),
+                false,
+                deadlineReached = true,
+                limit = 3,
+            ).matches,
+        )
+    }
+
+    @Test
+    fun extendingQueryKeepsSettledTopMatchesUntilTheNextDeadline() {
+        val oldMatch = topMatch("old", priority = 1, secondaryScore = 0L, index = 0)
+        val newMatch = topMatch("new", priority = 0, secondaryScore = 0L, index = 0)
+        val buffer = StableTopMatchesBuffer()
+
+        buffer.displayedValue("t", listOf(oldMatch), false, deadlineReached = false, limit = 3)
+
+        assertEquals(
+            listOf(oldMatch),
+            buffer.displayedValue(
+                "te",
+                listOf(newMatch),
+                true,
+                deadlineReached = false,
+                limit = 3,
+            ).matches,
+        )
+        assertEquals(
+            listOf(newMatch),
+            buffer.displayedValue(
+                "te",
+                listOf(newMatch),
+                true,
+                deadlineReached = true,
+                limit = 3,
+            ).matches,
+        )
+    }
+
+    @Test
+    fun backspaceKeepsSettledTopMatchesUntilTheNextDeadline() {
+        val narrowMatch = topMatch("narrow", priority = 0, secondaryScore = 0L, index = 0)
+        val broaderMatch = topMatch("broader", priority = 0, secondaryScore = 0L, index = 0)
+        val buffer = StableTopMatchesBuffer()
+
+        buffer.displayedValue("tem", listOf(narrowMatch), false, deadlineReached = false, limit = 3)
+
+        assertEquals(
+            listOf(narrowMatch),
+            buffer.displayedValue(
+                "te",
+                listOf(broaderMatch),
+                true,
+                deadlineReached = false,
+                limit = 3,
+            ).matches,
+        )
+        assertEquals(
+            listOf(broaderMatch),
+            buffer.displayedValue(
+                "te",
+                listOf(broaderMatch),
+                true,
+                deadlineReached = true,
+                limit = 3,
+            ).matches,
+        )
+    }
+
+    @Test
     fun refreshingTopMatchesKeepCurrentMatchesAndDropStaleOnes() {
         val currentMatch = topMatch("Gmail", priority = 0, secondaryScore = 0L, index = 0)
         val staleMatch = topMatch("Old shortcut", priority = 4, secondaryScore = 0L, index = 1)

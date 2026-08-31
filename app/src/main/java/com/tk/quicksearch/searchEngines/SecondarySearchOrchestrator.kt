@@ -6,7 +6,9 @@ import com.tk.quicksearch.search.core.SearchSectionPermissionRequirement
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.UnifiedSearchResults
+import com.tk.quicksearch.search.core.UnifiedSectionSearchResult
 import com.tk.quicksearch.search.core.UnifiedSectionSearchConfig
+import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +26,11 @@ interface SecondarySearchDataSource {
         showFolders: Boolean,
         showSystemFiles: Boolean,
         aliasSection: SearchSection?,
+        sectionSearchDelayMillis: Map<SearchSection, Long> = emptyMap(),
+        onSectionResult: suspend (
+            result: UnifiedSectionSearchResult,
+            recencyIndex: RecentResultRankingUtils.RecencyIndex,
+        ) -> Unit = { _, _ -> },
     ): UnifiedSearchResults
 }
 
@@ -66,7 +73,17 @@ class SecondarySearchOrchestrator(
 
     companion object {
         private const val SECONDARY_SEARCH_DEBOUNCE_MS = 150L
+        private const val NOTES_SEARCH_DEBOUNCE_MS = 50L
+        private const val PARTIAL_RESULTS_FRAME_COALESCE_MS = 16L
         private const val WEB_SUGGESTIONS_AFTER_LOCAL_RESULTS_DELAY_MS = 32L
+
+        private val SECTION_SEARCH_DELAY_MILLIS =
+            mapOf(
+                SearchSection.CONTACTS to SECONDARY_SEARCH_DEBOUNCE_MS,
+                SearchSection.FILES to SECONDARY_SEARCH_DEBOUNCE_MS,
+                SearchSection.CALENDAR to SECONDARY_SEARCH_DEBOUNCE_MS,
+                SearchSection.NOTES to NOTES_SEARCH_DEBOUNCE_MS,
+            )
     }
 
     fun willRunSecondarySearch(query: String): Boolean {
@@ -120,6 +137,7 @@ class SecondarySearchOrchestrator(
                     appSettingResults = emptyList(),
                     appShortcutResults = emptyList(),
                     isSecondarySearchInProgress = false,
+                    secondarySearchSectionsInProgress = emptySet(),
                     webSuggestionsLoading = false,
                     // Flush any staged app results (query was cleared, so clear them too).
                     searchResults = emptyList(),
@@ -178,6 +196,7 @@ class SecondarySearchOrchestrator(
             uiStateUpdater { state ->
                 state.copy(
                     isSecondarySearchInProgress = false,
+                    secondarySearchSectionsInProgress = emptySet(),
                     webSuggestionsLoading = false,
                     searchResults = state.pendingSearchResults ?: state.searchResults,
                     pendingSearchResults = null,
@@ -214,14 +233,14 @@ class SecondarySearchOrchestrator(
 
         val currentVersion = queryVersion.incrementAndGet()
         lastQueryLength = trimmedQuery.length
-        uiStateUpdater { it.copy(isSecondarySearchInProgress = true) }
+        val pendingSections =
+            sectionSearchConfig.filterValues { it.shouldSearch }.keys
+        uiStateUpdater { state ->
+            state.prepareForSecondarySearch(pendingSections)
+        }
 
         searchJob =
             scope.launch(workerDispatcher) {
-                // Debounce expensive contact/file queries during rapid typing
-                delay(SECONDARY_SEARCH_DEBOUNCE_MS)
-                if (currentVersion != queryVersion.get()) return@launch
-
                 val unifiedResults =
                     unifiedSearchHandler.performSearch(
                         query = trimmedQuery,
@@ -230,41 +249,35 @@ class SecondarySearchOrchestrator(
                         showFolders = currentState.showFolders,
                         showSystemFiles = currentState.showSystemFiles,
                         aliasSection = null,
+                        sectionSearchDelayMillis = SECTION_SEARCH_DELAY_MILLIS,
+                        onSectionResult = { result, recencyIndex ->
+                            // Nearby completions land in the same frame while a slow provider can
+                            // never keep an already-ready section waiting.
+                            delay(PARTIAL_RESULTS_FRAME_COALESCE_MS)
+                            withContext(mainDispatcher) {
+                                if (currentVersion != queryVersion.get()) return@withContext
+                                val shouldSearch =
+                                    sectionSearchConfig[result.section]?.shouldSearch == true
+                                updateNoResultTracking(
+                                    section = result.section,
+                                    shouldSearch = shouldSearch,
+                                    query = trimmedQuery,
+                                    hadResults = result.hasResults(),
+                                )
+                                uiStateUpdater { state ->
+                                    state.withSecondarySectionResult(result, recencyIndex)
+                                }
+                            }
+                        },
                     )
 
                 withContext(mainDispatcher) {
                     if (currentVersion == queryVersion.get()) {
-                        // Update no-results tracking based on search results
-                        SearchSectionRegistry.secondarySearchDefinitions.forEach { definition ->
-                            val section = definition.section
-                            val shouldSearch = sectionSearchConfig[section]?.shouldSearch == true
-                            updateNoResultTracking(
-                                section = section,
-                                shouldSearch = shouldSearch,
-                                query = trimmedQuery,
-                                hadResults = hasResultsForSection(unifiedResults, section),
-                            )
-                        }
-
                         uiStateUpdater { state ->
                             state.copy(
-                                contactResults = unifiedResults.contactResults,
-                                fileResults = unifiedResults.fileResults,
-                                settingResults = unifiedResults.settingResults,
-                                calendarEvents = unifiedResults.calendarEvents,
-                                noteResults = unifiedResults.noteResults,
-                                appSettingResults = unifiedResults.appSettingResults,
                                 recentResultRecencyIndex = unifiedResults.recencyIndex,
-                                // Preserve existing results when the search was skipped via the
-                                // no-results cache; overwriting with empty would clear valid
-                                // results that were found for the current or a prior query.
-                                appShortcutResults =
-                                    if (sectionSearchConfig[SearchSection.APP_SHORTCUTS]?.shouldSearch == true) {
-                                        unifiedResults.appShortcutResults
-                                    } else {
-                                        state.appShortcutResults
-                                    },
                                 isSecondarySearchInProgress = false,
+                                secondarySearchSectionsInProgress = emptySet(),
                                 // Flush any staged app results atomically with secondary results
                                 // so both appear in the UI in a single state update.
                                 searchResults = state.pendingSearchResults ?: state.searchResults,
@@ -347,6 +360,7 @@ class SecondarySearchOrchestrator(
                     webSuggestions = emptyList(),
                     webSuggestionsLoading = false,
                     isSecondarySearchInProgress = false,
+                    secondarySearchSectionsInProgress = emptySet(),
                     // Flush staged app results (query cleared — discard them).
                     searchResults = emptyList(),
                     pendingSearchResults = null,
@@ -400,6 +414,7 @@ class SecondarySearchOrchestrator(
                     webSuggestions = emptyList(),
                     webSuggestionsLoading = false,
                     isSecondarySearchInProgress = false,
+                    secondarySearchSectionsInProgress = emptySet(),
                     // Flush any staged app results — no targeted search will complete.
                     searchResults = state.pendingSearchResults ?: state.searchResults,
                     pendingSearchResults = null,
@@ -408,12 +423,9 @@ class SecondarySearchOrchestrator(
             return
         }
 
-        uiStateUpdater { it.copy(isSecondarySearchInProgress = true) }
+        uiStateUpdater { state -> state.prepareForSecondarySearch(setOf(section)) }
         searchJob =
             scope.launch(workerDispatcher) {
-                delay(SECONDARY_SEARCH_DEBOUNCE_MS)
-                if (currentVersion != queryVersion.get()) return@launch
-
                 val unifiedResults =
                     unifiedSearchHandler.performSearch(
                         query = trimmedQuery,
@@ -422,29 +434,34 @@ class SecondarySearchOrchestrator(
                         showFolders = currentState.showFolders,
                         showSystemFiles = currentState.showSystemFiles,
                         aliasSection = section,
+                        sectionSearchDelayMillis = SECTION_SEARCH_DELAY_MILLIS,
+                        onSectionResult = { result, recencyIndex ->
+                            if (result.section != section) return@performSearch
+                            delay(PARTIAL_RESULTS_FRAME_COALESCE_MS)
+                            withContext(mainDispatcher) {
+                                if (currentVersion != queryVersion.get()) return@withContext
+                                updateNoResultTracking(
+                                    section = section,
+                                    shouldSearch = shouldRunTargetedSearch,
+                                    query = trimmedQuery,
+                                    hadResults = result.hasResults(),
+                                )
+                                uiStateUpdater { state ->
+                                    state.withSecondarySectionResult(result, recencyIndex)
+                                }
+                            }
+                        },
                     )
 
                 withContext(mainDispatcher) {
                     if (currentVersion != queryVersion.get()) return@withContext
-                    updateNoResultTracking(
-                        section = section,
-                        shouldSearch = shouldRunTargetedSearch,
-                        query = trimmedQuery,
-                        hadResults = hasResultsForSection(unifiedResults, section),
-                    )
                     uiStateUpdater { state ->
                         state.copy(
-                            contactResults = unifiedResults.contactResults,
-                            fileResults = unifiedResults.fileResults,
-                            settingResults = unifiedResults.settingResults,
-                            calendarEvents = unifiedResults.calendarEvents,
-                            noteResults = unifiedResults.noteResults,
-                            appSettingResults = unifiedResults.appSettingResults,
-                            appShortcutResults = unifiedResults.appShortcutResults,
                             recentResultRecencyIndex = unifiedResults.recencyIndex,
                             webSuggestions = emptyList(),
                             webSuggestionsLoading = false,
                             isSecondarySearchInProgress = false,
+                            secondarySearchSectionsInProgress = emptySet(),
                             // Flush staged app results atomically with secondary results.
                             searchResults = state.pendingSearchResults ?: state.searchResults,
                             pendingSearchResults = null,
@@ -489,6 +506,7 @@ class SecondarySearchOrchestrator(
         uiStateUpdater { state ->
             state.copy(
                 isSecondarySearchInProgress = false,
+                secondarySearchSectionsInProgress = emptySet(),
                 webSuggestionsLoading = false,
                 searchResults = state.pendingSearchResults ?: state.searchResults,
                 pendingSearchResults = null,
@@ -513,6 +531,7 @@ class SecondarySearchOrchestrator(
                             appSettingResults = emptyList(),
                             appShortcutResults = emptyList(),
                             isSecondarySearchInProgress = false,
+                            secondarySearchSectionsInProgress = emptySet(),
                             webSuggestionsLoading = false,
                         )
                     }
@@ -546,6 +565,7 @@ class SecondarySearchOrchestrator(
                 uiStateUpdater { state ->
                     state.copy(
                         isSecondarySearchInProgress = false,
+                        secondarySearchSectionsInProgress = emptySet(),
                         webSuggestionsLoading = false,
                         searchResults = state.pendingSearchResults ?: state.searchResults,
                         pendingSearchResults = null,
@@ -558,6 +578,7 @@ class SecondarySearchOrchestrator(
         uiStateUpdater { state ->
             state.copy(
                 isSecondarySearchInProgress = false,
+                secondarySearchSectionsInProgress = emptySet(),
                 webSuggestionsLoading = false,
                 // Flush any staged app results so they aren't permanently hidden.
                 searchResults = state.pendingSearchResults ?: state.searchResults,
@@ -644,18 +665,65 @@ class SecondarySearchOrchestrator(
             -> false
         }
 
-    private fun hasResultsForSection(
-        results: UnifiedSearchResults,
-        section: SearchSection,
-    ): Boolean =
-        when (section) {
-            SearchSection.CONTACTS -> results.contactResults.isNotEmpty()
-            SearchSection.FILES -> results.fileResults.isNotEmpty()
-            SearchSection.SETTINGS -> results.settingResults.isNotEmpty()
-            SearchSection.CALENDAR -> results.calendarEvents.isNotEmpty()
-            SearchSection.NOTES -> results.noteResults.isNotEmpty()
-            SearchSection.APP_SETTINGS -> results.appSettingResults.isNotEmpty()
-            SearchSection.APP_SHORTCUTS -> results.appShortcutResults.isNotEmpty()
-            SearchSection.APPS -> false
+    private fun SearchUiState.prepareForSecondarySearch(
+        pendingSections: Set<SearchSection>,
+    ): SearchUiState =
+        copy(
+            contactResults = contactResults.takeIf { SearchSection.CONTACTS in pendingSections }.orEmpty(),
+            fileResults = fileResults.takeIf { SearchSection.FILES in pendingSections }.orEmpty(),
+            settingResults = settingResults.takeIf { SearchSection.SETTINGS in pendingSections }.orEmpty(),
+            calendarEvents = calendarEvents.takeIf { SearchSection.CALENDAR in pendingSections }.orEmpty(),
+            noteResults = noteResults.takeIf { SearchSection.NOTES in pendingSections }.orEmpty(),
+            appSettingResults =
+                appSettingResults.takeIf { SearchSection.APP_SETTINGS in pendingSections }.orEmpty(),
+            appShortcutResults =
+                appShortcutResults.takeIf { SearchSection.APP_SHORTCUTS in pendingSections }.orEmpty(),
+            isSecondarySearchInProgress = pendingSections.isNotEmpty(),
+            secondarySearchSectionsInProgress = pendingSections,
+        )
+
+    private fun SearchUiState.withSecondarySectionResult(
+        result: UnifiedSectionSearchResult,
+        recencyIndex: RecentResultRankingUtils.RecencyIndex,
+    ): SearchUiState {
+        val withResults =
+            when (result) {
+                is UnifiedSectionSearchResult.Contacts -> copy(contactResults = result.results)
+                is UnifiedSectionSearchResult.Files -> copy(fileResults = result.results)
+                is UnifiedSectionSearchResult.Settings -> copy(settingResults = result.results)
+                is UnifiedSectionSearchResult.Calendar -> copy(calendarEvents = result.results)
+                is UnifiedSectionSearchResult.Notes -> copy(noteResults = result.results)
+                is UnifiedSectionSearchResult.AppSettings -> copy(appSettingResults = result.results)
+                is UnifiedSectionSearchResult.AppShortcuts -> copy(appShortcutResults = result.results)
+                is UnifiedSectionSearchResult.Skipped ->
+                    when (result.section) {
+                        SearchSection.CONTACTS -> copy(contactResults = emptyList())
+                        SearchSection.FILES -> copy(fileResults = emptyList())
+                        SearchSection.SETTINGS -> copy(settingResults = emptyList())
+                        SearchSection.CALENDAR -> copy(calendarEvents = emptyList())
+                        SearchSection.NOTES -> copy(noteResults = emptyList())
+                        SearchSection.APP_SETTINGS -> copy(appSettingResults = emptyList())
+                        SearchSection.APP_SHORTCUTS -> copy(appShortcutResults = emptyList())
+                        SearchSection.APPS -> this
+                    }
+            }
+        val remainingSections = withResults.secondarySearchSectionsInProgress - result.section
+        return withResults.copy(
+            recentResultRecencyIndex = recencyIndex,
+            secondarySearchSectionsInProgress = remainingSections,
+            isSecondarySearchInProgress = remainingSections.isNotEmpty(),
+        )
+    }
+
+    private fun UnifiedSectionSearchResult.hasResults(): Boolean =
+        when (this) {
+            is UnifiedSectionSearchResult.Skipped -> false
+            is UnifiedSectionSearchResult.Contacts -> results.isNotEmpty()
+            is UnifiedSectionSearchResult.Files -> results.isNotEmpty()
+            is UnifiedSectionSearchResult.Settings -> results.isNotEmpty()
+            is UnifiedSectionSearchResult.Calendar -> results.isNotEmpty()
+            is UnifiedSectionSearchResult.Notes -> results.isNotEmpty()
+            is UnifiedSectionSearchResult.AppSettings -> results.isNotEmpty()
+            is UnifiedSectionSearchResult.AppShortcuts -> results.isNotEmpty()
         }
 }

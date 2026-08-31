@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.data
 
 import android.content.Context
 import android.content.res.Configuration
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AppThemeMode
@@ -33,6 +34,7 @@ class StartupPreferencesFacade(
             val searchHintsEnabled: Boolean,
             val settingsIconEnabled: Boolean,
             val topResultIndicatorEnabled: Boolean,
+            val openTopResultUsingKeyboardEnabled: Boolean,
             val openKeyboardOnLaunch: Boolean,
             val clearQueryOnLaunch: Boolean,
             val autoCloseOverlay: Boolean,
@@ -63,7 +65,10 @@ class StartupPreferencesFacade(
             val launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT,
             val themedIconsEnabled: Boolean = true,
             val deviceThemeEnabled: Boolean = false,
-            val wallpaperAccentEnabled: Boolean = true,
+            val amoledThemeEnabled: Boolean = false,
+            val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
+            val customAccentColorArgb: Int =
+                    com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
             val maskUnsupportedIconPackIcons: Boolean = false,
             val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
             val appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
@@ -219,6 +224,13 @@ class StartupPreferencesFacade(
                         ] as?
                                 Boolean
                                 ?: false,
+                openTopResultUsingKeyboardEnabled =
+                        allPrefs[
+                                com.tk.quicksearch.search.data.preferences.UiPreferences
+                                        .KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED,
+                        ] as?
+                                Boolean
+                                ?: true,
                 openKeyboardOnLaunch =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -483,13 +495,15 @@ class StartupPreferencesFacade(
                         ] as?
                                 Boolean
                                 ?: false,
-                wallpaperAccentEnabled =
+                amoledThemeEnabled =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences
-                                        .KEY_WALLPAPER_ACCENT_ENABLED,
+                                        .KEY_AMOLED_THEME_ENABLED,
                         ] as?
                                 Boolean
-                                ?: true,
+                                ?: false,
+                accentColorMode = accentColorModeFromPrefs(allPrefs),
+                customAccentColorArgb = customAccentColorArgbFromPrefs(allPrefs),
                 maskUnsupportedIconPackIcons =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -643,6 +657,13 @@ class StartupPreferencesFacade(
                                 ] as?
                                         Boolean
                                         ?: false,
+                        openTopResultUsingKeyboardEnabled =
+                                allPrefs[
+                                        com.tk.quicksearch.search.data.preferences.UiPreferences
+                                                .KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED,
+                                ] as?
+                                        Boolean
+                                        ?: true,
                         openKeyboardOnLaunch =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -910,13 +931,15 @@ class StartupPreferencesFacade(
                                 ] as?
                                         Boolean
                                         ?: false,
-                        wallpaperAccentEnabled =
+                        amoledThemeEnabled =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences
-                                                .KEY_WALLPAPER_ACCENT_ENABLED,
+                                                .KEY_AMOLED_THEME_ENABLED,
                                 ] as?
                                         Boolean
-                                        ?: true,
+                                        ?: false,
+                        accentColorMode = accentColorModeFromPrefs(allPrefs),
+                        customAccentColorArgb = customAccentColorArgbFromPrefs(allPrefs),
                         maskUnsupportedIconPackIcons =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences
@@ -947,4 +970,29 @@ class StartupPreferencesFacade(
         )
     }
 
+    private fun accentColorModeFromPrefs(allPrefs: Map<String, *>): AccentColorMode =
+            com.tk.quicksearch.search.data.preferences.UiPreferences.resolveAccentColorMode(
+                    savedModeName =
+                            allPrefs[
+                                    com.tk.quicksearch.search.data.preferences.UiPreferences
+                                            .KEY_ACCENT_COLOR_MODE,
+                            ] as?
+                                    String,
+                    wallpaperAccentEnabled =
+                            allPrefs[
+                                    com.tk.quicksearch.search.data.preferences.UiPreferences
+                                            .KEY_WALLPAPER_ACCENT_ENABLED,
+                            ] as?
+                                    Boolean
+                                    ?: true,
+            )
+
+    private fun customAccentColorArgbFromPrefs(allPrefs: Map<String, *>): Int =
+            allPrefs[
+                    com.tk.quicksearch.search.data.preferences.UiPreferences
+                            .KEY_CUSTOM_ACCENT_COLOR_ARGB,
+            ] as?
+                    Int
+                    ?: com.tk.quicksearch.search.data.preferences.UiPreferences
+                            .DEFAULT_CUSTOM_ACCENT_COLOR_ARGB
 }

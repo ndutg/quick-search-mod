@@ -1,13 +1,10 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.oss.licenses)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.baselineprofile)
-    id("kotlin-parcelize")
 }
 
 android {
@@ -18,8 +15,8 @@ android {
         applicationId = "com.tk.quicksearch"
         minSdk = 24
         targetSdk = 36
-        versionCode = 78
-        versionName = "4.1.1"
+        versionCode = 79
+        versionName = "4.2"
         manifestPlaceholders["profileCaptureExported"] =
             providers.gradleProperty("profileCapture").orElse("false").get().toBoolean()
 
@@ -56,26 +53,20 @@ android {
         }
     }
 
-    adbOptions {
-        installOptions("--user", "0")
+    installation {
+        installOptions.addAll(listOf("--user", "0"))
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
-    }
-
     androidResources {
         localeFilters +=
             listOf(
@@ -96,16 +87,6 @@ android {
     }
 }
 
-android {
-    applicationVariants.all {
-        if (name == "standardRelease") {
-            outputs.all {
-                (this as BaseVariantOutputImpl).outputFileName = "app-release.apk"
-            }
-        }
-    }
-}
-
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
@@ -115,6 +96,31 @@ baselineProfile {
     // so startup DEX layout is not inflated by captured framework and library implementation code.
     filter {
         include("com.tk.quicksearch.**")
+    }
+}
+
+// AGP 9 removed the legacy variant API that renamed APK outputs in place. Keep the
+// existing release artifact name as a compatibility copy for release automation.
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        if (variant.name == "standardRelease") {
+            val apkDirectory = variant.artifacts.get(com.android.build.api.artifact.SingleArtifact.APK)
+            val sourceApk = apkDirectory.map { it.file("app-standard-release.apk") }
+            val compatibilityApk =
+                layout.buildDirectory.file("outputs/apk/standard/release/app-release.apk")
+            val copyStandardReleaseApk = tasks.register("copyStandardReleaseApk") {
+                inputs.file(sourceApk).withPropertyName("sourceApk")
+                outputs.file(compatibilityApk)
+
+                doLast {
+                    sourceApk.get().asFile.copyTo(compatibilityApk.get().asFile, overwrite = true)
+                }
+            }
+
+            tasks.matching { it.name == "assembleStandardRelease" }.configureEach {
+                finalizedBy(copyStandardReleaseApk)
+            }
+        }
     }
 }
 
@@ -147,6 +153,7 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.kotlin.parcelize.runtime)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

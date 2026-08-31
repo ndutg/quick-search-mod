@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.data.preferences
 import android.content.Context
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.AppSuggestionTabType
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.LauncherAppIcon
@@ -177,8 +178,22 @@ class UiPreferences(
     fun isTopResultIndicatorEnabled(): Boolean =
             getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, false)
 
+    fun isOpenTopResultUsingKeyboardEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED, true)
+
+    fun isTopResultIndicatorManuallyDisabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_MANUALLY_DISABLED, false)
+
     fun setTopResultIndicatorEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_ENABLED, enabled)
+    }
+
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED, enabled)
+    }
+
+    fun setTopResultIndicatorManuallyDisabled(disabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_TOP_RESULT_INDICATOR_MANUALLY_DISABLED, disabled)
     }
 
     fun isTopMatchesEnabled(): Boolean =
@@ -525,10 +540,39 @@ class UiPreferences(
         setBooleanPref(KEY_DEVICE_THEME_ENABLED, enabled)
     }
 
-    fun isWallpaperAccentEnabled(): Boolean = getBooleanPref(KEY_WALLPAPER_ACCENT_ENABLED, true)
+    fun isAmoledThemeEnabled(): Boolean = getBooleanPref(KEY_AMOLED_THEME_ENABLED, false)
+
+    fun setAmoledThemeEnabled(enabled: Boolean) {
+        setBooleanPref(KEY_AMOLED_THEME_ENABLED, enabled)
+    }
+
+    fun isWallpaperAccentEnabled(): Boolean =
+            getAccentColorMode() == AccentColorMode.FROM_WALLPAPER
 
     fun setWallpaperAccentEnabled(enabled: Boolean) {
-        setBooleanPref(KEY_WALLPAPER_ACCENT_ENABLED, enabled)
+        setAccentColorMode(
+                if (enabled) AccentColorMode.FROM_WALLPAPER else AccentColorMode.NONE,
+        )
+    }
+
+    fun getAccentColorMode(): AccentColorMode =
+            resolveAccentColorMode(
+                    savedModeName = prefs.getString(KEY_ACCENT_COLOR_MODE, null),
+                    wallpaperAccentEnabled = getBooleanPref(KEY_WALLPAPER_ACCENT_ENABLED, true),
+            )
+
+    fun setAccentColorMode(mode: AccentColorMode) {
+        prefs.edit()
+                .putString(KEY_ACCENT_COLOR_MODE, mode.name)
+                .putBoolean(KEY_WALLPAPER_ACCENT_ENABLED, mode == AccentColorMode.FROM_WALLPAPER)
+                .apply()
+    }
+
+    fun getCustomAccentColorArgb(): Int =
+            prefs.getInt(KEY_CUSTOM_ACCENT_COLOR_ARGB, DEFAULT_CUSTOM_ACCENT_COLOR_ARGB)
+
+    fun setCustomAccentColorArgb(argb: Int) {
+        prefs.edit().putInt(KEY_CUSTOM_ACCENT_COLOR_ARGB, argb).apply()
     }
 
     fun shouldShowAppLabels(): Boolean = getBooleanPref(KEY_SHOW_APP_LABELS, true)
@@ -1200,6 +1244,8 @@ class UiPreferences(
         const val KEY_DEFAULT_LAUNCHER_AUTO_ENABLED_APP_SUGGESTION_TABS =
             "default_launcher_auto_enabled_app_suggestion_tabs"
         const val KEY_TOP_RESULT_INDICATOR_ENABLED = "top_result_indicator_enabled"
+        const val KEY_OPEN_TOP_RESULT_USING_KEYBOARD_ENABLED = "open_top_result_using_keyboard_enabled"
+        const val KEY_TOP_RESULT_INDICATOR_MANUALLY_DISABLED = "top_result_indicator_manually_disabled"
         const val KEY_TOP_MATCHES_ENABLED = "top_matches_enabled"
         const val KEY_TOP_MATCHES_LIMIT = "top_matches_limit"
         const val KEY_TOP_MATCHES_SECTION_ORDER = "top_matches_section_order"
@@ -1230,7 +1276,25 @@ class UiPreferences(
         const val KEY_LAUNCHER_APP_ICON = "launcher_app_icon"
         const val KEY_THEMED_ICONS_ENABLED = "themed_icons_enabled"
         const val KEY_DEVICE_THEME_ENABLED = "device_theme_enabled"
+        const val KEY_AMOLED_THEME_ENABLED = "amoled_theme_enabled"
         const val KEY_WALLPAPER_ACCENT_ENABLED = "wallpaper_accent_enabled"
+        const val KEY_ACCENT_COLOR_MODE = "accent_color_mode"
+        const val KEY_CUSTOM_ACCENT_COLOR_ARGB = "custom_accent_color_argb"
+        const val DEFAULT_CUSTOM_ACCENT_COLOR_ARGB = -10011996 // #6750A4
+
+        fun resolveAccentColorMode(
+                savedModeName: String?,
+                wallpaperAccentEnabled: Boolean,
+        ): AccentColorMode {
+            savedModeName
+                    ?.let { runCatching { AccentColorMode.valueOf(it) }.getOrNull() }
+                    ?.let { return it }
+            return if (wallpaperAccentEnabled) {
+                AccentColorMode.FROM_WALLPAPER
+            } else {
+                AccentColorMode.NONE
+            }
+        }
         const val KEY_SHOW_APP_LABELS = "show_app_labels"
         const val KEY_PHONE_APP_GRID_COLUMNS = "phone_app_grid_columns"
         const val KEY_APP_ICON_SIZE_STEP = "app_icon_size_step"

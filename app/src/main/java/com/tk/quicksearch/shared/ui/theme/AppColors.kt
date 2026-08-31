@@ -191,6 +191,9 @@ data class SearchColorTheme(
 /** Provides the resolved [SearchColorTheme] for the active search screen. Null outside search context. */
 val LocalSearchColorTheme = staticCompositionLocalOf<SearchColorTheme?> { null }
 
+/** True when AMOLED true-black theme surfaces are active (dark Mono + AMOLED toggle). */
+val LocalAmoledThemeActive = staticCompositionLocalOf { false }
+
 object AppColors {
     // Theme-aware semantic colors ------------------------------------------------------------
 
@@ -306,6 +309,9 @@ object AppColors {
     }
 
     val SettingsBackground: Color = Color.Transparent
+
+    /** Solid charcoal for elevated cards on AMOLED true-black backgrounds. */
+    val AmoledCardBackground: Color = Color(0xFF161616)
 
     val SettingsCardBackground: Color
         @Composable
@@ -771,7 +777,9 @@ object AppColors {
 
     @Composable
     fun getSettingsCardContainerColor(): Color =
-        if (LocalSearchColorTheme.current == null) {
+        if (LocalAmoledThemeActive.current) {
+            AmoledCardBackground
+        } else if (LocalSearchColorTheme.current == null) {
             MaterialTheme.colorScheme.surfaceContainer
         } else if (LocalAppIsDarkTheme.current) {
             Color.Black.copy(alpha = 0.4f)

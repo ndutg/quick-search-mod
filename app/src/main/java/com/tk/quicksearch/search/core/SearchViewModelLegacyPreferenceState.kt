@@ -19,7 +19,9 @@ internal class SearchViewModelLegacyPreferenceState(
     var searchHintsEnabled: Boolean = true
     var settingsIconEnabled: Boolean = true
     var topResultIndicatorEnabled: Boolean = false
-    var wallpaperAccentEnabled: Boolean = true
+    var openTopResultUsingKeyboardEnabled: Boolean = true
+    var accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER
+    var customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB
     var openKeyboardOnLaunch: Boolean = true
     var overlayModeEnabled: Boolean = false
     var autoCloseOverlay: Boolean = true
@@ -35,6 +37,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT
     var themedIconsEnabled: Boolean = false
     var deviceThemeEnabled: Boolean = false
+    var amoledThemeEnabled: Boolean = false
     var maskUnsupportedIconPackIcons: Boolean = false
     var wallpaperBackgroundAlpha: Float = UiPreferences.DEFAULT_WALLPAPER_BACKGROUND_ALPHA
     var wallpaperBlurRadius: Float = UiPreferences.DEFAULT_WALLPAPER_BLUR_RADIUS
@@ -71,7 +74,9 @@ internal class SearchViewModelLegacyPreferenceState(
         searchHintsEnabled = prefCache.searchHintsEnabled
         settingsIconEnabled = prefCache.settingsIconEnabled
         topResultIndicatorEnabled = prefCache.topResultIndicatorEnabled
-        wallpaperAccentEnabled = prefCache.wallpaperAccentEnabled
+        openTopResultUsingKeyboardEnabled = prefCache.openTopResultUsingKeyboardEnabled
+        accentColorMode = prefCache.accentColorMode
+        customAccentColorArgb = prefCache.customAccentColorArgb
         openKeyboardOnLaunch = prefCache.openKeyboardOnLaunch
         overlayModeEnabled = prefCache.overlayModeEnabled
         autoCloseOverlay = prefCache.autoCloseOverlay
@@ -87,6 +92,7 @@ internal class SearchViewModelLegacyPreferenceState(
         launcherAppIcon = prefCache.launcherAppIcon
         themedIconsEnabled = prefCache.themedIconsEnabled
         deviceThemeEnabled = prefCache.deviceThemeEnabled
+        amoledThemeEnabled = prefCache.amoledThemeEnabled
         maskUnsupportedIconPackIcons = prefCache.maskUnsupportedIconPackIcons
         wallpaperBackgroundAlpha = prefCache.wallpaperBackgroundAlpha
         wallpaperBlurRadius = prefCache.wallpaperBlurRadius
