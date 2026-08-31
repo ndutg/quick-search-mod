@@ -42,6 +42,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -124,6 +125,9 @@ private const val PlaceholderHintTransitionDurationMs = 700
 private const val PlaceholderHintTransitionDelayMs = 120
 private const val LightSearchBarShadowAmbientAlpha = 0.38f
 private const val LightSearchBarShadowSpotAlpha = 0.62f
+/** Resting radius of the standalone bar, matching [DesignTokens.ShapeXXLarge]. */
+private val DefaultSearchBarCornerRadius = DesignTokens.Spacing28
+
 private val AliasMorphTextStartPadding = DesignTokens.Spacing48 + DesignTokens.SpacingXSmall
 private val AliasMorphHorizontalTravel = DesignTokens.Spacing28
 private val AliasMorphVerticalTravel = DesignTokens.SpacingXXSmall
@@ -179,15 +183,20 @@ internal fun PersistentSearchBar(
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
     onPressWhileKeyboardClosed: () -> Unit = {},
     focusRequester: FocusRequester? = null,
+    transparentBackground: Boolean = false,
+    cornerRadius: Dp = DefaultSearchBarCornerRadius,
     modifier: Modifier = Modifier,
 ) {
+    val barShape = remember(cornerRadius) { RoundedCornerShape(cornerRadius) }
     val focusRequester = focusRequester ?: remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val view = LocalView.current
 
     val searchBarBackground =
-        if (opaqueBackground) {
+        if (transparentBackground) {
+            Color.Transparent
+        } else if (opaqueBackground) {
             AppColors.DialogBackground
         } else {
             AppColors.getSearchBarBackground(showWallpaperBackground)
@@ -440,7 +449,9 @@ internal fun PersistentSearchBar(
             modifier
                 .fillMaxWidth()
                 .graphicsLayer {
-                    if (!isDarkTheme) {
+                    // The inset strip already paints the card behind a transparent bar, so an
+                    // accent-tinted shadow would only wash colour across the bar's interior.
+                    if (!isDarkTheme && !transparentBackground) {
                         val elevationDp =
                             if (lightWallpaperSearchBar) {
                                 DesignTokens.ElevationLevel5
@@ -448,7 +459,7 @@ internal fun PersistentSearchBar(
                                 DesignTokens.ElevationLevel4
                             }
                         shadowElevation = with(density) { elevationDp.toPx() }
-                        shape = DesignTokens.ShapeXXLarge
+                        shape = barShape
                         ambientShadowColor = accentColor.copy(alpha = LightSearchBarShadowAmbientAlpha)
                         spotShadowColor = accentColor.copy(alpha = LightSearchBarShadowSpotAlpha)
                     } else {
@@ -459,7 +470,7 @@ internal fun PersistentSearchBar(
                     val alpha = glowAlpha.value
                     if (alpha > 0f) {
                         val strokeWidth = DesignTokens.SearchFieldBorderWidth.toPx()
-                        val cornerRadiusVal = DesignTokens.Spacing28.toPx()
+                        val cornerRadiusVal = cornerRadius.toPx()
 
                         // Calculate gradient movement based on animation
                         // progress
@@ -546,10 +557,10 @@ internal fun PersistentSearchBar(
                                         (borderAlpha.value * DesignTokens.SearchFieldAccentOutlineAlpha)
                                             .coerceIn(0f, 1f),
                                 ),
-                            shape = DesignTokens.ShapeXXLarge,
+                            shape = barShape,
                         )
                     },
-                ).clip(DesignTokens.ShapeXXLarge)
+                ).clip(barShape)
                 .background(searchBarBackground),
     ) {
         TextField(
@@ -614,7 +625,7 @@ internal fun PersistentSearchBar(
                         }
                     }
                     .animateContentSize(),
-            shape = DesignTokens.ShapeXXLarge,
+            shape = barShape,
             placeholder = {
                 AnimatedContent(
                     targetState = placeholderText,

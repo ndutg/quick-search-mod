@@ -34,12 +34,13 @@ fun WorldClockResult(
             } else {
                 null
             }
+    val effectiveProviderId = worldClockState.llmProviderId ?: llmProviderId
 
     GeminiResultCard(
             showWallpaperBackground = showWallpaperBackground,
             showAttribution = showAttribution,
             usedModelId = worldClockState.usedModelId,
-            llmProviderId = llmProviderId,
+            llmProviderId = effectiveProviderId,
             isAttributionClickable = true,
             onGeminiModelInfoClick = onGeminiModelInfoClick,
             copyText = copyText,

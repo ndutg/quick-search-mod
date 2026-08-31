@@ -1,6 +1,9 @@
 package com.tk.quicksearch.search.utils
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -59,5 +62,36 @@ class SearchRankingUtilsTest {
             )
 
         assertTrue(DefaultSearchMatcher.isMatch(priority))
+    }
+
+    @Test
+    fun cachedMatcherProducesTheSamePrioritiesAsTheDefaultMatcher() {
+        val cachedMatcher = CachedSearchMatcher(SearchTextCache())
+        val cases =
+            listOf(
+                Triple("Özgür Işık", "ozgur isik", null),
+                Triple("F-Droid", "fdroi", null),
+                Triple("Contact", "balagunateja", "Bala Guna Teja"),
+                Triple("Passport Office", "teja passport", null),
+                Triple("No match", "quantum", null),
+            )
+
+        cases.forEach { (text, rawQuery, nickname) ->
+            val query = SearchQueryContext.fromRawQuery(rawQuery)
+            assertEquals(
+                DefaultSearchMatcher.match(text, query, nickname),
+                cachedMatcher.match(text, query, nickname),
+            )
+        }
+    }
+
+    @Test
+    fun textCacheReusesIdenticalContentWithoutStalingChangedContent() {
+        val cache = SearchTextCache()
+        val first = cache.prepare("Localized label")
+
+        assertSame(first, cache.prepare("Localized label"))
+        assertNotSame(first, cache.prepare("Changed localized label"))
+        assertEquals("changed localized label", cache.prepare("Changed localized label").normalized)
     }
 }

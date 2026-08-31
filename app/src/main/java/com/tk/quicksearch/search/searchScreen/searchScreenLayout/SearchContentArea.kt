@@ -220,6 +220,7 @@ fun SearchContentArea(
                 theme = state.appTheme,
                 isDarkMode = isDarkMode,
                 intensity = state.overlayThemeIntensity,
+                amoledThemeEnabled = state.amoledThemeEnabled,
             )
         } else {
             null

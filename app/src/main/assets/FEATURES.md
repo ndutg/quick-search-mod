@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.1.1 (Updated August 24 2026)
+**Version**: 4.2 (Updated August 30 2026)
 
 ### Search
 
@@ -117,7 +117,9 @@ Long-press on most results to open a context menu with quick actions.
 - **System Font** - Option to use your device system font throughout the app for a native look and better consistency with your phone theme.
 - **Font Size** - Choose between small, medium, and large font sizes for all in-app text.
 - **Theme** - Set base theme to Light, Dark or System (follows system theme). Then, pick among the available themes - Mono, Forest, Aurora, Sunset - and adjust their intensity. These themes will adapt to light and dark mode seamlessly.
+- **AMOLED / True Black** - When Dark Mono is selected, enable AMOLED Theme to use a true-black background instead of dark gray.
 - **Material You** - Enable to use your device's color palette from Material You for the app's theme and accent colors.
+- **Custom Accent Color** - Pick a custom accent color, or derive the accent from your wallpaper background. You can also turn accent coloring off.
 - **Themed App Icons** - Enable or disable themed app icons for app results and for the Quick Search launcher icon.
 - **Wallpaper Background** - Use your wallpaper or any custom image as your search screen background, you can also tune transparency and blur to keep content readable. Choose whether to derive accent colors from wallpaper.
 - **Search Engine Style** - Choose between:
@@ -230,6 +232,7 @@ Long-press on most results to open a context menu with quick actions.
 ### More Options
 
 - **Top Result Indicator Toggle** - Option to hide the top result indicator for top results that can be opened with the keyboard.
+- **Open Top Result with Keyboard** - By default, the Enter/Done key opens the top result. Disable this option if you want Enter to search using your default search engine instead.
 - **Open Keyboard Toggle** - Choose to disable automatic keyboard opening during app launch. This is useful if you want to use this app just to quickly access pinned items.
 - **Unified Pinned Items** - Combine pinned items from different sections into a single list on the home screen. This option is off by default.
 - **Clear Query** - The app clears your query by default when you reopen the app; you can choose to keep the query by disabling this toggle.
@@ -248,6 +251,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Double Tap Gesture** - Double-tap on an empty area in Home to trigger a custom action, search engine, or tool, or disable it if you do not need it.
 - **Keyboard Gestures** - Choose which swipe opens the keyboard and which swipe closes it. These are available on Home only when there is no scrollable content, so normal scrolling always takes priority.
 - **Launcher Swipe Right** - When Quick Search is set as your launcher, swipe right can open the Widget Panel.
+- **Widgets Panel Gesture** - You can also assign swipe left or swipe right to open the Widgets Panel without setting Quick Search as your launcher.
 
 ---
 
@@ -270,6 +274,7 @@ Long-press on most results to open a context menu with quick actions.
 
 ### Widgets
 
+- **Widgets Panel** - Add home-screen widgets to a side panel inside Quick Search. You do not need to set Quick Search as your launcher; assign a swipe gesture to open the panel, then add widgets from there.
 - **Search Widget** - Tap the widget to instantly open Quick Search. Highly customizable with mic button support and up to 2 custom buttons alongside the search functionality.
 - **Custom Buttons Widget** - A dedicated widget for custom buttons - apps, app shortcuts, contacts, files, device settings, and notes - with enhanced customizable layouts and actions.
 
@@ -299,7 +304,7 @@ Long-press on most results to open a context menu with quick actions.
   - If the results contain emails, phone numbers, or links, you can tap them to email, call, or open them.
   - You can quickly change the model by tapping on "Powered by" text in the result.
 - **Physical Keyboard Shortcuts** - Full keyboard shortcut support for navigating results, opening items, and performing actions when using a physical keyboard.
-- **Keyboard Action Button** - Tap on keyboard action button to automatically open the top result
+- **Keyboard Action Button** - Tap on keyboard action button to automatically open the top result. You can disable this in More Options so that Enter searches with your default search engine instead.
 - **Show/Switch Keyboard Button** - When you close the keyboard, a small "Open Keyboard" button appears so that you don't have to tap on the search bar. When you type numbers in search, a "Switch to number" keyboard will appear. This is useful when using the calculator.
 - **Alias-based Contact and File Searches** - When you trigger contact/files search using an alias, the app will search more deeply.
 - **Search History Items** - Up to 15 items in the expanded list, with **Clear all** at the bottom. Long-press on any item to remove it.

@@ -3,7 +3,7 @@ package com.tk.quicksearch.search.data.preferences
 import android.content.Context
 
 enum class SwipeGestureAction {
-    QUICK_NOTE,
+    WIDGETS_PANEL,
     SETTINGS,
     OPEN_KEYBOARD,
     CLOSE_KEYBOARD_OR_NOTIFICATIONS,
@@ -25,7 +25,7 @@ class GesturesPreferences(
     context: Context,
 ) : BasePreferences(context) {
     fun getSwipeRightAction(): SwipeGestureAction =
-        getGestureAction(KEY_SWIPE_RIGHT_ACTION, SwipeGestureAction.QUICK_NOTE)
+        getGestureAction(KEY_SWIPE_RIGHT_ACTION, SwipeGestureAction.WIDGETS_PANEL)
 
     fun setSwipeRightAction(action: SwipeGestureAction) =
         setGestureAction(KEY_SWIPE_RIGHT_ACTION, action)
@@ -127,10 +127,11 @@ class GesturesPreferences(
     fun getHomeDoubleTapAliasTarget(): String? = prefs.getString(KEY_HOME_DOUBLE_TAP_ALIAS_TARGET, null)
     fun setHomeDoubleTapAliasTarget(targetId: String?) = setCustomAction(KEY_HOME_DOUBLE_TAP_ALIAS_TARGET, targetId)
 
-    private fun getGestureAction(key: String, default: SwipeGestureAction): SwipeGestureAction =
-        prefs.getString(key, default.name)
-            ?.let { value -> SwipeGestureAction.entries.firstOrNull { it.name == value } }
-            ?: default
+    private fun getGestureAction(key: String, default: SwipeGestureAction): SwipeGestureAction {
+        val stored = prefs.getString(key, default.name) ?: return default
+        if (stored == LEGACY_QUICK_NOTE_ACTION) return SwipeGestureAction.WIDGETS_PANEL
+        return SwipeGestureAction.entries.firstOrNull { it.name == stored } ?: default
+    }
 
     private fun setGestureAction(key: String, action: SwipeGestureAction) {
         prefs.edit().putString(key, action.name).apply()
@@ -165,5 +166,9 @@ class GesturesPreferences(
             if (actionJson == null) remove(key) else putString(key, actionJson)
             apply()
         }
+    }
+
+    private companion object {
+        const val LEGACY_QUICK_NOTE_ACTION = "QUICK_NOTE"
     }
 }

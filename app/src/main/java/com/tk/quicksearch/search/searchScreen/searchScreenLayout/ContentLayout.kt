@@ -57,7 +57,6 @@ import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.InfoBanner
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
 import com.tk.quicksearch.search.searchScreen.renderSection
-import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSectionContext
 import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSearchRenderingState
 import com.tk.quicksearch.search.searchScreen.rememberSettledTopMatches
 import com.tk.quicksearch.search.searchScreen.rememberTopMatches
@@ -173,7 +172,8 @@ fun ContentLayout(
         rememberSettledRegularSearchRenderingState(
             query = state.query,
             currentState = renderingState,
-            isSearchRefreshing = isLocalSearchRefreshing,
+            isAppSearchRefreshing = state.isAppSearchInProgress,
+            secondarySectionsRefreshing = state.secondarySearchSectionsInProgress,
         )
     // The overlay already animates its full surface on entry. In one-handed mode, layering every
     // async Home section height animation on top of that bottom-anchored surface makes early
@@ -221,7 +221,7 @@ fun ContentLayout(
 
     // 3. Prepare Shared Rendering Context and Params
     // We reuse the extracted logic to determine visibility and expansion states
-    val currentSectionContext =
+    val sectionContext =
         rememberSectionRenderContext(
             state = state,
             renderingState = regularRenderingState,
@@ -236,13 +236,6 @@ fun ContentLayout(
             oneHandedMode =
                 state.oneHandedMode, // This affects list reversal inside helpers
         )
-    val sectionContext =
-        rememberSettledRegularSectionContext(
-            query = state.query,
-            currentContext = currentSectionContext,
-            isSearchRefreshing = isLocalSearchRefreshing,
-        )
-
     val sectionParams =
         SectionRenderParams(
             renderingState = regularRenderingState,
@@ -391,19 +384,23 @@ fun ContentLayout(
                     screenTimeState = state.screenTimeState,
                 ),
         )
-    val displayedTopMatches =
+    val settledTopMatches =
         rememberSettledTopMatches(
             query = state.query,
             currentMatches = topMatches,
             isSearchRefreshing = isLocalSearchRefreshing,
+            limit = state.topMatchesLimit,
         )
-    val showTopMatches =
+    val displayedTopMatches = settledTopMatches.matches
+    val canShowTopMatches =
         state.topMatchesEnabled &&
             hasQuery &&
             !hideResults &&
             !isExpanded &&
-            !isSectionAliasMode &&
-            displayedTopMatches.isNotEmpty()
+            !isSectionAliasMode
+    val showTopMatches = canShowTopMatches && displayedTopMatches.isNotEmpty()
+    val showTopMatchesSection =
+        canShowTopMatches && (showTopMatches || isLocalSearchRefreshing)
     val hasMoreResults =
         hasMoreResults(
             renderingState = regularRenderingState,
@@ -732,7 +729,7 @@ fun ContentLayout(
 
     @Composable
     fun renderTopMatches() {
-        if (!showTopMatches) return
+        if (!showTopMatchesSection) return
         TopMatchesSection(
             matches = displayedTopMatches,
             params = sectionParams,
@@ -747,7 +744,7 @@ fun ContentLayout(
             onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
             modifier = Modifier.fillMaxWidth(),
         )
-        if (hasMoreResults && !isReversed) {
+        if (showTopMatches && hasMoreResults && !isReversed) {
             Text(
                 text = stringResource(R.string.more_results_title),
                 style = MaterialTheme.typography.labelSmall,
@@ -762,7 +759,7 @@ fun ContentLayout(
     }
 
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        if (showTopMatches && !isReversed) {
+        if (showTopMatchesSection && !isReversed) {
             renderTopMatches()
         }
         finalLayoutOrder.forEach { itemType ->
@@ -1004,7 +1001,8 @@ fun ContentLayout(
                     if (showWorldClock) {
                         WorldClockResult(
                                 worldClockState = state.worldClockState,
-                                llmProviderId = state.aiSearchLlmProviderId,
+                                llmProviderId = state.worldClockState.llmProviderId
+                                        ?: state.aiSearchLlmProviderId,
                                 showWallpaperBackground = effectiveShowWallpaperBackground,
                                 onGeminiModelInfoClick = onGeminiModelInfoClick,
                         )
@@ -1015,7 +1013,8 @@ fun ContentLayout(
                     if (showDictionary) {
                         DictionaryResult(
                                 dictionaryState = state.dictionaryState,
-                                llmProviderId = state.aiSearchLlmProviderId,
+                                llmProviderId = state.dictionaryState.llmProviderId
+                                        ?: state.aiSearchLlmProviderId,
                                 showWallpaperBackground = effectiveShowWallpaperBackground,
                                 onGeminiModelInfoClick = onGeminiModelInfoClick,
                         )
@@ -1158,7 +1157,7 @@ fun ContentLayout(
             deferredSearchHistoryRendered = true
         }
 
-        if (showTopMatches && isReversed) {
+        if (showTopMatchesSection && isReversed) {
             renderTopMatches()
         }
     }

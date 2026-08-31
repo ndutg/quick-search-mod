@@ -134,6 +134,12 @@ enum class BackgroundSource {
         CUSTOM_IMAGE,
 }
 
+enum class AccentColorMode {
+        NONE,
+        FROM_WALLPAPER,
+        CUSTOM,
+}
+
 enum class AppThemeMode {
         LIGHT,
         DARK,
@@ -236,6 +242,7 @@ data class WorldClockState(
         val timeZoneText: String? = null,
         val activeQuery: String? = null,
         val usedModelId: String? = null,
+        val llmProviderId: AiSearchLlmProviderId? = null,
         val errorMessage: String? = null,
 )
 
@@ -248,6 +255,7 @@ data class DictionaryState(
         val synonyms: List<String> = emptyList(),
         val activeQuery: String? = null,
         val usedModelId: String? = null,
+        val llmProviderId: AiSearchLlmProviderId? = null,
         val errorMessage: String? = null,
 )
 
@@ -540,6 +548,7 @@ data class SearchUiState(
         val searchHintsEnabled: Boolean = true,
         val settingsIconEnabled: Boolean = true,
         val topResultIndicatorEnabled: Boolean = false,
+        val openTopResultUsingKeyboardEnabled: Boolean = true,
         val openKeyboardOnLaunch: Boolean = true,
         val clearQueryOnLaunch: Boolean = true,
         val autoCloseOverlay: Boolean = true,
@@ -569,7 +578,8 @@ data class SearchUiState(
         val useSystemFont: Boolean = false,
         val homeTextColorOverride: HomeTextColor? = null,
         val backgroundSource: BackgroundSource = BackgroundSource.THEME,
-        val wallpaperAccentEnabled: Boolean = true,
+        val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
+        val customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
         val customImageUri: String? = null,
         val startupBackgroundPreviewPath: String? = null,
         // Icon pack
@@ -584,6 +594,7 @@ data class SearchUiState(
         val launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT,
         val themedIconsEnabled: Boolean = true,
         val deviceThemeEnabled: Boolean = false,
+        val amoledThemeEnabled: Boolean = false,
         val appSuggestionsEnabled: Boolean = true,
         val showAllAppsButton: Boolean = false,
         val includeNonLaunchableAppsInSearch: Boolean = false,
@@ -636,6 +647,7 @@ data class SearchUiState(
         val webSuggestionsLoading: Boolean = false,
         val isAppSearchInProgress: Boolean = false,
         val isSecondarySearchInProgress: Boolean = false,
+        val secondarySearchSectionsInProgress: Set<SearchSection> = emptySet(),
         val detectedShortcutTarget: SearchTarget? = null,
         val detectedAliasSearchSection: SearchSection? = null,
         val isCurrencyConverterAliasMode: Boolean = false,
@@ -752,6 +764,7 @@ fun SearchUiState(
                 webSuggestionsLoading = results.webSuggestionsLoading,
                 isAppSearchInProgress = results.isAppSearchInProgress,
                 isSecondarySearchInProgress = results.isSecondarySearchInProgress,
+                secondarySearchSectionsInProgress = results.secondarySearchSectionsInProgress,
                 webSuggestionWasSelected = results.webSuggestionWasSelected,
                 detectedShortcutTarget = results.detectedShortcutTarget,
                 detectedAliasSearchSection = results.detectedAliasSearchSection,
@@ -860,7 +873,9 @@ fun SearchUiState(
                 searchHintsEnabled = config.searchHintsEnabled,
                 settingsIconEnabled = config.settingsIconEnabled,
                 topResultIndicatorEnabled = config.topResultIndicatorEnabled,
-                wallpaperAccentEnabled = config.wallpaperAccentEnabled,
+                openTopResultUsingKeyboardEnabled = config.openTopResultUsingKeyboardEnabled,
+                accentColorMode = config.accentColorMode,
+                customAccentColorArgb = config.customAccentColorArgb,
                 openKeyboardOnLaunch = config.openKeyboardOnLaunch,
                 clearQueryOnLaunch = config.clearQueryOnLaunch,
                 autoCloseOverlay = config.autoCloseOverlay,
@@ -876,6 +891,7 @@ fun SearchUiState(
                 launcherAppIcon = config.launcherAppIcon,
                 themedIconsEnabled = config.themedIconsEnabled,
                 deviceThemeEnabled = config.deviceThemeEnabled,
+                amoledThemeEnabled = config.amoledThemeEnabled,
                 appSuggestionsEnabled = config.appSuggestionsEnabled,
                 showAllAppsButton = config.showAllAppsButton,
                 includeNonLaunchableAppsInSearch = config.includeNonLaunchableAppsInSearch,

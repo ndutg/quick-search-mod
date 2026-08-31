@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,11 +25,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -48,12 +54,15 @@ private val QuickNoteFocusedHeight = 280.dp
 @Composable
 internal fun CompactQuickNoteWidget(
     modifier: Modifier = Modifier,
+    fillAvailableSpace: Boolean = false,
     onDragStart: () -> Unit = {},
     onDrag: (x: Float, y: Float) -> Unit = { _, _ -> },
     onDragEnd: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val repository = remember(context) { NotesRepository(context) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
     val linkColor = AppColors.LinkColor
     var bodyInput by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -65,6 +74,12 @@ internal fun CompactQuickNoteWidget(
         targetValue = if (isFocused) QuickNoteFocusedHeight else QuickNoteHeight,
         label = "quickNoteHeight",
     )
+    val surfaceModifier =
+        if (fillAvailableSpace) {
+            modifier.fillMaxSize()
+        } else {
+            modifier.height(quickNoteHeight)
+        }
 
     LaunchedEffect(Unit) {
         val note = withContext(Dispatchers.IO) { repository.getOrCreateQuickNote() }
@@ -79,6 +94,11 @@ internal fun CompactQuickNoteWidget(
                 selection = TextRange(note.markdownContent.length),
             )
         baselineBody = note.markdownContent
+        if (note.markdownContent.isBlank()) {
+            withFrameNanos {}
+            runCatching { focusRequester.requestFocus() }
+            keyboardController?.show()
+        }
     }
 
     LaunchedEffect(quickNoteId, bodyInput.text, baselineBody) {
@@ -113,7 +133,7 @@ internal fun CompactQuickNoteWidget(
     }
 
     Surface(
-        modifier = modifier.height(quickNoteHeight),
+        modifier = surfaceModifier,
         shape = DesignTokens.ExtraLargeCardShape,
         color = AppColors.getSettingsCardContainerColor(),
     ) {
@@ -128,17 +148,23 @@ internal fun CompactQuickNoteWidget(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .pointerInput(Unit) {
-                            detectDragGesturesAfterLongPress(
-                                onDragStart = { onDragStart() },
-                                onDrag = { change, dragAmount ->
-                                    change.consume()
-                                    onDrag(dragAmount.x, dragAmount.y)
-                                },
-                                onDragEnd = onDragEnd,
-                                onDragCancel = onDragEnd,
-                            )
-                        },
+                        .then(
+                            if (fillAvailableSpace) {
+                                Modifier
+                            } else {
+                                Modifier.pointerInput(Unit) {
+                                    detectDragGesturesAfterLongPress(
+                                        onDragStart = { onDragStart() },
+                                        onDrag = { change, dragAmount ->
+                                            change.consume()
+                                            onDrag(dragAmount.x, dragAmount.y)
+                                        },
+                                        onDragEnd = onDragEnd,
+                                        onDragCancel = onDragEnd,
+                                    )
+                                }
+                            },
+                        ),
             ) {
                 Text(
                     text = stringResource(R.string.notes_quick_note_title),
@@ -162,6 +188,16 @@ internal fun CompactQuickNoteWidget(
                 modifier =
                     Modifier
                         .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                        .then(
+                            if (fillAvailableSpace) {
+                                Modifier
+                                    .weight(1f)
+                                    .verticalScroll(rememberScrollState())
+                            } else {
+                                Modifier
+                            },
+                        )
                         .onFocusChanged { isFocused = it.isFocused },
                 textStyle =
                     MaterialTheme.typography.bodyLarge.copy(

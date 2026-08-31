@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">Εμφάνιση των καλύτερων αντιστοιχισμένων αποτελεσμάτων όλων των τύπων σε μία λίστα.</string>
     <string name="top_result_indicator_toggle_desc">Επισήμανση του κορυφαίου αποτελέσματος που μπορεί να ανοίξει με το πληκτρολόγιο.</string>
     <string name="top_result_indicator_toggle_title">Δείκτης κορυφαίου αποτελέσματος</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Άνοιγμα κορυφαίου αποτελέσματος με πληκτρολόγιο</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Το πλήκτρο Enter/Τέλος ανοίγει το κορυφαίο αποτέλεσμα</string>
     <string name="include_non_launchable_apps_toggle_title">Μη εκκινήσιμες εφαρμογές</string>
     <string name="include_non_launchable_apps_toggle_desc">Συμπερίληψη εφαρμογών που δεν έχουν δραστηριότητα εκκίνησης στα αποτελέσματα αναζήτησης.</string>
     <string name="web_search_suggestions_title">Προτάσεις ιστού</string>
@@ -492,8 +494,16 @@
         <item quantity="one">%d ημέρα</item>
         <item quantity="other">%d ημέρες</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d ώρα</item>
+        <item quantity="other">%d ώρες</item>
+    </plurals>
     <string name="calendar_relative_in_format">σε %1$s</string>
     <string name="calendar_relative_in_minutes">σε %1$d λεπτά</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d λεπτό</item>
+        <item quantity="other">%d λεπτά</item>
+    </plurals>
     <string name="calendar_relative_now">Τώρα</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d μήνας</item>
@@ -650,6 +660,8 @@
     <string name="settings_default_assistant_title">Προεπιλεγμένος βοηθός</string>
     <string name="settings_default_launcher_desc">Ορίστε αυτήν την εφαρμογή ως την προεπιλεγμένη αρχική σας εφαρμογή (Launcher).</string>
     <string name="settings_default_launcher_title">Προεπιλεγμένος Launcher</string>
+    <string name="settings_amoled_theme_desc">Χρήση πραγματικού μαύρου φόντου για το θέμα Mono</string>
+    <string name="settings_amoled_theme_title">Θέμα AMOLED</string>
     <string name="settings_device_theme_blocked_toast">Απενεργοποιημένο όσο το θέμα Material You είναι ενεργό</string>
     <string name="settings_device_theme_desc">Χρήση της δυναμικής παλέτας χρωμάτων της συσκευής σας ως θέμα εφαρμογής</string>
     <string name="settings_device_theme_title">Material You</string>
@@ -668,6 +680,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">Μάσκα μη υποστηριζόμενων εικονιδίων</string>
     <string name="settings_icon_pack_option_system">Εικονίδια συστήματος</string>
     <string name="settings_icon_pack_picker_title">Επιλογή πακέτου εικονιδίων</string>
+    <string name="settings_icon_pack_reset_all_icons">Επαναφορά όλων των εικονιδίων</string>
     <string name="settings_icon_pack_search_query">Free icon packs</string>
     <string name="settings_icon_pack_title">Πακέτο εικονιδίων</string>
     <string name="settings_icon_title">Εικονίδιο ρυθμίσεων</string>
@@ -724,8 +737,12 @@
     <string name="settings_tools_title">Εργαλεία</string>
     <string name="settings_use_system_font_desc">Χρήση του στυλ γραμματοσειράς της συσκευής</string>
     <string name="settings_use_system_font_title">Χρήση γραμματοσειράς συστήματος</string>
-    <string name="settings_wallpaper_accent_desc">Εξαγωγή χρωμάτων έμφασης από την εικόνα φόντου</string>
-    <string name="settings_wallpaper_accent_title">Χρώματα έμφασης</string>
+    <string name="settings_accent_color_from_wallpaper">Ταπετσαρία</string>
+    <string name="settings_accent_color_none">Καμία</string>
+    <string name="settings_accent_color_picker_title">Χρώμα έμφασης</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Ρυθμίστε πρώτα το φόντο ταπετσαρίας</string>
+    <string name="settings_wallpaper_accent_desc">Προκύπτει το χρώμα έμφασης από την ταπετσαρία ή επιλέξτε προσαρμοσμένο χρώμα</string>
+    <string name="settings_wallpaper_accent_title">Χρώμα έμφασης</string>
     <string name="settings_wallpaper_blur_label">Θόλωση</string>
     <string name="settings_wallpaper_card_title">Φόντο ταπετσαρίας</string>
     <string name="settings_wallpaper_transparency_label">Διαφάνεια</string>

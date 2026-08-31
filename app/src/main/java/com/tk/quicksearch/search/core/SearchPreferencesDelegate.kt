@@ -29,7 +29,9 @@ internal interface SearchPreferencesStateAccess {
     var unifiedPinnedItemsEnabled: Boolean
     var settingsIconEnabled: Boolean
     var topResultIndicatorEnabled: Boolean
-    var wallpaperAccentEnabled: Boolean
+    var openTopResultUsingKeyboardEnabled: Boolean
+    var accentColorMode: AccentColorMode
+    var customAccentColorArgb: Int
     var openKeyboardOnLaunch: Boolean
     var overlayModeEnabled: Boolean
     var autoCloseOverlay: Boolean
@@ -42,6 +44,7 @@ internal interface SearchPreferencesStateAccess {
     var launcherAppIcon: LauncherAppIcon
     var themedIconsEnabled: Boolean
     var deviceThemeEnabled: Boolean
+    var amoledThemeEnabled: Boolean
     var maskUnsupportedIconPackIcons: Boolean
     var wallpaperBackgroundAlpha: Float
     var wallpaperBlurRadius: Float
@@ -648,6 +651,15 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setAmoledThemeEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.amoledThemeEnabled == enabled) return@launch
+            userPreferences.setAmoledThemeEnabled(enabled)
+            stateAccess.amoledThemeEnabled = enabled
+            updateConfigState { it.copy(amoledThemeEnabled = enabled) }
+        }
+    }
+
     fun setIconPackUnsupportedIconMaskEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             if (stateAccess.maskUnsupportedIconPackIcons == enabled) return@launch
@@ -804,23 +816,56 @@ internal class SearchPreferencesDelegate(
         if (!enabled && userPreferences.isPhysicalKeyboardConnected()) {
             return
         }
-        updateBooleanPreference(
-            value = enabled,
-            preferenceSetter = userPreferences::setTopResultIndicatorEnabled,
-            stateUpdater = {
-                stateAccess.topResultIndicatorEnabled = it
-                updateUiState { state -> state.copy(topResultIndicatorEnabled = it) }
-                stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
-            },
-        )
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.topResultIndicatorEnabled == enabled) return@launch
+            userPreferences.setTopResultIndicatorEnabled(enabled)
+            userPreferences.setTopResultIndicatorManuallyDisabled(!enabled)
+            stateAccess.topResultIndicatorEnabled = enabled
+            updateUiState { state -> state.copy(topResultIndicatorEnabled = enabled) }
+            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+        }
     }
 
-    fun setWallpaperAccentEnabled(enabled: Boolean) {
+    fun setOpenTopResultUsingKeyboardEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
-            if (stateAccess.wallpaperAccentEnabled == enabled) return@launch
-            userPreferences.setWallpaperAccentEnabled(enabled)
-            stateAccess.wallpaperAccentEnabled = enabled
-            updateConfigState { it.copy(wallpaperAccentEnabled = enabled) }
+            if (stateAccess.openTopResultUsingKeyboardEnabled == enabled) return@launch
+
+            userPreferences.setOpenTopResultUsingKeyboardEnabled(enabled)
+            val restoreTopResultIndicator =
+                enabled && !userPreferences.isTopResultIndicatorManuallyDisabled()
+            if (!enabled || restoreTopResultIndicator) {
+                userPreferences.setTopResultIndicatorEnabled(enabled)
+            }
+
+            stateAccess.openTopResultUsingKeyboardEnabled = enabled
+            stateAccess.topResultIndicatorEnabled = if (!enabled) false else restoreTopResultIndicator || stateAccess.topResultIndicatorEnabled
+            updateUiState { state ->
+                state.copy(
+                    openTopResultUsingKeyboardEnabled = enabled,
+                    topResultIndicatorEnabled =
+                        if (!enabled) false else restoreTopResultIndicator || state.topResultIndicatorEnabled,
+                )
+            }
+            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+        }
+    }
+
+    fun setAccentColorMode(mode: AccentColorMode) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.accentColorMode == mode) return@launch
+            userPreferences.setAccentColorMode(mode)
+            stateAccess.accentColorMode = mode
+            updateConfigState { it.copy(accentColorMode = mode) }
+            stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
+        }
+    }
+
+    fun setCustomAccentColorArgb(argb: Int) {
+        scope.launch(Dispatchers.IO) {
+            if (stateAccess.customAccentColorArgb == argb) return@launch
+            userPreferences.setCustomAccentColorArgb(argb)
+            stateAccess.customAccentColorArgb = argb
+            updateConfigState { it.copy(customAccentColorArgb = argb) }
             stateAccess.saveStartupSurfaceSnapshotAsync(allowDuringQuery = true)
         }
     }

@@ -45,6 +45,12 @@ fun MoreOptionsSettings(
                 leadingIcon = Icons.Rounded.Apps,
             ),
             ToggleItem(
+                key = AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD,
+                titleRes = R.string.open_top_result_using_keyboard_toggle_title,
+                subtitleRes = R.string.open_top_result_using_keyboard_toggle_desc,
+                leadingIcon = Icons.Rounded.Keyboard,
+            ),
+            ToggleItem(
                 key = AppSettingsToggleKey.TOP_RESULT_INDICATOR,
                 titleRes = R.string.top_result_indicator_toggle_title,
                 subtitleRes = R.string.top_result_indicator_toggle_desc,
@@ -72,6 +78,10 @@ fun MoreOptionsSettings(
             .filterNot {
                 isPhysicalKeyboardConnected &&
                     it.key == AppSettingsToggleKey.TOP_RESULT_INDICATOR
+            }
+            .filterNot {
+                it.key == AppSettingsToggleKey.TOP_RESULT_INDICATOR &&
+                    !isToggleEnabled(AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD)
             }
 
     SettingsCard(

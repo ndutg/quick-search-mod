@@ -5,6 +5,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.LlmRequest
+import com.tk.quicksearch.tools.aiSearch.LlmResponseText
 import org.json.JSONObject
 
 class DictionaryNotRecognizedException : Exception()
@@ -21,10 +22,10 @@ class DictionaryHandler(
         private val userPreferences: UserAppPreferences,
 ) {
     fun parseModelResponse(raw: String): Result<DictionaryModelResult> {
-        val trimmed =
-                raw.trim().removePrefix("```json").removePrefix("```").removeSuffix("```").trim()
+        val payload = LlmResponseText.extractJsonObjectPayload(raw)
         return runCatching {
-            val obj = JSONObject(trimmed)
+            check(payload.startsWith("{")) { "invalid" }
+            val obj = JSONObject(payload)
             if (obj.optString("error") == "not_dictionary") {
                 throw DictionaryNotRecognizedException()
             }

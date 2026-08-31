@@ -4,9 +4,11 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPerformanceLogger
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPolicyResolver
 import com.tk.quicksearch.search.utils.FuzzyMatcher
+import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
+import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
-import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.utils.SearchTextCache
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 private const val FUZZY_CANDIDATE_BUFFER_MULTIPLIER = 12
@@ -21,6 +23,8 @@ object AppSettingsSearchAlgorithm {
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
+        matcher: SearchMatcher = DefaultSearchMatcher,
+        textCache: SearchTextCache = SearchTextCache(),
     ): List<AppSettingResult> {
         if (fullList.isEmpty()) return emptyList()
         if (queryContext.normalizedQuery.isBlank()) return emptyList()
@@ -33,6 +37,7 @@ object AppSettingsSearchAlgorithm {
                         AppSettingsSearchPolicy.evaluateMatch(
                             setting = setting,
                             query = queryContext,
+                            matcher = matcher,
                         )
                     if (!matchResult.hasMatch) return@mapNotNull null
                     val priority = AppSettingsSearchPolicy.rankingPriority(matchResult)
@@ -82,17 +87,16 @@ object AppSettingsSearchAlgorithm {
                 .take(fuzzyCandidateCount)
                 .filterNot { exactMatchIds.contains(it.id) }
                 .mapNotNull { setting ->
-                    val normalizedTitle = SearchTextNormalizer.normalizeForSearch(setting.title)
-                    val normalizedSupportingText =
-                        SearchTextNormalizer.normalizeForSearch(
-                            buildString {
-                                append(setting.description.orEmpty())
-                                if (setting.keywords.isNotEmpty()) {
-                                    append(' ')
-                                    append(setting.keywords.joinToString(" "))
-                                }
-                            },
-                        )
+                    val normalizedTitle = textCache.prepare(setting.title).normalized
+                    val supportingText =
+                        buildString {
+                            append(setting.description.orEmpty())
+                            if (setting.keywords.isNotEmpty()) {
+                                append(' ')
+                                append(setting.keywords.joinToString(" "))
+                            }
+                        }
+                    val normalizedSupportingText = textCache.prepare(supportingText).normalized
                     val fuzzyScore =
                         FuzzyMatcher.score(
                             query = queryContext.normalizedQuery,
@@ -110,14 +114,15 @@ object AppSettingsSearchAlgorithm {
                             keywords = setting.keywords,
                             fuzzyMinScore = fuzzyPolicy.minimumScore,
                             fuzzyMaxEditDistance = fuzzyPolicy.maximumEditDistance,
+                            textCache = textCache,
                         )
                     ) {
                         null
                     } else {
-                        setting to fuzzyScore
+                        Triple(setting, fuzzyScore, setting.title.lowercase())
                     }
                 }.sortedWith(
-                    compareByDescending<Pair<AppSettingResult, Int>> { it.second }
+                    compareByDescending<Triple<AppSettingResult, Int, String>> { it.second }
                         .thenByDescending {
                             when (secondaryRankingSignal) {
                                 SecondaryRankingSignal.RECENCY -> recentSettingScores[it.first.id] ?: 0
@@ -125,7 +130,7 @@ object AppSettingsSearchAlgorithm {
                                 SecondaryRankingSignal.NONE -> 0
                             }
                         }
-                        .thenBy { it.first.title.lowercase() },
+                        .thenBy { it.third },
                 ).map { it.first }
                 .toList()
             }

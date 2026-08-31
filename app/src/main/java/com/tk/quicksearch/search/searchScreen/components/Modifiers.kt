@@ -5,6 +5,8 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
@@ -24,31 +26,34 @@ private const val PredictedSubmitIndicatorEnterDelayMs = 500
 private const val PredictedSubmitIndicatorFadeInDurationMs = 300
 private const val PredictedSubmitIndicatorFadeOutDurationMs = 240
 
+@Composable
+internal fun rememberPredictedSubmitIndicatorAlpha(isPredicted: Boolean): State<Float> {
+    val indicatorTransition =
+        updateTransition(targetState = isPredicted, label = "predictedSubmitIndicator")
+    return indicatorTransition.animateFloat(
+        transitionSpec = {
+            tween(
+                durationMillis =
+                    if (targetState) {
+                        PredictedSubmitIndicatorFadeInDurationMs
+                    } else {
+                        PredictedSubmitIndicatorFadeOutDurationMs
+                    },
+                delayMillis = if (targetState) PredictedSubmitIndicatorEnterDelayMs else 0,
+                easing = FastOutSlowInEasing,
+            )
+        },
+        label = "predictedSubmitIndicatorAlpha",
+    ) { predicted -> if (predicted) 1f else 0f }
+}
+
 internal fun Modifier.predictedSubmitHighlight(
     isPredicted: Boolean,
     shape: Shape = DesignTokens.CardShape,
     opaqueCardTopResultBorder: Boolean = false,
 ): Modifier =
     composed {
-        val indicatorTransition = updateTransition(targetState = isPredicted, label = "predictedSubmitIndicator")
-        val indicatorAlpha =
-            indicatorTransition.animateFloat(
-                transitionSpec = {
-                    tween(
-                        durationMillis =
-                            if (targetState) {
-                                PredictedSubmitIndicatorFadeInDurationMs
-                            } else {
-                                PredictedSubmitIndicatorFadeOutDurationMs
-                            },
-                        delayMillis = if (targetState) PredictedSubmitIndicatorEnterDelayMs else 0,
-                        easing = FastOutSlowInEasing,
-                    )
-                },
-                label = "predictedSubmitIndicatorAlpha",
-            ) { predicted ->
-                if (predicted) 1f else 0f
-            }
+        val indicatorAlpha = rememberPredictedSubmitIndicatorAlpha(isPredicted)
         val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
         val primary = MaterialTheme.colorScheme.primary
         val highlightColor =

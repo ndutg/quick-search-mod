@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">Die besten passenden Ergebnisse aller Typen in einer einzigen Liste anzeigen.</string>
     <string name="top_result_indicator_toggle_desc">Das beste Ergebnis hervorheben, das per Tastatur geöffnet werden kann.</string>
     <string name="top_result_indicator_toggle_title">Anzeige des Top-Ergebnisses</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Top-Ergebnis mit Tastatur öffnen</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Die Eingabe-/Fertig-Taste öffnet das Top-Ergebnis</string>
     <string name="include_non_launchable_apps_toggle_title">Nicht startbare Apps</string>
     <string name="include_non_launchable_apps_toggle_desc">Apps ohne Start-Aktivität in den Suchergebnissen anzeigen.</string>
     <string name="web_search_suggestions_title">Web-Vorschläge</string>
@@ -492,8 +494,16 @@
         <item quantity="one">%d Tag</item>
         <item quantity="other">%d Tage</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d Stunde</item>
+        <item quantity="other">%d Stunden</item>
+    </plurals>
     <string name="calendar_relative_in_format">in %1$s</string>
     <string name="calendar_relative_in_minutes">in %1$d Minuten</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d Minute</item>
+        <item quantity="other">%d Minuten</item>
+    </plurals>
     <string name="calendar_relative_now">Jetzt</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d Monat</item>
@@ -650,6 +660,8 @@
     <string name="settings_default_assistant_title">Standard-Assistent</string>
     <string name="settings_default_launcher_desc">Diese App als Standard-Startseiten-App festlegen.</string>
     <string name="settings_default_launcher_title">Standard-Launcher</string>
+    <string name="settings_amoled_theme_desc">Echten Schwarz-Hintergrund für das Mono-Design verwenden</string>
+    <string name="settings_amoled_theme_title">AMOLED-Design</string>
     <string name="settings_device_theme_blocked_toast">Deaktiviert, solange das Material You-Design aktiv ist</string>
     <string name="settings_device_theme_desc">Dynamische Farbpalette des Geräts als App-Design verwenden</string>
     <string name="settings_device_theme_title">Material You</string>
@@ -668,6 +680,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">Nicht unterstützte Symbole maskieren</string>
     <string name="settings_icon_pack_option_system">System-Symbole</string>
     <string name="settings_icon_pack_picker_title">Icon-Pack auswählen</string>
+    <string name="settings_icon_pack_reset_all_icons">Alle Icons zurücksetzen</string>
     <string name="settings_icon_pack_search_query">Kostenlose Icon-Packs</string>
     <string name="settings_icon_pack_title">Icon-Pack</string>
     <string name="settings_icon_title">Einstellungssymbol</string>
@@ -724,8 +737,12 @@
     <string name="settings_tools_title">Tools</string>
     <string name="settings_use_system_font_desc">Schriftstil des Geräts übernehmen</string>
     <string name="settings_use_system_font_title">Systemschrift verwenden</string>
-    <string name="settings_wallpaper_accent_desc">Akzentfarben vom Hintergrundbild ableiten</string>
-    <string name="settings_wallpaper_accent_title">Akzentfarben</string>
+    <string name="settings_accent_color_from_wallpaper">Hintergrundbild</string>
+    <string name="settings_accent_color_none">Keine</string>
+    <string name="settings_accent_color_picker_title">Akzentfarbe</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Richten Sie zuerst den Hintergrund ein</string>
+    <string name="settings_wallpaper_accent_desc">Akzentfarbe vom Hintergrundbild ableiten oder eine eigene Farbe wählen</string>
+    <string name="settings_wallpaper_accent_title">Akzentfarbe</string>
     <string name="settings_wallpaper_blur_label">Unschärfe</string>
     <string name="settings_wallpaper_card_title">Hintergrundbild</string>
     <string name="settings_wallpaper_transparency_label">Transparenz</string>

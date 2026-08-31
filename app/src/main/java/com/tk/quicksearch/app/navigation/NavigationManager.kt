@@ -535,6 +535,7 @@ private fun NavigationContent(
                     appTheme = uiState.appTheme,
                     overlayThemeIntensity = uiState.overlayThemeIntensity,
                     deviceThemeEnabled = uiState.deviceThemeEnabled,
+                    amoledThemeEnabled = uiState.amoledThemeEnabled,
                 )
             }
 
@@ -573,13 +574,6 @@ private fun NavigationContent(
                 val navigateToSettings: (SettingsDetailType?) -> Unit = { detailType ->
                     onDestinationChange(RootDestination.Settings)
                     onSettingsDetailTypeChange(detailType)
-                    leaveSearchSurface()
-                }
-                val navigateToQuickNoteFromSwipeRight: (Long) -> Unit = { _ ->
-                    rootAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
-                    settingsDetailAnimationDirectionOverride = SwipeAnimationDirection.RIGHT
-                    onDestinationChange(RootDestination.Settings)
-                    onSettingsDetailTypeChangeFromSearch(SettingsDetailType.NOTE_EDITOR)
                     leaveSearchSurface()
                 }
                 val navigateToWidgetsPanelFromSwipeRight: () -> Unit = {
@@ -648,7 +642,6 @@ private fun NavigationContent(
                             navigateToSettings(destination)
                         }
                     },
-                    onOpenQuickNoteFromSwipe = navigateToQuickNoteFromSwipeRight,
                     onOpenWidgetsPanelFromSwipe = navigateToWidgetsPanelFromSwipeRight,
                     onSearchEngineLongPress = {
                         navigateToSettings(SettingsDetailType.SEARCH_ENGINES)

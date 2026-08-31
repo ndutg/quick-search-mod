@@ -54,6 +54,16 @@ object OtherSearchItemRegistry {
         pinnedItemOrder: List<String>,
     ): Boolean = itemId.pinnedItemKey in pinnedItemOrder
 
+    fun togglePin(
+        itemId: OtherSearchItemId,
+        pinnedItemOrder: List<String>,
+    ): List<String> =
+        if (isPinned(itemId, pinnedItemOrder)) {
+            pinnedItemOrder.filterNot { it == itemId.pinnedItemKey }
+        } else {
+            pinnedItemOrder + itemId.pinnedItemKey
+        }
+
     fun shouldLoad(
         itemId: OtherSearchItemId,
         query: String,

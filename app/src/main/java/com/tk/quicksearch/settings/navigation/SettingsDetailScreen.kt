@@ -103,6 +103,7 @@ internal fun SettingsDetailLevel1Screen(
         appTheme = effectiveAppTheme,
         overlayThemeIntensity = state.overlayThemeIntensity,
         deviceThemeEnabled = effectiveDeviceThemeEnabled,
+        amoledThemeEnabled = state.amoledThemeEnabled,
         modifier = modifier,
     ) {
     MonoThemeWrapper(
@@ -399,6 +400,9 @@ internal fun SettingsDetailLevel1Screen(
                                     SettingsCommand.IconPackPackageSetting(packageName),
                                 )
                             },
+                            onResetAllIcons = {
+                                callbacks.onApplySettingsCommand(SettingsCommand.ResetAllAppIcons)
+                            },
                             onSetMaskUnsupportedIconPackIcons =
                                     callbacks.onSetMaskUnsupportedIconPackIcons,
                             onRefreshIconPacks = {
@@ -435,13 +439,25 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
-                            wallpaperAccentEnabled = state.wallpaperAccentEnabled,
-                            onWallpaperAccentToggle = { enabled ->
+                            amoledThemeEnabled = state.amoledThemeEnabled,
+                            onAmoledThemeToggle = { enabled ->
                                 callbacks.onApplySettingsCommand(
                                     SettingsCommand.Toggle(
-                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.WALLPAPER_ACCENT,
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.AMOLED_THEME,
                                         enabled = enabled,
                                     ),
+                                )
+                            },
+                            accentColorMode = state.accentColorMode,
+                            customAccentColorArgb = state.customAccentColorArgb,
+                            onAccentColorModeChange = { mode ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.AccentColorModeSetting(mode),
+                                )
+                            },
+                            onCustomAccentColorChange = { argb ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.CustomAccentColorSetting(argb),
                                 )
                             },
                             hasWallpaperPermission = state.hasWallpaperPermission,

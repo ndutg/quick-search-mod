@@ -43,7 +43,6 @@ import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
-import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
@@ -51,7 +50,6 @@ import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
-import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.CalendarEventInfo
@@ -82,9 +80,7 @@ import com.tk.quicksearch.search.searchScreen.SearchScreen as SearchScreenCompos
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
 import com.tk.quicksearch.search.searchScreen.ExcludeUndoSnackbarHost
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 private const val SWIPE_NAVIGATION_THRESHOLD_PX = 140f
 private const val RATE_QUICK_SEARCH_SETTING_ID = "app_settings_rate_quick_search"
@@ -118,7 +114,6 @@ fun SearchRoute(
     onOpenReleaseNotesFeatures: () -> Unit = {},
     onOpenAppSettingDestination: (AppSettingsDestination) -> Unit = {},
     onOpenNotesDetail: (Long?) -> Unit = {},
-    onOpenQuickNoteFromSwipe: ((Long) -> Unit)? = null,
     onOpenWidgetsPanelFromSwipe: (() -> Unit)? = null,
     onOverlayDismissRequest: (() -> Unit)? = null,
     onCloseAppRequest: (() -> Unit)? = null,
@@ -136,7 +131,6 @@ fun SearchRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    val notesRepository = remember(context) { NotesRepository(context) }
 
     val nicknameUpdateVersion = uiState.nicknameUpdateVersion
     val getAppNickname: (String) -> String? =
@@ -180,27 +174,6 @@ fun SearchRoute(
     val effectiveSnackbarHostState = overlaySnackbarHostState ?: snackbarHostState
     val snackbarScope = rememberCoroutineScope()
     val undoLabel = stringResource(R.string.action_undo)
-    var isQuickNoteNavigationInProgress by remember { mutableStateOf(false) }
-
-    val openQuickNoteEditor: () -> Unit =
-        openQuickNoteEditor@{
-            if (isQuickNoteNavigationInProgress) return@openQuickNoteEditor
-            isQuickNoteNavigationInProgress = true
-            snackbarScope.launch {
-                try {
-                    val quickNote =
-                        withContext(Dispatchers.IO) { notesRepository.getOrCreateQuickNote() }
-                    NotesNavigationMemory.setPendingNoteId(
-                        noteId = quickNote.noteId,
-                        hideEditorAppBar = true,
-                    )
-                    onOpenQuickNoteFromSwipe?.invoke(quickNote.noteId)
-                        ?: onOpenNotesDetail(quickNote.noteId)
-                } finally {
-                    isQuickNoteNavigationInProgress = false
-                }
-            }
-        }
 
     val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo ->
         snackbarScope.launch {
@@ -517,10 +490,6 @@ fun SearchRoute(
         } else {
             modifier.fillMaxSize()
         }
-    val notesPreferences = remember(context.applicationContext) {
-        NotesPreferences(context.applicationContext)
-    }
-    var quickNoteEnabled by remember { mutableStateOf(notesPreferences.isQuickNoteEnabled()) }
     val gesturePreferences = remember(context.applicationContext) {
         UserAppPreferences(context.applicationContext)
     }
@@ -566,15 +535,6 @@ fun SearchRoute(
     }
     var homeAliasTargets by remember { mutableStateOf(listOf(gesturePreferences.getHomeSwipeUpAliasTarget(), gesturePreferences.getHomeSwipeDownAliasTarget(), gesturePreferences.getHomeDoubleTapAliasTarget())) }
     var isLauncherSwipeRightEnabled by remember { mutableStateOf(gesturePreferences.isLauncherSwipeRightEnabled()) }
-    DisposableEffect(lifecycleOwner, notesPreferences) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                quickNoteEnabled = notesPreferences.isQuickNoteEnabled()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
     DisposableEffect(gesturePreferences) {
         val preferences =
             context.applicationContext.getSharedPreferences(
@@ -629,7 +589,7 @@ fun SearchRoute(
                     if (isLauncherSwipeRightEnabled) onOpenWidgetsPanelFromSwipe?.invoke()
                 } else {
                     when (swipeActions[0]) {
-                        SwipeGestureAction.QUICK_NOTE -> if (quickNoteEnabled) openQuickNoteEditor()
+                        SwipeGestureAction.WIDGETS_PANEL -> onOpenWidgetsPanelFromSwipe?.invoke()
                         SwipeGestureAction.CUSTOM -> {
                             com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
                                 .fromJson(customSwipeActions[0])
@@ -657,7 +617,7 @@ fun SearchRoute(
         }
     }
     val swipeNavigationModifier =
-        Modifier.pointerInput(isDefaultLauncher, isLauncherSwipeRightEnabled, quickNoteEnabled, swipeActions, customSwipeActions, uiState.query) {
+        Modifier.pointerInput(isDefaultLauncher, isLauncherSwipeRightEnabled, swipeActions, customSwipeActions, uiState.query) {
             var totalHorizontalDrag = 0f
             detectHorizontalDragGestures(
                 onDragStart = { totalHorizontalDrag = 0f },
@@ -1060,6 +1020,7 @@ fun SearchRoute(
                 },
                 onMaskUnsupportedIconsChange = viewModel::setIconPackUnsupportedIconMaskEnabled,
                 onDownloadIconPacks = viewModel::searchIconPacks,
+                onResetAllIcons = viewModel::resetAllAppIconsToDefault,
                 onDismiss = { showIconPackDialog = false },
             )
         }

@@ -1,6 +1,5 @@
 plugins {
     id("com.android.test")
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.androidx.baselineprofile)
 }
 
@@ -31,9 +30,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 }
 
 dependencies {

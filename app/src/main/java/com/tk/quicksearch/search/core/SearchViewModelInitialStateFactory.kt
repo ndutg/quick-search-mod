@@ -156,6 +156,8 @@ internal object SearchViewModelInitialStateFactory {
                 topResultIndicatorEnabled =
                     startupSnapshot?.topResultIndicatorEnabled
                         ?: startupPreferencesReader.isTopResultIndicatorEnabled(),
+                openTopResultUsingKeyboardEnabled =
+                    startupPreferencesReader.isOpenTopResultUsingKeyboardEnabled(),
                 openKeyboardOnLaunch = startupPreferencesReader.isOpenKeyboardOnLaunchEnabled(),
                 clearQueryOnLaunch = clearQueryOnLaunch,
                 autoCloseOverlay = startupPreferencesReader.isAutoCloseOverlayEnabled(),
@@ -178,6 +180,7 @@ internal object SearchViewModelInitialStateFactory {
                 appIconShape = startupPreferencesReader.getAppIconShape(),
                 themedIconsEnabled = startupPreferencesReader.isThemedIconsEnabled(),
                 deviceThemeEnabled = startupPreferencesReader.isDeviceThemeEnabled(),
+                amoledThemeEnabled = startupPreferencesReader.isAmoledThemeEnabled(),
                 maskUnsupportedIconPackIcons =
                     startupPreferencesReader.isIconPackUnsupportedIconMaskEnabled(),
                 appSuggestionsEnabled =

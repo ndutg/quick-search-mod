@@ -278,6 +278,8 @@
     <string name="top_matches_toggle_desc">Mostrar os resultados com melhor correspondência de todos os tipos em uma única lista.</string>
     <string name="top_result_indicator_toggle_desc">Destacar o principal resultado que pode ser aberto com o teclado.</string>
     <string name="top_result_indicator_toggle_title">Indicador do principal resultado</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Abrir principal resultado com o teclado</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">A tecla Enter/Concluído abrirá o principal resultado</string>
     <string name="include_non_launchable_apps_toggle_title">Aplicativos não inicializáveis</string>
     <string name="include_non_launchable_apps_toggle_desc">Incluir aplicativos que não possuem uma atividade de inicialização nos resultados de pesquisa.</string>
     <string name="web_search_suggestions_title">Sugestões da web</string>
@@ -492,8 +494,16 @@
         <item quantity="one">%d dia</item>
         <item quantity="other">%d dias</item>
     </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d horas</item>
+    </plurals>
     <string name="calendar_relative_in_format">em %1$s</string>
     <string name="calendar_relative_in_minutes">em %1$d minutos</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="other">%d minutos</item>
+    </plurals>
     <string name="calendar_relative_now">Agora</string>
     <plurals name="calendar_relative_months">
         <item quantity="one">%d mês</item>
@@ -650,6 +660,8 @@
     <string name="settings_default_assistant_title">Assistente padrão</string>
     <string name="settings_default_launcher_desc">Defina este app como seu inicializador (launcher) padrão.</string>
     <string name="settings_default_launcher_title">Launcher padrão</string>
+    <string name="settings_amoled_theme_desc">Usar fundo preto puro no tema Mono</string>
+    <string name="settings_amoled_theme_title">Tema AMOLED</string>
     <string name="settings_device_theme_blocked_toast">Desativado enquanto o tema Material You estiver ativo</string>
     <string name="settings_device_theme_desc">Usar a paleta de cores dinâmicas do seu dispositivo como tema do app</string>
     <string name="settings_device_theme_title">Material You</string>
@@ -668,6 +680,7 @@
     <string name="settings_icon_pack_mask_unsupported_icons">Mascarar ícones não suportados</string>
     <string name="settings_icon_pack_option_system">Ícones do sistema</string>
     <string name="settings_icon_pack_picker_title">Escolha o pacote de ícones</string>
+    <string name="settings_icon_pack_reset_all_icons">Redefinir todos os ícones</string>
     <string name="settings_icon_pack_search_query">Pacotes de ícones gratuitos</string>
     <string name="settings_icon_pack_title">Pacote de ícones</string>
     <string name="settings_icon_title">Ícone de configurações</string>
@@ -724,8 +737,12 @@
     <string name="settings_tools_title">Ferramentas</string>
     <string name="settings_use_system_font_desc">Seguir o estilo de fonte do seu dispositivo</string>
     <string name="settings_use_system_font_title">Usar fonte do sistema</string>
-    <string name="settings_wallpaper_accent_desc">Derivar cores de destaque a partir da imagem de fundo</string>
-    <string name="settings_wallpaper_accent_title">Cores de destaque</string>
+    <string name="settings_accent_color_from_wallpaper">Papel de parede</string>
+    <string name="settings_accent_color_none">Nenhum</string>
+    <string name="settings_accent_color_picker_title">Cor de destaque</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Configure primeiro um fundo de papel de parede</string>
+    <string name="settings_wallpaper_accent_desc">Obtenha a cor de destaque do papel de parede ou escolha uma cor personalizada</string>
+    <string name="settings_wallpaper_accent_title">Cor de destaque</string>
     <string name="settings_wallpaper_blur_label">Desfoque</string>
     <string name="settings_wallpaper_card_title">Fundo do papel de parede</string>
     <string name="settings_wallpaper_transparency_label">Transparência</string>

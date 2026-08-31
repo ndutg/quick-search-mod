@@ -277,6 +277,8 @@
 <string name="top_matches_toggle_desc">Tüm türlerde en iyi eşleşen sonuçları tek bir listede göster.</string>
 <string name="top_result_indicator_toggle_desc">Klavye ile açılabilecek en üstteki sonucu vurgula.</string>
 <string name="top_result_indicator_toggle_title">En iyi sonuç göstergesi</string>
+<string name="open_top_result_using_keyboard_toggle_title">En iyi sonucu klavyeyle aç</string>
+<string name="open_top_result_using_keyboard_toggle_desc">Klavyedeki Enter/Bitti tuşu en iyi sonucu açar</string>
 <string name="include_non_launchable_apps_toggle_title">Başlatılamayan Uygulamalar</string>
 <string name="include_non_launchable_apps_toggle_desc">Arama sonuçlarında başlatma etkinliği olmayan uygulamaları da göster.</string>
 <string name="web_search_suggestions_title">Web önerileri</string>
@@ -491,8 +493,16 @@
     <item quantity="one">%d gün</item>
     <item quantity="other">%d gün</item>
 </plurals>
+<plurals name="calendar_relative_hours">
+    <item quantity="one">%d saat</item>
+    <item quantity="other">%d saat</item>
+</plurals>
 <string name="calendar_relative_in_format">%1$s içinde</string>
 <string name="calendar_relative_in_minutes">%1$d dakika içinde</string>
+<plurals name="calendar_relative_minutes">
+    <item quantity="one">%d dakika</item>
+    <item quantity="other">%d dakika</item>
+</plurals>
 <string name="calendar_relative_now">Şimdi</string>
 <plurals name="calendar_relative_months">
     <item quantity="one">%d ay</item>
@@ -649,6 +659,8 @@
 <string name="settings_default_assistant_title">Varsayılan asistan</string>
 <string name="settings_default_launcher_desc">Bu uygulamayı varsayılan ana ekran uygulaman olarak ayarla.</string>
 <string name="settings_default_launcher_title">Varsayılan başlatıcı</string>
+<string name="settings_amoled_theme_desc">Mono teması için gerçek siyah arka plan kullan</string>
+<string name="settings_amoled_theme_title">AMOLED Teması</string>
 <string name="settings_device_theme_blocked_toast">Material You teması etkinken devre dışı</string>
 <string name="settings_device_theme_desc">Cihazının dinamik renk paletini uygulama teması olarak kullan</string>
 <string name="settings_device_theme_title">Material You</string>
@@ -666,7 +678,8 @@
 <string name="settings_icon_pack_description_no_packs">Uygulama simgeleri için bir simge paketi ayarlayın.</string>
 <string name="settings_icon_pack_mask_unsupported_icons">Desteklenmeyen simgeleri maskele</string>
 <string name="settings_icon_pack_option_system">Sistem simgeleri</string>
-<string name="settings_icon_pack_picker_title">Simge paketi seç</string>
+    <string name="settings_icon_pack_picker_title">Simge paketi seç</string>
+    <string name="settings_icon_pack_reset_all_icons">Tüm simgeleri sıfırla</string>
 <string name="settings_icon_pack_search_query">Ücretsiz simge paketleri</string>
 <string name="settings_icon_pack_title">Simge paketi</string>
 <string name="settings_icon_title">Ayarlar simgesi</string>
@@ -723,8 +736,12 @@
 <string name="settings_tools_title">Araçlar</string>
 <string name="settings_use_system_font_desc">Cihazının yazı tipi stilini takip et</string>
 <string name="settings_use_system_font_title">Sistem yazı tipini kullan</string>
-<string name="settings_wallpaper_accent_desc">Vurgu renklerini arka plan görselinden türet</string>
-<string name="settings_wallpaper_accent_title">Vurgu renkleri</string>
+<string name="settings_accent_color_from_wallpaper">Duvar kağıdı</string>
+<string name="settings_accent_color_none">Yok</string>
+<string name="settings_accent_color_picker_title">Vurgu rengi</string>
+<string name="settings_accent_color_wallpaper_required_toast">Önce duvar kağıdı arka planını ayarlayın</string>
+<string name="settings_wallpaper_accent_desc">Vurgu rengini duvar kağıdından türetin veya özel bir renk seçin</string>
+<string name="settings_wallpaper_accent_title">Vurgu rengi</string>
 <string name="settings_wallpaper_blur_label">Bulanıklık</string>
 <string name="settings_wallpaper_card_title">Duvar kağıdı arka planı</string>
 <string name="settings_wallpaper_transparency_label">Şeffaflık</string>

@@ -478,6 +478,13 @@ class AppSettingsRepository(
                 keywords = listOf("ranking", "recency", "most opened", "sort", "order"),
             )
             addToggle(
+                id = "app_toggle_open_top_result_using_keyboard",
+                titleRes = R.string.open_top_result_using_keyboard_toggle_title,
+                descriptionRes = R.string.open_top_result_using_keyboard_toggle_desc,
+                toggleKey = AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD,
+                keywords = listOf("keyboard", "enter", "done", "top result"),
+            )
+            addToggle(
                 id = "app_toggle_top_result_indicator",
                 titleRes = R.string.top_result_indicator_toggle_title,
                 descriptionRes = R.string.top_result_indicator_toggle_desc,
@@ -516,12 +523,12 @@ class AppSettingsRepository(
                 keywords = listOf("call"),
             )
             addSearchSectionToggles()
-            addToggle(
+            addNavigation(
                 id = "app_toggle_wallpaper_accent",
                 titleRes = R.string.settings_wallpaper_accent_title,
                 descriptionRes = R.string.settings_wallpaper_accent_desc,
-                toggleKey = AppSettingsToggleKey.WALLPAPER_ACCENT,
-                keywords = listOf("wallpaper", "background"),
+                destination = AppSettingsDestination.APPEARANCE,
+                keywords = listOf("wallpaper", "background", "accent", "custom color"),
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 addToggle(
@@ -532,6 +539,13 @@ class AppSettingsRepository(
                     keywords = listOf("material you", "dynamic color", "palette", "theme"),
                 )
             }
+            addToggle(
+                id = "app_toggle_amoled_theme",
+                titleRes = R.string.settings_amoled_theme_title,
+                descriptionRes = R.string.settings_amoled_theme_desc,
+                toggleKey = AppSettingsToggleKey.AMOLED_THEME,
+                keywords = listOf("amoled", "true black", "oled", "mono", "dark"),
+            )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 addToggle(
                     id = "app_toggle_themed_icons",

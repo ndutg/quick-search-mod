@@ -1,5 +1,5 @@
-- Currency conversion now works without an API key
-- Option to pin items to notifications separately
-- Option to reset the app icon
-- In Top Matches, app results will now appear in a single row
+- AMOLED/True-Black option when Dark Mono theme is selected
+- Add widgets to the side panel without setting Quick Search as your launcher
+- Added support for custom accent colors
+- Added an option to disable opening the top result with the Enter key. When disabled, Enter will search using your default search engine instead
 - Bug fixes and improvements

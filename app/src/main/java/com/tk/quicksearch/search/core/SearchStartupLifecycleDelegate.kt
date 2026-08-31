@@ -8,6 +8,7 @@ import com.tk.quicksearch.search.data.StartupPreferencesFacade
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.apps.prefetchAppIcons
 import com.tk.quicksearch.searchEngines.getAppPackageCandidates
 import com.tk.quicksearch.shared.permissions.PermissionHelper
@@ -42,7 +43,9 @@ internal data class SearchStartupPreferencesSnapshot(
     val bottomSearchBarEnabled: Boolean,
     val unifiedPinnedItemsEnabled: Boolean,
     val topResultIndicatorEnabled: Boolean,
-    val wallpaperAccentEnabled: Boolean,
+    val openTopResultUsingKeyboardEnabled: Boolean,
+    val accentColorMode: AccentColorMode,
+    val customAccentColorArgb: Int,
     val openKeyboardOnLaunch: Boolean,
     val clearQueryOnLaunch: Boolean,
     val autoCloseOverlay: Boolean,
@@ -57,6 +60,7 @@ internal data class SearchStartupPreferencesSnapshot(
     val launcherAppIcon: LauncherAppIcon,
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean,
+    val amoledThemeEnabled: Boolean,
     val maskUnsupportedIconPackIcons: Boolean,
     val customImageUri: String?,
 )
@@ -69,6 +73,7 @@ internal data class SearchLoadedPreferencesSnapshot(
     val searchHintsEnabled: Boolean,
     val settingsIconEnabled: Boolean,
     val topResultIndicatorEnabled: Boolean,
+    val openTopResultUsingKeyboardEnabled: Boolean,
     val openKeyboardOnLaunch: Boolean,
     val clearQueryOnLaunch: Boolean,
     val autoCloseOverlay: Boolean,
@@ -85,6 +90,7 @@ internal data class SearchLoadedPreferencesSnapshot(
     val launcherAppIcon: LauncherAppIcon,
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean,
+    val amoledThemeEnabled: Boolean,
     val maskUnsupportedIconPackIcons: Boolean,
     val backgroundSource: BackgroundSource,
     val wallpaperBackgroundAlpha: Float,
@@ -369,6 +375,8 @@ internal class SearchStartupLifecycleDelegate(
 
     fun launchDeferredInitialization() {
         scope.launch(startupDispatcher) {
+            val startupStartedAtElapsedMs = SystemClock.elapsedRealtime()
+            AppSearchPerformanceLogger.log { "startupDeferredInitializationStarted" }
             startPackageChangeMonitoring()
 
             withContext(Dispatchers.Main.immediate) {
@@ -412,20 +420,41 @@ internal class SearchStartupLifecycleDelegate(
             if (appSearchManager.cachedApps.isNotEmpty() && permissionStateProvider().hasUsagePermission) {
                 appSearchManager.refreshUsageMetadataNow()
             }
-            // Finish any required catalog reconciliation before suggestions become visible. The
-            // rest of the startup UI remains independent, but the app grid is published once in
-            // its final startup order instead of visibly rearranging.
+            // A persisted catalog is already safe to render. Publish its suggestions before any
+            // required reconciliation so slow PackageManager metadata reads cannot hold the app
+            // grid in its loading state. A missing catalog still has to be loaded first.
+            val hasCachedApps = appSearchManager.cachedApps.isNotEmpty()
             val reconcileAppsInBackground =
-                shouldReconcileAppsAtStartup() && appSearchManager.cachedApps.isNotEmpty()
+                shouldReconcileAppsAtStartup() && hasCachedApps
+            val catalogReconciliationStartedAtElapsedMs = SystemClock.elapsedRealtime()
+            AppSearchPerformanceLogger.log {
+                "startupCatalogReconciliation decision=" +
+                    when {
+                        reconcileAppsInBackground -> "refreshCachedCatalog"
+                        appSearchManager.cachedApps.isEmpty() -> "loadEmptyCatalog"
+                        else -> "reuseFreshCatalog"
+                    } + " cachedApps=${appSearchManager.cachedApps.size}"
+            }
+            if (hasCachedApps) {
+                publishCurrentStartupAppSuggestions()
+            }
             if (reconcileAppsInBackground) {
                 packageRefreshJob?.cancel()
                 packageRefreshJob = launch(startupDispatcher) { loadApps() }
                 packageRefreshJob?.join()
-            } else if (appSearchManager.cachedApps.isEmpty()) {
+            } else if (!hasCachedApps) {
                 loadApps()
             }
-            refreshAppSuggestions()
-            publishStartupAppSuggestions()
+            AppSearchPerformanceLogger.logTiming(
+                event = "startupCatalogReady",
+                elapsedMs = SystemClock.elapsedRealtime() - catalogReconciliationStartedAtElapsedMs,
+                slowThresholdMs = 500L,
+            ) {
+                "apps=${appSearchManager.cachedApps.size} reconciled=$reconcileAppsInBackground"
+            }
+            if (!hasCachedApps) {
+                publishCurrentStartupAppSuggestions()
+            }
 
             val packageNames = appSearchManager.cachedApps.map { it.packageName }.toSet()
             val messagingInfo = getMessagingAppInfo(packageNames)
@@ -537,6 +566,7 @@ internal class SearchStartupLifecycleDelegate(
                 searchHintsEnabled = userPreferences.isSearchHintsEnabled(),
                 settingsIconEnabled = userPreferences.isSettingsIconEnabled(),
                     topResultIndicatorEnabled = userPreferences.isTopResultIndicatorEnabled(),
+                    openTopResultUsingKeyboardEnabled = userPreferences.isOpenTopResultUsingKeyboardEnabled(),
                     openKeyboardOnLaunch = userPreferences.isOpenKeyboardOnLaunchEnabled(),
                     clearQueryOnLaunch = userPreferences.isClearQueryOnLaunchEnabled(),
                     autoCloseOverlay = userPreferences.isAutoCloseOverlayEnabled(),
@@ -652,6 +682,13 @@ internal class SearchStartupLifecycleDelegate(
             // derived state here so the visible app grid does not change after first display.
             withContext(Dispatchers.Default) { refreshPostStartupState() }
             StartupTrace.mark("QS.Startup.PhasedInitializationComplete")
+            AppSearchPerformanceLogger.logTiming(
+                event = "startupDeferredInitializationComplete",
+                elapsedMs = SystemClock.elapsedRealtime() - startupStartedAtElapsedMs,
+                slowThresholdMs = 1_500L,
+            ) {
+                "apps=${appSearchManager.cachedApps.size}"
+            }
             saveStartupSurfaceSnapshotAsync(true, false)
         }
     }
@@ -691,6 +728,7 @@ internal class SearchStartupLifecycleDelegate(
     }
 
     suspend fun loadCacheAndMinimalPrefs() {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         val startupConfig = userPreferences.loadStartupConfig()
         setPrefCache(
             SearchPreferenceCache.from(
@@ -722,7 +760,9 @@ internal class SearchStartupLifecycleDelegate(
                     bottomSearchBarEnabled = startupSnapshot.bottomSearchBarEnabled,
                     unifiedPinnedItemsEnabled = startupSnapshot.unifiedPinnedItemsEnabled,
                     topResultIndicatorEnabled = startupSnapshot.topResultIndicatorEnabled,
-                    wallpaperAccentEnabled = startupSnapshot.wallpaperAccentEnabled,
+                    openTopResultUsingKeyboardEnabled = startupSnapshot.openTopResultUsingKeyboardEnabled,
+                    accentColorMode = startupSnapshot.accentColorMode,
+                    customAccentColorArgb = startupSnapshot.customAccentColorArgb,
                     openKeyboardOnLaunch = startupSnapshot.openKeyboardOnLaunch,
                     clearQueryOnLaunch = startupSnapshot.clearQueryOnLaunch,
                     autoCloseOverlay = startupSnapshot.autoCloseOverlay,
@@ -739,6 +779,7 @@ internal class SearchStartupLifecycleDelegate(
                     launcherAppIcon = startupSnapshot.launcherAppIcon,
                     themedIconsEnabled = startupSnapshot.themedIconsEnabled,
                     deviceThemeEnabled = startupSnapshot.deviceThemeEnabled,
+                    amoledThemeEnabled = startupSnapshot.amoledThemeEnabled,
                     maskUnsupportedIconPackIcons = startupSnapshot.maskUnsupportedIconPackIcons,
                     isInitializing = true,
                 )
@@ -783,9 +824,17 @@ internal class SearchStartupLifecycleDelegate(
             }
             searchableAppsWarmupJob.join()
         }
+        AppSearchPerformanceLogger.logTiming(
+            event = "startupCacheAndMinimalPrefsReady",
+            elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+            slowThresholdMs = 250L,
+        ) {
+            "cachedApps=${cachedAppsList?.size ?: 0} usagePermission=$hasUsagePermission"
+        }
     }
 
     suspend fun loadRemainingStartupPreferences(applyStartupPreferences: (StartupPreferencesFacade.StartupPreferences) -> Unit) {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
         val startupPrefs =
             getStartupConfig()?.startupPreferences
                 ?: userPreferences.getStartupPreferences()
@@ -799,6 +848,11 @@ internal class SearchStartupLifecycleDelegate(
                 ?: repository.cacheLastUpdatedMillis()
         withContext(Dispatchers.Default) { refreshDerivedState(lastUpdated, false) }
         withContext(Dispatchers.Main) { updateConfigState { it.copy(isInitializing = false) } }
+        AppSearchPerformanceLogger.logTiming(
+            event = "startupRemainingPreferencesReady",
+            elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+            slowThresholdMs = 250L,
+        )
     }
 
     fun applyStartupPreferences(prefs: StartupPreferencesFacade.StartupPreferences) {
@@ -820,6 +874,7 @@ internal class SearchStartupLifecycleDelegate(
                 searchHintsEnabled = snapshot.searchHintsEnabled,
                 settingsIconEnabled = snapshot.settingsIconEnabled,
                 topResultIndicatorEnabled = snapshot.topResultIndicatorEnabled,
+                openTopResultUsingKeyboardEnabled = snapshot.openTopResultUsingKeyboardEnabled,
                 openKeyboardOnLaunch = snapshot.openKeyboardOnLaunch,
                 clearQueryOnLaunch = snapshot.clearQueryOnLaunch,
                 autoCloseOverlay = snapshot.autoCloseOverlay,
@@ -836,6 +891,7 @@ internal class SearchStartupLifecycleDelegate(
                 launcherAppIcon = snapshot.launcherAppIcon,
                 themedIconsEnabled = snapshot.themedIconsEnabled,
                 deviceThemeEnabled = snapshot.deviceThemeEnabled,
+                amoledThemeEnabled = snapshot.amoledThemeEnabled,
                 maskUnsupportedIconPackIcons = snapshot.maskUnsupportedIconPackIcons,
                 showWallpaperBackground = snapshot.backgroundSource != BackgroundSource.THEME,
                 wallpaperBackgroundAlpha = snapshot.wallpaperBackgroundAlpha,
@@ -1053,6 +1109,19 @@ internal class SearchStartupLifecycleDelegate(
             )
         }
         saveStartupSurfaceSnapshotAsync(false, false)
+    }
+
+    private suspend fun publishCurrentStartupAppSuggestions() {
+        val startedAtElapsedMs = SystemClock.elapsedRealtime()
+        refreshAppSuggestions()
+        publishStartupAppSuggestions()
+        AppSearchPerformanceLogger.logTiming(
+            event = "startupSuggestionsPublished",
+            elapsedMs = SystemClock.elapsedRealtime() - startedAtElapsedMs,
+            slowThresholdMs = 100L,
+        ) {
+            "recents=${resultsStateProvider().recentApps.size} pinned=${resultsStateProvider().pinnedApps.size}"
+        }
     }
 
     private suspend fun publishStartupAppSuggestions() {

@@ -21,6 +21,25 @@ class OtherSearchItemRegistryTest {
     }
 
     @Test
+    fun togglingScreenTimePinPreservesUnrelatedPinnedItems() {
+        val existingOrder = listOf("contact:42", "note:7")
+        val pinnedOrder =
+            OtherSearchItemRegistry.togglePin(
+                OtherSearchItemId.SCREEN_TIME,
+                existingOrder,
+            )
+
+        assertEquals(existingOrder + "other:screen_time", pinnedOrder)
+        assertEquals(
+            existingOrder,
+            OtherSearchItemRegistry.togglePin(
+                OtherSearchItemId.SCREEN_TIME,
+                pinnedOrder,
+            ),
+        )
+    }
+
+    @Test
     fun pinnedScreenTimeLoadsOnHomeButNotForUnrelatedSearches() {
         val pinnedOrder = listOf(OtherSearchItemId.SCREEN_TIME.pinnedItemKey)
 

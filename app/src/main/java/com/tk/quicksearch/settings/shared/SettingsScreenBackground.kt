@@ -11,7 +11,9 @@ import androidx.compose.ui.graphics.luminance
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.searchScreen.SearchScreenBackground
+import com.tk.quicksearch.search.searchScreen.isAmoledSurfaceTheme
 import com.tk.quicksearch.search.searchScreen.resolveSearchColorTheme
+import com.tk.quicksearch.shared.ui.theme.LocalAmoledThemeActive
 import com.tk.quicksearch.shared.ui.theme.LocalSearchColorTheme
 import com.tk.quicksearch.shared.ui.theme.ThemeModeFallbackBackgroundAlpha
 
@@ -20,24 +22,37 @@ fun SettingsScreenBackground(
     appTheme: AppTheme,
     overlayThemeIntensity: Float,
     deviceThemeEnabled: Boolean = false,
+    amoledThemeEnabled: Boolean = false,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     val isDarkMode = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val searchColorTheme = remember(appTheme, overlayThemeIntensity, isDarkMode, deviceThemeEnabled) {
-        if (deviceThemeEnabled) {
-            null
-        } else {
-            resolveSearchColorTheme(
-                theme = appTheme,
-                backgroundSource = BackgroundSource.THEME,
-                isDarkMode = isDarkMode,
-                intensity = overlayThemeIntensity,
-            )
+    val amoledSurfacesActive =
+        isAmoledSurfaceTheme(
+            amoledThemeEnabled = amoledThemeEnabled,
+            theme = appTheme,
+            isDarkMode = isDarkMode,
+            deviceThemeEnabled = deviceThemeEnabled,
+        )
+    val searchColorTheme =
+        remember(appTheme, overlayThemeIntensity, isDarkMode, deviceThemeEnabled, amoledThemeEnabled) {
+            if (deviceThemeEnabled) {
+                null
+            } else {
+                resolveSearchColorTheme(
+                    theme = appTheme,
+                    backgroundSource = BackgroundSource.THEME,
+                    isDarkMode = isDarkMode,
+                    intensity = overlayThemeIntensity,
+                    amoledThemeEnabled = amoledThemeEnabled,
+                )
+            }
         }
-    }
 
-    CompositionLocalProvider(LocalSearchColorTheme provides searchColorTheme) {
+    CompositionLocalProvider(
+        LocalSearchColorTheme provides searchColorTheme,
+        LocalAmoledThemeActive provides amoledSurfacesActive,
+    ) {
         Box(modifier = modifier.fillMaxSize()) {
             SearchScreenBackground(
                 showWallpaperBackground = false,
@@ -48,6 +63,7 @@ fun SettingsScreenBackground(
                 useGradientFallback = !deviceThemeEnabled,
                 appTheme = appTheme,
                 overlayThemeIntensity = overlayThemeIntensity,
+                amoledThemeEnabled = amoledThemeEnabled,
                 modifier = Modifier.fillMaxSize(),
             )
             content()

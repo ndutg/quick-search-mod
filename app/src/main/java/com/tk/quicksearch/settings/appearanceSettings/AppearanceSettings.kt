@@ -83,6 +83,7 @@ fun AppearanceSettingsSection(
         appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
         onSetAppIconSizeStep: (Int) -> Unit = {},
         onSelectIconPack: (String?) -> Unit,
+        onResetAllIcons: () -> Unit,
         onSetMaskUnsupportedIconPackIcons: (Boolean) -> Unit,
         onRefreshIconPacks: () -> Unit,
         onSearchIconPacks: () -> Unit,
@@ -94,8 +95,12 @@ fun AppearanceSettingsSection(
         onThemedIconsToggle: (Boolean) -> Unit,
         deviceThemeEnabled: Boolean,
         onDeviceThemeToggle: (Boolean) -> Unit,
-        wallpaperAccentEnabled: Boolean,
-        onWallpaperAccentToggle: (Boolean) -> Unit,
+        amoledThemeEnabled: Boolean,
+        onAmoledThemeToggle: (Boolean) -> Unit,
+        accentColorMode: com.tk.quicksearch.search.core.AccentColorMode,
+        customAccentColorArgb: Int,
+        onAccentColorModeChange: (com.tk.quicksearch.search.core.AccentColorMode) -> Unit,
+        onCustomAccentColorChange: (Int) -> Unit,
         hasWallpaperPermission: Boolean = true,
         modifier: Modifier = Modifier,
 ) {
@@ -158,6 +163,8 @@ fun AppearanceSettingsSection(
                 onThemedIconsToggle = onThemedIconsToggle,
                 deviceThemeEnabled = deviceThemeEnabled,
                 onDeviceThemeToggle = onDeviceThemeToggle,
+                amoledThemeEnabled = amoledThemeEnabled,
+                onAmoledThemeToggle = onAmoledThemeToggle,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -173,8 +180,10 @@ fun AppearanceSettingsSection(
                 onPickCustomImage = onPickCustomImage,
                 hasWallpaperPermission = hasWallpaperPermission,
                 onRequestWallpaperPermission = onRequestWallpaperPermission,
-                wallpaperAccentEnabled = wallpaperAccentEnabled,
-                onWallpaperAccentToggle = onWallpaperAccentToggle,
+                accentColorMode = accentColorMode,
+                customAccentColorArgb = customAccentColorArgb,
+                onAccentColorModeChange = onAccentColorModeChange,
+                onCustomAccentColorChange = onCustomAccentColorChange,
                 deviceThemeEnabled = deviceThemeEnabled,
         )
 
@@ -294,6 +303,7 @@ fun AppearanceSettingsSection(
                 },
                 onMaskUnsupportedIconsChange = onSetMaskUnsupportedIconPackIcons,
                 onDownloadIconPacks = onSearchIconPacks,
+                onResetAllIcons = onResetAllIcons,
                 onDismiss = { showIconPackDialog = false },
         )
     }

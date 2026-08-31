@@ -5,6 +5,7 @@ import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.LauncherAppIcon
+import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.MessagingApp
@@ -87,6 +88,7 @@ data class SettingsScreenState(
     val launcherAppIcon: LauncherAppIcon = LauncherAppIcon.DEFAULT,
     val themedIconsEnabled: Boolean = true,
     val deviceThemeEnabled: Boolean = false,
+    val amoledThemeEnabled: Boolean = false,
     val directDialEnabled: Boolean,
     val numberSearchEnabled: Boolean,
     val disabledSections: Set<SearchSection>,
@@ -114,7 +116,8 @@ data class SettingsScreenState(
     val topMatchesLimit: Int,
     val topMatchesSectionOrder: List<SearchSection>,
     val disabledTopMatchesSections: Set<SearchSection>,
-    val wallpaperAccentEnabled: Boolean,
+    val accentColorMode: AccentColorMode,
+    val customAccentColorArgb: Int,
     val openKeyboardOnLaunch: Boolean,
     val clearQueryOnLaunch: Boolean,
     val autoCloseOverlay: Boolean,
@@ -236,7 +239,9 @@ data class SettingsScreenState(
                 launcherAppIcon = launcherAppIcon,
                 themedIconsEnabled = themedIconsEnabled,
                 deviceThemeEnabled = deviceThemeEnabled,
-                wallpaperAccentEnabled = wallpaperAccentEnabled,
+                amoledThemeEnabled = amoledThemeEnabled,
+                accentColorMode = accentColorMode,
+                customAccentColorArgb = customAccentColorArgb,
                 openKeyboardOnLaunch = openKeyboardOnLaunch,
                 clearQueryOnLaunch = clearQueryOnLaunch,
                 autoCloseOverlay = autoCloseOverlay,
@@ -362,7 +367,8 @@ data class SettingsScreenCallbacks(
     val onToggleOpenKeyboardOnLaunch: (Boolean) -> Unit,
     val onToggleClearQueryOnLaunch: (Boolean) -> Unit,
     val onToggleAutoCloseOverlay: (Boolean) -> Unit,
-    val onToggleWallpaperAccent: (Boolean) -> Unit,
+    val onSetAccentColorMode: (AccentColorMode) -> Unit,
+    val onSetCustomAccentColor: (Int) -> Unit,
     val onToggleRecentQueries: (Boolean) -> Unit,
     val onSetGeminiApiKey: (String?) -> Unit,
     val onSetLlmApiKey: (AiSearchLlmProviderId, String?) -> Unit,
@@ -492,7 +498,8 @@ data class SettingsScreenCallbacks(
                 onSetLauncherAppIcon = onSetLauncherAppIcon,
                 onToggleThemedIcons = onToggleThemedIcons,
                 onToggleDeviceTheme = onToggleDeviceTheme,
-                onToggleWallpaperAccent = onToggleWallpaperAccent,
+                onSetAccentColorMode = onSetAccentColorMode,
+                onSetCustomAccentColor = onSetCustomAccentColor,
                 onToggleOpenKeyboardOnLaunch = onToggleOpenKeyboardOnLaunch,
                 onToggleClearQueryOnLaunch = onToggleClearQueryOnLaunch,
                 onToggleAutoCloseOverlay = onToggleAutoCloseOverlay,
@@ -590,7 +597,9 @@ data class AppearanceSettingsState(
     val launcherAppIcon: LauncherAppIcon,
     val themedIconsEnabled: Boolean,
     val deviceThemeEnabled: Boolean = false,
-    val wallpaperAccentEnabled: Boolean,
+    val amoledThemeEnabled: Boolean = false,
+    val accentColorMode: AccentColorMode,
+    val customAccentColorArgb: Int,
     val openKeyboardOnLaunch: Boolean,
     val clearQueryOnLaunch: Boolean,
     val autoCloseOverlay: Boolean,
@@ -697,7 +706,8 @@ data class AppearanceSettingsCallbacks(
     val onSetLauncherAppIcon: (LauncherAppIcon) -> Unit,
     val onToggleThemedIcons: (Boolean) -> Unit,
     val onToggleDeviceTheme: (Boolean) -> Unit,
-    val onToggleWallpaperAccent: (Boolean) -> Unit,
+    val onSetAccentColorMode: (AccentColorMode) -> Unit,
+    val onSetCustomAccentColor: (Int) -> Unit,
     val onToggleOpenKeyboardOnLaunch: (Boolean) -> Unit,
     val onToggleClearQueryOnLaunch: (Boolean) -> Unit,
     val onToggleAutoCloseOverlay: (Boolean) -> Unit,

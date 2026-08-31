@@ -16,4 +16,7 @@ package com.tk.quicksearch.app
  * current home surface and the system reveals the previous launcher behind it
  * during the transition animation.
  */
-class HomeActivity : MainActivity()
+class HomeActivity : MainActivity() {
+    /** Back at the launcher root must not reveal the previously used app. */
+    override fun handleSearchBackPressed() = Unit
+}

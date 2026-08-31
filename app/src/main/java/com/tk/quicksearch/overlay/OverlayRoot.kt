@@ -447,6 +447,7 @@ fun OverlayRoot(
                                                         },
                                                 overlayThemeIntensity =
                                                         uiState.overlayThemeIntensity,
+                                                amoledThemeEnabled = uiState.amoledThemeEnabled,
                                                 modifier = Modifier.fillMaxSize(),
                                         )
 
@@ -496,6 +497,13 @@ fun OverlayRoot(
                                                                 context,
                                                                 openSettings = true,
                                                                 settingsDetailType = destination,
+                                                        )
+                                                        handleClose()
+                                                },
+                                                onOpenWidgetsPanelFromSwipe = {
+                                                        OverlayModeController.openMainActivity(
+                                                                context,
+                                                                openWidgetsPanel = true,
                                                         )
                                                         handleClose()
                                                 },

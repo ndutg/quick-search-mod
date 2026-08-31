@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -497,100 +498,103 @@ internal fun TopMatchesSection(
     onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (matches.isEmpty()) return
     val highlightedMatch = selectedMatchIndex?.let(matches::getOrNull) ?: matches.firstOrNull()
-    val titleRes = if (matches.size == 1) R.string.top_match_title else R.string.top_matches_title
     val displayedMatches = if (reverseOrder) matches.asReversed() else matches
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
     ) {
-        Row(
-            modifier =
-                Modifier.padding(
-                    start = DesignTokens.SpacingMedium,
-                    top = DesignTokens.SpacingXSmall,
-                    end = DesignTokens.SpacingLarge,
-                    bottom = DesignTokens.SpacingXSmall,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.AutoAwesome,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.92f),
-                modifier = Modifier.size(14.dp),
-            )
-            Text(
-                text = stringResource(titleRes),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+        TopMatchesHeader()
 
         displayedMatches.forEach { item ->
-            val isTopPredicted = showTopResultIndicator && item == highlightedMatch
-            if (item is TopMatchItem.AppGrid) {
-                TopMatchAppGrid(
-                    apps = item.apps,
-                    params = params.appsParams,
-                    isPredicted = isTopPredicted,
-                )
-                return@forEach
-            }
-            if (item is TopMatchItem.Other) {
-                when (item.itemId) {
-                    OtherSearchItemId.SCREEN_TIME ->
-                        ScreenTimeResultCard(
-                            state = screenTimeState,
-                            isPinned =
-                                OtherSearchItemRegistry.isPinned(
-                                    item.itemId,
-                                    pinnedNonAppItemOrder,
-                                ),
-                            showWallpaperBackground = showWallpaperBackground,
-                            iconPackPackage = iconPackPackage,
-                            onTogglePin = { onToggleOtherSearchItemPin(item.itemId) },
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .predictedSubmitHighlight(
-                                        isPredicted = isTopPredicted,
-                                        shape = SearchResultCardDefaults.shape,
-                                        opaqueCardTopResultBorder = true,
-                                    ),
-                        )
-                }
-                return@forEach
-            }
-            SearchResultCard(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .predictedSubmitHighlight(
-                            isPredicted = isTopPredicted,
-                            shape = SearchResultCardDefaults.shape,
-                            opaqueCardTopResultBorder = true,
-                        ),
-                showWallpaperBackground = showWallpaperBackground,
-            ) {
-                Column(
-                    modifier =
-                        Modifier.padding(
-                            horizontal = DesignTokens.SpacingLarge,
-                            vertical = 4.dp,
-                        ),
-                ) {
-                    TopMatchRow(
-                        item = item,
-                        params = params,
-                        isPredicted = false,
+            key(item.stableKey()) {
+                val isTopPredicted = showTopResultIndicator && item == highlightedMatch
+                if (item is TopMatchItem.AppGrid) {
+                    TopMatchAppGrid(
+                        apps = item.apps,
+                        params = params.appsParams,
+                        isPredicted = isTopPredicted,
                     )
+                } else if (item is TopMatchItem.Other) {
+                    when (item.itemId) {
+                        OtherSearchItemId.SCREEN_TIME ->
+                            ScreenTimeResultCard(
+                                state = screenTimeState,
+                                isPinned =
+                                    OtherSearchItemRegistry.isPinned(
+                                        item.itemId,
+                                        pinnedNonAppItemOrder,
+                                    ),
+                                showWallpaperBackground = showWallpaperBackground,
+                                iconPackPackage = iconPackPackage,
+                                onTogglePin = { onToggleOtherSearchItemPin(item.itemId) },
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .predictedSubmitHighlight(
+                                            isPredicted = isTopPredicted,
+                                            shape = SearchResultCardDefaults.shape,
+                                            opaqueCardTopResultBorder = true,
+                                        ),
+                            )
+                    }
+                } else {
+                    SearchResultCard(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .predictedSubmitHighlight(
+                                    isPredicted = isTopPredicted,
+                                    shape = SearchResultCardDefaults.shape,
+                                    opaqueCardTopResultBorder = true,
+                                ),
+                        showWallpaperBackground = showWallpaperBackground,
+                    ) {
+                        Column(
+                            modifier =
+                                Modifier.padding(
+                                    horizontal = DesignTokens.SpacingLarge,
+                                    vertical = 4.dp,
+                                ),
+                        ) {
+                            TopMatchRow(
+                                item = item,
+                                params = params,
+                                isPredicted = false,
+                            )
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TopMatchesHeader() {
+    Row(
+        modifier =
+            Modifier.padding(
+                start = DesignTokens.SpacingMedium,
+                top = DesignTokens.SpacingXSmall,
+                end = DesignTokens.SpacingLarge,
+                bottom = DesignTokens.SpacingXSmall,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.AutoAwesome,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.92f),
+            modifier = Modifier.size(14.dp),
+        )
+        Text(
+            text = stringResource(R.string.top_matches_title),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 

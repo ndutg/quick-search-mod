@@ -4,9 +4,11 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPerformanceLogger
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPolicyResolver
 import com.tk.quicksearch.search.utils.FuzzyMatcher
+import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
+import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
-import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.utils.SearchTextCache
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 private const val FUZZY_CANDIDATE_BUFFER_MULTIPLIER = 12
@@ -24,6 +26,8 @@ object DeviceSettingsSearchAlgorithm {
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
+        matcher: SearchMatcher = DefaultSearchMatcher,
+        textCache: SearchTextCache = SearchTextCache(),
     ): List<DeviceSetting> {
         if (fullList.isEmpty()) return emptyList()
         val trimmed = query.trim()
@@ -40,6 +44,8 @@ object DeviceSettingsSearchAlgorithm {
             resultLimit = resultLimit,
             enableFuzzyMatching = enableFuzzyMatching,
             isLowRamDevice = isLowRamDevice,
+            matcher = matcher,
+            textCache = textCache,
         )
     }
 
@@ -55,6 +61,8 @@ object DeviceSettingsSearchAlgorithm {
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
+        matcher: SearchMatcher = DefaultSearchMatcher,
+        textCache: SearchTextCache = SearchTextCache(),
     ): List<DeviceSetting> {
         if (fullList.isEmpty()) return emptyList()
         if (queryContext.normalizedQuery.isBlank()) return emptyList()
@@ -71,6 +79,7 @@ object DeviceSettingsSearchAlgorithm {
                         query = queryContext,
                         matchingNicknameIds = matchingNicknameIds,
                         nicknameCache = nicknameCache,
+                        matcher = matcher,
                     )
                 if (!matchResult.hasMatch) return@mapNotNull null
 
@@ -123,21 +132,20 @@ object DeviceSettingsSearchAlgorithm {
                 .filterNot { exactMatchIds.contains(it.id) }
                 .mapNotNull { setting ->
                     val nickname = nicknameCache[setting.id]
-                    val normalizedTitle = SearchTextNormalizer.normalizeForSearch(setting.title)
-                    val normalizedSupportingText =
-                        SearchTextNormalizer.normalizeForSearch(
-                            buildString {
-                                append(setting.description.orEmpty())
-                                if (setting.keywords.isNotEmpty()) {
-                                    append(' ')
-                                    append(setting.keywords.joinToString(" "))
-                                }
-                                if (!nickname.isNullOrBlank()) {
-                                    append(' ')
-                                    append(nickname)
-                                }
-                            },
-                        )
+                    val normalizedTitle = textCache.prepare(setting.title).normalized
+                    val supportingText =
+                        buildString {
+                            append(setting.description.orEmpty())
+                            if (setting.keywords.isNotEmpty()) {
+                                append(' ')
+                                append(setting.keywords.joinToString(" "))
+                            }
+                            if (!nickname.isNullOrBlank()) {
+                                append(' ')
+                                append(nickname)
+                            }
+                        }
+                    val normalizedSupportingText = textCache.prepare(supportingText).normalized
                     val fuzzyScore =
                         FuzzyMatcher.score(
                             query = queryContext.normalizedQuery,
@@ -156,14 +164,15 @@ object DeviceSettingsSearchAlgorithm {
                             nickname = nickname,
                             fuzzyMinScore = fuzzyPolicy.minimumScore,
                             fuzzyMaxEditDistance = fuzzyPolicy.maximumEditDistance,
+                            textCache = textCache,
                         )
                     ) {
                         null
                     } else {
-                        setting to fuzzyScore
+                        Triple(setting, fuzzyScore, setting.title.lowercase())
                     }
                 }.sortedWith(
-                    compareByDescending<Pair<DeviceSetting, Int>> { it.second }
+                    compareByDescending<Triple<DeviceSetting, Int, String>> { it.second }
                         .thenByDescending {
                             when (secondaryRankingSignal) {
                                 SecondaryRankingSignal.RECENCY -> recentSettingScores[it.first.id] ?: 0
@@ -171,7 +180,7 @@ object DeviceSettingsSearchAlgorithm {
                                 SecondaryRankingSignal.NONE -> 0
                             }
                         }
-                        .thenBy { it.first.title.lowercase() },
+                        .thenBy { it.third },
                 ).map { it.first }
                 .toList()
             }

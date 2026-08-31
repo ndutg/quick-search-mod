@@ -9,8 +9,9 @@ import com.tk.quicksearch.search.fuzzy.FuzzySearchPolicyResolver
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.FuzzyMatcher
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
+import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
-import com.tk.quicksearch.search.utils.SearchTextNormalizer
+import com.tk.quicksearch.search.utils.SearchTextCache
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 
 private const val FUZZY_CANDIDATE_BUFFER_MULTIPLIER = 12
@@ -29,6 +30,8 @@ object AppShortcutSearchAlgorithm {
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
+        matcher: SearchMatcher = DefaultSearchMatcher,
+        textCache: SearchTextCache = SearchTextCache(),
     ): List<StaticShortcut> {
         if (fullList.isEmpty()) return emptyList()
         val trimmed = query.trim()
@@ -45,6 +48,8 @@ object AppShortcutSearchAlgorithm {
             resultLimit = resultLimit,
             enableFuzzyMatching = enableFuzzyMatching,
             isLowRamDevice = isLowRamDevice,
+            matcher = matcher,
+            textCache = textCache,
         )
     }
 
@@ -60,6 +65,8 @@ object AppShortcutSearchAlgorithm {
         resultLimit: Int = 25,
         enableFuzzyMatching: Boolean = false,
         isLowRamDevice: Boolean = false,
+        matcher: SearchMatcher = DefaultSearchMatcher,
+        textCache: SearchTextCache = SearchTextCache(),
     ): List<StaticShortcut> {
         if (fullList.isEmpty()) return emptyList()
         if (queryContext.normalizedQuery.isBlank()) return emptyList()
@@ -79,6 +86,7 @@ object AppShortcutSearchAlgorithm {
                         appLabel = shortcut.appLabel,
                         nickname = nickname,
                         query = queryContext,
+                        matcher = matcher,
                     )
 
                 if (!DefaultSearchMatcher.isMatch(priority)) {
@@ -139,15 +147,14 @@ object AppShortcutSearchAlgorithm {
                 .filterNot { exactMatchIds.contains(shortcutKey(it)) }
                 .mapNotNull { shortcut ->
                     val shortcutId = shortcutKey(shortcut)
-                    val normalizedDisplayName =
-                        SearchTextNormalizer.normalizeForSearch(shortcutDisplayName(shortcut))
-                    val normalizedSupportingText =
-                        SearchTextNormalizer.normalizeForSearch(
-                            listOfNotNull(
-                                shortcut.appLabel,
-                                shortcutNicknames[shortcutId],
-                            ).joinToString(" "),
-                        )
+                    val displayName = shortcutDisplayName(shortcut)
+                    val normalizedDisplayName = textCache.prepare(displayName).normalized
+                    val supportingText =
+                        listOfNotNull(
+                            shortcut.appLabel,
+                            shortcutNicknames[shortcutId],
+                        ).joinToString(" ")
+                    val normalizedSupportingText = textCache.prepare(supportingText).normalized
                     val fuzzyScore =
                         FuzzyMatcher.score(
                             query = queryContext.normalizedQuery,
@@ -165,14 +172,15 @@ object AppShortcutSearchAlgorithm {
                             nickname = shortcutNicknames[shortcutId],
                             fuzzyMinScore = fuzzyPolicy.minimumScore,
                             fuzzyMaxEditDistance = fuzzyPolicy.maximumEditDistance,
+                            textCache = textCache,
                         )
                     ) {
                         null
                     } else {
-                        shortcut to fuzzyScore
+                        Triple(shortcut, fuzzyScore, displayName.lowercase())
                     }
                 }.sortedWith(
-                    compareByDescending<Pair<StaticShortcut, Int>> { it.second }
+                    compareByDescending<Triple<StaticShortcut, Int, String>> { it.second }
                         .thenByDescending {
                             val key = shortcutKey(it.first)
                             when (secondaryRankingSignal) {
@@ -181,7 +189,7 @@ object AppShortcutSearchAlgorithm {
                                 SecondaryRankingSignal.NONE -> 0
                             }
                         }
-                        .thenBy { shortcutDisplayName(it.first).lowercase() },
+                        .thenBy { it.third },
                 ).map { it.first }
                 .toList()
             }

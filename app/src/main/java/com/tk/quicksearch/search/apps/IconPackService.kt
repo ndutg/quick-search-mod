@@ -105,6 +105,29 @@ class IconPackService(
         }
     }
 
+    fun resetAllAppIconsToDefault() {
+        scope.launch(Dispatchers.IO) {
+            val overriddenPackages = userPreferences.getAppIconOverridePackageNames()
+            if (overriddenPackages.isNotEmpty()) {
+                userPreferences.clearAppIconOverrides(overriddenPackages)
+            }
+
+            val alreadyUsingSystemIcons = selectedIconPackPackage == null
+            if (!alreadyUsingSystemIcons) {
+                selectedIconPackPackage = null
+                userPreferences.setSelectedIconPackPackage(null)
+            }
+
+            if (!alreadyUsingSystemIcons || overriddenPackages.isNotEmpty()) {
+                invalidateAppIconCache()
+            }
+
+            onStateUpdate { state ->
+                state.copy(selectedIconPackPackage = null)
+            }
+        }
+    }
+
     fun prefetchVisibleAppIcons(
         pinnedApps: List<com.tk.quicksearch.search.models.AppInfo>,
         recents: List<com.tk.quicksearch.search.models.AppInfo>,

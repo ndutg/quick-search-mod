@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -51,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
@@ -58,6 +60,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppIconShape
@@ -75,6 +79,44 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
 
 /** Constants for search engine section layout. */
+/** Corner radius shared by the inset strip and the bottom search bar it attaches to. */
+private val INSET_CORNER_RADIUS = 28.dp
+
+/**
+ * Geometry shared by the bottom search bar and the inset engine strip that wraps around it. The
+ * strip paints the card both of them live in, so the bar's insets and the distance the strip has to
+ * reach down behind it are derived from the same numbers instead of being tuned separately.
+ */
+object InsetSearchBarGeometry {
+    /**
+     * Matches `TextFieldDefaults.MinHeight`. Only a starting point: a large font scale grows the
+     * bar past it, and an overlap that falls short leaves the container's bottom edge drawing a
+     * hairline inside the bar, so callers pass a measured overlap once the bar has been laid out.
+     */
+    private val BarHeight = 56.dp
+
+    /** Lets the card sit slightly outside the regular content inset. */
+    val ContainerHorizontalExtension = DesignTokens.SpacingXSmall
+
+    /** Pulls the bar in from the card's side edges. */
+    val BarHorizontalInset = DesignTokens.SpacingSmall
+
+    /** Gap between the engine row and the top of the bar. */
+    val BarTopSpacing = DesignTokens.SpacingSmall
+
+    /** Gap between the bottom of the bar and the bottom of the card. */
+    val BarBottomSpacing = DesignTokens.SpacingMedium
+
+    val ContainerOverlap = overlapFor(BarHeight)
+
+    /** The distance the container has to reach down to cover a bar of [barHeight]. */
+    fun overlapFor(barHeight: Dp): Dp =
+        BarTopSpacing + barHeight.coerceAtLeast(BarHeight) + BarBottomSpacing
+
+    /** Keeps the inset search bar as rounded as the standalone search bar. */
+    val BarCornerRadius = DesignTokens.Spacing28
+}
+
 private object SearchEngineSectionConstants {
     val ICON_SIZE = SearchTargetConstants.DEFAULT_ICON_SIZE
     val SPACING = 20.dp
@@ -92,7 +134,43 @@ private object SearchEngineSectionConstants {
     val TOOL_BUTTON_CORNER_RADIUS = 24.dp
     val TOOL_BUTTON_HORIZONTAL_PADDING = DesignTokens.SpacingLarge
     val TOOL_BUTTON_VERTICAL_PADDING = DesignTokens.SpacingMedium
+
+    /**
+     * Same radius as the search bar on every corner: the strip's bottom corners land exactly on the
+     * bar's top corners, so tucking it behind the bar yields one continuous outline.
+     */
+    val INSET_CONTAINER_SHAPE = RoundedCornerShape(INSET_CORNER_RADIUS)
+
+    /** How far the container reaches down behind the bar it is attached to. */
+    val INSET_CONTAINER_OVERLAP = InsetSearchBarGeometry.ContainerOverlap
+
+    /** Lets the attached background sit slightly outside the regular content inset. */
+    val INSET_HORIZONTAL_EXTENSION = InsetSearchBarGeometry.ContainerHorizontalExtension
+
+    /** Trimmed row padding so the full engine row still fits inside the narrower inset strip. */
+    val INSET_HORIZONTAL_PADDING = DesignTokens.SpacingSmall
 }
+
+/** Draws the inset container wider and behind the search bar without changing sibling placement. */
+private fun Modifier.attachToBottomSearchBar(
+    overlap: Dp,
+    horizontalExtension: Dp,
+): Modifier =
+    layout { measurable, constraints ->
+        val horizontalExtensionPx = horizontalExtension.roundToPx()
+        val attachedWidth = constraints.maxWidth + (horizontalExtensionPx * 2)
+        val placeable =
+            measurable.measure(
+                constraints.copy(
+                    minWidth = attachedWidth,
+                    maxWidth = attachedWidth,
+                ),
+            )
+        val overlapPx = overlap.roundToPx()
+        layout(constraints.maxWidth, (placeable.height - overlapPx).coerceAtLeast(0)) {
+            placeable.placeRelative(-horizontalExtensionPx, 0)
+        }
+    }
 
 @Composable
 private fun InlineCardEnterAnimation(
@@ -146,6 +224,8 @@ fun SearchEngineIconsSection(
     toolActionAppIconPackage: String? = null,
     onToolActionClick: (() -> Unit)? = null,
     showOnlyToolAction: Boolean = false,
+    useInsetContainer: Boolean = false,
+    insetOverlap: Dp = SearchEngineSectionConstants.INSET_CONTAINER_OVERLAP,
 ) {
     val hasToolAction = toolActionLabel != null && onToolActionClick != null
     if (enabledEngines.isEmpty() && detectedShortcutTarget == null && !hasToolAction) return
@@ -153,8 +233,12 @@ fun SearchEngineIconsSection(
     val scrollState = externalScrollState ?: rememberLazyListState()
 
     // Match compact section background with the persistent search bar for visual consistency.
-    val backgroundColor = AppColors.getSearchEngineSectionBackground(showWallpaperBackground)
-
+    val backgroundColor =
+        if (useInsetContainer) {
+            AppColors.getSearchBarBackground(showWallpaperBackground)
+        } else {
+            AppColors.getSearchEngineSectionBackground(showWallpaperBackground)
+        }
     if (detectedShortcutTarget != null) {
         // Check if query starts with the shortcut and remove it
         // The shortcut corresponds to the detected engine
@@ -191,17 +275,43 @@ fun SearchEngineIconsSection(
         Surface(
             modifier =
                 modifier
-                    .extendToScreenEdges()
+                    .then(
+                        if (useInsetContainer) {
+                            Modifier.attachToBottomSearchBar(
+                                overlap = insetOverlap,
+                                horizontalExtension =
+                                    SearchEngineSectionConstants.INSET_HORIZONTAL_EXTENSION,
+                            )
+                        } else {
+                            Modifier.extendToScreenEdges()
+                        },
+                    )
                     .graphicsLayer {
                         shadowElevation = 0f
                     },
             color = backgroundColor,
+            shape =
+                if (useInsetContainer) {
+                    SearchEngineSectionConstants.INSET_CONTAINER_SHAPE
+                } else {
+                    RectangleShape
+                },
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                HorizontalDivider(
-                    color = compactTopDividerColor,
-                    thickness = SearchEngineSectionConstants.COMPACT_TOP_DIVIDER_THICKNESS,
-                )
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            bottom =
+                                if (useInsetContainer) insetOverlap else 0.dp,
+                        ),
+            ) {
+                if (!useInsetContainer) {
+                    HorizontalDivider(
+                        color = compactTopDividerColor,
+                        thickness = SearchEngineSectionConstants.COMPACT_TOP_DIVIDER_THICKNESS,
+                    )
+                }
                 if ((showOnlyToolAction || enabledEngines.isEmpty()) && hasToolAction) {
                     AnimatedVisibility(
                         visible = true,
@@ -223,6 +333,7 @@ fun SearchEngineIconsSection(
                 } else {
                     SearchEngineContent(
                         query = query,
+                        useInsetContainer = useInsetContainer,
                         enabledEngines = enabledEngines,
                         scrollState = scrollState,
                         onSearchEngineClick = onSearchEngineClick,
@@ -262,6 +373,7 @@ fun SearchEngineIconsSection(
 @Composable
 private fun SearchEngineContent(
     query: String,
+    useInsetContainer: Boolean,
     enabledEngines: List<SearchTarget>,
     scrollState: androidx.compose.foundation.lazy.LazyListState,
     onSearchEngineClick: (String, SearchTarget) -> Unit,
@@ -279,7 +391,12 @@ private fun SearchEngineContent(
             Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = SearchEngineSectionConstants.HORIZONTAL_PADDING,
+                    horizontal =
+                        if (useInsetContainer) {
+                            SearchEngineSectionConstants.INSET_HORIZONTAL_PADDING
+                        } else {
+                            SearchEngineSectionConstants.HORIZONTAL_PADDING
+                        },
                     vertical = SearchEngineSectionConstants.VERTICAL_PADDING,
                 ),
         horizontalArrangement = Arrangement.Start,
@@ -392,6 +509,8 @@ internal fun AiFollowUpInputSection(
     onSend: () -> Unit,
     showWallpaperBackground: Boolean,
     modifier: Modifier = Modifier,
+    useInsetContainer: Boolean = false,
+    insetOverlap: Dp = SearchEngineSectionConstants.INSET_CONTAINER_OVERLAP,
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -413,14 +532,46 @@ internal fun AiFollowUpInputSection(
             AppColors.Accent.copy(alpha = 0.22f)
         }
     Surface(
-        modifier = modifier.extendToScreenEdges(),
-        color = AppColors.getSearchEngineSectionBackground(showWallpaperBackground),
+        modifier =
+            modifier.then(
+                if (useInsetContainer) {
+                    Modifier.attachToBottomSearchBar(
+                        overlap = insetOverlap,
+                        horizontalExtension =
+                            SearchEngineSectionConstants.INSET_HORIZONTAL_EXTENSION,
+                    )
+                } else {
+                    Modifier.extendToScreenEdges()
+                },
+            ),
+        color =
+            if (useInsetContainer) {
+                AppColors.getSearchBarBackground(showWallpaperBackground)
+            } else {
+                AppColors.getSearchEngineSectionBackground(showWallpaperBackground)
+            },
+        shape =
+            if (useInsetContainer) {
+                SearchEngineSectionConstants.INSET_CONTAINER_SHAPE
+            } else {
+                RectangleShape
+            },
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            HorizontalDivider(
-                color = dividerColor,
-                thickness = SearchEngineSectionConstants.COMPACT_TOP_DIVIDER_THICKNESS,
-            )
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        bottom =
+                            if (useInsetContainer) insetOverlap else 0.dp,
+                    ),
+        ) {
+            if (!useInsetContainer) {
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = SearchEngineSectionConstants.COMPACT_TOP_DIVIDER_THICKNESS,
+                )
+            }
             OutlinedTextField(
                 value = value,
                 onValueChange = onValueChange,
