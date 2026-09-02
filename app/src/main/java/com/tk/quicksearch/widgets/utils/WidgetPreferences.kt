@@ -70,18 +70,18 @@ internal object WidgetDefaults {
     val BORDER_COLOR_ARGB = BORDER_COLOR.toArgb()
     val BORDER_COLOR_OPTION = BorderColorOption.WHITE
     const val BORDER_RADIUS_DP = 29f
-    const val BORDER_WIDTH_DP = 1.5f
+    const val BORDER_WIDTH_DP = 0f
     const val SHOW_LABEL = true
-    const val ICON_SIZE_SCALE = 1f
+    const val ICON_SIZE_SCALE = 1.15f
 
     val SEARCH_ICON_DISPLAY = SearchIconDisplay.LEFT
 
-    // Default to dark theme for higher contrast out of the box.
-    val THEME = WidgetTheme.DARK
+    val THEME = WidgetTheme.LIGHT
     val BACKGROUND_COLOR: Int? = null
-    const val BACKGROUND_ALPHA = 0.35f
+    const val BACKGROUND_ALPHA = 0.2f
     const val BORDER_ALPHA = BACKGROUND_ALPHA
     val MIC_ACTION = MicAction.DEFAULT_VOICE_SEARCH
+    val TEXT_ICON_COLOR_OVERRIDE = TextIconColorOverride.WHITE
     const val INTERNAL_HORIZONTAL_PADDING_DP = 0f
     const val INTERNAL_VERTICAL_PADDING_DP = 0f
     const val USE_DEVICE_THEME_BACKGROUND = false
@@ -149,7 +149,7 @@ data class WidgetPreferences(
     val backgroundAlpha: Float = WidgetDefaults.BACKGROUND_ALPHA,
     val borderAlpha: Float = WidgetDefaults.BORDER_ALPHA,
     val micAction: MicAction = WidgetDefaults.MIC_ACTION,
-    val textIconColorOverride: TextIconColorOverride = TextIconColorOverride.THEME,
+    val textIconColorOverride: TextIconColorOverride = WidgetDefaults.TEXT_ICON_COLOR_OVERRIDE,
     val internalHorizontalPaddingDp: Float = WidgetDefaults.INTERNAL_HORIZONTAL_PADDING_DP,
     val internalVerticalPaddingDp: Float = WidgetDefaults.INTERNAL_VERTICAL_PADDING_DP,
     val useDeviceThemeBackground: Boolean = WidgetDefaults.USE_DEVICE_THEME_BACKGROUND,
@@ -284,7 +284,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
             this[WidgetKeys.TEXT_ICON_COLOR_OVERRIDE]?.let { overrideString ->
                 TextIconColorOverride.entries.find { it.value == overrideString }
             }
-                ?: TextIconColorOverride.THEME,
+                ?: WidgetDefaults.TEXT_ICON_COLOR_OVERRIDE,
         internalHorizontalPaddingDp =
             this[WidgetKeys.INTERNAL_HORIZONTAL_PADDING]
                 ?: WidgetDefaults.INTERNAL_HORIZONTAL_PADDING_DP,

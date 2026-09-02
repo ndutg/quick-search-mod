@@ -19,6 +19,8 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.loadShortcutsFromSys
 import com.tk.quicksearch.search.data.AppShortcutRepository.loadShortcutsViaLauncherApps
 import com.tk.quicksearch.search.data.AppShortcutRepository.mergeAndSortShortcuts
 import com.tk.quicksearch.search.data.AppShortcutRepository.parseCustomShortcutFromPickerResult
+import com.tk.quicksearch.search.data.AppShortcutRepository.removeSystemShortcutsForPackage
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -27,6 +29,8 @@ class AppShortcutRepository(
 ) {
     private val packageManager: PackageManager = context.packageManager
     private val shortcutCache = AppShortcutCache(context)
+    private val unavailablePackages = ConcurrentHashMap.newKeySet<String>()
+    private val shortcutStateLock = Any()
 
     @Volatile private var inMemoryShortcuts: List<StaticShortcut>? = null
 
@@ -37,10 +41,16 @@ class AppShortcutRepository(
         return withContext(Dispatchers.IO) {
             val cached = shortcutCache.loadCachedShortcuts().orEmpty()
             val custom = shortcutCache.loadCustomShortcuts().orEmpty()
-            val merged = mergeAndSortShortcuts(staticShortcuts = cached, customShortcuts = custom, context = context, packageManager = packageManager)
-            if (merged.isNotEmpty()) {
-                inMemoryShortcuts = merged
-                merged
+            val merged =
+                mergeAndSortShortcuts(
+                    staticShortcuts = filterUnavailablePackages(cached),
+                    customShortcuts = custom,
+                    context = context,
+                    packageManager = packageManager,
+                )
+            val availableShortcuts = storeInMemory(merged)
+            if (availableShortcuts.isNotEmpty()) {
+                availableShortcuts
             } else {
                 null
             }
@@ -50,6 +60,24 @@ class AppShortcutRepository(
     fun clearCache() {
         shortcutCache.clearCache()
         inMemoryShortcuts = null
+    }
+
+    fun markPackageUnavailable(packageName: String) {
+        if (packageName.isBlank()) return
+        synchronized(shortcutStateLock) {
+            unavailablePackages.add(packageName)
+            inMemoryShortcuts =
+                inMemoryShortcuts?.let { shortcuts ->
+                    removeSystemShortcutsForPackage(shortcuts, packageName)
+                }
+        }
+    }
+
+    fun markPackageAvailable(packageName: String) {
+        if (packageName.isBlank()) return
+        synchronized(shortcutStateLock) {
+            unavailablePackages.remove(packageName)
+        }
     }
 
     suspend fun loadStaticShortcuts(): List<StaticShortcut> =
@@ -67,17 +95,31 @@ class AppShortcutRepository(
                 } else {
                     loadShortcutsFromSystem(context, packageManager)
                 }
-            shortcutCache.saveShortcuts(systemShortcuts)
+            val availableSystemShortcuts = filterUnavailablePackages(systemShortcuts)
+            shortcutCache.saveShortcuts(availableSystemShortcuts)
             val customShortcuts = shortcutCache.loadCustomShortcuts().orEmpty()
             val merged =
                 mergeAndSortShortcuts(
-                    staticShortcuts = systemShortcuts,
+                    staticShortcuts = availableSystemShortcuts,
                     customShortcuts = customShortcuts,
                     context = context,
                     packageManager = packageManager,
                 )
-            inMemoryShortcuts = merged
-            merged
+            storeInMemory(merged)
+        }
+
+    private fun filterUnavailablePackages(shortcuts: List<StaticShortcut>): List<StaticShortcut> {
+        if (unavailablePackages.isEmpty()) return shortcuts
+        return unavailablePackages.fold(shortcuts) { availableShortcuts, packageName ->
+            removeSystemShortcutsForPackage(availableShortcuts, packageName)
+        }
+    }
+
+    private fun storeInMemory(shortcuts: List<StaticShortcut>): List<StaticShortcut> =
+        synchronized(shortcutStateLock) {
+            val availableShortcuts = filterUnavailablePackages(shortcuts)
+            inMemoryShortcuts = availableShortcuts
+            availableShortcuts
         }
 
     suspend fun addCustomShortcutFromPickerResult(

@@ -695,6 +695,16 @@ internal class SearchStartupLifecycleDelegate(
 
     private fun startPackageChangeMonitoring() {
         repository.startPackageChangeMonitoring { change ->
+            change.packageName?.let { packageName ->
+                if (change.isRemoval) {
+                    if (appShortcutSearchHandler.removeUnavailablePackage(packageName)) {
+                        refreshAppShortcutsState()
+                    }
+                } else {
+                    appShortcutSearchHandler.markPackageAvailable(packageName)
+                }
+            }
+
             if (change.isRemoval) {
                 appSearchManager.removeUnavailableApp(change)
             }
@@ -703,6 +713,7 @@ internal class SearchStartupLifecycleDelegate(
             packageRefreshJob =
                 scope.launch(startupDispatcher) {
                     loadApps()
+                    loadAppShortcuts()
                 }
         }
     }
