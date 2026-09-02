@@ -282,6 +282,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Το πλήκτρο Enter/Τέλος ανοίγει το κορυφαίο αποτέλεσμα</string>
     <string name="include_non_launchable_apps_toggle_title">Μη εκκινήσιμες εφαρμογές</string>
     <string name="include_non_launchable_apps_toggle_desc">Συμπερίληψη εφαρμογών που δεν έχουν δραστηριότητα εκκίνησης στα αποτελέσματα αναζήτησης.</string>
+    <string name="show_in_recents_toggle_title">Εμφάνιση στα Πρόσφατα</string>
+    <string name="show_in_recents_toggle_desc">Εμφάνιση του Quick Search στις πρόσφατες εφαρμογές της συσκευής σας</string>
     <string name="web_search_suggestions_title">Προτάσεις ιστού</string>
 
     <!-- ============================================================================

@@ -282,6 +282,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">कीबोर्ड की Enter/Done कुंजी शीर्ष परिणाम खोलेगी</string>
     <string name="include_non_launchable_apps_toggle_title">लॉन्च न होने वाले ऐप्स</string>
     <string name="include_non_launchable_apps_toggle_desc">खोज परिणामों में उन ऐप्स को शामिल करें जिनमें कोई लॉन्च गतिविधि नहीं है।</string>
+    <string name="show_in_recents_toggle_title">हाल की ऐप्स में दिखाएँ</string>
+    <string name="show_in_recents_toggle_desc">Quick Search को अपने डिवाइस की हाल की ऐप्स में दिखाएँ</string>
     <string name="web_search_suggestions_title">वेब सुझाव</string>
 
     <!-- ============================================================================

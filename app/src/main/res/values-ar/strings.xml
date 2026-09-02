@@ -283,6 +283,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">سيؤدي مفتاح الإدخال/تم في لوحة المفاتيح إلى فتح أفضل نتيجة</string>
     <string name="include_non_launchable_apps_toggle_title">تطبيقات غير قابلة للتشغيل</string>
     <string name="include_non_launchable_apps_toggle_desc">تضمين التطبيقات التي لا تحتوي على نشاط تشغيل في نتائج البحث.</string>
+    <string name="show_in_recents_toggle_title">إظهار في التطبيقات الحديثة</string>
+    <string name="show_in_recents_toggle_desc">إظهار Quick Search في التطبيقات الحديثة على جهازك</string>
     <string name="web_search_suggestions_title">اقتراحات الويب</string>
 
     <!-- ============================================================================

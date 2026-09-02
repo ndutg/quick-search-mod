@@ -281,6 +281,8 @@
 <string name="open_top_result_using_keyboard_toggle_desc">Klavyedeki Enter/Bitti tuşu en iyi sonucu açar</string>
 <string name="include_non_launchable_apps_toggle_title">Başlatılamayan Uygulamalar</string>
 <string name="include_non_launchable_apps_toggle_desc">Arama sonuçlarında başlatma etkinliği olmayan uygulamaları da göster.</string>
+    <string name="show_in_recents_toggle_title">Son kullanılanlarda göster</string>
+    <string name="show_in_recents_toggle_desc">Quick Search\'ü cihazınızın son kullanılan uygulamalarında göster</string>
 <string name="web_search_suggestions_title">Web önerileri</string>
 
 <!-- ============================================================================

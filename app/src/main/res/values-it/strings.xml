@@ -281,6 +281,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Il tasto Invio/Fine della tastiera aprirà il miglior risultato</string>
     <string name="include_non_launchable_apps_toggle_title">App non avviabili</string>
     <string name="include_non_launchable_apps_toggle_desc">Includi le app che non hanno un\'attività di avvio nei risultati di ricerca.</string>
+    <string name="show_in_recents_toggle_title">Mostra nelle app recenti</string>
+    <string name="show_in_recents_toggle_desc">Mostra Quick Search nelle app recenti del tuo dispositivo</string>
     <string name="web_search_suggestions_title">Suggerimenti web</string>
 
     <!-- ============================================================================

@@ -178,6 +178,14 @@ internal class SearchPreferencesDelegate(
         )
     }
 
+    fun setShowInRecents(enabled: Boolean) {
+        updateBooleanPreference(
+            value = enabled,
+            preferenceSetter = userPreferences::setShowInRecents,
+            stateUpdater = { updateConfigState { state -> state.copy(showInRecents = it) } },
+        )
+    }
+
     fun setShowAllAppsButton(enabled: Boolean) {
         updateBooleanPreference(
             value = enabled,

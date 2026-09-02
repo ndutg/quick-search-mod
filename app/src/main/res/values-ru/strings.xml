@@ -282,6 +282,8 @@
 <string name="open_top_result_using_keyboard_toggle_desc">Клавиша Enter/Готово откроет лучший результат</string>
 <string name="include_non_launchable_apps_toggle_title">Не запускаемые приложения</string>
 <string name="include_non_launchable_apps_toggle_desc">Показывать в результатах поиска приложения без активности запуска.</string>
+    <string name="show_in_recents_toggle_title">Показывать в недавних</string>
+    <string name="show_in_recents_toggle_desc">Показывать Quick Search в списке недавних приложений устройства</string>
 <string name="web_search_suggestions_title">Поисковые подсказки</string>
 
 <!-- ============================================================================

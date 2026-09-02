@@ -274,6 +274,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Keyboard enter/done key will open top result</string>
     <string name="include_non_launchable_apps_toggle_title">Non-Launchable Apps</string>
     <string name="include_non_launchable_apps_toggle_desc">Include apps that don’t have a launch activity in search results.</string>
+    <string name="show_in_recents_toggle_title">Show in Recents</string>
+    <string name="show_in_recents_toggle_desc">Show Quick Search in your device’s recent apps</string>
     <string name="web_search_suggestions_title">Web Suggestions</string>
 
     <!-- ============================================================================

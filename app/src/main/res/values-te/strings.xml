@@ -282,6 +282,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">కీబోర్డ్ Enter/Done కీ అగ్ర ఫలితాన్ని తెరుస్తుంది</string>
     <string name="include_non_launchable_apps_toggle_title">ప్రారంభించలేని యాప్‌లు</string>
     <string name="include_non_launchable_apps_toggle_desc">సెర్చ్ ఫలితాలలో లాంచ్ యాక్టివిటీ లేని యాప్‌లను చేర్చండి.</string>
+    <string name="show_in_recents_toggle_title">ఇటీవలివాటిలో చూపించు</string>
+    <string name="show_in_recents_toggle_desc">మీ పరికరంలోని ఇటీవలి యాప్‌లలో Quick Searchను చూపించు</string>
     <string name="web_search_suggestions_title">వెబ్ సూచనలు</string>
 
     <!-- ============================================================================
