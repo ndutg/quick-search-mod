@@ -69,9 +69,7 @@ jobs:
           if "Dark scrim for text readability" in content:
               print("Scrim already present")
           else:
-              import re
-              has_color = re.search(r'^import androidx\.compose\.ui\.graphics\.Color$', content, re.MULTILINE)
-              if not has_color:
+              if "import androidx.compose.ui.graphics.Color" not in content:
                   content = content.replace(
                       "import com.tk.quicksearch.shared.ui.theme.DesignTokens",
                       "import com.tk.quicksearch.shared.ui.theme.DesignTokens\nimport androidx.compose.ui.graphics.Color"
