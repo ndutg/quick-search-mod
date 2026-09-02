@@ -4,6 +4,7 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.AppShortcutRepositor
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.AppShortcutRepository.isUserCreatedShortcut
+import com.tk.quicksearch.search.data.AppShortcutRepository.removeSystemShortcutsForPackage
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
@@ -33,6 +34,19 @@ class AppShortcutSearchHandler(
     private val searchMatcher = CachedSearchMatcher(searchTextCache)
 
     fun getAvailableShortcuts(): List<StaticShortcut> = mergeIconOverrides(availableShortcuts)
+
+    fun removeUnavailablePackage(packageName: String): Boolean {
+        repository.markPackageUnavailable(packageName)
+        val updated = removeSystemShortcutsForPackage(availableShortcuts, packageName)
+        if (updated == availableShortcuts) return false
+        availableShortcuts = updated
+        searchTextCache.clear()
+        return true
+    }
+
+    fun markPackageAvailable(packageName: String) {
+        repository.markPackageAvailable(packageName)
+    }
 
     suspend fun loadCachedShortcutsOnly(): Boolean {
         val cached = repository.loadCachedShortcuts() ?: return false

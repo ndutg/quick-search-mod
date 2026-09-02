@@ -657,8 +657,8 @@ internal fun PersistentSearchBar(
             },
             textStyle =
                 MaterialTheme.typography.titleMedium.copy(color = iconAndTextColor),
-            singleLine = false,
-            maxLines = 3,
+            singleLine = true,
+            maxLines = 1,
             leadingIcon = {
                 Box {
                     AnimatedContent(

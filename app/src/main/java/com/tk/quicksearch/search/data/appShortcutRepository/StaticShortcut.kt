@@ -109,6 +109,14 @@ internal fun shortcutKey(shortcut: StaticShortcut): String = "${shortcut.package
 internal fun isUserCreatedShortcut(shortcut: StaticShortcut): Boolean =
     shortcut.id.startsWith(CUSTOM_SHORTCUT_ID_PREFIX)
 
+internal fun removeSystemShortcutsForPackage(
+    shortcuts: List<StaticShortcut>,
+    packageName: String,
+): List<StaticShortcut> =
+    shortcuts.filterNot { shortcut ->
+        shortcut.packageName == packageName && !isUserCreatedShortcut(shortcut)
+    }
+
 internal fun isValidShortcutId(id: String): Boolean {
     val trimmed = id.trim()
     if (trimmed.isBlank()) return false
