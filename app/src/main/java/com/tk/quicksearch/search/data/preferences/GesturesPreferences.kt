@@ -14,6 +14,7 @@ enum class SwipeGestureAction {
 }
 
 enum class HomeSwipeGestureAction {
+    LOCK_SCREEN,
     NOTIFICATION_PANEL,
     CUSTOM,
     SEARCH_ENGINE,

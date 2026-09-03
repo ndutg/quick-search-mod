@@ -102,6 +102,10 @@
     <string name="settings_gesture_close_keyboard_notifications">Close Keyboard / Open Notifications</string>
     <string name="settings_gesture_close_keyboard">Close Keyboard</string>
     <string name="settings_gesture_notification_panel">Notification Panel</string>
+    <string name="settings_gesture_lock_screen">Lock Screen</string>
+    <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
+    <string name="accessibility_lock_screen_service_label">Quick Search Lock Screen</string>
+    <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture. It does not read screen content.</string>
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
     <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>

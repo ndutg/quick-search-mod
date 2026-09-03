@@ -577,6 +577,13 @@ fun SearchRoute(
             if (event == Lifecycle.Event.ON_RESUME) {
                 isDefaultLauncher = context.isDefaultHomeApp()
                 homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
+                if (
+                    gesturePreferences.getHomeDoubleTapAction() == HomeSwipeGestureAction.LOCK_SCREEN &&
+                    !LockScreenAccessibilityService.isEnabled(context)
+                ) {
+                    gesturePreferences.setHomeDoubleTapAction(HomeSwipeGestureAction.NONE)
+                    homeDoubleTapAction = HomeSwipeGestureAction.NONE
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
