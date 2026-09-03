@@ -212,7 +212,17 @@ fun mergeAndSortShortcuts(
 ): List<StaticShortcut> {
     val locale = Locale.getDefault()
     val hardcodedShortcuts = loadHardcodedShortcuts(staticShortcuts, context, packageManager)
-    return filterShortcuts(staticShortcuts + hardcodedShortcuts + customShortcuts, packageManager, context)
+    // Custom shortcuts have already been validated when the picker returned them. Do not
+    // rediscover them through PackageManager during a later catalog refresh: some providers
+    // (notably Tasker's task-shortcut picker) return an intent that only resolves while their
+    // setup activity is active. Revalidating it later makes a successfully saved shortcut
+    // disappear even though its persisted launch intent is still the user's configuration.
+    val validCustomShortcuts =
+        customShortcuts.filter { shortcut ->
+            shortcut.enabled && shortcut.intents.isNotEmpty() && isUserCreatedShortcut(shortcut)
+        }
+    return (filterShortcuts(staticShortcuts + hardcodedShortcuts, packageManager, context) +
+        validCustomShortcuts)
         .distinctBy { shortcutKey(it) }
         .sortedWith(
             compareBy<StaticShortcut> { it.appLabel.lowercase(locale) }
