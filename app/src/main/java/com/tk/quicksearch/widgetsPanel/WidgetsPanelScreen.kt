@@ -154,6 +154,10 @@ fun WidgetsPanelScreen(
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
     var pendingRequest by remember { mutableStateOf<PendingWidgetRequest?>(null) }
+    // Keep the first panel frame independent of third-party RemoteViews. Some providers perform
+    // expensive work while their host view is created; doing that during navigation blocks the
+    // whole panel from appearing.
+    var showHostedWidgets by remember { mutableStateOf(false) }
     val panelScrollState = rememberScrollState()
     // Window bounds of the scroll viewport, used to auto-scroll a widget back into view while it is
     // being dragged near the top/bottom edge.
@@ -315,6 +319,12 @@ fun WidgetsPanelScreen(
         }
     }
 
+    LaunchedEffect(appWidgetHost) {
+        // Let the host begin listening and the panel draw once before creating provider views.
+        withFrameNanos { }
+        showHostedWidgets = true
+    }
+
     LaunchedEffect(appWidgetHost, panelScrollState) {
         snapshotFlow { panelScrollState.isScrollInProgress }
             .collect { inProgress ->
@@ -425,7 +435,7 @@ fun WidgetsPanelScreen(
                                 if (isQuickNoteEnabled) add(quickNoteWidget)
                                 addAll(widgets)
                             }
-                        if (panelItems.isNotEmpty()) {
+                        if (panelItems.isNotEmpty() && showHostedWidgets) {
                             WidgetPanelGrid(
                                 widgets = panelItems,
                                 appWidgetManager = appWidgetManager,

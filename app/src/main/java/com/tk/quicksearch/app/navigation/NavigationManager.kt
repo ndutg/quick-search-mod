@@ -502,22 +502,31 @@ private fun NavigationContent(
     AnimatedContent(
         targetState = destination,
         transitionSpec = {
-            val isForward =
-                when {
-                    initialState == RootDestination.WidgetsPanel &&
-                        targetState == RootDestination.Search -> true
-                    initialState == RootDestination.Search &&
-                        targetState == RootDestination.Settings -> true
-                    else -> false
-                }
-            val animationDirection =
-                rootAnimationDirectionOverride
-                    ?: if (isForward) {
-                        SwipeAnimationDirection.LEFT
-                    } else {
-                        SwipeAnimationDirection.RIGHT
+            // Hosting third-party widgets can synchronously inflate RemoteViews on the main
+            // thread. The panel defers that work until after its first frame, so swapping to the
+            // panel here makes the gesture feel directly connected to the destination instead of
+            // waiting behind a navigation animation.
+            if (targetState == RootDestination.WidgetsPanel) {
+                androidx.compose.animation.EnterTransition.None togetherWith
+                    androidx.compose.animation.ExitTransition.None
+            } else {
+                val isForward =
+                    when {
+                        initialState == RootDestination.WidgetsPanel &&
+                            targetState == RootDestination.Search -> true
+                        initialState == RootDestination.Search &&
+                            targetState == RootDestination.Settings -> true
+                        else -> false
                     }
-            directionalNavigationTransition(animationDirection)
+                val animationDirection =
+                    rootAnimationDirectionOverride
+                        ?: if (isForward) {
+                            SwipeAnimationDirection.LEFT
+                        } else {
+                            SwipeAnimationDirection.RIGHT
+                        }
+                directionalNavigationTransition(animationDirection)
+            }
         },
         label = "NavigationTransition",
     ) { targetDestination ->
