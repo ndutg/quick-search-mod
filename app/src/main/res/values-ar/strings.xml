@@ -763,6 +763,7 @@
     <string name="settings_add_search_engine_error_placeholder">يجب أن يحتوي الرابط على {{query}}</string>
     <string name="settings_add_search_engine_error_required">يرجى إدخال قالب رابط URL.</string>
     <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">الاسم المستعار:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

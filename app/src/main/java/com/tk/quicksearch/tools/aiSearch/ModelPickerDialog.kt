@@ -242,6 +242,7 @@ private fun fallbackModels(providerId: AiSearchLlmProviderId): List<GeminiTextMo
         AiSearchLlmProviderId.OPENAI -> OpenAiModelCatalog.FALLBACK_TEXT_MODELS
         AiSearchLlmProviderId.ANTHROPIC -> AnthropicModelCatalog.FALLBACK_TEXT_MODELS
         AiSearchLlmProviderId.GROQ -> GroqModelCatalog.FALLBACK_TEXT_MODELS
+        AiSearchLlmProviderId.META -> MetaModelCatalog.FALLBACK_TEXT_MODELS
         else -> emptyList()
     }
 
@@ -251,7 +252,8 @@ private fun providerSortOrder(providerId: AiSearchLlmProviderId): Int =
         AiSearchLlmProviderId.OPENAI -> 1
         AiSearchLlmProviderId.ANTHROPIC -> 2
         AiSearchLlmProviderId.GROQ -> 3
-        else -> 4
+        AiSearchLlmProviderId.META -> 4
+        else -> 5
     }
 
 @Composable
@@ -295,6 +297,24 @@ private fun ProviderWordmark(
                 modifier = Modifier.size(width = 41.dp, height = 15.dp),
             )
         }
+        AiSearchLlmProviderId.META -> {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.meta_logo),
+                    contentDescription = stringResource(R.string.settings_ai_provider_meta),
+                    colorFilter = ColorFilter.tint(contentColor),
+                    modifier = Modifier.size(15.dp),
+                )
+                Text(
+                    text = stringResource(R.string.settings_ai_provider_meta),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = contentColor,
+                )
+            }
+        }
         AiSearchLlmProviderId.GEMINI -> {
             Box(modifier = Modifier.size(width = 67.dp, height = 15.dp)) {
                 Image(
@@ -328,6 +348,7 @@ private fun providerSearchName(providerId: AiSearchLlmProviderId): String =
         AiSearchLlmProviderId.OPENAI -> "OpenAI"
         AiSearchLlmProviderId.ANTHROPIC -> "Claude"
         AiSearchLlmProviderId.GROQ -> "Groq"
+        AiSearchLlmProviderId.META -> "Meta AI"
         else -> "Custom"
     }
 

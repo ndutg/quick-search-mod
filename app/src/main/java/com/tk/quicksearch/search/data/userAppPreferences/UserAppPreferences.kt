@@ -56,6 +56,7 @@ class UserAppPreferences(
     private val openAiPreferences by lazy { OpenAiPreferences(context) }
     private val anthropicPreferences by lazy { AnthropicPreferences(context) }
     private val groqPreferences by lazy { GroqPreferences(context) }
+    private val metaPreferences by lazy { MetaPreferences(context) }
     private val customLlmProviderPreferences by lazy { CustomLlmProviderPreferences(context) }
     private val llmPreferences by lazy { LlmPreferences(context) }
     val uiPreferences by lazy { UiPreferences(context) }
@@ -818,6 +819,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.getApiKey()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getApiKey()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getApiKey()
+                AiSearchLlmProviderId.META -> metaPreferences.getApiKey()
                 else -> null
             }
         }
@@ -835,6 +837,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setApiKey(key)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setApiKey(key)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setApiKey(key)
+            AiSearchLlmProviderId.META -> metaPreferences.setApiKey(key)
             else -> Unit
         }
         refreshConfiguredAiProviderHint()
@@ -849,6 +852,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.getModel()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getModel()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getModel()
+                AiSearchLlmProviderId.META -> metaPreferences.getModel()
                 else -> OpenAiModelCatalog.DEFAULT_MODEL_ID
             }
         }
@@ -863,6 +867,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setModel(modelId)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setModel(modelId)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setModel(modelId)
+            AiSearchLlmProviderId.META -> metaPreferences.setModel(modelId)
             else -> Unit
         }
     }
@@ -876,6 +881,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.isGroundingEnabled()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.isGroundingEnabled()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.isGroundingEnabled()
+                AiSearchLlmProviderId.META -> metaPreferences.isGroundingEnabled()
                 else -> false
             }
         }
@@ -887,6 +893,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setGroundingEnabled(enabled)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setGroundingEnabled(enabled)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setGroundingEnabled(enabled)
+            AiSearchLlmProviderId.META -> metaPreferences.setGroundingEnabled(enabled)
             else -> Unit
         }
     }
@@ -900,6 +907,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> false
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.isThinkingEnabled()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.isThinkingEnabled()
+                AiSearchLlmProviderId.META -> metaPreferences.isThinkingEnabled()
                 else -> false
             }
         }
@@ -911,6 +919,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> Unit
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setThinkingEnabled(enabled)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setThinkingEnabled(enabled)
+            AiSearchLlmProviderId.META -> metaPreferences.setThinkingEnabled(enabled)
             else -> Unit
         }
     }
@@ -924,6 +933,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.getPersonalContext()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getPersonalContext()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getPersonalContext()
+                AiSearchLlmProviderId.META -> metaPreferences.getPersonalContext()
                 else -> null
             }
         }
@@ -938,6 +948,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setPersonalContext(context)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setPersonalContext(context)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setPersonalContext(context)
+            AiSearchLlmProviderId.META -> metaPreferences.setPersonalContext(context)
             else -> Unit
         }
     }
@@ -948,6 +959,7 @@ class UserAppPreferences(
             !openAiPreferences.getApiKey().isNullOrBlank() ||
             !anthropicPreferences.getApiKey().isNullOrBlank() ||
             !groqPreferences.getApiKey().isNullOrBlank() ||
+            !metaPreferences.getApiKey().isNullOrBlank() ||
             customLlmProviderPreferences.getProviders().any { it.apiKey.isNotBlank() }
 
     /** Opens encrypted storage only from an AI/settings or long-idle path. */

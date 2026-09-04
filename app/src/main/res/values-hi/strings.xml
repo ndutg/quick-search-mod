@@ -762,6 +762,7 @@
     <string name="settings_add_search_engine_error_placeholder">URL में {{query}} होना चाहिए</string>
     <string name="settings_add_search_engine_error_required">कृपया URL टेम्पलेट दर्ज करें।</string>
     <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">उपनाम:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>
