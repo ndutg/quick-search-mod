@@ -54,8 +54,46 @@ internal object SearchEngineIntents {
             SearchEngineNativeLaunchMode.GROK -> ::openGrok
             SearchEngineNativeLaunchMode.GOOGLE_TRANSLATE -> ::openGoogleTranslate
             SearchEngineNativeLaunchMode.KAGI -> ::openKagi
+            SearchEngineNativeLaunchMode.FDROID -> ::openFdroid
             SearchEngineNativeLaunchMode.NONE -> null
         }
+
+    /** Opens F-Droid's documented search URI when the app is installed. */
+    fun openFdroid(
+        context: Application,
+        query: String,
+    ) {
+        val trimmedQuery = query.trim()
+        if (trimmedQuery.isBlank()) {
+            openWebBackedEngine(
+                context = context,
+                query = trimmedQuery,
+                searchEngine = SearchEngine.FDROID,
+                packageName = PackageConstants.FDROID_PACKAGE,
+                logTag = "FDroidLaunch",
+            )
+            return
+        }
+
+        val appSearchIntent =
+            Intent(Intent.ACTION_VIEW, Uri.parse("fdroid.search:${Uri.encode(trimmedQuery)}")).apply {
+                setPackage(PackageConstants.FDROID_PACKAGE)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+        if (IntentUtils.canResolveIntent(context, appSearchIntent)) {
+            try {
+                context.startActivity(appSearchIntent)
+                return
+            } catch (e: ActivityNotFoundException) {
+                Log.w("FDroidLaunch", "Search URI failed: ${e.message}")
+            } catch (e: SecurityException) {
+                Log.w("FDroidLaunch", "Search URI security exception: ${e.message}")
+            }
+        }
+
+        openWebUrl(context, buildSearchUrl(trimmedQuery, SearchEngine.FDROID))
+    }
 
     /** Opens ChatGPT when the query is empty, otherwise opens its web search URL. */
     fun openChatGpt(

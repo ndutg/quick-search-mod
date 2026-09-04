@@ -1010,6 +1010,7 @@
     <string name="search_engine_claude">Claude</string>
     <string name="search_engine_custom">Custom Search</string>
     <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
     <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
     <string name="search_engine_gemini">Gemini</string>
     <string name="search_engine_google">Google</string>

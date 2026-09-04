@@ -32,6 +32,7 @@ enum class SearchEngine {
         GEMINI,
         PERPLEXITY,
         GOOGLE_PLAY,
+        FDROID,
         YOUTUBE,
         GOOGLE_MAPS,
         WAZE,

@@ -1007,8 +1007,9 @@
 <string name="search_engine_chatgpt">ChatGPT</string>
 <string name="search_engine_claude">Claude</string>
 <string name="search_engine_custom">Özel arama</string>
-<string name="search_engine_duckduckgo">DuckDuckGo</string>
-<string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
+    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
 <string name="search_engine_gemini">Gemini</string>
 <string name="search_engine_google">Google</string>
 <string name="search_engine_google_drive">Google Drive</string>
