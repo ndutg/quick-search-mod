@@ -266,7 +266,6 @@ internal fun GeminiAttributionRow(
                     Image(
                             painter = painterResource(R.drawable.meta_logo),
                             contentDescription = poweredByText,
-                            colorFilter = ColorFilter.tint(contentColor),
                             modifier = Modifier.size(16.dp),
                     )
                     Text(

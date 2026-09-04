@@ -491,7 +491,6 @@ private fun ProviderLogo(
                 Image(
                     painter = painterResource(R.drawable.meta_logo),
                     contentDescription = stringResource(R.string.settings_ai_provider_meta),
-                    colorFilter = ColorFilter.tint(contentColor),
                     modifier = Modifier.size(24.dp),
                 )
                 Text(
