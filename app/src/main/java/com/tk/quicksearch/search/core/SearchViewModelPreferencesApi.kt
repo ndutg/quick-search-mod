@@ -65,6 +65,8 @@ internal interface SearchViewModelPreferencesApi {
     fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) =
         preferencesApiDelegate.setIncludeNonLaunchableAppsInSearch(enabled)
 
+    fun setShowInRecents(enabled: Boolean) = preferencesApiDelegate.setShowInRecents(enabled)
+
     fun setSelectedAppSuggestionTab(tab: AppSuggestionTabType) =
         preferencesApiDelegate.setSelectedAppSuggestionTab(tab)
 
@@ -355,6 +357,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) =
         preferencesDelegate.setIncludeNonLaunchableAppsInSearch(enabled)
+
+    fun setShowInRecents(enabled: Boolean) = preferencesDelegate.setShowInRecents(enabled)
 
     fun setSelectedAppSuggestionTab(tab: AppSuggestionTabType) =
         preferencesDelegate.setSelectedAppSuggestionTab(tab)

@@ -16,6 +16,7 @@ object PackageConstants {
     const val GOOGLE_MAPS_PACKAGE = "com.google.android.apps.maps"
     const val GOOGLE_DRIVE_PACKAGE = "com.google.android.apps.docs"
     const val GOOGLE_PLAY_PACKAGE = "com.android.vending"
+    const val FDROID_PACKAGE = "org.fdroid.fdroid"
     const val YOUTUBE_PACKAGE = "com.google.android.youtube"
     const val GEMINI_PACKAGE_NAME = "com.google.android.apps.bard"
     const val GOOGLE_PHOTOS_PACKAGE_NAME = "com.google.android.apps.photos"

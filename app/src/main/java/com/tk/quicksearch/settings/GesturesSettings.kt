@@ -1,5 +1,7 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -31,6 +33,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +45,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tk.quicksearch.R
@@ -54,6 +60,7 @@ import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
+import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
@@ -85,6 +92,7 @@ fun GesturesSettingsSection(
     searchViewModel: SearchViewModel = viewModel(),
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val preferences = remember(context) { UserAppPreferences(context.applicationContext) }
     val isDefaultLauncher = context.isDefaultHomeApp()
     val searchState by searchViewModel.uiState.collectAsStateWithLifecycle()
@@ -113,6 +121,18 @@ fun GesturesSettingsSection(
         )
     }
     var homeAliasTargets by remember { mutableStateOf(HomeGesture.entries.associateWith(preferences::homeAliasTargetFor)) }
+    var isLockScreenAccessibilityEnabled by remember {
+        mutableStateOf(LockScreenAccessibilityService.isEnabled(context))
+    }
+    DisposableEffect(lifecycleOwner, context) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                isLockScreenAccessibilityEnabled = LockScreenAccessibilityService.isEnabled(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     fun save(direction: SwipeDirection, action: SwipeGestureAction, customAction: CustomWidgetButtonAction? = null, aliasTarget: String? = null) {
         preferences.setActionFor(direction, action)
@@ -328,6 +348,8 @@ fun GesturesSettingsSection(
         HomeVerticalGestureDialog(
             titleResId = gesture.titleResId,
             allowsNotificationPanel = gesture == HomeGesture.SWIPE_DOWN || gesture == HomeGesture.DOUBLE_TAP,
+            allowsLockScreen = gesture == HomeGesture.DOUBLE_TAP,
+            hasLockScreenAccessibilityPermission = isLockScreenAccessibilityEnabled,
             selectedAction = homeActions.getValue(gesture),
             selectedCustomActionJson = homeCustomActions[gesture],
             selectedAliasTarget = homeAliasTargets[gesture],
@@ -339,6 +361,19 @@ fun GesturesSettingsSection(
                 homeActions = homeActions + (gesture to action)
                 homeCustomActions = homeCustomActions + (gesture to null)
                 selectedHomeGesture = null
+            },
+            onSelectLockScreen = {
+                if (LockScreenAccessibilityService.isEnabled(context)) {
+                    preferences.setHomeActionFor(gesture, HomeSwipeGestureAction.LOCK_SCREEN)
+                    preferences.setHomeCustomActionFor(gesture, null)
+                    preferences.setHomeAliasTargetFor(gesture, null)
+                    homeActions = homeActions + (gesture to HomeSwipeGestureAction.LOCK_SCREEN)
+                    homeCustomActions = homeCustomActions + (gesture to null)
+                    homeAliasTargets = homeAliasTargets + (gesture to null)
+                    selectedHomeGesture = null
+                } else {
+                    context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
             },
             onPickCustom = {
                 selectedHomeGesture = null
@@ -527,12 +562,15 @@ private fun HomeGesture.icon() =
 private fun HomeVerticalGestureDialog(
     titleResId: Int,
     allowsNotificationPanel: Boolean,
+    allowsLockScreen: Boolean,
+    hasLockScreenAccessibilityPermission: Boolean,
     selectedAction: HomeSwipeGestureAction,
     selectedCustomActionJson: String?,
     selectedAliasTarget: String?,
     customActions: List<CustomWidgetButtonAction>,
     aliasItems: List<GestureAliasItem>,
     onSelectDefault: (HomeSwipeGestureAction) -> Unit,
+    onSelectLockScreen: () -> Unit,
     onPickCustom: () -> Unit,
     onPickSearchEngine: () -> Unit,
     onPickTool: () -> Unit,
@@ -558,6 +596,19 @@ private fun HomeVerticalGestureDialog(
                         label = stringResource(R.string.settings_gesture_notification_panel),
                         selected = selectedAction == HomeSwipeGestureAction.NOTIFICATION_PANEL,
                         onClick = { onSelectDefault(HomeSwipeGestureAction.NOTIFICATION_PANEL) },
+                    )
+                }
+                if (allowsLockScreen) {
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = stringResource(R.string.settings_gesture_lock_screen),
+                        supportingText = if (hasLockScreenAccessibilityPermission) {
+                            null
+                        } else {
+                            stringResource(R.string.settings_gesture_lock_screen_requires_accessibility)
+                        },
+                        selected = selectedAction == HomeSwipeGestureAction.LOCK_SCREEN,
+                        onClick = onSelectLockScreen,
                     )
                 }
                 customActions.forEach { action ->
@@ -695,17 +746,23 @@ private fun GestureActionRow(
     selected: Boolean,
     onClick: () -> Unit,
     onDelete: (() -> Unit)? = null,
+    supportingText: String? = null,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().height(56.dp).clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = selected, onClick = null)
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f).padding(start = DesignTokens.SpacingMedium),
-        )
+        Column(modifier = Modifier.weight(1f).padding(start = DesignTokens.SpacingMedium)) {
+            Text(text = label, style = MaterialTheme.typography.bodyLarge)
+            supportingText?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
         onDelete?.let {
             IconButton(onClick = it) {
                 Icon(Icons.Rounded.Delete, contentDescription = stringResource(R.string.action_remove))
@@ -1015,6 +1072,7 @@ private fun SwipeGestureAction.labelResId(): Int =
 
 private fun HomeSwipeGestureAction.labelResId(): Int =
     when (this) {
+        HomeSwipeGestureAction.LOCK_SCREEN -> R.string.settings_gesture_lock_screen
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> R.string.settings_gesture_notification_panel
         HomeSwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
         HomeSwipeGestureAction.SEARCH_ENGINE -> R.string.settings_app_shortcuts_filter_search_engines

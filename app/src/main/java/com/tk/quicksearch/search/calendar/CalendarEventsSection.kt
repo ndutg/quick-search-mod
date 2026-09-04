@@ -325,7 +325,7 @@ internal fun CalendarEventRow(
                 text = rememberQueryHighlightedText(event.title),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(

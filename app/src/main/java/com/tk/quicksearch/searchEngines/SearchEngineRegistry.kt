@@ -27,6 +27,7 @@ enum class SearchEngineNativeLaunchMode {
     GROK,
     GOOGLE_TRANSLATE,
     KAGI,
+    FDROID,
 }
 
 data class SearchEngineDefinition(
@@ -154,6 +155,17 @@ object SearchEngineRegistry {
                 defaultShortcutCode = "gpl",
                 homeUrl = "https://play.google.com/store/apps",
                 appPackages = listOf(PackageConstants.GOOGLE_PLAY_PACKAGE),
+            ),
+            SearchEngineDefinition(
+                engine = SearchEngine.FDROID,
+                drawableResId = R.drawable.fdroid,
+                contentDescriptionResId = R.string.search_engine_fdroid,
+                urlTemplate = "https://search.f-droid.org/?q=%s",
+                defaultShortcutCode = "fdr",
+                homeUrl = "https://f-droid.org",
+                appPackages = listOf(PackageConstants.FDROID_PACKAGE),
+                defaultDisableIfAppMissing = true,
+                nativeLaunchMode = SearchEngineNativeLaunchMode.FDROID,
             ),
             SearchEngineDefinition(
                 engine = SearchEngine.REDDIT,

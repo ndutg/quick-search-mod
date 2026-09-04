@@ -268,6 +268,9 @@ open class MainActivity : ComponentActivity() {
     private fun setupContent() {
         setContent {
             val uiState by searchViewModel.uiState.collectAsStateWithLifecycle()
+            LaunchedEffect(uiState.showInRecents) {
+                updateRecentsVisibility(showInRecents = uiState.showInRecents)
+            }
             val isSystemDarkTheme = isSystemInDarkTheme()
             LaunchedEffect(isSystemDarkTheme, uiState.appThemeMode, uiState.launcherAppIcon) {
                 searchViewModel.onSystemDarkModeChanged(isDarkMode = isSystemDarkTheme)
@@ -398,6 +401,15 @@ open class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun updateRecentsVisibility(showInRecents: Boolean) {
+        if (this is HomeActivity) return
+        val appTask =
+            (getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager)
+                .appTasks
+                .firstOrNull { it.taskInfo?.taskId == taskId }
+        appTask?.setExcludeFromRecents(!showInRecents)
     }
 
     private fun extractTextFromIntent(intent: Intent?): String? {

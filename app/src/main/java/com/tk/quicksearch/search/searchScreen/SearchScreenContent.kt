@@ -124,6 +124,7 @@ private const val ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS = 130
 
 private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, aliasTarget: String?, context: android.content.Context, onAliasTarget: (HomeSwipeGestureAction, String) -> Unit) {
     when (this) {
+        HomeSwipeGestureAction.LOCK_SCREEN -> LockScreenAccessibilityService.lockScreen()
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
         HomeSwipeGestureAction.CUSTOM -> {
             CustomWidgetButtonAction.fromJson(actionJson)?.let { action ->

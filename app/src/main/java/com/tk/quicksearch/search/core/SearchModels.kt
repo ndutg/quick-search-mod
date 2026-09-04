@@ -32,6 +32,7 @@ enum class SearchEngine {
         GEMINI,
         PERPLEXITY,
         GOOGLE_PLAY,
+        FDROID,
         YOUTUBE,
         GOOGLE_MAPS,
         WAZE,
@@ -598,6 +599,7 @@ data class SearchUiState(
         val appSuggestionsEnabled: Boolean = true,
         val showAllAppsButton: Boolean = false,
         val includeNonLaunchableAppsInSearch: Boolean = false,
+        val showInRecents: Boolean = false,
         val selectedAppSuggestionTab: AppSuggestionTabType = AppSuggestionTabType.RECENTS,
         val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         // Section visibility preferences
@@ -895,6 +897,7 @@ fun SearchUiState(
                 appSuggestionsEnabled = config.appSuggestionsEnabled,
                 showAllAppsButton = config.showAllAppsButton,
                 includeNonLaunchableAppsInSearch = config.includeNonLaunchableAppsInSearch,
+                showInRecents = config.showInRecents,
                 selectedAppSuggestionTab = config.selectedAppSuggestionTab,
                 enabledAppSuggestionTabs = config.enabledAppSuggestionTabs,
                 selectedIconPackPackage = config.selectedIconPackPackage,

@@ -5,6 +5,14 @@ package com.tk.quicksearch.search.utils
  */
 object FileUtils {
     /**
+     * Returns a display name without its extension, preserving names that do not have one.
+     */
+    fun getFileNameWithoutExtension(displayName: String): String {
+        val extension = getFileExtension(displayName) ?: return displayName
+        return displayName.dropLast(extension.length + 1)
+    }
+
+    /**
      * Extracts the file extension from a display name.
      * Returns null if no extension is found.
      *
