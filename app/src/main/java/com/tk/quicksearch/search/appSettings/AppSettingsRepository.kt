@@ -438,6 +438,13 @@ class AppSettingsRepository(
                 keywords = listOf("app info", "launch activity", "hidden apps"),
             )
             addToggle(
+                id = "app_toggle_show_in_recents",
+                titleRes = R.string.show_in_recents_toggle_title,
+                descriptionRes = R.string.show_in_recents_toggle_desc,
+                toggleKey = AppSettingsToggleKey.SHOW_IN_RECENTS,
+                keywords = listOf("recent apps", "overview", "task"),
+            )
+            addToggle(
                 id = "app_toggle_web_suggestions",
                 titleRes = R.string.web_search_suggestions_title,
                 toggleKey = AppSettingsToggleKey.WEB_SUGGESTIONS,

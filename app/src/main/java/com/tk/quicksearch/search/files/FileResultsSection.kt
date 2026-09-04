@@ -71,6 +71,7 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
+import com.tk.quicksearch.search.utils.FileUtils
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppTheme
@@ -772,12 +773,36 @@ internal fun FileResultRow(
                         modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
                 )
 
-                Text(
-                        text = rememberQueryHighlightedText(deviceFile.displayName),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(1f),
-                )
+                val extension = FileUtils.getFileExtension(deviceFile.displayName)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                            text =
+                                    rememberQueryHighlightedText(
+                                            FileUtils.getFileNameWithoutExtension(
+                                                    deviceFile.displayName,
+                                            ),
+                                    ),
+                            style =
+                                    MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.SemiBold,
+                                    ),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.86f),
+                    )
+                    extension?.let {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                                text = it.uppercase(),
+                                style =
+                                        MaterialTheme.typography.bodySmall.copy(
+                                                fontWeight = FontWeight.SemiBold,
+                                        ),
+                                color =
+                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                alpha = 0.64f,
+                                        ),
+                        )
+                    }
+                }
             }
         }
 

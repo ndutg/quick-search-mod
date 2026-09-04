@@ -281,6 +281,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Il tasto Invio/Fine della tastiera aprirà il miglior risultato</string>
     <string name="include_non_launchable_apps_toggle_title">App non avviabili</string>
     <string name="include_non_launchable_apps_toggle_desc">Includi le app che non hanno un\'attività di avvio nei risultati di ricerca.</string>
+    <string name="show_in_recents_toggle_title">Mostra nelle app recenti</string>
+    <string name="show_in_recents_toggle_desc">Mostra Quick Search nelle app recenti del tuo dispositivo</string>
     <string name="web_search_suggestions_title">Suggerimenti web</string>
 
     <!-- ============================================================================
@@ -1006,6 +1008,7 @@
     <string name="search_engine_claude">Claude</string>
     <string name="search_engine_custom">Ricerca personalizzata</string>
     <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
     <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
     <string name="search_engine_gemini">Gemini</string>
     <string name="search_engine_google">Google</string>

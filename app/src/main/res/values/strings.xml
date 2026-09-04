@@ -102,6 +102,10 @@
     <string name="settings_gesture_close_keyboard_notifications">Close Keyboard / Open Notifications</string>
     <string name="settings_gesture_close_keyboard">Close Keyboard</string>
     <string name="settings_gesture_notification_panel">Notification Panel</string>
+    <string name="settings_gesture_lock_screen">Lock Screen</string>
+    <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
+    <string name="accessibility_lock_screen_service_label">Quick Search Lock Screen</string>
+    <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture. It does not read screen content.</string>
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
     <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>
@@ -274,6 +278,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Keyboard enter/done key will open top result</string>
     <string name="include_non_launchable_apps_toggle_title">Non-Launchable Apps</string>
     <string name="include_non_launchable_apps_toggle_desc">Include apps that don’t have a launch activity in search results.</string>
+    <string name="show_in_recents_toggle_title">Show in Recents</string>
+    <string name="show_in_recents_toggle_desc">Show Quick Search in your device’s recent apps</string>
     <string name="web_search_suggestions_title">Web Suggestions</string>
 
     <!-- ============================================================================
@@ -1004,6 +1010,7 @@
     <string name="search_engine_claude">Claude</string>
     <string name="search_engine_custom">Custom Search</string>
     <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
     <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
     <string name="search_engine_gemini">Gemini</string>
     <string name="search_engine_google">Google</string>

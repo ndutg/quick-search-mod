@@ -806,6 +806,13 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH, enabled)
     }
 
+    fun shouldShowInRecents(): Boolean =
+            getBooleanPref(UiPreferences.KEY_SHOW_IN_RECENTS, false)
+
+    fun setShowInRecents(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_SHOW_IN_RECENTS, enabled)
+    }
+
     fun getSelectedAppSuggestionTab(): AppSuggestionTabType {
         val raw = prefs.getString(UiPreferences.KEY_SELECTED_APP_SUGGESTION_TAB, null)
         return raw
@@ -1352,6 +1359,7 @@ class UiPreferences(
         const val KEY_SHOW_ALL_APPS_BUTTON = "show_all_apps_button"
         const val KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH =
             "include_non_launchable_apps_in_search"
+        const val KEY_SHOW_IN_RECENTS = "show_in_recents"
         const val KEY_SELECTED_APP_SUGGESTION_TAB = "selected_app_suggestion_tab"
         const val KEY_ENABLED_APP_SUGGESTION_TABS = "enabled_app_suggestion_tabs"
 

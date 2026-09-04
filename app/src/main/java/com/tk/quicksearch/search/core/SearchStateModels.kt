@@ -278,6 +278,7 @@ data class SearchUiConfigState(
         val appSuggestionsEnabled: Boolean = true,
         val showAllAppsButton: Boolean = false,
         val includeNonLaunchableAppsInSearch: Boolean = false,
+        val showInRecents: Boolean = false,
         val selectedAppSuggestionTab: AppSuggestionTabType = AppSuggestionTabType.RECENTS,
         val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         val selectedIconPackPackage: String? = null,

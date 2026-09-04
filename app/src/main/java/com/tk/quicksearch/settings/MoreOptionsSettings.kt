@@ -45,6 +45,12 @@ fun MoreOptionsSettings(
                 leadingIcon = Icons.Rounded.Apps,
             ),
             ToggleItem(
+                key = AppSettingsToggleKey.SHOW_IN_RECENTS,
+                titleRes = R.string.show_in_recents_toggle_title,
+                subtitleRes = R.string.show_in_recents_toggle_desc,
+                leadingIcon = Icons.Rounded.Apps,
+            ),
+            ToggleItem(
                 key = AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD,
                 titleRes = R.string.open_top_result_using_keyboard_toggle_title,
                 subtitleRes = R.string.open_top_result_using_keyboard_toggle_desc,

@@ -212,7 +212,17 @@ fun mergeAndSortShortcuts(
 ): List<StaticShortcut> {
     val locale = Locale.getDefault()
     val hardcodedShortcuts = loadHardcodedShortcuts(staticShortcuts, context, packageManager)
-    return filterShortcuts(staticShortcuts + hardcodedShortcuts + customShortcuts, packageManager, context)
+    // Custom shortcuts have already been validated when the picker returned them. Do not
+    // rediscover them through PackageManager during a later catalog refresh: some providers
+    // (notably Tasker's task-shortcut picker) return an intent that only resolves while their
+    // setup activity is active. Revalidating it later makes a successfully saved shortcut
+    // disappear even though its persisted launch intent is still the user's configuration.
+    val validCustomShortcuts =
+        customShortcuts.filter { shortcut ->
+            shortcut.enabled && shortcut.intents.isNotEmpty() && isUserCreatedShortcut(shortcut)
+        }
+    return (filterShortcuts(staticShortcuts + hardcodedShortcuts, packageManager, context) +
+        validCustomShortcuts)
         .distinctBy { shortcutKey(it) }
         .sortedWith(
             compareBy<StaticShortcut> { it.appLabel.lowercase(locale) }
@@ -657,6 +667,11 @@ fun launchStaticShortcut(
         val details = formatIntentDetails(intent)
         val resolved = pm.resolveActivity(intent, 0)
         if (resolved == null) {
+            // Legacy shortcut providers can return a broadcast intent instead of an activity
+            // intent. Tasker's task-shortcut picker does this for its task actions.
+            if (sendShortcutBroadcastIfResolvable(context, pm, intent)) {
+                return null
+            }
             // Activities that can't be resolved via PackageManager (e.g., Knox-protected
             // activities) may still be launchable directly. Try if this is an explicit
             // component intent from a custom deep link (parsed from an intent URI).
@@ -726,6 +741,39 @@ fun launchStaticShortcut(
 
     return context.getString(R.string.error_shortcut_no_activity_resolves) + noActivityIntentDetails.toSuffixDetail()
 }
+
+private fun sendShortcutBroadcastIfResolvable(
+    context: Context,
+    packageManager: PackageManager,
+    intent: Intent,
+): Boolean {
+    val receiver = findBroadcastReceiver(packageManager, intent) ?: return false
+    val receiverInfo = receiver.activityInfo ?: return false
+    if (!receiverInfo.exported) return false
+
+    val requiredPermission = receiverInfo.permission?.takeIf { it.isNotBlank() }
+    if (requiredPermission != null &&
+        context.checkSelfPermission(requiredPermission) != PackageManager.PERMISSION_GRANTED
+    ) {
+        return false
+    }
+
+    return kotlin.runCatching { context.sendBroadcast(intent) }.isSuccess
+}
+
+private fun findBroadcastReceiver(
+    packageManager: PackageManager,
+    intent: Intent,
+): android.content.pm.ResolveInfo? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.queryBroadcastReceivers(
+            intent,
+            PackageManager.ResolveInfoFlags.of(0L),
+        ).firstOrNull()
+    } else {
+        @Suppress("DEPRECATION")
+        packageManager.queryBroadcastReceivers(intent, 0).firstOrNull()
+    }
 
 private fun launchLauncherAppsShortcut(
     context: Context,

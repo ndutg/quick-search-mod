@@ -404,6 +404,20 @@
 
         <!-- Quick Settings Tile Service -->
         <service
+            android:name=".search.searchScreen.LockScreenAccessibilityService"
+            android:description="@string/accessibility_lock_screen_service_description"
+            android:exported="true"
+            android:label="@string/accessibility_lock_screen_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/lock_screen_accessibility_service" />
+        </service>
+
+        <service
             android:name=".tile.QuickSearchTileService"
             android:exported="true"
             android:icon="@drawable/ic_widget_search"

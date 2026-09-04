@@ -282,6 +282,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">La touche Entrée/Terminé ouvrira le premier résultat</string>
 <string name="include_non_launchable_apps_toggle_title">Applications non lançables</string>
 <string name="include_non_launchable_apps_toggle_desc">Inclure les applications sans activité de lancement dans les résultats de recherche.</string>
+    <string name="show_in_recents_toggle_title">Afficher dans les applications récentes</string>
+    <string name="show_in_recents_toggle_desc">Afficher Quick Search dans les applications récentes de votre appareil</string>
 <string name="web_search_suggestions_title">Suggestions Web</string>
 
 <!-- ============================================================================
@@ -1006,8 +1008,9 @@
 <string name="search_engine_chatgpt">ChatGPT</string>
 <string name="search_engine_claude">Claude</string>
 <string name="search_engine_custom">Recherche personnalisée</string>
-<string name="search_engine_duckduckgo">DuckDuckGo</string>
-<string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
+    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
 <string name="search_engine_gemini">Gemini</string>
 <string name="search_engine_google">Google</string>
 <string name="search_engine_google_drive">Google Drive</string>
