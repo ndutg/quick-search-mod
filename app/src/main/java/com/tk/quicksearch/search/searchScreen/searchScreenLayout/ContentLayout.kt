@@ -361,11 +361,10 @@ fun ContentLayout(
             state.isInitializing &&
             state.recentApps.isEmpty() &&
             state.pinnedApps.isEmpty()
-    val holdingForAppGridAnimation =
-        canDeferOtherContentForSuggestions &&
-            !suggestionsAppGridHasAppeared &&
-            (state.recentApps.isNotEmpty() || state.pinnedApps.isNotEmpty())
-    val hideOtherContent = waitingForSuggestions || holdingForAppGridAnimation
+    // Keep pinned home content in the layout while the suggestions grid expands. Removing it
+    // until the grid has appeared makes cards below the grid (such as Screen Time) pop back in
+    // at their final position instead of being smoothly pushed down by the expanding grid.
+    val hideOtherContent = waitingForSuggestions
     val topMatches =
         rememberTopMatches(
             query = state.query,
