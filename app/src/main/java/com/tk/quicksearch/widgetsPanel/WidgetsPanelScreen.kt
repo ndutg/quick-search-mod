@@ -1005,7 +1005,9 @@ private fun BoxScope.QuickNoteEditOverlay(onRemove: () -> Unit) {
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
-                    .padding(WidgetActionButtonInset),
+                    // A 12dp inset places the button's center at the 28dp card-corner radius,
+                    // visually nesting it inside the Quick Note card instead of crowding its curve.
+                    .padding(DesignTokens.SpacingMedium),
         )
     }
 }
