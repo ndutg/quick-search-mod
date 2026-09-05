@@ -226,7 +226,11 @@ private fun AddCustomProviderCard(
                     },
                 singleLine = true,
                 readOnly = true,
-                colors = dialogTextFieldColors(),
+                colors =
+                    dialogTextFieldColors(
+                        unfocusedIndicatorColor =
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    ),
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -400,7 +404,11 @@ private fun ProviderApiKeyCard(
                             null
                         },
                     shape = DesignTokens.ShapeXXLarge,
-                    colors = dialogTextFieldColors(),
+                    colors =
+                        dialogTextFieldColors(
+                            unfocusedIndicatorColor =
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        ),
                     singleLine = true,
                     readOnly = true,
                 )
