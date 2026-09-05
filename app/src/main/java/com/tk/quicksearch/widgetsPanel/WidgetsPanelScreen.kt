@@ -108,7 +108,7 @@ private val WidgetResizeVisualLong = 28.dp
 private val WidgetResizeVisualShort = 6.dp
 private val WidgetActionButtonSize = 32.dp
 private val WidgetActionButtonInset = 6.dp
-private val WidgetEditBorderWidth = 2.dp
+private val WidgetEditBorderWidth = 1.dp
 private val WidgetPanelBottomScrollSpace = 150.dp
 
 private data class PendingWidgetRequest(
@@ -147,7 +147,9 @@ fun WidgetsPanelScreen(
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, WIDGET_PANEL_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
     val notesPreferences = remember(appContext) { NotesPreferences(appContext) }
-    val isQuickNoteEnabled = remember(appContext) { notesPreferences.isQuickNoteEnabled() }
+    var isQuickNoteEnabled by remember(appContext) {
+        mutableStateOf(notesPreferences.isQuickNoteEnabled())
+    }
 
     var widgets by remember { mutableStateOf(preferences.getWidgets()) }
     var quickNoteWidget by remember { mutableStateOf(preferences.getQuickNoteWidget()) }
@@ -414,10 +416,26 @@ fun WidgetsPanelScreen(
 
                 val isQuickNoteSolo = isQuickNoteEnabled && widgets.isEmpty()
                 if (isQuickNoteSolo) {
-                    CompactQuickNoteWidget(
+                    Box(
                         modifier = Modifier.weight(1f).fillMaxWidth(),
-                        fillAvailableSpace = true,
-                    )
+                    ) {
+                        CompactQuickNoteWidget(
+                            modifier = Modifier.fillMaxSize(),
+                            fillAvailableSpace = true,
+                            onDragStart = {
+                                editingWidgetId = QUICK_NOTE_PANEL_WIDGET_ID
+                            },
+                        )
+                        if (editingWidgetId == QUICK_NOTE_PANEL_WIDGET_ID) {
+                            QuickNoteEditOverlay(
+                                onRemove = {
+                                    notesPreferences.setQuickNoteEnabled(false)
+                                    isQuickNoteEnabled = false
+                                    editingWidgetId = null
+                                },
+                            )
+                        }
+                    }
                 } else {
                     Column(
                         modifier =
@@ -448,11 +466,15 @@ fun WidgetsPanelScreen(
                                 onPersist = ::persistPanelItems,
                                 onSetEditingWidgetId = { id -> editingWidgetId = id },
                                 onRemoveWidget = { widget ->
-                                    if (widget.isQuickNoteWidget()) return@WidgetPanelGrid
-                                    appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
-                                    persistWidgets(
-                                        preferences.removeWidget(widget.appWidgetId),
-                                    )
+                                    if (widget.isQuickNoteWidget()) {
+                                        notesPreferences.setQuickNoteEnabled(false)
+                                        isQuickNoteEnabled = false
+                                    } else {
+                                        appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
+                                        persistWidgets(
+                                            preferences.removeWidget(widget.appWidgetId),
+                                        )
+                                    }
                                     editingWidgetId = null
                                 },
                                 onConfigureWidget = { _, configureIntent ->
@@ -474,7 +496,13 @@ fun WidgetsPanelScreen(
             if (showPicker) {
                 WidgetPickerSheet(
                     appWidgetManager = appWidgetManager,
+                    showQuickNote = !isQuickNoteEnabled,
                     onDismiss = { showPicker = false },
+                    onAddQuickNote = {
+                        notesPreferences.setQuickNoteEnabled(true)
+                        isQuickNoteEnabled = true
+                        showPicker = false
+                    },
                     onSelectWidget = ::requestAddWidget,
                 )
             }
@@ -829,6 +857,7 @@ private fun BoxScope.WidgetPanelGridItem(
             onDragStart = onQuickNoteDragStart,
             onDrag = onQuickNoteDrag,
             onDragEnd = onQuickNoteDragEnd,
+            onRemove = onRemove,
         )
         return
     }
@@ -908,6 +937,7 @@ private fun BoxScope.QuickNotePanelGridItem(
     onDragStart: () -> Unit,
     onDrag: (totalDragX: Float, totalDragY: Float) -> Unit,
     onDragEnd: () -> Unit,
+    onRemove: () -> Unit,
 ) {
     val density = LocalDensity.current
     val column = widget.column ?: 0
@@ -950,17 +980,33 @@ private fun BoxScope.QuickNotePanelGridItem(
             onDragEnd = onDragEnd,
         )
         if (isEditing) {
-            Box(
-                modifier =
-                    Modifier
-                        .matchParentSize()
-                        .border(
-                            width = WidgetEditBorderWidth,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = DesignTokens.ExtraLargeCardShape,
-                        ),
-            )
+            QuickNoteEditOverlay(onRemove = onRemove)
         }
+    }
+}
+
+@Composable
+private fun BoxScope.QuickNoteEditOverlay(onRemove: () -> Unit) {
+    Box(
+        modifier =
+            Modifier
+                .matchParentSize()
+                .border(
+                    width = WidgetEditBorderWidth,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                    shape = DesignTokens.ExtraLargeCardShape,
+                ),
+    ) {
+        WidgetActionButton(
+            icon = Icons.Rounded.Delete,
+            tint = MaterialTheme.colorScheme.onError,
+            background = MaterialTheme.colorScheme.error,
+            onClick = onRemove,
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(WidgetActionButtonInset),
+        )
     }
 }
 
@@ -1043,7 +1089,7 @@ private fun BoxScope.WidgetEditOverlay(
                 .matchParentSize()
                 .border(
                     width = WidgetEditBorderWidth,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                     shape = DesignTokens.ShapeMedium,
                 )
                 .pointerInput(Unit) {

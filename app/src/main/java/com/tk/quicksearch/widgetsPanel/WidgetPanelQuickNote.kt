@@ -149,20 +149,16 @@ internal fun CompactQuickNoteWidget(
                     Modifier
                         .fillMaxWidth()
                         .then(
-                            if (fillAvailableSpace) {
-                                Modifier
-                            } else {
-                                Modifier.pointerInput(Unit) {
-                                    detectDragGesturesAfterLongPress(
-                                        onDragStart = { onDragStart() },
-                                        onDrag = { change, dragAmount ->
-                                            change.consume()
-                                            onDrag(dragAmount.x, dragAmount.y)
-                                        },
-                                        onDragEnd = onDragEnd,
-                                        onDragCancel = onDragEnd,
-                                    )
-                                }
+                            Modifier.pointerInput(Unit) {
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = { onDragStart() },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        onDrag(dragAmount.x, dragAmount.y)
+                                    },
+                                    onDragEnd = onDragEnd,
+                                    onDragCancel = onDragEnd,
+                                )
                             },
                         ),
             ) {
