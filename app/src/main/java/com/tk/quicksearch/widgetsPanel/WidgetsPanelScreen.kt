@@ -19,6 +19,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -82,6 +84,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -108,8 +111,13 @@ private val WidgetResizeVisualLong = 28.dp
 private val WidgetResizeVisualShort = 6.dp
 private val WidgetActionButtonSize = 32.dp
 private val WidgetActionButtonInset = 6.dp
-private val WidgetEditBorderWidth = 2.dp
+private val WidgetEditBorderWidth = 1.dp
 private val WidgetPanelBottomScrollSpace = 150.dp
+private val WidgetLayoutMotion =
+    spring<Dp>(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMediumLow,
+    )
 
 private data class PendingWidgetRequest(
     val appWidgetId: Int,
@@ -143,17 +151,25 @@ fun WidgetsPanelScreen(
     val packageManager = context.packageManager
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
+    val focusManager = LocalFocusManager.current
     val appWidgetManager = remember(appContext) { AppWidgetManager.getInstance(appContext) }
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, WIDGET_PANEL_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
     val notesPreferences = remember(appContext) { NotesPreferences(appContext) }
-    val isQuickNoteEnabled = remember(appContext) { notesPreferences.isQuickNoteEnabled() }
+    var isQuickNoteEnabled by remember(appContext) {
+        mutableStateOf(notesPreferences.isQuickNoteEnabled())
+    }
 
     var widgets by remember { mutableStateOf(preferences.getWidgets()) }
     var quickNoteWidget by remember { mutableStateOf(preferences.getQuickNoteWidget()) }
+    var isQuickNoteFocused by remember { mutableStateOf(false) }
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
     var pendingRequest by remember { mutableStateOf<PendingWidgetRequest?>(null) }
+    // Keep the first panel frame independent of third-party RemoteViews. Some providers perform
+    // expensive work while their host view is created; doing that during navigation blocks the
+    // whole panel from appearing.
+    var showHostedWidgets by remember { mutableStateOf(false) }
     val panelScrollState = rememberScrollState()
     // Window bounds of the scroll viewport, used to auto-scroll a widget back into view while it is
     // being dragged near the top/bottom edge.
@@ -315,6 +331,12 @@ fun WidgetsPanelScreen(
         }
     }
 
+    LaunchedEffect(appWidgetHost) {
+        // Let the host begin listening and the panel draw once before creating provider views.
+        withFrameNanos { }
+        showHostedWidgets = true
+    }
+
     LaunchedEffect(appWidgetHost, panelScrollState) {
         snapshotFlow { panelScrollState.isScrollInProgress }
             .collect { inProgress ->
@@ -361,13 +383,14 @@ fun WidgetsPanelScreen(
             )
         }
 
-    val editModeDismissModifier =
-        if (editingWidgetId != null) {
-            Modifier.pointerInput(Unit) {
-                detectTapGestures(onTap = { editingWidgetId = null })
-            }
-        } else {
-            Modifier
+    val panelTapModifier =
+        Modifier.pointerInput(editingWidgetId, focusManager) {
+            detectTapGestures(
+                onTap = {
+                    focusManager.clearFocus(force = true)
+                    editingWidgetId = null
+                },
+            )
         }
 
     SettingsScreenBackground(
@@ -382,7 +405,7 @@ fun WidgetsPanelScreen(
                 Modifier
                     .fillMaxSize()
                     .then(swipeBackModifier)
-                    .then(editModeDismissModifier)
+                    .then(panelTapModifier)
                     .navigationBarsPadding(),
         ) {
             Column(
@@ -398,16 +421,39 @@ fun WidgetsPanelScreen(
 
                 WidgetsPanelHeader(
                     inEditMode = editingWidgetId != null,
-                    onAddWidget = { showPicker = true },
-                    onExitEditMode = { editingWidgetId = null },
+                    onAddWidget = {
+                        focusManager.clearFocus(force = true)
+                        showPicker = true
+                    },
+                    onExitEditMode = {
+                        focusManager.clearFocus(force = true)
+                        editingWidgetId = null
+                    },
                 )
 
                 val isQuickNoteSolo = isQuickNoteEnabled && widgets.isEmpty()
                 if (isQuickNoteSolo) {
-                    CompactQuickNoteWidget(
+                    Box(
                         modifier = Modifier.weight(1f).fillMaxWidth(),
-                        fillAvailableSpace = true,
-                    )
+                    ) {
+                        CompactQuickNoteWidget(
+                            modifier = Modifier.fillMaxSize(),
+                            fillAvailableSpace = true,
+                            onFocusChanged = { isQuickNoteFocused = it },
+                            onDragStart = {
+                                editingWidgetId = QUICK_NOTE_PANEL_WIDGET_ID
+                            },
+                        )
+                        if (editingWidgetId == QUICK_NOTE_PANEL_WIDGET_ID) {
+                            QuickNoteEditOverlay(
+                                onRemove = {
+                                    notesPreferences.setQuickNoteEnabled(false)
+                                    isQuickNoteEnabled = false
+                                    editingWidgetId = null
+                                },
+                            )
+                        }
+                    }
                 } else {
                     Column(
                         modifier =
@@ -425,7 +471,7 @@ fun WidgetsPanelScreen(
                                 if (isQuickNoteEnabled) add(quickNoteWidget)
                                 addAll(widgets)
                             }
-                        if (panelItems.isNotEmpty()) {
+                        if (panelItems.isNotEmpty() && showHostedWidgets) {
                             WidgetPanelGrid(
                                 widgets = panelItems,
                                 appWidgetManager = appWidgetManager,
@@ -437,12 +483,31 @@ fun WidgetsPanelScreen(
                                 viewportHeightPx = scrollViewportHeightPx,
                                 onPersist = ::persistPanelItems,
                                 onSetEditingWidgetId = { id -> editingWidgetId = id },
+                                onWidgetTouch = { widgetId ->
+                                    when {
+                                        editingWidgetId != null && editingWidgetId != widgetId -> {
+                                            focusManager.clearFocus(force = true)
+                                            editingWidgetId = null
+                                            true
+                                        }
+                                        isQuickNoteFocused -> {
+                                            focusManager.clearFocus(force = true)
+                                            true
+                                        }
+                                        else -> false
+                                    }
+                                },
+                                onQuickNoteFocusChanged = { isQuickNoteFocused = it },
                                 onRemoveWidget = { widget ->
-                                    if (widget.isQuickNoteWidget()) return@WidgetPanelGrid
-                                    appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
-                                    persistWidgets(
-                                        preferences.removeWidget(widget.appWidgetId),
-                                    )
+                                    if (widget.isQuickNoteWidget()) {
+                                        notesPreferences.setQuickNoteEnabled(false)
+                                        isQuickNoteEnabled = false
+                                    } else {
+                                        appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
+                                        persistWidgets(
+                                            preferences.removeWidget(widget.appWidgetId),
+                                        )
+                                    }
                                     editingWidgetId = null
                                 },
                                 onConfigureWidget = { _, configureIntent ->
@@ -464,7 +529,13 @@ fun WidgetsPanelScreen(
             if (showPicker) {
                 WidgetPickerSheet(
                     appWidgetManager = appWidgetManager,
+                    showQuickNote = !isQuickNoteEnabled,
                     onDismiss = { showPicker = false },
+                    onAddQuickNote = {
+                        notesPreferences.setQuickNoteEnabled(true)
+                        isQuickNoteEnabled = true
+                        showPicker = false
+                    },
                     onSelectWidget = ::requestAddWidget,
                 )
             }
@@ -519,6 +590,8 @@ private fun WidgetPanelGrid(
     viewportHeightPx: Int,
     onPersist: (List<PanelWidgetInfo>) -> Unit,
     onSetEditingWidgetId: (Int?) -> Unit,
+    onWidgetTouch: (Int) -> Boolean,
+    onQuickNoteFocusChanged: (Boolean) -> Unit,
     onRemoveWidget: (PanelWidgetInfo) -> Unit,
     onConfigureWidget: (PanelWidgetInfo, Intent) -> Unit,
     packageManager: PackageManager,
@@ -539,7 +612,7 @@ private fun WidgetPanelGrid(
                         if (widget.isQuickNoteWidget()) {
                             WidgetGridSpec(
                                 minColumnSpan = WIDGET_PANEL_GRID_COLUMNS,
-                                minRowSpan = WIDGET_PANEL_DEFAULT_ROW_SPAN,
+                                minRowSpan = 1,
                             )
                         } else {
                             val info = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
@@ -589,6 +662,7 @@ private fun WidgetPanelGrid(
         val currentGridUnitHeightPx by rememberUpdatedState(gridUnitHeightPx)
         val currentOnPersist by rememberUpdatedState(onPersist)
         val currentOnSetEditing by rememberUpdatedState(onSetEditingWidgetId)
+        val currentOnWidgetTouch by rememberUpdatedState(onWidgetTouch)
 
         fun moveQuickNoteBy(totalDragX: Float, totalDragY: Float) {
             val start = quickNoteDragStart ?: return
@@ -645,6 +719,7 @@ private fun WidgetPanelGrid(
                 hostDragStart = null
                 if (final != null && final != currentLaidOut) currentOnPersist(final)
             }
+            appWidgetHost.onWidgetTouch = { widgetId -> currentOnWidgetTouch(widgetId) }
         }
 
         // Auto-scroll the panel while a widget is being dragged near the viewport's top/bottom edge
@@ -693,12 +768,18 @@ private fun WidgetPanelGrid(
             } ?: 0
         val panelHeight =
             if (rows <= 0) 0.dp else rowHeight * rows + gap * (rows - 1)
+        val animatedPanelHeight by
+            animateDpAsState(
+                targetValue = panelHeight,
+                animationSpec = WidgetLayoutMotion,
+                label = "widgetPanelHeight",
+            )
 
         Box(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(panelHeight)
+                    .height(animatedPanelHeight)
                     .onGloballyPositioned { coordinates ->
                         gridTopPx = coordinates.positionInWindow().y
                     },
@@ -755,6 +836,7 @@ private fun WidgetPanelGrid(
                             quickNoteDragStart = null
                             if (final != null && final != laidOut) onPersist(final)
                         },
+                        onQuickNoteFocusChanged = onQuickNoteFocusChanged,
                     )
                 }
             }
@@ -783,6 +865,7 @@ private fun BoxScope.WidgetPanelGridItem(
     onQuickNoteDragStart: () -> Unit,
     onQuickNoteDrag: (totalDragX: Float, totalDragY: Float) -> Unit,
     onQuickNoteDragEnd: () -> Unit,
+    onQuickNoteFocusChanged: (Boolean) -> Unit,
 ) {
     val density = LocalDensity.current
     val column = widget.column ?: 0
@@ -794,16 +877,14 @@ private fun BoxScope.WidgetPanelGridItem(
     val x = (cellWidth + gap) * column
     val y = (rowHeight + gap) * row
 
-    // The widget being edited is the one under the finger during a drag/resize: snap it to its
-    // target so it tracks the gesture, while the others animate as they slide out of the way.
-    val animatedX by animateDpAsState(targetValue = x, label = "widgetX")
-    val animatedY by animateDpAsState(targetValue = y, label = "widgetY")
-    val animatedWidth by animateDpAsState(targetValue = width, label = "widgetWidth")
-    val animatedHeight by animateDpAsState(targetValue = height, label = "widgetHeight")
-    val offsetX = if (isEditing) x else animatedX
-    val offsetY = if (isEditing) y else animatedY
-    val renderWidth = if (isEditing) width else animatedWidth
-    val renderHeight = if (isEditing) height else animatedHeight
+    // Animate each grid-step update, including the widget being edited, so resizing and the
+    // resulting reflow feel continuous instead of snapping between row/column boundaries.
+    val animatedX by animateDpAsState(targetValue = x, animationSpec = WidgetLayoutMotion, label = "widgetX")
+    val animatedY by animateDpAsState(targetValue = y, animationSpec = WidgetLayoutMotion, label = "widgetY")
+    val animatedWidth by
+        animateDpAsState(targetValue = width, animationSpec = WidgetLayoutMotion, label = "widgetWidth")
+    val animatedHeight by
+        animateDpAsState(targetValue = height, animationSpec = WidgetLayoutMotion, label = "widgetHeight")
     val editScale by animateFloatAsState(
         targetValue = if (isEditing) 1.02f else 1f,
         label = "widgetEditScale",
@@ -816,9 +897,15 @@ private fun BoxScope.WidgetPanelGridItem(
             cellWidth = cellWidth,
             rowHeight = rowHeight,
             gap = gap,
+            gridUnitHeightPx = gridUnitHeightPx,
+            minRowSpan = spec?.minRowSpan ?: 1,
             onDragStart = onQuickNoteDragStart,
             onDrag = onQuickNoteDrag,
             onDragEnd = onQuickNoteDragEnd,
+            onFocusChanged = onQuickNoteFocusChanged,
+            onResizePreview = onResizePreview,
+            onInteractionEnd = onInteractionEnd,
+            onRemove = onRemove,
         )
         return
     }
@@ -842,11 +929,11 @@ private fun BoxScope.WidgetPanelGridItem(
     Box(
         modifier =
             Modifier
-                .size(width = renderWidth, height = renderHeight)
+                .size(width = animatedWidth, height = animatedHeight)
                 .offset {
                     IntOffset(
-                        x = with(density) { offsetX.roundToPx() },
-                        y = with(density) { offsetY.roundToPx() },
+                        x = with(density) { animatedX.roundToPx() },
+                        y = with(density) { animatedY.roundToPx() },
                     )
                 }
                 .zIndex(if (isEditing) 1f else 0f)
@@ -860,8 +947,8 @@ private fun BoxScope.WidgetPanelGridItem(
             providerInfo = providerInfo,
             appWidgetManager = appWidgetManager,
             appWidgetHost = appWidgetHost,
-            width = width,
-            height = height,
+            width = animatedWidth,
+            height = animatedHeight,
             columnSpan = columnSpan,
             rowSpan = rowSpan,
             modifier = Modifier.fillMaxSize(),
@@ -895,9 +982,15 @@ private fun BoxScope.QuickNotePanelGridItem(
     cellWidth: Dp,
     rowHeight: Dp,
     gap: Dp,
+    gridUnitHeightPx: Float,
+    minRowSpan: Int,
     onDragStart: () -> Unit,
     onDrag: (totalDragX: Float, totalDragY: Float) -> Unit,
     onDragEnd: () -> Unit,
+    onFocusChanged: (Boolean) -> Unit,
+    onResizePreview: (WidgetGridResize) -> Unit,
+    onInteractionEnd: () -> Unit,
+    onRemove: () -> Unit,
 ) {
     val density = LocalDensity.current
     val column = widget.column ?: 0
@@ -908,25 +1001,32 @@ private fun BoxScope.QuickNotePanelGridItem(
     val height = rowHeight * rowSpan + gap * (rowSpan - 1)
     val x = (cellWidth + gap) * column
     val y = (rowHeight + gap) * row
-    val animatedY by animateDpAsState(targetValue = y, label = "quickNoteWidgetY")
-    val offsetY = if (isEditing) y else animatedY
+    val animatedY by
+        animateDpAsState(targetValue = y, animationSpec = WidgetLayoutMotion, label = "quickNoteWidgetY")
+    val animatedHeight by
+        animateDpAsState(
+            targetValue = height,
+            animationSpec = WidgetLayoutMotion,
+            label = "quickNoteWidgetHeight",
+        )
     var totalDragX by remember { mutableFloatStateOf(0f) }
     var totalDragY by remember { mutableFloatStateOf(0f) }
 
     Box(
         modifier =
             Modifier
-                .size(width = width, height = height)
+                .size(width = width, height = animatedHeight)
                 .offset {
                     IntOffset(
                         x = with(density) { x.roundToPx() },
-                        y = with(density) { offsetY.roundToPx() },
+                        y = with(density) { animatedY.roundToPx() },
                     )
                 }
                 .zIndex(if (isEditing) 1f else 0f),
     ) {
         CompactQuickNoteWidget(
             modifier = Modifier.fillMaxSize(),
+            onFocusChanged = onFocusChanged,
             onDragStart = {
                 totalDragX = 0f
                 totalDragY = 0f
@@ -940,17 +1040,77 @@ private fun BoxScope.QuickNotePanelGridItem(
             onDragEnd = onDragEnd,
         )
         if (isEditing) {
-            Box(
-                modifier =
-                    Modifier
-                        .matchParentSize()
-                        .border(
-                            width = WidgetEditBorderWidth,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = DesignTokens.ExtraLargeCardShape,
-                        ),
+            QuickNoteEditOverlay(
+                column = column,
+                row = row,
+                columnSpan = columnSpan,
+                rowSpan = rowSpan,
+                gridUnitHeightPx = gridUnitHeightPx,
+                minRowSpan = minRowSpan,
+                onResizePreview = onResizePreview,
+                onInteractionEnd = onInteractionEnd,
+                onRemove = onRemove,
             )
         }
+    }
+}
+
+@Composable
+private fun BoxScope.QuickNoteEditOverlay(
+    column: Int = 0,
+    row: Int = 0,
+    columnSpan: Int = WIDGET_PANEL_GRID_COLUMNS,
+    rowSpan: Int = WIDGET_PANEL_DEFAULT_ROW_SPAN,
+    gridUnitHeightPx: Float = 0f,
+    minRowSpan: Int = 1,
+    onResizePreview: ((WidgetGridResize) -> Unit)? = null,
+    onInteractionEnd: () -> Unit = {},
+    onRemove: () -> Unit,
+) {
+    Box(
+        modifier =
+            Modifier
+                .matchParentSize()
+                .border(
+                    width = WidgetEditBorderWidth,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                    shape = DesignTokens.ExtraLargeCardShape,
+                )
+                .pointerInput(Unit) {
+                    // Keep taps on the selected Quick Note from being treated as outside taps.
+                    detectTapGestures(onTap = {})
+                },
+    ) {
+        onResizePreview?.let { resize ->
+            listOf(ResizeEdge.Top, ResizeEdge.Bottom).forEach { edge ->
+                EdgeResizeHandle(
+                    edge = edge,
+                    startColumn = column,
+                    startRow = row,
+                    startColumnSpan = columnSpan,
+                    startRowSpan = rowSpan,
+                    gridUnitWidthPx = 0f,
+                    gridUnitHeightPx = gridUnitHeightPx,
+                    minColumnSpan = WIDGET_PANEL_GRID_COLUMNS,
+                    minRowSpan = minRowSpan,
+                    onResizePreview = resize,
+                    onInteractionEnd = onInteractionEnd,
+                    modifier = Modifier.align(edge.alignment),
+                )
+            }
+        }
+        WidgetActionButton(
+            icon = Icons.Rounded.Delete,
+            tint = MaterialTheme.colorScheme.onError,
+            background = MaterialTheme.colorScheme.error,
+            onClick = onRemove,
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    // A 12dp inset places the button's center at the 28dp card-corner radius,
+                    // visually nesting it inside the Quick Note card instead of crowding its curve.
+                    .padding(DesignTokens.SpacingMedium),
+        )
     }
 }
 
@@ -1033,7 +1193,7 @@ private fun BoxScope.WidgetEditOverlay(
                 .matchParentSize()
                 .border(
                     width = WidgetEditBorderWidth,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                     shape = DesignTokens.ShapeMedium,
                 )
                 .pointerInput(Unit) {

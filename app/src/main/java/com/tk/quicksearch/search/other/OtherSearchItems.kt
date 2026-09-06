@@ -4,6 +4,7 @@ import android.app.usage.UsageStatsManager
 import android.app.usage.UsageEvents
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.PowerManager
 import com.tk.quicksearch.search.core.ScreenTimeAppUsage
 import com.tk.quicksearch.search.core.ScreenTimeState
@@ -203,10 +204,7 @@ class ScreenTimeRepository(context: Context) {
             }
         val homePackages =
             setOfNotNull(
-                appContext.packageManager
-                    .resolveActivity(homeIntent, 0)
-                    ?.activityInfo
-                    ?.packageName,
+                resolveDefaultHomePackage(homeIntent),
             )
         return (homePackages +
             setOf(
@@ -214,6 +212,21 @@ class ScreenTimeRepository(context: Context) {
                 "com.android.systemui",
                 "com.samsung.android.app.aodservice",
             )).toSet()
+    }
+
+    private fun resolveDefaultHomePackage(homeIntent: Intent): String? {
+        val packageManager = appContext.packageManager
+        val resolveInfo =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                packageManager.resolveActivity(
+                    homeIntent,
+                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong()),
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            }
+        return resolveInfo?.activityInfo?.packageName
     }
 }
 

@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
@@ -92,7 +93,9 @@ private data class WidgetPickerApp(
 @Composable
 internal fun WidgetPickerSheet(
     appWidgetManager: AppWidgetManager,
+    showQuickNote: Boolean,
     onDismiss: () -> Unit,
+    onAddQuickNote: () -> Unit,
     onSelectWidget: (AppWidgetProviderInfo) -> Unit,
 ) {
     val context = LocalContext.current
@@ -249,6 +252,11 @@ internal fun WidgetPickerSheet(
                                 .nestedScroll(blockSheetDragFromListScroll),
                         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                     ) {
+                        if (showQuickNote) {
+                            item(key = "quick_note") {
+                                QuickNotePickerRow(onClick = onAddQuickNote)
+                            }
+                        }
                         items(filteredApps, key = { it.key }) { app ->
                             WidgetPickerAppGroup(
                                 app = app,
@@ -278,6 +286,40 @@ internal fun WidgetPickerSheet(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun QuickNotePickerRow(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = DesignTokens.ExtraLargeCardShape,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onClick)
+                    .padding(DesignTokens.SpacingLarge),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.EditNote,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(DesignTokens.LargeIconSize),
+            )
+            Text(
+                text = stringResource(R.string.notes_quick_note_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }

@@ -18,7 +18,6 @@ import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInpu
 import com.tk.quicksearch.shared.util.isPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.OpenAiModelCatalog
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
@@ -56,6 +55,7 @@ class UserAppPreferences(
     private val openAiPreferences by lazy { OpenAiPreferences(context) }
     private val anthropicPreferences by lazy { AnthropicPreferences(context) }
     private val groqPreferences by lazy { GroqPreferences(context) }
+    private val metaPreferences by lazy { MetaPreferences(context) }
     private val customLlmProviderPreferences by lazy { CustomLlmProviderPreferences(context) }
     private val llmPreferences by lazy { LlmPreferences(context) }
     val uiPreferences by lazy { UiPreferences(context) }
@@ -818,6 +818,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.getApiKey()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getApiKey()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getApiKey()
+                AiSearchLlmProviderId.META -> metaPreferences.getApiKey()
                 else -> null
             }
         }
@@ -835,6 +836,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setApiKey(key)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setApiKey(key)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setApiKey(key)
+            AiSearchLlmProviderId.META -> metaPreferences.setApiKey(key)
             else -> Unit
         }
         refreshConfiguredAiProviderHint()
@@ -849,6 +851,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.getModel()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getModel()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getModel()
+                AiSearchLlmProviderId.META -> metaPreferences.getModel()
                 else -> OpenAiModelCatalog.DEFAULT_MODEL_ID
             }
         }
@@ -863,6 +866,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setModel(modelId)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setModel(modelId)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setModel(modelId)
+            AiSearchLlmProviderId.META -> metaPreferences.setModel(modelId)
             else -> Unit
         }
     }
@@ -876,6 +880,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.isGroundingEnabled()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.isGroundingEnabled()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.isGroundingEnabled()
+                AiSearchLlmProviderId.META -> metaPreferences.isGroundingEnabled()
                 else -> false
             }
         }
@@ -887,6 +892,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setGroundingEnabled(enabled)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setGroundingEnabled(enabled)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setGroundingEnabled(enabled)
+            AiSearchLlmProviderId.META -> metaPreferences.setGroundingEnabled(enabled)
             else -> Unit
         }
     }
@@ -900,6 +906,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> false
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.isThinkingEnabled()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.isThinkingEnabled()
+                AiSearchLlmProviderId.META -> metaPreferences.isThinkingEnabled()
                 else -> false
             }
         }
@@ -911,6 +918,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> Unit
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setThinkingEnabled(enabled)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setThinkingEnabled(enabled)
+            AiSearchLlmProviderId.META -> metaPreferences.setThinkingEnabled(enabled)
             else -> Unit
         }
     }
@@ -924,6 +932,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.OPENAI -> openAiPreferences.getPersonalContext()
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getPersonalContext()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getPersonalContext()
+                AiSearchLlmProviderId.META -> metaPreferences.getPersonalContext()
                 else -> null
             }
         }
@@ -938,6 +947,7 @@ class UserAppPreferences(
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setPersonalContext(context)
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setPersonalContext(context)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setPersonalContext(context)
+            AiSearchLlmProviderId.META -> metaPreferences.setPersonalContext(context)
             else -> Unit
         }
     }
@@ -948,6 +958,7 @@ class UserAppPreferences(
             !openAiPreferences.getApiKey().isNullOrBlank() ||
             !anthropicPreferences.getApiKey().isNullOrBlank() ||
             !groqPreferences.getApiKey().isNullOrBlank() ||
+            !metaPreferences.getApiKey().isNullOrBlank() ||
             customLlmProviderPreferences.getProviders().any { it.apiKey.isNotBlank() }
 
     /** Opens encrypted storage only from an AI/settings or long-idle path. */
@@ -1425,7 +1436,10 @@ class UserAppPreferences(
 
     fun setDictionaryEnabled(enabled: Boolean) = uiPreferences.setDictionaryEnabled(enabled)
 
-    fun getCurrencyConverterModel(): String = uiPreferences.getCurrencyConverterModel()
+    fun getCurrencyConverterModel(): String =
+        uiPreferences.getCurrencyConverterModel().ifBlank {
+            getLlmModel(getCurrencyConverterProviderId())
+        }
     fun setCurrencyConverterModel(modelId: String) = uiPreferences.setCurrencyConverterModel(modelId)
     fun getCurrencyConverterAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getCurrencyConverterAdvancedPayload()
     fun setCurrencyConverterAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setCurrencyConverterAdvancedPayload(payload, enabled)
@@ -1442,7 +1456,10 @@ class UserAppPreferences(
     fun setCurrencyConverterThinkingEnabled(enabled: Boolean) =
         uiPreferences.setCurrencyConverterThinkingEnabled(enabled)
 
-    fun getWorldClockModel(): String = uiPreferences.getWorldClockModel()
+    fun getWorldClockModel(): String =
+        uiPreferences.getWorldClockModel().ifBlank {
+            getLlmModel(getWorldClockProviderId())
+        }
     fun setWorldClockModel(modelId: String) = uiPreferences.setWorldClockModel(modelId)
     fun getWorldClockAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getWorldClockAdvancedPayload()
     fun setWorldClockAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setWorldClockAdvancedPayload(payload, enabled)
@@ -1458,7 +1475,10 @@ class UserAppPreferences(
     fun setWorldClockThinkingEnabled(enabled: Boolean) =
         uiPreferences.setWorldClockThinkingEnabled(enabled)
 
-    fun getDictionaryModel(): String = uiPreferences.getDictionaryModel()
+    fun getDictionaryModel(): String =
+        uiPreferences.getDictionaryModel().ifBlank {
+            getLlmModel(getDictionaryProviderId())
+        }
     fun setDictionaryModel(modelId: String) = uiPreferences.setDictionaryModel(modelId)
     fun getDictionaryAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getDictionaryAdvancedPayload()
     fun setDictionaryAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setDictionaryAdvancedPayload(payload, enabled)
@@ -1482,7 +1502,7 @@ class UserAppPreferences(
     fun setWeatherSystemPrompt(prompt: String) = weatherPreferences.setSystemPrompt(prompt)
     fun getWeatherModel(): String =
         weatherPreferences.getModel().ifBlank {
-            getCurrencyConverterModel().ifBlank { GeminiModelCatalog.DEFAULT_MODEL_ID }
+            getLlmModel(getWeatherProviderId())
         }
     fun setWeatherModel(modelId: String) = weatherPreferences.setModel(modelId)
     fun getWeatherProviderId(): AiSearchLlmProviderId = weatherPreferences.getProviderId()

@@ -752,6 +752,7 @@
     <string name="settings_add_search_engine_error_placeholder">URL 必须包含占位符 {{query}}</string>
     <string name="settings_add_search_engine_error_required">请输入 URL 模板。</string>
     <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">别名：</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

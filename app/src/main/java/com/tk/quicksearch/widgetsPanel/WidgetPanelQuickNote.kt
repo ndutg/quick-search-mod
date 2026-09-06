@@ -55,6 +55,7 @@ private val QuickNoteFocusedHeight = 280.dp
 internal fun CompactQuickNoteWidget(
     modifier: Modifier = Modifier,
     fillAvailableSpace: Boolean = false,
+    onFocusChanged: (Boolean) -> Unit = {},
     onDragStart: () -> Unit = {},
     onDrag: (x: Float, y: Float) -> Unit = { _, _ -> },
     onDragEnd: () -> Unit = {},
@@ -149,20 +150,16 @@ internal fun CompactQuickNoteWidget(
                     Modifier
                         .fillMaxWidth()
                         .then(
-                            if (fillAvailableSpace) {
-                                Modifier
-                            } else {
-                                Modifier.pointerInput(Unit) {
-                                    detectDragGesturesAfterLongPress(
-                                        onDragStart = { onDragStart() },
-                                        onDrag = { change, dragAmount ->
-                                            change.consume()
-                                            onDrag(dragAmount.x, dragAmount.y)
-                                        },
-                                        onDragEnd = onDragEnd,
-                                        onDragCancel = onDragEnd,
-                                    )
-                                }
+                            Modifier.pointerInput(Unit) {
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = { onDragStart() },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        onDrag(dragAmount.x, dragAmount.y)
+                                    },
+                                    onDragEnd = onDragEnd,
+                                    onDragCancel = onDragEnd,
+                                )
                             },
                         ),
             ) {
@@ -198,7 +195,10 @@ internal fun CompactQuickNoteWidget(
                                 Modifier
                             },
                         )
-                        .onFocusChanged { isFocused = it.isFocused },
+                        .onFocusChanged {
+                            isFocused = it.isFocused
+                            onFocusChanged(it.isFocused)
+                        },
                 textStyle =
                     MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface,

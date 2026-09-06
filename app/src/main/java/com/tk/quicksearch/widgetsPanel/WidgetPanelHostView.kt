@@ -11,6 +11,8 @@ import android.view.ViewConfiguration
 import com.tk.quicksearch.shared.util.MemoryDiagnostics
 import kotlin.math.abs
 
+private const val WIDGET_EDIT_LONG_PRESS_CONFIRMATION_MS = 100L
+
 /**
  * Host that vends a host view capable of detecting long-press regardless of whether the widget's
  * own children consume touches, and forwarding the in-progress drag after long-press so the user
@@ -28,6 +30,7 @@ internal class WidgetPanelHost(
     var onWidgetDragMove: ((appWidgetId: Int, totalDeltaX: Float, totalDeltaY: Float) -> Unit)? =
         null
     var onWidgetDragEnd: ((appWidgetId: Int) -> Unit)? = null
+    var onWidgetTouch: ((appWidgetId: Int) -> Boolean)? = null
 
     /**
      * Provider for whether the surrounding scroll container is currently scrolling/flinging.
@@ -47,6 +50,7 @@ internal class WidgetPanelHost(
             view.onLongPress = { onWidgetLongPress?.invoke(appWidgetId) }
             view.onDragMove = { dx, dy -> onWidgetDragMove?.invoke(appWidgetId, dx, dy) }
             view.onDragEnd = { onWidgetDragEnd?.invoke(appWidgetId) }
+            view.onTouchStarted = { onWidgetTouch?.invoke(appWidgetId) ?: false }
             view.isScrollInProgressProvider = { isScrollInProgressProvider() }
             view.onDetached = {
                 if (liveViews.remove(view)) MemoryDiagnostics.widgetViewsReleased(1)
@@ -84,6 +88,7 @@ internal class WidgetPanelHost(
         onWidgetLongPress = null
         onWidgetDragMove = null
         onWidgetDragEnd = null
+        onWidgetTouch = null
         isScrollInProgressProvider = { false }
         stopListening()
         clearViews()
@@ -106,10 +111,12 @@ private class WidgetPanelHostView(
     var onLongPress: (() -> Unit)? = null
     var onDragMove: ((deltaX: Float, deltaY: Float) -> Unit)? = null
     var onDragEnd: (() -> Unit)? = null
+    var onTouchStarted: (() -> Boolean)? = null
     var onDetached: (() -> Unit)? = null
     var isScrollInProgressProvider: () -> Boolean = { false }
 
     fun cancelPendingLongPress() {
+        longPressArmed = false
         removeCallbacks(longPressRunnable)
     }
 
@@ -118,6 +125,7 @@ private class WidgetPanelHostView(
         onLongPress = null
         onDragMove = null
         onDragEnd = null
+        onTouchStarted = null
         onDetached = null
         isScrollInProgressProvider = { false }
     }
@@ -134,10 +142,13 @@ private class WidgetPanelHostView(
     private var downRawX = 0f
     private var downRawY = 0f
     private var longPressFired = false
+    private var longPressArmed = false
     private var dragHandled = false
+    private var focusClearTouch = false
     private val longPressRunnable =
         Runnable {
-            if (longPressFired) return@Runnable
+            if (!longPressArmed || longPressFired) return@Runnable
+            longPressArmed = false
             longPressFired = true
             dragHandled = true
             performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
@@ -149,15 +160,27 @@ private class WidgetPanelHostView(
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         when (ev.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                focusClearTouch = onTouchStarted?.invoke() == true
+                if (focusClearTouch) {
+                    longPressArmed = false
+                    removeCallbacks(longPressRunnable)
+                    return true
+                }
                 downRawX = ev.rawX
                 downRawY = ev.rawY
                 longPressFired = false
                 dragHandled = false
+                longPressArmed = false
                 removeCallbacks(longPressRunnable)
                 // Don't arm long-press if the surrounding scroll is mid-fling — the user is
-                // tapping to stop momentum, not asking to edit.
+                // tapping to stop momentum, not asking to edit. The short confirmation buffer
+                // prevents a delayed RemoteViews touch-up from being mistaken for a long press.
                 if (!isScrollInProgressProvider()) {
-                    postDelayed(longPressRunnable, longPressTimeout)
+                    longPressArmed = true
+                    postDelayed(
+                        longPressRunnable,
+                        longPressTimeout + WIDGET_EDIT_LONG_PRESS_CONFIRMATION_MS,
+                    )
                 }
             }
 
@@ -167,15 +190,22 @@ private class WidgetPanelHostView(
                         abs(ev.rawX - downRawX) > touchSlop ||
                         abs(ev.rawY - downRawY) > touchSlop
                     ) {
+                        longPressArmed = false
                         removeCallbacks(longPressRunnable)
                     }
                 }
             }
 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                longPressArmed = false
                 removeCallbacks(longPressRunnable)
+                if (focusClearTouch) {
+                    focusClearTouch = false
+                    return true
+                }
             }
         }
+        if (focusClearTouch) return true
         return super.dispatchTouchEvent(ev)
     }
 
