@@ -63,6 +63,8 @@ import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
 import com.tk.quicksearch.overlay.OverlayModeController
+import com.tk.quicksearch.search.apps.speedBump.SpeedBump
+import com.tk.quicksearch.search.apps.speedBump.SpeedBumpOverlay
 import com.tk.quicksearch.shared.permissions.PermissionSettingsDialog
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -321,6 +323,8 @@ fun SearchRoute(
     var pendingDirectDialToggleFromAppSetting by remember { mutableStateOf(false) }
     var editingCustomCalendarEvent by remember { mutableStateOf<CalendarEventInfo?>(null) }
     var previewFile by remember { mutableStateOf<DeviceFile?>(null) }
+    // Non-null while a SpeedBump app is waiting out its interstitial before launching.
+    var speedBumpApp by remember { mutableStateOf<com.tk.quicksearch.search.models.AppInfo?>(null) }
     val customCalendarEventRepository = remember(context) { CustomCalendarEventRepository(context) }
 
     val callPermissionLauncher =
@@ -678,7 +682,11 @@ fun SearchRoute(
             onToggleOtherSearchItemPin = viewModel::toggleOtherSearchItemPin,
             onSettingsClick = onSettingsClick,
             onAppClick = { app: com.tk.quicksearch.search.models.AppInfo ->
-                viewModel.launchApp(app, context)
+                if (SpeedBump.isEnabled(context, app.packageName)) {
+                    speedBumpApp = app
+                } else {
+                    viewModel.launchApp(app, context)
+                }
             },
             onOpenInSplitScreen = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.launchAppInSplitScreen(app, context)
@@ -1029,6 +1037,19 @@ fun SearchRoute(
                 onDownloadIconPacks = viewModel::searchIconPacks,
                 onResetAllIcons = viewModel::resetAllAppIconsToDefault,
                 onDismiss = { showIconPackDialog = false },
+            )
+        }
+
+        speedBumpApp?.let { app ->
+            SpeedBumpOverlay(
+                appInfo = app,
+                iconPackPackage = uiState.selectedIconPackPackage,
+                appIconShape = uiState.appIconShape,
+                onOpen = {
+                    speedBumpApp = null
+                    viewModel.launchApp(app, context)
+                },
+                onCancel = { speedBumpApp = null },
             )
         }
 

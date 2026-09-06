@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcel
 import android.util.Base64
 import android.util.TypedValue
 import androidx.core.graphics.drawable.toBitmap
@@ -90,7 +89,6 @@ internal class AppShortcutCache(
 
         private const val FIELD_ACTION = "action"
         private const val FIELD_INTENT_URI = "intentUri"
-        private const val FIELD_INTENT_PARCEL_BASE64 = "intentParcelBase64"
         private const val FIELD_TARGET_PACKAGE = "targetPackage"
         private const val FIELD_TARGET_CLASS = "targetClass"
         private const val FIELD_DATA = "data"
@@ -163,20 +161,13 @@ internal class AppShortcutCache(
                             shortcut.iconResId?.let { put(FIELD_ICON_RES_ID, it) }
                             shortcut.iconBase64?.let { put(FIELD_ICON_BASE64, it) }
                             put(FIELD_ENABLED, shortcut.enabled)
-                            put(
-                                FIELD_INTENTS,
-                                shortcut.intents.toIntentJsonArray(
-                                    preserveCompleteIntent = isUserCreatedShortcut(shortcut),
-                                ),
-                            )
+                            put(FIELD_INTENTS, shortcut.intents.toIntentJsonArray())
                         },
                     )
                 }
             }
 
-        private fun List<Intent>.toIntentJsonArray(
-            preserveCompleteIntent: Boolean,
-        ): JSONArray =
+        private fun List<Intent>.toIntentJsonArray(): JSONArray =
             JSONArray().apply {
                 forEach { intent ->
                     val component = intent.component
@@ -193,9 +184,6 @@ internal class AppShortcutCache(
                         JSONObject().apply {
                             if (!intentUri.isNullOrBlank()) {
                                 put(FIELD_INTENT_URI, intentUri)
-                            }
-                            if (preserveCompleteIntent) {
-                                intent.toParcelBase64()?.let { put(FIELD_INTENT_PARCEL_BASE64, it) }
                             }
                             if (!action.isNullOrBlank()) put(FIELD_ACTION, action)
                             if (!targetPackage.isNullOrBlank()) {
@@ -217,10 +205,6 @@ internal class AppShortcutCache(
             val intents = mutableListOf<Intent>()
             for (index in 0 until length()) {
                 val jsonObject = getJSONObject(index)
-                val completeIntent =
-                    jsonObject
-                        .getNullableString(FIELD_INTENT_PARCEL_BASE64)
-                        ?.toIntentFromParcel()
                 val intentUri = jsonObject.getNullableString(FIELD_INTENT_URI)
                 val action = jsonObject.getNullableString(FIELD_ACTION)
                 val targetPackage =
@@ -231,63 +215,32 @@ internal class AppShortcutCache(
 
                 intents.add(
                     (
-                        completeIntent
-                            ?: runCatching {
-                                if (intentUri.isNullOrBlank()) {
-                                    null
-                                } else {
-                                    Intent.parseUri(intentUri, Intent.URI_INTENT_SCHEME)
-                                }
-                            }.getOrNull()
-                            ?: Intent()
+                        runCatching {
+                            if (intentUri.isNullOrBlank()) {
+                                null
+                            } else {
+                                Intent.parseUri(intentUri, Intent.URI_INTENT_SCHEME)
+                            }
+                        }.getOrNull() ?: Intent()
                     ).apply {
-                        // The parcel is the exact picker result. Only reconstruct individual
-                        // fields for legacy entries that do not have it; otherwise the fallback
-                        // source package can change how a Tasker intent resolves.
-                        if (completeIntent == null) {
-                            if (action != null) {
-                                setAction(action)
-                            }
-                            if (!data.isNullOrBlank()) {
-                                setData(android.net.Uri.parse(data))
-                            }
-                            if (!targetClass.isNullOrBlank()) {
-                                component = android.content.ComponentName(targetPackage, targetClass)
-                            } else if (`package`.isNullOrBlank()) {
-                                `package` = targetPackage
-                            }
-                            extrasJson?.applyExtras(this)
+                        if (action != null) {
+                            setAction(action)
                         }
+                        if (!data.isNullOrBlank()) {
+                            setData(android.net.Uri.parse(data))
+                        }
+                        if (!targetClass.isNullOrBlank()) {
+                            component = android.content.ComponentName(targetPackage, targetClass)
+                        } else if (`package`.isNullOrBlank()) {
+                            `package` = targetPackage
+                        }
+                        extrasJson?.applyExtras(this)
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     },
                 )
             }
             return intents
         }
-
-        private fun Intent.toParcelBase64(): String? =
-            runCatching {
-                val parcel = Parcel.obtain()
-                try {
-                    writeToParcel(parcel, 0)
-                    Base64.encodeToString(parcel.marshall(), Base64.NO_WRAP)
-                } finally {
-                    parcel.recycle()
-                }
-            }.getOrNull()
-
-        private fun String.toIntentFromParcel(): Intent? =
-            runCatching {
-                val bytes = Base64.decode(this, Base64.NO_WRAP)
-                val parcel = Parcel.obtain()
-                try {
-                    parcel.unmarshall(bytes, 0, bytes.size)
-                    parcel.setDataPosition(0)
-                    Intent.CREATOR.createFromParcel(parcel)
-                } finally {
-                    parcel.recycle()
-                }
-            }.getOrNull()
 
         private fun JSONObject.getNullableString(name: String): String? {
             if (!has(name) || isNull(name)) return null

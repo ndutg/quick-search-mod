@@ -143,6 +143,7 @@ data class SearchPermissionState(
         val messagingApp: MessagingApp = MessagingApp.MESSAGES,
         val callingApp: CallingApp = CallingApp.CALL,
         val isWhatsAppInstalled: Boolean = false,
+        val isWhatsAppBusinessInstalled: Boolean = false,
         val isTelegramInstalled: Boolean = false,
         val isSignalInstalled: Boolean = false,
         val isGoogleMeetInstalled: Boolean = false,

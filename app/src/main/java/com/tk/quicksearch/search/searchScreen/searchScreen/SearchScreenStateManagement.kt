@@ -26,6 +26,9 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ContactMethod
+import com.tk.quicksearch.search.models.ContactMethodMimeTypes
+import com.tk.quicksearch.search.utils.PhoneNumberUtils
+import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.dialogs.NicknameDialogState
@@ -214,6 +217,9 @@ internal fun SearchScreenStateManagement(
             ) {
                 CallingApp.CALL -> ContactCardAction.Phone(phoneNumber)
                 CallingApp.WHATSAPP -> ContactCardAction.WhatsAppCall(phoneNumber)
+                CallingApp.WHATSAPP_BUSINESS ->
+                    contact.whatsAppBusinessAction(phoneNumber, ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL)
+                        ?: ContactCardAction.Phone(phoneNumber)
                 CallingApp.TELEGRAM -> ContactCardAction.TelegramCall(phoneNumber)
                 CallingApp.SIGNAL -> ContactCardAction.SignalCall(phoneNumber)
                 CallingApp.GOOGLE_MEET -> ContactCardAction.GoogleMeet(phoneNumber)
@@ -227,6 +233,9 @@ internal fun SearchScreenStateManagement(
             ) {
                 MessagingApp.MESSAGES -> ContactCardAction.Sms(phoneNumber)
                 MessagingApp.WHATSAPP -> ContactCardAction.WhatsAppMessage(phoneNumber)
+                MessagingApp.WHATSAPP_BUSINESS ->
+                    contact.whatsAppBusinessAction(phoneNumber, ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE)
+                        ?: ContactCardAction.Sms(phoneNumber)
                 MessagingApp.TELEGRAM -> ContactCardAction.TelegramMessage(phoneNumber)
                 MessagingApp.SIGNAL -> ContactCardAction.SignalMessage(phoneNumber)
             }
@@ -625,3 +634,23 @@ internal data class SearchScreenStateResult(
     val setShowGeminiModelDialog: (Boolean) -> Unit,
     val setPersonalContextInput: (TextFieldValue) -> Unit,
 )
+
+private fun ContactInfo.whatsAppBusinessAction(
+    phoneNumber: String,
+    mimeType: String,
+): ContactCardAction? =
+    contactMethods
+        .filterIsInstance<ContactMethod.CustomApp>()
+        .firstOrNull { method ->
+            method.packageName == PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
+                method.mimeType == mimeType &&
+                (method.data.isBlank() || PhoneNumberUtils.isSameNumber(method.data, phoneNumber))
+        }?.let { method ->
+            ContactCardAction.CustomApp(
+                phoneNumber = phoneNumber,
+                mimeType = method.mimeType,
+                packageName = method.packageName,
+                dataId = method.dataId,
+                displayLabel = method.displayLabel,
+            )
+        }

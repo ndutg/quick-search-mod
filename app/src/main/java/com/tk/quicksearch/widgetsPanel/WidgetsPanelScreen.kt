@@ -437,8 +437,8 @@ fun WidgetsPanelScreen(
                         modifier = Modifier.weight(1f).fillMaxWidth(),
                     ) {
                         CompactQuickNoteWidget(
-                            modifier = Modifier.fillMaxSize(),
-                            fillAvailableSpace = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            fitContentHeight = true,
                             onFocusChanged = { isQuickNoteFocused = it },
                             onDragStart = {
                                 editingWidgetId = QUICK_NOTE_PANEL_WIDGET_ID

@@ -252,6 +252,7 @@ internal fun PersistentSearchBar(
     var textFieldValue by remember {
         mutableStateOf(TextFieldValue(query, TextRange(query.length)))
     }
+    var localInputAwaitingStateAck by remember { mutableStateOf<String?>(null) }
     var hasLaidOutSearchField by remember { mutableStateOf(false) }
     var showSectionMenu by remember { mutableStateOf(false) }
     val aliasMorphProgress = remember { Animatable(1f) }
@@ -274,7 +275,20 @@ internal fun PersistentSearchBar(
 
     LaunchedEffect(query, leadingIconState) {
         val previousText = textFieldValue.text
-        if (query != previousText) {
+        val shouldDeferSync =
+            shouldDeferTextFieldValueSync(
+                stateQuery = query,
+                localText = previousText,
+                localInputAwaitingStateAck = localInputAwaitingStateAck,
+            )
+        if (query == localInputAwaitingStateAck) {
+            localInputAwaitingStateAck = null
+        }
+        if (
+            query != previousText &&
+                !shouldDeferSync
+        ) {
+            localInputAwaitingStateAck = null
             val shouldAnimateAliasMorph =
                 leadingIconState !is LeadingIconState.Search &&
                     previousLeadingIconState != leadingIconState
@@ -570,6 +584,7 @@ internal fun PersistentSearchBar(
                     StartupTrace.mark("QS.Home.FirstInputAccepted")
                 }
                 textFieldValue = newValue
+                localInputAwaitingStateAck = newValue.text
                 onQueryChange(newValue.text)
             },
             modifier =
@@ -747,6 +762,7 @@ internal fun PersistentSearchBar(
                         IconButton(
                             onClick = {
                                 if (query.isNotEmpty()) {
+                                    localInputAwaitingStateAck = null
                                     onClearQuery()
                                 } else if (isAliasDetected) {
                                     onClearDetectedShortcut()
@@ -980,6 +996,22 @@ private sealed interface LeadingIconState {
         val section: SearchSection,
     ) : LeadingIconState
 }
+
+/**
+ * The IME can send a newer composing value before the ViewModel-backed [stateQuery] has been
+ * rendered. Do not replace that value with its stale prefix while it is awaiting that state
+ * acknowledgment: doing so cancels the IME composition and can leave voice transcription
+ * truncated. Clear actions and other external query updates continue through the normal
+ * synchronization path.
+ */
+internal fun shouldDeferTextFieldValueSync(
+    stateQuery: String,
+    localText: String,
+    localInputAwaitingStateAck: String?,
+): Boolean =
+    localInputAwaitingStateAck == localText &&
+        stateQuery.length < localText.length &&
+        localText.startsWith(stateQuery)
 
 private fun detectConsumedPrefixAlias(
     previousText: String,

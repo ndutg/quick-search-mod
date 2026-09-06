@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.2 (Updated August 30 2026)
+**Version**: 4.3 (Updated September 6 2026)
 
 ### Search
 
@@ -25,7 +25,7 @@ This document highlights all the available features. It also includes details ab
 - **Multi-App Search** - Type a query and tap any "search on" card to quickly search using that search engine. If compact mode is enabled, you can just tap on any icon in the search engine section above your keyboard.
 - **Browser Integration** - Installed browsers automatically appear as search engine options
 - **In-App Browser** - Option to open URLs inside the app instead of an external browser
-- **Supported Search Engines** (27 total): AI Search, Google, ChatGPT, Gemini, Perplexity, Grok, Google Maps, Google Drive, Google Photos, Google Play, Google Translate, Kagi, YouTube, YouTube Music, Spotify, Reddit, Amazon, X (Twitter), Facebook Marketplace, Bing, DuckDuckGo, Brave, Startpage, You.com, AI Mode, Claude, Wikipedia
+- **Supported Search Engines** (28 total): AI Search, Google, ChatGPT, Gemini, Perplexity, Grok, Google Maps, Google Drive, Google Photos, Google Play, Google Translate, Kagi, YouTube, YouTube Music, Spotify, Reddit, Amazon, X (Twitter), Facebook Marketplace, Bing, DuckDuckGo, Brave, Startpage, You.com, AI Mode, Claude, Wikipedia, F-Droid
 - **AI Search** - Configure your Gemini API key to see answers directly within Quick Search. Ask follow-up questions to continue an AI Search conversation.
 - **Custom Search Engines** - Add your own search engines from the Search Engines settings screen.
 - **Web Search Suggestions** - Web suggestions automatically appear when you type your query; you can disable them or change the count in settings.
@@ -63,7 +63,7 @@ This document highlights all the available features. It also includes details ab
 - **Currency Converter** - Convert between currencies directly from the search bar without an API key. Example: "100 USD to EUR" to see the converted amount with the current exchange rate.
 - **Weather** - See current weather information of a particular location directly in search.
 - **Custom AI Tools** - Create your own tools for AI Search. This feature requires an API key to be configured. The current system time can be added in system prompt by using {time} modifier.
-- **Tasker Integration** - Create Tasker actions with broadcast intents and trigger them from Quick Search using aliases. The current query is sent to Tasker as an extra.
+- **Tasker Integration** - Create Tasker actions with broadcast intents and trigger them from Quick Search using aliases; the current query is sent to Tasker as an extra. You can also add Tasker task shortcuts from App Shortcuts and launch them directly from Quick Search.
 
 ---
 
@@ -107,6 +107,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Edit Icons for App Shortcuts** - Option to add custom icons for app shortcuts.
 - **App Info / Uninstall / Hide** - For apps, open system app info, uninstall supported apps, or hide them from suggestions/results using the long-press menu on the app icon.
 - **Open in Split Screen** - Long-press any app to open it in split screen.
+- **SpeedBump** - Long-press any app and select **SpeedBump** to add a short delay before it opens—a small pause to help break habitual app opens.
 - **File-Specific Options** - For files, long-press to share, open the containing folder, exclude all files with the same extension, or view a detailed file info dialog (type, size, path, last modified, etc.).
 
 ---
@@ -160,7 +161,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Amazon Domain** - Select the Amazon region/domain used when searching via the Amazon engine. Updating this will open your Amazon queries within the installed app instead of the website.
 - **Custom Search Engines** - Add your own search engines by specifying a URL template with the {{query}} placeholder. The app automatically fetches the name and icon for the website, but you can choose to edit them if needed. Tapping on {{query}} in the error hint will add this string to your URL so that you don't have to type it. You can choose any installed browser to open custom search engine queries.
 - **AI Search** - Connect a Gemini API key to enable AI answers directly in Quick Search, view if a key is configured, and open the dedicated AI Search configuration screen. Gemini Flash Latest is the model which is chosen by default.
-- **AI Providers** - Configure API keys for multiple AI providers - Gemini, OpenAI, Claude, Groq - at the same time and switch models as needed.
+- **AI Providers** - Configure API keys for multiple AI providers - Gemini, OpenAI, Claude, Groq, Meta AI - at the same time and switch models as needed.
 - **Custom AI Providers** - Add your own AI providers using any OpenAI-compatible API. Specify the base URL, API key, and model details to plug in self-hosted or third-party endpoints. Advanced users can also provide a custom JSON payload for full control over request parameters.
 
 ---
@@ -200,8 +201,8 @@ Long-press on most results to open a context menu with quick actions.
 - Can be accessed in Search Result settings page via Contacts Option
 - **Number Search** - Enable searching contacts by their phone numbers.
 - **Direct Dial** - Enable direct dialing from search results (tapping a phone result calls immediately instead of opening the dialer).
-- **Default Calling App** - Choose which app to show up as the default calling action in contact result cards (supported apps when installed: Google Meet, WhatsApp, Telegram, Signal).
-- **Default Messaging App** - Choose which app to show up as the default messaging action in the contact result cards (supported apps when installed: Google Meet, WhatsApp, Telegram, Signal).
+- **Default Calling App** - Choose which app to show up as the default calling action in contact result cards (supported apps when installed: Google Meet, WhatsApp, WhatsApp Business, Telegram, Signal).
+- **Default Messaging App** - Choose which app to show up as the default messaging action in the contact result cards (supported apps when installed: Google Meet, WhatsApp, WhatsApp Business, Telegram, Signal).
 
 ---
 
@@ -241,6 +242,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Search Hints** - Option to show or hide the rotating search hints displayed in the search bar.
 - **Settings Icon** - Option to show or hide the settings icon in the search bar.
 - **Quick Note** - Option to disable the quick note feature (swipe left from home) if you don't use it.
+- **Show in Recents** - Show Quick Search in your device's recent apps.
 
 ---
 
@@ -248,7 +250,7 @@ Long-press on most results to open a context menu with quick actions.
 
 - **Swipe Left/Right** - Customize swipe left and right actions. By default, swipe right opens Quick Note and swipe left opens Settings; you can disable either gesture or assign a custom action, search engine, or tool instead.
 - **Home Screen Swipe Up/Down** - Customize swipe up and swipe down on Home. Assign a custom action, search engine, or tool, or disable the gesture. Swipe down can also open the notification panel.
-- **Double Tap Gesture** - Double-tap on an empty area in Home to trigger a custom action, search engine, or tool, or disable it if you do not need it.
+- **Double Tap Gesture** - Double-tap on an empty area in Home to trigger a custom action, search engine, tool, or lock your screen, or disable it if you do not need it.
 - **Keyboard Gestures** - Choose which swipe opens the keyboard and which swipe closes it. These are available on Home only when there is no scrollable content, so normal scrolling always takes priority.
 - **Launcher Swipe Right** - When Quick Search is set as your launcher, swipe right can open the Widget Panel.
 - **Widgets Panel Gesture** - You can also assign swipe left or swipe right to open the Widgets Panel without setting Quick Search as your launcher.

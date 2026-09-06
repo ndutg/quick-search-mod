@@ -1104,4 +1104,10 @@
     <string name="pin_notification_dialog_title">Fixar na notificação</string>
     <string name="pin_notification_with_other_items">Fixar junto com outros itens</string>
     <string name="pin_notification_separately">Fixar separadamente</string>
+    <string name="speed_bump_dont_open">Não abrir</string>
+    <string name="speed_bump_explainer_body">Este recurso adiciona um pequeno atraso antes de abrir um app, dando a você um momento para decidir se realmente quer abri-lo. Isso pode ajudar a evitar abrir apps por impulso e reduzir hábitos viciantes.</string>
+    <string name="speed_bump_explainer_just_enabled">Você acabou de ativar para %1$s</string>
+    <string name="speed_bump_overlay_prompt">%1$s vai abrir em instantes. Toque no botão abaixo se não quiser continuar.</string>
+    <string name="speed_bump_overlay_title">Respire fundo</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

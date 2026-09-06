@@ -122,6 +122,7 @@ fun FinalSetupScreen(
                         hasCallPermission = hasCallPermission,
                         contactsSectionEnabled = true,
                         isWhatsAppInstalled = uiState.isWhatsAppInstalled,
+                        isWhatsAppBusinessInstalled = uiState.isWhatsAppBusinessInstalled,
                         isTelegramInstalled = uiState.isTelegramInstalled,
                         isSignalInstalled = uiState.isSignalInstalled,
                         showCallingApp = false,
@@ -136,6 +137,10 @@ fun FinalSetupScreen(
 
                                     MessagingApp.WHATSAPP -> {
                                         uiState.isWhatsAppInstalled
+                                    }
+
+                                    MessagingApp.WHATSAPP_BUSINESS -> {
+                                        uiState.isWhatsAppBusinessInstalled
                                     }
 
                                     MessagingApp.TELEGRAM -> {
@@ -157,6 +162,10 @@ fun FinalSetupScreen(
                                                 R.string
                                                     .contact_method_whatsapp_message_label,
                                             )
+                                        }
+
+                                        MessagingApp.WHATSAPP_BUSINESS -> {
+                                            context.getString(R.string.contact_method_whatsapp_business_label)
                                         }
 
                                         MessagingApp.TELEGRAM -> {

@@ -363,6 +363,17 @@ class ContactActionHandler(
         ) {
             MessagingApp.MESSAGES -> performSms(number)
             MessagingApp.WHATSAPP -> ContactIntentHelpers.openWhatsAppChat(context, number) { resId -> showToastCallback(resId) }
+            MessagingApp.WHATSAPP_BUSINESS -> {
+                val method =
+                    contactInfo.contactMethods
+                        .filterIsInstance<ContactMethod.CustomApp>()
+                        .firstOrNull {
+                            it.packageName == com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
+                                it.mimeType == com.tk.quicksearch.search.models.ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE &&
+                                (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number))
+                        }
+                if (method != null) handleContactMethod(contactInfo, method) else performSms(number)
+            }
             MessagingApp.TELEGRAM -> ContactIntentHelpers.openTelegramChat(context, number) { resId -> showToastCallback(resId) }
             MessagingApp.SIGNAL -> ContactIntentHelpers.openSignalChat(context, number) { resId -> showToastCallback(resId) }
         }
@@ -385,6 +396,22 @@ class ContactActionHandler(
                     contactInfo.contactMethods.firstOrNull { it is ContactMethod.WhatsAppCall && it.dataId != null && (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number)) } as? ContactMethod.WhatsAppCall
                 if (method?.dataId != null) {
                     handleWhatsAppCallWithPermission(method.dataId)
+                } else {
+                    beginRegularCallFlow(contactInfo.displayName, number)
+                }
+            }
+            CallingApp.WHATSAPP_BUSINESS -> {
+                val method =
+                    contactInfo.contactMethods
+                        .filterIsInstance<ContactMethod.CustomApp>()
+                        .firstOrNull {
+                            it.packageName == com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
+                                it.mimeType == com.tk.quicksearch.search.models.ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL &&
+                                it.dataId != null &&
+                                (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number))
+                        }
+                if (method != null) {
+                    handleContactMethod(contactInfo, method)
                 } else {
                     beginRegularCallFlow(contactInfo.displayName, number)
                 }

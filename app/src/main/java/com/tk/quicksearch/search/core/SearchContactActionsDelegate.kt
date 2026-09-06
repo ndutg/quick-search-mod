@@ -11,8 +11,10 @@ import com.tk.quicksearch.search.data.ContactRepository
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
+import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
+import com.tk.quicksearch.shared.util.PackageConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -358,6 +360,10 @@ internal class SearchContactActionsDelegate(
             ) {
                 CallingApp.CALL -> ContactCardAction.Phone(phoneNumber)
                 CallingApp.WHATSAPP -> ContactCardAction.WhatsAppCall(phoneNumber)
+                CallingApp.WHATSAPP_BUSINESS -> contact.whatsAppBusinessAction(
+                    phoneNumber,
+                    ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL,
+                )
                 CallingApp.TELEGRAM -> ContactCardAction.TelegramCall(phoneNumber)
                 CallingApp.SIGNAL -> ContactCardAction.SignalCall(phoneNumber)
                 CallingApp.GOOGLE_MEET -> ContactCardAction.GoogleMeet(phoneNumber)
@@ -371,9 +377,33 @@ internal class SearchContactActionsDelegate(
             ) {
                 MessagingApp.MESSAGES -> ContactCardAction.Sms(phoneNumber)
                 MessagingApp.WHATSAPP -> ContactCardAction.WhatsAppMessage(phoneNumber)
+                MessagingApp.WHATSAPP_BUSINESS -> contact.whatsAppBusinessAction(
+                    phoneNumber,
+                    ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE,
+                )
                 MessagingApp.TELEGRAM -> ContactCardAction.TelegramMessage(phoneNumber)
                 MessagingApp.SIGNAL -> ContactCardAction.SignalMessage(phoneNumber)
             }
         }
     }
+
+    private fun ContactInfo.whatsAppBusinessAction(
+        phoneNumber: String,
+        mimeType: String,
+    ): ContactCardAction? =
+        contactMethods
+            .filterIsInstance<ContactMethod.CustomApp>()
+            .firstOrNull { method ->
+                method.packageName == PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
+                    method.mimeType == mimeType &&
+                    (method.data.isBlank() || PhoneNumberUtils.isSameNumber(method.data, phoneNumber))
+            }?.let { method ->
+                ContactCardAction.CustomApp(
+                    phoneNumber = phoneNumber,
+                    mimeType = method.mimeType,
+                    packageName = method.packageName,
+                    dataId = method.dataId,
+                    displayLabel = method.displayLabel,
+                )
+            }
 }

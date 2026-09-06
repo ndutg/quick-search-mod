@@ -105,6 +105,7 @@ fun MessagingSection(
     hasCallPermission: Boolean,
     contactsSectionEnabled: Boolean = true,
     isWhatsAppInstalled: Boolean = false,
+    isWhatsAppBusinessInstalled: Boolean = false,
     isTelegramInstalled: Boolean = false,
     isSignalInstalled: Boolean = false,
     isGoogleMeetInstalled: Boolean = false,
@@ -119,9 +120,9 @@ fun MessagingSection(
         return
     }
 
-    val hasAnyThirdPartyMessagingApp = isWhatsAppInstalled || isTelegramInstalled || isSignalInstalled
+    val hasAnyThirdPartyMessagingApp = isWhatsAppInstalled || isWhatsAppBusinessInstalled || isTelegramInstalled || isSignalInstalled
     val hasAnyThirdPartyCallingApp =
-        isGoogleMeetInstalled || isWhatsAppInstalled || isTelegramInstalled || isSignalInstalled
+        isGoogleMeetInstalled || isWhatsAppInstalled || isWhatsAppBusinessInstalled || isTelegramInstalled || isSignalInstalled
     val shouldShowCallingCard = showCallingApp && hasAnyThirdPartyCallingApp
     val shouldShowMessagingCard = hasAnyThirdPartyMessagingApp
     val shouldShowDirectDialCard = showDirectDial
@@ -135,6 +136,9 @@ fun MessagingSection(
             add(MessagingOption(MessagingApp.MESSAGES, R.string.settings_messaging_option_messages))
             if (isWhatsAppInstalled) {
                 add(MessagingOption(MessagingApp.WHATSAPP, R.string.contact_method_whatsapp_message_label))
+            }
+            if (isWhatsAppBusinessInstalled) {
+                add(MessagingOption(MessagingApp.WHATSAPP_BUSINESS, R.string.contact_method_whatsapp_business_label))
             }
             if (isTelegramInstalled) {
                 add(MessagingOption(MessagingApp.TELEGRAM, R.string.contact_method_telegram_message_label))
@@ -151,6 +155,9 @@ fun MessagingSection(
             }
             if (isWhatsAppInstalled) {
                 add(CallingOption(CallingApp.WHATSAPP, R.string.contact_method_whatsapp_message_label))
+            }
+            if (isWhatsAppBusinessInstalled) {
+                add(CallingOption(CallingApp.WHATSAPP_BUSINESS, R.string.contact_method_whatsapp_business_label))
             }
             if (isTelegramInstalled) {
                 add(CallingOption(CallingApp.TELEGRAM, R.string.contact_method_telegram_message_label))
@@ -480,6 +487,12 @@ private fun CallingOptionIcon(app: CallingApp) {
                 size = MessagingSpacing.iconSize,
             )
         }
+        CallingApp.WHATSAPP_BUSINESS -> {
+            AppVoiceCallIcon(
+                logoPainterRes = R.drawable.whatsapp_call,
+                size = MessagingSpacing.iconSize,
+            )
+        }
         CallingApp.TELEGRAM -> {
             AppVoiceCallIcon(
                 logoPainterRes = R.drawable.telegram_call,
@@ -562,6 +575,13 @@ private fun MessagingOptionIcon(app: MessagingApp) {
                 modifier = Modifier.size(MessagingSpacing.iconSize),
             )
         }
+        MessagingApp.WHATSAPP_BUSINESS -> {
+            Image(
+                painter = painterResource(id = R.drawable.whatsapp),
+                contentDescription = null,
+                modifier = Modifier.size(MessagingSpacing.iconSize),
+            )
+        }
 
         MessagingApp.TELEGRAM -> {
             Image(
@@ -598,6 +618,7 @@ fun CallsTextsSettingsSection(
     hasCallPermission: Boolean,
     contactsSectionEnabled: Boolean = true,
     isWhatsAppInstalled: Boolean = false,
+    isWhatsAppBusinessInstalled: Boolean = false,
     isTelegramInstalled: Boolean = false,
     isSignalInstalled: Boolean = false,
     isGoogleMeetInstalled: Boolean = false,
@@ -638,6 +659,7 @@ fun CallsTextsSettingsSection(
                 CallingApp.CALL -> true
                 CallingApp.GOOGLE_MEET -> isGoogleMeetInstalled
                 CallingApp.WHATSAPP -> isWhatsAppInstalled
+                CallingApp.WHATSAPP_BUSINESS -> isWhatsAppBusinessInstalled
                 CallingApp.TELEGRAM -> isTelegramInstalled
                 CallingApp.SIGNAL -> isSignalInstalled
             }
@@ -645,6 +667,7 @@ fun CallsTextsSettingsSection(
         if (isInstalled) {
             val requiresCallPermission =
                 app == CallingApp.WHATSAPP ||
+                    app == CallingApp.WHATSAPP_BUSINESS ||
                     app == CallingApp.TELEGRAM ||
                     app == CallingApp.SIGNAL
             if (requiresCallPermission && !PermissionHelper.checkCallPermission(context)) {
@@ -659,6 +682,7 @@ fun CallsTextsSettingsSection(
                     CallingApp.CALL -> context.getString(R.string.contact_method_call_label)
                     CallingApp.GOOGLE_MEET -> context.getString(R.string.contact_method_google_meet_label)
                     CallingApp.WHATSAPP -> context.getString(R.string.contact_method_whatsapp_message_label)
+                    CallingApp.WHATSAPP_BUSINESS -> context.getString(R.string.contact_method_whatsapp_business_label)
                     CallingApp.TELEGRAM -> context.getString(R.string.contact_method_telegram_message_label)
                     CallingApp.SIGNAL -> context.getString(R.string.contact_method_signal_message_label)
                 }
@@ -683,6 +707,7 @@ fun CallsTextsSettingsSection(
 
                 // Messages is always available
                 MessagingApp.WHATSAPP -> isWhatsAppInstalled
+                MessagingApp.WHATSAPP_BUSINESS -> isWhatsAppBusinessInstalled
 
                 MessagingApp.TELEGRAM -> isTelegramInstalled
 
@@ -696,6 +721,10 @@ fun CallsTextsSettingsSection(
                 when (app) {
                     MessagingApp.WHATSAPP -> {
                         context.getString(R.string.contact_method_whatsapp_message_label)
+                    }
+
+                    MessagingApp.WHATSAPP_BUSINESS -> {
+                        context.getString(R.string.contact_method_whatsapp_business_label)
                     }
 
                     MessagingApp.TELEGRAM -> {
@@ -734,6 +763,7 @@ fun CallsTextsSettingsSection(
         hasCallPermission = hasCallPermission,
         contactsSectionEnabled = contactsSectionEnabled,
         isWhatsAppInstalled = isWhatsAppInstalled,
+        isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
         isTelegramInstalled = isTelegramInstalled,
         isSignalInstalled = isSignalInstalled,
         isGoogleMeetInstalled = isGoogleMeetInstalled,

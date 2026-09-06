@@ -15,6 +15,8 @@ class MessagingHandler(
 
     var isWhatsAppInstalled: Boolean = false
         private set
+    var isWhatsAppBusinessInstalled: Boolean = false
+        private set
 
     var isTelegramInstalled: Boolean = false
         private set
@@ -23,11 +25,13 @@ class MessagingHandler(
 
     fun resolveMessagingApp(
         whatsappInstalled: Boolean,
+        whatsappBusinessInstalled: Boolean,
         telegramInstalled: Boolean,
         signalInstalled: Boolean,
     ): MessagingApp =
         when (messagingApp) {
             MessagingApp.WHATSAPP -> if (whatsappInstalled) MessagingApp.WHATSAPP else MessagingApp.MESSAGES
+            MessagingApp.WHATSAPP_BUSINESS -> if (whatsappBusinessInstalled) MessagingApp.WHATSAPP_BUSINESS else MessagingApp.MESSAGES
             MessagingApp.TELEGRAM -> if (telegramInstalled) MessagingApp.TELEGRAM else MessagingApp.MESSAGES
             MessagingApp.SIGNAL -> if (signalInstalled) MessagingApp.SIGNAL else MessagingApp.MESSAGES
             MessagingApp.MESSAGES -> MessagingApp.MESSAGES
@@ -35,15 +39,17 @@ class MessagingHandler(
 
     fun updateMessagingAvailability(
         whatsappInstalled: Boolean,
+        whatsappBusinessInstalled: Boolean,
         telegramInstalled: Boolean,
         signalInstalled: Boolean,
         updateState: Boolean = true,
     ): MessagingApp {
         isWhatsAppInstalled = whatsappInstalled
+        isWhatsAppBusinessInstalled = whatsappBusinessInstalled
         isTelegramInstalled = telegramInstalled
         isSignalInstalled = signalInstalled
 
-        val resolvedMessagingApp = resolveMessagingApp(whatsappInstalled, telegramInstalled, signalInstalled)
+        val resolvedMessagingApp = resolveMessagingApp(whatsappInstalled, whatsappBusinessInstalled, telegramInstalled, signalInstalled)
         if (resolvedMessagingApp != messagingApp) {
             messagingApp = resolvedMessagingApp
             userPreferences.setMessagingApp(resolvedMessagingApp)
@@ -54,6 +60,7 @@ class MessagingHandler(
                 state.copy(
                     messagingApp = messagingApp,
                     isWhatsAppInstalled = whatsappInstalled,
+                    isWhatsAppBusinessInstalled = whatsappBusinessInstalled,
                     isTelegramInstalled = telegramInstalled,
                     isSignalInstalled = signalInstalled,
                 )
@@ -69,6 +76,7 @@ class MessagingHandler(
         userPreferences.setMessagingApp(app)
         updateMessagingAvailability(
             whatsappInstalled = isWhatsAppInstalled,
+            whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
             telegramInstalled = isTelegramInstalled,
             signalInstalled = isSignalInstalled,
         )

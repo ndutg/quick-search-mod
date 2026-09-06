@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.apps
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,14 +23,18 @@ import androidx.compose.material.icons.rounded.Image as IconImage
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PinEnd
+import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
@@ -39,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
@@ -55,21 +61,92 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
+import com.tk.quicksearch.search.apps.speedBump.SpeedBump
+import com.tk.quicksearch.search.apps.speedBump.SpeedBumpExplainerDialog
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.hapticConfirm
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private data class AppMenuItem(
+internal enum class AppMenuItemKey {
+    PIN,
+    NICKNAME,
+    ICON,
+    TRIGGER,
+    SPLIT_SCREEN,
+    ADD_TO_HOME,
+    APP_INFO,
+    SPEED_BUMP,
+    EXCLUDE,
+    NOTIFICATIONS,
+    UNINSTALL,
+}
+
+internal data class AppMenuItem(
+    val key: AppMenuItemKey,
     val textResId: Int,
     val icon: @Composable () -> Unit,
     val onClick: () -> Unit,
-    val spansTwoColumns: Boolean = false,
+    val onLongClick: (() -> Unit)? = null,
+    /** Columns this item occupies in the 3-column action grid. */
+    val span: Int = 1,
 )
 
 private val ShortcutGridIconSize = 32.dp
+
+internal const val ActionGridColumns = 3
+
+/** Items that must never be split across rows, in the order they should appear. */
+internal val InseparableActionKeys = listOf(AppMenuItemKey.SPEED_BUMP, AppMenuItemKey.EXCLUDE)
+
+/**
+ * Packs action items into 3-column rows.
+ *
+ * Items keep their declared order unless one does not fit the remaining space, in which case a
+ * later item that does fit is pulled forward. That keeps rows full so empty slots only ever
+ * appear at the end of the last row. The SpeedBump / Exclude pair is packed as a single unit so
+ * SpeedBump always sits directly to the left of Exclude.
+ */
+internal fun packActionRows(items: List<AppMenuItem>): List<List<AppMenuItem>> {
+    val groups: List<List<AppMenuItem>> =
+        buildList {
+            val pair = InseparableActionKeys.mapNotNull { key -> items.firstOrNull { it.key == key } }
+            var pairEmitted = false
+            items.forEach { item ->
+                if (item.key in InseparableActionKeys) {
+                    if (!pairEmitted) {
+                        add(pair)
+                        pairEmitted = true
+                    }
+                } else {
+                    add(listOf(item))
+                }
+            }
+        }
+
+    val remaining = groups.toMutableList()
+    val rows = mutableListOf<List<AppMenuItem>>()
+    while (remaining.isNotEmpty()) {
+        val row = mutableListOf<AppMenuItem>()
+        var used = 0
+        while (used < ActionGridColumns) {
+            val index =
+                remaining.indexOfFirst { group ->
+                    group.sumOf { it.span } <= ActionGridColumns - used
+                }
+            if (index < 0) break
+            val group = remaining.removeAt(index)
+            row += group
+            used += group.sumOf { it.span }
+        }
+        if (row.isEmpty()) break
+        rows += row
+    }
+    return rows
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,9 +194,15 @@ fun AppItemDropdownMenu(
         )
     val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
     val showIconPicker = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    var speedBumpEnabled by remember(appInfo.packageName, expanded) {
+        mutableStateOf(SpeedBump.isEnabled(context, appInfo.packageName))
+    }
+    // Non-null while the explainer is up; true when it followed the user first turning it on.
+    var speedBumpExplainerJustEnabled by remember { mutableStateOf<Boolean?>(null) }
     val menuItems = buildList {
         if (!isCurrentApp && isLaunchableApp) {
             add(AppMenuItem(
+                key = AppMenuItemKey.PIN,
                 textResId = if (isPinned) R.string.action_unpin_app else R.string.action_pin_app,
                 icon = {
                     Icon(
@@ -132,16 +215,19 @@ fun AppItemDropdownMenu(
         }
         if (!isCurrentApp) {
             add(AppMenuItem(
+                key = AppMenuItemKey.NICKNAME,
                 textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
                 icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
                 onClick = { onDismiss(); onNicknameClick() },
             ))
             add(AppMenuItem(
+                key = AppMenuItemKey.ICON,
                 textResId = R.string.action_change_icon,
                 icon = { Icon(imageVector = Icons.Rounded.IconImage, contentDescription = null) },
                 onClick = { onDismiss(); showIconPicker.value = true },
             ))
             add(AppMenuItem(
+                key = AppMenuItemKey.TRIGGER,
                 textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,
                 icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null) },
                 onClick = { onDismiss(); onTriggerClick() },
@@ -150,29 +236,58 @@ fun AppItemDropdownMenu(
         if (isLaunchableApp) {
             if (appInfo.userHandleId == null) {
                 add(AppMenuItem(
+                    key = AppMenuItemKey.SPLIT_SCREEN,
                     textResId = R.string.action_open_in_split_screen,
                     icon = { Icon(imageVector = Icons.Rounded.HorizontalSplit, contentDescription = null) },
                     onClick = { onDismiss(); onOpenInSplitScreen() },
                 ))
             }
             add(AppMenuItem(
+                key = AppMenuItemKey.ADD_TO_HOME,
                 textResId = R.string.action_add_to_home,
                 icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
                 onClick = { onDismiss(); onAddToHome() },
             ))
         }
         add(AppMenuItem(
+            key = AppMenuItemKey.APP_INFO,
             textResId = R.string.action_app_info,
             icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
             onClick = { onDismiss(); onAppInfoClick() },
         ))
+        if (!isCurrentApp && isLaunchableApp) {
+            add(AppMenuItem(
+                key = AppMenuItemKey.SPEED_BUMP,
+                textResId = R.string.speed_bump_title,
+                // The green tint is the only affordance for the on/off state.
+                icon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Spa,
+                        contentDescription = null,
+                        tint = if (speedBumpEnabled) AppColors.ActionPhone else LocalContentColor.current,
+                    )
+                },
+                onClick = {
+                    speedBumpEnabled = SpeedBump.toggle(context, appInfo.packageName)
+                    if (!SpeedBump.hasSeenExplainer(context)) {
+                        SpeedBump.markExplainerSeen(context)
+                        onDismiss()
+                        speedBumpExplainerJustEnabled = true
+                    }
+                    // Otherwise the menu stays open so the icon can be seen turning green.
+                },
+                onLongClick = { onDismiss(); speedBumpExplainerJustEnabled = false },
+            ))
+        }
         add(AppMenuItem(
+            key = AppMenuItemKey.EXCLUDE,
             textResId = R.string.action_exclude_generic,
             icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
             onClick = { onDismiss(); onHideApp() },
         ))
         if (isLaunchableApp) {
             add(AppMenuItem(
+                key = AppMenuItemKey.NOTIFICATIONS,
                 textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
                 icon = {
                     if (isPinnedToNotifications) {
@@ -182,11 +297,12 @@ fun AppItemDropdownMenu(
                     }
                 },
                 onClick = { onDismiss(); PinnedNotifications.toggle(context, notificationAction) },
-                spansTwoColumns = true,
+                span = 2,
             ))
         }
         if (showUninstall) {
             add(AppMenuItem(
+                key = AppMenuItemKey.UNINSTALL,
                 textResId = R.string.action_uninstall_app,
                 icon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
                 onClick = { onDismiss(); onUninstallClick() },
@@ -312,132 +428,46 @@ fun AppItemDropdownMenu(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                val uninstallActionItem =
-                    menuItems.singleOrNull { it.textResId == R.string.action_uninstall_app }
-                val actionItems = menuItems.filterNot { it == uninstallActionItem }
-                val notificationActionItem = actionItems.singleOrNull { it.spansTwoColumns }
-                val trailingExclude = actionItems.lastOrNull { it.textResId == R.string.action_exclude_generic }
-                val splitScreenActionItem =
-                    actionItems.singleOrNull { it.textResId == R.string.action_open_in_split_screen }
-                val standardActionItems = actionItems.filterNot {
-                    it.spansTwoColumns ||
-                        ((notificationActionItem != null || uninstallActionItem != null) && it == trailingExclude) ||
-                        (notificationActionItem != null && it == splitScreenActionItem)
-                }
-                standardActionItems.chunked(3).forEach { row ->
+                // SpeedBump and Exclude are kept side by side, so they are packed as one
+                // inseparable pair. Later single-column items may move ahead of an item that
+                // does not fit, which keeps empty slots at the end of the final row only.
+                val actionRows = packActionRows(menuItems)
+                actionRows.forEach { row ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                     ) {
                         row.forEach { item ->
-                            AppMenuGridButton(
-                                label = stringResource(item.textResId),
-                                icon = { item.icon() },
-                                onClick = item.onClick,
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                        repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
-                    }
-                }
-                if (splitScreenActionItem != null && notificationActionItem != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        AppMenuGridButton(
-                            label = stringResource(splitScreenActionItem.textResId),
-                            icon = { splitScreenActionItem.icon() },
-                            onClick = splitScreenActionItem.onClick,
-                            modifier = Modifier.weight(1f),
-                        )
-                        AppMenuGridButton(
-                            label = stringResource(notificationActionItem.textResId),
-                            icon = { notificationActionItem.icon() },
-                            onClick = notificationActionItem.onClick,
-                            modifier = Modifier.weight(2f),
-                        )
-                    }
-                    trailingExclude?.let { excludeActionItem ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                        ) {
-                            AppMenuGridButton(
-                                label = stringResource(excludeActionItem.textResId),
-                                icon = { excludeActionItem.icon() },
-                                onClick = excludeActionItem.onClick,
-                                modifier = Modifier.weight(1f),
-                            )
-                            uninstallActionItem?.let { uninstallItem ->
+                            if (item.key == AppMenuItemKey.UNINSTALL) {
                                 UninstallMenuGridButton(
-                                    item = uninstallItem,
-                                    modifier = Modifier.weight(1f),
+                                    item = item,
+                                    modifier = Modifier.weight(item.span.toFloat()),
                                 )
-                            } ?: Spacer(Modifier.weight(1f))
+                            } else {
+                                AppMenuGridButton(
+                                    label = stringResource(item.textResId),
+                                    icon = { item.icon() },
+                                    onClick = item.onClick,
+                                    onLongClick = item.onLongClick,
+                                    modifier = Modifier.weight(item.span.toFloat()),
+                                )
+                            }
+                        }
+                        repeat(ActionGridColumns - row.sumOf { it.span }) {
                             Spacer(Modifier.weight(1f))
                         }
-                    }
-                } else if (trailingExclude != null && notificationActionItem != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        AppMenuGridButton(
-                            label = stringResource(trailingExclude.textResId),
-                            icon = { trailingExclude.icon() },
-                            onClick = trailingExclude.onClick,
-                            modifier = Modifier.weight(1f),
-                        )
-                        uninstallActionItem?.let { uninstallItem ->
-                            UninstallMenuGridButton(
-                                item = uninstallItem,
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                        AppMenuGridButton(
-                            label = stringResource(notificationActionItem.textResId),
-                            icon = { notificationActionItem.icon() },
-                            onClick = notificationActionItem.onClick,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                } else if (trailingExclude != null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        AppMenuGridButton(
-                            label = stringResource(trailingExclude.textResId),
-                            icon = { trailingExclude.icon() },
-                            onClick = trailingExclude.onClick,
-                            modifier = Modifier.weight(1f),
-                        )
-                        uninstallActionItem?.let { uninstallItem ->
-                            UninstallMenuGridButton(
-                                item = uninstallItem,
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                        Spacer(Modifier.weight(1f))
-                    }
-                } else actionItems.filter { it.spansTwoColumns }.forEach { item ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        AppMenuGridButton(
-                            label = stringResource(item.textResId),
-                            icon = { item.icon() },
-                            onClick = item.onClick,
-                            modifier = Modifier.weight(2f),
-                        )
-                        Spacer(Modifier.weight(1f))
                     }
                 }
 
             }
         }
+    }
+
+    speedBumpExplainerJustEnabled?.let { justEnabled ->
+        SpeedBumpExplainerDialog(
+            justEnabledForAppName = appInfo.appName.takeIf { justEnabled },
+            onDismiss = { speedBumpExplainerJustEnabled = null },
+        )
     }
 
     if (showIconPicker.value) {
@@ -490,6 +520,7 @@ internal fun AppMenuGridButton(
     label: String,
     icon: @Composable () -> Unit,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     enableMarquee: Boolean = false,
     containerColor: Color = Color.Transparent,
     contentColor: Color = AppColors.DialogText,
@@ -497,23 +528,35 @@ internal fun AppMenuGridButton(
     modifier: Modifier = Modifier,
 ) {
     val borderColor = AppColors.OnboardingBubbleBorder
-    Surface(
-        onClick = onClick,
-        modifier =
-            modifier.then(
-                if (showBorder) {
-                    Modifier.border(
-                        width = DesignTokens.BorderWidth,
-                        color = borderColor,
-                        shape = DesignTokens.ShapeSmall,
-                    )
-                } else {
-                    Modifier
-                },
-            ),
-        shape = DesignTokens.ShapeSmall,
-        color = containerColor,
-    ) {
+    val view = LocalView.current
+    val borderModifier =
+        if (showBorder) {
+            Modifier.border(
+                width = DesignTokens.BorderWidth,
+                color = borderColor,
+                shape = DesignTokens.ShapeSmall,
+            )
+        } else {
+            Modifier
+        }
+    // Surface's own onClick cannot carry a long-press, so items that need one opt into
+    // combinedClickable instead.
+    val surfaceModifier =
+        if (onLongClick != null) {
+            modifier
+                .clip(DesignTokens.ShapeSmall)
+                .then(borderModifier)
+                .combinedClickable(
+                    onClick = onClick,
+                    onLongClick = {
+                        hapticConfirm(view)()
+                        onLongClick()
+                    },
+                )
+        } else {
+            modifier.then(borderModifier)
+        }
+    val surfaceContent: @Composable () -> Unit = {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -531,5 +574,20 @@ internal fun AppMenuGridButton(
                 modifier = if (enableMarquee) Modifier.basicMarquee() else Modifier,
             )
         }
+    }
+
+    if (onLongClick != null) {
+        Surface(
+            modifier = surfaceModifier,
+            shape = DesignTokens.ShapeSmall,
+            color = containerColor,
+        ) { surfaceContent() }
+    } else {
+        Surface(
+            onClick = onClick,
+            modifier = surfaceModifier,
+            shape = DesignTokens.ShapeSmall,
+            color = containerColor,
+        ) { surfaceContent() }
     }
 }
