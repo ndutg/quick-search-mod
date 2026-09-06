@@ -23,6 +23,7 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.isUserCreatedShortcu
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.searchEngines.SearchTargetQueryShortcutActivity
+import com.tk.quicksearch.tools.tasker.TaskerIntegration
 import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
@@ -39,6 +40,8 @@ private fun <T : Parcelable> Intent.getParcelableExtraCompat(
         @Suppress("DEPRECATION")
         getParcelableExtra(key) as? T
     }
+
+private const val TASKER_INTENT_HANDLER_CLASS = "net.dinglisch.android.taskerm.IntentHandler"
 
 fun parseCustomShortcutFromPickerResult(
     resultData: Intent?,
@@ -664,12 +667,14 @@ fun launchStaticShortcut(
                     putExtra(SearchTargetQueryShortcutActivity.EXTRA_SKIP_QUERY_HISTORY, true)
                 }
             }
+        val isTaskerTaskShortcut =
+            shortcut.packageName == TaskerIntegration.PACKAGE_NAME &&
+                intent.`package` == TaskerIntegration.PACKAGE_NAME &&
+                intent.action?.startsWith("net.dinglisch.android.tasker.") == true
         val details = formatIntentDetails(intent)
         val resolved = pm.resolveActivity(intent, 0)
         if (resolved == null) {
-            // Legacy shortcut providers can return a broadcast intent instead of an activity
-            // intent. Tasker's task-shortcut picker does this for its task actions.
-            if (sendShortcutBroadcastIfResolvable(context, pm, intent)) {
+            if (isTaskerTaskShortcut && launchTaskerShortcut(context, intent)) {
                 return null
             }
             // Activities that can't be resolved via PackageManager (e.g., Knox-protected
@@ -742,38 +747,21 @@ fun launchStaticShortcut(
     return context.getString(R.string.error_shortcut_no_activity_resolves) + noActivityIntentDetails.toSuffixDetail()
 }
 
-private fun sendShortcutBroadcastIfResolvable(
+private fun launchTaskerShortcut(
     context: Context,
-    packageManager: PackageManager,
     intent: Intent,
-): Boolean {
-    val receiver = findBroadcastReceiver(packageManager, intent) ?: return false
-    val receiverInfo = receiver.activityInfo ?: return false
-    if (!receiverInfo.exported) return false
-
-    val requiredPermission = receiverInfo.permission?.takeIf { it.isNotBlank() }
-    if (requiredPermission != null &&
-        context.checkSelfPermission(requiredPermission) != PackageManager.PERMISSION_GRANTED
-    ) {
-        return false
-    }
-
-    return kotlin.runCatching { context.sendBroadcast(intent) }.isSuccess
-}
-
-private fun findBroadcastReceiver(
-    packageManager: PackageManager,
-    intent: Intent,
-): android.content.pm.ResolveInfo? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        packageManager.queryBroadcastReceivers(
-            intent,
-            PackageManager.ResolveInfoFlags.of(0L),
-        ).firstOrNull()
-    } else {
-        @Suppress("DEPRECATION")
-        packageManager.queryBroadcastReceivers(intent, 0).firstOrNull()
-    }
+): Boolean =
+    runCatching {
+        context.startActivity(
+            Intent(intent).apply {
+                component =
+                    android.content.ComponentName(
+                        TaskerIntegration.PACKAGE_NAME,
+                        TASKER_INTENT_HANDLER_CLASS,
+                    )
+            },
+        )
+    }.isSuccess
 
 private fun launchLauncherAppsShortcut(
     context: Context,

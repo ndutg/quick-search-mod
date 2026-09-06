@@ -63,7 +63,7 @@ This document highlights all the available features. It also includes details ab
 - **Currency Converter** - Convert between currencies directly from the search bar without an API key. Example: "100 USD to EUR" to see the converted amount with the current exchange rate.
 - **Weather** - See current weather information of a particular location directly in search.
 - **Custom AI Tools** - Create your own tools for AI Search. This feature requires an API key to be configured. The current system time can be added in system prompt by using {time} modifier.
-- **Tasker Integration** - Create Tasker actions with broadcast intents and trigger them from Quick Search using aliases. The current query is sent to Tasker as an extra.
+- **Tasker Integration** - Create Tasker actions with broadcast intents and trigger them from Quick Search using aliases; the current query is sent to Tasker as an extra. You can also add Tasker task shortcuts from App Shortcuts and launch them directly from Quick Search.
 
 ---
 
