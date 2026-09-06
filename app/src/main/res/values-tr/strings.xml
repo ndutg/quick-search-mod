@@ -760,7 +760,8 @@
 <string name="settings_add_search_engine_error_multiple_placeholders">{{query}} ifadesini yalnızca bir kez kullan.</string>
 <string name="settings_add_search_engine_error_placeholder">URL {{query}} içermelidir</string>
 <string name="settings_add_search_engine_error_required">Lütfen bir URL şablonu gir.</string>
-<string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
 <string name="settings_ai_provider_openai">OpenAI</string>
 <string name="settings_alias_label">Kısaltma:</string>
 <string name="settings_amazon_domain_default">amazon.com</string>

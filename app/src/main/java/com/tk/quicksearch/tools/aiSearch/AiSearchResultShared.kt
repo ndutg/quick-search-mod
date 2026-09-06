@@ -192,7 +192,7 @@ private fun GemmaWordmark(
     }
 }
 
-/** Attribution row showing powered by Gemini, Gemma, OpenAI, Claude, or Groq branding. */
+/** Attribution row showing the branding for the provider that generated the answer. */
 @Composable
 internal fun GeminiAttributionRow(
         modifier: Modifier = Modifier,
@@ -257,6 +257,23 @@ internal fun GeminiAttributionRow(
                         modifier =
                                 Modifier.height(18.dp).aspectRatio(152f / 55.5f),
                 )
+            }
+            AiSearchLlmProviderId.META -> {
+                Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                            painter = painterResource(R.drawable.meta_logo),
+                            contentDescription = poweredByText,
+                            modifier = Modifier.size(16.dp),
+                    )
+                    Text(
+                            text = stringResource(R.string.settings_ai_provider_meta),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = contentColor,
+                    )
+                }
             }
             else -> {
                 if (llmProviderId.isCustom) {

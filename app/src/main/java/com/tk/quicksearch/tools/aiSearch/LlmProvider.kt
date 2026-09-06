@@ -46,7 +46,8 @@ data class AiSearchLlmProviderId(
         val OPENAI = AiSearchLlmProviderId("openai")
         val ANTHROPIC = AiSearchLlmProviderId("anthropic")
         val GROQ = AiSearchLlmProviderId("groq")
-        val entries = listOf(GEMINI, OPENAI, ANTHROPIC, GROQ)
+        val META = AiSearchLlmProviderId("meta")
+        val entries = listOf(GEMINI, OPENAI, ANTHROPIC, GROQ, META)
 
         fun custom(id: String): AiSearchLlmProviderId =
             AiSearchLlmProviderId("$CUSTOM_PREFIX${id.trim()}")
@@ -62,6 +63,7 @@ data class AiSearchLlmProviderId(
          * Detect the provider from an API key prefix.
          * - `sk-ant-*` → ANTHROPIC
          * - `gsk_*` → GROQ
+         * - `LLM|*` → META
          * - `sk-*` (not `sk-ant-`) → OPENAI
          * - everything else → GEMINI
          */
@@ -71,6 +73,7 @@ data class AiSearchLlmProviderId(
             return when {
                 trimmed.startsWith("sk-ant-") -> ANTHROPIC
                 trimmed.startsWith("gsk_") -> GROQ
+                trimmed.startsWith("LLM|") -> META
                 trimmed.startsWith("sk-") -> OPENAI
                 else -> GEMINI
             }
@@ -112,6 +115,7 @@ object AiSearchLlmProviderRegistry {
             AiSearchLlmProviderId.OPENAI -> OpenAiAiSearchLlmProvider
             AiSearchLlmProviderId.ANTHROPIC -> AnthropicAiSearchLlmProvider
             AiSearchLlmProviderId.GROQ -> GroqAiSearchLlmProvider
+            AiSearchLlmProviderId.META -> MetaAiSearchLlmProvider
             else -> GeminiAiSearchLlmProvider
         }
     }

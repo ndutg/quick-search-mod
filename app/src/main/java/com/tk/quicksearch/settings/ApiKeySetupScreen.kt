@@ -226,7 +226,11 @@ private fun AddCustomProviderCard(
                     },
                 singleLine = true,
                 readOnly = true,
-                colors = dialogTextFieldColors(),
+                colors =
+                    dialogTextFieldColors(
+                        unfocusedIndicatorColor =
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    ),
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -400,7 +404,11 @@ private fun ProviderApiKeyCard(
                             null
                         },
                     shape = DesignTokens.ShapeXXLarge,
-                    colors = dialogTextFieldColors(),
+                    colors =
+                        dialogTextFieldColors(
+                            unfocusedIndicatorColor =
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        ),
                     singleLine = true,
                     readOnly = true,
                 )
@@ -482,6 +490,23 @@ private fun ProviderLogo(
                 colorFilter = ColorFilter.tint(contentColor),
                 modifier = Modifier.height(20.dp).aspectRatio(152f / 55.5f),
             )
+        }
+        AiSearchLlmProviderId.META -> {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.meta_logo),
+                    contentDescription = stringResource(R.string.settings_ai_provider_meta),
+                    modifier = Modifier.size(24.dp),
+                )
+                Text(
+                    text = stringResource(R.string.settings_ai_provider_meta),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = contentColor,
+                )
+            }
         }
         AiSearchLlmProviderId.GEMINI -> {
             Box(modifier = Modifier.height(16.dp).aspectRatio(288f / 65f)) {

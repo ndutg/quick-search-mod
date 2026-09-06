@@ -592,6 +592,13 @@ abstract class BasePreferences(
         const val KEY_GROQ_MODEL = "groq_model"
         const val KEY_GROQ_GROUNDING_ENABLED = "groq_grounding_enabled"
         const val KEY_GROQ_THINKING_ENABLED = "groq_thinking_enabled"
+
+        // Meta AI preferences keys
+        const val KEY_META_API_KEY = "meta_api_key"
+        const val KEY_META_PERSONAL_CONTEXT = "meta_personal_context"
+        const val KEY_META_MODEL = "meta_model"
+        const val KEY_META_GROUNDING_ENABLED = "meta_grounding_enabled"
+        const val KEY_META_THINKING_ENABLED = "meta_thinking_enabled"
         const val KEY_CUSTOM_LLM_PROVIDERS = "custom_llm_providers"
 
         // Usage permission banner preferences keys

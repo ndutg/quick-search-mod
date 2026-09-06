@@ -101,8 +101,8 @@ object InsetSearchBarGeometry {
     /** Pulls the bar in from the card's side edges. */
     val BarHorizontalInset = DesignTokens.SpacingSmall
 
-    /** Gap between the engine row and the top of the bar. */
-    val BarTopSpacing = DesignTokens.SpacingSmall
+    /** Slight gap between the engine row and the top of the bar in the combined compact card. */
+    val BarTopSpacing = DesignTokens.SpacingXXSmall
 
     /** Gap between the bottom of the bar and the bottom of the card. */
     val BarBottomSpacing = DesignTokens.SpacingMedium
