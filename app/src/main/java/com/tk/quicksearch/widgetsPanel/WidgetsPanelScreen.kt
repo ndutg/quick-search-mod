@@ -84,6 +84,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -150,6 +151,7 @@ fun WidgetsPanelScreen(
     val packageManager = context.packageManager
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
+    val focusManager = LocalFocusManager.current
     val appWidgetManager = remember(appContext) { AppWidgetManager.getInstance(appContext) }
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, WIDGET_PANEL_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
@@ -160,6 +162,7 @@ fun WidgetsPanelScreen(
 
     var widgets by remember { mutableStateOf(preferences.getWidgets()) }
     var quickNoteWidget by remember { mutableStateOf(preferences.getQuickNoteWidget()) }
+    var isQuickNoteFocused by remember { mutableStateOf(false) }
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
     var pendingRequest by remember { mutableStateOf<PendingWidgetRequest?>(null) }
@@ -380,13 +383,14 @@ fun WidgetsPanelScreen(
             )
         }
 
-    val editModeDismissModifier =
-        if (editingWidgetId != null) {
-            Modifier.pointerInput(Unit) {
-                detectTapGestures(onTap = { editingWidgetId = null })
-            }
-        } else {
-            Modifier
+    val panelTapModifier =
+        Modifier.pointerInput(editingWidgetId, focusManager) {
+            detectTapGestures(
+                onTap = {
+                    focusManager.clearFocus(force = true)
+                    editingWidgetId = null
+                },
+            )
         }
 
     SettingsScreenBackground(
@@ -401,7 +405,7 @@ fun WidgetsPanelScreen(
                 Modifier
                     .fillMaxSize()
                     .then(swipeBackModifier)
-                    .then(editModeDismissModifier)
+                    .then(panelTapModifier)
                     .navigationBarsPadding(),
         ) {
             Column(
@@ -417,8 +421,14 @@ fun WidgetsPanelScreen(
 
                 WidgetsPanelHeader(
                     inEditMode = editingWidgetId != null,
-                    onAddWidget = { showPicker = true },
-                    onExitEditMode = { editingWidgetId = null },
+                    onAddWidget = {
+                        focusManager.clearFocus(force = true)
+                        showPicker = true
+                    },
+                    onExitEditMode = {
+                        focusManager.clearFocus(force = true)
+                        editingWidgetId = null
+                    },
                 )
 
                 val isQuickNoteSolo = isQuickNoteEnabled && widgets.isEmpty()
@@ -429,6 +439,7 @@ fun WidgetsPanelScreen(
                         CompactQuickNoteWidget(
                             modifier = Modifier.fillMaxSize(),
                             fillAvailableSpace = true,
+                            onFocusChanged = { isQuickNoteFocused = it },
                             onDragStart = {
                                 editingWidgetId = QUICK_NOTE_PANEL_WIDGET_ID
                             },
@@ -472,6 +483,21 @@ fun WidgetsPanelScreen(
                                 viewportHeightPx = scrollViewportHeightPx,
                                 onPersist = ::persistPanelItems,
                                 onSetEditingWidgetId = { id -> editingWidgetId = id },
+                                onWidgetTouch = { widgetId ->
+                                    when {
+                                        editingWidgetId != null && editingWidgetId != widgetId -> {
+                                            focusManager.clearFocus(force = true)
+                                            editingWidgetId = null
+                                            true
+                                        }
+                                        isQuickNoteFocused -> {
+                                            focusManager.clearFocus(force = true)
+                                            true
+                                        }
+                                        else -> false
+                                    }
+                                },
+                                onQuickNoteFocusChanged = { isQuickNoteFocused = it },
                                 onRemoveWidget = { widget ->
                                     if (widget.isQuickNoteWidget()) {
                                         notesPreferences.setQuickNoteEnabled(false)
@@ -564,6 +590,8 @@ private fun WidgetPanelGrid(
     viewportHeightPx: Int,
     onPersist: (List<PanelWidgetInfo>) -> Unit,
     onSetEditingWidgetId: (Int?) -> Unit,
+    onWidgetTouch: (Int) -> Boolean,
+    onQuickNoteFocusChanged: (Boolean) -> Unit,
     onRemoveWidget: (PanelWidgetInfo) -> Unit,
     onConfigureWidget: (PanelWidgetInfo, Intent) -> Unit,
     packageManager: PackageManager,
@@ -634,6 +662,7 @@ private fun WidgetPanelGrid(
         val currentGridUnitHeightPx by rememberUpdatedState(gridUnitHeightPx)
         val currentOnPersist by rememberUpdatedState(onPersist)
         val currentOnSetEditing by rememberUpdatedState(onSetEditingWidgetId)
+        val currentOnWidgetTouch by rememberUpdatedState(onWidgetTouch)
 
         fun moveQuickNoteBy(totalDragX: Float, totalDragY: Float) {
             val start = quickNoteDragStart ?: return
@@ -690,6 +719,7 @@ private fun WidgetPanelGrid(
                 hostDragStart = null
                 if (final != null && final != currentLaidOut) currentOnPersist(final)
             }
+            appWidgetHost.onWidgetTouch = { widgetId -> currentOnWidgetTouch(widgetId) }
         }
 
         // Auto-scroll the panel while a widget is being dragged near the viewport's top/bottom edge
@@ -806,6 +836,7 @@ private fun WidgetPanelGrid(
                             quickNoteDragStart = null
                             if (final != null && final != laidOut) onPersist(final)
                         },
+                        onQuickNoteFocusChanged = onQuickNoteFocusChanged,
                     )
                 }
             }
@@ -834,6 +865,7 @@ private fun BoxScope.WidgetPanelGridItem(
     onQuickNoteDragStart: () -> Unit,
     onQuickNoteDrag: (totalDragX: Float, totalDragY: Float) -> Unit,
     onQuickNoteDragEnd: () -> Unit,
+    onQuickNoteFocusChanged: (Boolean) -> Unit,
 ) {
     val density = LocalDensity.current
     val column = widget.column ?: 0
@@ -870,6 +902,7 @@ private fun BoxScope.WidgetPanelGridItem(
             onDragStart = onQuickNoteDragStart,
             onDrag = onQuickNoteDrag,
             onDragEnd = onQuickNoteDragEnd,
+            onFocusChanged = onQuickNoteFocusChanged,
             onResizePreview = onResizePreview,
             onInteractionEnd = onInteractionEnd,
             onRemove = onRemove,
@@ -954,6 +987,7 @@ private fun BoxScope.QuickNotePanelGridItem(
     onDragStart: () -> Unit,
     onDrag: (totalDragX: Float, totalDragY: Float) -> Unit,
     onDragEnd: () -> Unit,
+    onFocusChanged: (Boolean) -> Unit,
     onResizePreview: (WidgetGridResize) -> Unit,
     onInteractionEnd: () -> Unit,
     onRemove: () -> Unit,
@@ -992,6 +1026,7 @@ private fun BoxScope.QuickNotePanelGridItem(
     ) {
         CompactQuickNoteWidget(
             modifier = Modifier.fillMaxSize(),
+            onFocusChanged = onFocusChanged,
             onDragStart = {
                 totalDragX = 0f
                 totalDragY = 0f
@@ -1040,7 +1075,11 @@ private fun BoxScope.QuickNoteEditOverlay(
                     width = WidgetEditBorderWidth,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
                     shape = DesignTokens.ExtraLargeCardShape,
-                ),
+                )
+                .pointerInput(Unit) {
+                    // Keep taps on the selected Quick Note from being treated as outside taps.
+                    detectTapGestures(onTap = {})
+                },
     ) {
         onResizePreview?.let { resize ->
             listOf(ResizeEdge.Top, ResizeEdge.Bottom).forEach { edge ->

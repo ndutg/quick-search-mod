@@ -55,6 +55,7 @@ private val QuickNoteFocusedHeight = 280.dp
 internal fun CompactQuickNoteWidget(
     modifier: Modifier = Modifier,
     fillAvailableSpace: Boolean = false,
+    onFocusChanged: (Boolean) -> Unit = {},
     onDragStart: () -> Unit = {},
     onDrag: (x: Float, y: Float) -> Unit = { _, _ -> },
     onDragEnd: () -> Unit = {},
@@ -194,7 +195,10 @@ internal fun CompactQuickNoteWidget(
                                 Modifier
                             },
                         )
-                        .onFocusChanged { isFocused = it.isFocused },
+                        .onFocusChanged {
+                            isFocused = it.isFocused
+                            onFocusChanged(it.isFocused)
+                        },
                 textStyle =
                     MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface,
