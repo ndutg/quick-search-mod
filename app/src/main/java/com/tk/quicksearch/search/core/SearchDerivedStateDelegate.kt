@@ -282,12 +282,14 @@ internal class SearchDerivedStateDelegate(
         val apps = appSearchManager.cachedApps
         val packageNames = apps.map { it.packageName }.toSet()
         val isWhatsAppInstalled = packageNames.contains(PackageConstants.WHATSAPP_PACKAGE)
+        val isWhatsAppBusinessInstalled = packageNames.contains(PackageConstants.WHATSAPP_BUSINESS_PACKAGE)
         val isTelegramInstalled = packageNames.contains(PackageConstants.TELEGRAM_PACKAGE)
         val isSignalInstalled = packageNames.contains(PackageConstants.SIGNAL_PACKAGE)
         val isGoogleMeetInstalled = packageNames.contains(PackageConstants.GOOGLE_MEET_PACKAGE)
         val resolvedMessagingApp =
             messagingHandler.updateMessagingAvailability(
                 whatsappInstalled = isWhatsAppInstalled,
+                whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
                 telegramInstalled = isTelegramInstalled,
                 signalInstalled = isSignalInstalled,
                 updateState = false,
@@ -297,6 +299,7 @@ internal class SearchDerivedStateDelegate(
             resolveCallingApp(
                 app = selectedCallingApp,
                 isWhatsAppInstalled = isWhatsAppInstalled,
+                isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
                 isTelegramInstalled = isTelegramInstalled,
                 isSignalInstalled = isSignalInstalled,
                 isGoogleMeetInstalled = isGoogleMeetInstalled,
@@ -309,6 +312,7 @@ internal class SearchDerivedStateDelegate(
                 messagingApp = resolvedMessagingApp,
                 callingApp = resolvedCallingApp,
                 isWhatsAppInstalled = isWhatsAppInstalled,
+                isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
                 isTelegramInstalled = isTelegramInstalled,
                 isSignalInstalled = isSignalInstalled,
                 isGoogleMeetInstalled = isGoogleMeetInstalled,
@@ -465,12 +469,14 @@ internal class SearchDerivedStateDelegate(
     private fun resolveCallingApp(
         app: CallingApp,
         isWhatsAppInstalled: Boolean,
+        isWhatsAppBusinessInstalled: Boolean,
         isTelegramInstalled: Boolean,
         isSignalInstalled: Boolean,
         isGoogleMeetInstalled: Boolean,
     ): CallingApp =
         when (app) {
             CallingApp.WHATSAPP -> if (isWhatsAppInstalled) CallingApp.WHATSAPP else CallingApp.CALL
+            CallingApp.WHATSAPP_BUSINESS -> if (isWhatsAppBusinessInstalled) CallingApp.WHATSAPP_BUSINESS else CallingApp.CALL
             CallingApp.TELEGRAM -> if (isTelegramInstalled) CallingApp.TELEGRAM else CallingApp.CALL
             CallingApp.SIGNAL -> if (isSignalInstalled) CallingApp.SIGNAL else CallingApp.CALL
             CallingApp.GOOGLE_MEET ->

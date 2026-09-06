@@ -110,6 +110,7 @@ enum class SearchSection {
 enum class MessagingApp {
         MESSAGES,
         WHATSAPP,
+        WHATSAPP_BUSINESS,
         TELEGRAM,
         SIGNAL,
 }
@@ -118,6 +119,7 @@ enum class CallingApp {
         CALL,
         GOOGLE_MEET,
         WHATSAPP,
+        WHATSAPP_BUSINESS,
         TELEGRAM,
         SIGNAL,
 }
@@ -565,6 +567,7 @@ data class SearchUiState(
         val messagingApp: MessagingApp = MessagingApp.MESSAGES,
         val callingApp: CallingApp = CallingApp.CALL,
         val isWhatsAppInstalled: Boolean = false,
+        val isWhatsAppBusinessInstalled: Boolean = false,
         val isTelegramInstalled: Boolean = false,
         val isSignalInstalled: Boolean = false,
         val isGoogleMeetInstalled: Boolean = false,
@@ -792,6 +795,7 @@ fun SearchUiState(
                 messagingApp = permissions.messagingApp,
                 callingApp = permissions.callingApp,
                 isWhatsAppInstalled = permissions.isWhatsAppInstalled,
+                isWhatsAppBusinessInstalled = permissions.isWhatsAppBusinessInstalled,
                 isTelegramInstalled = permissions.isTelegramInstalled,
                 isSignalInstalled = permissions.isSignalInstalled,
                 isGoogleMeetInstalled = permissions.isGoogleMeetInstalled,

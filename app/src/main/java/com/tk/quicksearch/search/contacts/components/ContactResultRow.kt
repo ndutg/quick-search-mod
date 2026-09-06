@@ -408,6 +408,13 @@ private fun ContactActionButtons(
                                                         enabled = hasNumber,
                                                 )
                                         }
+                                        CallingApp.WHATSAPP_BUSINESS -> {
+                                                AppVoiceCallIcon(
+                                                        logoPainterRes = R.drawable.whatsapp_call,
+                                                        size = ContactUiConstants.ACTION_ICON_SIZE.dp,
+                                                        enabled = hasNumber,
+                                                )
+                                        }
                                         CallingApp.TELEGRAM -> {
                                                 AppVoiceCallIcon(
                                                         logoPainterRes = R.drawable.telegram_call,
@@ -493,6 +500,14 @@ private fun ContactActionButtons(
                                                                                 .ACTION_ICON_SIZE
                                                                                 .dp,
                                                                 ),
+                                                )
+                                        }
+                                        MessagingApp.WHATSAPP_BUSINESS -> {
+                                                Icon(
+                                                        painter = painterResource(id = R.drawable.whatsapp),
+                                                        contentDescription = null,
+                                                        tint = if (hasNumber) Color.Unspecified else MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        modifier = Modifier.size(ContactUiConstants.ACTION_ICON_SIZE.dp),
                                                 )
                                         }
                                         MessagingApp.TELEGRAM -> {

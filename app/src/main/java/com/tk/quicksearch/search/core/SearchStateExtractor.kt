@@ -86,6 +86,7 @@ internal object SearchStateExtractor {
             messagingApp = s.messagingApp,
             callingApp = s.callingApp,
             isWhatsAppInstalled = s.isWhatsAppInstalled,
+            isWhatsAppBusinessInstalled = s.isWhatsAppBusinessInstalled,
             isTelegramInstalled = s.isTelegramInstalled,
             isSignalInstalled = s.isSignalInstalled,
             isGoogleMeetInstalled = s.isGoogleMeetInstalled,

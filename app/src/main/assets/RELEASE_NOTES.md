@@ -1,5 +1,8 @@
-- AMOLED/True-Black option when Dark Mono theme is selected
-- Add widgets to the side panel without setting Quick Search as your launcher
-- Added support for custom accent colors
-- Added an option to disable opening the top result with the Enter key. When disabled, Enter will search using your default search engine instead
-- Bug fixes and improvements
+- Introducing SpeedBump: Long-press any app and select SpeedBump to add a short delay before it opens, giving you time to think before opening it out of habit.
+- Double-tap gesture to lock your screen 
+- New AI provider: Meta AI
+- New search engine: F-Droid
+- Set WhatsApp Business as your default app for messaging and calling
+- Option to show Quick Search in your recent apps. Enable it in More options.
+- Widget panel optimizations
+- Bug fixes

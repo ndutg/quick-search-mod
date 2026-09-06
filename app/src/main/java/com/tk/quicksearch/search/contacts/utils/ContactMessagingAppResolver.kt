@@ -14,6 +14,10 @@ object ContactMessagingAppResolver {
                 if (contactInfo.hasWhatsAppMethods()) MessagingApp.WHATSAPP else MessagingApp.MESSAGES
             }
 
+            MessagingApp.WHATSAPP_BUSINESS -> {
+                if (contactInfo.hasWhatsAppBusinessMessageMethod()) MessagingApp.WHATSAPP_BUSINESS else MessagingApp.MESSAGES
+            }
+
             MessagingApp.TELEGRAM -> {
                 if (contactInfo.hasTelegramMethods()) MessagingApp.TELEGRAM else MessagingApp.MESSAGES
             }
@@ -32,6 +36,13 @@ object ContactMessagingAppResolver {
             method is ContactMethod.WhatsAppMessage ||
                 method is ContactMethod.WhatsAppCall ||
                 method is ContactMethod.WhatsAppVideoCall
+        }
+
+    private fun ContactInfo.hasWhatsAppBusinessMessageMethod(): Boolean =
+        contactMethods.any { method ->
+            method is ContactMethod.CustomApp &&
+                method.packageName == "com.whatsapp.w4b" &&
+                method.mimeType == com.tk.quicksearch.search.models.ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE
         }
 
     private fun ContactInfo.hasTelegramMethods(): Boolean =

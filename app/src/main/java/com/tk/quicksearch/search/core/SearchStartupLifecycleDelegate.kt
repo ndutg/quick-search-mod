@@ -577,6 +577,7 @@ internal class SearchStartupLifecycleDelegate(
                     messagingApp = messagingInfo.messagingApp,
                     callingApp = messagingInfo.callingApp,
                     isWhatsAppInstalled = messagingInfo.isWhatsAppInstalled,
+                    isWhatsAppBusinessInstalled = messagingInfo.isWhatsAppBusinessInstalled,
                     isTelegramInstalled = messagingInfo.isTelegramInstalled,
                     isSignalInstalled = messagingInfo.isSignalInstalled,
                     isGoogleMeetInstalled = messagingInfo.isGoogleMeetInstalled,
@@ -1161,6 +1162,12 @@ internal class SearchStartupLifecycleDelegate(
             } else {
                 messagingHandler.isPackageInstalled(PackageConstants.WHATSAPP_PACKAGE)
             }
+        val isWhatsAppBusinessInstalled =
+            if (packageNames.isNotEmpty()) {
+                packageNames.contains(PackageConstants.WHATSAPP_BUSINESS_PACKAGE)
+            } else {
+                messagingHandler.isPackageInstalled(PackageConstants.WHATSAPP_BUSINESS_PACKAGE)
+            }
         val isTelegramInstalled =
             if (packageNames.isNotEmpty()) {
                 packageNames.contains(PackageConstants.TELEGRAM_PACKAGE)
@@ -1182,6 +1189,7 @@ internal class SearchStartupLifecycleDelegate(
         val resolvedMessagingApp =
             messagingHandler.updateMessagingAvailability(
                 whatsappInstalled = isWhatsAppInstalled,
+                whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
                 telegramInstalled = isTelegramInstalled,
                 signalInstalled = isSignalInstalled,
                 updateState = false,
@@ -1191,6 +1199,7 @@ internal class SearchStartupLifecycleDelegate(
             resolveCallingApp(
                 app = selectedCallingApp,
                 isWhatsAppInstalled = isWhatsAppInstalled,
+                isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
                 isTelegramInstalled = isTelegramInstalled,
                 isSignalInstalled = isSignalInstalled,
                 isGoogleMeetInstalled = isGoogleMeetInstalled,
@@ -1201,6 +1210,7 @@ internal class SearchStartupLifecycleDelegate(
 
         return MessagingAppInfo(
             isWhatsAppInstalled,
+            isWhatsAppBusinessInstalled,
             isTelegramInstalled,
             isSignalInstalled,
             resolvedMessagingApp,
@@ -1212,12 +1222,14 @@ internal class SearchStartupLifecycleDelegate(
     private fun resolveCallingApp(
         app: CallingApp,
         isWhatsAppInstalled: Boolean,
+        isWhatsAppBusinessInstalled: Boolean,
         isTelegramInstalled: Boolean,
         isSignalInstalled: Boolean,
         isGoogleMeetInstalled: Boolean,
     ): CallingApp =
         when (app) {
             CallingApp.WHATSAPP -> if (isWhatsAppInstalled) CallingApp.WHATSAPP else CallingApp.CALL
+            CallingApp.WHATSAPP_BUSINESS -> if (isWhatsAppBusinessInstalled) CallingApp.WHATSAPP_BUSINESS else CallingApp.CALL
             CallingApp.TELEGRAM -> if (isTelegramInstalled) CallingApp.TELEGRAM else CallingApp.CALL
             CallingApp.SIGNAL -> if (isSignalInstalled) CallingApp.SIGNAL else CallingApp.CALL
             CallingApp.GOOGLE_MEET ->
@@ -1260,6 +1272,7 @@ internal class SearchStartupLifecycleDelegate(
 
     private data class MessagingAppInfo(
         val isWhatsAppInstalled: Boolean,
+        val isWhatsAppBusinessInstalled: Boolean,
         val isTelegramInstalled: Boolean,
         val isSignalInstalled: Boolean,
         val messagingApp: MessagingApp,
