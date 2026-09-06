@@ -5,7 +5,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Covers [packActionRows]: Speed Bump must sit directly left of Exclude, and empty grid slots
+ * Covers [packActionRows]: SpeedBump must sit directly left of Exclude, and empty grid slots
  * must appear only at the end of the final row.
  */
 class AppMenuActionRowPackingTest {
@@ -81,7 +81,7 @@ class AppMenuActionRowPackingTest {
     }
 
     @Test
-    fun `non launchable app without speed bump still packs exclude`() {
+    fun `non launchable app without SpeedBump still packs exclude`() {
         val rows =
             packActionRows(
                 listOf(

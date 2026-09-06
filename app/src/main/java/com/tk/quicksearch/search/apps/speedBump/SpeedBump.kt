@@ -3,7 +3,7 @@ package com.tk.quicksearch.search.apps.speedBump
 import android.content.Context
 
 /**
- * Per-app "Speed Bump" state.
+ * Per-app "SpeedBump" state.
  *
  * When an app is bumped, launching it from Quick Search first plays a short calming
  * interstitial that gives the user a chance to back out before the app opens.

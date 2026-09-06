@@ -21,7 +21,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
- * Explains what Speed Bump does.
+ * Explains what SpeedBump does.
  *
  * Shown once, right after the user first turns the feature on, and again on every long press of
  * the action. It never changes state — the toggle has already happened by the time it appears.

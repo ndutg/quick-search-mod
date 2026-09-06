@@ -323,7 +323,7 @@ fun SearchRoute(
     var pendingDirectDialToggleFromAppSetting by remember { mutableStateOf(false) }
     var editingCustomCalendarEvent by remember { mutableStateOf<CalendarEventInfo?>(null) }
     var previewFile by remember { mutableStateOf<DeviceFile?>(null) }
-    // Non-null while a Speed Bump app is waiting out its interstitial before launching.
+    // Non-null while a SpeedBump app is waiting out its interstitial before launching.
     var speedBumpApp by remember { mutableStateOf<com.tk.quicksearch.search.models.AppInfo?>(null) }
     val customCalendarEventRepository = remember(context) { CustomCalendarEventRepository(context) }
 

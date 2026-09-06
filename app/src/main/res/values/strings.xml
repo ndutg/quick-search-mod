@@ -1102,5 +1102,5 @@
     <string name="speed_bump_explainer_just_enabled">You just turned it on for %1$s</string>
     <string name="speed_bump_overlay_prompt">Opening %1$s soon. Tap the button below if you don\u2019t want to continue.</string>
     <string name="speed_bump_overlay_title">Take a deep breath</string>
-    <string name="speed_bump_title">Speed Bump</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

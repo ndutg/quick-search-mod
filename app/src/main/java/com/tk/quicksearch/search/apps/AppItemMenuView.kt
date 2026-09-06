@@ -107,8 +107,8 @@ internal val InseparableActionKeys = listOf(AppMenuItemKey.SPEED_BUMP, AppMenuIt
  *
  * Items keep their declared order unless one does not fit the remaining space, in which case a
  * later item that does fit is pulled forward. That keeps rows full so empty slots only ever
- * appear at the end of the last row. The Speed Bump / Exclude pair is packed as a single unit so
- * Speed Bump always sits directly to the left of Exclude.
+ * appear at the end of the last row. The SpeedBump / Exclude pair is packed as a single unit so
+ * SpeedBump always sits directly to the left of Exclude.
  */
 internal fun packActionRows(items: List<AppMenuItem>): List<List<AppMenuItem>> {
     val groups: List<List<AppMenuItem>> =
@@ -428,7 +428,7 @@ fun AppItemDropdownMenu(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                // Speed Bump and Exclude are kept side by side, so they are packed as one
+                // SpeedBump and Exclude are kept side by side, so they are packed as one
                 // inseparable pair. Later single-column items may move ahead of an item that
                 // does not fit, which keeps empty slots at the end of the final row only.
                 val actionRows = packActionRows(menuItems)
