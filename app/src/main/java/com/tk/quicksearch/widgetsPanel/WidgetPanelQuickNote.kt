@@ -25,15 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -62,8 +58,6 @@ internal fun CompactQuickNoteWidget(
 ) {
     val context = LocalContext.current
     val repository = remember(context) { NotesRepository(context) }
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
     val linkColor = AppColors.LinkColor
     var bodyInput by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -93,13 +87,8 @@ internal fun CompactQuickNoteWidget(
                         linkColor,
                     ),
                 selection = TextRange(note.markdownContent.length),
-            )
+        )
         baselineBody = note.markdownContent
-        if (note.markdownContent.isBlank()) {
-            withFrameNanos {}
-            runCatching { focusRequester.requestFocus() }
-            keyboardController?.show()
-        }
     }
 
     LaunchedEffect(quickNoteId, bodyInput.text, baselineBody) {
@@ -185,7 +174,6 @@ internal fun CompactQuickNoteWidget(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
                         .then(
                             if (fillAvailableSpace) {
                                 Modifier
