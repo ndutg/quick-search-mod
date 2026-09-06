@@ -11,6 +11,7 @@ class SearchBarInputSyncPolicyTest {
             shouldDeferTextFieldValueSync(
                 stateQuery = "What's",
                 localText = "What's the weather in Barcelona today?",
+                localInputAwaitingStateAck = "What's the weather in Barcelona today?",
             ),
         )
     }
@@ -21,6 +22,7 @@ class SearchBarInputSyncPolicyTest {
             shouldDeferTextFieldValueSync(
                 stateQuery = "",
                 localText = "What's",
+                localInputAwaitingStateAck = "What's",
             ),
         )
     }
@@ -31,6 +33,7 @@ class SearchBarInputSyncPolicyTest {
             shouldDeferTextFieldValueSync(
                 stateQuery = "weather Barcelona",
                 localText = "What's",
+                localInputAwaitingStateAck = "What's",
             ),
         )
     }
@@ -41,6 +44,18 @@ class SearchBarInputSyncPolicyTest {
             shouldDeferTextFieldValueSync(
                 stateQuery = "What's the weather",
                 localText = "What's the weather",
+                localInputAwaitingStateAck = "What's the weather",
+            ),
+        )
+    }
+
+    @Test
+    fun `applies a clear that was not initiated by pending local input`() {
+        assertFalse(
+            shouldDeferTextFieldValueSync(
+                stateQuery = "",
+                localText = "What's the weather in Barcelona today?",
+                localInputAwaitingStateAck = null,
             ),
         )
     }

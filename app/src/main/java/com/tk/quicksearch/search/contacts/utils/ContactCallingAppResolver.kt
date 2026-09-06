@@ -16,6 +16,10 @@ object ContactCallingAppResolver {
                 if (contactInfo.hasMethod<ContactMethod.WhatsAppCall>(phoneNumber)) CallingApp.WHATSAPP else CallingApp.CALL
             }
 
+            CallingApp.WHATSAPP_BUSINESS -> {
+                if (contactInfo.hasWhatsAppBusinessCallMethod(phoneNumber)) CallingApp.WHATSAPP_BUSINESS else CallingApp.CALL
+            }
+
             CallingApp.TELEGRAM -> {
                 if (contactInfo.hasTelegramCallMethod()) CallingApp.TELEGRAM else CallingApp.CALL
             }
@@ -43,4 +47,12 @@ object ContactCallingAppResolver {
 
     private fun ContactInfo.hasTelegramCallMethod(): Boolean =
         contactMethods.any { method -> method is ContactMethod.TelegramCall }
+
+    private fun ContactInfo.hasWhatsAppBusinessCallMethod(phoneNumber: String?): Boolean =
+        contactMethods.any { method ->
+            method is ContactMethod.CustomApp &&
+                method.packageName == "com.whatsapp.w4b" &&
+                method.mimeType == com.tk.quicksearch.search.models.ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL &&
+                (phoneNumber == null || method.data.isBlank() || PhoneNumberUtils.isSameNumber(method.data, phoneNumber))
+        }
 }

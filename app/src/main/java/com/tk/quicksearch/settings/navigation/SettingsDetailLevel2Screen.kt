@@ -723,6 +723,7 @@ internal fun SettingsDetailLevel2Screen(
                                 hasCallPermission = PermissionHelper.checkCallPermission(context),
                                 contactsSectionEnabled = true,
                                 isWhatsAppInstalled = state.isWhatsAppInstalled,
+                                isWhatsAppBusinessInstalled = state.isWhatsAppBusinessInstalled,
                                 isTelegramInstalled = state.isTelegramInstalled,
                                 isSignalInstalled = state.isSignalInstalled,
                                 isGoogleMeetInstalled = state.isGoogleMeetInstalled,

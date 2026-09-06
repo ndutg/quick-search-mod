@@ -123,6 +123,7 @@ class SearchViewModelSearchEngineApiDelegate internal constructor(
             resolveCallingApp(
                 app = app,
                 isWhatsAppInstalled = permState.isWhatsAppInstalled,
+                isWhatsAppBusinessInstalled = permState.isWhatsAppBusinessInstalled,
                 isTelegramInstalled = permState.isTelegramInstalled,
                 isSignalInstalled = permState.isSignalInstalled,
                 isGoogleMeetInstalled = permState.isGoogleMeetInstalled,
@@ -202,12 +203,14 @@ class SearchViewModelSearchEngineApiDelegate internal constructor(
 internal fun resolveCallingApp(
     app: CallingApp,
     isWhatsAppInstalled: Boolean,
+    isWhatsAppBusinessInstalled: Boolean,
     isTelegramInstalled: Boolean,
     isSignalInstalled: Boolean,
     isGoogleMeetInstalled: Boolean,
 ): CallingApp =
     when (app) {
         CallingApp.WHATSAPP -> if (isWhatsAppInstalled) CallingApp.WHATSAPP else CallingApp.CALL
+        CallingApp.WHATSAPP_BUSINESS -> if (isWhatsAppBusinessInstalled) CallingApp.WHATSAPP_BUSINESS else CallingApp.CALL
         CallingApp.TELEGRAM -> if (isTelegramInstalled) CallingApp.TELEGRAM else CallingApp.CALL
         CallingApp.SIGNAL -> if (isSignalInstalled) CallingApp.SIGNAL else CallingApp.CALL
         CallingApp.GOOGLE_MEET ->
