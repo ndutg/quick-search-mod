@@ -1,4 +1,4 @@
-- Introducing SpeedBump: long-press any app and select SpeedBump to add a short delay before it opens. A small pause to help break habitual app opens.
+- Introducing SpeedBump: Long-press any app and select SpeedBump to add a short delay before it opens, giving you time to think before opening it out of habit.
 - Double-tap gesture to lock your screen 
 - New AI provider: Meta AI
 - New search engine: F-Droid
