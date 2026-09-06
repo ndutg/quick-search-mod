@@ -87,7 +87,7 @@ internal fun CompactQuickNoteWidget(
                         linkColor,
                     ),
                 selection = TextRange(note.markdownContent.length),
-        )
+            )
         baselineBody = note.markdownContent
     }
 
