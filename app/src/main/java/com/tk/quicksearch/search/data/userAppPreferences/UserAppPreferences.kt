@@ -18,7 +18,6 @@ import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInpu
 import com.tk.quicksearch.shared.util.isPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.OpenAiModelCatalog
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
@@ -1437,7 +1436,10 @@ class UserAppPreferences(
 
     fun setDictionaryEnabled(enabled: Boolean) = uiPreferences.setDictionaryEnabled(enabled)
 
-    fun getCurrencyConverterModel(): String = uiPreferences.getCurrencyConverterModel()
+    fun getCurrencyConverterModel(): String =
+        uiPreferences.getCurrencyConverterModel().ifBlank {
+            getLlmModel(getCurrencyConverterProviderId())
+        }
     fun setCurrencyConverterModel(modelId: String) = uiPreferences.setCurrencyConverterModel(modelId)
     fun getCurrencyConverterAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getCurrencyConverterAdvancedPayload()
     fun setCurrencyConverterAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setCurrencyConverterAdvancedPayload(payload, enabled)
@@ -1454,7 +1456,10 @@ class UserAppPreferences(
     fun setCurrencyConverterThinkingEnabled(enabled: Boolean) =
         uiPreferences.setCurrencyConverterThinkingEnabled(enabled)
 
-    fun getWorldClockModel(): String = uiPreferences.getWorldClockModel()
+    fun getWorldClockModel(): String =
+        uiPreferences.getWorldClockModel().ifBlank {
+            getLlmModel(getWorldClockProviderId())
+        }
     fun setWorldClockModel(modelId: String) = uiPreferences.setWorldClockModel(modelId)
     fun getWorldClockAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getWorldClockAdvancedPayload()
     fun setWorldClockAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setWorldClockAdvancedPayload(payload, enabled)
@@ -1470,7 +1475,10 @@ class UserAppPreferences(
     fun setWorldClockThinkingEnabled(enabled: Boolean) =
         uiPreferences.setWorldClockThinkingEnabled(enabled)
 
-    fun getDictionaryModel(): String = uiPreferences.getDictionaryModel()
+    fun getDictionaryModel(): String =
+        uiPreferences.getDictionaryModel().ifBlank {
+            getLlmModel(getDictionaryProviderId())
+        }
     fun setDictionaryModel(modelId: String) = uiPreferences.setDictionaryModel(modelId)
     fun getDictionaryAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getDictionaryAdvancedPayload()
     fun setDictionaryAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setDictionaryAdvancedPayload(payload, enabled)
@@ -1494,7 +1502,7 @@ class UserAppPreferences(
     fun setWeatherSystemPrompt(prompt: String) = weatherPreferences.setSystemPrompt(prompt)
     fun getWeatherModel(): String =
         weatherPreferences.getModel().ifBlank {
-            getCurrencyConverterModel().ifBlank { GeminiModelCatalog.DEFAULT_MODEL_ID }
+            getLlmModel(getWeatherProviderId())
         }
     fun setWeatherModel(modelId: String) = weatherPreferences.setModel(modelId)
     fun getWeatherProviderId(): AiSearchLlmProviderId = weatherPreferences.getProviderId()
