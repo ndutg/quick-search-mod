@@ -274,7 +274,13 @@ internal fun PersistentSearchBar(
 
     LaunchedEffect(query, leadingIconState) {
         val previousText = textFieldValue.text
-        if (query != previousText) {
+        if (
+            query != previousText &&
+                !shouldDeferTextFieldValueSync(
+                    stateQuery = query,
+                    localText = previousText,
+                )
+        ) {
             val shouldAnimateAliasMorph =
                 leadingIconState !is LeadingIconState.Search &&
                     previousLeadingIconState != leadingIconState
@@ -980,6 +986,18 @@ private sealed interface LeadingIconState {
         val section: SearchSection,
     ) : LeadingIconState
 }
+
+/**
+ * The IME can send a newer composing value before the ViewModel-backed [stateQuery] has been
+ * rendered. Do not replace that value with its stale prefix: doing so cancels the IME composition
+ * and can leave voice transcription truncated. Non-prefix changes are external query updates and
+ * continue through the normal synchronization path.
+ */
+internal fun shouldDeferTextFieldValueSync(
+    stateQuery: String,
+    localText: String,
+): Boolean =
+    stateQuery.length < localText.length && localText.startsWith(stateQuery)
 
 private fun detectConsumedPrefixAlias(
     previousText: String,
