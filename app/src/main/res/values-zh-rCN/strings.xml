@@ -1099,5 +1099,5 @@
     <string name="speed_bump_explainer_just_enabled">你刚刚为 %1$s 开启了此功能</string>
     <string name="speed_bump_overlay_prompt">%1$s 即将打开。如果你不想继续，请点按下方按钮。</string>
     <string name="speed_bump_overlay_title">深呼吸一下</string>
-    <string name="speed_bump_title">减速带</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

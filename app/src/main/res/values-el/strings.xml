@@ -1109,5 +1109,5 @@
     <string name="speed_bump_explainer_just_enabled">Μόλις το ενεργοποίησες για %1$s</string>
     <string name="speed_bump_overlay_prompt">Το %1$s θα ανοίξει σύντομα. Πάτησε το κουμπί παρακάτω αν δεν θέλεις να συνεχίσεις.</string>
     <string name="speed_bump_overlay_title">Πάρε μια βαθιά ανάσα</string>
-    <string name="speed_bump_title">Σαμαράκι</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

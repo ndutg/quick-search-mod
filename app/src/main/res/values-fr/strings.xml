@@ -1109,5 +1109,5 @@
     <string name="speed_bump_explainer_just_enabled">Vous venez de l\u2019activer pour %1$s</string>
     <string name="speed_bump_overlay_prompt">%1$s va bientôt s\u2019ouvrir. Appuyez sur le bouton ci-dessous si vous ne voulez pas continuer.</string>
     <string name="speed_bump_overlay_title">Respirez profondément</string>
-    <string name="speed_bump_title">Ralentisseur</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

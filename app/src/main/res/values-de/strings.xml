@@ -1109,5 +1109,5 @@
     <string name="speed_bump_explainer_just_enabled">Du hast sie gerade für %1$s aktiviert</string>
     <string name="speed_bump_overlay_prompt">%1$s wird gleich geöffnet. Tippe unten auf die Schaltfläche, wenn du nicht fortfahren möchtest.</string>
     <string name="speed_bump_overlay_title">Atme tief durch</string>
-    <string name="speed_bump_title">Bremsschwelle</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

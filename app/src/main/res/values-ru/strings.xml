@@ -1129,5 +1129,5 @@
     <string name="speed_bump_explainer_just_enabled">Вы только что включили её для %1$s</string>
     <string name="speed_bump_overlay_prompt">%1$s скоро откроется. Нажмите кнопку ниже, если не хотите продолжать.</string>
     <string name="speed_bump_overlay_title">Сделайте глубокий вдох</string>
-    <string name="speed_bump_title">Лежачий полицейский</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

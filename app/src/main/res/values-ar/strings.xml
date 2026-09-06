@@ -1111,5 +1111,5 @@
     <string name="speed_bump_explainer_just_enabled">لقد فعّلتها للتو لـ %1$s</string>
     <string name="speed_bump_overlay_prompt">سيُفتح %1$s قريبًا. اضغط الزر أدناه إذا كنت لا تريد المتابعة.</string>
     <string name="speed_bump_overlay_title">خذ نفسًا عميقًا</string>
-    <string name="speed_bump_title">مطبّ السرعة</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

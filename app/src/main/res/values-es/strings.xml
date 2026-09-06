@@ -1109,5 +1109,5 @@
     <string name="speed_bump_explainer_just_enabled">Acabas de activarlo para %1$s</string>
     <string name="speed_bump_overlay_prompt">%1$s se abrirá pronto. Toca el botón de abajo si no quieres continuar.</string>
     <string name="speed_bump_overlay_title">Respira hondo</string>
-    <string name="speed_bump_title">Reductor de velocidad</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

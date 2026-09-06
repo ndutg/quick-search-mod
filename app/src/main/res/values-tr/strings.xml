@@ -1108,5 +1108,5 @@
     <string name="speed_bump_explainer_just_enabled">Az önce %1$s için açtın</string>
     <string name="speed_bump_overlay_prompt">%1$s birazdan açılacak. Devam etmek istemiyorsan aşağıdaki düğmeye dokun.</string>
     <string name="speed_bump_overlay_title">Derin bir nefes al</string>
-    <string name="speed_bump_title">Hız Kesici</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>

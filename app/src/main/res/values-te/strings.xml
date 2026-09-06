@@ -1109,5 +1109,5 @@
     <string name="speed_bump_explainer_just_enabled">మీరు దీన్ని ఇప్పుడే %1$s కోసం ఆన్ చేశారు</string>
     <string name="speed_bump_overlay_prompt">%1$s త్వరలో తెరుచుకుంటుంది. మీరు కొనసాగించకూడదనుకుంటే కింది బటన్‌ను నొక్కండి.</string>
     <string name="speed_bump_overlay_title">ఒక దీర్ఘ శ్వాస తీసుకోండి</string>
-    <string name="speed_bump_title">స్పీడ్ బ్రేకర్</string>
+    <string name="speed_bump_title">SpeedBump</string>
 </resources>
