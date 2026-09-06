@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -50,7 +51,7 @@ private val QuickNoteFocusedHeight = 280.dp
 @Composable
 internal fun CompactQuickNoteWidget(
     modifier: Modifier = Modifier,
-    fillAvailableSpace: Boolean = false,
+    fitContentHeight: Boolean = false,
     onFocusChanged: (Boolean) -> Unit = {},
     onDragStart: () -> Unit = {},
     onDrag: (x: Float, y: Float) -> Unit = { _, _ -> },
@@ -70,8 +71,10 @@ internal fun CompactQuickNoteWidget(
         label = "quickNoteHeight",
     )
     val surfaceModifier =
-        if (fillAvailableSpace) {
-            modifier.fillMaxSize()
+        if (fitContentHeight) {
+            modifier
+                .fillMaxWidth()
+                .heightIn(min = QuickNoteHeight)
         } else {
             modifier.height(quickNoteHeight)
         }
@@ -129,8 +132,7 @@ internal fun CompactQuickNoteWidget(
     ) {
         Column(
             modifier =
-                Modifier
-                    .fillMaxSize()
+                (if (fitContentHeight) Modifier.fillMaxWidth() else Modifier.fillMaxSize())
                     .padding(DesignTokens.CardHorizontalPadding),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
         ) {
@@ -175,10 +177,8 @@ internal fun CompactQuickNoteWidget(
                     Modifier
                         .fillMaxWidth()
                         .then(
-                            if (fillAvailableSpace) {
-                                Modifier
-                                    .weight(1f)
-                                    .verticalScroll(rememberScrollState())
+                            if (fitContentHeight) {
+                                Modifier.verticalScroll(rememberScrollState())
                             } else {
                                 Modifier
                             },
