@@ -109,6 +109,8 @@
 <string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
+<string name="accessibility_lock_screen_disclosure_title">Ekran kilidi için erişilebilirlik erişimi</string>
+<string name="accessibility_lock_screen_disclosure_message">Quick Search, Android AccessibilityService API’sini yalnızca Ana ekrana iki kez dokunduğunuzda cihazınızı kilitlemek için kullanır. Quick Search bu hizmet aracılığıyla ekran içeriğinizi veya diğer kişisel verilerinizi okumaz, toplamaz, saklamaz ya da paylaşmaz.</string>
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
 <string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
@@ -137,6 +139,7 @@
 <string name="action_uninstall_app">Yüklemeyi kaldır</string>
 <string name="action_rate">Şimdi değerlendir</string>
 <string name="action_not_now">Şimdi değil</string>
+<string name="action_agree">Kabul ediyorum</string>
 <string name="action_unpin_app">Sabitlemeyi kaldır</string>
 <string name="alias_trigger_after_space">Boşluktan sonra tetikle</string>
 <string name="common_action_add">Ekle</string>
@@ -1106,7 +1109,7 @@
     <string name="speed_bump_dont_open">Açma</string>
     <string name="speed_bump_explainer_body">Bu özellik bir uygulama açılmadan önce kısa bir gecikme ekler ve gerçekten açmak isteyip istemediğine karar vermen için sana bir an tanır. Uygulamaları dürtüsel olarak açmayı önlemeye ve bağımlılık yapan alışkanlıkları azaltmaya yardımcı olabilir.</string>
     <string name="speed_bump_explainer_just_enabled">Az önce %1$s için açtın</string>
-    <string name="speed_bump_overlay_prompt">%1$s birazdan açılacak. Devam etmek istemiyorsan aşağıdaki düğmeye dokun.</string>
+    <string name="speed_bump_overlay_prompt">%1$s birazdan açılacak…</string>
     <string name="speed_bump_overlay_title">Derin bir nefes al</string>
     <string name="speed_bump_title">SpeedBump</string>
 </resources>
