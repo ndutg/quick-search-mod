@@ -110,6 +110,8 @@
     <string name="settings_gesture_close_keyboard_notifications">కీబోర్డ్ మూసివేయి / నోటిఫికేషన్‌లను తెరవండి</string>
     <string name="settings_gesture_close_keyboard">కీబోర్డ్ మూసివేయి</string>
     <string name="settings_gesture_notification_panel">నోటిఫికేషన్ ప్యానెల్</string>
+    <string name="accessibility_lock_screen_disclosure_title">స్క్రీన్ లాక్ కోసం యాక్సెసిబిలిటీ యాక్సెస్</string>
+    <string name="accessibility_lock_screen_disclosure_message">మీరు హోమ్ స్క్రీన్‌పై రెండుసార్లు ట్యాప్ చేసినప్పుడు మీ పరికరాన్ని లాక్ చేయడానికి మాత్రమే Quick Search Android AccessibilityService APIని ఉపయోగిస్తుంది. ఈ సేవ ద్వారా Quick Search మీ స్క్రీన్ కంటెంట్‌ను లేదా ఇతర వ్యక్తిగత డేటాను చదవదు, సేకరించదు, నిల్వ చేయదు లేదా పంచుకోదు.</string>
     <string name="settings_gesture_none">ఏదీ లేదు</string>
     <string name="settings_gesture_custom">అనుకూలమైనవి (యాప్‌లు, ఫైల్‌లు మొదలైనవి)</string>
     <string name="settings_keyboard_gestures_title">కీబోర్డ్ హావభావాలు (హోమ్)</string>
@@ -138,6 +140,7 @@
     <string name="action_uninstall_app">అన్‌ఇన్‌స్టాల్ చేయి</string>
     <string name="action_rate">ఇప్పుడే రేట్ చేయండి</string>
     <string name="action_not_now">ఇప్పుడు వద్దు</string>
+    <string name="action_agree">అంగీకరిస్తున్నాను</string>
     <string name="action_unpin_app">అన్‌పిన్ చేయి</string>
     <string name="alias_trigger_after_space">స్పేస్ తర్వాత ట్రిగ్గర్ చేయి</string>
     <string name="common_action_add">జోడించు</string>
@@ -1107,7 +1110,7 @@
     <string name="speed_bump_dont_open">తెరవవద్దు</string>
     <string name="speed_bump_explainer_body">ఈ ఫీచర్ యాప్ తెరవడానికి ముందు కొద్దిపాటి ఆలస్యాన్ని జోడిస్తుంది, తద్వారా మీరు నిజంగా దీన్ని తెరవాలనుకుంటున్నారా అని నిర్ణయించుకునే క్షణం దొరుకుతుంది. ఇది అనాలోచితంగా యాప్‌లు తెరవడాన్ని నివారించి, వ్యసన అలవాట్లను తగ్గించడంలో సాయపడుతుంది.</string>
     <string name="speed_bump_explainer_just_enabled">మీరు దీన్ని ఇప్పుడే %1$s కోసం ఆన్ చేశారు</string>
-    <string name="speed_bump_overlay_prompt">%1$s త్వరలో తెరుచుకుంటుంది. మీరు కొనసాగించకూడదనుకుంటే కింది బటన్‌ను నొక్కండి.</string>
+    <string name="speed_bump_overlay_prompt">%1$s త్వరలో తెరుచుకుంటుంది…</string>
     <string name="speed_bump_overlay_title">ఒక దీర్ఘ శ్వాస తీసుకోండి</string>
     <string name="speed_bump_title">SpeedBump</string>
 </resources>
