@@ -18,9 +18,10 @@
         <item name="android:windowActionBar">false</item>
     </style>
 
-    <!-- Opaque variant used by MainActivity. See notes in values/themes.xml. -->
+    <!-- Home-specific wallpaper backdrop variant. See notes in values/themes.xml. -->
     <style name="Theme.QuickSearch.Opaque" parent="Theme.QuickSearch">
         <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowShowWallpaper">true</item>
     </style>
 
 </resources>

@@ -4,6 +4,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,11 +31,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,6 +48,8 @@ import androidx.compose.ui.unit.sp
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /** A compact icon-over-label tile shown in the Shortcuts and Actions grids. */
 data class ItemMenuTile(
@@ -56,6 +70,9 @@ data class ItemMenuRow(
     val icon: @Composable () -> Unit,
     val onClick: () -> Unit,
     val onLongClick: (() -> Unit)? = null,
+    /** Runs only after this button remains continuously pressed for [longHoldDurationMillis]. */
+    val onLongHold: (() -> Unit)? = null,
+    val longHoldDurationMillis: Long = 0L,
     val trailingText: String? = null,
     val destructive: Boolean = false,
     /** Content anchored to a side-by-side button, such as a small dropdown shown on long press. */
@@ -92,8 +109,10 @@ fun ItemMenuPopup(
         leadingContent = leadingContent,
         containerColor = dialogBackground,
         contentCardColor = dialogBackground,
-        contentSpacing = 0.dp,
+        // Keep scrolled menu items visually clear of the fixed title area.
+        contentSpacing = DesignTokens.SpacingSmall,
         headerSpacing = DesignTokens.SpacingMedium,
+        contentTopPadding = 0.dp,
         // The popup's own bottom padding already separates the last item from the edge.
         contentBottomPadding = 0.dp,
     ) {
@@ -312,6 +331,55 @@ private fun ItemMenuButton(
         } else {
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
         }
+    val longHoldInteractionSource = remember { MutableInteractionSource() }
+    val longHoldIndication = LocalIndication.current
+    val coroutineScope = rememberCoroutineScope()
+    val clickModifier =
+        if (button.onLongHold != null && button.longHoldDurationMillis > 0L) {
+            Modifier
+                .indication(longHoldInteractionSource, longHoldIndication)
+                .semantics {
+                    onClick {
+                        button.onClick()
+                        true
+                    }
+                }
+                .pointerInput(button.onClick, button.onLongHold, button.longHoldDurationMillis) {
+                    awaitEachGesture {
+                        val down = awaitFirstDown()
+                        down.consume()
+                        val press = PressInteraction.Press(down.position)
+                        longHoldInteractionSource.tryEmit(press)
+                        var longHoldTriggered = false
+                        val longHoldJob = coroutineScope.launch {
+                            delay(button.longHoldDurationMillis)
+                            longHoldTriggered = true
+                            longHoldInteractionSource.tryEmit(PressInteraction.Release(press))
+                            hapticConfirm(view)()
+                            button.onLongHold.invoke()
+                        }
+                        val up = waitForUpOrCancellation()
+                        longHoldJob.cancel()
+                        if (!longHoldTriggered) {
+                            longHoldInteractionSource.tryEmit(
+                                if (up != null) PressInteraction.Release(press)
+                                else PressInteraction.Cancel(press),
+                            )
+                            if (up != null) button.onClick()
+                        }
+                    }
+                }
+        } else {
+            Modifier.combinedClickable(
+                onClick = button.onClick,
+                onLongClick = button.onLongClick?.let { onLongClick ->
+                    {
+                        hapticConfirm(view)()
+                        onLongClick()
+                    }
+                },
+            )
+        }
     Box(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -319,15 +387,7 @@ private fun ItemMenuButton(
                 .heightIn(min = 48.dp)
                 .clip(DesignTokens.ShapeSmall)
                 .background(containerColor)
-                .combinedClickable(
-                    onClick = button.onClick,
-                    onLongClick = button.onLongClick?.let { onLongClick ->
-                        {
-                            hapticConfirm(view)()
-                            onLongClick()
-                        }
-                    },
-                )
+                .then(clickModifier)
                 .padding(horizontal = DesignTokens.SpacingMedium, vertical = DesignTokens.SpacingSmall),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall, Alignment.CenterHorizontally),

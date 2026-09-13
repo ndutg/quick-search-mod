@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.3 (Updated September 6 2026)
+**Version**: 4.4 (Updated September 13 2026)
 
 ### Search
 
@@ -25,7 +25,7 @@ This document highlights all the available features. It also includes details ab
 - **Multi-App Search** - Type a query and tap any "search on" card to quickly search using that search engine. If compact mode is enabled, you can just tap on any icon in the search engine section above your keyboard.
 - **Browser Integration** - Installed browsers automatically appear as search engine options
 - **In-App Browser** - Option to open URLs inside the app instead of an external browser
-- **Supported Search Engines** (28 total): AI Search, Google, ChatGPT, Gemini, Perplexity, Grok, Google Maps, Google Drive, Google Photos, Google Play, Google Translate, Kagi, YouTube, YouTube Music, Spotify, Reddit, Amazon, X (Twitter), Facebook Marketplace, Bing, DuckDuckGo, Brave, Startpage, You.com, AI Mode, Claude, Wikipedia, F-Droid
+- **Supported Search Engines** (30 total): AI Search, Google, ChatGPT, Gemini, Perplexity, Grok, Google Maps, Google Drive, Google Photos, Google Play, Google Translate, Kagi, Kagi Assistant, Muse, YouTube, YouTube Music, Spotify, Reddit, Amazon, X (Twitter), Facebook Marketplace, Bing, DuckDuckGo, Brave, Startpage, You.com, AI Mode, Claude, Wikipedia, F-Droid. Kagi Assistant and Muse require their apps to be installed.
 - **AI Search** - Configure your Gemini API key to see answers directly within Quick Search. Ask follow-up questions to continue an AI Search conversation.
 - **Custom Search Engines** - Add your own search engines from the Search Engines settings screen.
 - **Web Search Suggestions** - Web suggestions automatically appear when you type your query; you can disable them or change the count in settings.
@@ -62,6 +62,7 @@ This document highlights all the available features. It also includes details ab
 - **World Clock** - Check the current time across different time zones. Search for city names to see their current time instantly.
 - **Currency Converter** - Convert between currencies directly from the search bar without an API key. Example: "100 USD to EUR" to see the converted amount with the current exchange rate.
 - **Weather** - See current weather information of a particular location directly in search.
+- **Color Visualizer** - Visualize hex and RGB color codes directly from search. Enter a six-digit hex code (for example, `#FF0000`) or an RGB value (for example, `rgb(255, 0, 0)`).
 - **Custom AI Tools** - Create your own tools for AI Search. This feature requires an API key to be configured. The current system time can be added in system prompt by using {time} modifier.
 - **Tasker Integration** - Create Tasker actions with broadcast intents and trigger them from Quick Search using aliases; the current query is sent to Tasker as an extra. You can also add Tasker task shortcuts from App Shortcuts and launch them directly from Quick Search.
 
@@ -108,6 +109,7 @@ Long-press on most results to open a context menu with quick actions.
 - **App Info / Uninstall / Hide** - For apps, open system app info, uninstall supported apps, or hide them from suggestions/results using the long-press menu on the app icon.
 - **Open in Split Screen** - Long-press any app to open it in split screen.
 - **SpeedBump** - Long-press any app and select **SpeedBump** to add a short delay before it opens—a small pause to help break habitual app opens.
+- **Copy Content** - Long-press a note and tap **Copy Content** to copy its text to the clipboard.
 - **File-Specific Options** - For files, long-press to share, open the containing folder, exclude all files with the same extension, or view a detailed file info dialog (type, size, path, last modified, etc.).
 
 ---
@@ -132,6 +134,7 @@ Long-press on most results to open a context menu with quick actions.
 - **App Result Rows** - Choose whether search results show one or two rows of apps.
 - **App Icon Size** - Adjust the size of app icons displayed in results and suggestions.
 - **App Labels** - You can choose to hide app labels.
+- **Notification Dots** - Choose whether to show notification dots on app icons.
 - **Home Text Colours** - Customize text colours on Home, including app labels and section titles.
 - **Circular App icons** - Option to force circular app icons
 - **Icon Packs** - Select an installed icon pack. If none of them are installed, tapping on the card will open the Play Store and search for icon packs. Once installed, come back to the app and hit the refresh button on the icon packs option to refresh the icon packs list.
@@ -149,7 +152,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Search History** - Enable or disable search history and choose how many items appear before the list expands. The expanded list shows up to 15 items; **Clear all** history is available at the bottom of the list. Your search queries, recently opened items (files, contacts, etc.) appear in your search history. AI answers are also saved to history alongside your queries. Swipe left or right on the expanded list to switch between **recent queries** and **recently opened results**.
 - **Excluded Items** - When you exclude any item on the search results page, you can find them here and clear them if you want to.
 - **Refresh Data** - The app automatically refreshes your data from time to time, but if you want to manually refresh the data, you can do it here.
-- **Calendar Options** - Create custom calendar entries and choose to ignore past events in results. Timed events appear on the home screen 30 minutes before they start, and tap **More Events** to view all of today's events.
+- **Calendar Options** - Create custom calendar entries, choose which calendar app opens your events, and choose to ignore past events in results. Timed events appear on the home screen 30 minutes before they start, and tap **More Events** to view all of today's events.
 
 ---
 
@@ -238,6 +241,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Unified Pinned Items** - Combine pinned items from different sections into a single list on the home screen. This option is off by default.
 - **Clear Query** - The app clears your query by default when you reopen the app; you can choose to keep the query by disabling this toggle.
 - **Auto-Close App** - Option to toggle auto-close app after any action
+- **Close with Gestures** - Option to close Quick Search with gestures.
 - **Language** - In-app language switcher to change the app language without changing your device language.
 - **Search Hints** - Option to show or hide the rotating search hints displayed in the search bar.
 - **Settings Icon** - Option to show or hide the settings icon in the search bar.
@@ -251,6 +255,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Swipe Left/Right** - Customize swipe left and right actions. By default, swipe right opens Quick Note and swipe left opens Settings; you can disable either gesture or assign a custom action, search engine, or tool instead.
 - **Home Screen Swipe Up/Down** - Customize swipe up and swipe down on Home. Assign a custom action, search engine, or tool, or disable the gesture. Swipe down can also open the notification panel.
 - **Double Tap Gesture** - Double-tap on an empty area in Home to trigger a custom action, search engine, tool, or lock your screen, or disable it if you do not need it.
+- **App Icon Swipe Gestures** - Swipe up or down on an app icon to trigger any item you choose.
 - **Keyboard Gestures** - Choose which swipe opens the keyboard and which swipe closes it. These are available on Home only when there is no scrollable content, so normal scrolling always takes priority.
 - **Launcher Swipe Right** - When Quick Search is set as your launcher, swipe right can open the Widget Panel.
 - **Widgets Panel Gesture** - You can also assign swipe left or swipe right to open the Widgets Panel without setting Quick Search as your launcher.
@@ -271,6 +276,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Swipe Up for Keyboard** - Swipe up on the home screen to open Quick Search with the keyboard raised, ready to type.
 - **Long Press to Change Wallpaper** - Long press on an empty area of the home screen to change your wallpaper.
 - **More App Shortcuts** - You will see more app shortcuts from the system when you set Quick Search as your launcher.
+- **App Lock** - Lock apps with biometrics when Quick Search is set as your launcher.
 
 ---
 
@@ -298,6 +304,7 @@ Long-press on most results to open a context menu with quick actions.
 ### Hidden / Non-Obvious Features
 
 - Swipe left to quickly write a note.
+- **App Lock Recovery** - If fingerprint or biometrics cannot unlock a locked app, long-press its unlock button for 6 seconds to show other unlock options, such as PIN.
 - **Reorder Quick Note** - When Quick Search is set as your launcher, hold and drag the Quick Note header to reorder it on the home screen.
 - **Search Icon tap behavior** - Tap on the Search icon in search bar to narrow down your search to a specific type. 
 - **URL Detection in Search Bar** - Paste or type a URL in the search bar to open it quickly in your installed browsers of your choice.

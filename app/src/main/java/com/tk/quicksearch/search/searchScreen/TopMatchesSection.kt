@@ -51,7 +51,6 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SectionRenderContext
 import com.tk.quicksearch.search.core.SectionRenderParams
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.AppShortcutRepository.launchStaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
@@ -804,6 +803,7 @@ private fun TopMatchAppGrid(
         hasAppResults = true,
         showAllAppsButton = false,
         onAppClick = params.onAppClick,
+        onAppShortcutClick = params.onAppShortcutClick,
         onAppInfoClick = params.onAppInfoClick,
         onUninstallClick = params.onUninstallClick,
         onHideApp = params.onHideApp,
@@ -926,7 +926,7 @@ private fun TopMatchAppRow(
             appInfo = app,
             iconPackPackage = params.iconPackPackage,
             appIconShape = params.appIconShape,
-            onShortcutClick = { shortcut -> launchStaticShortcut(context, shortcut) },
+            onShortcutClick = params.onAppShortcutClick,
             onAppInfoClick = { params.onAppInfoClick(app) },
             onHideApp = { params.onHideApp(app) },
             onPinApp = { params.onPinApp(app) },

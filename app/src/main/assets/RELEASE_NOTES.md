@@ -1,8 +1,9 @@
-- Introducing SpeedBump: Long-press any app and select SpeedBump to add a short delay before it opens, giving you time to think before opening it out of habit.
-- Double-tap gesture to lock your screen 
-- New AI provider: Meta AI
-- New search engine: F-Droid
-- Set WhatsApp Business as your default app for messaging and calling
-- Option to show Quick Search in your recent apps. Enable it in More options.
-- Widget panel optimizations
-- Bug fixes
+- Option to Lock apps with biometrics. This works only when Quick Search is set as your launcher.
+- New search engines: Muse and Kagi assistant. Requires apps to be installed.
+- App icon swipe gestures: Swipe up or down on an app icon to trigger any item you choose.
+- Option to choose which calendar app opens your events.
+- Option to show a notification dot on apps.
+- Option to close Quick Search with gestures.
+- New tool: Visualize color hex and RGB codes right from search.
+- Copy Content button in the long-press menu for notes.
+- UI updates, performance improvements, and bug fixes.

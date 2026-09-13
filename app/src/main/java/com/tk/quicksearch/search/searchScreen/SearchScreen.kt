@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
 import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.DirectDialOption
@@ -138,6 +140,7 @@ fun SearchScreen(
     onRefreshAvailableGeminiModels: () -> Unit = {},
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
     onWallpaperLoaded: (() -> Unit)? = null,
+    onWallpaperUnavailable: (() -> Unit)? = null,
     onSystemWallpaperChanged: (() -> Unit)? = null,
     isOverlayPresentation: Boolean = false,
     onOpenAppSettings: () -> Unit,
@@ -353,6 +356,7 @@ fun SearchScreen(
         onDeleteRecentItem = onDeleteRecentItem,
         onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
         onWallpaperLoaded = onWallpaperLoaded,
+        onWallpaperUnavailable = onWallpaperUnavailable,
         onSystemWallpaperChanged = onSystemWallpaperChanged,
         onCustomAction = onCustomAction,
         getPrimaryContactCardAction = getPrimaryContactCardAction,
@@ -449,32 +453,45 @@ fun SearchScreen(
     ) {
     Box(modifier = screenModifier) {
         if (!isOverlayPresentation) {
-            SearchScreenBackground(
-                showWallpaperBackground = stateResult.useImageBackground,
-                wallpaperBitmap = stateResult.imageBitmap,
-                wallpaperBackgroundAlpha = state.wallpaperBackgroundAlpha,
-                wallpaperBlurRadius = state.wallpaperBlurRadius,
-                backgroundTransitionDurationMillis =
-                    if (state.isInitializing &&
-                        effectiveBackgroundSource != com.tk.quicksearch.search.core.BackgroundSource.THEME
-                    ) {
-                        STARTUP_BACKGROUND_TRANSITION_DURATION_MS
-                    } else {
-                        com.tk.quicksearch.shared.ui.theme.DesignTokens.WallpaperFadeInDuration + 120
-                    },
-                fallbackBackgroundAlpha =
-                    if (!state.deviceThemeEnabled && effectiveBackgroundSource == com.tk.quicksearch.search.core.BackgroundSource.THEME) {
-                        ThemeModeFallbackBackgroundAlpha
-                    } else {
-                        1f
-                    },
-                useGradientFallback =
-                    !state.deviceThemeEnabled &&
-                        (effectiveBackgroundSource == com.tk.quicksearch.search.core.BackgroundSource.THEME || stateResult.useMonoThemeFallback),
-                appTheme = effectiveAppTheme,
-                overlayThemeIntensity = state.overlayThemeIntensity,
-                amoledThemeEnabled = state.amoledThemeEnabled,
-            )
+            if (stateResult.useSystemWallpaperBackdrop) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(
+                                AppColors.WallpaperOverlayTint.copy(
+                                    alpha = state.wallpaperBackgroundAlpha.coerceIn(0f, 1f),
+                                ),
+                            ),
+                )
+            } else {
+                SearchScreenBackground(
+                    showWallpaperBackground = stateResult.useImageBackground,
+                    wallpaperBitmap = stateResult.imageBitmap,
+                    wallpaperBackgroundAlpha = state.wallpaperBackgroundAlpha,
+                    wallpaperBlurRadius = state.wallpaperBlurRadius,
+                    backgroundTransitionDurationMillis =
+                        if (state.isInitializing &&
+                            effectiveBackgroundSource != com.tk.quicksearch.search.core.BackgroundSource.THEME
+                        ) {
+                            STARTUP_BACKGROUND_TRANSITION_DURATION_MS
+                        } else {
+                            com.tk.quicksearch.shared.ui.theme.DesignTokens.WallpaperFadeInDuration + 120
+                        },
+                    fallbackBackgroundAlpha =
+                        if (!state.deviceThemeEnabled && effectiveBackgroundSource == com.tk.quicksearch.search.core.BackgroundSource.THEME) {
+                            ThemeModeFallbackBackgroundAlpha
+                        } else {
+                            1f
+                        },
+                    useGradientFallback =
+                        !state.deviceThemeEnabled &&
+                            (effectiveBackgroundSource == com.tk.quicksearch.search.core.BackgroundSource.THEME || stateResult.useMonoThemeFallback),
+                    appTheme = effectiveAppTheme,
+                    overlayThemeIntensity = state.overlayThemeIntensity,
+                    amoledThemeEnabled = state.amoledThemeEnabled,
+                )
+            }
         }
 
         // Main content

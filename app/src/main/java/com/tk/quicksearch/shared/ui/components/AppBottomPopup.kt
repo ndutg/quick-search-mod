@@ -66,6 +66,7 @@ import kotlin.math.roundToInt
  * @param maxInnerCardHeight Optional max height for the inner content card. If null, defaults to
  *   72% of screen height.
  * @param contentBottomPadding Padding below the scrollable content, inside the card.
+ * @param contentTopPadding Padding above scrollable content when there is no fixed top content.
  * @param content Content rendered inside the scrollable dark card.
  */
 @Composable
@@ -84,6 +85,7 @@ fun AppBottomPopup(
     drawerHeight: Dp? = null,
     contentSpacing: Dp = 24.dp,
     headerSpacing: Dp = 16.dp,
+    contentTopPadding: Dp = 20.dp,
     contentBottomPadding: Dp = 24.dp,
     contentScrollable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
@@ -202,7 +204,7 @@ fun AppBottomPopup(
                                             )
                                         .padding(
                                             start = 16.dp,
-                                            top = 20.dp,
+                                            top = contentTopPadding,
                                             end = 16.dp,
                                             bottom = contentBottomPadding,
                                         ),

@@ -70,6 +70,10 @@
     <string name="action_add_to_home">होम में जोड़ें</string>
     <string name="action_add_trigger">ट्रिगर जोड़ें</string>
     <string name="action_app_info">ऐप जानकारी</string>
+    <string name="action_lock_app">लॉक करें</string>
+    <string name="action_unlock_app">अनलॉक करें</string>
+    <string name="app_lock_prompt_lock">%1$s को लॉक करें</string>
+    <string name="app_lock_prompt_unlock">%1$s को अनलॉक करें</string>
     <string name="action_change_icon">आइकन बदलें</string>
     <string name="icon_picker_search">आइकन खोजें</string>
     <string name="icon_picker_title">"%1$s" के लिए आइकन बदलें</string>
@@ -352,6 +356,8 @@
     <string name="error_shortcut_no_activity_resolves">Intent के लिए कोई activity उपलब्ध नहीं है।</string>
     <string name="error_shortcut_requires_permission">शॉर्टकट के लिए अनुमति आवश्यक है: %1$s।</string>
     <string name="error_shortcuts_not_supported">इस डिवाइस पर होम स्क्रीन में शॉर्टकट जोड़ना समर्थित नहीं है</string>
+    <string name="pin_shortcut_request_added">\"%1$s\" Quick Search में जोड़ा गया</string>
+    <string name="pin_shortcut_request_added_generic">शॉर्टकट Quick Search में जोड़ा गया</string>
     <string name="settings_app_shortcuts_activity_dialog_title">ऐप Activity चुनें</string>
     <string name="settings_app_shortcuts_activity_empty">कोई ऐप activities उपलब्ध नहीं हैं।</string>
     <string name="settings_app_shortcuts_activity_warning">कुछ activities उम्मीद के अनुसार काम नहीं कर सकतीं</string>

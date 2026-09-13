@@ -21,6 +21,7 @@ import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 
@@ -36,7 +37,11 @@ class AddToHomeHandler(private val context: Context) {
 
     fun isSupported(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            shortcutManager?.isRequestPinShortcutSupported == true
+            // As the default launcher there is no separate home screen to pin to, and
+            // PinShortcutRequestActivity only accepts other apps' requests. Keeps the
+            // pre-existing "unsupported" behavior instead of silently dropping the request.
+            !context.cachedDefaultHomeAppStatus() &&
+                shortcutManager?.isRequestPinShortcutSupported == true
         } else {
             false
         }

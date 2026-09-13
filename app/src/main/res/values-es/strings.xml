@@ -70,6 +70,10 @@
     <string name="action_add_to_home">Añadir a la pantalla de inicio</string>
     <string name="action_add_trigger">Activador</string>
     <string name="action_app_info">Información de la app</string>
+    <string name="action_lock_app">Bloquear</string>
+    <string name="action_unlock_app">Desbloquear</string>
+    <string name="app_lock_prompt_lock">Bloquear %1$s</string>
+    <string name="app_lock_prompt_unlock">Desbloquear %1$s</string>
     <string name="action_change_icon">Cambiar icono</string>
     <string name="icon_picker_search">Buscar iconos</string>
     <string name="icon_picker_title">Cambiar icono de "%1$s"</string>
@@ -352,6 +356,8 @@
     <string name="error_shortcut_no_activity_resolves">Ninguna actividad resuelve el intent.</string>
     <string name="error_shortcut_requires_permission">El acceso directo requiere el permiso: %1$s.</string>
     <string name="error_shortcuts_not_supported">Añadir accesos directos a la pantalla de inicio no es compatible con este dispositivo</string>
+    <string name="pin_shortcut_request_added">Se añadió \"%1$s\" a Quick Search</string>
+    <string name="pin_shortcut_request_added_generic">Acceso directo añadido a Quick Search</string>
     <string name="settings_app_shortcuts_activity_dialog_title">Elegir actividad de la app</string>
     <string name="settings_app_shortcuts_activity_empty">No hay actividades disponibles para esta app.</string>
     <string name="settings_app_shortcuts_activity_warning">Es posible que algunas actividades no funcionen como se espera</string>

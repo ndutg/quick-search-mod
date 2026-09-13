@@ -70,6 +70,10 @@
     <string name="action_add_to_home">Προσθήκη στην αρχική οθόνη</string>
     <string name="action_add_trigger">Ενεργοποίηση</string>
     <string name="action_app_info">Πληροφορίες εφαρμογής</string>
+    <string name="action_lock_app">Κλείδωμα</string>
+    <string name="action_unlock_app">Ξεκλείδωμα</string>
+    <string name="app_lock_prompt_lock">Κλείδωμα %1$s</string>
+    <string name="app_lock_prompt_unlock">Ξεκλείδωμα %1$s</string>
     <string name="action_change_icon">Αλλαγή εικονιδίου</string>
     <string name="icon_picker_search">Αναζήτηση εικονιδίων</string>
     <string name="icon_picker_title">Αλλαγή εικονιδίου για το "%1$s"</string>
@@ -352,6 +356,8 @@
     <string name="error_shortcut_no_activity_resolves">Καμία δραστηριότητα δεν επιλύει το intent.</string>
     <string name="error_shortcut_requires_permission">Η συντόμευση απαιτεί άδεια: %1$s.</string>
     <string name="error_shortcuts_not_supported">Η προσθήκη συντομεύσεων στην αρχική οθόνη δεν υποστηρίζεται σε αυτή τη συσκευή</string>
+    <string name="pin_shortcut_request_added">Το \"%1$s\" προστέθηκε στο Quick Search</string>
+    <string name="pin_shortcut_request_added_generic">Η συντόμευση προστέθηκε στο Quick Search</string>
     <string name="settings_app_shortcuts_activity_dialog_title">Επιλογή δραστηριότητας εφαρμογής</string>
     <string name="settings_app_shortcuts_activity_empty">Δεν υπάρχουν διαθέσιμες δραστηριότητες εφαρμογής.</string>
     <string name="settings_app_shortcuts_activity_warning">Ορισμένες δραστηριότητες ενδέχεται να μην λειτουργούν όπως αναμένεται</string>

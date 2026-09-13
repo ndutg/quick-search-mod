@@ -173,6 +173,7 @@ internal fun SearchScreenStateManagement(
     onDeleteRecentItem: (RecentSearchEntry) -> Unit,
     onWelcomeAnimationCompleted: (() -> Unit)?,
     onWallpaperLoaded: (() -> Unit)?,
+    onWallpaperUnavailable: (() -> Unit)?,
     onSystemWallpaperChanged: (() -> Unit)?,
     onCustomAction: (ContactInfo, ContactCardAction) -> Unit,
     getPrimaryContactCardAction: (Long) -> ContactCardAction?,
@@ -368,24 +369,25 @@ internal fun SearchScreenStateManagement(
         reverseScrolling = alignResultsToBottom,
     )
 
-    val (imageBitmap, useImageBackground, useMonoThemeFallback) = SearchScreenWallpaperLogic(
+    val wallpaperState = SearchScreenWallpaperLogic(
         state = state,
         onWallpaperLoaded = onWallpaperLoaded,
+        onWallpaperUnavailable = onWallpaperUnavailable,
         onSystemWallpaperChanged = onSystemWallpaperChanged,
         isOverlayPresentation = isOverlayPresentation,
     )
 
     val effectiveStateForCards =
         state.copy(
-            showWallpaperBackground = useImageBackground,
+            showWallpaperBackground = wallpaperState.usesWallpaperBackground,
             backgroundSource =
-                if (useMonoThemeFallback) {
+                if (wallpaperState.usesMonoThemeFallback) {
                     BackgroundSource.THEME
                 } else {
                     state.backgroundSource
                 },
             appTheme =
-                if (useMonoThemeFallback) {
+                if (wallpaperState.usesMonoThemeFallback) {
                     AppTheme.MONOCHROME
                 } else {
                     state.appTheme
@@ -581,9 +583,10 @@ internal fun SearchScreenStateManagement(
         showGeminiModelDialog = showGeminiModelDialog,
         personalContextInput = personalContextInput,
         openPersonalContextDialog = openPersonalContextDialog,
-        imageBitmap = imageBitmap,
-        useImageBackground = useImageBackground,
-        useMonoThemeFallback = useMonoThemeFallback,
+        imageBitmap = wallpaperState.imageBitmap,
+        useImageBackground = wallpaperState.usesWallpaperBackground,
+        useSystemWallpaperBackdrop = wallpaperState.usesSystemWallpaperBackdrop,
+        useMonoThemeFallback = wallpaperState.usesMonoThemeFallback,
         effectiveStateForCards = effectiveStateForCards,
         sectionParams = sectionParams,
         renderingState = renderingState,
@@ -619,6 +622,7 @@ internal data class SearchScreenStateResult(
     val openPersonalContextDialog: () -> Unit,
     val imageBitmap: androidx.compose.ui.graphics.ImageBitmap?,
     val useImageBackground: Boolean,
+    val useSystemWallpaperBackdrop: Boolean,
     val useMonoThemeFallback: Boolean,
     val effectiveStateForCards: SearchUiState,
     val sectionParams: SectionParams,

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Trace
 import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.fragment.app.FragmentActivity
 import com.tk.quicksearch.app.startup.StartupCoordinator
 import com.tk.quicksearch.app.startup.StartupMode
 import com.tk.quicksearch.app.UiSurfaceMemoryManager
@@ -37,7 +37,7 @@ import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.searchWidget.VoiceSearchHandler
 
-class OverlayActivity : ComponentActivity() {
+class OverlayActivity : FragmentActivity() {
     private companion object {
         const val TRACE_ON_CREATE_ENTRY = "QS.Startup.OverlayActivity.OnCreate"
     }

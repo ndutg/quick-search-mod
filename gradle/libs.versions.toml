@@ -27,6 +27,7 @@ ksp = "2.3.9"
 reorderable = "2.4.3"
 androidxBrowser = "1.8.0"
 appcompat = "1.7.1"
+biometric = "1.1.0"
 desugarJdkLibs = "2.1.4"
 
 [libraries]
@@ -68,6 +69,7 @@ androidx-room-testing = { group = "androidx.room", name = "room-testing", versio
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidxBrowser" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 kotlin-parcelize-runtime = { group = "org.jetbrains.kotlin", name = "kotlin-parcelize-runtime", version.ref = "kotlin" }
 

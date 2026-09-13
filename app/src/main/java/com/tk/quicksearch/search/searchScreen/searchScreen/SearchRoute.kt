@@ -2,13 +2,17 @@ package com.tk.quicksearch.search.searchScreen
 
 import android.Manifest
 import android.app.Activity
+import android.app.KeyguardManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,8 +40,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.UpdateHelper
+import com.tk.quicksearch.search.core.AccentColorMode
+import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
@@ -65,6 +73,9 @@ import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
+import com.tk.quicksearch.search.apps.appLock.AppLock
+import com.tk.quicksearch.search.apps.appLock.LocalAppLockAuthenticator
+import com.tk.quicksearch.search.apps.appLock.LocalAppLockCredentialAuthenticator
 import com.tk.quicksearch.search.apps.speedBump.SpeedBump
 import com.tk.quicksearch.search.apps.swipeGestures.AppSwipeGestures
 import com.tk.quicksearch.search.apps.speedBump.SpeedBumpOverlay
@@ -534,6 +545,89 @@ fun SearchRoute(
         UserAppPreferences(context.applicationContext)
     }
     var isDefaultLauncher by remember { mutableStateOf(context.cachedDefaultHomeAppStatus()) }
+    var pendingBiometricAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    var pendingDeviceCredentialAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    val deviceCredentialLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val action = pendingDeviceCredentialAction
+            pendingDeviceCredentialAction = null
+            if (result.resultCode == Activity.RESULT_OK) action?.invoke()
+        }
+    val fragmentActivity = context as? FragmentActivity
+    val biometricPrompt = remember(fragmentActivity) {
+        fragmentActivity?.let { activity ->
+            BiometricPrompt(
+                activity,
+                ContextCompat.getMainExecutor(activity),
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        val action = pendingBiometricAction
+                        pendingBiometricAction = null
+                        action?.invoke()
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        pendingBiometricAction = null
+                    }
+                },
+            )
+        }
+    }
+    val requestBiometricAuthentication = remember(biometricPrompt, context) {
+        { promptTitle: String, onAuthenticated: () -> Unit ->
+            val prompt = biometricPrompt
+            if (prompt != null) {
+                pendingBiometricAction = onAuthenticated
+                prompt.authenticate(
+                    BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(promptTitle)
+                        .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+                        .setNegativeButtonText(context.getString(android.R.string.cancel))
+                        .build(),
+                )
+            }
+        }
+    }
+    val requestDeviceCredentialAuthentication =
+        remember(biometricPrompt, context, deviceCredentialLauncher) {
+            { promptTitle: String, onAuthenticated: () -> Unit ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    biometricPrompt?.let { prompt ->
+                        pendingBiometricAction = onAuthenticated
+                        prompt.authenticate(
+                            BiometricPrompt.PromptInfo.Builder()
+                                .setTitle(promptTitle)
+                                .setAllowedAuthenticators(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                                .build(),
+                        )
+                    }
+                } else {
+                    val keyguardManager = context.getSystemService(KeyguardManager::class.java)
+                    @Suppress("DEPRECATION")
+                    val credentialIntent =
+                        keyguardManager?.createConfirmDeviceCredentialIntent(promptTitle, null)
+                    if (credentialIntent != null) {
+                        pendingDeviceCredentialAction = onAuthenticated
+                        deviceCredentialLauncher.launch(credentialIntent)
+                    }
+                }
+                Unit
+            }
+        }
+    fun runAfterAppUnlock(
+        packageName: String,
+        appName: String,
+        action: () -> Unit,
+    ) {
+        if (isDefaultLauncher && AppLock.isLocked(context, packageName)) {
+            requestBiometricAuthentication(
+                context.getString(R.string.app_lock_prompt_unlock, appName),
+                action,
+            )
+        } else {
+            action()
+        }
+    }
     var swipeActions by remember {
         mutableStateOf(
             listOf(
@@ -707,7 +801,11 @@ fun SearchRoute(
     }
 
     Box(modifier = containerModifier) {
-        CompositionLocalProvider(LocalHomeHorizontalSwipeHandler provides handleHomeHorizontalSwipe) {
+        CompositionLocalProvider(
+            LocalHomeHorizontalSwipeHandler provides handleHomeHorizontalSwipe,
+            LocalAppLockAuthenticator provides requestBiometricAuthentication,
+            LocalAppLockCredentialAuthenticator provides requestDeviceCredentialAuthentication,
+        ) {
             SearchScreenComposable(
                 modifier =
                     if (isOverlayPresentation) {
@@ -728,11 +826,15 @@ fun SearchRoute(
                 if (SpeedBump.isEnabled(context, app.packageName)) {
                     speedBumpApp = app
                 } else {
-                    viewModel.launchApp(app, context)
+                    runAfterAppUnlock(app.packageName, app.appName) {
+                        viewModel.launchApp(app, context)
+                    }
                 }
             },
             onOpenInSplitScreen = { app: com.tk.quicksearch.search.models.AppInfo ->
-                viewModel.launchAppInSplitScreen(app, context)
+                runAfterAppUnlock(app.packageName, app.appName) {
+                    viewModel.launchAppInSplitScreen(app, context)
+                }
             },
             onAppInfoClick = { app: com.tk.quicksearch.search.models.AppInfo ->
                 viewModel.openAppInfo(app)
@@ -828,7 +930,9 @@ fun SearchRoute(
             onMovePinnedSetting = viewModel::movePinnedSetting,
             onExcludeSetting = onExcludeSettingWithUndo,
             onAppShortcutClick = { shortcut: com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut ->
-                viewModel.launchAppShortcut(shortcut)
+                runAfterAppUnlock(shortcut.packageName, shortcut.appLabel) {
+                    viewModel.launchAppShortcut(shortcut)
+                }
             },
             onPinAppShortcut = viewModel::pinAppShortcut,
             onUnpinAppShortcut = viewModel::unpinAppShortcut,
@@ -970,6 +1074,15 @@ fun SearchRoute(
             onSavePrimaryContactCardAction = viewModel::setPrimaryContactCardAction,
             onSaveSecondaryContactCardAction = viewModel::setSecondaryContactCardAction,
             onWallpaperLoaded = onWallpaperLoaded,
+            onWallpaperUnavailable = {
+                viewModel.setWallpaperAvailable(false)
+                if (
+                    viewModel.uiState.value.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+                    viewModel.uiState.value.accentColorMode == AccentColorMode.FROM_WALLPAPER
+                ) {
+                    viewModel.setAccentColorMode(AccentColorMode.NONE)
+                }
+            },
             onSystemWallpaperChanged = viewModel::resetHomeTextColorForNewWallpaper,
             isOverlayPresentation = isOverlayPresentation,
             onOverlayExpandRequest = onOverlayExpandRequest,
@@ -1103,7 +1216,9 @@ fun SearchRoute(
                 appIconShape = uiState.appIconShape,
                 onOpen = {
                     speedBumpApp = null
-                    viewModel.launchApp(app, context)
+                    runAfterAppUnlock(app.packageName, app.appName) {
+                        viewModel.launchApp(app, context)
+                    }
                 },
                 onCancel = { speedBumpApp = null },
             )

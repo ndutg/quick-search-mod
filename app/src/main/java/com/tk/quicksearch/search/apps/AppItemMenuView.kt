@@ -19,6 +19,8 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Image as IconImage
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.PinEnd
 import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material.icons.rounded.SwipeDown
@@ -65,6 +67,9 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.apps.speedBump.SpeedBump
 import com.tk.quicksearch.search.apps.speedBump.SpeedBumpExplainerDialog
+import com.tk.quicksearch.search.apps.appLock.AppLock
+import com.tk.quicksearch.search.apps.appLock.LocalAppLockAuthenticator
+import com.tk.quicksearch.search.apps.appLock.LocalAppLockCredentialAuthenticator
 import com.tk.quicksearch.search.apps.swipeGestures.AppSwipeDirection
 import com.tk.quicksearch.search.apps.swipeGestures.AppSwipeGestures
 import com.tk.quicksearch.search.apps.swipeGestures.rememberAppSwipeActions
@@ -73,12 +78,14 @@ import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 private val ShortcutGridIconSize = 24.dp
+private const val AppUnlockCredentialHoldMillis = 6_000L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,6 +138,12 @@ fun AppItemDropdownMenu(
     var speedBumpEnabled by remember(appInfo.packageName, expanded) {
         mutableStateOf(SpeedBump.isEnabled(context, appInfo.packageName))
     }
+    var appLockEnabled by remember(appInfo.packageName, expanded) {
+        mutableStateOf(AppLock.isLocked(context, appInfo.packageName))
+    }
+    val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
+    val authenticate = LocalAppLockAuthenticator.current
+    val authenticateWithDeviceCredential = LocalAppLockCredentialAuthenticator.current
     // Non-null while the explainer is up; true when it followed the user first turning it on.
     var speedBumpExplainerJustEnabled by remember { mutableStateOf<Boolean?>(null) }
     val isOtherLaunchableApp = !isCurrentApp && isLaunchableApp
@@ -168,9 +181,9 @@ fun AppItemDropdownMenu(
         ))
     }
 
-    val appearanceRows = buildList {
+    val speedBumpAction =
         if (isOtherLaunchableApp) {
-            add(ItemMenuRow(
+            ItemMenuRow(
                 label = stringResource(R.string.speed_bump_title),
                 icon = {
                     Icon(
@@ -192,8 +205,53 @@ fun AppItemDropdownMenu(
                     // Otherwise the menu stays open so the new state can be seen.
                 },
                 onLongClick = { onDismiss(); speedBumpExplainerJustEnabled = false },
-            ))
+            )
+        } else {
+            null
         }
+    val lockPromptTitle = stringResource(
+        if (appLockEnabled) R.string.app_lock_prompt_unlock else R.string.app_lock_prompt_lock,
+        appInfo.appName,
+    )
+    val appLockAction =
+        if (isDefaultLauncher && isOtherLaunchableApp) {
+            ItemMenuRow(
+                label = stringResource(
+                    if (appLockEnabled) R.string.action_unlock_app else R.string.action_lock_app,
+                ),
+                icon = {
+                    Icon(
+                        imageVector = if (appLockEnabled) Icons.Rounded.LockOpen else Icons.Rounded.Lock,
+                        contentDescription = null,
+                        tint = if (appLockEnabled) AppColors.ActionPhone else LocalContentColor.current,
+                    )
+                },
+                onClick = {
+                    val newLockState = !appLockEnabled
+                    authenticate(lockPromptTitle) {
+                        AppLock.setLocked(context, appInfo.packageName, newLockState)
+                        appLockEnabled = newLockState
+                    }
+                },
+                onLongHold =
+                    if (appLockEnabled) {
+                        {
+                            authenticateWithDeviceCredential(lockPromptTitle) {
+                                AppLock.setLocked(context, appInfo.packageName, false)
+                                appLockEnabled = false
+                            }
+                        }
+                    } else {
+                        null
+                    },
+                longHoldDurationMillis = AppUnlockCredentialHoldMillis,
+            )
+        } else {
+            null
+        }
+
+    val appearanceRows = buildList {
+        if (!isDefaultLauncher) speedBumpAction?.let(::add)
         if (isLaunchableApp) {
             add(ItemMenuRow(
                 label = stringResource(
@@ -211,6 +269,13 @@ fun AppItemDropdownMenu(
             ))
         }
     }
+
+    val speedBumpAndLockButtons =
+        if (isDefaultLauncher) {
+            listOfNotNull(speedBumpAction, appLockAction)
+        } else {
+            emptyList()
+        }
 
     val splitAndIconButtons = buildList {
         if (isLaunchableApp && appInfo.userHandleId == null) {
@@ -375,7 +440,7 @@ fun AppItemDropdownMenu(
             shortcuts = shortcutTiles,
             actionsTitle = stringResource(R.string.app_menu_section_actions),
             actions = actions,
-            buttonRows = listOf(splitAndIconButtons, swipeButtons),
+            buttonRows = listOf(speedBumpAndLockButtons, splitAndIconButtons, swipeButtons),
             rows = appearanceRows + launchRows,
             footer = footerButtons,
         )

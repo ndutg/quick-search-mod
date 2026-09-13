@@ -138,6 +138,7 @@ data class SearchPermissionState(
         val hasCalendarPermission: Boolean = false,
         val hasCallPermission: Boolean = false,
         val hasWallpaperPermission: Boolean = false,
+        /** Wallpaper bitmap pixels are available to app-rendered surfaces/features. */
         val wallpaperAvailable: Boolean = false,
         // Messaging / calling app selection (depends on installed apps)
         val messagingApp: MessagingApp = MessagingApp.MESSAGES,
