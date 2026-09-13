@@ -74,6 +74,7 @@
 <string name="icon_picker_title">"%1$s" için simgeyi değiştir</string>
 <string name="action_change_wallpaper">Duvar kağıdını değiştir</string>
 <string name="action_clear_all_history">Geçmişi temizle</string>
+<string name="action_copy_content">İçeriği kopyala</string>
 <string name="action_edit_icon">Simgeyi düzenle</string>
 <string name="action_edit_nickname">Takma adı düzenle</string>
 <string name="action_edit_trigger">Tetikleyiciyi düzenle</string>
@@ -104,12 +105,13 @@
 <string name="settings_gesture_swipe_down">Aşağı Kaydır</string>
 <string name="settings_gesture_swipe_up_home">Yukarı Kaydır (Ana Ekran)</string>
 <string name="settings_gesture_swipe_down_home">Aşağı Kaydır (Ana Ekran)</string>
+<string name="settings_gesture_close_quick_search">Quick Search\'i kapat</string>
 <string name="settings_gesture_double_tap_home">Çift Dokunma (Ana Ekran)</string>
 <string name="settings_gesture_settings">Ayarlar</string>
 <string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
-<string name="accessibility_lock_screen_disclosure_title">Ekran kilidi için erişilebilirlik erişimi</string>
+<string name="accessibility_permission_disclaimer_title">Erişilebilirlik İzni Bildirimi</string>
 <string name="accessibility_lock_screen_disclosure_message">Quick Search, Android AccessibilityService API’sini yalnızca Ana ekrana iki kez dokunduğunuzda cihazınızı kilitlemek için kullanır. Quick Search bu hizmet aracılığıyla ekran içeriğinizi veya diğer kişisel verilerinizi okumaz, toplamaz, saklamaz ya da paylaşmaz.</string>
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
@@ -129,6 +131,13 @@
     <string name="notification_pinned_item_type_file">Dosya</string>
     <string name="notification_pinned_item_type_note">Not</string>
 <string name="action_remove">Kaldır</string>
+<string name="app_swipe_current_action">Geçerli eylem</string>
+<string name="app_swipe_up_picker_title">%1$s için yukarı kaydırma eylemini seçin</string>
+<string name="app_swipe_down_picker_title">%1$s için aşağı kaydırma eylemini seçin</string>
+<string name="app_swipe_picker_tip">Uygulama simgesinde kaydırmak, seçilen öğeyi hem uygulama önerilerinde hem de arama sonuçlarında açar</string>
+<string name="app_swipe_picker_search_hint">Uygulama, kişi vb. ara</string>
+<string name="app_swipe_up_set_toast">%1$s için yukarı kaydırma hareketi ayarlandı</string>
+<string name="app_swipe_down_set_toast">%1$s için aşağı kaydırma hareketi ayarlandı</string>
 <string name="action_remove_from_history">Geçmişten kaldır</string>
 <string name="action_reset_app_shortcut_icon">Varsayılan simgeye sıfırla</string>
 <string name="action_retry">Yeniden dene</string>
@@ -246,8 +255,6 @@
 <string name="recent_queries_toggle_title">Arama geçmişi</string>
 <string name="search_history_tab_recently_opened">Sonuçlar</string>
 <string name="search_history_tab_searches">Aramalar</string>
-<string name="search_history_tip_link">ayarlar</string>
-<string name="search_history_tip_message">Arama geçmişini şuradan devre dışı bırakabilirsiniz:</string>
 <string name="search_section_app_settings_toggle_desc">Uygulama ayarları aramasını aç veya kapat</string>
 <string name="search_section_app_settings_toggle_title">Uygulama ayarları araması</string>
 <string name="search_section_app_shortcuts_toggle_desc">Uygulama kısayolları aramasını aç veya kapat</string>
@@ -284,6 +291,9 @@
 <string name="open_top_result_using_keyboard_toggle_desc">Klavyedeki Enter/Bitti tuşu en iyi sonucu açar</string>
 <string name="include_non_launchable_apps_toggle_title">Başlatılamayan Uygulamalar</string>
 <string name="include_non_launchable_apps_toggle_desc">Arama sonuçlarında başlatma etkinliği olmayan uygulamaları da göster.</string>
+    <string name="notification_dots_toggle_title">Bildirim noktaları</string>
+    <string name="notification_dots_toggle_desc">Bildirimi olan uygulamalarda bildirim noktalarını göster</string>
+    <string name="desc_notification_dot">Bildirimleri var</string>
     <string name="show_in_recents_toggle_title">Son kullanılanlarda göster</string>
     <string name="show_in_recents_toggle_desc">Quick Search\'ü cihazınızın son kullanılan uygulamalarında göster</string>
 <string name="web_search_suggestions_title">Web önerileri</string>
@@ -293,6 +303,8 @@
      ============================================================================ -->
 <string name="app_menu_section_actions">İşlemler</string>
 <string name="app_menu_section_shortcuts">Kısayollar</string>
+<string name="app_menu_value_on">Açık</string>
+<string name="action_uninstall_named">%1$s uygulamasını kaldır</string>
 <string name="apps_refreshed_successfully">Uygulamalar başarıyla yenilendi</string>
 <string name="error_loading_user_apps">Uygulamalarınız yüklenemedi. Birazdan tekrar deneyin.</string>
 <string name="error_uninstall_app">%1$s kaldırılamadı</string>
@@ -549,6 +561,7 @@
 <string name="settings_calendar_permission_title">Takvim</string>
 <string name="settings_calendar_show_today_events_desc">Bugünün etkinliklerini ana ekranda göster.</string>
 <string name="settings_calendar_show_today_events_title">Bugünün etkinliklerini göster</string>
+    <string name="settings_calendar_default_title">Etkinlikleri şurada aç...</string>
 <string name="settings_calendar_view_all_events_desc">Tüm etkinlikleri görüntüle</string>
 
 <!-- ============================================================================
@@ -862,6 +875,9 @@
 <string name="currency_converter_requires_gemini_key">Bir AI sağlayıcı API anahtarı gerektirir</string>
 <string name="currency_converter_toggle_desc">Örnek: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Döviz dönüştürücü</string>
+    <string name="color_visualizer_toggle_title">Renk Görselleştirici</string>
+    <string name="color_visualizer_toggle_desc">Örnekler: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Bir hex veya RGB rengi girin</string>
     <string name="currency_converter_updated">Güncellendi %1$s</string>
 <string name="date_calculator_category_absolute_time">Mutlak zaman</string>
 <string name="date_calculator_category_date_differences">Tarih farkları</string>
@@ -929,9 +945,10 @@
 <string name="widget_background_color_custom_dialog_title">Özel renk</string>
 <string name="widget_border_color">Kenarlık rengi</string>
 <string name="widget_custom_button_add_desc">Özel buton ekle</string>
-<string name="widget_custom_buttons_dialog_hint">Uygulamalar, Uygulama Kısayolları, Kişiler, Dosyalar, Klasörler, Notlar &amp; Cihaz ayarları için arama yapabilirsin.</string>
+<string name="widget_custom_buttons_dialog_hint">Uygulamalar, Uygulama Kısayolları, Kişiler, Dosyalar, Klasörler, Notlar &amp; Cihaz ayarlarında arama yap.</string>
 <string name="widget_custom_buttons_dialog_title">İşlem seç</string>
 <string name="widget_custom_buttons_no_results">Sonuç bulunamadı.</string>
+<string name="widget_custom_buttons_filter_all">Tümü</string>
 <string name="widget_custom_buttons_restriction">Özel butonlar aktifken kullanılamaz.</string>
 <string name="widget_custom_buttons_title">Özel butonlar</string>
 <string name="widget_custom_buttons_widget_title">Özel butonlar widget\'ı</string>
@@ -971,6 +988,11 @@
      ============================================================================ -->
 <string name="permissions_calendar_desc">Takvim etkinliklerinde arama yapmak için gereklidir.</string>
 <string name="permissions_calling_desc">Arama ekranını açmadan kişilerini doğrudan aramak için gereklidir.</string>
+<string name="settings_notifications_permission_title">Bildirim gönderme</string>
+<string name="permissions_notifications_desc">Arama sonuçlarını bildirim paneline sabitlemek için gereklidir</string>
+    <string name="permissions_notification_access_desc">Bildirimi olan uygulamalarda bildirim noktalarını göstermek için gereklidir.</string>
+<string name="permissions_accessibility_lock_screen_title">Erişilebilirlik</string>
+<string name="permissions_accessibility_lock_screen_desc">Çift dokunma hareketinin cihazınızı kilitlemesini sağlar.</string>
 <string name="permissions_contacts_desc">Kişilerinde arama yapmak için gereklidir.</string>
 <string name="permissions_files_desc">Belgelerin ve diğer dosyaların arasında arama yapmak için gereklidir.</string>
 <string name="permissions_files_title">Dosya erişimi</string>
@@ -978,7 +1000,8 @@
 <string name="permissions_mandatory_indicator">*</string>
 <string name="permissions_reminder_dialog_message">Daha sonra %1$s izni hakkında fikrini değiştirirsen, uygulama ayarlarından bu izni verebilirsin.</string>
 <string name="permissions_reminder_dialog_title">İzinler verilmedi</string>
-<string name="permissions_screen_subtitle">Bu izinler ek özellikleri kullanmanı sağlar. İsteğe bağlıdır. Verilerin cihazında kalır.</string>
+<string name="permissions_screen_subtitle">Buradaki tüm izinler isteğe bağlıdır. Yalnızca ek özelliklerin kilidini açmak için kullanılırlar. Verilerin cihazında kalır.</string>
+<string name="permissions_screen_optional_emphasis">isteğe bağlıdır</string>
 <string name="permissions_usage_desc">Son kullandığın uygulamaları önerilerde göstermek için gereklidir.</string>
 <string name="setup_action_next">Sonraki</string>
 <string name="setup_action_start">Aramaya başla!</string>
@@ -1080,6 +1103,8 @@
     <string name="widget_custom_button_choose_colour">Klasör rengini seç</string>
     <string name="search_engine_google_translate">Google Çeviri</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Tasker Eylemleri</string>
     <string name="tasker_integration_description">Yayın intent\'leri (broadcast intents) kullanarak Tasker eylemleri oluşturun.</string>
     <string name="tasker_add_intent_title">Tasker Yayın Intent\'i Ekle</string>

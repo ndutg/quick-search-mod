@@ -65,6 +65,7 @@ import kotlin.math.roundToInt
  *   scrollable content.
  * @param maxInnerCardHeight Optional max height for the inner content card. If null, defaults to
  *   72% of screen height.
+ * @param contentBottomPadding Padding below the scrollable content, inside the card.
  * @param content Content rendered inside the scrollable dark card.
  */
 @Composable
@@ -82,6 +83,8 @@ fun AppBottomPopup(
     innerCardHeight: Dp? = null,
     drawerHeight: Dp? = null,
     contentSpacing: Dp = 24.dp,
+    headerSpacing: Dp = 16.dp,
+    contentBottomPadding: Dp = 24.dp,
     contentScrollable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -155,7 +158,7 @@ fun AppBottomPopup(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(headerSpacing),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         if (leadingContent != null) {
@@ -201,7 +204,7 @@ fun AppBottomPopup(
                                             start = 16.dp,
                                             top = 20.dp,
                                             end = 16.dp,
-                                            bottom = 24.dp,
+                                            bottom = contentBottomPadding,
                                         ),
                                 verticalArrangement = Arrangement.spacedBy(20.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -246,7 +249,7 @@ fun AppBottomPopup(
                                                 start = 16.dp,
                                                 top = 12.dp,
                                                 end = 16.dp,
-                                                bottom = 24.dp,
+                                                bottom = contentBottomPadding,
                                             ),
                                     verticalArrangement = Arrangement.spacedBy(20.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,

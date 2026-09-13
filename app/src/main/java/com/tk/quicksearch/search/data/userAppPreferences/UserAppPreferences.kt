@@ -366,6 +366,11 @@ class UserAppPreferences(
 
     fun setShowTodayEvents(show: Boolean) = calendarPreferences.setShowTodayEvents(show)
 
+    fun getDefaultCalendarPackage(): String? = calendarPreferences.getDefaultCalendarPackage()
+
+    fun setDefaultCalendarPackage(packageName: String?) =
+        calendarPreferences.setDefaultCalendarPackage(packageName)
+
     fun getArchivedTodayEventIds(): Set<Long> = calendarPreferences.getArchivedTodayEventIds()
 
     fun archiveTodayCalendarEvent(eventId: Long): Set<Long> = calendarPreferences.archiveTodayEvent(eventId)
@@ -1298,11 +1303,6 @@ class UserAppPreferences(
 
     fun setHasSeenContactActionHint(seen: Boolean) = uiPreferences.setHasSeenContactActionHint(seen)
 
-    fun hasDismissedSearchHistoryTip(): Boolean = uiPreferences.hasDismissedSearchHistoryTip()
-
-    fun setSearchHistoryTipDismissed(dismissed: Boolean) =
-            uiPreferences.setSearchHistoryTipDismissed(dismissed)
-
     fun hasSeenOverlayAssistantTip(): Boolean = uiPreferences.hasSeenOverlayAssistantTip()
 
     fun setHasSeenOverlayAssistantTip(seen: Boolean) =
@@ -1322,6 +1322,18 @@ class UserAppPreferences(
 
     fun setLastSeenVersionCode(versionCode: Long) =
             uiPreferences.setLastSeenVersionCode(versionCode)
+
+    fun isAccessibilityPermissionDisclaimerPending(): Boolean =
+            uiPreferences.isAccessibilityPermissionDisclaimerPending()
+
+    fun setAccessibilityPermissionDisclaimerPending(pending: Boolean) =
+            uiPreferences.setAccessibilityPermissionDisclaimerPending(pending)
+
+    fun hasSeenAccessibilityPermissionDisclaimer(): Boolean =
+            uiPreferences.hasSeenAccessibilityPermissionDisclaimer()
+
+    fun setHasSeenAccessibilityPermissionDisclaimer(seen: Boolean) =
+            uiPreferences.setHasSeenAccessibilityPermissionDisclaimer(seen)
 
     fun getUsagePermissionBannerDismissCount(): Int =
             uiPreferences.getUsagePermissionBannerDismissCount()
@@ -1361,6 +1373,11 @@ class UserAppPreferences(
     fun shouldShowInRecents(): Boolean = uiPreferences.shouldShowInRecents()
 
     fun setShowInRecents(enabled: Boolean) = uiPreferences.setShowInRecents(enabled)
+
+    fun areNotificationDotsEnabled(): Boolean = uiPreferences.areNotificationDotsEnabled()
+
+    fun setNotificationDotsEnabled(enabled: Boolean) =
+            uiPreferences.setNotificationDotsEnabled(enabled)
 
     fun getSelectedAppSuggestionTab(): AppSuggestionTabType =
             uiPreferences.getSelectedAppSuggestionTab()
@@ -1427,6 +1444,10 @@ class UserAppPreferences(
     fun isCurrencyConverterEnabled(): Boolean = uiPreferences.isCurrencyConverterEnabled()
 
     fun setCurrencyConverterEnabled(enabled: Boolean) = uiPreferences.setCurrencyConverterEnabled(enabled)
+
+    fun isColorVisualizerEnabled(): Boolean = uiPreferences.isColorVisualizerEnabled()
+
+    fun setColorVisualizerEnabled(enabled: Boolean) = uiPreferences.setColorVisualizerEnabled(enabled)
 
     fun isWorldClockEnabled(): Boolean = uiPreferences.isWorldClockEnabled()
 

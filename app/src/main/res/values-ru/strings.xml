@@ -75,6 +75,7 @@
 <string name="icon_picker_title">Изменить значок для «%1$s»</string>
 <string name="action_change_wallpaper">Изменить обои</string>
 <string name="action_clear_all_history">Очистить историю</string>
+<string name="action_copy_content">Копировать содержимое</string>
     <string name="action_edit_icon">Редактировать значок</string>
 <string name="action_edit_nickname">Изменить псевдоним</string>
 <string name="action_edit_trigger">Изменить триггер</string>
@@ -105,12 +106,13 @@
 <string name="settings_gesture_swipe_down">Смахивание вниз</string>
 <string name="settings_gesture_swipe_up_home">Смахивание вверх (Главный экран)</string>
 <string name="settings_gesture_swipe_down_home">Смахивание вниз (Главный экран)</string>
+<string name="settings_gesture_close_quick_search">Закрыть Quick Search</string>
 <string name="settings_gesture_double_tap_home">Двойное нажатие (Главный экран)</string>
 <string name="settings_gesture_settings">Настройки</string>
 <string name="settings_gesture_close_keyboard_notifications">Закрыть клавиатуру / Открыть уведомления</string>
 <string name="settings_gesture_close_keyboard">Закрыть клавиатуру</string>
 <string name="settings_gesture_notification_panel">Панель уведомлений</string>
-<string name="accessibility_lock_screen_disclosure_title">Специальные возможности для блокировки экрана</string>
+<string name="accessibility_permission_disclaimer_title">Уведомление о разрешении специальных возможностей</string>
 <string name="accessibility_lock_screen_disclosure_message">Quick Search использует API AccessibilityService Android только для блокировки устройства при двойном нажатии на главный экран. Через эту службу Quick Search не читает, не собирает, не хранит и не передает содержимое экрана или другие персональные данные.</string>
 <string name="settings_gesture_none">Нет</string>
 <string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
@@ -130,6 +132,13 @@
 <string name="notification_pinned_item_type_file">Файл</string>
 <string name="notification_pinned_item_type_note">Заметка</string>
 <string name="action_remove">Удалить</string>
+<string name="app_swipe_current_action">Текущее действие</string>
+<string name="app_swipe_up_picker_title">Выберите действие для свайпа вверх для %1$s</string>
+<string name="app_swipe_down_picker_title">Выберите действие для свайпа вниз для %1$s</string>
+<string name="app_swipe_picker_tip">Свайп по значку приложения откроет выбранный элемент как в подсказках приложений, так и в результатах поиска</string>
+<string name="app_swipe_picker_search_hint">Поиск приложений, контактов и т. д.</string>
+<string name="app_swipe_up_set_toast">Жест свайпа вверх назначен для %1$s</string>
+<string name="app_swipe_down_set_toast">Жест свайпа вниз назначен для %1$s</string>
 <string name="action_remove_from_history">Удалить из истории</string>
 <string name="action_reset_app_shortcut_icon">Сбросить значок</string>
 <string name="action_retry">Повторить</string>
@@ -247,8 +256,6 @@
 <string name="recent_queries_toggle_title">История поиска</string>
 <string name="search_history_tab_recently_opened">Результаты</string>
 <string name="search_history_tab_searches">Запросы</string>
-<string name="search_history_tip_link">настройках</string>
-<string name="search_history_tip_message">Вы можете отключить сохранение истории поиска в</string>
 <string name="search_section_app_settings_toggle_desc">Включить или отключить поиск по настройкам приложений</string>
 <string name="search_section_app_settings_toggle_title">Поиск по настройкам приложений</string>
 <string name="search_section_app_shortcuts_toggle_desc">Включить или отключить поиск по ярлыкам приложений</string>
@@ -285,6 +292,9 @@
 <string name="open_top_result_using_keyboard_toggle_desc">Клавиша Enter/Готово откроет лучший результат</string>
 <string name="include_non_launchable_apps_toggle_title">Не запускаемые приложения</string>
 <string name="include_non_launchable_apps_toggle_desc">Показывать в результатах поиска приложения без активности запуска.</string>
+    <string name="notification_dots_toggle_title">Точки уведомлений</string>
+    <string name="notification_dots_toggle_desc">Показывать точки уведомлений на приложениях с уведомлениями</string>
+    <string name="desc_notification_dot">Есть уведомления</string>
     <string name="show_in_recents_toggle_title">Показывать в недавних</string>
     <string name="show_in_recents_toggle_desc">Показывать Quick Search в списке недавних приложений устройства</string>
 <string name="web_search_suggestions_title">Поисковые подсказки</string>
@@ -294,6 +304,8 @@
      ============================================================================ -->
 <string name="app_menu_section_actions">Действия</string>
 <string name="app_menu_section_shortcuts">Ярлыки</string>
+<string name="app_menu_value_on">Вкл.</string>
+<string name="action_uninstall_named">Удалить %1$s</string>
 <string name="apps_refreshed_successfully">Список приложений успешно обновлен</string>
 <string name="error_loading_user_apps">Не удалось загрузить ваши приложения. Повторите попытку позже.</string>
 <string name="error_uninstall_app">Не удалось удалить %1$s</string>
@@ -570,6 +582,7 @@
 <string name="settings_calendar_permission_title">Календарь</string>
 <string name="settings_calendar_show_today_events_desc">Показывать сегодняшние события на главном экране.</string>
 <string name="settings_calendar_show_today_events_title">Показывать события на сегодня</string>
+    <string name="settings_calendar_default_title">Открывать события в...</string>
     <string name="settings_calendar_view_all_events_desc">Просмотреть все события</string>
 
 <!-- ============================================================================
@@ -883,6 +896,9 @@
 <string name="currency_converter_requires_gemini_key">Требуется API-ключ AI-провайдера</string>
 <string name="currency_converter_toggle_desc">Пример: 100 USD в INR</string>
     <string name="currency_converter_toggle_title">Конвертер валют</string>
+    <string name="color_visualizer_toggle_title">Визуализатор цветов</string>
+    <string name="color_visualizer_toggle_desc">Примеры: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Введите шестнадцатеричный цвет или RGB</string>
     <string name="currency_converter_updated">Обновлено %1$s</string>
 <string name="date_calculator_category_absolute_time">Абсолютное время</string>
 <string name="date_calculator_category_date_differences">Разница между датами</string>
@@ -950,9 +966,10 @@
 <string name="widget_background_color_custom_dialog_title">Кастомный цвет</string>
 <string name="widget_border_color">Цвет рамки</string>
 <string name="widget_custom_button_add_desc">Добавить кастомную кнопку</string>
-<string name="widget_custom_buttons_dialog_hint">Вы можете искать приложения, ярлыки приложений, контакты, файлы, папки, заметки и настройки устройства.</string>
+<string name="widget_custom_buttons_dialog_hint">Ищите приложения, ярлыки приложений, контакты, файлы, папки, заметки и настройки устройства.</string>
 <string name="widget_custom_buttons_dialog_title">Выберите действие</string>
 <string name="widget_custom_buttons_no_results">Результатов не найдено.</string>
+<string name="widget_custom_buttons_filter_all">Все</string>
 <string name="widget_custom_buttons_restriction">Недоступно, когда активны кастомные кнопки.</string>
 <string name="widget_custom_buttons_title">Кастомные кнопки</string>
 <string name="widget_custom_buttons_widget_title">Виджет с кастомными кнопками</string>
@@ -992,6 +1009,11 @@
      ============================================================================ -->
 <string name="permissions_calendar_desc">Требуется для поиска событий в вашем календаре.</string>
 <string name="permissions_calling_desc">Требуется для совершения звонков контактам напрямую без открытия номеронабирателя.</string>
+<string name="settings_notifications_permission_title">Отправка уведомлений</string>
+<string name="permissions_notifications_desc">Требуется для закрепления результатов поиска на панели уведомлений</string>
+    <string name="permissions_notification_access_desc">Требуется для отображения точек уведомлений на приложениях с уведомлениями.</string>
+<string name="permissions_accessibility_lock_screen_title">Специальные возможности</string>
+<string name="permissions_accessibility_lock_screen_desc">Позволяет блокировать устройство с помощью жеста двойного нажатия.</string>
 <string name="permissions_contacts_desc">Требуется для поиска по вашим контактам.</string>
 <string name="permissions_files_desc">Требуется для поиска по вашим документам и другим файлам.</string>
 <string name="permissions_files_title">Доступ к файлам</string>
@@ -999,7 +1021,8 @@
 <string name="permissions_mandatory_indicator">*</string>
 <string name="permissions_reminder_dialog_message">Если вы позже передумаете насчет разрешения «%1$s», вы сможете предоставить его в настройках приложения.</string>
 <string name="permissions_reminder_dialog_title">Разрешения не предоставлены</string>
-<string name="permissions_screen_subtitle">Эти разрешения открывают дополнительные функции. Они не являются обязательными. Ваши данные остаются на устройстве.</string>
+<string name="permissions_screen_subtitle">Все разрешения здесь необязательны. Они используются только для разблокировки дополнительных функций. Ваши данные остаются на устройстве.</string>
+<string name="permissions_screen_optional_emphasis">необязательны</string>
 <string name="permissions_usage_desc">Требуется для отображения недавно использованных приложений в подсказках.</string>
 <string name="setup_action_next">Далее</string>
 <string name="setup_action_start">Начать поиск!</string>
@@ -1101,6 +1124,8 @@
     <string name="widget_custom_button_choose_colour">Выбрать цвет папки</string>
     <string name="search_engine_google_translate">Google Переводчик</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Действия Tasker</string>
     <string name="tasker_integration_description">Создавайте действия Tasker с помощью широковещательных интентов (broadcast intents).</string>
     <string name="tasker_add_intent_title">Добавить интент Tasker</string>

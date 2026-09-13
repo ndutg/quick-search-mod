@@ -14,6 +14,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setDateCalculatorEnabled(enabled: Boolean) =
         preferencesApiDelegate.setDateCalculatorEnabled(enabled)
 
+    fun setColorVisualizerEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setColorVisualizerEnabled(enabled)
+
     fun setCurrencyConverterEnabled(enabled: Boolean) =
         preferencesApiDelegate.setCurrencyConverterEnabled(enabled)
 
@@ -67,6 +70,9 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setShowInRecents(enabled: Boolean) = preferencesApiDelegate.setShowInRecents(enabled)
 
+    fun setNotificationDotsEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setNotificationDotsEnabled(enabled)
+
     fun setSelectedAppSuggestionTab(tab: AppSuggestionTabType) =
         preferencesApiDelegate.setSelectedAppSuggestionTab(tab)
 
@@ -114,7 +120,6 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setShowTodayEvents(enabled: Boolean) = preferencesApiDelegate.setShowTodayEvents(enabled)
 
-    fun dismissSearchHistoryTip() = preferencesApiDelegate.dismissSearchHistoryTip()
 
     fun setWallpaperBackgroundAlpha(alpha: Float) =
         preferencesApiDelegate.setWallpaperBackgroundAlpha(alpha)
@@ -307,6 +312,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setDateCalculatorEnabled(enabled: Boolean) = preferencesDelegate.setDateCalculatorEnabled(enabled)
 
+    fun setColorVisualizerEnabled(enabled: Boolean) = preferencesDelegate.setColorVisualizerEnabled(enabled)
+
     fun setCurrencyConverterEnabled(enabled: Boolean) =
         preferencesDelegate.setCurrencyConverterEnabled(enabled)
 
@@ -360,6 +367,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setShowInRecents(enabled: Boolean) = preferencesDelegate.setShowInRecents(enabled)
 
+    fun setNotificationDotsEnabled(enabled: Boolean) =
+        preferencesDelegate.setNotificationDotsEnabled(enabled)
+
     fun setSelectedAppSuggestionTab(tab: AppSuggestionTabType) =
         preferencesDelegate.setSelectedAppSuggestionTab(tab)
 
@@ -395,7 +405,6 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun archiveTodayCalendarEvent(eventId: Long) = preferencesDelegate.archiveTodayCalendarEvent(eventId)
 
-    fun dismissSearchHistoryTip() = preferencesDelegate.dismissSearchHistoryTip()
 
     fun setWallpaperBackgroundAlpha(alpha: Float) =
         preferencesDelegate.setWallpaperBackgroundAlpha(alpha)

@@ -190,6 +190,7 @@ data class SearchFeatureState(
         val calculatorEnabled: Boolean = true,
         val unitConverterEnabled: Boolean = true,
         val dateCalculatorEnabled: Boolean = true,
+        val colorVisualizerEnabled: Boolean = true,
         val currencyConverterEnabled: Boolean = true,
         val worldClockEnabled: Boolean = true,
         val dictionaryEnabled: Boolean = true,
@@ -207,7 +208,6 @@ data class SearchFeatureState(
         val fuzzySearchEnabled: Boolean = true,
         val fuzzySearchAvailable: Boolean = true,
         val secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
-        val hasDismissedSearchHistoryTip: Boolean = false,
         // Top matches
         val topMatchesEnabled: Boolean = false,
         val topMatchesLimit: Int = UiPreferences.DEFAULT_TOP_MATCHES_LIMIT,
@@ -280,6 +280,7 @@ data class SearchUiConfigState(
         val showAllAppsButton: Boolean = false,
         val includeNonLaunchableAppsInSearch: Boolean = false,
         val showInRecents: Boolean = false,
+        val notificationDotsEnabled: Boolean = false,
         val selectedAppSuggestionTab: AppSuggestionTabType = AppSuggestionTabType.RECENTS,
         val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         val selectedIconPackPackage: String? = null,
@@ -301,6 +302,7 @@ data class SearchUiConfigState(
         val hasSeenOverlayAssistantTip: Boolean = true,
         val showReleaseNotesDialog: Boolean = false,
         val releaseNotesVersionName: String? = null,
+        val showAccessibilityPermissionDisclaimer: Boolean = false,
         // Transient dialog state (ephemeral UI overlays unrelated to search query)
         val phoneNumberSelection: PhoneNumberSelection? = null,
         val directDialChoice: DirectDialChoice? = null,

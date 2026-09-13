@@ -2,7 +2,6 @@ package com.tk.quicksearch.shared.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,71 +9,90 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
+/**
+ * @param swipeToDismissEnabled When false, the sheet can't be dragged at all and the drag handle
+ *   is hidden; it can still be closed with the back gesture or the `dismiss` passed to [content].
+ * @param dismissOnClickOutside Whether tapping the scrim closes the sheet.
+ * @param onFullyExpanded Called once the open animation has settled.
+ * @param onDismissStarted Called as soon as the sheet starts closing (back gesture, `dismiss`,
+ *   scrim tap or swipe), before the close animation finishes and [onDismissRequest] is called.
+ * @param content Receives `dismiss`, which animates the sheet closed and then calls
+ *   [onDismissRequest].
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AppBottomSheet(
     onDismissRequest: () -> Unit,
     swipeToDismissEnabled: Boolean = true,
-    content: @Composable ColumnScope.() -> Unit,
+    dismissOnClickOutside: Boolean = true,
+    onFullyExpanded: (() -> Unit)? = null,
+    onDismissStarted: (() -> Unit)? = null,
+    content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { if (swipeToDismissEnabled) true else it != SheetValue.Hidden },
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+    val currentOnDismissRequest by rememberUpdatedState(onDismissRequest)
+    val currentOnFullyExpanded by rememberUpdatedState(onFullyExpanded)
+    val currentOnDismissStarted by rememberUpdatedState(onDismissStarted)
+    val dismiss: () -> Unit = {
+        scope.launch { sheetState.hide() }.invokeOnCompletion { currentOnDismissRequest() }
+    }
 
-    // When swipe-to-dismiss is disabled, consume downward scroll leftovers so the sheet
-    // never physically moves. onPostScroll/onPostFling run after child scrollables have
-    // taken what they need, so verticalScroll inside the sheet still works normally.
-    val blockSwipeConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource,
-            ): Offset = if (available.y > 0f) available else Offset.Zero
-
-            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity =
-                if (available.y > 0f) available else Velocity.Zero
+    LaunchedEffect(Unit) {
+        launch {
+            snapshotFlow {
+                sheetState.currentValue == SheetValue.Expanded && !sheetState.isAnimationRunning
+            }.first { it }
+            currentOnFullyExpanded?.invoke()
         }
+        // The sheet starts out hidden, so wait for it to begin opening before watching for close.
+        snapshotFlow { sheetState.targetValue }.first { it != SheetValue.Hidden }
+        snapshotFlow { sheetState.targetValue }.first { it == SheetValue.Hidden }
+        currentOnDismissStarted?.invoke()
     }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState,
+        sheetGesturesEnabled = swipeToDismissEnabled,
+        properties =
+            ModalBottomSheetProperties(
+                shouldDismissOnBackPress = true,
+                shouldDismissOnClickOutside = dismissOnClickOutside,
+            ),
         containerColor = AppColors.DialogBackground,
         tonalElevation = 0.dp,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 12.dp)
-                    .size(width = 32.dp, height = 4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
-            )
-        },
-        content = {
-            if (!swipeToDismissEnabled) {
-                Column(modifier = Modifier.nestedScroll(blockSwipeConnection)) {
-                    content()
+        dragHandle =
+            if (swipeToDismissEnabled) {
+                {
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 12.dp)
+                            .size(width = 32.dp, height = 4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+                    )
                 }
             } else {
-                content()
-            }
-        },
+                null
+            },
+        content = { content(dismiss) },
     )
 }

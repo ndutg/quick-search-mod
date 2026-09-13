@@ -75,6 +75,7 @@
     <string name="icon_picker_title">Αλλαγή εικονιδίου για το "%1$s"</string>
     <string name="action_change_wallpaper">Αλλαγή ταπετσαρίας</string>
     <string name="action_clear_all_history">Εκκαθάριση ιστορικού</string>
+    <string name="action_copy_content">Αντιγραφή περιεχομένου</string>
     <string name="action_edit_icon">Επεξεργασία εικονιδίου</string>
     <string name="action_edit_nickname">Επεξεργασία ψευδωνύμου</string>
     <string name="action_edit_trigger">Επεξεργασία ενεργοποίησης</string>
@@ -105,12 +106,13 @@
     <string name="settings_gesture_swipe_down">Σάρωση προς τα κάτω</string>
     <string name="settings_gesture_swipe_up_home">Σάρωση προς τα πάνω (Αρχική)</string>
 <string name="settings_gesture_swipe_down_home">Σάρωση προς τα κάτω (Αρχική)</string>
+<string name="settings_gesture_close_quick_search">Κλείσιμο του Quick Search</string>
 <string name="settings_gesture_double_tap_home">Διπλό πάτημα (Αρχική)</string>
     <string name="settings_gesture_settings">Ρυθμίσεις</string>
     <string name="settings_gesture_close_keyboard_notifications">Κλείσιμο πληκτρολογίου / Άνοιγμα ειδοποιήσεων</string>
     <string name="settings_gesture_close_keyboard">Κλείσιμο πληκτρολογίου</string>
     <string name="settings_gesture_notification_panel">Πίνακας ειδοποιήσεων</string>
-    <string name="accessibility_lock_screen_disclosure_title">Πρόσβαση προσβασιμότητας για το κλείδωμα οθόνης</string>
+<string name="accessibility_permission_disclaimer_title">Αποποίηση ευθύνης άδειας προσβασιμότητας</string>
     <string name="accessibility_lock_screen_disclosure_message">Το Quick Search χρησιμοποιεί το AccessibilityService API του Android μόνο για να κλειδώνει τη συσκευή σας όταν πατάτε δύο φορές την αρχική οθόνη. Μέσω αυτής της υπηρεσίας, το Quick Search δεν διαβάζει, συλλέγει, αποθηκεύει ή κοινοποιεί το περιεχόμενο της οθόνης σας ή άλλα προσωπικά δεδομένα.</string>
     <string name="settings_gesture_none">Κανένα</string>
     <string name="settings_gesture_custom">Προσαρμοσμένο (Εφαρμογές, Αρχεία κ.λπ.)</string>
@@ -130,6 +132,13 @@
     <string name="notification_pinned_item_type_file">Αρχείο</string>
     <string name="notification_pinned_item_type_note">Σημείωση</string>
     <string name="action_remove">Κατάργηση</string>
+    <string name="app_swipe_current_action">Τρέχουσα ενέργεια</string>
+    <string name="app_swipe_up_picker_title">Επιλογή ενέργειας σύρσης προς τα πάνω για %1$s</string>
+    <string name="app_swipe_down_picker_title">Επιλογή ενέργειας σύρσης προς τα κάτω για %1$s</string>
+    <string name="app_swipe_picker_tip">Σύροντας στο εικονίδιο της εφαρμογής θα ανοίγει το επιλεγμένο στοιχείο τόσο στις προτάσεις εφαρμογών όσο και στα αποτελέσματα αναζήτησης</string>
+    <string name="app_swipe_picker_search_hint">Αναζήτηση εφαρμογών, επαφών κ.λπ.</string>
+    <string name="app_swipe_up_set_toast">Η χειρονομία σύρσης προς τα πάνω ορίστηκε για %1$s</string>
+    <string name="app_swipe_down_set_toast">Η χειρονομία σύρσης προς τα κάτω ορίστηκε για %1$s</string>
     <string name="action_remove_from_history">Κατάργηση από το ιστορικό</string>
     <string name="action_reset_app_shortcut_icon">Επαναφορά προεπιλεγμένου εικονιδίου</string>
     <string name="action_retry">Δοκιμάστε ξανά</string>
@@ -247,8 +256,6 @@
     <string name="recent_queries_toggle_title">Ιστορικό αναζήτησης</string>
     <string name="search_history_tab_recently_opened">Αποτελέσματα</string>
     <string name="search_history_tab_searches">Αναζητήσεις</string>
-    <string name="search_history_tip_link">ρυθμίσεις</string>
-    <string name="search_history_tip_message">Μπορείτε να απενεργοποιήσετε το ιστορικό αναζήτησης στις</string>
     <string name="search_section_app_settings_toggle_desc">Ενεργοποίηση ή απενεργοποίηση αναζήτησης ρυθμίσεων εφαρμογών</string>
     <string name="search_section_app_settings_toggle_title">Αναζήτηση ρυθμίσεων εφαρμογών</string>
     <string name="search_section_app_shortcuts_toggle_desc">Ενεργοποίηση ή απενεργοποίηση αναζήτησης συντομεύσεων εφαρμογών</string>
@@ -285,6 +292,9 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Το πλήκτρο Enter/Τέλος ανοίγει το κορυφαίο αποτέλεσμα</string>
     <string name="include_non_launchable_apps_toggle_title">Μη εκκινήσιμες εφαρμογές</string>
     <string name="include_non_launchable_apps_toggle_desc">Συμπερίληψη εφαρμογών που δεν έχουν δραστηριότητα εκκίνησης στα αποτελέσματα αναζήτησης.</string>
+    <string name="notification_dots_toggle_title">Τελείες ειδοποιήσεων</string>
+    <string name="notification_dots_toggle_desc">Εμφάνιση τελειών ειδοποιήσεων στις εφαρμογές που έχουν ειδοποιήσεις</string>
+    <string name="desc_notification_dot">Έχει ειδοποιήσεις</string>
     <string name="show_in_recents_toggle_title">Εμφάνιση στα Πρόσφατα</string>
     <string name="show_in_recents_toggle_desc">Εμφάνιση του Quick Search στις πρόσφατες εφαρμογές της συσκευής σας</string>
     <string name="web_search_suggestions_title">Προτάσεις ιστού</string>
@@ -294,6 +304,8 @@
          ============================================================================ -->
     <string name="app_menu_section_actions">Ενέργειες</string>
     <string name="app_menu_section_shortcuts">Συντομεύσεις</string>
+    <string name="app_menu_value_on">Ενεργό</string>
+    <string name="action_uninstall_named">Απεγκατάσταση %1$s</string>
     <string name="apps_refreshed_successfully">Επιτυχής ανανέωση εφαρμογών</string>
     <string name="error_loading_user_apps">Δεν ήταν δυνατή η φόρτωση των εφαρμογών σας. Δοκιμάστε ξανά σε λίγο.</string>
     <string name="error_uninstall_app">Αδυναμία απεγκατάστασης του %1$s</string>
@@ -550,6 +562,7 @@
     <string name="settings_calendar_permission_title">Ημερολόγιο</string>
     <string name="settings_calendar_show_today_events_desc">Εμφάνιση των σημερινών συμβάντων στην αρχική οθόνη.</string>
     <string name="settings_calendar_show_today_events_title">Εμφάνιση σημερινών συμβάντων</string>
+    <string name="settings_calendar_default_title">Άνοιγμα συμβάντων σε...</string>
     <string name="settings_calendar_view_all_events_desc">Προβολή όλων των συμβάντων</string>
 
     <!-- ============================================================================
@@ -863,6 +876,9 @@
     <string name="currency_converter_requires_gemini_key">Απαιτείται ένα κλειδί API παρόχου AI</string>
     <string name="currency_converter_toggle_desc">Παράδειγμα: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>
+    <string name="color_visualizer_toggle_title">Οπτικοποίηση χρώματος</string>
+    <string name="color_visualizer_toggle_desc">Παραδείγματα: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Εισαγάγετε ένα χρώμα hex ή RGB</string>
     <string name="currency_converter_updated">Ενημερώθηκε %1$s</string>
     <string name="date_calculator_category_absolute_time">Απόλυτος χρόνος</string>
     <string name="date_calculator_category_date_differences">Διαφορές ημερομηνιών</string>
@@ -930,9 +946,10 @@
     <string name="widget_background_color_custom_dialog_title">Προσαρμοσμένο χρώμα</string>
     <string name="widget_border_color">Χρώμα περιγράμματος</string>
     <string name="widget_custom_button_add_desc">Προσθήκη προσαρμοσμένου κουμπιού</string>
-    <string name="widget_custom_buttons_dialog_hint">Μπορείτε να αναζητήσετε Εφαρμογές, Συντομεύσεις, Επαφές, Αρχεία, Φακέλους, Σημειώσεις &amp; Ρυθμίσεις συσκευής.</string>
+    <string name="widget_custom_buttons_dialog_hint">Αναζητήστε Εφαρμογές, Συντομεύσεις, Επαφές, Αρχεία, Φακέλους, Σημειώσεις &amp; Ρυθμίσεις συσκευής.</string>
     <string name="widget_custom_buttons_dialog_title">Επιλογή ενέργειας</string>
     <string name="widget_custom_buttons_no_results">Δεν βρέθηκαν αποτελέσματα.</string>
+    <string name="widget_custom_buttons_filter_all">Όλα</string>
     <string name="widget_custom_buttons_restriction">Μη διαθέσιμο όταν τα προσαρμοσμένα κουμπιά είναι ενεργά.</string>
     <string name="widget_custom_buttons_title">Προσαρμοσμένα κουμπιά</string>
     <string name="widget_custom_buttons_widget_title">Widget προσαρμοσμένων κουμπιών</string>
@@ -972,6 +989,11 @@
          ============================================================================ -->
     <string name="permissions_calendar_desc">Απαραίτητο για την αναζήτηση συμβάντων στο ημερολόγιό σας.</string>
     <string name="permissions_calling_desc">Απαραίτητο για την απευθείας κλήση των επαφών σας χωρίς το άνοιγμα της εφαρμογής κλήσεων.</string>
+    <string name="settings_notifications_permission_title">Δημοσίευση ειδοποιήσεων</string>
+    <string name="permissions_notifications_desc">Απαιτείται για το καρφίτσωμα αποτελεσμάτων αναζήτησης στον πίνακα ειδοποιήσεων</string>
+    <string name="permissions_notification_access_desc">Απαιτείται για την εμφάνιση τελειών ειδοποιήσεων στις εφαρμογές που έχουν ειδοποιήσεις.</string>
+    <string name="permissions_accessibility_lock_screen_title">Προσβασιμότητα</string>
+    <string name="permissions_accessibility_lock_screen_desc">Επιτρέπει στη χειρονομία διπλού πατήματος να κλειδώνει τη συσκευή σας.</string>
     <string name="permissions_contacts_desc">Απαραίτητο για την αναζήτηση των επαφών σας.</string>
     <string name="permissions_files_desc">Απαραίτητο για την αναζήτηση στα έγγραφα και τα υπόλοιπα αρχεία σας.</string>
     <string name="permissions_files_title">Πρόσβαση σε αρχεία</string>
@@ -979,7 +1001,8 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">Εάν αλλάξετε γνώμη αργότερα σχετικά με την άδεια %1$s, μπορείτε να τη χορηγήσετε μέσα από τις ρυθμίσεις της εφαρμογής.</string>
     <string name="permissions_reminder_dialog_title">Οι άδειες δεν χορηγήθηκαν</string>
-    <string name="permissions_screen_subtitle">Αυτές οι άδειες ξεκλειδώνουν πρόσθετες δυνατότητες. Είναι προαιρετικές. Τα δεδομένα σας παραμένουν στη συσκευή σας.</string>
+    <string name="permissions_screen_subtitle">Όλες οι άδειες εδώ είναι προαιρετικές. Χρησιμοποιούνται μόνο για το ξεκλείδωμα πρόσθετων λειτουργιών. Τα δεδομένα σας παραμένουν στη συσκευή σας.</string>
+    <string name="permissions_screen_optional_emphasis">προαιρετικές</string>
     <string name="permissions_usage_desc">Απαραίτητο για την εμφάνιση των πρόσφατα χρησιμοποιημένων εφαρμογών σας στις προτάσεις.</string>
     <string name="setup_action_next">Επόμενο</string>
     <string name="setup_action_start">Έναρξη αναζήτησης!</string>
@@ -1081,6 +1104,8 @@
     <string name="widget_custom_button_choose_colour">Επιλογή χρώματος φακέλου</string>
     <string name="search_engine_google_translate">Μετάφραση Google</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Ενέργειες Tasker</string>
     <string name="tasker_integration_description">Δημιουργήστε ενέργειες Tasker χρησιμοποιώντας broadcast intents.</string>
     <string name="tasker_add_intent_title">Προσθήκη Intent Εκπομπής Tasker</string>

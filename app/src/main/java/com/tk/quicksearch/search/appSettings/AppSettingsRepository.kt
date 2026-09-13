@@ -256,6 +256,12 @@ class AppSettingsRepository(
                 descriptionRes = R.string.settings_calendar_view_all_events_desc,
                 destination = AppSettingsDestination.CALENDAR_EVENTS,
             )
+            addNavigation(
+                id = "app_settings_open_events_in",
+                titleRes = R.string.settings_calendar_default_title,
+                destination = AppSettingsDestination.OPEN_EVENTS_IN,
+                keywords = listOf("calendar app", "open calendar", "event app"),
+            )
             addToggle(
                 id = "app_toggle_calendar_today_events",
                 titleRes = R.string.settings_calendar_show_today_events_title,
@@ -405,6 +411,13 @@ class AppSettingsRepository(
                 keywords = listOf("examples"),
             )
             addToggle(
+                id = "app_toggle_color_visualizer",
+                titleRes = R.string.color_visualizer_toggle_title,
+                descriptionRes = R.string.color_visualizer_toggle_desc,
+                toggleKey = AppSettingsToggleKey.COLOR_VISUALIZER,
+                keywords = listOf("color", "colour", "hex", "rgb"),
+            )
+            addToggle(
                 id = "app_toggle_dictionary",
                 titleRes = R.string.dictionary_toggle_title,
                 descriptionRes = R.string.dictionary_toggle_desc,
@@ -422,6 +435,13 @@ class AppSettingsRepository(
                 titleRes = R.string.app_suggestions_toggle_title,
                 descriptionRes = R.string.app_suggestions_toggle_desc,
                 toggleKey = AppSettingsToggleKey.APP_SUGGESTIONS,
+            )
+            addToggle(
+                id = "app_toggle_notification_dots",
+                titleRes = R.string.notification_dots_toggle_title,
+                descriptionRes = R.string.notification_dots_toggle_desc,
+                toggleKey = AppSettingsToggleKey.NOTIFICATION_DOTS,
+                keywords = listOf("badge", "notification", "dot", "unread"),
             )
             addToggle(
                 id = "app_toggle_show_all_apps_button",

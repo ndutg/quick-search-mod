@@ -436,22 +436,26 @@ fun WidgetsPanelScreen(
                     Box(
                         modifier = Modifier.weight(1f).fillMaxWidth(),
                     ) {
-                        CompactQuickNoteWidget(
-                            modifier = Modifier.fillMaxWidth(),
-                            fitContentHeight = true,
-                            onFocusChanged = { isQuickNoteFocused = it },
-                            onDragStart = {
-                                editingWidgetId = QUICK_NOTE_PANEL_WIDGET_ID
-                            },
-                        )
-                        if (editingWidgetId == QUICK_NOTE_PANEL_WIDGET_ID) {
-                            QuickNoteEditOverlay(
-                                onRemove = {
-                                    notesPreferences.setQuickNoteEnabled(false)
-                                    isQuickNoteEnabled = false
-                                    editingWidgetId = null
+                        // Wrap the card so the edit outline matches its height rather than the
+                        // full remaining panel height.
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            CompactQuickNoteWidget(
+                                modifier = Modifier.fillMaxWidth(),
+                                fitContentHeight = true,
+                                onFocusChanged = { isQuickNoteFocused = it },
+                                onDragStart = {
+                                    editingWidgetId = QUICK_NOTE_PANEL_WIDGET_ID
                                 },
                             )
+                            if (editingWidgetId == QUICK_NOTE_PANEL_WIDGET_ID) {
+                                QuickNoteEditOverlay(
+                                    onRemove = {
+                                        notesPreferences.setQuickNoteEnabled(false)
+                                        isQuickNoteEnabled = false
+                                        editingWidgetId = null
+                                    },
+                                )
+                            }
                         }
                     }
                 } else {

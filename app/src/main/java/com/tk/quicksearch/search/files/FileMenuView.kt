@@ -3,8 +3,6 @@ package com.tk.quicksearch.search.files
 import android.provider.OpenableColumns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,13 +48,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
-import com.tk.quicksearch.search.apps.AppMenuGridButton
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.utils.FileUtils
-import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
+import com.tk.quicksearch.shared.ui.components.ItemMenuRow
+import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
-import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -64,11 +62,16 @@ import java.util.Locale
 private data class FileMenuItem(
         val textResId: Int,
         val textArg: String? = null,
-        val enableMarquee: Boolean = false,
         val icon: @Composable () -> Unit,
         val onClick: () -> Unit,
-        val spansTwoColumns: Boolean = false,
+        val group: FileMenuGroup = FileMenuGroup.ACTIONS,
 )
+
+/** Where an item appears in the long-press [ItemMenuPopup]. */
+private enum class FileMenuGroup {
+        ACTIONS,
+        ROWS,
+}
 
 private fun formatFileSize(bytes: Long): String {
     return when {
@@ -217,16 +220,6 @@ fun FileDropdownMenu(
                     icon = { Icon(imageVector = Icons.Rounded.Share, contentDescription = null) },
                     onClick = { onDismissRequest(); onShareClick() },
             ))
-            add(FileMenuItem(
-                    textResId = R.string.action_file_info,
-                    icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
-                    onClick = { onDismissRequest(); onFileInfoClick() },
-            ))
-            add(FileMenuItem(
-                    textResId = R.string.action_open_folder,
-                    icon = { Icon(imageVector = Icons.Rounded.Folder, contentDescription = null) },
-                    onClick = { onDismissRequest(); onOpenFolderClick() },
-            ))
         }
         add(FileMenuItem(
                 textResId = if (isPinned) R.string.action_unpin_app else R.string.action_pin_app,
@@ -238,6 +231,33 @@ fun FileDropdownMenu(
                 },
                 onClick = { onDismissRequest(); onTogglePin() },
         ))
+        add(FileMenuItem(
+                textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,
+                icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null) },
+                onClick = { onDismissRequest(); onTriggerClick() },
+        ))
+        if (!deviceFile.isDirectory) {
+            add(FileMenuItem(
+                    textResId = R.string.action_file_info,
+                    icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
+                    onClick = { onDismissRequest(); onFileInfoClick() },
+            ))
+        }
+
+        add(FileMenuItem(
+                textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
+                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                onClick = { onDismissRequest(); onNicknameClick() },
+                group = FileMenuGroup.ROWS,
+        ))
+        if (!deviceFile.isDirectory) {
+            add(FileMenuItem(
+                    textResId = R.string.action_open_folder,
+                    icon = { Icon(imageVector = Icons.Rounded.Folder, contentDescription = null) },
+                    onClick = { onDismissRequest(); onOpenFolderClick() },
+                    group = FileMenuGroup.ROWS,
+            ))
+        }
         add(FileMenuItem(
                 textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
                 icon = {
@@ -254,35 +274,27 @@ fun FileDropdownMenu(
                         action = notificationAction,
                     )
                 },
-                spansTwoColumns = true,
-        ))
-        add(FileMenuItem(
-                textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
-                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
-                onClick = { onDismissRequest(); onNicknameClick() },
-        ))
-        add(FileMenuItem(
-                textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,
-                icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null) },
-                onClick = { onDismissRequest(); onTriggerClick() },
+                group = FileMenuGroup.ROWS,
         ))
         add(FileMenuItem(
                 textResId = R.string.action_add_to_home,
                 icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
                 onClick = { onDismissRequest(); onAddToHome() },
+                group = FileMenuGroup.ROWS,
         ))
         add(FileMenuItem(
                 textResId = R.string.action_exclude_generic,
                 icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
                 onClick = { onDismissRequest(); onExclude() },
+                group = FileMenuGroup.ROWS,
         ))
         if (fileExtension != null) {
             add(FileMenuItem(
                     textResId = R.string.action_exclude_extension,
                     textArg = fileExtension,
-                    enableMarquee = true,
                     icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
                     onClick = { onDismissRequest(); onExcludeExtension() },
+                    group = FileMenuGroup.ROWS,
             ))
         }
     }
@@ -327,7 +339,17 @@ fun FileDropdownMenu(
     }
 
     if (expanded) {
-        AppBottomPopup(
+        val rowsByGroup = menuItems.groupBy { it.group }.mapValues { (_, items) ->
+            items.map { item ->
+                ItemMenuRow(
+                        label = item.textArg?.let { stringResource(item.textResId, it) }
+                                ?: stringResource(item.textResId),
+                        icon = item.icon,
+                        onClick = item.onClick,
+                )
+            }
+        }
+        ItemMenuPopup(
                 onDismiss = onDismissRequest,
                 leadingContent = {
                     Icon(
@@ -347,44 +369,16 @@ fun FileDropdownMenu(
                             overflow = TextOverflow.Ellipsis,
                     )
                 },
-        ) {
-            Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-            ) {
-                menuItems.filterNot { it.spansTwoColumns }.chunked(3).forEach { row ->
-                    Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        row.forEach { item ->
-                            AppMenuGridButton(
-                                    label = if (item.textArg != null) stringResource(item.textResId, item.textArg) else stringResource(item.textResId),
-                                    icon = { item.icon() },
-                                    onClick = item.onClick,
-                                    enableMarquee = item.enableMarquee,
-                                    modifier = Modifier.weight(1f),
-                            )
-                        }
-                        repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
-                    }
-                }
-                menuItems.filter { it.spansTwoColumns }.forEach { item ->
-                    Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        AppMenuGridButton(
-                                label = if (item.textArg != null) stringResource(item.textResId, item.textArg) else stringResource(item.textResId),
-                                icon = { item.icon() },
-                                onClick = item.onClick,
-                                enableMarquee = item.enableMarquee,
-                                modifier = Modifier.weight(2f),
-                        )
-                        Spacer(Modifier.weight(1f))
-                    }
-                }
-            }
-        }
+                shortcutsTitle = stringResource(R.string.app_menu_section_shortcuts),
+                actionsTitle = stringResource(R.string.app_menu_section_actions),
+                actions = menuItems.filter { it.group == FileMenuGroup.ACTIONS }.map { item ->
+                    ItemMenuTile(
+                            label = stringResource(item.textResId),
+                            icon = item.icon,
+                            onClick = item.onClick,
+                    )
+                },
+                rows = rowsByGroup[FileMenuGroup.ROWS].orEmpty(),
+        )
     }
 }

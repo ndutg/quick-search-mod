@@ -76,6 +76,7 @@
     <string name="icon_picker_title">تغيير أيقونة "%1$s"</string>
     <string name="action_change_wallpaper">تغيير الخلفية</string>
     <string name="action_clear_all_history">مسح سجل البحث</string>
+    <string name="action_copy_content">نسخ المحتوى</string>
     <string name="action_edit_icon">تعديل الأيقونة</string>
     <string name="action_edit_nickname">تعديل اللقب</string>
     <string name="action_edit_trigger">تعديل كلمة التشغيل</string>
@@ -106,12 +107,13 @@
     <string name="settings_gesture_swipe_down">السحب للأسفل</string>
     <string name="settings_gesture_swipe_up_home">السحب للأعلى (الرئيسية)</string>
 <string name="settings_gesture_swipe_down_home">السحب للأسفل (الرئيسية)</string>
+<string name="settings_gesture_close_quick_search">إغلاق البحث السريع</string>
 <string name="settings_gesture_double_tap_home">النقر المزدوج (الرئيسية)</string>
     <string name="settings_gesture_settings">الإعدادات</string>
     <string name="settings_gesture_close_keyboard_notifications">إغلاق لوحة المفاتيح / فتح الإشعارات</string>
     <string name="settings_gesture_close_keyboard">إغلاق لوحة المفاتيح</string>
     <string name="settings_gesture_notification_panel">لوحة الإشعارات</string>
-    <string name="accessibility_lock_screen_disclosure_title">إمكانية الوصول لقفل الشاشة</string>
+    <string name="accessibility_permission_disclaimer_title">إخلاء مسؤولية إذن إمكانية الوصول</string>
     <string name="accessibility_lock_screen_disclosure_message">يستخدم Quick Search واجهة AccessibilityService في Android فقط لقفل جهازك عند النقر المزدوج على الشاشة الرئيسية. ومن خلال هذه الخدمة، لا يقرأ Quick Search محتوى شاشتك أو بياناتك الشخصية الأخرى ولا يجمعها أو يخزنها أو يشاركها.</string>
     <string name="settings_gesture_none">بلا</string>
     <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
@@ -131,6 +133,13 @@
     <string name="notification_pinned_item_type_file">ملف</string>
     <string name="notification_pinned_item_type_note">ملاحظة</string>
     <string name="action_remove">إزالة</string>
+    <string name="app_swipe_current_action">الإجراء الحالي</string>
+    <string name="app_swipe_up_picker_title">اختر إجراء السحب لأعلى لـ %1$s</string>
+    <string name="app_swipe_down_picker_title">اختر إجراء السحب لأسفل لـ %1$s</string>
+    <string name="app_swipe_picker_tip">سيؤدي السحب على أيقونة التطبيق إلى فتح العنصر المحدد في اقتراحات التطبيقات ونتائج البحث</string>
+    <string name="app_swipe_picker_search_hint">ابحث في التطبيقات وجهات الاتصال وغيرها</string>
+    <string name="app_swipe_up_set_toast">تم تعيين إيماءة السحب لأعلى لـ %1$s</string>
+    <string name="app_swipe_down_set_toast">تم تعيين إيماءة السحب لأسفل لـ %1$s</string>
     <string name="action_remove_from_history">إزالة من السجل</string>
     <string name="action_reset_app_shortcut_icon">إعادة تعيين إلى الأيقونة الافتراضية</string>
     <string name="action_retry">إعادة المحاولة</string>
@@ -248,8 +257,6 @@
     <string name="recent_queries_toggle_title">سجل البحث</string>
     <string name="search_history_tab_recently_opened">النتائج</string>
     <string name="search_history_tab_searches">عمليات البحث</string>
-    <string name="search_history_tip_link">الإعدادات</string>
-    <string name="search_history_tip_message">يمكنك تعطيل سجل البحث في</string>
     <string name="search_section_app_settings_toggle_desc">تفعيل أو تعطيل البحث في إعدادات التطبيقات</string>
     <string name="search_section_app_settings_toggle_title">البحث في إعدادات التطبيقات</string>
     <string name="search_section_app_shortcuts_toggle_desc">تفعيل أو تعطيل البحث في اختصارات التطبيقات</string>
@@ -286,6 +293,9 @@
     <string name="open_top_result_using_keyboard_toggle_desc">سيؤدي مفتاح الإدخال/تم في لوحة المفاتيح إلى فتح أفضل نتيجة</string>
     <string name="include_non_launchable_apps_toggle_title">تطبيقات غير قابلة للتشغيل</string>
     <string name="include_non_launchable_apps_toggle_desc">تضمين التطبيقات التي لا تحتوي على نشاط تشغيل في نتائج البحث.</string>
+    <string name="notification_dots_toggle_title">نقاط الإشعارات</string>
+    <string name="notification_dots_toggle_desc">إظهار نقاط الإشعارات على التطبيقات التي لديها إشعارات</string>
+    <string name="desc_notification_dot">يحتوي على إشعارات</string>
     <string name="show_in_recents_toggle_title">إظهار في التطبيقات الحديثة</string>
     <string name="show_in_recents_toggle_desc">إظهار Quick Search في التطبيقات الحديثة على جهازك</string>
     <string name="web_search_suggestions_title">اقتراحات الويب</string>
@@ -295,6 +305,8 @@
          ============================================================================ -->
     <string name="app_menu_section_actions">الإجراءات</string>
     <string name="app_menu_section_shortcuts">الاختصارات</string>
+    <string name="app_menu_value_on">مفعّل</string>
+    <string name="action_uninstall_named">إلغاء تثبيت %1$s</string>
     <string name="apps_refreshed_successfully">تم تحديث التطبيقات بنجاح</string>
     <string name="error_loading_user_apps">عذراً، تعذر تحميل تطبيقاتك. يرجى المحاولة مرة أخرى بعد قليل.</string>
     <string name="error_uninstall_app">تعذر إلغاء تثبيت %1$s</string>
@@ -551,6 +563,7 @@
     <string name="settings_calendar_permission_title">التقويم</string>
     <string name="settings_calendar_show_today_events_desc">عرض أحداث اليوم على الشاشة الرئيسية.</string>
     <string name="settings_calendar_show_today_events_title">عرض أحداث اليوم</string>
+    <string name="settings_calendar_default_title">فتح الأحداث في...</string>
     <string name="settings_calendar_view_all_events_desc">عرض جميع الأحداث</string>
 
     <!-- ============================================================================
@@ -864,6 +877,9 @@
     <string name="currency_converter_requires_gemini_key">يتطلب مفتاح API لمزود AI</string>
     <string name="currency_converter_toggle_desc">مثال: 100 USD إلى INR</string>
     <string name="currency_converter_toggle_title">محول العملات</string>
+    <string name="color_visualizer_toggle_title">عارض الألوان</string>
+    <string name="color_visualizer_toggle_desc">أمثلة: #FF0000، rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">أدخل لونًا سداسيًا أو RGB</string>
     <string name="currency_converter_updated">تم التحديث %1$s</string>
     <string name="date_calculator_category_absolute_time">الوقت المطلق</string>
     <string name="date_calculator_category_date_differences">فروق التواريخ</string>
@@ -931,9 +947,10 @@
     <string name="widget_background_color_custom_dialog_title">لون مخصص</string>
     <string name="widget_border_color">لون الحدود</string>
     <string name="widget_custom_button_add_desc">إضافة زر مخصص</string>
-    <string name="widget_custom_buttons_dialog_hint">يمكنك البحث عن التطبيقات، واختصارات التطبيقات، وجهات الاتصال، والملفات، والمجلدات، والملاحظات، وإعدادات الجهاز.</string>
+    <string name="widget_custom_buttons_dialog_hint">ابحث عن التطبيقات، واختصارات التطبيقات، وجهات الاتصال، والملفات، والمجلدات، والملاحظات، وإعدادات الجهاز.</string>
     <string name="widget_custom_buttons_dialog_title">اختر الإجراء</string>
     <string name="widget_custom_buttons_no_results">لم يتم العثور على أي نتائج.</string>
+    <string name="widget_custom_buttons_filter_all">الكل</string>
     <string name="widget_custom_buttons_restriction">غير متاح عندما تكون الأزرار المخصصة مفعلة.</string>
     <string name="widget_custom_buttons_title">أزرار مخصصة</string>
     <string name="widget_custom_buttons_widget_title">عنصر واجهة مستخدم الأزرار المخصصة</string>
@@ -973,6 +990,11 @@
          ============================================================================ -->
     <string name="permissions_calendar_desc">مطلوب للبحث في أحداث التقويم الخاص بك.</string>
     <string name="permissions_calling_desc">مطلوب للاتصال بجهات الاتصال الخاصة بك مباشرة دون فتح لوحة الاتصال.</string>
+    <string name="settings_notifications_permission_title">نشر الإشعارات</string>
+    <string name="permissions_notifications_desc">مطلوب لتثبيت نتائج البحث في لوحة الإشعارات</string>
+    <string name="permissions_notification_access_desc">مطلوب لإظهار نقاط الإشعارات على التطبيقات التي لديها إشعارات.</string>
+    <string name="permissions_accessibility_lock_screen_title">إمكانية الوصول</string>
+    <string name="permissions_accessibility_lock_screen_desc">يسمح لإيماءة النقر المزدوج بقفل جهازك.</string>
     <string name="permissions_contacts_desc">مطلوب للبحث في جهات الاتصال الخاصة بك.</string>
     <string name="permissions_files_desc">مطلوب للبحث في ملفاتك ومستنداتك المختلفة.</string>
     <string name="permissions_files_title">إذن الوصول إلى الملفات</string>
@@ -980,7 +1002,8 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">إذا غيرت رأيك لاحقاً بشأن إذن %1$s، يمكنك منحه في أي وقت من إعدادات التطبيق.</string>
     <string name="permissions_reminder_dialog_title">الأذونات غير ممنوحة</string>
-    <string name="permissions_screen_subtitle">تساعد هذه الأذونات على تفعيل ميزات إضافية وهي اختيارية تماماً، مع الحفاظ على خصوصية بياناتك محلياً على جهازك.</string>
+    <string name="permissions_screen_subtitle">جميع الأذونات هنا اختيارية. ولا تُستخدم إلا لفتح ميزات إضافية. تظل بياناتك على جهازك.</string>
+    <string name="permissions_screen_optional_emphasis">اختيارية</string>
     <string name="permissions_usage_desc">مطلوب لعرض تطبيقاتك المستخدمة مؤخراً في قسم الاقتراحات.</string>
     <string name="setup_action_next">التالي</string>
     <string name="setup_action_start">ابدأ البحث الآن!</string>
@@ -1083,6 +1106,8 @@
     <string name="widget_custom_button_choose_colour">اختيار لون المجلد</string>
     <string name="search_engine_google_translate">ترجمة Google</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">إجراءات Tasker</string>
     <string name="tasker_integration_description">إنشاء إجراءات Tasker باستخدام نوايا البث (broadcast intents).</string>
     <string name="tasker_add_intent_title">إضافة نية بث لـ Tasker</string>

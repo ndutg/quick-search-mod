@@ -48,6 +48,7 @@ import com.tk.quicksearch.search.webSuggestions.WebSuggestionsSection
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.tools.aiSearch.CurrencyConverterResult
+import com.tk.quicksearch.tools.aiSearch.ColorVisualizerResult
 import com.tk.quicksearch.tools.aiSearch.CalculatorResult
 import com.tk.quicksearch.tools.aiSearch.DictionaryResult
 import com.tk.quicksearch.tools.aiSearch.AiSearchResult
@@ -119,8 +120,6 @@ fun ContentLayout(
     onSearchTargetClick: (String, SearchTarget) -> Unit = { _, _ -> },
     onDeleteRecentItem: (RecentSearchEntry) -> Unit = {},
     onClearRecentItems: () -> Unit = {},
-    onOpenSearchHistorySettings: () -> Unit = {},
-    onDismissSearchHistoryTip: () -> Unit = {},
     onGeminiModelInfoClick: () -> Unit = {},
     onSearchHistoryExpandedChange: (Boolean) -> Unit = {},
     searchHistoryCollapseRequestKey: Int = 0,
@@ -680,9 +679,6 @@ fun ContentLayout(
                     onDeleteRecentItem =
                     onDeleteRecentItem,
                     onClearRecentItems = onClearRecentItems,
-                    showSearchHistoryTip = !state.hasDismissedSearchHistoryTip,
-                    onOpenSearchHistorySettings = onOpenSearchHistorySettings,
-                    onDismissSearchHistoryTip = onDismissSearchHistoryTip,
                     isExpanded = searchHistoryExpanded,
                     collapsedItemCount = state.recentQueriesDisplayCount,
                     reverseCollapsedItems = state.oneHandedMode,
@@ -979,11 +975,18 @@ fun ContentLayout(
 
                 ItemPriorityConfig.ItemType.CALCULATOR_RESULT -> {
                     if (showCalculator) {
-                        CalculatorResult(
-                            calculatorState = state.calculatorState,
-                            showWallpaperBackground =
-                                effectiveShowWallpaperBackground,
-                        )
+                        if (state.calculatorState.toolType == com.tk.quicksearch.search.core.SearchToolType.COLOR_VISUALIZER) {
+                            ColorVisualizerResult(
+                                calculatorState = state.calculatorState,
+                                showWallpaperBackground = effectiveShowWallpaperBackground,
+                            )
+                        } else {
+                            CalculatorResult(
+                                calculatorState = state.calculatorState,
+                                showWallpaperBackground =
+                                    effectiveShowWallpaperBackground,
+                            )
+                        }
                     }
                 }
 

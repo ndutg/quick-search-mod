@@ -108,6 +108,13 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setColorVisualizerEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setColorVisualizerEnabled(enabled)
+            updateFeatureState { it.copy(colorVisualizerEnabled = enabled) }
+        }
+    }
+
     fun setCurrencyConverterEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             userPreferences.setCurrencyConverterEnabled(enabled)
@@ -183,6 +190,14 @@ internal class SearchPreferencesDelegate(
             value = enabled,
             preferenceSetter = userPreferences::setShowInRecents,
             stateUpdater = { updateConfigState { state -> state.copy(showInRecents = it) } },
+        )
+    }
+
+    fun setNotificationDotsEnabled(enabled: Boolean) {
+        updateBooleanPreference(
+            value = enabled,
+            preferenceSetter = userPreferences::setNotificationDotsEnabled,
+            stateUpdater = { updateConfigState { state -> state.copy(notificationDotsEnabled = it) } },
         )
     }
 
@@ -394,13 +409,6 @@ internal class SearchPreferencesDelegate(
             updateResultsState { state ->
                 state.copy(todayCalendarEvents = state.todayCalendarEvents.filterNot { it.eventId == eventId })
             }
-        }
-    }
-
-    fun dismissSearchHistoryTip() {
-        scope.launch(Dispatchers.IO) {
-            userPreferences.setSearchHistoryTipDismissed(true)
-            updateFeatureState { it.copy(hasDismissedSearchHistoryTip = true) }
         }
     }
 

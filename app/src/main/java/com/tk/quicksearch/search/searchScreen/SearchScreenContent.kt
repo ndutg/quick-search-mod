@@ -122,8 +122,15 @@ private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DURATION_MS = 180
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DELAY_MS = 40
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS = 130
 
-private fun HomeSwipeGestureAction.performHomeGesture(actionJson: String?, aliasTarget: String?, context: android.content.Context, onAliasTarget: (HomeSwipeGestureAction, String) -> Unit) {
+private fun HomeSwipeGestureAction.performHomeGesture(
+    actionJson: String?,
+    aliasTarget: String?,
+    context: android.content.Context,
+    onAliasTarget: (HomeSwipeGestureAction, String) -> Unit,
+    onCloseQuickSearch: () -> Unit,
+) {
     when (this) {
+        HomeSwipeGestureAction.CLOSE_QUICK_SEARCH -> onCloseQuickSearch()
         HomeSwipeGestureAction.LOCK_SCREEN -> LockScreenAccessibilityService.lockScreen()
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
         HomeSwipeGestureAction.CUSTOM -> {
@@ -176,8 +183,6 @@ internal fun SearchScreenContent(
         onAiFollowUpSubmit: (String) -> Unit = {},
         onDeleteRecentItem: (RecentSearchEntry) -> Unit = {},
         onClearRecentItems: () -> Unit = {},
-        onOpenSearchHistorySettings: () -> Unit = {},
-        onDismissSearchHistoryTip: () -> Unit = {},
         onGeminiModelInfoClick: () -> Unit = {},
         onCurrencyConversionClick: () -> Unit = {},
         onDictionarySearchClick: () -> Unit = {},
@@ -217,6 +222,7 @@ internal fun SearchScreenContent(
         homeSwipeDownAliasTarget: String? = null,
         homeDoubleTapAliasTarget: String? = null,
         onGestureAliasTarget: (Enum<*>, String) -> Unit = { _, _ -> },
+        onCloseQuickSearch: () -> Unit = {},
         getAllTriggerWordsById: () -> Map<String, String> = { emptyMap() },
         getAllContactActionTriggers: () -> Map<com.tk.quicksearch.search.data.preferences.ContactActionTriggerKey, com.tk.quicksearch.search.data.preferences.ResultTrigger> = { emptyMap() },
         onContactActionTrigger: (Long, com.tk.quicksearch.search.contacts.models.ContactCardAction) -> Unit = { _, _ -> },
@@ -1382,8 +1388,6 @@ internal fun SearchScreenContent(
                 onOpenAiSearchConfigure = onOpenAiSearchConfigure,
                 onDeleteRecentItem = onDeleteRecentItem,
                 onClearRecentItems = onClearRecentItems,
-                onOpenSearchHistorySettings = onOpenSearchHistorySettings,
-                onDismissSearchHistoryTip = onDismissSearchHistoryTip,
                 onGeminiModelInfoClick = onGeminiModelInfoClick,
                 onSearchHistoryExpandedChange = { isSearchHistoryExpanded = it },
                 searchHistoryCollapseRequestKey = searchHistoryCollapseRequestKey,
@@ -1417,7 +1421,13 @@ internal fun SearchScreenContent(
                         swipeUpAction == SwipeGestureAction.SEARCH_ENGINE || swipeUpAction == SwipeGestureAction.TOOL ->
                             swipeUpAliasTarget?.let { onGestureAliasTarget(swipeUpAction, it) }
                         else ->
-                            homeSwipeUpAction.performHomeGesture(homeSwipeUpCustomActionJson, homeSwipeUpAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
+                            homeSwipeUpAction.performHomeGesture(
+                                homeSwipeUpCustomActionJson,
+                                homeSwipeUpAliasTarget,
+                                context,
+                                { action, target -> onGestureAliasTarget(action, target) },
+                                onCloseQuickSearch,
+                            )
                     }
                 },
                 onLauncherOverscrollDown = {
@@ -1432,11 +1442,23 @@ internal fun SearchScreenContent(
                         swipeDownAction == SwipeGestureAction.SEARCH_ENGINE || swipeDownAction == SwipeGestureAction.TOOL ->
                             swipeDownAliasTarget?.let { onGestureAliasTarget(swipeDownAction, it) }
                         else ->
-                            homeSwipeDownAction.performHomeGesture(homeSwipeDownCustomActionJson, homeSwipeDownAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
+                            homeSwipeDownAction.performHomeGesture(
+                                homeSwipeDownCustomActionJson,
+                                homeSwipeDownAliasTarget,
+                                context,
+                                { action, target -> onGestureAliasTarget(action, target) },
+                                onCloseQuickSearch,
+                            )
                     }
                 },
                 onHomeDoubleTap = {
-                    homeDoubleTapAction.performHomeGesture(homeDoubleTapCustomActionJson, homeDoubleTapAliasTarget, context) { action, target -> onGestureAliasTarget(action, target) }
+                    homeDoubleTapAction.performHomeGesture(
+                        homeDoubleTapCustomActionJson,
+                        homeDoubleTapAliasTarget,
+                        context,
+                        { action, target -> onGestureAliasTarget(action, target) },
+                        onCloseQuickSearch,
+                    )
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
         )
@@ -1786,10 +1808,7 @@ internal fun SearchScreenContent(
     } 
 }
 
-private fun String.isPhoneNumberQuery(): Boolean =
-        isNotEmpty() &&
-                if (first() == '+') {
-                    length > 1 && drop(1).all(Char::isDigit)
-                } else {
-                    all(Char::isDigit)
-                }
+private fun String.isPhoneNumberQuery(): Boolean {
+    val digits = if (startsWith('+')) drop(1) else this
+    return digits.length >= 3 && digits.all(Char::isDigit)
+}
