@@ -55,6 +55,17 @@ class SearchEngineRegistryContractTest {
     }
 
     @Test
+    fun bundledIconsArePresentUnlessInstallOnly() {
+        SearchEngineRegistry.definitions.forEach { definition ->
+            if (definition.installOnly) return@forEach
+            assertNotNull(
+                "${definition.engine} needs a bundled icon when it can appear without its app",
+                definition.drawableResId,
+            )
+        }
+    }
+
+    @Test
     fun nativeLaunchMetadataAlwaysResolvesToAHandler() {
         SearchEngineRegistry.definitions.forEach { definition ->
             if (definition.nativeLaunchMode == SearchEngineNativeLaunchMode.NONE) {
@@ -77,5 +88,35 @@ class SearchEngineRegistryContractTest {
         assertEquals("com.kagi.search.HomeActivity", spec.className)
         assertEquals("text/plain", spec.mimeType)
         assertEquals("privacy search", spec.text)
+    }
+
+    @Test
+    fun kagiAssistantLaunchSpecPrefillsNewThreadText() {
+        val spec = SearchEngineIntents.buildKagiAssistantLaunchSpec("  ask assistant  ")
+
+        assertEquals("ask assistant", spec.text)
+        assertEquals("com.kagi.assistant://thread/new?text=ask%20assistant", spec.uriString)
+    }
+
+    @Test
+    fun kagiAssistantLaunchSpecOmitsTextWhenQueryIsBlank() {
+        val spec = SearchEngineIntents.buildKagiAssistantLaunchSpec("   ")
+
+        assertNull(spec.text)
+        assertEquals("com.kagi.assistant://thread/new", spec.uriString)
+    }
+
+    @Test
+    fun museNativeShareContractCarriesTrimmedQuery() {
+        val spec = SearchEngineIntents.buildMuseShareIntentSpec("  plan my week  ")
+
+        assertEquals(Intent.ACTION_SEND, spec.action)
+        assertEquals(PackageConstants.MUSE_PACKAGE, spec.packageName)
+        assertEquals(
+            "com.facebook.aura.share.AuraShareIntentHandlerActivity",
+            spec.className,
+        )
+        assertEquals("text/plain", spec.mimeType)
+        assertEquals("plan my week", spec.text)
     }
 }

@@ -52,6 +52,10 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="content" />
+        </intent>
     </queries>
 
     <application
@@ -373,6 +377,10 @@
             android:name=".pinnedNotifications.PinnedNotificationUnpinReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name=".pinnedNotifications.PinnedNotificationCopyContentReceiver"
+            android:exported="false" />
+
         <!-- Widget Receivers -->
         <receiver
             android:name=".widgets.searchWidget.SearchWidgetReceiver"
@@ -414,6 +422,16 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/lock_screen_accessibility_service" />
+        </service>
+
+        <service
+            android:name=".search.apps.notificationDots.NotificationDotsListenerService"
+            android:exported="true"
+            android:label="@string/notification_dots_toggle_title"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
         </service>
 
         <service

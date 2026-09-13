@@ -75,6 +75,7 @@
     <string name="icon_picker_title">"%1$s" के लिए आइकन बदलें</string>
     <string name="action_change_wallpaper">वॉलपेपर बदलें</string>
     <string name="action_clear_all_history">इतिहास साफ करें</string>
+    <string name="action_copy_content">सामग्री कॉपी करें</string>
     <string name="action_edit_icon">आइकन संपादित करें</string>
     <string name="action_edit_nickname">निकनेम संपादित करें</string>
     <string name="action_edit_trigger">ट्रिगर संपादित करें</string>
@@ -105,12 +106,13 @@
     <string name="settings_gesture_swipe_down">नीचे स्वाइप करें</string>
     <string name="settings_gesture_swipe_up_home">ऊपर स्वाइप करें (होम)</string>
 <string name="settings_gesture_swipe_down_home">नीचे स्वाइप करें (होम)</string>
+<string name="settings_gesture_close_quick_search">Quick Search बंद करें</string>
 <string name="settings_gesture_double_tap_home">डबल टैप (होम)</string>
     <string name="settings_gesture_settings">सेटिंग्स</string>
     <string name="settings_gesture_close_keyboard_notifications">कीबोर्ड बंद करें / नोटिफिकेशन खोलें</string>
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
     <string name="settings_gesture_notification_panel">नोटिफिकेशन पैनल</string>
-    <string name="accessibility_lock_screen_disclosure_title">स्क्रीन लॉक के लिए सुलभता ऐक्सेस</string>
+<string name="accessibility_permission_disclaimer_title">सुलभता अनुमति अस्वीकरण</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search Android की AccessibilityService API का उपयोग केवल तब आपके डिवाइस को लॉक करने के लिए करता है, जब आप होम स्क्रीन पर दो बार टैप करते हैं। इस सेवा के माध्यम से Quick Search आपकी स्क्रीन की सामग्री या अन्य निजी डेटा को पढ़ता, एकत्र करता, संग्रहीत या साझा नहीं करता है।</string>
     <string name="settings_gesture_none">कोई नहीं</string>
     <string name="settings_gesture_custom">कस्टम (ऐप्स, फ़ाइलें आदि)</string>
@@ -130,6 +132,13 @@
     <string name="notification_pinned_item_type_file">फ़ाइल</string>
     <string name="notification_pinned_item_type_note">नोट</string>
     <string name="action_remove">हटाएं</string>
+    <string name="app_swipe_current_action">वर्तमान क्रिया</string>
+    <string name="app_swipe_up_picker_title">%1$s के लिए ऊपर स्वाइप क्रिया चुनें</string>
+    <string name="app_swipe_down_picker_title">%1$s के लिए नीचे स्वाइप क्रिया चुनें</string>
+    <string name="app_swipe_picker_tip">ऐप आइकन पर स्वाइप करने से चुना गया आइटम ऐप सुझावों और खोज परिणामों दोनों में खुलेगा</string>
+    <string name="app_swipe_picker_search_hint">ऐप्स, संपर्क आदि खोजें</string>
+    <string name="app_swipe_up_set_toast">%1$s के लिए ऊपर स्वाइप जेस्चर सेट किया गया</string>
+    <string name="app_swipe_down_set_toast">%1$s के लिए नीचे स्वाइप जेस्चर सेट किया गया</string>
     <string name="action_remove_from_history">इतिहास से हटाएं</string>
     <string name="action_reset_app_shortcut_icon">डिफ़ॉल्ट आइकन पर रीसेट करें</string>
     <string name="action_retry">फिर से कोशिश करें</string>
@@ -247,8 +256,6 @@
     <string name="recent_queries_toggle_title">खोज इतिहास</string>
     <string name="search_history_tab_recently_opened">परिणाम</string>
     <string name="search_history_tab_searches">खोजें</string>
-    <string name="search_history_tip_link">सेटिंग्स</string>
-    <string name="search_history_tip_message">आप खोज इतिहास यहां बंद कर सकते हैं</string>
     <string name="search_section_app_settings_toggle_desc">ऐप सेटिंग्स खोज को चालू या बंद करें</string>
     <string name="search_section_app_settings_toggle_title">ऐप सेटिंग्स खोज</string>
     <string name="search_section_app_shortcuts_toggle_desc">ऐप शॉर्टकट खोज को चालू या बंद करें</string>
@@ -285,6 +292,9 @@
     <string name="open_top_result_using_keyboard_toggle_desc">कीबोर्ड की Enter/Done कुंजी शीर्ष परिणाम खोलेगी</string>
     <string name="include_non_launchable_apps_toggle_title">लॉन्च न होने वाले ऐप्स</string>
     <string name="include_non_launchable_apps_toggle_desc">खोज परिणामों में उन ऐप्स को शामिल करें जिनमें कोई लॉन्च गतिविधि नहीं है।</string>
+    <string name="notification_dots_toggle_title">नोटिफ़िकेशन डॉट्स</string>
+    <string name="notification_dots_toggle_desc">जिन ऐप्स पर नोटिफ़िकेशन हैं उन पर नोटिफ़िकेशन डॉट्स दिखाएँ</string>
+    <string name="desc_notification_dot">नोटिफ़िकेशन हैं</string>
     <string name="show_in_recents_toggle_title">हाल की ऐप्स में दिखाएँ</string>
     <string name="show_in_recents_toggle_desc">Quick Search को अपने डिवाइस की हाल की ऐप्स में दिखाएँ</string>
     <string name="web_search_suggestions_title">वेब सुझाव</string>
@@ -294,6 +304,8 @@
          ============================================================================ -->
     <string name="app_menu_section_actions">क्रियाएं</string>
     <string name="app_menu_section_shortcuts">शॉर्टकट्स</string>
+    <string name="app_menu_value_on">चालू</string>
+    <string name="action_uninstall_named">%1$s अनइंस्टॉल करें</string>
     <string name="apps_refreshed_successfully">ऐप्स सफलतापूर्वक रिफ्रेश हो गए</string>
     <string name="error_loading_user_apps">आपके ऐप्स लोड नहीं हो सके। थोड़ी देर बाद फिर कोशिश करें।</string>
     <string name="error_uninstall_app">%1$s अनइंस्टॉल नहीं हो सका</string>
@@ -550,6 +562,7 @@
     <string name="settings_calendar_permission_title">कैलेंडर</string>
     <string name="settings_calendar_show_today_events_desc">होम स्क्रीन पर आज के इवेंट्स दिखाएं।</string>
     <string name="settings_calendar_show_today_events_title">आज के इवेंट्स दिखाएं</string>
+    <string name="settings_calendar_default_title">इवेंट्स इसमें खोलें...</string>
     <string name="settings_calendar_view_all_events_desc">सभी इवेंट्स देखें</string>
 
     <!-- ============================================================================
@@ -863,6 +876,9 @@
     <string name="currency_converter_requires_gemini_key">AI provider API key आवश्यक है</string>
     <string name="currency_converter_toggle_desc">उदाहरण: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">मुद्रा परिवर्तक</string>
+    <string name="color_visualizer_toggle_title">रंग विज़ुअलाइज़र</string>
+    <string name="color_visualizer_toggle_desc">उदाहरण: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">हेक्स या RGB रंग दर्ज करें</string>
     <string name="currency_converter_updated">अपडेट किया गया %1$s</string>
     <string name="date_calculator_category_absolute_time">निरपेक्ष समय</string>
     <string name="date_calculator_category_date_differences">तारीख अंतर</string>
@@ -930,9 +946,10 @@
     <string name="widget_background_color_custom_dialog_title">कस्टम रंग</string>
     <string name="widget_border_color">बॉर्डर रंग</string>
     <string name="widget_custom_button_add_desc">कस्टम बटन जोड़ें</string>
-    <string name="widget_custom_buttons_dialog_hint">आप ऐप्स, ऐप शॉर्टकट्स, कॉन्टैक्ट्स, फाइलें, फोल्डर्स, नोट्स और डिवाइस सेटिंग्स खोज सकते हैं।</string>
+    <string name="widget_custom_buttons_dialog_hint">ऐप्स, ऐप शॉर्टकट्स, कॉन्टैक्ट्स, फाइलें, फोल्डर्स, नोट्स और डिवाइस सेटिंग्स खोजें।</string>
     <string name="widget_custom_buttons_dialog_title">क्रिया चुनें</string>
     <string name="widget_custom_buttons_no_results">कोई परिणाम नहीं मिला।</string>
+    <string name="widget_custom_buttons_filter_all">सभी</string>
     <string name="widget_custom_buttons_restriction">जब कस्टम बटन सक्रिय हों, तब उपलब्ध नहीं।</string>
     <string name="widget_custom_buttons_title">कस्टम बटन</string>
     <string name="widget_custom_buttons_widget_title">कस्टम बटन विजेट</string>
@@ -972,6 +989,11 @@
          ============================================================================ -->
     <string name="permissions_calendar_desc">आपके कैलेंडर इवेंट्स खोजने के लिए आवश्यक।</string>
     <string name="permissions_calling_desc">डायलर खोले बिना आपके कॉन्टैक्ट्स को सीधे कॉल करने के लिए आवश्यक।</string>
+    <string name="settings_notifications_permission_title">पोस्ट नोटिफ़िकेशन</string>
+    <string name="permissions_notifications_desc">खोज परिणामों को सूचना पैनल में पिन करने के लिए आवश्यक</string>
+    <string name="permissions_notification_access_desc">जिन ऐप्स पर नोटिफ़िकेशन हैं उन पर नोटिफ़िकेशन डॉट्स दिखाने के लिए आवश्यक।</string>
+    <string name="permissions_accessibility_lock_screen_title">सुलभता</string>
+    <string name="permissions_accessibility_lock_screen_desc">डबल-टैप जेस्चर से आपका डिवाइस लॉक किया जा सकता है।</string>
     <string name="permissions_contacts_desc">आपके कॉन्टैक्ट्स खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_desc">आपके दस्तावेज़ों और अन्य फाइलों में खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_title">फाइल पहुंच</string>
@@ -979,7 +1001,8 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">यदि बाद में आप %1$s अनुमति के बारे में अपना निर्णय बदलते हैं, तो आप ऐप सेटिंग्स से अनुमति दे सकते हैं।</string>
     <string name="permissions_reminder_dialog_title">अनुमतियां प्रदान नहीं की गईं</string>
-    <string name="permissions_screen_subtitle">ये अनुमतियां अतिरिक्त फ़ीचर्स अनलॉक करती हैं। ये वैकल्पिक हैं। आपका डेटा आपके डिवाइस पर ही रहता है।</string>
+    <string name="permissions_screen_subtitle">यहाँ सभी अनुमतियाँ वैकल्पिक हैं। इनका उपयोग केवल अतिरिक्त सुविधाएँ अनलॉक करने के लिए किया जाता है। आपका डेटा आपके डिवाइस पर ही रहता है।</string>
+    <string name="permissions_screen_optional_emphasis">वैकल्पिक</string>
     <string name="permissions_usage_desc">सुझावों में हाल ही में उपयोग किए गए ऐप्स दिखाने के लिए आवश्यक।</string>
     <string name="setup_action_next">आगे</string>
     <string name="setup_action_start">खोज शुरू करें!</string>
@@ -1081,6 +1104,8 @@
     <string name="widget_custom_button_choose_colour">फ़ोल्डर का रंग चुनें</string>
     <string name="search_engine_google_translate">Google अनुवाद</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Tasker क्रियाएं</string>
     <string name="tasker_integration_description">ब्रॉडकास्ट इंटेंट का उपयोग करके Tasker क्रियाएं बनाएं।</string>
     <string name="tasker_add_intent_title">Tasker ब्रॉडकास्ट इंटेंट जोड़ें</string>

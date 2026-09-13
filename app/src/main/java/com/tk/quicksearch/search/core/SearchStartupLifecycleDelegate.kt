@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.isUserCreatedShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
@@ -370,7 +371,15 @@ internal class SearchStartupLifecycleDelegate(
 
             sectionManager.refreshDisabledSections()
         }
+        disableNotificationDotsIfPermissionMissing()
         return changed
+    }
+
+    private fun disableNotificationDotsIfPermissionMissing() {
+        if (!configStateProvider().notificationDotsEnabled) return
+        if (NotificationDotsPermission.canEnableNotificationDots(applicationProvider())) return
+        userPreferences.setNotificationDotsEnabled(false)
+        updateConfigState { it.copy(notificationDotsEnabled = false) }
     }
 
     fun launchDeferredInitialization() {
@@ -482,6 +491,7 @@ internal class SearchStartupLifecycleDelegate(
                     calculatorEnabled = userPreferences.isCalculatorEnabled(),
                     unitConverterEnabled = userPreferences.isUnitConverterEnabled(),
                     dateCalculatorEnabled = userPreferences.isDateCalculatorEnabled(),
+                    colorVisualizerEnabled = userPreferences.isColorVisualizerEnabled(),
                     currencyConverterEnabled = userPreferences.isCurrencyConverterEnabled(),
                     worldClockEnabled = userPreferences.isWorldClockEnabled(),
                     dictionaryEnabled = userPreferences.isDictionaryEnabled(),
@@ -945,7 +955,6 @@ internal class SearchStartupLifecycleDelegate(
                 topMatchesSectionOrder = userPreferences.getTopMatchesSectionOrder(),
                 disabledTopMatchesSections = userPreferences.getDisabledTopMatchesSections(),
                 shouldShowUsagePermissionBanner = userPreferences.shouldShowUsagePermissionBanner(),
-                hasDismissedSearchHistoryTip = userPreferences.hasDismissedSearchHistoryTip(),
             )
         }
 
@@ -998,6 +1007,7 @@ internal class SearchStartupLifecycleDelegate(
                         calculatorEnabled = userPreferences.isCalculatorEnabled(),
                         unitConverterEnabled = userPreferences.isUnitConverterEnabled(),
                         dateCalculatorEnabled = userPreferences.isDateCalculatorEnabled(),
+                        colorVisualizerEnabled = userPreferences.isColorVisualizerEnabled(),
                         currencyConverterEnabled = userPreferences.isCurrencyConverterEnabled(),
                         worldClockEnabled = userPreferences.isWorldClockEnabled(),
                         dictionaryEnabled = userPreferences.isDictionaryEnabled(),

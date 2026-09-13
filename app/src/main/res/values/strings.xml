@@ -67,6 +67,7 @@
     <string name="icon_picker_title">Change icon for "%1$s"</string>
     <string name="action_change_wallpaper">Change Wallpaper</string>
     <string name="action_clear_all_history">Clear History</string>
+    <string name="action_copy_content">Copy Content</string>
     <string name="action_edit_icon">Edit Icon</string>
     <string name="action_edit_nickname">Edit Nickname</string>
     <string name="action_edit_trigger">Edit Trigger</string>
@@ -97,6 +98,7 @@
     <string name="settings_gesture_swipe_down">Swipe Down</string>
     <string name="settings_gesture_swipe_up_home">Swipe Up (Home)</string>
     <string name="settings_gesture_swipe_down_home">Swipe Down (Home)</string>
+    <string name="settings_gesture_close_quick_search">Close Quick Search</string>
     <string name="settings_gesture_double_tap_home">Double Tap (Home)</string>
     <string name="settings_gesture_settings">Settings</string>
     <string name="settings_gesture_close_keyboard_notifications">Close Keyboard / Open Notifications</string>
@@ -106,7 +108,7 @@
     <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
     <string name="accessibility_lock_screen_service_label">Quick Search Lock Screen</string>
     <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture. It does not read screen content.</string>
-    <string name="accessibility_lock_screen_disclosure_title">Accessibility access for Lock Screen</string>
+    <string name="accessibility_permission_disclaimer_title">Accessibility Permission Disclaimer</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Android’s AccessibilityService API only to lock your device when you double-tap the Home screen. Through this service, Quick Search does not read, collect, store, or share your screen content or other personal data.</string>
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
@@ -126,6 +128,13 @@
     <string name="notification_pinned_item_type_file">File</string>
     <string name="notification_pinned_item_type_note">Note</string>
     <string name="action_remove">Remove</string>
+    <string name="app_swipe_current_action">Current Action</string>
+    <string name="app_swipe_up_picker_title">Select Swipe up action for %1$s</string>
+    <string name="app_swipe_down_picker_title">Select Swipe down action for %1$s</string>
+    <string name="app_swipe_picker_tip">Swiping on the app icon will open the selected item both in app suggestions and search results</string>
+    <string name="app_swipe_picker_search_hint">Search Apps, Contacts, etc.</string>
+    <string name="app_swipe_up_set_toast">Swipe Up Gesture has been Set for %1$s</string>
+    <string name="app_swipe_down_set_toast">Swipe Down Gesture has been Set for %1$s</string>
     <string name="action_remove_from_history">Remove From History</string>
     <string name="action_reset_app_shortcut_icon">Reset to default icon</string>
     <string name="action_retry">Retry</string>
@@ -243,8 +252,6 @@
     <string name="recent_queries_toggle_title">Search History</string>
     <string name="search_history_tab_recently_opened">Results</string>
     <string name="search_history_tab_searches">Searches</string>
-    <string name="search_history_tip_link">settings</string>
-    <string name="search_history_tip_message">You can disable search history in</string>
     <string name="search_section_app_settings_toggle_desc">Turn app settings search on or off</string>
     <string name="search_section_app_settings_toggle_title">App Settings Search</string>
     <string name="search_section_app_shortcuts_toggle_desc">Turn app shortcuts search on or off</string>
@@ -281,6 +288,9 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Keyboard enter/done key will open top result</string>
     <string name="include_non_launchable_apps_toggle_title">Non-Launchable Apps</string>
     <string name="include_non_launchable_apps_toggle_desc">Include apps that don’t have a launch activity in search results.</string>
+    <string name="notification_dots_toggle_title">Notification Dots</string>
+    <string name="notification_dots_toggle_desc">Show notification dots on apps that have notifications</string>
+    <string name="desc_notification_dot">Has notifications</string>
     <string name="show_in_recents_toggle_title">Show in Recents</string>
     <string name="show_in_recents_toggle_desc">Show Quick Search in your device’s recent apps</string>
     <string name="web_search_suggestions_title">Web Suggestions</string>
@@ -290,6 +300,8 @@
          ============================================================================ -->
     <string name="app_menu_section_actions">Actions</string>
     <string name="app_menu_section_shortcuts">Shortcuts</string>
+    <string name="app_menu_value_on">On</string>
+    <string name="action_uninstall_named">Uninstall %1$s</string>
     <string name="apps_refreshed_successfully">Apps refreshed successfully</string>
     <string name="error_loading_user_apps">We could not load your apps. Try again in a moment.</string>
     <string name="error_uninstall_app">Unable to uninstall %1$s</string>
@@ -548,6 +560,7 @@
     <string name="settings_calendar_permission_title">Calendar</string>
     <string name="settings_calendar_show_today_events_desc">Show today\'s events in home screen.</string>
     <string name="settings_calendar_show_today_events_title">Show Today\'s Events</string>
+    <string name="settings_calendar_default_title">Open Events in...</string>
     <string name="settings_calendar_view_all_events_desc">View all events</string>
 
     <!-- ============================================================================
@@ -862,6 +875,9 @@
     <string name="currency_converter_requires_gemini_key">Requires an AI provider API key</string>
     <string name="currency_converter_toggle_desc">Example: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Currency Converter</string>
+    <string name="color_visualizer_toggle_title">Color Visualizer</string>
+    <string name="color_visualizer_toggle_desc">Examples: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Enter a hex or RGB color</string>
     <string name="currency_converter_updated">Updated %1$s</string>
     <string name="date_calculator_category_absolute_time">Absolute Time</string>
     <string name="date_calculator_category_date_differences">Date Differences</string>
@@ -931,9 +947,10 @@
     <string name="widget_custom_button_add_desc">Add custom button</string>
     <string name="widget_custom_button_change_colour">Change colour</string>
     <string name="widget_custom_button_choose_colour">Choose folder colour</string>
-    <string name="widget_custom_buttons_dialog_hint">You can search for Apps, App Shortcuts, Contacts, Files, Folders, Notes &amp; Device settings.</string>
+    <string name="widget_custom_buttons_dialog_hint">Search for Apps, App Shortcuts, Contacts, Files, Folders, Notes &amp; Device settings.</string>
     <string name="widget_custom_buttons_dialog_title">Select Action</string>
     <string name="widget_custom_buttons_no_results">No results found.</string>
+    <string name="widget_custom_buttons_filter_all">All</string>
     <string name="widget_custom_buttons_restriction">Not available when custom buttons are active.</string>
     <string name="widget_custom_buttons_title">Custom Buttons</string>
     <string name="widget_custom_buttons_widget_title">Custom Buttons Widget</string>
@@ -973,6 +990,11 @@
          ============================================================================ -->
     <string name="permissions_calendar_desc">Required to search your calendar events.</string>
     <string name="permissions_calling_desc">Required to call your contacts directly without opening the dialer.</string>
+    <string name="settings_notifications_permission_title">Post Notifications</string>
+    <string name="permissions_notifications_desc">Required to pin search results to notification panel</string>
+    <string name="permissions_notification_access_desc">Required to show notification dots on apps that have notifications.</string>
+    <string name="permissions_accessibility_lock_screen_title">Accessibility</string>
+    <string name="permissions_accessibility_lock_screen_desc">Allows the double-tap gesture to lock your device.</string>
     <string name="permissions_contacts_desc">Required to search your contacts.</string>
     <string name="permissions_files_desc">Required to search through your documents and other files.</string>
     <string name="permissions_files_title">Files Access</string>
@@ -980,7 +1002,8 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">If you later change your mind about %1$s permission, you can grant the permission from app settings.</string>
     <string name="permissions_reminder_dialog_title">Permissions Not Granted</string>
-    <string name="permissions_screen_subtitle">These permissions unlock additional features. They are optional. Your data stays on your device.</string>
+    <string name="permissions_screen_subtitle">All permissions here are optional. They are only used to unlock additional features. Your data stays on your device.</string>
+    <string name="permissions_screen_optional_emphasis">optional</string>
     <string name="permissions_usage_desc">Required to show your recently used apps in suggestions.</string>
     <string name="setup_action_next">Next</string>
     <string name="setup_action_start">Start Searching!</string>
@@ -1025,6 +1048,8 @@
     <string name="search_engine_google_play">Google Play</string>
     <string name="search_engine_grok">Grok</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="search_engine_onboarding_description">When you type your search query and tap on any of these search engines, it will trigger search within these apps. You can modify them by long pressing.</string>
     <string name="search_engine_perplexity">Perplexity</string>
     <string name="search_engine_reddit">Reddit</string>

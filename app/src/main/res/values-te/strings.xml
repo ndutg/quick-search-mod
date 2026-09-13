@@ -75,6 +75,7 @@
     <string name="icon_picker_title">"%1$s" కోసం చిహ్నాన్ని మార్చండి</string>
     <string name="action_change_wallpaper">వాల్‌పేపర్ మార్చు</string>
     <string name="action_clear_all_history">చరిత్రను క్లియర్ చేయి</string>
+    <string name="action_copy_content">కంటెంట్‌ను కాపీ చేయండి</string>
     <string name="action_edit_icon">ఐకాన్ సవరించు</string>
     <string name="action_edit_nickname">మారుపేరును సవరించు</string>
     <string name="action_edit_trigger">ట్రిగ్గర్‌ను సవరించు</string>
@@ -105,12 +106,13 @@
     <string name="settings_gesture_swipe_down">క్రిందికి స్వైప్ చేయండి</string>
     <string name="settings_gesture_swipe_up_home">పైకి స్వైప్ చేయండి (హోమ్)</string>
     <string name="settings_gesture_swipe_down_home">క్రిందికి స్వైప్ చేయండి (హోమ్)</string>
+    <string name="settings_gesture_close_quick_search">Quick Searchని మూసివేయండి</string>
     <string name="settings_gesture_double_tap_home">రెండుసార్లు నొక్కండి (హోమ్)</string>
     <string name="settings_gesture_settings">సెట్టింగులు</string>
     <string name="settings_gesture_close_keyboard_notifications">కీబోర్డ్ మూసివేయి / నోటిఫికేషన్‌లను తెరవండి</string>
     <string name="settings_gesture_close_keyboard">కీబోర్డ్ మూసివేయి</string>
     <string name="settings_gesture_notification_panel">నోటిఫికేషన్ ప్యానెల్</string>
-    <string name="accessibility_lock_screen_disclosure_title">స్క్రీన్ లాక్ కోసం యాక్సెసిబిలిటీ యాక్సెస్</string>
+<string name="accessibility_permission_disclaimer_title">యాక్సెసిబిలిటీ అనుమతి నిరాకరణ</string>
     <string name="accessibility_lock_screen_disclosure_message">మీరు హోమ్ స్క్రీన్‌పై రెండుసార్లు ట్యాప్ చేసినప్పుడు మీ పరికరాన్ని లాక్ చేయడానికి మాత్రమే Quick Search Android AccessibilityService APIని ఉపయోగిస్తుంది. ఈ సేవ ద్వారా Quick Search మీ స్క్రీన్ కంటెంట్‌ను లేదా ఇతర వ్యక్తిగత డేటాను చదవదు, సేకరించదు, నిల్వ చేయదు లేదా పంచుకోదు.</string>
     <string name="settings_gesture_none">ఏదీ లేదు</string>
     <string name="settings_gesture_custom">అనుకూలమైనవి (యాప్‌లు, ఫైల్‌లు మొదలైనవి)</string>
@@ -130,6 +132,13 @@
     <string name="notification_pinned_item_type_file">ఫైల్</string>
     <string name="notification_pinned_item_type_note">నోట్</string>
     <string name="action_remove">తొలగించు</string>
+    <string name="app_swipe_current_action">ప్రస్తుత చర్య</string>
+    <string name="app_swipe_up_picker_title">%1$s కోసం పైకి స్వైప్ చర్యను ఎంచుకోండి</string>
+    <string name="app_swipe_down_picker_title">%1$s కోసం కిందికి స్వైప్ చర్యను ఎంచుకోండి</string>
+    <string name="app_swipe_picker_tip">యాప్ ఐకాన్‌పై స్వైప్ చేస్తే ఎంచుకున్న అంశం యాప్ సూచనలు మరియు శోధన ఫలితాలు రెండింటిలోనూ తెరుచుకుంటుంది</string>
+    <string name="app_swipe_picker_search_hint">యాప్‌లు, పరిచయాలు మొదలైనవి శోధించండి</string>
+    <string name="app_swipe_up_set_toast">%1$s కోసం పైకి స్వైప్ సంజ్ఞ సెట్ చేయబడింది</string>
+    <string name="app_swipe_down_set_toast">%1$s కోసం కిందికి స్వైప్ సంజ్ఞ సెట్ చేయబడింది</string>
     <string name="action_remove_from_history">చరిత్ర నుండి తొలగించు</string>
     <string name="action_reset_app_shortcut_icon">డిఫాల్ట్ ఐకాన్‌కి పునరుద్ధరించు</string>
     <string name="action_retry">మళ్ళీ ప్రయత్నించు</string>
@@ -247,8 +256,6 @@
     <string name="recent_queries_toggle_title">శోధన చరిత్ర</string>
     <string name="search_history_tab_recently_opened">ఫలితాలు</string>
     <string name="search_history_tab_searches">శోధనలు</string>
-    <string name="search_history_tip_link">సెట్టింగ్‌లు</string>
-    <string name="search_history_tip_message">మీరు శోధన చరిత్రను ఇక్కడ నిలిపివేయవచ్చు:</string>
     <string name="search_section_app_settings_toggle_desc">యాప్ సెట్టింగ్‌ల శోధనను ఆన్ లేదా ఆఫ్ చేయి</string>
     <string name="search_section_app_settings_toggle_title">యాప్ సెట్టింగ్‌ల శోధన</string>
     <string name="search_section_app_shortcuts_toggle_desc">యాప్ షార్ట్‌కట్‌ల శోధనను ఆన్ లేదా ఆఫ్ చేయి</string>
@@ -285,6 +292,9 @@
     <string name="open_top_result_using_keyboard_toggle_desc">కీబోర్డ్ Enter/Done కీ అగ్ర ఫలితాన్ని తెరుస్తుంది</string>
     <string name="include_non_launchable_apps_toggle_title">ప్రారంభించలేని యాప్‌లు</string>
     <string name="include_non_launchable_apps_toggle_desc">సెర్చ్ ఫలితాలలో లాంచ్ యాక్టివిటీ లేని యాప్‌లను చేర్చండి.</string>
+    <string name="notification_dots_toggle_title">నోటిఫికేషన్ డాట్‌లు</string>
+    <string name="notification_dots_toggle_desc">నోటిఫికేషన్‌లు ఉన్న యాప్‌లపై నోటిఫికేషన్ డాట్‌లను చూపించు</string>
+    <string name="desc_notification_dot">నోటిఫికేషన్‌లు ఉన్నాయి</string>
     <string name="show_in_recents_toggle_title">ఇటీవలివాటిలో చూపించు</string>
     <string name="show_in_recents_toggle_desc">మీ పరికరంలోని ఇటీవలి యాప్‌లలో Quick Searchను చూపించు</string>
     <string name="web_search_suggestions_title">వెబ్ సూచనలు</string>
@@ -294,6 +304,8 @@
          ============================================================================ -->
     <string name="app_menu_section_actions">చర్యలు</string>
     <string name="app_menu_section_shortcuts">షార్ట్‌కట్‌లు</string>
+    <string name="app_menu_value_on">ఆన్</string>
+    <string name="action_uninstall_named">%1$s అన్‌ఇన్‌స్టాల్ చేయండి</string>
     <string name="apps_refreshed_successfully">యాప్‌లు విజయవంతంగా రీఫ్రెష్ చేయబడ్డాయి</string>
     <string name="error_loading_user_apps">మేము మీ యాప్‌లను లోడ్ చేయలేకపోయాము. కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.</string>
     <string name="error_uninstall_app">%1$sను అన్‌ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</string>
@@ -550,6 +562,7 @@
     <string name="settings_calendar_permission_title">క్యాలెండర్</string>
     <string name="settings_calendar_show_today_events_desc">ఈరోజు ఈవెంట్‌లను హోమ్ స్క్రీన్‌లో చూపించు.</string>
     <string name="settings_calendar_show_today_events_title">ఈరోజు ఈవెంట్‌లను చూపించు</string>
+    <string name="settings_calendar_default_title">ఈవెంట్‌లను ఇందులో తెరవండి...</string>
     <string name="settings_calendar_view_all_events_desc">అన్ని ఈవెంట్‌లను చూడండి</string>
 
     <!-- ============================================================================
@@ -863,6 +876,9 @@
     <string name="currency_converter_requires_gemini_key">AI ప్రొవైడర్ API కీ అవసరం</string>
     <string name="currency_converter_toggle_desc">ఉదాహరణ: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">కరెన్సీ కన్వర్టర్</string>
+    <string name="color_visualizer_toggle_title">రంగు విజువలైజర్</string>
+    <string name="color_visualizer_toggle_desc">ఉదాహరణలు: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">హెక్స్ లేదా RGB రంగును నమోదు చేయండి</string>
     <string name="currency_converter_updated">నవీకరించబడింది %1$s</string>
     <string name="date_calculator_category_absolute_time">నిర్దిష్ట సమయం</string>
     <string name="date_calculator_category_date_differences">తేదీ వ్యత్యాసాలు</string>
@@ -930,9 +946,10 @@
     <string name="widget_background_color_custom_dialog_title">కస్టమ్ రంగు</string>
     <string name="widget_border_color">అంచు రంగు</string>
     <string name="widget_custom_button_add_desc">కస్టమ్ బటన్‌ను జోడించండి</string>
-    <string name="widget_custom_buttons_dialog_hint">మీరు యాప్‌లు, యాప్ షార్ట్‌కట్‌లు, పరిచయాలు, ఫైళ్లు, ఫోల్డర్‌లు, గమనికలు &amp; పరికర సెట్టింగ్‌ల కోసం శోధించవచ్చు.</string>
+    <string name="widget_custom_buttons_dialog_hint">యాప్‌లు, యాప్ షార్ట్‌కట్‌లు, పరిచయాలు, ఫైళ్లు, ఫోల్డర్‌లు, గమనికలు &amp; పరికర సెట్టింగ్‌ల కోసం శోధించండి.</string>
     <string name="widget_custom_buttons_dialog_title">చర్యను ఎంచుకోండి</string>
     <string name="widget_custom_buttons_no_results">ఫలితాలు ఏవీ కనుగొనబడలేదు.</string>
+    <string name="widget_custom_buttons_filter_all">అన్నీ</string>
     <string name="widget_custom_buttons_restriction">కస్టమ్ బటన్‌లు సక్రియంగా ఉన్నప్పుడు అందుబాటులో ఉండదు.</string>
     <string name="widget_custom_buttons_title">కస్టమ్ బటన్‌లు</string>
     <string name="widget_custom_buttons_widget_title">కస్టమ్ బటన్‌ల విడ్జెట్</string>
@@ -972,6 +989,11 @@
          ============================================================================ -->
     <string name="permissions_calendar_desc">మీ క్యాలెండర్ ఈవెంట్‌లను శోధించడానికి అవసరం.</string>
     <string name="permissions_calling_desc">డయలర్ తెరవకుండానే మీ పరిచయాలకు నేరుగా కాల్ చేయడానికి అవసరం.</string>
+    <string name="settings_notifications_permission_title">పోస్ట్ నోటిఫికేషన్‌లు</string>
+    <string name="permissions_notifications_desc">శోధన ఫలితాలను నోటిఫికేషన్ ప్యానెల్‌కు పిన్ చేయడానికి అవసరం</string>
+    <string name="permissions_notification_access_desc">నోటిఫికేషన్‌లు ఉన్న యాప్‌లపై నోటిఫికేషన్ డాట్‌లను చూపించడానికి అవసరం.</string>
+    <string name="permissions_accessibility_lock_screen_title">యాక్సెసిబిలిటీ</string>
+    <string name="permissions_accessibility_lock_screen_desc">రెండుసార్లు ట్యాప్ చేసే సంజ్ఞతో మీ పరికరాన్ని లాక్ చేయడానికి అనుమతిస్తుంది.</string>
     <string name="permissions_contacts_desc">మీ పరిచయాలను శోధించడానికి అవసరం.</string>
     <string name="permissions_files_desc">మీ పత్రాలు మరియు ఇతర ఫైళ్లను శోధించడానికి అవసరం.</string>
     <string name="permissions_files_title">ఫైళ్ల యాక్సెస్</string>
@@ -979,7 +1001,8 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">ఒకవేళ మీరు తర్వాత %1$s అనుమతి గురించి మీ నిర్ణయాన్ని మార్చుకుంటే, మీరు యాప్ సెట్టింగ్‌ల నుండి అనుమతిని మంజూరు చేయవచ్చు.</string>
     <string name="permissions_reminder_dialog_title">అనుమతులు మంజూరు చేయబడలేదు</string>
-    <string name="permissions_screen_subtitle">ఈ అనుమతులు అదనపు ఫీచర్లను అన్‌లాక్ చేస్తాయి. ఇవి ఐచ్ఛికం. మీ డేటా మీ పరికరంలోనే ఉంటుంది.</string>
+    <string name="permissions_screen_subtitle">ఇక్కడి అనుమతులన్నీ ఐచ్ఛికం. అవి అదనపు ఫీచర్‌లను అన్‌లాక్ చేయడానికి మాత్రమే ఉపయోగించబడతాయి. మీ డేటా మీ పరికరంలోనే ఉంటుంది.</string>
+    <string name="permissions_screen_optional_emphasis">ఐచ్ఛికం</string>
     <string name="permissions_usage_desc">మీరు ఇటీవల ఉపయోగించిన యాప్‌లను సూచనలలో చూపించడానికి అవసరం.</string>
     <string name="setup_action_next">తదుపరి</string>
     <string name="setup_action_start">శోధించడం ప్రారంభించండి!</string>
@@ -1081,6 +1104,8 @@
     <string name="widget_custom_button_choose_colour">ఫోల్డర్ రంగును ఎంచుకోండి</string>
     <string name="search_engine_google_translate">గూగుల్ అనువాదం</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Tasker చర్యలు</string>
     <string name="tasker_integration_description">బ్రాడ్‌కాస్ట్ ఇంటెంట్‌లను ఉపయోగించి Tasker చర్యలను సృష్టించండి.</string>
     <string name="tasker_add_intent_title">Tasker బ్రాడ్‌కాస్ట్ ఇంటెంట్‌ను జోడించండి</string>

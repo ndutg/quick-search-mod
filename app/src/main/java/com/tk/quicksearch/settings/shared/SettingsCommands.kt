@@ -107,11 +107,13 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.CALCULATOR -> setCalculatorEnabled(command.enabled)
                 AppSettingsToggleKey.UNIT_CONVERTER -> setUnitConverterEnabled(command.enabled)
                 AppSettingsToggleKey.DATE_CALCULATOR -> setDateCalculatorEnabled(command.enabled)
+                AppSettingsToggleKey.COLOR_VISUALIZER -> setColorVisualizerEnabled(command.enabled)
                 AppSettingsToggleKey.APP_SUGGESTIONS -> setAppSuggestionsEnabled(command.enabled)
                 AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON -> setShowAllAppsButton(command.enabled)
                 AppSettingsToggleKey.INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH ->
                     setIncludeNonLaunchableAppsInSearch(command.enabled)
                 AppSettingsToggleKey.SHOW_IN_RECENTS -> setShowInRecents(command.enabled)
+                AppSettingsToggleKey.NOTIFICATION_DOTS -> setNotificationDotsEnabled(command.enabled)
                 AppSettingsToggleKey.WEB_SUGGESTIONS -> setWebSuggestionsEnabled(command.enabled)
                 AppSettingsToggleKey.RECENT_QUERIES -> setRecentQueriesEnabled(command.enabled)
                 AppSettingsToggleKey.FUZZY_SEARCH -> setFuzzySearchEnabled(command.enabled)
@@ -211,11 +213,13 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.CALCULATOR -> calculatorEnabled
         AppSettingsToggleKey.UNIT_CONVERTER -> unitConverterEnabled
         AppSettingsToggleKey.DATE_CALCULATOR -> dateCalculatorEnabled
+        AppSettingsToggleKey.COLOR_VISUALIZER -> colorVisualizerEnabled
         AppSettingsToggleKey.APP_SUGGESTIONS -> appSuggestionsEnabled
         AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON -> showAllAppsButton
         AppSettingsToggleKey.INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH ->
             includeNonLaunchableAppsInSearch
         AppSettingsToggleKey.SHOW_IN_RECENTS -> showInRecents
+        AppSettingsToggleKey.NOTIFICATION_DOTS -> notificationDotsEnabled
         AppSettingsToggleKey.WEB_SUGGESTIONS -> webSuggestionsEnabled
         AppSettingsToggleKey.RECENT_QUERIES -> recentQueriesEnabled
         AppSettingsToggleKey.FUZZY_SEARCH -> fuzzySearchEnabled

@@ -187,6 +187,7 @@ fun SearchScreen(
     onDismissDirectDialChoice: () -> Unit,
     onReleaseNotesAcknowledged: () -> Unit,
     onReleaseNotesViewAllFeatures: () -> Unit = {},
+    onAccessibilityPermissionDisclaimerDismissed: () -> Unit = {},
     onWebSuggestionClick: (String) -> Unit = {},
     onSearchEngineOnboardingDismissed: () -> Unit = {},
     onContactActionHintDismissed: () -> Unit = {},
@@ -200,8 +201,6 @@ fun SearchScreen(
     onConsumeContactActionRequest: () -> Unit = {},
     onDeleteRecentItem: (RecentSearchEntry) -> Unit = {},
     onClearRecentItems: () -> Unit = {},
-    onOpenSearchHistorySettings: () -> Unit = {},
-    onDismissSearchHistoryTip: () -> Unit = {},
     onCurrencyConversionClick: () -> Unit = {},
     onDictionarySearchClick: () -> Unit = {},
     onWeatherSearchClick: () -> Unit = {},
@@ -236,6 +235,7 @@ fun SearchScreen(
     homeSwipeDownAliasTarget: String? = null,
     homeDoubleTapAliasTarget: String? = null,
     onGestureAliasTarget: (Enum<*>, String) -> Unit = { _, _ -> },
+    onCloseQuickSearch: () -> Unit = {},
 ) {
     val directAnswerContactName = stringResource(R.string.direct_answer_contact_name)
 
@@ -351,8 +351,6 @@ fun SearchScreen(
         onCustomizeSearchEnginesClick = onCustomizeSearchEnginesClick,
         onOpenAiSearchConfigure = onOpenAiSearchConfigure,
         onDeleteRecentItem = onDeleteRecentItem,
-        onOpenSearchHistorySettings = onOpenSearchHistorySettings,
-        onDismissSearchHistoryTip = onDismissSearchHistoryTip,
         onWelcomeAnimationCompleted = onWelcomeAnimationCompleted,
         onWallpaperLoaded = onWallpaperLoaded,
         onSystemWallpaperChanged = onSystemWallpaperChanged,
@@ -528,8 +526,6 @@ fun SearchScreen(
             onAiFollowUpSubmit = onAiFollowUpSubmit,
             onDeleteRecentItem = onDeleteRecentItem,
             onClearRecentItems = onClearRecentItems,
-            onOpenSearchHistorySettings = onOpenSearchHistorySettings,
-            onDismissSearchHistoryTip = onDismissSearchHistoryTip,
             onGeminiModelInfoClick = {
                 val cardsState = stateResult.effectiveStateForCards
                 val customToolId = cardsState.detectedCustomToolId
@@ -580,6 +576,7 @@ fun SearchScreen(
             homeSwipeDownAliasTarget = homeSwipeDownAliasTarget,
             homeDoubleTapAliasTarget = homeDoubleTapAliasTarget,
             onGestureAliasTarget = onGestureAliasTarget,
+            onCloseQuickSearch = onCloseQuickSearch,
             getAllTriggerWordsById = getAllTriggerWordsById,
             getAllContactActionTriggers = getAllContactActionTriggers,
             onContactActionTrigger = onContactActionTrigger,
@@ -613,6 +610,8 @@ fun SearchScreen(
         onDismissContactMethods = onDismissContactMethods,
         onReleaseNotesAcknowledged = onReleaseNotesAcknowledged,
         onReleaseNotesViewAllFeatures = onReleaseNotesViewAllFeatures,
+        onAccessibilityPermissionDisclaimerDismissed =
+            onAccessibilityPermissionDisclaimerDismissed,
         onDismissNicknameDialog = { stateResult.setNicknameDialogState(null) },
         onDismissTriggerDialog = { stateResult.setTriggerDialogState(null) },
         onSaveAppNickname = { app, nickname ->

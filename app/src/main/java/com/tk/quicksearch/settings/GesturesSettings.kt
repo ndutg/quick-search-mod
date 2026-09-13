@@ -61,6 +61,8 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
+import com.tk.quicksearch.shared.permissions.LockScreenAccessibilityDisclosureDialog
+import com.tk.quicksearch.shared.permissions.shouldShowAccessibilityDisclosure
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
@@ -213,6 +215,7 @@ fun GesturesSettingsSection(
             )
         } else GestureActionDialog(
             direction = direction,
+            allowsCloseQuickSearch = !isDefaultLauncher,
             selectedAction = actions.getValue(direction),
             selectedCustomActionJson = customActions[direction],
             selectedAliasTarget = aliasTargets[direction],
@@ -349,6 +352,7 @@ fun GesturesSettingsSection(
         HomeVerticalGestureDialog(
             titleResId = gesture.titleResId,
             allowsNotificationPanel = gesture == HomeGesture.SWIPE_DOWN || gesture == HomeGesture.DOUBLE_TAP,
+            allowsCloseQuickSearch = !isDefaultLauncher,
             allowsLockScreen = gesture == HomeGesture.DOUBLE_TAP,
             hasLockScreenAccessibilityPermission = isLockScreenAccessibilityEnabled,
             selectedAction = homeActions.getValue(gesture),
@@ -374,7 +378,11 @@ fun GesturesSettingsSection(
                     selectedHomeGesture = null
                 } else {
                     selectedHomeGesture = null
-                    showLockScreenAccessibilityDisclosure = true
+                    if (shouldShowAccessibilityDisclosure) {
+                        showLockScreenAccessibilityDisclosure = true
+                    } else {
+                        context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                    }
                 }
             },
             onPickCustom = {
@@ -574,6 +582,7 @@ private fun HomeGesture.icon() =
 private fun HomeVerticalGestureDialog(
     titleResId: Int,
     allowsNotificationPanel: Boolean,
+    allowsCloseQuickSearch: Boolean,
     allowsLockScreen: Boolean,
     hasLockScreenAccessibilityPermission: Boolean,
     selectedAction: HomeSwipeGestureAction,
@@ -608,6 +617,14 @@ private fun HomeVerticalGestureDialog(
                         label = stringResource(R.string.settings_gesture_notification_panel),
                         selected = selectedAction == HomeSwipeGestureAction.NOTIFICATION_PANEL,
                         onClick = { onSelectDefault(HomeSwipeGestureAction.NOTIFICATION_PANEL) },
+                    )
+                }
+                if (allowsCloseQuickSearch) {
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = stringResource(R.string.settings_gesture_close_quick_search),
+                        selected = selectedAction == HomeSwipeGestureAction.CLOSE_QUICK_SEARCH,
+                        onClick = { onSelectDefault(HomeSwipeGestureAction.CLOSE_QUICK_SEARCH) },
                     )
                 }
                 if (allowsLockScreen) {
@@ -654,28 +671,6 @@ private fun HomeVerticalGestureDialog(
 }
 
 @Composable
-private fun LockScreenAccessibilityDisclosureDialog(
-    onAgree: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.accessibility_lock_screen_disclosure_title)) },
-        text = { Text(stringResource(R.string.accessibility_lock_screen_disclosure_message)) },
-        confirmButton = {
-            TextButton(onClick = onAgree) {
-                Text(stringResource(R.string.action_agree))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_not_now))
-            }
-        },
-    )
-}
-
-@Composable
 private fun KeyboardGestureDialog(
     action: SwipeGestureAction,
     selectedDirection: SwipeDirection?,
@@ -713,6 +708,7 @@ private fun KeyboardGestureDialog(
 @Composable
 private fun GestureActionDialog(
     direction: SwipeDirection,
+    allowsCloseQuickSearch: Boolean,
     selectedAction: SwipeGestureAction,
     selectedCustomActionJson: String?,
     selectedAliasTarget: String?,
@@ -744,6 +740,14 @@ private fun GestureActionDialog(
                     selected = selectedAction == direction.defaultAction,
                     onClick = { onSelectDefault(direction.defaultAction) },
                 )
+                if (allowsCloseQuickSearch) {
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = stringResource(R.string.settings_gesture_close_quick_search),
+                        selected = selectedAction == SwipeGestureAction.CLOSE_QUICK_SEARCH,
+                        onClick = { onSelectDefault(SwipeGestureAction.CLOSE_QUICK_SEARCH) },
+                    )
+                }
                 customActions.forEach { action ->
                     HorizontalDivider(color = AppColors.SettingsDivider)
                     val json = action.toJson()
@@ -989,7 +993,9 @@ private fun GestureToolPickerDialog(
     onDismiss: () -> Unit,
     onSelect: (String) -> Unit,
 ) {
-    val tools = ToolSettingsRegistry.definitions.map { GestureToolItem(it.aliasFeatureId, stringResource(it.titleResId), it.icon) } +
+    val tools = ToolSettingsRegistry.definitions.mapNotNull { definition ->
+        definition.aliasFeatureId?.let { GestureToolItem(it, stringResource(definition.titleResId), definition.icon) }
+    } +
         state.customTools.filterNot { it.id in state.disabledCustomToolIds }.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) } +
         state.taskerIntentTools.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) }
     AppAlertDialog(
@@ -1086,7 +1092,9 @@ private fun allGestureAliasItems(
 
 @Composable
 private fun gestureToolItems(state: com.tk.quicksearch.search.core.SearchUiState): List<Pair<String, String>> =
-    ToolSettingsRegistry.definitions.map { it.aliasFeatureId to stringResource(it.titleResId) } +
+    ToolSettingsRegistry.definitions.mapNotNull { definition ->
+        definition.aliasFeatureId?.let { it to stringResource(definition.titleResId) }
+    } +
         state.customTools
             .filterNot { it.id in state.disabledCustomToolIds }
             .map { it.id to it.name } +
@@ -1094,6 +1102,7 @@ private fun gestureToolItems(state: com.tk.quicksearch.search.core.SearchUiState
 
 private fun SwipeGestureAction.labelResId(): Int =
     when (this) {
+        SwipeGestureAction.CLOSE_QUICK_SEARCH -> R.string.settings_gesture_close_quick_search
         SwipeGestureAction.WIDGETS_PANEL -> R.string.settings_gesture_widget_panel
         SwipeGestureAction.SETTINGS -> R.string.settings_gesture_settings
         SwipeGestureAction.OPEN_KEYBOARD -> R.string.action_open_keyboard
@@ -1106,6 +1115,7 @@ private fun SwipeGestureAction.labelResId(): Int =
 
 private fun HomeSwipeGestureAction.labelResId(): Int =
     when (this) {
+        HomeSwipeGestureAction.CLOSE_QUICK_SEARCH -> R.string.settings_gesture_close_quick_search
         HomeSwipeGestureAction.LOCK_SCREEN -> R.string.settings_gesture_lock_screen
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> R.string.settings_gesture_notification_panel
         HomeSwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom

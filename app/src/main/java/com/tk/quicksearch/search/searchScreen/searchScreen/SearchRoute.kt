@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,7 +64,9 @@ import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
 import com.tk.quicksearch.overlay.OverlayModeController
+import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
 import com.tk.quicksearch.search.apps.speedBump.SpeedBump
+import com.tk.quicksearch.search.apps.swipeGestures.AppSwipeGestures
 import com.tk.quicksearch.search.apps.speedBump.SpeedBumpOverlay
 import com.tk.quicksearch.shared.permissions.PermissionSettingsDialog
 import com.tk.quicksearch.shared.permissions.PermissionHelper
@@ -75,7 +78,9 @@ import com.tk.quicksearch.settings.shared.applySettingsCommand
 import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
 import com.tk.quicksearch.search.data.CustomCalendarEventRepository
+import com.tk.quicksearch.search.data.preferences.CalendarPreferences
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomEventEditDialog
+import com.tk.quicksearch.settings.settingsDetailScreen.DefaultCalendarDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.SecondaryRankingDialog
 import com.tk.quicksearch.settings.AppearanceSettings.IconPackPickerDialog
 import com.tk.quicksearch.search.searchScreen.SearchScreen as SearchScreenComposable
@@ -107,7 +112,6 @@ private fun launchSystemWallpaperPicker(context: Context) {
 fun SearchRoute(
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit = {},
-    onOpenSearchHistorySettings: () -> Unit = {},
     onSearchEngineLongPress: () -> Unit = {},
     onCustomizeSearchEnginesClick: () -> Unit = {},
     onOpenAiSearchConfigure: () -> Unit = {},
@@ -132,6 +136,20 @@ fun SearchRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    // The app swipe action picker searches through the shared query. While it's open (and until
+    // the original query is restored), keep the search screen on a snapshot so its search bar and
+    // results don't mirror what's typed in the picker.
+    val appSwipePickerRequest by AppSwipeGestures.pickerRequest.collectAsState()
+    var searchScreenSnapshot by remember { mutableStateOf<SearchUiState?>(null) }
+    if (appSwipePickerRequest != null && searchScreenSnapshot == null) {
+        searchScreenSnapshot = uiState
+    }
+    val snapshot = searchScreenSnapshot
+    if (appSwipePickerRequest == null && snapshot != null && uiState.query == snapshot.query) {
+        searchScreenSnapshot = null
+    }
+    val searchScreenState = searchScreenSnapshot ?: uiState
     val context = LocalContext.current
 
     val nicknameUpdateVersion = uiState.nicknameUpdateVersion
@@ -318,6 +336,7 @@ fun SearchRoute(
     var showPermissionSettingsDialog by remember { mutableStateOf(false) }
     var showSecondaryRankingDialog by remember { mutableStateOf(false) }
     var showIconPackDialog by remember { mutableStateOf(false) }
+    var showDefaultCalendarDialog by remember { mutableStateOf(false) }
     var pendingPermissionSettingsAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     var pendingPermissionSettingsType by remember { mutableStateOf<Int?>(null) }
     var pendingDirectDialToggleFromAppSetting by remember { mutableStateOf(false) }
@@ -326,6 +345,8 @@ fun SearchRoute(
     // Non-null while a SpeedBump app is waiting out its interstitial before launching.
     var speedBumpApp by remember { mutableStateOf<com.tk.quicksearch.search.models.AppInfo?>(null) }
     val customCalendarEventRepository = remember(context) { CustomCalendarEventRepository(context) }
+    val calendarPreferences = remember(context) { CalendarPreferences(context) }
+    var defaultCalendarPackage by remember { mutableStateOf(calendarPreferences.getDefaultCalendarPackage()) }
 
     val callPermissionLauncher =
         if (context is android.app.Activity) {
@@ -395,9 +416,20 @@ fun SearchRoute(
             )
         }
 
+    val onNotificationDotsCheckedChange =
+        rememberNotificationDotsCheckedChange { enabled ->
+            viewModel.applySettingsCommand(
+                SettingsCommand.Toggle(
+                    key = AppSettingsToggleKey.NOTIFICATION_DOTS,
+                    enabled = enabled,
+                ),
+            )
+        }
+
     val onAppSettingToggle: (AppSettingResult, Boolean) -> Unit = { setting, enabled ->
         viewModel.trackRecentAppSettingTap(setting.id)
         when (val toggleKey = setting.toggleKey) {
+            AppSettingsToggleKey.NOTIFICATION_DOTS -> onNotificationDotsCheckedChange(enabled)
             AppSettingsToggleKey.OVERLAY_MODE -> {
                 val isDefaultHomeApp = context.isDefaultHomeApp()
                 val shouldEnableOverlay = enabled && !isDefaultHomeApp
@@ -447,6 +479,10 @@ fun SearchRoute(
             if (destination == AppSettingsDestination.ICON_PACKS) {
                 viewModel.refreshIconPacks()
                 showIconPackDialog = true
+                return@appSettingClick
+            }
+            if (destination == AppSettingsDestination.OPEN_EVENTS_IN) {
+                showDefaultCalendarDialog = true
                 return@appSettingClick
             }
             if (destination == AppSettingsDestination.RATE_QUICK_SEARCH) {
@@ -593,6 +629,11 @@ fun SearchRoute(
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
+    val closeQuickSearch: () -> Unit = {
+        if (!isDefaultLauncher) {
+            if (isOverlayPresentation) onOverlayDismissRequest?.invoke() else onCloseAppRequest?.invoke()
+        }
+    }
     val handleHomeHorizontalSwipe: (HomeHorizontalSwipe) -> Unit = { swipe ->
         when (swipe) {
             HomeHorizontalSwipe.RIGHT -> {
@@ -600,6 +641,7 @@ fun SearchRoute(
                     if (isLauncherSwipeRightEnabled) onOpenWidgetsPanelFromSwipe?.invoke()
                 } else {
                     when (swipeActions[0]) {
+                        SwipeGestureAction.CLOSE_QUICK_SEARCH -> closeQuickSearch()
                         SwipeGestureAction.WIDGETS_PANEL -> onOpenWidgetsPanelFromSwipe?.invoke()
                         SwipeGestureAction.CUSTOM -> {
                             com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
@@ -614,6 +656,7 @@ fun SearchRoute(
             }
             HomeHorizontalSwipe.LEFT -> {
                 when (swipeActions[1]) {
+                    SwipeGestureAction.CLOSE_QUICK_SEARCH -> closeQuickSearch()
                     SwipeGestureAction.SETTINGS -> onSettingsClick()
                     SwipeGestureAction.CUSTOM -> {
                         com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
@@ -672,7 +715,7 @@ fun SearchRoute(
                     } else {
                         Modifier.fillMaxSize().then(swipeNavigationModifier)
                     },
-            state = uiState,
+            state = searchScreenState,
             onQueryChanged = viewModel::onQueryChange,
             onSelectRetainedQueryHandled = viewModel::consumeRetainedQuerySelectionRequest,
             onRestoreSearchKeyboardHandled = viewModel::consumeSearchKeyboardRestoreRequest,
@@ -898,6 +941,8 @@ fun SearchRoute(
                 viewModel.acknowledgeReleaseNotes()
                 onOpenReleaseNotesFeatures()
             },
+            onAccessibilityPermissionDisclaimerDismissed =
+                viewModel::dismissAccessibilityPermissionDisclaimer,
             onWebSuggestionClick = { suggestion: String ->
                 viewModel.onWebSuggestionTap(suggestion)
             },
@@ -909,8 +954,6 @@ fun SearchRoute(
             onAiFollowUpSubmit = viewModel::submitAiFollowUp,
             onDeleteRecentItem = viewModel::deleteRecentItem,
             onClearRecentItems = viewModel::clearRecentItems,
-            onOpenSearchHistorySettings = onOpenSearchHistorySettings,
-            onDismissSearchHistoryTip = viewModel::dismissSearchHistoryTip,
             onCurrencyConversionClick = viewModel::executeCurrencyConversion,
             onDictionarySearchClick = viewModel::executeDictionaryLookup,
             onWeatherSearchClick = viewModel::executeWeatherLookup,
@@ -961,7 +1004,8 @@ fun SearchRoute(
                     else -> Unit
                 }
             },
-            )
+            onCloseQuickSearch = closeQuickSearch,
+        )
         }
 
         if (overlaySnackbarHostState == null) {
@@ -1040,6 +1084,18 @@ fun SearchRoute(
             )
         }
 
+        if (showDefaultCalendarDialog) {
+            DefaultCalendarDialog(
+                selectedPackageName = defaultCalendarPackage,
+                onCalendarSelected = { packageName ->
+                    defaultCalendarPackage = packageName
+                    calendarPreferences.setDefaultCalendarPackage(packageName)
+                    showDefaultCalendarDialog = false
+                },
+                onDismiss = { showDefaultCalendarDialog = false },
+            )
+        }
+
         speedBumpApp?.let { app ->
             SpeedBumpOverlay(
                 appInfo = app,
@@ -1052,6 +1108,11 @@ fun SearchRoute(
                 onCancel = { speedBumpApp = null },
             )
         }
+
+        com.tk.quicksearch.search.apps.swipeGestures.AppSwipeGesturePickerHost(
+            searchState = uiState,
+            onQueryChange = viewModel::onQueryChange,
+        )
 
         previewFile?.let { file ->
             com.tk.quicksearch.search.files.FilePreviewBottomSheet(

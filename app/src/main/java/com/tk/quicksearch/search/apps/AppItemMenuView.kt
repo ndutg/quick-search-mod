@@ -1,18 +1,15 @@
 package com.tk.quicksearch.search.apps
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.HorizontalSplit
@@ -24,12 +21,17 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PinEnd
 import androidx.compose.material.icons.rounded.Spa
+import androidx.compose.material.icons.rounded.SwipeDown
+import androidx.compose.material.icons.rounded.SwipeUp
 import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,14 +46,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
@@ -63,90 +65,20 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.apps.speedBump.SpeedBump
 import com.tk.quicksearch.search.apps.speedBump.SpeedBumpExplainerDialog
-import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.search.apps.swipeGestures.AppSwipeDirection
+import com.tk.quicksearch.search.apps.swipeGestures.AppSwipeGestures
+import com.tk.quicksearch.search.apps.swipeGestures.rememberAppSwipeActions
+import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
+import com.tk.quicksearch.shared.ui.components.ItemMenuRow
+import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.theme.AppColors
-import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.util.hapticConfirm
+import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal enum class AppMenuItemKey {
-    PIN,
-    NICKNAME,
-    ICON,
-    TRIGGER,
-    SPLIT_SCREEN,
-    ADD_TO_HOME,
-    APP_INFO,
-    SPEED_BUMP,
-    EXCLUDE,
-    NOTIFICATIONS,
-    UNINSTALL,
-}
-
-internal data class AppMenuItem(
-    val key: AppMenuItemKey,
-    val textResId: Int,
-    val icon: @Composable () -> Unit,
-    val onClick: () -> Unit,
-    val onLongClick: (() -> Unit)? = null,
-    /** Columns this item occupies in the 3-column action grid. */
-    val span: Int = 1,
-)
-
-private val ShortcutGridIconSize = 32.dp
-
-internal const val ActionGridColumns = 3
-
-/** Items that must never be split across rows, in the order they should appear. */
-internal val InseparableActionKeys = listOf(AppMenuItemKey.SPEED_BUMP, AppMenuItemKey.EXCLUDE)
-
-/**
- * Packs action items into 3-column rows.
- *
- * Items keep their declared order unless one does not fit the remaining space, in which case a
- * later item that does fit is pulled forward. That keeps rows full so empty slots only ever
- * appear at the end of the last row. The SpeedBump / Exclude pair is packed as a single unit so
- * SpeedBump always sits directly to the left of Exclude.
- */
-internal fun packActionRows(items: List<AppMenuItem>): List<List<AppMenuItem>> {
-    val groups: List<List<AppMenuItem>> =
-        buildList {
-            val pair = InseparableActionKeys.mapNotNull { key -> items.firstOrNull { it.key == key } }
-            var pairEmitted = false
-            items.forEach { item ->
-                if (item.key in InseparableActionKeys) {
-                    if (!pairEmitted) {
-                        add(pair)
-                        pairEmitted = true
-                    }
-                } else {
-                    add(listOf(item))
-                }
-            }
-        }
-
-    val remaining = groups.toMutableList()
-    val rows = mutableListOf<List<AppMenuItem>>()
-    while (remaining.isNotEmpty()) {
-        val row = mutableListOf<AppMenuItem>()
-        var used = 0
-        while (used < ActionGridColumns) {
-            val index =
-                remaining.indexOfFirst { group ->
-                    group.sumOf { it.span } <= ActionGridColumns - used
-                }
-            if (index < 0) break
-            val group = remaining.removeAt(index)
-            row += group
-            used += group.sumOf { it.span }
-        }
-        if (row.isEmpty()) break
-        rows += row
-    }
-    return rows
-}
+private val ShortcutGridIconSize = 24.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,6 +103,8 @@ fun AppItemDropdownMenu(
     onTriggerClick: () -> Unit,
     onAddToHome: () -> Unit,
     onOpenInSplitScreen: () -> Unit,
+    /** False where swiping the item can't run the app's swipe gestures, such as list rows. */
+    showSwipeGestures: Boolean = true,
 ) {
     val context = LocalContext.current
     val todayUsage by produceState<TodayAppUsage?>(
@@ -199,11 +133,11 @@ fun AppItemDropdownMenu(
     }
     // Non-null while the explainer is up; true when it followed the user first turning it on.
     var speedBumpExplainerJustEnabled by remember { mutableStateOf<Boolean?>(null) }
-    val menuItems = buildList {
-        if (!isCurrentApp && isLaunchableApp) {
-            add(AppMenuItem(
-                key = AppMenuItemKey.PIN,
-                textResId = if (isPinned) R.string.action_unpin_app else R.string.action_pin_app,
+    val isOtherLaunchableApp = !isCurrentApp && isLaunchableApp
+    val actions = buildList {
+        if (isOtherLaunchableApp) {
+            add(ItemMenuTile(
+                label = stringResource(if (isPinned) R.string.action_unpin_app else R.string.action_pin_app),
                 icon = {
                     Icon(
                         painter = painterResource(if (isPinned) R.drawable.ic_unpin else R.drawable.ic_pin),
@@ -214,52 +148,30 @@ fun AppItemDropdownMenu(
             ))
         }
         if (!isCurrentApp) {
-            add(AppMenuItem(
-                key = AppMenuItemKey.NICKNAME,
-                textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
-                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
-                onClick = { onDismiss(); onNicknameClick() },
-            ))
-            add(AppMenuItem(
-                key = AppMenuItemKey.ICON,
-                textResId = R.string.action_change_icon,
-                icon = { Icon(imageVector = Icons.Rounded.IconImage, contentDescription = null) },
-                onClick = { onDismiss(); showIconPicker.value = true },
-            ))
-            add(AppMenuItem(
-                key = AppMenuItemKey.TRIGGER,
-                textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,
+            add(ItemMenuTile(
+                label = stringResource(if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger),
                 icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null) },
                 onClick = { onDismiss(); onTriggerClick() },
             ))
         }
-        if (isLaunchableApp) {
-            if (appInfo.userHandleId == null) {
-                add(AppMenuItem(
-                    key = AppMenuItemKey.SPLIT_SCREEN,
-                    textResId = R.string.action_open_in_split_screen,
-                    icon = { Icon(imageVector = Icons.Rounded.HorizontalSplit, contentDescription = null) },
-                    onClick = { onDismiss(); onOpenInSplitScreen() },
-                ))
-            }
-            add(AppMenuItem(
-                key = AppMenuItemKey.ADD_TO_HOME,
-                textResId = R.string.action_add_to_home,
-                icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
-                onClick = { onDismiss(); onAddToHome() },
+        if (!isCurrentApp) {
+            add(ItemMenuTile(
+                label = stringResource(if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname),
+                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                onClick = { onDismiss(); onNicknameClick() },
             ))
         }
-        add(AppMenuItem(
-            key = AppMenuItemKey.APP_INFO,
-            textResId = R.string.action_app_info,
-            icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
-            onClick = { onDismiss(); onAppInfoClick() },
+        add(ItemMenuTile(
+            label = stringResource(R.string.action_exclude_generic),
+            icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+            onClick = { onDismiss(); onHideApp() },
         ))
-        if (!isCurrentApp && isLaunchableApp) {
-            add(AppMenuItem(
-                key = AppMenuItemKey.SPEED_BUMP,
-                textResId = R.string.speed_bump_title,
-                // The green tint is the only affordance for the on/off state.
+    }
+
+    val appearanceRows = buildList {
+        if (isOtherLaunchableApp) {
+            add(ItemMenuRow(
+                label = stringResource(R.string.speed_bump_title),
                 icon = {
                     Icon(
                         imageVector = Icons.Rounded.Spa,
@@ -267,6 +179,9 @@ fun AppItemDropdownMenu(
                         tint = if (speedBumpEnabled) AppColors.ActionPhone else LocalContentColor.current,
                     )
                 },
+                trailingText = stringResource(
+                    if (speedBumpEnabled) R.string.app_menu_value_on else R.string.widget_icon_off,
+                ),
                 onClick = {
                     speedBumpEnabled = SpeedBump.toggle(context, appInfo.packageName)
                     if (!SpeedBump.hasSeenExplainer(context)) {
@@ -274,21 +189,17 @@ fun AppItemDropdownMenu(
                         onDismiss()
                         speedBumpExplainerJustEnabled = true
                     }
-                    // Otherwise the menu stays open so the icon can be seen turning green.
+                    // Otherwise the menu stays open so the new state can be seen.
                 },
                 onLongClick = { onDismiss(); speedBumpExplainerJustEnabled = false },
             ))
         }
-        add(AppMenuItem(
-            key = AppMenuItemKey.EXCLUDE,
-            textResId = R.string.action_exclude_generic,
-            icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
-            onClick = { onDismiss(); onHideApp() },
-        ))
         if (isLaunchableApp) {
-            add(AppMenuItem(
-                key = AppMenuItemKey.NOTIFICATIONS,
-                textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
+            add(ItemMenuRow(
+                label = stringResource(
+                    if (isPinnedToNotifications) R.string.action_unpin_from_notifications
+                    else R.string.action_pin_to_notifications,
+                ),
                 icon = {
                     if (isPinnedToNotifications) {
                         Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null)
@@ -297,15 +208,86 @@ fun AppItemDropdownMenu(
                     }
                 },
                 onClick = { onDismiss(); PinnedNotifications.toggle(context, notificationAction) },
-                span = 2,
             ))
         }
+    }
+
+    val splitAndIconButtons = buildList {
+        if (isLaunchableApp && appInfo.userHandleId == null) {
+            add(ItemMenuRow(
+                label = stringResource(R.string.action_open_in_split_screen),
+                icon = { Icon(imageVector = Icons.Rounded.HorizontalSplit, contentDescription = null) },
+                onClick = { onDismiss(); onOpenInSplitScreen() },
+            ))
+        }
+        if (!isCurrentApp) {
+            add(ItemMenuRow(
+                label = stringResource(R.string.action_change_icon),
+                icon = { Icon(imageVector = Icons.Rounded.IconImage, contentDescription = null) },
+                onClick = { onDismiss(); showIconPicker.value = true },
+            ))
+        }
+    }
+
+    val launchRows = buildList {
+        if (isLaunchableApp) {
+            add(ItemMenuRow(
+                label = stringResource(R.string.action_add_to_home),
+                icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                onClick = { onDismiss(); onAddToHome() },
+            ))
+        }
+    }
+
+    val (swipeUpAction, swipeDownAction) = rememberAppSwipeActions(appInfo)
+    var swipeInfoDirection by remember(appInfo.launchCountKey(), expanded) { mutableStateOf<AppSwipeDirection?>(null) }
+    val swipeButtons = buildList {
+        if (isLaunchableApp && showSwipeGestures) {
+            listOf(
+                Triple(AppSwipeDirection.UP, R.string.settings_gesture_swipe_up, swipeUpAction),
+                Triple(AppSwipeDirection.DOWN, R.string.settings_gesture_swipe_down, swipeDownAction),
+            ).forEach { (direction, labelRes, assignedAction) ->
+                add(ItemMenuRow(
+                    label = stringResource(labelRes),
+                    icon = {
+                        Icon(
+                            imageVector =
+                                if (direction == AppSwipeDirection.UP) Icons.Rounded.SwipeUp else Icons.Rounded.SwipeDown,
+                            contentDescription = null,
+                            tint = if (assignedAction != null) AppColors.ActionPhone else LocalContentColor.current,
+                        )
+                    },
+                    onClick = { onDismiss(); AppSwipeGestures.requestPicker(appInfo, direction) },
+                    onLongClick = assignedAction?.let { { swipeInfoDirection = direction } },
+                    anchoredContent = {
+                        AppSwipeActionDropdown(
+                            expanded = swipeInfoDirection == direction && assignedAction != null,
+                            action = assignedAction,
+                            iconPackPackage = iconPackPackage,
+                            onDismiss = { swipeInfoDirection = null },
+                            onClear = {
+                                swipeInfoDirection = null
+                                AppSwipeGestures.setAction(context, appInfo, direction, null)
+                            },
+                        )
+                    },
+                ))
+            }
+        }
+    }
+
+    val footerButtons = buildList {
+        add(ItemMenuRow(
+            label = stringResource(R.string.action_app_info),
+            icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
+            onClick = { onDismiss(); onAppInfoClick() },
+        ))
         if (showUninstall) {
-            add(AppMenuItem(
-                key = AppMenuItemKey.UNINSTALL,
-                textResId = R.string.action_uninstall_app,
+            add(ItemMenuRow(
+                label = stringResource(R.string.action_uninstall_app),
                 icon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
                 onClick = { onDismiss(); onUninstallClick() },
+                destructive = true,
             ))
         }
     }
@@ -322,7 +304,31 @@ fun AppItemDropdownMenu(
     )
 
     if (expanded) {
-        AppBottomPopup(
+        val shortcutTiles = shortcuts.map { shortcut ->
+            val displayName = shortcutDisplayName(shortcut)
+            val iconBitmap = rememberShortcutIcon(shortcut, shortcutIconSizePx)
+            ItemMenuTile(
+                label = displayName,
+                icon = {
+                    if (iconBitmap != null) {
+                        Image(
+                            bitmap = iconBitmap,
+                            contentDescription = displayName,
+                            modifier = Modifier.size(ShortcutGridIconSize),
+                            contentScale = ContentScale.Fit,
+                        )
+                    } else {
+                        Text(
+                            text = displayName.trim().take(1).uppercase(),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                },
+                onClick = { onShortcutClick(shortcut); onDismiss() },
+                enableMarquee = true,
+            )
+        }
+        ItemMenuPopup(
             onDismiss = onDismiss,
             leadingContent = {
                 iconResult.bitmap?.let { bitmap ->
@@ -365,102 +371,14 @@ fun AppItemDropdownMenu(
                         }
                 }
             },
-        ) {
-            if (shortcuts.isNotEmpty()) {
-                // Shortcuts section
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                ) {
-                    Text(
-                        text = stringResource(R.string.app_menu_section_shortcuts),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    shortcuts.chunked(3).forEach { row ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                        ) {
-                            row.forEach { shortcut ->
-                                val displayName = shortcutDisplayName(shortcut)
-                                val iconBitmap = rememberShortcutIcon(shortcut, shortcutIconSizePx)
-                                AppMenuGridButton(
-                                    label = displayName,
-                                    icon = {
-                                        if (iconBitmap != null) {
-                                            Image(
-                                                bitmap = iconBitmap,
-                                                contentDescription = displayName,
-                                                modifier = Modifier.size(ShortcutGridIconSize),
-                                                contentScale = ContentScale.Fit,
-                                            )
-                                        } else {
-                                            Box(
-                                                modifier = Modifier.size(ShortcutGridIconSize),
-                                                contentAlignment = Alignment.Center,
-                                            ) {
-                                                Text(
-                                                    text = displayName.trim().take(1).uppercase(),
-                                                    style = MaterialTheme.typography.titleMedium,
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onClick = { onShortcutClick(shortcut); onDismiss() },
-                                    enableMarquee = true,
-                                    modifier = Modifier.weight(1f),
-                                )
-                            }
-                            repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
-                        }
-                    }
-                }
-            }
-
-            // Actions section
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-            ) {
-                Text(
-                    text = stringResource(R.string.app_menu_section_actions),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                // SpeedBump and Exclude are kept side by side, so they are packed as one
-                // inseparable pair. Later single-column items may move ahead of an item that
-                // does not fit, which keeps empty slots at the end of the final row only.
-                val actionRows = packActionRows(menuItems)
-                actionRows.forEach { row ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        row.forEach { item ->
-                            if (item.key == AppMenuItemKey.UNINSTALL) {
-                                UninstallMenuGridButton(
-                                    item = item,
-                                    modifier = Modifier.weight(item.span.toFloat()),
-                                )
-                            } else {
-                                AppMenuGridButton(
-                                    label = stringResource(item.textResId),
-                                    icon = { item.icon() },
-                                    onClick = item.onClick,
-                                    onLongClick = item.onLongClick,
-                                    modifier = Modifier.weight(item.span.toFloat()),
-                                )
-                            }
-                        }
-                        repeat(ActionGridColumns - row.sumOf { it.span }) {
-                            Spacer(Modifier.weight(1f))
-                        }
-                    }
-                }
-
-            }
-        }
+            shortcutsTitle = stringResource(R.string.app_menu_section_shortcuts),
+            shortcuts = shortcutTiles,
+            actionsTitle = stringResource(R.string.app_menu_section_actions),
+            actions = actions,
+            buttonRows = listOf(splitAndIconButtons, swipeButtons),
+            rows = appearanceRows + launchRows,
+            footer = footerButtons,
+        )
     }
 
     speedBumpExplainerJustEnabled?.let { justEnabled ->
@@ -479,26 +397,68 @@ fun AppItemDropdownMenu(
     }
 }
 
+/** Small popup shown on long press of an assigned Swipe up / Swipe down button. */
 @Composable
-private fun UninstallMenuGridButton(
-    item: AppMenuItem,
-    modifier: Modifier = Modifier,
+private fun AppSwipeActionDropdown(
+    expanded: Boolean,
+    action: CustomWidgetButtonAction?,
+    iconPackPackage: String?,
+    onDismiss: () -> Unit,
+    onClear: () -> Unit,
 ) {
-    AppMenuGridButton(
-        label = stringResource(item.textResId),
-        icon = {
-            Icon(
-                imageVector = Icons.Rounded.Delete,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.72f),
+    // Fills the anchoring button so the popup can match its width.
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        DropdownMenu(
+            expanded = expanded && action != null,
+            onDismissRequest = onDismiss,
+            modifier = Modifier.width(maxWidth),
+            offset = DpOffset(x = 0.dp, y = 8.dp),
+            shape = RoundedCornerShape(24.dp),
+            properties = PopupProperties(focusable = false),
+            containerColor = if (LocalAppIsDarkTheme.current) Color.Black else Color.White,
+        ) {
+            if (action == null) return@DropdownMenu
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.app_swipe_current_action),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    CustomWidgetButtonIcon(
+                        action = action,
+                        iconSize = 24.dp,
+                        iconPackPackage = iconPackPackage,
+                    )
+                    Text(
+                        text = action.displayLabel(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                }
+            }
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
             )
-        },
-        onClick = item.onClick,
-        containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.10f),
-        contentColor = Color.White,
-        showBorder = false,
-        modifier = modifier,
-    )
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.action_remove)) },
+                leadingIcon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
+                onClick = onClear,
+            )
+        }
+    }
 }
 
 @Composable
@@ -511,83 +471,5 @@ private fun formatUsageDuration(durationMillis: Long): String {
             stringResource(R.string.app_menu_usage_hours_decimal, "$hours.5")
         totalMinutes >= 60 -> pluralStringResource(R.plurals.app_menu_usage_hours, hours, hours)
         else -> pluralStringResource(R.plurals.app_menu_usage_minutes, totalMinutes, totalMinutes)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-internal fun AppMenuGridButton(
-    label: String,
-    icon: @Composable () -> Unit,
-    onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null,
-    enableMarquee: Boolean = false,
-    containerColor: Color = Color.Transparent,
-    contentColor: Color = AppColors.DialogText,
-    showBorder: Boolean = true,
-    modifier: Modifier = Modifier,
-) {
-    val borderColor = AppColors.OnboardingBubbleBorder
-    val view = LocalView.current
-    val borderModifier =
-        if (showBorder) {
-            Modifier.border(
-                width = DesignTokens.BorderWidth,
-                color = borderColor,
-                shape = DesignTokens.ShapeSmall,
-            )
-        } else {
-            Modifier
-        }
-    // Surface's own onClick cannot carry a long-press, so items that need one opt into
-    // combinedClickable instead.
-    val surfaceModifier =
-        if (onLongClick != null) {
-            modifier
-                .clip(DesignTokens.ShapeSmall)
-                .then(borderModifier)
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = {
-                        hapticConfirm(view)()
-                        onLongClick()
-                    },
-                )
-        } else {
-            modifier.then(borderModifier)
-        }
-    val surfaceContent: @Composable () -> Unit = {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp, horizontal = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
-        ) {
-            icon()
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = contentColor,
-                maxLines = 1,
-                textAlign = TextAlign.Center,
-                modifier = if (enableMarquee) Modifier.basicMarquee() else Modifier,
-            )
-        }
-    }
-
-    if (onLongClick != null) {
-        Surface(
-            modifier = surfaceModifier,
-            shape = DesignTokens.ShapeSmall,
-            color = containerColor,
-        ) { surfaceContent() }
-    } else {
-        Surface(
-            onClick = onClick,
-            modifier = surfaceModifier,
-            shape = DesignTokens.ShapeSmall,
-            color = containerColor,
-        ) { surfaceContent() }
     }
 }

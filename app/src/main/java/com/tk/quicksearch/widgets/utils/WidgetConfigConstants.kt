@@ -30,5 +30,4 @@ object WidgetConfigConstants {
     val CUSTOM_BUTTON_ICON_SIZE = 24.dp
     val CUSTOM_BUTTON_SPACING = 8.dp
     val CUSTOM_BUTTON_RESULT_ICON_SIZE = 20.dp
-    val CUSTOM_BUTTON_DIALOG_MAX_HEIGHT = 225.dp
 }

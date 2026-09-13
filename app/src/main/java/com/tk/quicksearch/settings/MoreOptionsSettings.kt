@@ -1,12 +1,15 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,9 +17,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
+import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 
@@ -30,8 +35,23 @@ fun MoreOptionsSettings(
     val isDefaultLauncher = context.isDefaultHomeApp()
     val isPhysicalKeyboardConnected = rememberPhysicalKeyboardConnected()
 
-    val toggleItems =
+    val onNotificationDotsCheckedChange =
+        rememberNotificationDotsCheckedChange { enabled ->
+            onApplySettingsCommand(
+                SettingsCommand.Toggle(
+                    key = AppSettingsToggleKey.NOTIFICATION_DOTS,
+                    enabled = enabled,
+                ),
+            )
+        }
+    val appToggleItems =
         listOf(
+            ToggleItem(
+                key = AppSettingsToggleKey.NOTIFICATION_DOTS,
+                titleRes = R.string.notification_dots_toggle_title,
+                subtitleRes = R.string.notification_dots_toggle_desc,
+                leadingIcon = Icons.Rounded.Notifications,
+            ),
             ToggleItem(
                 key = AppSettingsToggleKey.SHOW_ALL_APPS_BUTTON,
                 titleRes = R.string.settings_app_shortcuts_filter_all_apps,
@@ -44,6 +64,9 @@ fun MoreOptionsSettings(
                 subtitleRes = R.string.include_non_launchable_apps_toggle_desc,
                 leadingIcon = Icons.Rounded.Apps,
             ),
+        )
+    val otherToggleItems =
+        listOf(
             ToggleItem(
                 key = AppSettingsToggleKey.SHOW_IN_RECENTS,
                 titleRes = R.string.show_in_recents_toggle_title,
@@ -90,11 +113,38 @@ fun MoreOptionsSettings(
                     !isToggleEnabled(AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD)
             }
 
+    Column(modifier = modifier.fillMaxWidth()) {
+        MoreOptionsToggleCard(
+            items = appToggleItems,
+            isDefaultLauncher = isDefaultLauncher,
+            isToggleEnabled = isToggleEnabled,
+            onApplySettingsCommand = onApplySettingsCommand,
+            onNotificationDotsCheckedChange = onNotificationDotsCheckedChange,
+        )
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
+        MoreOptionsToggleCard(
+            items = otherToggleItems,
+            isDefaultLauncher = isDefaultLauncher,
+            isToggleEnabled = isToggleEnabled,
+            onApplySettingsCommand = onApplySettingsCommand,
+            onNotificationDotsCheckedChange = onNotificationDotsCheckedChange,
+        )
+    }
+}
+
+@Composable
+private fun MoreOptionsToggleCard(
+    items: List<ToggleItem>,
+    isDefaultLauncher: Boolean,
+    isToggleEnabled: (AppSettingsToggleKey) -> Boolean,
+    onApplySettingsCommand: (SettingsCommand) -> Unit,
+    onNotificationDotsCheckedChange: (Boolean) -> Unit,
+) {
     SettingsCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column {
-            toggleItems.forEachIndexed { index, item ->
+            items.forEachIndexed { index, item ->
                 val isItemEnabled = if (item.key == AppSettingsToggleKey.AUTO_CLOSE_OVERLAY) !isDefaultLauncher else true
                 val itemSubtitle = if (item.key == AppSettingsToggleKey.AUTO_CLOSE_OVERLAY && isDefaultLauncher) {
                     stringResource(R.string.settings_overlay_mode_desc_launcher_blocked)
@@ -107,16 +157,20 @@ fun MoreOptionsSettings(
                     checked = isToggleEnabled(item.key),
                     enabled = isItemEnabled,
                     onCheckedChange = { enabled ->
-                        onApplySettingsCommand(
-                            SettingsCommand.Toggle(
-                                key = item.key,
-                                enabled = enabled,
-                            ),
-                        )
+                        if (item.key == AppSettingsToggleKey.NOTIFICATION_DOTS) {
+                            onNotificationDotsCheckedChange(enabled)
+                        } else {
+                            onApplySettingsCommand(
+                                SettingsCommand.Toggle(
+                                    key = item.key,
+                                    enabled = enabled,
+                                ),
+                            )
+                        }
                     },
                     leadingIcon = item.leadingIcon,
                     isFirstItem = index == 0,
-                    isLastItem = index == toggleItems.lastIndex,
+                    isLastItem = index == items.lastIndex,
                 )
             }
         }

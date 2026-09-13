@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.shared.permissions.shouldShowAccessibilityDisclosure
 
 class ReleaseNotesHandler(
     private val application: Application,
@@ -44,6 +45,8 @@ class ReleaseNotesHandler(
         val currentVersionCode = getCurrentVersionCode()
 
         if (userPreferences.isFirstLaunch()) {
+            userPreferences.setAccessibilityPermissionDisclaimerPending(false)
+            userPreferences.setHasSeenAccessibilityPermissionDisclaimer(true)
             userPreferences.setLastSeenVersionName(currentVersion)
             currentVersionCode?.let { userPreferences.setLastSeenVersionCode(it) }
             return
@@ -63,7 +66,18 @@ class ReleaseNotesHandler(
                 (lastSeenCode == null || lastSeenCode != currentVersionCode)
 
         if (!nameChanged && !versionCodeChanged) {
+            if (shouldShowAccessibilityDisclosure &&
+                userPreferences.isAccessibilityPermissionDisclaimerPending()
+            ) {
+                showAccessibilityPermissionDisclaimer()
+            }
             return
+        }
+
+        if (shouldShowAccessibilityDisclosure &&
+            !userPreferences.hasSeenAccessibilityPermissionDisclaimer()
+        ) {
+            userPreferences.setAccessibilityPermissionDisclaimerPending(true)
         }
 
         showReleaseNotes(currentVersion)
@@ -92,7 +106,22 @@ class ReleaseNotesHandler(
             it.copy(
                 showReleaseNotesDialog = false,
                 releaseNotesVersionName = versionToStore,
+                showAccessibilityPermissionDisclaimer =
+                    shouldShowAccessibilityDisclosure &&
+                        userPreferences.isAccessibilityPermissionDisclaimerPending(),
             )
+        }
+    }
+
+    fun dismissAccessibilityPermissionDisclaimer() {
+        userPreferences.setAccessibilityPermissionDisclaimerPending(false)
+        userPreferences.setHasSeenAccessibilityPermissionDisclaimer(true)
+        uiStateUpdater { it.copy(showAccessibilityPermissionDisclaimer = false) }
+    }
+
+    private fun showAccessibilityPermissionDisclaimer() {
+        if (shouldShowAccessibilityDisclosure) {
+            uiStateUpdater { it.copy(showAccessibilityPermissionDisclaimer = true) }
         }
     }
 }

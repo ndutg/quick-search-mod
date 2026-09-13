@@ -55,6 +55,8 @@ enum class SearchEngine {
         STARTPAGE,
         GOOGLE_TRANSLATE,
         KAGI,
+        KAGI_ASSISTANT,
+        MUSE,
 }
 
 data class BrowserApp(
@@ -210,6 +212,7 @@ enum class SearchToolType {
         CALCULATOR,
         UNIT_CONVERTER,
         DATE_CALCULATOR,
+        COLOR_VISUALIZER,
 }
 
 data class AiSearchState(
@@ -278,6 +281,9 @@ data class CalculatorState(
         val isCalculatorMode: Boolean = false,
         val isUnitConverterMode: Boolean = false,
         val isDateCalculatorMode: Boolean = false,
+        val isColorVisualizerMode: Boolean = false,
+        /** Parsed opaque ARGB color for the Color Visualizer tool. */
+        val colorArgb: Int? = null,
         val toolType: SearchToolType = SearchToolType.CALCULATOR,
         val showInvalidExpression: Boolean = false,
         /** Epoch millis for the date parsed by the date calculator tool. */
@@ -297,7 +303,7 @@ data class CalculatorState(
         val timeContextLabel2: String? = null,
 ) {
         val isToolMode: Boolean
-                get() = isCalculatorMode || isUnitConverterMode || isDateCalculatorMode
+                get() = isCalculatorMode || isUnitConverterMode || isDateCalculatorMode || isColorVisualizerMode
 }
 
 data class PhoneNumberSelection(
@@ -603,6 +609,7 @@ data class SearchUiState(
         val showAllAppsButton: Boolean = false,
         val includeNonLaunchableAppsInSearch: Boolean = false,
         val showInRecents: Boolean = false,
+        val notificationDotsEnabled: Boolean = false,
         val selectedAppSuggestionTab: AppSuggestionTabType = AppSuggestionTabType.RECENTS,
         val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         // Section visibility preferences
@@ -614,6 +621,7 @@ data class SearchUiState(
         val calculatorEnabled: Boolean = true,
         val unitConverterEnabled: Boolean = true,
         val dateCalculatorEnabled: Boolean = true,
+        val colorVisualizerEnabled: Boolean = true,
         val currencyConverterEnabled: Boolean = true,
         val worldClockEnabled: Boolean = true,
         val dictionaryEnabled: Boolean = true,
@@ -641,6 +649,7 @@ data class SearchUiState(
         // Release notes dialog
         val showReleaseNotesDialog: Boolean = false,
         val releaseNotesVersionName: String? = null,
+        val showAccessibilityPermissionDisclaimer: Boolean = false,
         // Transient search state
         val calculatorState: CalculatorState = CalculatorState(),
         val currencyConverterState: CurrencyConverterState = CurrencyConverterState(),
@@ -668,7 +677,6 @@ data class SearchUiState(
         val showSearchBarWelcomeAnimation: Boolean = false,
         val showContactActionHint: Boolean = false,
         val hasSeenOverlayAssistantTip: Boolean = true,
-        val hasDismissedSearchHistoryTip: Boolean = false,
         // Recent items
         val recentItems: List<RecentSearchItem> = emptyList(),
         val aliasRecentItems: List<RecentSearchItem> = emptyList(),
@@ -830,6 +838,7 @@ fun SearchUiState(
                 calculatorEnabled = features.calculatorEnabled,
                 unitConverterEnabled = features.unitConverterEnabled,
                 dateCalculatorEnabled = features.dateCalculatorEnabled,
+                colorVisualizerEnabled = features.colorVisualizerEnabled,
                 currencyConverterEnabled = features.currencyConverterEnabled,
                 worldClockEnabled = features.worldClockEnabled,
                 dictionaryEnabled = features.dictionaryEnabled,
@@ -850,7 +859,6 @@ fun SearchUiState(
                 topMatchesSectionOrder = features.topMatchesSectionOrder,
                 disabledTopMatchesSections = features.disabledTopMatchesSections,
                 showTodayEvents = features.showTodayEvents,
-                hasDismissedSearchHistoryTip = features.hasDismissedSearchHistoryTip,
                 directDialEnabled = features.directDialEnabled,
                 numberSearchEnabled = features.numberSearchEnabled,
                 assistantLaunchVoiceModeEnabled = features.assistantLaunchVoiceModeEnabled,
@@ -902,6 +910,7 @@ fun SearchUiState(
                 showAllAppsButton = config.showAllAppsButton,
                 includeNonLaunchableAppsInSearch = config.includeNonLaunchableAppsInSearch,
                 showInRecents = config.showInRecents,
+                notificationDotsEnabled = config.notificationDotsEnabled,
                 selectedAppSuggestionTab = config.selectedAppSuggestionTab,
                 enabledAppSuggestionTabs = config.enabledAppSuggestionTabs,
                 selectedIconPackPackage = config.selectedIconPackPackage,
@@ -921,6 +930,8 @@ fun SearchUiState(
                 hasSeenOverlayAssistantTip = config.hasSeenOverlayAssistantTip,
                 showReleaseNotesDialog = config.showReleaseNotesDialog,
                 releaseNotesVersionName = config.releaseNotesVersionName,
+                showAccessibilityPermissionDisclaimer =
+                    config.showAccessibilityPermissionDisclaimer,
                 phoneNumberSelection = config.phoneNumberSelection,
                 directDialChoice = config.directDialChoice,
                 contactMethodsBottomSheet = config.contactMethodsBottomSheet,

@@ -75,6 +75,7 @@
     <string name="icon_picker_title">Cambiar icono de "%1$s"</string>
     <string name="action_change_wallpaper">Cambiar fondo de pantalla</string>
     <string name="action_clear_all_history">Borrar historial</string>
+    <string name="action_copy_content">Copiar contenido</string>
     <string name="action_edit_icon">Editar icono</string>
     <string name="action_edit_nickname">Editar apodo</string>
     <string name="action_edit_trigger">Editar activador</string>
@@ -105,12 +106,13 @@
     <string name="settings_gesture_swipe_down">Deslizar hacia abajo</string>
     <string name="settings_gesture_swipe_up_home">Deslizar hacia arriba (Inicio)</string>
 <string name="settings_gesture_swipe_down_home">Deslizar hacia abajo (Inicio)</string>
+<string name="settings_gesture_close_quick_search">Cerrar Quick Search</string>
 <string name="settings_gesture_double_tap_home">Tocar dos veces (Inicio)</string>
     <string name="settings_gesture_settings">Ajustes</string>
     <string name="settings_gesture_close_keyboard_notifications">Cerrar teclado / Abrir notificaciones</string>
     <string name="settings_gesture_close_keyboard">Cerrar teclado</string>
     <string name="settings_gesture_notification_panel">Panel de notificaciones</string>
-    <string name="accessibility_lock_screen_disclosure_title">Acceso de accesibilidad para bloquear la pantalla</string>
+    <string name="accessibility_permission_disclaimer_title">Aviso sobre el permiso de accesibilidad</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search usa la API AccessibilityService de Android únicamente para bloquear el dispositivo cuando tocas dos veces la pantalla de inicio. Mediante este servicio, Quick Search no lee, recopila, almacena ni comparte el contenido de la pantalla ni otros datos personales.</string>
     <string name="settings_gesture_none">Ninguno</string>
     <string name="settings_gesture_custom">Personalizado (Apps, archivos, etc.)</string>
@@ -130,6 +132,13 @@
     <string name="notification_pinned_item_type_file">Archivo</string>
     <string name="notification_pinned_item_type_note">Nota</string>
     <string name="action_remove">Eliminar</string>
+    <string name="app_swipe_current_action">Acción actual</string>
+    <string name="app_swipe_up_picker_title">Seleccionar acción de deslizar hacia arriba para %1$s</string>
+    <string name="app_swipe_down_picker_title">Seleccionar acción de deslizar hacia abajo para %1$s</string>
+    <string name="app_swipe_picker_tip">Deslizar sobre el icono de la aplicación abrirá el elemento seleccionado tanto en las sugerencias de aplicaciones como en los resultados de búsqueda</string>
+    <string name="app_swipe_picker_search_hint">Buscar apps, contactos, etc.</string>
+    <string name="app_swipe_up_set_toast">Gesto de deslizar hacia arriba configurado para %1$s</string>
+    <string name="app_swipe_down_set_toast">Gesto de deslizar hacia abajo configurado para %1$s</string>
     <string name="action_remove_from_history">Eliminar del historial</string>
     <string name="action_reset_app_shortcut_icon">Restablecer icono predeterminado</string>
     <string name="action_retry">Reintentar</string>
@@ -247,8 +256,6 @@
     <string name="recent_queries_toggle_title">Historial de búsqueda</string>
     <string name="search_history_tab_recently_opened">Resultados</string>
     <string name="search_history_tab_searches">Búsquedas</string>
-    <string name="search_history_tip_link">ajustes</string>
-    <string name="search_history_tip_message">Puedes desactivar el historial de búsqueda en</string>
     <string name="search_section_app_settings_toggle_desc">Activa o desactiva la búsqueda en los ajustes de la app</string>
     <string name="search_section_app_settings_toggle_title">Buscar en ajustes de la app</string>
     <string name="search_section_app_shortcuts_toggle_desc">Activa o desactiva la búsqueda en los accesos directos de la app</string>
@@ -285,6 +292,9 @@
     <string name="open_top_result_using_keyboard_toggle_desc">La tecla Intro/Listo abrirá el mejor resultado</string>
     <string name="include_non_launchable_apps_toggle_title">Aplicaciones no ejecutables</string>
     <string name="include_non_launchable_apps_toggle_desc">Incluir aplicaciones que no tienen una actividad de inicio en los resultados de búsqueda.</string>
+    <string name="notification_dots_toggle_title">Puntos de notificación</string>
+    <string name="notification_dots_toggle_desc">Mostrar puntos de notificación en las apps que tienen notificaciones</string>
+    <string name="desc_notification_dot">Tiene notificaciones</string>
     <string name="show_in_recents_toggle_title">Mostrar en Recientes</string>
     <string name="show_in_recents_toggle_desc">Mostrar Quick Search en las aplicaciones recientes de tu dispositivo</string>
     <string name="web_search_suggestions_title">Sugerencias web</string>
@@ -294,6 +304,8 @@
          ============================================================================ -->
     <string name="app_menu_section_actions">Acciones</string>
     <string name="app_menu_section_shortcuts">Accesos directos</string>
+    <string name="app_menu_value_on">Activado</string>
+    <string name="action_uninstall_named">Desinstalar %1$s</string>
     <string name="apps_refreshed_successfully">Aplicaciones actualizadas con éxito</string>
     <string name="error_loading_user_apps">No pudimos cargar tus aplicaciones. Inténtalo de nuevo en un momento.</string>
     <string name="error_uninstall_app">No se pudo desinstalar %1$s</string>
@@ -550,6 +562,7 @@
     <string name="settings_calendar_permission_title">Calendario</string>
     <string name="settings_calendar_show_today_events_desc">Muestra los eventos de hoy en la pantalla de inicio.</string>
     <string name="settings_calendar_show_today_events_title">Mostrar eventos de hoy</string>
+    <string name="settings_calendar_default_title">Abrir eventos en...</string>
     <string name="settings_calendar_view_all_events_desc">Ver todos los eventos</string>
 
     <!-- ============================================================================
@@ -863,6 +876,9 @@
     <string name="currency_converter_requires_gemini_key">Requiere una clave API de un AI Provider</string>
     <string name="currency_converter_toggle_desc">Ejemplo: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Conversor de divisas</string>
+    <string name="color_visualizer_toggle_title">Visualizador de colores</string>
+    <string name="color_visualizer_toggle_desc">Ejemplos: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Introduce un color hexadecimal o RGB</string>
     <string name="currency_converter_updated">Actualizado %1$s</string>
     <string name="date_calculator_category_absolute_time">Hora absoluta</string>
     <string name="date_calculator_category_date_differences">Diferencias de fechas</string>
@@ -930,9 +946,10 @@
     <string name="widget_background_color_custom_dialog_title">Color personalizado</string>
     <string name="widget_border_color">Color del borde</string>
     <string name="widget_custom_button_add_desc">Añadir botón personalizado</string>
-    <string name="widget_custom_buttons_dialog_hint">Puedes buscar aplicaciones, accesos directos, contactos, archivos, carpetas, notas y ajustes del dispositivo.</string>
+    <string name="widget_custom_buttons_dialog_hint">Busca aplicaciones, accesos directos, contactos, archivos, carpetas, notas y ajustes del dispositivo.</string>
     <string name="widget_custom_buttons_dialog_title">Seleccionar acción</string>
     <string name="widget_custom_buttons_no_results">No se encontraron resultados.</string>
+    <string name="widget_custom_buttons_filter_all">Todo</string>
     <string name="widget_custom_buttons_restriction">No disponible cuando los botones personalizados están activos.</string>
     <string name="widget_custom_buttons_title">Botones personalizados</string>
     <string name="widget_custom_buttons_widget_title">Widget de botones personalizados</string>
@@ -972,6 +989,11 @@
          ============================================================================ -->
     <string name="permissions_calendar_desc">Necesario para buscar tus eventos de calendario.</string>
     <string name="permissions_calling_desc">Necesario para llamar a tus contactos directamente sin abrir el teclado de marcación.</string>
+    <string name="settings_notifications_permission_title">Publicar notificaciones</string>
+    <string name="permissions_notifications_desc">Necesario para fijar resultados de búsqueda en el panel de notificaciones</string>
+    <string name="permissions_notification_access_desc">Necesario para mostrar puntos de notificación en las apps que tienen notificaciones.</string>
+    <string name="permissions_accessibility_lock_screen_title">Accesibilidad</string>
+    <string name="permissions_accessibility_lock_screen_desc">Permite que el gesto de doble toque bloquee el dispositivo.</string>
     <string name="permissions_contacts_desc">Necesario para buscar tus contactos.</string>
     <string name="permissions_files_desc">Necesario para buscar en tus documentos y otros archivos.</string>
     <string name="permissions_files_title">Acceso a archivos</string>
@@ -979,7 +1001,8 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">Si más adelante cambias de opinión sobre el permiso de %1$s, puedes concederlo desde los ajustes de la app.</string>
     <string name="permissions_reminder_dialog_title">Permisos no concedidos</string>
-    <string name="permissions_screen_subtitle">Estos permisos desbloquean funciones adicionales. Son opcionales. Tus datos permanecen en tu dispositivo.</string>
+    <string name="permissions_screen_subtitle">Todos los permisos aquí son opcionales. Solo se utilizan para desbloquear funciones adicionales. Tus datos permanecen en tu dispositivo.</string>
+    <string name="permissions_screen_optional_emphasis">opcionales</string>
     <string name="permissions_usage_desc">Necesario para mostrar tus apps usadas recientemente en las sugerencias.</string>
     <string name="setup_action_next">Siguiente</string>
     <string name="setup_action_start">¡Empezar a buscar!</string>
@@ -1081,6 +1104,8 @@
     <string name="widget_custom_button_choose_colour">Elegir color de la carpeta</string>
     <string name="search_engine_google_translate">Traductor de Google</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Acciones de Tasker</string>
     <string name="tasker_integration_description">Crea acciones de Tasker usando intents de difusión (broadcast).</string>
     <string name="tasker_add_intent_title">Añadir intent de difusión de Tasker</string>

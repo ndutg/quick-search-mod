@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,7 +36,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Search
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.components.AppBottomSheet
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -46,7 +47,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -69,13 +69,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
+import androidx.annotation.StringRes
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material.icons.rounded.Info
+import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
@@ -98,7 +103,6 @@ import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
 import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetColorPickerDialog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -566,123 +570,212 @@ fun CustomWidgetButtonPickerDialog(
     onQueryChange: (String) -> Unit,
     onDismiss: () -> Unit,
     onSelect: (CustomWidgetButtonAction) -> Unit,
+    title: String? = null,
+    tipText: String? = null,
+    // When set, shown inside the search field in place of the hint text below it.
+    searchPlaceholder: String? = null,
 ) {
     val context = LocalContext.current
     var query by remember { mutableStateOf(TextFieldValue("")) }
+    var selectedFilter by rememberSaveable { mutableStateOf(CustomWidgetResultFilter.ALL) }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) { onQueryChange("") }
+
+    // Set once a result is picked or the sheet starts closing. The keyboard can still commit its
+    // in-progress text as the field goes away, which would otherwise re-apply the old query.
+    var isClosing by remember { mutableStateOf(false) }
+
+    val clearQuery = {
+        query = TextFieldValue("")
         onQueryChange("")
-        delay(50)
-        focusRequester.requestFocus()
-        keyboardController?.show()
-        query = query.copy(selection = TextRange(query.text.length))
+    }
+    val clearQueryForClose = {
+        isClosing = true
+        keyboardController?.hide()
+        clearQuery()
     }
 
     val results =
-        remember(searchState, query.text) {
+        remember(searchState, query.text, selectedFilter) {
             if (query.text.trim().isEmpty()) {
                 emptyList()
             } else {
-                buildCustomWidgetSearchResults(searchState)
+                buildCustomWidgetSearchResults(searchState).filter(selectedFilter::matches)
             }
         }
 
-    AppAlertDialog(
+    AppBottomSheet(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.fillMaxWidth(0.95f),
-        title = { Text(text = stringResource(R.string.widget_custom_buttons_dialog_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = {
+        swipeToDismissEnabled = false,
+        dismissOnClickOutside = false,
+        // Show the keyboard only after the open animation settles; bringing it up mid-animation
+        // resizes the sheet and makes the slide-in stutter.
+        onFullyExpanded = {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        },
+        onDismissStarted = clearQueryForClose,
+    ) { dismiss ->
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.85f)
+                    .padding(
+                        top = DesignTokens.SpacingLarge,
+                        start = DesignTokens.ContentHorizontalPadding,
+                        end = DesignTokens.ContentHorizontalPadding,
+                        bottom = DesignTokens.SpacingLarge,
+                    ),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+            ) {
+                Text(
+                    text = title ?: stringResource(R.string.widget_custom_buttons_dialog_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(
+                    onClick = {
+                        clearQueryForClose()
+                        dismiss()
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = stringResource(R.string.common_close),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                value = query,
+                onValueChange = {
+                    if (!isClosing) {
                         query = it
                         onQueryChange(it.text)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                shape = RoundedCornerShape(50.dp),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription =
+                            stringResource(R.string.common_search),
+                    )
+                },
+                trailingIcon = {
+                    if (query.text.isNotBlank()) {
+                        IconButton(onClick = clearQuery) {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription =
+                                    stringResource(R.string.desc_clear_search),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                },
+                placeholder =
+                    searchPlaceholder?.let {
+                        {
+                            Text(
+                                text = it,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                     },
-                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                    shape = RoundedCornerShape(50.dp),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Search,
-                            contentDescription =
-                                stringResource(R.string.common_search),
-                        )
-                    },
-                    trailingIcon = {
-                        if (query.text.isNotBlank()) {
-                            IconButton(
-                                onClick = {
-                                    query = TextFieldValue("")
-                                    onQueryChange("")
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Close,
-                                    contentDescription =
-                                        stringResource(R.string.desc_clear_search),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                singleLine = true,
+                colors =
+                    dialogTextFieldColors().copy(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
+            )
+
+            CustomWidgetResultFilterChips(
+                selectedFilter = selectedFilter,
+                onFilterSelected = { selectedFilter = it },
+            )
+
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+            ) {
+                when {
+                    query.text.trim().isEmpty() -> {
+                        Column(
+                            modifier =
+                                Modifier
+                                    .align(Alignment.TopCenter)
+                                    .fillMaxWidth()
+                                    .padding(top = DesignTokens.SpacingSmall),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXLarge),
+                        ) {
+                            if (searchPlaceholder == null) {
+                                Text(
+                                    text = stringResource(R.string.widget_custom_buttons_dialog_hint),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth(0.75f),
+                                )
+                            }
+                            tipText?.let {
+                                TipBanner(
+                                    text = it,
+                                    icon = Icons.Rounded.Info,
+                                    showDismissButton = false,
                                 )
                             }
                         }
-                    },
-                    singleLine = true,
-                    colors = dialogTextFieldColors(),
-                )
+                    }
 
-                // Show hint below search bar when there's no query
-                if (query.text.isBlank()) {
-                    Text(
-                        text = stringResource(R.string.widget_custom_buttons_dialog_hint),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 4.dp),
-                    )
-                }
+                    results.isEmpty() -> {
+                        Text(
+                            text =
+                                stringResource(
+                                    R.string.widget_custom_buttons_no_results,
+                                ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
 
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .heightIn(
-                                max =
-                                    WidgetConfigConstants
-                                        .CUSTOM_BUTTON_DIALOG_MAX_HEIGHT,
-                            ),
-                ) {
-                    when {
-                        query.text.trim().isEmpty() -> {
-                            // Empty state - no prompt text needed
-                        }
-
-                        results.isEmpty() -> {
-                            Text(
-                                text =
-                                    stringResource(
-                                        R.string.widget_custom_buttons_no_results,
-                                    ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-
-                        else -> {
-                            LazyColumn {
-                                items(results) { result ->
-                                    val isSelected =
-                                        currentAction?.matchesResult(result) == true
-                                    CustomWidgetSearchResultRow(
-                                        result = result,
-                                        iconPackPackage = iconPackPackage,
-                                        isSelected = isSelected,
-                                        onClick = {
-                                            onSelect(result.toPersistedAction(context))
-                                        },
-                                    )
+                    else -> {
+                        LazyColumn {
+                            itemsIndexed(results) { index, result ->
+                                val isSelected =
+                                    currentAction?.matchesResult(result) == true
+                                CustomWidgetSearchResultRow(
+                                    result = result,
+                                    iconPackPackage = iconPackPackage,
+                                    isSelected = isSelected,
+                                    onClick = {
+                                        val action = result.toPersistedAction(context)
+                                        clearQueryForClose()
+                                        onSelect(action)
+                                    },
+                                )
+                                if (index < results.lastIndex) {
                                     HorizontalDivider(
-                                        color = MaterialTheme.colorScheme.outlineVariant,
+                                        modifier = Modifier.padding(start = RESULT_DIVIDER_START_INSET),
+                                        thickness = 0.5.dp,
+                                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
                                     )
                                 }
                             }
@@ -690,13 +783,8 @@ fun CustomWidgetButtonPickerDialog(
                     }
                 }
             }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.dialog_cancel))
-            }
-        },
-    )
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -711,21 +799,22 @@ private fun CustomWidgetSearchResultRow(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .heightIn(min = DesignTokens.SpacingMedium * 2)
+                .heightIn(min = RESULT_ROW_MIN_HEIGHT)
+                .clip(RoundedCornerShape(DesignTokens.SpacingMedium))
                 .combinedClickable(onClick = onClick)
                 .padding(
-                    vertical = DesignTokens.SpacingSmall,
+                    vertical = DesignTokens.SpacingMedium,
                     horizontal = DesignTokens.SpacingMedium,
                 ),
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         CustomWidgetSearchResultIcon(result = result, iconPackPackage = iconPackPackage)
 
         Text(
             text = result.displayLabel(),
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
 
@@ -734,6 +823,71 @@ private fun CustomWidgetSearchResultRow(
                 imageVector = Icons.Rounded.Check,
                 contentDescription = stringResource(R.string.desc_selected),
                 tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+private val RESULT_ROW_MIN_HEIGHT = 56.dp
+
+// Row horizontal padding + icon + icon/text spacing, so dividers line up with the labels.
+private val RESULT_DIVIDER_START_INSET =
+    DesignTokens.SpacingMedium +
+        WidgetConfigConstants.CUSTOM_BUTTON_RESULT_ICON_SIZE +
+        DesignTokens.SpacingLarge
+
+private enum class CustomWidgetResultFilter(
+    @StringRes val labelRes: Int,
+) {
+    ALL(R.string.widget_custom_buttons_filter_all),
+    APPS(R.string.section_apps),
+    APP_SHORTCUTS(R.string.section_app_shortcuts),
+    CONTACTS(R.string.contacts_action_button_contacts),
+    FILES(R.string.section_files),
+    SETTINGS(R.string.section_settings),
+    NOTES(R.string.section_notes),
+    ;
+
+    fun matches(result: CustomWidgetSearchResult): Boolean =
+        when (this) {
+            ALL -> true
+            APPS -> result is CustomWidgetSearchResult.App
+            APP_SHORTCUTS -> result is CustomWidgetSearchResult.AppShortcut
+            CONTACTS -> result is CustomWidgetSearchResult.Contact
+            FILES -> result is CustomWidgetSearchResult.File
+            SETTINGS -> result is CustomWidgetSearchResult.Setting
+            NOTES -> result is CustomWidgetSearchResult.Note
+        }
+}
+
+@Composable
+private fun CustomWidgetResultFilterChips(
+    selectedFilter: CustomWidgetResultFilter,
+    onFilterSelected: (CustomWidgetResultFilter) -> Unit,
+) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        items(CustomWidgetResultFilter.entries) { filter ->
+            val selected = filter == selectedFilter
+            FilterChip(
+                selected = selected,
+                onClick = { onFilterSelected(filter) },
+                label = { Text(text = stringResource(filter.labelRes)) },
+                shape = RoundedCornerShape(50.dp),
+                border =
+                    FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = selected,
+                        borderColor = AppColors.SettingsDivider,
+                        selectedBorderColor = Color.Transparent,
+                    ),
+                colors =
+                    FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             )
         }
     }

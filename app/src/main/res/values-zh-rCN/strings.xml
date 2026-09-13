@@ -75,6 +75,7 @@
     <string name="icon_picker_title">更改“%1$s”的图标</string>
     <string name="action_change_wallpaper">更改壁纸</string>
     <string name="action_clear_all_history">清空历史记录</string>
+    <string name="action_copy_content">复制内容</string>
     <string name="action_edit_icon">编辑图标</string>
     <string name="action_edit_nickname">编辑昵称</string>
     <string name="action_edit_trigger">编辑触发词</string>
@@ -105,12 +106,13 @@
     <string name="settings_gesture_swipe_down">向下滑动</string>
     <string name="settings_gesture_swipe_up_home">向上滑动 (主屏幕)</string>
     <string name="settings_gesture_swipe_down_home">向下滑动 (主屏幕)</string>
+    <string name="settings_gesture_close_quick_search">关闭 Quick Search</string>
     <string name="settings_gesture_double_tap_home">双击 (主屏幕)</string>
     <string name="settings_gesture_settings">设置</string>
     <string name="settings_gesture_close_keyboard_notifications">关闭键盘 / 打开通知</string>
     <string name="settings_gesture_close_keyboard">关闭键盘</string>
     <string name="settings_gesture_notification_panel">通知面板</string>
-    <string name="accessibility_lock_screen_disclosure_title">锁定屏幕的无障碍访问权限</string>
+<string name="accessibility_permission_disclaimer_title">无障碍权限免责声明</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search 仅在您双击主屏幕时使用 Android AccessibilityService API 锁定设备。Quick Search 不会通过此服务读取、收集、存储或分享您的屏幕内容或其他个人数据。</string>
     <string name="settings_gesture_none">无</string>
     <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
@@ -130,6 +132,13 @@
     <string name="notification_pinned_item_type_file">文件</string>
     <string name="notification_pinned_item_type_note">笔记</string>
     <string name="action_remove">移除</string>
+    <string name="app_swipe_current_action">当前操作</string>
+    <string name="app_swipe_up_picker_title">为 %1$s 选择上滑操作</string>
+    <string name="app_swipe_down_picker_title">为 %1$s 选择下滑操作</string>
+    <string name="app_swipe_picker_tip">在应用图标上滑动将打开所选项目，适用于应用建议和搜索结果</string>
+    <string name="app_swipe_picker_search_hint">搜索应用、联系人等</string>
+    <string name="app_swipe_up_set_toast">已为 %1$s 设置上滑手势</string>
+    <string name="app_swipe_down_set_toast">已为 %1$s 设置下滑手势</string>
     <string name="action_remove_from_history">从历史记录中移除</string>
     <string name="action_reset_app_shortcut_icon">恢复默认图标</string>
     <string name="action_retry">重试</string>
@@ -247,8 +256,6 @@
     <string name="recent_queries_toggle_title">搜索历史</string>
     <string name="search_history_tab_recently_opened">结果</string>
     <string name="search_history_tab_searches">搜索记录</string>
-    <string name="search_history_tip_link">设置</string>
-    <string name="search_history_tip_message">您可以在此处停用搜索历史记录：</string>
     <string name="search_section_app_settings_toggle_desc">开启或关闭应用设置的搜索</string>
     <string name="search_section_app_settings_toggle_title">应用设置搜索</string>
     <string name="search_section_app_shortcuts_toggle_desc">开启或关闭应用快捷方式的搜索</string>
@@ -285,6 +292,9 @@
     <string name="open_top_result_using_keyboard_toggle_desc">键盘回车/完成键将打开最佳结果</string>
     <string name="include_non_launchable_apps_toggle_title">不可启动的应用</string>
     <string name="include_non_launchable_apps_toggle_desc">在搜索结果中包含没有启动 Activity 的应用。</string>
+    <string name="notification_dots_toggle_title">通知圆点</string>
+    <string name="notification_dots_toggle_desc">在有通知的应用上显示通知圆点</string>
+    <string name="desc_notification_dot">有通知</string>
     <string name="show_in_recents_toggle_title">在最近任务中显示</string>
     <string name="show_in_recents_toggle_desc">在设备的最近使用应用中显示 Quick Search</string>
     <string name="web_search_suggestions_title">网络联想建议</string>
@@ -294,6 +304,8 @@
          ============================================================================ -->
     <string name="app_menu_section_actions">操作</string>
     <string name="app_menu_section_shortcuts">快捷方式</string>
+    <string name="app_menu_value_on">开</string>
+    <string name="action_uninstall_named">卸载%1$s</string>
     <string name="apps_refreshed_successfully">应用数据刷新成功</string>
     <string name="error_loading_user_apps">我们无法加载您的应用。请稍后重试。</string>
     <string name="error_uninstall_app">无法卸载 %1$s</string>
@@ -540,6 +552,7 @@
     <string name="settings_calendar_permission_title">日历</string>
     <string name="settings_calendar_show_today_events_desc">在主屏幕上显示今天的日程。</string>
     <string name="settings_calendar_show_today_events_title">显示今日日程</string>
+    <string name="settings_calendar_default_title">在此打开日程...</string>
     <string name="settings_calendar_view_all_events_desc">查看所有日程</string>
 
     <!-- ============================================================================
@@ -853,6 +866,9 @@
     <string name="currency_converter_requires_gemini_key">此功能需要配置 AI 提供商的 API 密钥</string>
     <string name="currency_converter_toggle_desc">例如：100 USD to INR</string>
     <string name="currency_converter_toggle_title">货币转换器</string>
+    <string name="color_visualizer_toggle_title">颜色可视化工具</string>
+    <string name="color_visualizer_toggle_desc">示例：#FF0000、rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">请输入十六进制或 RGB 颜色</string>
     <string name="currency_converter_updated">更新于 %1$s</string>
     <string name="date_calculator_category_absolute_time">绝对时间</string>
     <string name="date_calculator_category_date_differences">日期差异</string>
@@ -920,9 +936,10 @@
     <string name="widget_background_color_custom_dialog_title">自定义色彩</string>
     <string name="widget_border_color">边框颜色</string>
     <string name="widget_custom_button_add_desc">添加自定义按钮</string>
-    <string name="widget_custom_buttons_dialog_hint">您可以关联搜索应用、应用快捷方式、联系人、文件、文件夹、笔记及设备系统设置。</string>
+    <string name="widget_custom_buttons_dialog_hint">搜索应用、应用快捷方式、联系人、文件、文件夹、笔记及设备系统设置。</string>
     <string name="widget_custom_buttons_dialog_title">选择关联操作</string>
     <string name="widget_custom_buttons_no_results">未找到匹配项结果。</string>
+    <string name="widget_custom_buttons_filter_all">全部</string>
     <string name="widget_custom_buttons_restriction">当自定义按钮处于激活状态时此项不可用。</string>
     <string name="widget_custom_buttons_title">自定义快捷按钮</string>
     <string name="widget_custom_buttons_widget_title">自定义按钮小部件</string>
@@ -962,6 +979,11 @@
          ============================================================================ -->
     <string name="permissions_calendar_desc">开启此项以检索并展示您设备系统日历中的日程事件。</string>
     <string name="permissions_calling_desc">允许直接呼叫您的联系人，省去跳转并开启系统拨号盘的步骤。</string>
+    <string name="settings_notifications_permission_title">发送通知</string>
+    <string name="permissions_notifications_desc">用于将搜索结果固定到通知面板</string>
+    <string name="permissions_notification_access_desc">用于在有通知的应用上显示通知圆点。</string>
+    <string name="permissions_accessibility_lock_screen_title">无障碍</string>
+    <string name="permissions_accessibility_lock_screen_desc">允许使用双击手势锁定设备。</string>
     <string name="permissions_contacts_desc">允许检索、匹配并展示您设备通讯录中的联系人信息。</string>
     <string name="permissions_files_desc">用于在您的个人文档、下载内容和其他本地文件中开展精确检索。</string>
     <string name="permissions_files_title">文件读写权限</string>
@@ -969,7 +991,8 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">若您后续改变了关于 %1$s 权限的想法，可以随时前往应用系统设置页面内重新授予该项权限。</string>
     <string name="permissions_reminder_dialog_title">权限未授予</string>
-    <string name="permissions_screen_subtitle">这些系统权限可以解锁更多高级功能。它们是可选的。您的数据将保存在本地设备中。</string>
+    <string name="permissions_screen_subtitle">此处的所有权限均为可选权限。它们仅用于解锁其他功能。您的数据会保留在您的设备上。</string>
+    <string name="permissions_screen_optional_emphasis">可选</string>
     <string name="permissions_usage_desc">用于在智能建议面板中优先展示您近期最常使用或新运行的应用。</string>
     <string name="setup_action_next">下一步</string>
     <string name="setup_action_start">开始搜索！</string>
@@ -1071,6 +1094,8 @@
     <string name="widget_custom_button_choose_colour">选择文件夹颜色</string>
     <string name="search_engine_google_translate">谷歌翻译</string>
     <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
     <string name="tasker_integration_title">Tasker 操作</string>
     <string name="tasker_integration_description">使用广播 Intent 创建 Tasker 操作。</string>
     <string name="tasker_add_intent_title">添加 Tasker 广播 Intent</string>

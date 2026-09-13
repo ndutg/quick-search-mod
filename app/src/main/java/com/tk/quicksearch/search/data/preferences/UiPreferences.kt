@@ -673,16 +673,6 @@ class UiPreferences(
         setBooleanPref(UiPreferences.KEY_HAS_SEEN_CONTACT_ACTION_HINT, seen)
     }
 
-    fun hasDismissedSearchHistoryTip(): Boolean =
-            firstLaunchPrefs.getBoolean(UiPreferences.KEY_SEARCH_HISTORY_TIP_DISMISSED, false)
-
-    fun setSearchHistoryTipDismissed(dismissed: Boolean) {
-        firstLaunchPrefs
-                .edit()
-                .putBoolean(UiPreferences.KEY_SEARCH_HISTORY_TIP_DISMISSED, dismissed)
-                .apply()
-    }
-
     fun isFuzzySearchEnabled(): Boolean =
             getBooleanPref(BasePreferences.KEY_FUZZY_SEARCH_ENABLED, true)
 
@@ -742,6 +732,32 @@ class UiPreferences(
 
     fun setLastSeenVersionCode(versionCode: Long) {
         sessionPrefs.edit().putLong(UiPreferences.KEY_LAST_SEEN_VERSION_CODE, versionCode).apply()
+    }
+
+    fun isAccessibilityPermissionDisclaimerPending(): Boolean =
+        firstLaunchPrefs.getBoolean(
+            UiPreferences.KEY_ACCESSIBILITY_PERMISSION_DISCLAIMER_PENDING,
+            false,
+        )
+
+    fun setAccessibilityPermissionDisclaimerPending(pending: Boolean) {
+        firstLaunchPrefs
+            .edit()
+            .putBoolean(UiPreferences.KEY_ACCESSIBILITY_PERMISSION_DISCLAIMER_PENDING, pending)
+            .apply()
+    }
+
+    fun hasSeenAccessibilityPermissionDisclaimer(): Boolean =
+        firstLaunchPrefs.getBoolean(
+            UiPreferences.KEY_HAS_SEEN_ACCESSIBILITY_PERMISSION_DISCLAIMER,
+            false,
+        )
+
+    fun setHasSeenAccessibilityPermissionDisclaimer(seen: Boolean) {
+        firstLaunchPrefs
+            .edit()
+            .putBoolean(UiPreferences.KEY_HAS_SEEN_ACCESSIBILITY_PERMISSION_DISCLAIMER, seen)
+            .apply()
     }
 
     fun getUsagePermissionBannerDismissCount(): Int =
@@ -811,6 +827,13 @@ class UiPreferences(
 
     fun setShowInRecents(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_SHOW_IN_RECENTS, enabled)
+    }
+
+    fun areNotificationDotsEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_NOTIFICATION_DOTS_ENABLED, false)
+
+    fun setNotificationDotsEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_NOTIFICATION_DOTS_ENABLED, enabled)
     }
 
     fun getSelectedAppSuggestionTab(): AppSuggestionTabType {
@@ -938,6 +961,13 @@ class UiPreferences(
 
     fun setCurrencyConverterEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_CURRENCY_CONVERTER_ENABLED, enabled)
+    }
+
+    fun isColorVisualizerEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_COLOR_VISUALIZER_ENABLED, true)
+
+    fun setColorVisualizerEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_COLOR_VISUALIZER_ENABLED, enabled)
     }
 
     fun isWorldClockEnabled(): Boolean =
@@ -1320,6 +1350,10 @@ class UiPreferences(
         const val TOP_MATCHES_SECTION_ORDER_SEPARATOR = ","
         const val KEY_LAST_SEEN_VERSION = "last_seen_version"
         const val KEY_LAST_SEEN_VERSION_CODE = "last_seen_version_code"
+        const val KEY_ACCESSIBILITY_PERMISSION_DISCLAIMER_PENDING =
+            "accessibility_permission_disclaimer_pending"
+        const val KEY_HAS_SEEN_ACCESSIBILITY_PERMISSION_DISCLAIMER =
+            "has_seen_accessibility_permission_disclaimer"
         const val KEY_AI_SEARCH_SETUP_EXPANDED = "direct_search_setup_expanded"
         const val KEY_DISABLED_SEARCH_ENGINES_EXPANDED = "disabled_search_engines_expanded"
         const val KEY_HOME_PINNED_SECTION_EXPANDED_PREFIX = "home_pinned_section_expanded_"
@@ -1329,7 +1363,6 @@ class UiPreferences(
         const val KEY_FORCE_SEARCH_BAR_WELCOME_ON_NEXT_OPEN =
                 "force_search_bar_welcome_on_next_open"
         const val KEY_HAS_SEEN_CONTACT_ACTION_HINT = "has_seen_contact_action_hint"
-        const val KEY_SEARCH_HISTORY_TIP_DISMISSED = "search_history_tip_dismissed"
         const val KEY_HAS_SEEN_OVERLAY_ASSISTANT_TIP = "has_seen_overlay_assistant_tip"
         const val KEY_HAS_SEEN_SETTINGS_SEARCH_TIP = "has_seen_settings_search_tip"
         // Section preferences keys
@@ -1360,6 +1393,7 @@ class UiPreferences(
         const val KEY_INCLUDE_NON_LAUNCHABLE_APPS_IN_SEARCH =
             "include_non_launchable_apps_in_search"
         const val KEY_SHOW_IN_RECENTS = "show_in_recents"
+        const val KEY_NOTIFICATION_DOTS_ENABLED = "notification_dots_enabled"
         const val KEY_SELECTED_APP_SUGGESTION_TAB = "selected_app_suggestion_tab"
         const val KEY_ENABLED_APP_SUGGESTION_TABS = "enabled_app_suggestion_tabs"
 
@@ -1391,6 +1425,7 @@ class UiPreferences(
         const val KEY_UNIT_CONVERTER_ENABLED = "unit_converter_enabled"
         const val KEY_DATE_CALCULATOR_ENABLED = "date_calculator_enabled"
         const val KEY_CURRENCY_CONVERTER_ENABLED = "currency_converter_enabled"
+        const val KEY_COLOR_VISUALIZER_ENABLED = "color_visualizer_enabled"
         const val KEY_WORD_CLOCK_ENABLED = "word_clock_enabled"
         const val KEY_DICTIONARY_ENABLED = "dictionary_enabled"
         const val KEY_CURRENCY_CONVERTER_MODEL = "currency_converter_model"

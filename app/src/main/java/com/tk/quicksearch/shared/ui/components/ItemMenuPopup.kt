@@ -1,0 +1,354 @@
+package com.tk.quicksearch.shared.ui.components
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.hapticConfirm
+
+/** A compact icon-over-label tile shown in the Shortcuts and Actions grids. */
+data class ItemMenuTile(
+    val label: String,
+    val icon: @Composable () -> Unit,
+    val onClick: () -> Unit,
+    val onLongClick: (() -> Unit)? = null,
+    val enableMarquee: Boolean = false,
+)
+
+/**
+ * A full-width row with a leading icon, label, optional trailing value and a chevron. Also used for
+ * the side-by-side button rows, where only the icon, label, long click, [destructive] style and
+ * [anchoredContent] apply.
+ */
+data class ItemMenuRow(
+    val label: String,
+    val icon: @Composable () -> Unit,
+    val onClick: () -> Unit,
+    val onLongClick: (() -> Unit)? = null,
+    val trailingText: String? = null,
+    val destructive: Boolean = false,
+    /** Content anchored to a side-by-side button, such as a small dropdown shown on long press. */
+    val anchoredContent: (@Composable () -> Unit)? = null,
+)
+
+private const val ItemMenuGridColumns = 4
+
+/**
+ * Long-press menu shared by apps, app shortcuts and files.
+ *
+ * Layout, top to bottom: an optional Shortcuts grid, an Actions grid of quick one-tap actions,
+ * then [buttonRows] of side-by-side buttons (e.g. Swipe up and Swipe down), a list of settings-like [rows],
+ * and finally [footer] buttons sharing one row (e.g. App info and Uninstall). Empty groups are skipped, and grid titles are only shown when both grids are
+ * present. An Actions grid that fits in one row spreads its tiles across the full width.
+ */
+@Composable
+fun ItemMenuPopup(
+    onDismiss: () -> Unit,
+    title: @Composable () -> Unit,
+    shortcutsTitle: String,
+    actionsTitle: String,
+    actions: List<ItemMenuTile>,
+    rows: List<ItemMenuRow>,
+    leadingContent: (@Composable () -> Unit)? = null,
+    shortcuts: List<ItemMenuTile> = emptyList(),
+    buttonRows: List<List<ItemMenuRow>> = emptyList(),
+    footer: List<ItemMenuRow> = emptyList(),
+) {
+    val dialogBackground = AppColors.DialogBackground
+    AppBottomPopup(
+        onDismiss = onDismiss,
+        title = title,
+        leadingContent = leadingContent,
+        containerColor = dialogBackground,
+        contentCardColor = dialogBackground,
+        contentSpacing = 0.dp,
+        headerSpacing = DesignTokens.SpacingMedium,
+        // The popup's own bottom padding already separates the last item from the edge.
+        contentBottomPadding = 0.dp,
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            val showGridTitles = shortcuts.isNotEmpty() && actions.isNotEmpty()
+            if (shortcuts.isNotEmpty()) {
+                if (showGridTitles) ItemMenuSectionTitle(shortcutsTitle)
+                ItemMenuTileGrid(tiles = shortcuts)
+                if (actions.isNotEmpty()) Spacer(Modifier.height(DesignTokens.SpacingLarge))
+            }
+            if (actions.isNotEmpty()) {
+                if (showGridTitles) ItemMenuSectionTitle(actionsTitle)
+                ItemMenuTileGrid(tiles = actions, fillSingleRow = true)
+            }
+            val hasGrids = shortcuts.isNotEmpty() || actions.isNotEmpty()
+            val visibleButtonRows = buttonRows.filter { it.isNotEmpty() }
+            if (visibleButtonRows.isNotEmpty()) {
+                if (hasGrids) Spacer(Modifier.height(DesignTokens.SpacingMedium))
+                Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall)) {
+                    visibleButtonRows.forEach { buttons -> ItemMenuButtonRow(buttons) }
+                }
+            }
+            if (rows.isNotEmpty()) {
+                if (visibleButtonRows.isNotEmpty()) {
+                    Spacer(Modifier.height(DesignTokens.SpacingSmall))
+                } else if (hasGrids) {
+                    Spacer(Modifier.height(DesignTokens.SpacingMedium))
+                }
+                rows.forEach { row -> ItemMenuListRow(row) }
+            }
+            if (footer.isNotEmpty()) {
+                Spacer(Modifier.height(DesignTokens.SpacingMedium))
+                ItemMenuButtonRow(footer)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ItemMenuSectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(bottom = DesignTokens.SpacingSmall),
+    )
+}
+
+@Composable
+private fun ItemMenuTileGrid(
+    tiles: List<ItemMenuTile>,
+    fillSingleRow: Boolean = false,
+) {
+    val spreadAcrossRow = fillSingleRow && tiles.size <= ItemMenuGridColumns
+    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall)) {
+        tiles.chunked(ItemMenuGridColumns).forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+            ) {
+                row.forEach { tile ->
+                    ItemMenuTileButton(tile = tile, modifier = Modifier.weight(1f))
+                }
+                if (!spreadAcrossRow) {
+                    repeat(ItemMenuGridColumns - row.size) { Spacer(Modifier.weight(1f)) }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ItemMenuTileButton(
+    tile: ItemMenuTile,
+    modifier: Modifier = Modifier,
+) {
+    val view = LocalView.current
+    Column(
+        modifier = modifier
+            .clip(DesignTokens.ShapeSmall)
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+            .combinedClickable(
+                onClick = tile.onClick,
+                onLongClick = tile.onLongClick?.let { onLongClick ->
+                    {
+                        hapticConfirm(view)()
+                        onLongClick()
+                    }
+                },
+            )
+            .padding(vertical = DesignTokens.SpacingMedium, horizontal = DesignTokens.SpacingXSmall),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            CompositionLocalProvider(LocalContentColor provides AppColors.DialogText) {
+                tile.icon()
+            }
+        }
+        val labelStyle = MaterialTheme.typography.labelMedium
+        if (tile.enableMarquee) {
+            Text(
+                text = tile.label,
+                style = labelStyle,
+                color = AppColors.DialogText,
+                maxLines = 1,
+                overflow = TextOverflow.Clip,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.basicMarquee(),
+            )
+        } else {
+            // Shrinks slightly so labels like "SpeedBump" fit a narrow tile before ellipsizing.
+            // The box keeps the full-size line height so a shrunk label doesn't make the tile shorter.
+            Box(
+                modifier = Modifier.height(with(LocalDensity.current) { labelStyle.lineHeight.toDp() }),
+                contentAlignment = Alignment.Center,
+            ) {
+                BasicText(
+                    text = tile.label,
+                    style = labelStyle.copy(color = AppColors.DialogText, textAlign = TextAlign.Center),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 9.sp,
+                        maxFontSize = labelStyle.fontSize,
+                        stepSize = 0.5.sp,
+                    ),
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ItemMenuListRow(row: ItemMenuRow) {
+    val view = LocalView.current
+    val contentColor =
+        if (row.destructive) MaterialTheme.colorScheme.error else AppColors.DialogText
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clip(DesignTokens.ShapeSmall)
+            .combinedClickable(
+                onClick = row.onClick,
+                onLongClick = row.onLongClick?.let { onLongClick ->
+                    {
+                        hapticConfirm(view)()
+                        onLongClick()
+                    }
+                },
+            )
+            .padding(vertical = DesignTokens.SpacingSmall),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
+    ) {
+        Box(modifier = Modifier.size(22.dp), contentAlignment = Alignment.Center) {
+            CompositionLocalProvider(LocalContentColor provides contentColor) {
+                row.icon()
+            }
+        }
+        Text(
+            text = row.label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        row.trailingText?.let { value ->
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        if (!row.destructive) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ItemMenuButtonRow(buttons: List<ItemMenuRow>) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        buttons.forEach { button ->
+            ItemMenuButton(button = button, modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ItemMenuButton(
+    button: ItemMenuRow,
+    modifier: Modifier = Modifier,
+) {
+    val view = LocalView.current
+    val contentColor =
+        if (button.destructive) MaterialTheme.colorScheme.error else AppColors.DialogText
+    val containerColor =
+        if (button.destructive) {
+            MaterialTheme.colorScheme.error.copy(alpha = 0.12f)
+        } else {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+        }
+    Box(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 48.dp)
+                .clip(DesignTokens.ShapeSmall)
+                .background(containerColor)
+                .combinedClickable(
+                    onClick = button.onClick,
+                    onLongClick = button.onLongClick?.let { onLongClick ->
+                        {
+                            hapticConfirm(view)()
+                            onLongClick()
+                        }
+                    },
+                )
+                .padding(horizontal = DesignTokens.SpacingMedium, vertical = DesignTokens.SpacingSmall),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall, Alignment.CenterHorizontally),
+        ) {
+            Box(modifier = Modifier.size(20.dp), contentAlignment = Alignment.Center) {
+                CompositionLocalProvider(LocalContentColor provides contentColor) {
+                    button.icon()
+                }
+            }
+            Text(
+                text = button.label,
+                style = MaterialTheme.typography.labelLarge,
+                color = contentColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+        }
+        button.anchoredContent?.let { content ->
+            // Matches the button's bounds so anchored popups position and size against it.
+            Box(modifier = Modifier.matchParentSize()) { content() }
+        }
+    }
+}

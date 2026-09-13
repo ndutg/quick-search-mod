@@ -22,6 +22,7 @@ object PackageConstants {
     const val GOOGLE_PHOTOS_PACKAGE_NAME = "com.google.android.apps.photos"
     const val GOOGLE_TRANSLATE_PACKAGE = "com.google.android.apps.translate"
     const val KAGI_PACKAGE = "com.kagi.search"
+    const val KAGI_ASSISTANT_PACKAGE = "com.kagi.assistant"
     const val YOU_COM_PACKAGE_NAME = "com.you.browser"
     const val WIKIPEDIA_PACKAGE_NAME = "org.wikipedia"
     const val STARTPAGE_PACKAGE_NAME = "com.startpage.app"
@@ -40,4 +41,5 @@ object PackageConstants {
     const val SPOTIFY_PACKAGE = "com.spotify.music"
     const val AMAZON_PACKAGE = "com.amazon.mShop.android.shopping"
     const val CLAUDE_PACKAGE = "com.anthropic.claude"
+    const val MUSE_PACKAGE = "com.facebook.aura"
 }
