@@ -102,6 +102,7 @@ fun AppearanceSettingsSection(
         onAccentColorModeChange: (com.tk.quicksearch.search.core.AccentColorMode) -> Unit,
         onCustomAccentColorChange: (Int) -> Unit,
         hasWallpaperPermission: Boolean = true,
+        wallpaperAvailable: Boolean = false,
         modifier: Modifier = Modifier,
 ) {
     val appearanceContext = androidx.compose.ui.platform.LocalContext.current
@@ -179,6 +180,7 @@ fun AppearanceSettingsSection(
                 onSetBackgroundSource = onSetBackgroundSource,
                 onPickCustomImage = onPickCustomImage,
                 hasWallpaperPermission = hasWallpaperPermission,
+                wallpaperAvailable = wallpaperAvailable,
                 onRequestWallpaperPermission = onRequestWallpaperPermission,
                 accentColorMode = accentColorMode,
                 customAccentColorArgb = customAccentColorArgb,

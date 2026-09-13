@@ -70,6 +70,10 @@
     <string name="action_add_to_home">హోమ్ స్క్రీన్‌కు జోడించు</string>
     <string name="action_add_trigger">ట్రిగ్గర్ జోడించు</string>
     <string name="action_app_info">యాప్ సమాచారం</string>
+    <string name="action_lock_app">లాక్ చేయండి</string>
+    <string name="action_unlock_app">అన్‌లాక్ చేయండి</string>
+    <string name="app_lock_prompt_lock">%1$sను లాక్ చేయండి</string>
+    <string name="app_lock_prompt_unlock">%1$sను అన్‌లాక్ చేయండి</string>
     <string name="action_change_icon">ఐకాన్ మార్చు</string>
     <string name="icon_picker_search">చిహ్నాలను శోధించండి</string>
     <string name="icon_picker_title">"%1$s" కోసం చిహ్నాన్ని మార్చండి</string>
@@ -352,6 +356,8 @@
     <string name="error_shortcut_no_activity_resolves">ఇంటెంట్‌ను పరిష్కరించే యాక్టివిటీ ఏదీ లేదు.</string>
     <string name="error_shortcut_requires_permission">షార్ట్‌కట్‌కు అనుమతి అవసరం: %1$s.</string>
     <string name="error_shortcuts_not_supported">ఈ పరికరంలో హోమ్ స్క్రీన్‌కు షార్ట్‌కట్‌లను జోడించడానికి మద్దతు లేదు</string>
+    <string name="pin_shortcut_request_added">\"%1$s\" Quick Searchకు జోడించబడింది</string>
+    <string name="pin_shortcut_request_added_generic">షార్ట్‌కట్ Quick Searchకు జోడించబడింది</string>
     <string name="settings_app_shortcuts_activity_dialog_title">యాప్ యాక్టివిటీని ఎంచుకోండి</string>
     <string name="settings_app_shortcuts_activity_empty">యాప్ యాక్టివిటీలు ఏవీ అందుబాటులో లేవు.</string>
     <string name="settings_app_shortcuts_activity_warning">కొన్ని యాక్టివిటీలు ఆశించిన విధంగా పని చేయకపోవచ్చు</string>

@@ -103,7 +103,6 @@ import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.StartupPhase
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.AppShortcutRepository.launchStaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.AppInfo
@@ -172,6 +171,7 @@ private data class AppSuggestionTab(
 /** Data class containing all app actions to reduce parameter count in composables. */
 private data class AppActions(
         val onClick: () -> Unit,
+        val onShortcutClick: (StaticShortcut) -> Unit,
         val onAppInfoClick: () -> Unit,
         val onUninstallClick: () -> Unit,
         val onHideApp: () -> Unit,
@@ -210,6 +210,7 @@ fun AppGridView(
         hasAppResults: Boolean,
         showAllAppsButton: Boolean,
         onAppClick: (AppInfo) -> Unit,
+        onAppShortcutClick: (StaticShortcut) -> Unit,
         onAppInfoClick: (AppInfo) -> Unit,
         onUninstallClick: (AppInfo) -> Unit,
         onHideApp: (AppInfo) -> Unit,
@@ -513,6 +514,7 @@ fun AppGridView(
                                         },
                                 isSearching = isSearching,
                                 onAppClick = onAppClick,
+                                onAppShortcutClick = onAppShortcutClick,
                                 onAppInfoClick = onAppInfoClick,
                                 onUninstallClick = onUninstallClick,
                                 onHideApp = onHideApp,
@@ -549,6 +551,7 @@ fun AppGridView(
                             apps = activeApps,
                             isSearching = isSearching,
                             onAppClick = onAppClick,
+                            onAppShortcutClick = onAppShortcutClick,
                             onAppInfoClick = onAppInfoClick,
                             onUninstallClick = onUninstallClick,
                             onHideApp = onHideApp,
@@ -614,6 +617,7 @@ fun AppGridView(
                     showAllAppsDialog = false
                     onAppClick(app)
                 },
+                onAppShortcutClick = onAppShortcutClick,
                 onAppInfoClick = onAppInfoClick,
                 onUninstallClick = onUninstallClick,
                 onHideApp = onHideApp,
@@ -641,6 +645,7 @@ private fun AllAppsDialog(
         apps: List<AppInfo>,
         onDismiss: () -> Unit,
         onAppClick: (AppInfo) -> Unit,
+        onAppShortcutClick: (StaticShortcut) -> Unit,
         onAppInfoClick: (AppInfo) -> Unit,
         onUninstallClick: (AppInfo) -> Unit,
         onHideApp: (AppInfo) -> Unit,
@@ -712,6 +717,7 @@ private fun AllAppsDialog(
                                     appActions =
                                             AppActions(
                                                     onClick = { onAppClick(app) },
+                                                    onShortcutClick = onAppShortcutClick,
                                                     onAppInfoClick = { onAppInfoClick(app) },
                                                     onUninstallClick = { onUninstallClick(app) },
                                                     onHideApp = { onHideApp(app) },
@@ -858,7 +864,7 @@ private fun AllAppsDialogGridItem(
                 appInfo = app,
                 iconPackPackage = iconPackPackage,
                 appIconShape = appIconShape,
-                onShortcutClick = { shortcut -> launchStaticShortcut(context, shortcut) },
+                onShortcutClick = appActions.onShortcutClick,
                 onAppInfoClick = appActions.onAppInfoClick,
                 onHideApp = appActions.onHideApp,
                 onPinApp = appActions.onPinApp,
@@ -982,6 +988,7 @@ private fun AppGrid(
         isSearching: Boolean,
         modifier: Modifier = Modifier,
         onAppClick: (AppInfo) -> Unit,
+        onAppShortcutClick: (StaticShortcut) -> Unit,
         onAppInfoClick: (AppInfo) -> Unit,
         onUninstallClick: (AppInfo) -> Unit,
         onHideApp: (AppInfo) -> Unit,
@@ -1147,6 +1154,7 @@ private fun AppGrid(
         val createAppActions =
                 remember(
                         onAppClick,
+                        onAppShortcutClick,
                         onAppInfoClick,
                         onUninstallClick,
                         onHideApp,
@@ -1160,6 +1168,7 @@ private fun AppGrid(
                     { app: AppInfo ->
                         AppActions(
                                 onClick = { onAppClick(app) },
+                                onShortcutClick = onAppShortcutClick,
                                 onAppInfoClick = { onAppInfoClick(app) },
                                 onUninstallClick = { onUninstallClick(app) },
                                 onHideApp = { onHideApp(app) },
@@ -1560,7 +1569,7 @@ private fun AppGridItem(
                 appInfo = appInfo,
                 iconPackPackage = iconPackPackage,
                 appIconShape = appIconShape,
-                onShortcutClick = { shortcut -> launchStaticShortcut(context, shortcut) },
+                onShortcutClick = appActions.onShortcutClick,
                 onAppInfoClick = appActions.onAppInfoClick,
                 onHideApp = appActions.onHideApp,
                 onPinApp = appActions.onPinApp,

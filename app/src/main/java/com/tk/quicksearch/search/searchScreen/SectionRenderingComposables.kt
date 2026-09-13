@@ -202,6 +202,7 @@ private fun renderAppsSection(
             hasAppResults = appsParams.hasAppResults,
             showAllAppsButton = appsParams.showAllAppsButton,
             onAppClick = appsParams.onAppClick,
+            onAppShortcutClick = appsParams.onAppShortcutClick,
             onAppInfoClick = appsParams.onAppInfoClick,
             onUninstallClick = appsParams.onUninstallClick,
             onHideApp = appsParams.onHideApp,

@@ -1,6 +1,10 @@
 package com.tk.quicksearch.settings.AppearanceSettings
 
+import android.graphics.PixelFormat
+import android.graphics.PorterDuff
 import android.os.Build
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -66,7 +70,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.HomeActivity
 import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
@@ -104,10 +110,14 @@ fun AppThemeCard(
 ) {
     val view = LocalView.current
     val context = LocalContext.current
+    val canShowSystemWallpaperBackdrop =
+            (context as? HomeActivity)?.canShowSystemWallpaperBackdrop == true
     val isDarkMode = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     val useMonoThemeFallback =
-            backgroundSource == BackgroundSource.SYSTEM_WALLPAPER && !hasWallpaperPermission
+            backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+                    !hasWallpaperPermission &&
+                    !canShowSystemWallpaperBackdrop
     val effectiveBackgroundSource =
             if (useMonoThemeFallback) BackgroundSource.THEME else backgroundSource
     val effectiveSelectedTheme =
@@ -401,6 +411,7 @@ fun WallpaperCard(
         onSetBackgroundSource: (BackgroundSource) -> Unit,
         onPickCustomImage: () -> Unit,
         hasWallpaperPermission: Boolean,
+        wallpaperAvailable: Boolean,
         onRequestWallpaperPermission: () -> Unit,
         accentColorMode: AccentColorMode,
         customAccentColorArgb: Int,
@@ -411,6 +422,8 @@ fun WallpaperCard(
 ) {
     val view = LocalView.current
     val context = LocalContext.current
+    val canShowSystemWallpaperBackdrop =
+            (context as? HomeActivity)?.canShowSystemWallpaperBackdrop == true
     val isDarkMode = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     val wallpaperPreviewBitmap by
@@ -420,8 +433,12 @@ fun WallpaperCard(
                     key2 = backgroundSource,
             ) {
                 value =
-                        WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
-                                ?: WallpaperUtils.getWallpaperBitmap(context)?.asImageBitmap()
+                        if (hasWallpaperPermission) {
+                            WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
+                                    ?: WallpaperUtils.getWallpaperBitmap(context)?.asImageBitmap()
+                        } else {
+                            null
+                        }
             }
     val customPreviewBitmap by
             produceState<androidx.compose.ui.graphics.ImageBitmap?>(
@@ -431,11 +448,19 @@ fun WallpaperCard(
                 value = WallpaperUtils.getOverlayCustomImageBitmap(context, customImageUri)
             }
 
+    val canDisplaySystemWallpaper = hasWallpaperPermission || canShowSystemWallpaperBackdrop
     val isWallpaperSourceSelected =
-            backgroundSource == BackgroundSource.SYSTEM_WALLPAPER && hasWallpaperPermission
+            backgroundSource == BackgroundSource.SYSTEM_WALLPAPER && canDisplaySystemWallpaper
     val isCustomSourceSelected = backgroundSource == BackgroundSource.CUSTOM_IMAGE
+    val wallpaperPixelEffectsAvailable =
+            isCustomSourceSelected ||
+                    (backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+                            hasWallpaperPermission &&
+                            wallpaperAvailable)
     val shouldHideSystemWallpaperSource =
-            !hasWallpaperPermission && PermissionHelper.checkFilesPermission(context)
+            !canShowSystemWallpaperBackdrop &&
+                    !hasWallpaperPermission &&
+                    PermissionHelper.checkFilesPermission(context)
 
     val wallpaperAlphaDisplayValue = (wallpaperBackgroundAlpha / 0.7f).coerceIn(0f, 1f)
     var lastAlphaStep by remember {
@@ -451,7 +476,11 @@ fun WallpaperCard(
     var showCustomAccentPicker by rememberSaveable { mutableStateOf(false) }
 
     val selectAccentMode: (AccentColorMode) -> Unit = { mode ->
-        val wallpaperAccentAvailable = isWallpaperSourceSelected || isCustomSourceSelected
+        val wallpaperAccentAvailable =
+                (backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+                        hasWallpaperPermission &&
+                        wallpaperAvailable) ||
+                        isCustomSourceSelected
         val requiresOverride = mode != AccentColorMode.NONE
         if (mode == AccentColorMode.FROM_WALLPAPER && !wallpaperAccentAvailable) {
             Toast.makeText(
@@ -505,13 +534,15 @@ fun WallpaperCard(
                                 hapticToggle(view)()
                                 if (isWallpaperSourceSelected) {
                                     onSetBackgroundSource(BackgroundSource.THEME)
+                                } else if (canShowSystemWallpaperBackdrop) {
+                                    onSetBackgroundSource(BackgroundSource.SYSTEM_WALLPAPER)
                                 } else {
                                     onRequestWallpaperPermission()
                                 }
                             },
                             label = stringResource(R.string.settings_overlay_source_wallpaper),
                     ) {
-                        if (!hasWallpaperPermission) {
+                        if (!canDisplaySystemWallpaper) {
                             Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -562,6 +593,22 @@ fun WallpaperCard(
                                     )
                                 }
                             }
+                        } else if (canShowSystemWallpaperBackdrop) {
+                            SystemWallpaperBackdropPreview()
+                        } else {
+                            Box(
+                                    modifier =
+                                            Modifier.fillMaxSize()
+                                                    .background(
+                                                            Brush.linearGradient(
+                                                                    colors =
+                                                                            listOf(
+                                                                                    MaterialTheme.colorScheme.primaryContainer,
+                                                                                    MaterialTheme.colorScheme.secondaryContainer,
+                                                                            ),
+                                                            ),
+                                                    ),
+                            )
                         }
                     }
                 }
@@ -677,40 +724,42 @@ fun WallpaperCard(
                     )
                 }
 
-                Text(
-                        text = stringResource(R.string.settings_wallpaper_blur_label),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    Slider(
-                            value = wallpaperBlurRadius,
-                            onValueChange = { value ->
-                                val step =
-                                        (value / UiPreferences.MAX_WALLPAPER_BLUR_RADIUS * 7)
+                if (wallpaperPixelEffectsAvailable) {
+                    Text(
+                            text = stringResource(R.string.settings_wallpaper_blur_label),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Slider(
+                                value = wallpaperBlurRadius,
+                                onValueChange = { value ->
+                                    val step =
+                                            (value / UiPreferences.MAX_WALLPAPER_BLUR_RADIUS * 7)
                                                 .roundToInt()
                                                 .coerceIn(0, 7)
-                                if (step != lastBlurStep) {
-                                    hapticToggle(view)()
-                                    lastBlurStep = step
-                                }
-                                onWallpaperBlurRadiusChange(value)
-                            },
-                            valueRange = 0f..UiPreferences.MAX_WALLPAPER_BLUR_RADIUS,
-                            steps = 7,
-                            modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                            text =
-                                    "${((wallpaperBlurRadius / UiPreferences.MAX_WALLPAPER_BLUR_RADIUS) * 100).toInt()}%",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.widthIn(min = 48.dp),
-                    )
+                                    if (step != lastBlurStep) {
+                                        hapticToggle(view)()
+                                        lastBlurStep = step
+                                    }
+                                    onWallpaperBlurRadiusChange(value)
+                                },
+                                valueRange = 0f..UiPreferences.MAX_WALLPAPER_BLUR_RADIUS,
+                                steps = 7,
+                                modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                                text =
+                                        "${((wallpaperBlurRadius / UiPreferences.MAX_WALLPAPER_BLUR_RADIUS) * 100).toInt()}%",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.widthIn(min = 48.dp),
+                        )
+                    }
                 }
 
             }
@@ -724,11 +773,13 @@ fun WallpaperCard(
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                 )
-                Text(
-                        text = stringResource(R.string.settings_wallpaper_accent_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                if (wallpaperPixelEffectsAvailable) {
+                    Text(
+                            text = stringResource(R.string.settings_wallpaper_accent_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 Row(
                         modifier = Modifier.fillMaxWidth().selectableGroup(),
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
@@ -743,16 +794,17 @@ fun WallpaperCard(
                             compactLabel = true,
                             modifier = Modifier.weight(1f),
                     )
-                    AppModeOption(
-                            label = stringResource(R.string.settings_accent_color_from_wallpaper),
-                            icon = Icons.Rounded.Image,
-                            selected = accentColorMode == AccentColorMode.FROM_WALLPAPER,
-                            onClick = { selectAccentMode(AccentColorMode.FROM_WALLPAPER) },
-                            enabled = isWallpaperSourceSelected || isCustomSourceSelected,
-                            iconLabelSpacing = DesignTokens.SpacingSmall,
-                            compactLabel = true,
-                            modifier = Modifier.weight(1f),
-                    )
+                    if (wallpaperPixelEffectsAvailable) {
+                        AppModeOption(
+                                label = stringResource(R.string.settings_accent_color_from_wallpaper),
+                                icon = Icons.Rounded.Image,
+                                selected = accentColorMode == AccentColorMode.FROM_WALLPAPER,
+                                onClick = { selectAccentMode(AccentColorMode.FROM_WALLPAPER) },
+                                iconLabelSpacing = DesignTokens.SpacingSmall,
+                                compactLabel = true,
+                                modifier = Modifier.weight(1f),
+                        )
+                    }
                     AppModeOption(
                             label = stringResource(R.string.common_custom),
                             icon = Icons.Rounded.Palette,
@@ -790,6 +842,47 @@ fun WallpaperCard(
 }
 
 @Composable
+private fun SystemWallpaperBackdropPreview() {
+    AndroidView(
+            factory = { context ->
+                SurfaceView(context).apply {
+                    holder.setFormat(PixelFormat.TRANSLUCENT)
+                    setZOrderMediaOverlay(true)
+                    setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                    holder.addCallback(
+                            object : SurfaceHolder.Callback {
+                                override fun surfaceCreated(holder: SurfaceHolder) {
+                                    clearWallpaperPreviewSurface(holder)
+                                }
+
+                                override fun surfaceChanged(
+                                        holder: SurfaceHolder,
+                                        format: Int,
+                                        width: Int,
+                                        height: Int,
+                                ) {
+                                    clearWallpaperPreviewSurface(holder)
+                                }
+
+                                override fun surfaceDestroyed(holder: SurfaceHolder) = Unit
+                            },
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxSize(),
+    )
+}
+
+private fun clearWallpaperPreviewSurface(holder: SurfaceHolder) {
+    val canvas = holder.lockCanvas() ?: return
+    try {
+        canvas.drawColor(android.graphics.Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    } finally {
+        holder.unlockCanvasAndPost(canvas)
+    }
+}
+
+@Composable
 private fun AppModeOption(
         label: String,
         icon: ImageVector,
@@ -821,6 +914,7 @@ private fun AppModeOption(
                             )
                             .selectable(
                                     selected = selected,
+                                    enabled = enabled,
                                     onClick = onClick,
                                     role = Role.RadioButton,
                             )

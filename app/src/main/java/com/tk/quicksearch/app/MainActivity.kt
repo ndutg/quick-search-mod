@@ -9,7 +9,7 @@ import android.provider.OpenableColumns
 import android.os.Bundle
 import android.os.Trace
 import android.view.KeyEvent
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.app.navigation.MainContent
@@ -56,7 +57,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-open class MainActivity : ComponentActivity() {
+open class MainActivity : FragmentActivity() {
     private data class PendingContactActionPickerRequest(
         val contactId: Long,
         val isPrimary: Boolean,
@@ -311,7 +312,18 @@ open class MainActivity : ComponentActivity() {
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background),
+                            .background(
+                                if (
+                                    this@MainActivity is HomeActivity &&
+                                    this@MainActivity.canShowSystemWallpaperBackdrop &&
+                                    uiState.backgroundSource ==
+                                        com.tk.quicksearch.search.core.BackgroundSource.SYSTEM_WALLPAPER
+                                ) {
+                                    Color.Transparent
+                                } else {
+                                    MaterialTheme.colorScheme.background
+                                },
+                            ),
                 ) {
                     LaunchedEffect(Unit) {
                         if (!hasSearchSurfaceComposeTraced) {
@@ -388,6 +400,11 @@ open class MainActivity : ComponentActivity() {
                         userPreferences = userPreferences,
                         searchViewModel = searchViewModel,
                         isFirstLaunch = isFirstLaunchAtActivityStart,
+                        allowSystemWallpaperBackdrop =
+                            this@MainActivity is HomeActivity &&
+                                this@MainActivity.canShowSystemWallpaperBackdrop &&
+                                uiState.backgroundSource ==
+                                    com.tk.quicksearch.search.core.BackgroundSource.SYSTEM_WALLPAPER,
                         onSearchBackPressed = ::handleSearchBackPressed,
                         navigationRequest = navigationRequest.value,
                         onNavigationRequestHandled = { navigationRequest.value = null },

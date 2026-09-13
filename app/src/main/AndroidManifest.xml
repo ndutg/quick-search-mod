@@ -87,10 +87,9 @@
             android:enabled="true" />
 
         <!-- Home Activity: receives CATEGORY_HOME launches (home gesture / home
-             button when this app is the default launcher). Uses the opaque theme
-             variant so the Pixel home-gesture animation does not reveal the
-             previous launcher behind a translucent window. Behavior is
-             identical to MainActivity (it is a thin subclass). -->
+             button when this app is the default launcher). Its theme permits
+             Android to composite the system wallpaper behind transparent Home
+             content without exposing wallpaper bitmap pixels to the app. -->
         <activity
             android:name=".app.HomeActivity"
             android:exported="true"
@@ -335,6 +334,20 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@style/Theme.QuickSearch" />
+
+        <!-- Accepts pin-shortcut requests from other apps while Quick Search is
+             the default launcher (ShortcutManager.requestPinShortcut). -->
+        <activity
+            android:name=".app.PinShortcutRequestActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.QuickSearch">
+            <intent-filter>
+                <action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT" />
+            </intent-filter>
+        </activity>
 
         <!-- Widget Activities -->
         <activity

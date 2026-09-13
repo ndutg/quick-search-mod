@@ -69,6 +69,10 @@
 <string name="action_add_to_home">Ana ekrana ekle</string>
 <string name="action_add_trigger">Tetikleyici</string>
 <string name="action_app_info">Uygulama bilgisi</string>
+    <string name="action_lock_app">Kilitle</string>
+    <string name="action_unlock_app">Kilidi aç</string>
+    <string name="app_lock_prompt_lock">%1$s uygulamasını kilitle</string>
+    <string name="app_lock_prompt_unlock">%1$s uygulamasının kilidini aç</string>
 <string name="action_change_icon">Simgeyi değiştir</string>
 <string name="icon_picker_search">Simgeleri ara</string>
 <string name="icon_picker_title">"%1$s" için simgeyi değiştir</string>
@@ -351,6 +355,8 @@
 <string name="error_shortcut_no_activity_resolves">İstemi (intent) karşılayan hiçbir aktivite bulunamadı.</string>
 <string name="error_shortcut_requires_permission">Kısayol şu izni gerektiriyor: %1$s.</string>
 <string name="error_shortcuts_not_supported">Ana ekrana kısayol ekleme bu cihazda desteklenmiyor</string>
+<string name="pin_shortcut_request_added">\"%1$s\" Quick Search\'e eklendi</string>
+<string name="pin_shortcut_request_added_generic">Kısayol Quick Search\'e eklendi</string>
 <string name="settings_app_shortcuts_activity_dialog_title">Uygulama aktivitesi seç</string>
 <string name="settings_app_shortcuts_activity_empty">Kullanılabilir uygulama aktivitesi yok.</string>
 <string name="settings_app_shortcuts_activity_warning">Bazı aktiviteler beklendiği gibi çalışmayabilir</string>

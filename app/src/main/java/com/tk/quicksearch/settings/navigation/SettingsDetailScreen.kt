@@ -461,6 +461,7 @@ internal fun SettingsDetailLevel1Screen(
                                 )
                             },
                             hasWallpaperPermission = state.hasWallpaperPermission,
+                            wallpaperAvailable = state.wallpaperAvailable,
                         )
                     }
 

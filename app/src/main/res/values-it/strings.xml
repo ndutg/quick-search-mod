@@ -69,6 +69,10 @@
     <string name="action_add_to_home">Aggiungi a Home</string>
     <string name="action_add_trigger">Aggiungi trigger</string>
     <string name="action_app_info">Info app</string>
+    <string name="action_lock_app">Blocca</string>
+    <string name="action_unlock_app">Sblocca</string>
+    <string name="app_lock_prompt_lock">Blocca %1$s</string>
+    <string name="app_lock_prompt_unlock">Sblocca %1$s</string>
     <string name="action_change_icon">Cambia icona</string>
     <string name="icon_picker_search">Cerca icone</string>
     <string name="icon_picker_title">Cambia icona per "%1$s"</string>
@@ -351,6 +355,8 @@
     <string name="error_shortcut_no_activity_resolves">Nessuna activity risolve l\u2019intent.</string>
     <string name="error_shortcut_requires_permission">La scorciatoia richiede l\u2019autorizzazione: %1$s.</string>
     <string name="error_shortcuts_not_supported">L\u2019aggiunta di scorciatoie alla schermata iniziale non è supportata su questo dispositivo</string>
+    <string name="pin_shortcut_request_added">\"%1$s\" aggiunto a Quick Search</string>
+    <string name="pin_shortcut_request_added_generic">Scorciatoia aggiunta a Quick Search</string>
     <string name="settings_app_shortcuts_activity_dialog_title">Scegli l\u2019activity dell\u2019app</string>
     <string name="settings_app_shortcuts_activity_empty">Nessuna activity disponibile per l\u2019app.</string>
     <string name="settings_app_shortcuts_activity_warning">Alcune activity potrebbero non funzionare come previsto</string>

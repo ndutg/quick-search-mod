@@ -49,13 +49,13 @@ internal fun rememberWallpaperPermissionController(
 
         if (accessState.needsPermission) {
             wallpaperButtonHasPermission = false
-        } else if (accessState.wallpaperAvailable) {
+        } else if (accessState.wallpaperBitmapAvailable) {
             wallpaperButtonHasPermission = true
         } else if (accessState.securityError) {
             wallpaperButtonHasPermission = false
         }
 
-        onSetWallpaperAvailable(accessState.wallpaperAvailable)
+        onSetWallpaperAvailable(accessState.wallpaperBitmapAvailable)
         if (autoSelectWallpaper && accessState.shouldSelectSystemWallpaper) {
             onSetBackgroundSource(BackgroundSource.SYSTEM_WALLPAPER)
         }

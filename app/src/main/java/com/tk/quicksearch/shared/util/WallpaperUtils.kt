@@ -64,7 +64,8 @@ object WallpaperUtils {
     }
 
     data class WallpaperAccessState(
-        val wallpaperAvailable: Boolean,
+        /** True only when the app can read wallpaper bitmap pixels. */
+        val wallpaperBitmapAvailable: Boolean,
         val needsPermission: Boolean,
         val securityError: Boolean,
         val shouldSelectSystemWallpaper: Boolean,
@@ -77,7 +78,7 @@ object WallpaperUtils {
         when (result) {
             is WallpaperLoadResult.Success ->
                 WallpaperAccessState(
-                    wallpaperAvailable = true,
+                    wallpaperBitmapAvailable = true,
                     needsPermission = false,
                     securityError = false,
                     shouldSelectSystemWallpaper = true,
@@ -85,7 +86,7 @@ object WallpaperUtils {
 
             WallpaperLoadResult.PermissionRequired ->
                 WallpaperAccessState(
-                    wallpaperAvailable = false,
+                    wallpaperBitmapAvailable = false,
                     needsPermission = true,
                     securityError = false,
                     shouldSelectSystemWallpaper = false,
@@ -93,7 +94,7 @@ object WallpaperUtils {
 
             WallpaperLoadResult.SecurityError ->
                 WallpaperAccessState(
-                    wallpaperAvailable = false,
+                    wallpaperBitmapAvailable = false,
                     needsPermission = false,
                     securityError = true,
                     shouldSelectSystemWallpaper = false,
@@ -101,7 +102,7 @@ object WallpaperUtils {
 
             WallpaperLoadResult.Unavailable ->
                 WallpaperAccessState(
-                    wallpaperAvailable = false,
+                    wallpaperBitmapAvailable = false,
                     needsPermission = false,
                     securityError = false,
                     shouldSelectSystemWallpaper = false,
@@ -186,6 +187,12 @@ object WallpaperUtils {
         }
 
     private suspend fun getWallpaperBitmapResultLocked(context: Context): WallpaperLoadResult {
+        // System wallpaper compositing does not require file access, but reading its
+        // pixels does. Never call WallpaperManager.drawable without that permission.
+        if (!hasWallpaperAccessPermission(context)) {
+            return WallpaperLoadResult.PermissionRequired
+        }
+
         val currentWallpaperId = getCurrentSystemWallpaperId(context)
         val cachedWallpaperId = cachedSystemWallpaperId
         cachedBitmap?.let { cached ->

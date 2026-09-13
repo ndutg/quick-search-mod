@@ -26,6 +26,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.app.PinnedShortcutRequests
 import com.tk.quicksearch.app.startup.StartupTrace
 import android.os.SystemClock
 
@@ -236,6 +237,10 @@ internal class SearchStartupLifecycleDelegate(
         if (startupComplete && optionalPermissionsChanged) {
             pinningHandler.loadPinnedContactsAndFiles()
             pinningHandler.loadExcludedContactsAndFiles()
+        }
+
+        if (startupComplete && PinnedShortcutRequests.consumeRefreshNeeded()) {
+            scope.launch(Dispatchers.IO) { loadAppShortcuts() }
         }
 
         if (startupComplete && stateAccess.resumeNeedsStaticDataRefresh) {

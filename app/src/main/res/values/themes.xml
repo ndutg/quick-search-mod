@@ -12,14 +12,12 @@
         <item name="android:windowActionBar">false</item>
     </style>
 
-    <!-- Opaque variant used by MainActivity. The translucent base theme is kept for
-         OverlayActivity and other activities that genuinely need to render on top of
-         another app. For MainActivity, windowIsTranslucent caused the previous
-         launcher to briefly flash behind during the Pixel home gesture, and the
-         app paints its own background/wallpaper via Compose anyway, so translucency
-         provided no visible benefit here. -->
+    <!-- Home entry point. Android renders the system wallpaper behind transparent
+         regions of this window; Compose paints an opaque background for every
+         source except the active launcher's System wallpaper source. -->
     <style name="Theme.QuickSearch.Opaque" parent="Theme.QuickSearch">
         <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowShowWallpaper">true</item>
     </style>
 
 </resources>

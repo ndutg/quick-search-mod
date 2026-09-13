@@ -70,6 +70,10 @@
 <string name="action_add_to_home">На главный экран</string>
 <string name="action_add_trigger">Добавить триггер</string>
 <string name="action_app_info">О приложении</string>
+    <string name="action_lock_app">Заблокировать</string>
+    <string name="action_unlock_app">Разблокировать</string>
+    <string name="app_lock_prompt_lock">Заблокировать %1$s</string>
+    <string name="app_lock_prompt_unlock">Разблокировать %1$s</string>
 <string name="action_change_icon">Изменить значок</string>
 <string name="icon_picker_search">Поиск значков</string>
 <string name="icon_picker_title">Изменить значок для «%1$s»</string>
@@ -352,6 +356,8 @@
 <string name="error_shortcut_no_activity_resolves">Не найдено приложение для обработки этого интента.</string>
 <string name="error_shortcut_requires_permission">Для ярлыка требуется разрешение: %1$s.</string>
 <string name="error_shortcuts_not_supported">Добавление ярлыков на главный экран не поддерживается на этом устройстве</string>
+<string name="pin_shortcut_request_added">«%1$s» добавлен в Quick Search</string>
+<string name="pin_shortcut_request_added_generic">Ярлык добавлен в Quick Search</string>
 <string name="settings_app_shortcuts_activity_dialog_title">Выберите Activity приложения</string>
 <string name="settings_app_shortcuts_activity_empty">Нет доступных Activity.</string>
 <string name="settings_app_shortcuts_activity_warning">Некоторые действия могут работать некорректно</string>

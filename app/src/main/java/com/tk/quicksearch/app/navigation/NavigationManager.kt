@@ -10,9 +10,13 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.io.File
@@ -134,6 +140,7 @@ fun MainContent(
     userPreferences: UserAppPreferences,
     searchViewModel: SearchViewModel,
     isFirstLaunch: Boolean,
+    allowSystemWallpaperBackdrop: Boolean = false,
     onFirstLaunchCompleted: () -> Unit = {},
     onSearchBackPressed: () -> Unit = {},
     navigationRequest: NavigationRequest? = null,
@@ -180,6 +187,24 @@ fun MainContent(
         }
     }
 
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    if (
+                        allowSystemWallpaperBackdrop &&
+                        currentScreen == AppScreen.Main &&
+                        destination == RootDestination.Search
+                    ) {
+                        Color.Transparent
+                    } else if (allowSystemWallpaperBackdrop) {
+                        MaterialTheme.colorScheme.background
+                    } else {
+                        Color.Transparent
+                    },
+                ),
+    ) {
     AnimatedContent(
         targetState = currentScreen,
         transitionSpec = {
@@ -446,6 +471,7 @@ fun MainContent(
                 )
             }
         }
+    }
     }
 }
 

@@ -18,19 +18,36 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
+import com.tk.quicksearch.app.HomeActivity
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.shared.util.WallpaperUtils
+
+internal data class SearchScreenWallpaperState(
+    val imageBitmap: ImageBitmap?,
+    val usesWallpaperBackground: Boolean,
+    val usesSystemWallpaperBackdrop: Boolean,
+    val usesMonoThemeFallback: Boolean,
+)
+
+private data class WallpaperBitmapState(
+    val imageBitmap: ImageBitmap?,
+    val loadResult: WallpaperUtils.WallpaperLoadResult?,
+)
 
 @Composable
 internal fun SearchScreenWallpaperLogic(
     state: SearchUiState,
     onWallpaperLoaded: (() -> Unit)? = null,
+    onWallpaperUnavailable: (() -> Unit)? = null,
     onSystemWallpaperChanged: (() -> Unit)? = null,
     isOverlayPresentation: Boolean = false,
-): Triple<ImageBitmap?, Boolean, Boolean> {
+): SearchScreenWallpaperState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val canShowSystemWallpaperBackdrop =
+        !isOverlayPresentation &&
+            (context as? HomeActivity)?.canShowSystemWallpaperBackdrop == true
     var wallpaperChangeVersion by remember { mutableIntStateOf(0) }
 
     DisposableEffect(context, state.backgroundSource) {
@@ -83,45 +100,68 @@ internal fun SearchScreenWallpaperLogic(
     }
 
     val shouldUseStartupPreview = wallpaperChangeVersion == 0
-    val sourceWallpaperBitmap =
-        produceState<ImageBitmap?>(
+    val sourceWallpaperState =
+        produceState<WallpaperBitmapState>(
             initialValue =
                 if (state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER) {
-                    WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
+                    if (WallpaperUtils.hasWallpaperAccessPermission(context)) {
+                        WallpaperUtils.getCachedWallpaperBitmap()?.let {
+                            WallpaperBitmapState(
+                                imageBitmap = it.asImageBitmap(),
+                                loadResult = WallpaperUtils.WallpaperLoadResult.Success(it),
+                            )
+                        } ?: WallpaperBitmapState(imageBitmap = null, loadResult = null)
+                    } else {
+                        WallpaperBitmapState(
+                            imageBitmap = null,
+                            loadResult = WallpaperUtils.WallpaperLoadResult.PermissionRequired,
+                        )
+                    }
                 } else {
-                    null
+                    WallpaperBitmapState(imageBitmap = null, loadResult = null)
                 },
             state.backgroundSource,
+            state.hasWallpaperPermission,
             state.wallpaperAvailable,
             state.startupBackgroundPreviewPath,
             wallpaperChangeVersion,
         ) {
             if (state.backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
-                value = null
+                value = WallpaperBitmapState(imageBitmap = null, loadResult = null)
                 return@produceState
             }
 
-            // Render from memory immediately. File decode remains off the composition thread.
-            val cachedWallpaper = WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
-            if (cachedWallpaper != null) {
-                value = cachedWallpaper
-            } else if (shouldUseStartupPreview) {
-                WallpaperUtils.loadStartupBackgroundPreviewBitmap(
-                    previewPath = state.startupBackgroundPreviewPath,
-                )?.asImageBitmap()?.let { value = it }
+            if (WallpaperUtils.hasWallpaperAccessPermission(context)) {
+                // Render from memory immediately. File decode remains off the composition thread.
+                val cachedWallpaper = WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
+                if (cachedWallpaper != null) {
+                    value = WallpaperBitmapState(imageBitmap = cachedWallpaper, loadResult = null)
+                } else if (shouldUseStartupPreview) {
+                    WallpaperUtils.loadStartupBackgroundPreviewBitmap(
+                        previewPath = state.startupBackgroundPreviewPath,
+                    )?.asImageBitmap()?.let {
+                        value = WallpaperBitmapState(imageBitmap = it, loadResult = null)
+                    }
+                }
             }
 
             when (val result = WallpaperUtils.getWallpaperBitmapResult(context)) {
                 is WallpaperUtils.WallpaperLoadResult.Success -> {
-                    value = result.bitmap.asImageBitmap()
+                    value =
+                        WallpaperBitmapState(
+                            imageBitmap = result.bitmap.asImageBitmap(),
+                            loadResult = result,
+                        )
                     if (!isOverlayPresentation) {
                         onWallpaperLoaded?.invoke()
                     }
                 }
 
                 else -> {
-                    // Force mono/theme fallback when system wallpaper cannot be loaded.
-                    value = null
+                    value = WallpaperBitmapState(imageBitmap = null, loadResult = result)
+                    if (!isOverlayPresentation) {
+                        onWallpaperUnavailable?.invoke()
+                    }
                 }
             }
         }
@@ -150,22 +190,34 @@ internal fun SearchScreenWallpaperLogic(
         }
     val imageBitmap =
         when (state.backgroundSource) {
-            BackgroundSource.SYSTEM_WALLPAPER -> sourceWallpaperBitmap
-            BackgroundSource.CUSTOM_IMAGE -> sourceCustomBitmap
+            BackgroundSource.SYSTEM_WALLPAPER -> sourceWallpaperState.value.imageBitmap
+            BackgroundSource.CUSTOM_IMAGE -> sourceCustomBitmap.value
             BackgroundSource.THEME -> null
         }
-    val useImageBackground =
+    val usesSystemWallpaperBackdrop =
+        state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+            canShowSystemWallpaperBackdrop &&
+            (sourceWallpaperState.value.loadResult ==
+                WallpaperUtils.WallpaperLoadResult.PermissionRequired ||
+                sourceWallpaperState.value.loadResult == WallpaperUtils.WallpaperLoadResult.SecurityError)
+    val useBitmapBackground =
         WallpaperUtils.shouldUseImageBackground(
             backgroundSource = state.backgroundSource,
-            hasImageBitmap = imageBitmap?.value != null,
+            hasImageBitmap = imageBitmap != null,
             wallpaperAvailable = state.wallpaperAvailable,
             requireWallpaperAvailableForSystemSource =
-                !(shouldUseStartupPreview && sourceWallpaperBitmap.value != null),
+                !(shouldUseStartupPreview && sourceWallpaperState.value.imageBitmap != null),
         )
+    val usesWallpaperBackground = usesSystemWallpaperBackdrop || useBitmapBackground
     val useMonoThemeFallback =
         !isOverlayPresentation &&
             state.backgroundSource != BackgroundSource.THEME &&
-            !useImageBackground
+            !usesWallpaperBackground
 
-    return Triple(imageBitmap?.value, useImageBackground, useMonoThemeFallback)
+    return SearchScreenWallpaperState(
+        imageBitmap = imageBitmap,
+        usesWallpaperBackground = usesWallpaperBackground,
+        usesSystemWallpaperBackdrop = usesSystemWallpaperBackdrop,
+        usesMonoThemeFallback = useMonoThemeFallback,
+    )
 }

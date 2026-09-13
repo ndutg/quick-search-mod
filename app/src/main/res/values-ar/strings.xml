@@ -71,6 +71,10 @@
     <string name="action_add_to_home">إضافة إلى الشاشة الرئيسية</string>
     <string name="action_add_trigger">إضافة كلمة تشغيل</string>
     <string name="action_app_info">معلومات التطبيق</string>
+    <string name="action_lock_app">قفل</string>
+    <string name="action_unlock_app">إلغاء القفل</string>
+    <string name="app_lock_prompt_lock">قفل %1$s</string>
+    <string name="app_lock_prompt_unlock">إلغاء قفل %1$s</string>
     <string name="action_change_icon">تغيير الأيقونة</string>
     <string name="icon_picker_search">البحث عن الأيقونات</string>
     <string name="icon_picker_title">تغيير أيقونة "%1$s"</string>
@@ -353,6 +357,8 @@
     <string name="error_shortcut_no_activity_resolves">لا يوجد نشاط تطبيق يمكنه معالجة هذا الإجراء.</string>
     <string name="error_shortcut_requires_permission">يتطلب الاختصار إذنًا: %1$s.</string>
     <string name="error_shortcuts_not_supported">إضافة اختصارات إلى الشاشة الرئيسية غير مدعومة على هذا الجهاز</string>
+    <string name="pin_shortcut_request_added">تمت إضافة \"%1$s\" إلى Quick Search</string>
+    <string name="pin_shortcut_request_added_generic">تمت إضافة الاختصار إلى Quick Search</string>
     <string name="settings_app_shortcuts_activity_dialog_title">اختر نشاطاً من التطبيق</string>
     <string name="settings_app_shortcuts_activity_empty">لا تتوفر أنشطة لهذا التطبيق.</string>
     <string name="settings_app_shortcuts_activity_warning">قد لا تعمل بعض الأنشطة كما هو متوقع</string>
