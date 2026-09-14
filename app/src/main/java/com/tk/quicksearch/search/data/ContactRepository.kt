@@ -1020,9 +1020,15 @@ class ContactRepository(
         val contactMethods: MutableList<ContactMethod> = mutableListOf(),
     ) {
         fun toContactInfo(): ContactInfo {
+            // Linked contacts from different accounts can each carry the same email address.
+            val seenEmails = mutableSetOf<String>()
+            val uniqueMethods =
+                contactMethods.filter { method ->
+                    method !is ContactMethod.Email || seenEmails.add(method.data.trim().lowercase())
+                }
             // Reorder contact methods so email comes last
             val reorderedMethods =
-                contactMethods.sortedWith(
+                uniqueMethods.sortedWith(
                     compareBy<ContactMethod> {
                         when (it) {
                             is ContactMethod.Email -> 1
@@ -1032,7 +1038,7 @@ class ContactRepository(
                         }
                     }.thenBy {
                         // Within the same priority group, maintain original order
-                        contactMethods.indexOf(it)
+                        uniqueMethods.indexOf(it)
                     },
                 )
 

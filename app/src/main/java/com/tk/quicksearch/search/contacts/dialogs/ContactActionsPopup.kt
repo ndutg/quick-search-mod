@@ -1,7 +1,12 @@
 package com.tk.quicksearch.search.contacts.dialogs
 
+import android.content.ContentUris
+import android.content.Intent
+import android.net.Uri
+import android.provider.ContactsContract
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronLeft
@@ -33,9 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +62,18 @@ import com.tk.quicksearch.search.utils.PhoneNumberUtils
 import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE
 import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_PACKAGE
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.shared.util.hapticConfirm
+import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.basicMarquee
 
 internal sealed interface ContactActionsPopupState {
     data class ContactActions(
@@ -86,6 +104,7 @@ private val VIDEO_CALL_WORDING_REGEX = Regex("\\s+video\\s+call\\b.*$", RegexOpt
 private val EMPTY_BRACKETS_REGEX = Regex("\\(\\s*\\)")
 private val ORPHAN_BRACKETS_REGEX = Regex("[()\\[\\]{}]")
 private const val CONTACT_ACTIONS_MAX_CARD_HEIGHT_RATIO = 0.62f
+private val NUMBER_SWIPE_THRESHOLD = 48.dp
 
 @Composable
 internal fun ContactActionsPopup(
@@ -141,7 +160,9 @@ internal fun ContactActionsPopup(
         )
     val normalizedContactMethods =
         remember(methodsForSelectedNumber) {
+            // Contacts can keep data from apps that were uninstalled, which can't be opened anymore.
             remapSignalMessageToMollyCustomMethod(methodsForSelectedNumber)
+                .filter { method -> method !is ContactMethod.CustomApp || context.canOpenCustomApp(method) }
         }
     val isRegularWhatsAppInstalled =
         remember(context) { context.isPackageInstalled(WHATSAPP_PACKAGE) }
@@ -199,8 +220,43 @@ internal fun ContactActionsPopup(
             ""
         }
 
+    val dialogBackground = AppColors.DialogBackground
+    val numberSwipeThresholdPx = with(LocalDensity.current) { NUMBER_SWIPE_THRESHOLD.toPx() }
+    val switchNumberOnSwipe =
+        if (reorderedPhoneNumbers.size > 1) {
+            Modifier.pointerInput(reorderedPhoneNumbers) {
+                var dragAmount = 0f
+                detectHorizontalDragGestures(
+                    onDragStart = { dragAmount = 0f },
+                    onDragEnd = {
+                        when {
+                            dragAmount <= -numberSwipeThresholdPx ->
+                                selectedPhoneIndex =
+                                    (selectedPhoneIndex + 1).coerceAtMost(reorderedPhoneNumbers.lastIndex)
+                            dragAmount >= numberSwipeThresholdPx ->
+                                selectedPhoneIndex = (selectedPhoneIndex - 1).coerceAtLeast(0)
+                        }
+                    },
+                    onHorizontalDrag = { change, amount ->
+                        change.consume()
+                        dragAmount += amount
+                    },
+                )
+            }
+        } else {
+            Modifier
+        }
     AppBottomPopup(
         onDismiss = onDismiss,
+        // Swiping left or right anywhere on the popup switches between the contact's numbers.
+        modifier = switchNumberOnSwipe,
+        containerColor = dialogBackground,
+        contentCardColor = dialogBackground,
+        contentSpacing = DesignTokens.SpacingSmall,
+        headerSpacing = DesignTokens.SpacingMedium,
+        contentTopPadding = 0.dp,
+        contentBottomPadding = 0.dp,
+        contentHorizontalPadding = 4.dp,
         leadingContent =
             if (state is ContactActionsPopupState.ContactActions) {
                 {
@@ -208,7 +264,7 @@ internal fun ContactActionsPopup(
                         photoUri = state.contactInfo.photoUri,
                         displayName = state.contactInfo.displayName,
                         onClick = { state.onAvatarClick(state.contactInfo) },
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier.size(40.dp),
                     )
                 }
             } else {
@@ -219,22 +275,24 @@ internal fun ContactActionsPopup(
                 is ContactActionsPopupState.ContactActions ->
                     Text(
                         text = state.contactInfo.displayName,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                     )
 
                 is ContactActionsPopupState.ReplaceAction ->
                     Text(
                         text = replaceActionTitle,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(start = 16.dp),
+                        modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
                     )
             }
         },
-        fixedTopContent = {
+        aboveCardContent = {
             selectedPhoneNumber?.let { phoneNumber ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -261,9 +319,7 @@ internal fun ContactActionsPopup(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier =
-                            Modifier
-                                .weight(1f)
+                        modifier = Modifier.weight(1f),
                     ) {
                         @OptIn(ExperimentalFoundationApi::class)
                         Text(
@@ -271,25 +327,26 @@ internal fun ContactActionsPopup(
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                             textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        onClick = {},
-                                        onLongClick = {
-                                            clipboardManager.setText(AnnotatedString(phoneNumber))
-                                        },
-                                    ),
+                                Modifier.combinedClickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    onClick = {},
+                                    onLongClick = {
+                                        clipboardManager.setText(AnnotatedString(phoneNumber))
+                                    },
+                                ),
                         )
-
                         selectedPhoneNumberLabel?.takeIf { it.isNotBlank() }?.let { label ->
                             Text(
                                 text = label,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     }
@@ -319,15 +376,18 @@ internal fun ContactActionsPopup(
                 }
             }
         },
-        showFixedTopDivider = false,
         maxInnerCardHeight = maxInnerCardHeight,
     ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(bottom = DesignTokens.SpacingLarge),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+        ) {
         when (state) {
             is ContactActionsPopupState.ContactActions -> {
                 if (firstRowMethods.isNotEmpty()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                         verticalAlignment = Alignment.Top,
                     ) {
                         firstRowMethods.forEach { method ->
@@ -343,6 +403,7 @@ internal fun ContactActionsPopup(
                                     state.onContactMethodClick(contactInfo, method)
                                     onDismiss()
                                 },
+                                modifier = Modifier.weight(1f),
                             )
                         }
                     }
@@ -462,7 +523,7 @@ internal fun ContactActionsPopup(
                 if (firstRowMethods.isNotEmpty()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                         verticalAlignment = Alignment.Top,
                     ) {
                         firstRowMethods.forEach { method ->
@@ -470,6 +531,7 @@ internal fun ContactActionsPopup(
                                 method = method,
                                 onClick = { onMethodClick(method) },
                                 usePhoneIconForCallActions = true,
+                                modifier = Modifier.weight(1f),
                             )
                         }
                     }
@@ -529,6 +591,7 @@ internal fun ContactActionsPopup(
                 }
             }
         }
+        }
     }
 }
 
@@ -547,74 +610,88 @@ private fun RemainingMethodsList(
     onContactActionTriggerClick: (ContactInfo, ContactCardAction, String) -> Unit =
         { _, _, _ -> },
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(0.dp),
-    ) {
-        methods.forEachIndexed { index, method ->
+    val view = LocalView.current
+    Column(modifier = Modifier.fillMaxWidth()) {
+        methods.forEach { method ->
             val action = contactMethodToCardAction(method, selectedPhoneNumber)
             val actionDisplayName = methodShortcutLabel(LocalContext.current, method)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                var showMenu by remember { mutableStateOf(false) }
+            val hasLongPressMenu =
+                contactInfo != null &&
+                    addToHomeHandler != null &&
+                    action != null &&
+                    actionDisplayName != null
+            var showMenu by remember { mutableStateOf(false) }
+            val onLongClick: (() -> Unit)? =
+                if (hasLongPressMenu) {
+                    { showMenu = true }
+                } else {
+                    onMethodLongClick?.let { { it(method) } }
+                }
+            // Matches the list rows in the shared item long-press menu.
+            Box(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .heightIn(min = 48.dp)
+                            .clip(DesignTokens.ShapeSmall)
                             .combinedClickable(
                                 onClick = { onMethodClick(method) },
                                 onLongClick =
-                                    if (
-                                        contactInfo != null &&
-                                        addToHomeHandler != null &&
-                                        action != null &&
-                                        actionDisplayName != null
-                                    ) {
-                                        { showMenu = true }
-                                    } else {
-                                        onMethodLongClick?.let { { it(method) } }
+                                    onLongClick?.let { onLongClick ->
+                                        {
+                                            hapticConfirm(view)()
+                                            onLongClick()
+                                        }
                                     },
-                            )
-                            .padding(horizontal = 8.dp, vertical = 12.dp),
+                            ).padding(vertical = DesignTokens.SpacingSmall),
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
                 ) {
-                    ContactMethodIcon(
-                        method = method,
-                        iconSize = 20.dp,
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    if (method.isWhatsAppBusinessMethod()) {
-                        Column {
-                            Text(
-                                text = getActionButtonLabel(method),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
+                    Box(modifier = Modifier.size(22.dp), contentAlignment = Alignment.Center) {
+                        ContactMethodIcon(
+                            method = method,
+                            iconSize = 22.dp,
+                            tintOverride = AppColors.DialogText,
+                        )
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text =
+                                if (method.isWhatsAppBusinessMethod()) {
+                                    getActionButtonLabel(method)
+                                } else {
+                                    getRemainingMethodLabel(method)
+                                },
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = AppColors.DialogText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Clip,
+                            modifier = Modifier.basicMarquee(),
+                        )
+                        if (method.isWhatsAppBusinessMethod()) {
                             Text(
                                 text = stringResource(R.string.contact_method_whatsapp_business_label),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                    } else {
-                        Text(
-                            text = getRemainingMethodLabel(method),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
                     }
-                    if (
-                        contactInfo != null &&
-                        addToHomeHandler != null &&
-                        action != null &&
-                        actionDisplayName != null
-                    ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                if (
+                    contactInfo != null &&
+                    addToHomeHandler != null &&
+                    action != null &&
+                    actionDisplayName != null
+                ) {
+                    // Matches the row's bounds so the dropdown positions against it.
+                    Box(modifier = Modifier.matchParentSize()) {
                         ContactActionLongPressMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false },
@@ -632,9 +709,6 @@ private fun RemainingMethodsList(
                         )
                     }
                 }
-            }
-            if (index != methods.lastIndex) {
-                HorizontalDivider()
             }
         }
     }
@@ -664,7 +738,7 @@ private fun ContactActionMethodRow(
     if (filteredMethods.isNotEmpty()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             verticalAlignment = Alignment.Top,
         ) {
             filteredMethods.forEach { method ->
@@ -677,6 +751,7 @@ private fun ContactActionMethodRow(
                     showTriggerAction = showTriggerAction,
                     onContactActionTriggerClick = onContactActionTriggerClick,
                     onClick = { onMethodClick(method) },
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -693,13 +768,14 @@ private fun ContactActionButtonWithLongPressMenu(
     showTriggerAction: Boolean,
     onContactActionTriggerClick: (ContactInfo, ContactCardAction, String) -> Unit,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val action = contactMethodToCardAction(method, selectedPhoneNumber)
     val actionDisplayName = methodShortcutLabel(context, method)
     var showMenu by remember { mutableStateOf(false) }
 
-    Box {
+    Box(modifier = modifier) {
         ContactActionButton(
             method = method,
             onClick = onClick,
@@ -741,9 +817,10 @@ private fun ContactActionLongPressMenu(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
+        offset = DpOffset(x = 0.dp, y = 8.dp),
         shape = RoundedCornerShape(24.dp),
         properties = PopupProperties(focusable = false),
-        containerColor = com.tk.quicksearch.shared.ui.theme.AppColors.DialogBackground,
+        containerColor = if (LocalAppIsDarkTheme.current) Color.Black else Color.White,
     ) {
         DropdownMenuItem(
             text = { Text(text = stringResource(R.string.action_add_to_home)) },
@@ -890,6 +967,17 @@ private fun ContactMethod.isWhatsAppBusinessMethod(): Boolean =
 
 private fun ContactMethod.isEmailOrWhatsAppBusinessMethod(): Boolean =
     this is ContactMethod.Email || isWhatsAppBusinessMethod()
+
+/** True when the method's app is installed, or another app can handle its contact data. */
+private fun android.content.Context.canOpenCustomApp(method: ContactMethod.CustomApp): Boolean {
+    if (method.packageName?.let(::isPackageInstalled) == true) return true
+    val dataUri =
+        method.dataId?.let { ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, it) }
+            ?: runCatching { Uri.parse(method.data) }.getOrNull()
+            ?: return false
+    val intent = Intent(Intent.ACTION_VIEW).setDataAndType(dataUri, method.mimeType)
+    return runCatching { intent.resolveActivity(packageManager) != null }.getOrDefault(false)
+}
 
 private fun android.content.Context.isPackageInstalled(packageName: String): Boolean =
     runCatching {

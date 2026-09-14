@@ -34,10 +34,12 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
+import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
 
 class PinnedNotificationChoiceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lockPortraitOrientationOnPhones()
         val action = CustomWidgetButtonAction.fromJson(intent.getStringExtra(ExtraAction))
         if (action == null) {
             finish()

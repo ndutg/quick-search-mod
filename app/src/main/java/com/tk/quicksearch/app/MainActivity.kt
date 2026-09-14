@@ -56,6 +56,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
 
 open class MainActivity : FragmentActivity() {
     private data class PendingContactActionPickerRequest(
@@ -123,6 +124,7 @@ open class MainActivity : FragmentActivity() {
             enableEdgeToEdge(statusBarStyle, navigationBarStyle)
 
             super.onCreate(savedInstanceState)
+            lockPortraitOrientationOnPhones()
             PinnedNotifications.show(this)
             UiSurfaceMemoryManager.onSurfaceCreated()
             isActivityInstanceTracked = true

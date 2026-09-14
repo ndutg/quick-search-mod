@@ -21,6 +21,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,7 +50,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -79,6 +80,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalConfiguration
@@ -107,11 +109,18 @@ private val WidgetPanelGridRowHeight = 80.dp
 private val WidgetPanelGridGap = 8.dp
 private val WidgetResizeEdgeHitLong = 64.dp
 private val WidgetResizeEdgeHitShort = 32.dp
-private val WidgetResizeVisualLong = 28.dp
-private val WidgetResizeVisualShort = 6.dp
-private val WidgetActionButtonSize = 32.dp
-private val WidgetActionButtonInset = 6.dp
+private val WidgetResizeVisualLong = 32.dp
+private val WidgetResizeVisualShort = 8.dp
+private val WidgetActionButtonSize = 30.dp
+private val WidgetEditRingWidth = 2.dp
+
+// Centers action buttons on the 45° point of the 28dp card-corner arc
+// (28dp × (1 − 1/√2) ≈ 8dp in from each edge, minus the 15dp button radius).
+private val WidgetActionButtonCornerOffset = 7.dp
 private val WidgetEditBorderWidth = 1.dp
+
+// How far edit badges and resize handles can extend past a widget's top edge.
+private val WidgetEditOverhang = 8.dp
 private val WidgetPanelBottomScrollSpace = 150.dp
 private val WidgetLayoutMotion =
     spring<Dp>(
@@ -463,11 +472,33 @@ fun WidgetsPanelScreen(
                         modifier =
                             Modifier
                                 .weight(1f)
+                                // Grow the scroll viewport upward (and pad its content back down)
+                                // so edit badges and handles that overhang the top row aren't
+                                // clipped by the scroll container, without moving the layout.
+                                .layout { measurable, constraints ->
+                                    val overhangPx = WidgetEditOverhang.roundToPx()
+                                    val placeable =
+                                        measurable.measure(
+                                            constraints.copy(
+                                                minHeight = constraints.minHeight + overhangPx,
+                                                maxHeight =
+                                                    if (constraints.hasBoundedHeight) {
+                                                        constraints.maxHeight + overhangPx
+                                                    } else {
+                                                        constraints.maxHeight
+                                                    },
+                                            ),
+                                        )
+                                    layout(placeable.width, placeable.height - overhangPx) {
+                                        placeable.place(0, -overhangPx)
+                                    }
+                                }
                                 .onGloballyPositioned { coordinates ->
                                     scrollViewportTopPx = coordinates.positionInWindow().y
                                     scrollViewportHeightPx = coordinates.size.height
                                 }
-                                .verticalScroll(panelScrollState),
+                                .verticalScroll(panelScrollState)
+                                .padding(top = WidgetEditOverhang),
                         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
                     ) {
                         val panelItems =
@@ -1075,16 +1106,12 @@ private fun BoxScope.QuickNoteEditOverlay(
         modifier =
             Modifier
                 .matchParentSize()
-                .border(
-                    width = WidgetEditBorderWidth,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                    shape = DesignTokens.ExtraLargeCardShape,
-                )
                 .pointerInput(Unit) {
                     // Keep taps on the selected Quick Note from being treated as outside taps.
                     detectTapGestures(onTap = {})
                 },
     ) {
+        WidgetEditBorder()
         onResizePreview?.let { resize ->
             listOf(ResizeEdge.Top, ResizeEdge.Bottom).forEach { edge ->
                 EdgeResizeHandle(
@@ -1104,16 +1131,14 @@ private fun BoxScope.QuickNoteEditOverlay(
             }
         }
         WidgetActionButton(
-            icon = Icons.Rounded.Delete,
+            icon = Icons.Rounded.Close,
             tint = MaterialTheme.colorScheme.onError,
             background = MaterialTheme.colorScheme.error,
             onClick = onRemove,
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
-                    // A 12dp inset places the button's center at the 28dp card-corner radius,
-                    // visually nesting it inside the Quick Note card instead of crowding its curve.
-                    .padding(DesignTokens.SpacingMedium),
+                    .offset(x = WidgetActionButtonCornerOffset, y = -WidgetActionButtonCornerOffset),
         )
     }
 }
@@ -1195,16 +1220,12 @@ private fun BoxScope.WidgetEditOverlay(
         modifier =
             Modifier
                 .matchParentSize()
-                .border(
-                    width = WidgetEditBorderWidth,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                    shape = DesignTokens.ShapeMedium,
-                )
                 .pointerInput(Unit) {
                     // Absorb taps anywhere on the widget so the screen-level dismiss doesn't fire.
                     detectTapGestures(onTap = {})
                 },
     ) {
+        WidgetEditBorder()
         // Drag-to-move handler covering the widget. Lives below handles & buttons so they get
         // their gestures first.
         Box(
@@ -1261,14 +1282,14 @@ private fun BoxScope.WidgetEditOverlay(
         }
 
         WidgetActionButton(
-            icon = Icons.Rounded.Delete,
+            icon = Icons.Rounded.Close,
             tint = MaterialTheme.colorScheme.onError,
             background = MaterialTheme.colorScheme.error,
             onClick = onRemove,
             modifier =
                 Modifier
                     .align(Alignment.TopEnd)
-                    .padding(WidgetActionButtonInset),
+                    .offset(x = WidgetActionButtonCornerOffset, y = -WidgetActionButtonCornerOffset),
         )
         if (hasConfigure) {
             WidgetActionButton(
@@ -1279,10 +1300,31 @@ private fun BoxScope.WidgetEditOverlay(
                 modifier =
                     Modifier
                         .align(Alignment.TopStart)
-                        .padding(WidgetActionButtonInset),
+                        .offset(
+                            x = -WidgetActionButtonCornerOffset,
+                            y = -WidgetActionButtonCornerOffset,
+                        ),
             )
         }
     }
+}
+
+/**
+ * Edit-mode outline drawn as the first child of an edit overlay. A `border` modifier on the
+ * overlay itself would draw after its children and paint over the action buttons and handles.
+ */
+@Composable
+private fun BoxScope.WidgetEditBorder() {
+    Box(
+        modifier =
+            Modifier
+                .matchParentSize()
+                .border(
+                    width = WidgetEditBorderWidth,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                    shape = DesignTokens.ExtraLargeCardShape,
+                ),
+    )
 }
 
 @Composable
@@ -1297,6 +1339,8 @@ private fun WidgetActionButton(
         modifier = modifier.size(WidgetActionButtonSize),
         shape = CircleShape,
         color = background,
+        // Ring in the panel background color separates the badge from widget content beneath it.
+        border = BorderStroke(WidgetEditRingWidth, MaterialTheme.colorScheme.background),
         shadowElevation = DesignTokens.ElevationLevel2,
     ) {
         IconButton(
@@ -1393,10 +1437,20 @@ private fun EdgeResizeHandle(
                 },
         contentAlignment = Alignment.Center,
     ) {
+        // Shift the pill from the hit area's center onto the border line so it sits on the edge
+        // instead of covering widget content.
+        val edgeOffset = WidgetResizeEdgeHitShort / 2
         Box(
             modifier =
                 Modifier
+                    .offset(x = edgeOffset * edge.xSign, y = edgeOffset * edge.ySign)
                     .size(width = visualWidth, height = visualHeight)
+                    .border(
+                        width = WidgetEditRingWidth,
+                        color = MaterialTheme.colorScheme.background,
+                        shape = CircleShape,
+                    )
+                    .padding(WidgetEditRingWidth)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape,

@@ -36,6 +36,7 @@ import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.searchWidget.VoiceSearchHandler
+import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
 
 class OverlayActivity : FragmentActivity() {
     private companion object {
@@ -68,6 +69,7 @@ class OverlayActivity : FragmentActivity() {
         enableEdgeToEdge(statusBarStyle, navigationBarStyle)
 
         super.onCreate(savedInstanceState)
+        lockPortraitOrientationOnPhones()
         UiSurfaceMemoryManager.onSurfaceCreated()
         isActivityInstanceTracked = true
 

@@ -44,11 +44,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -121,6 +124,7 @@ private const val ONE_HANDED_COMPACT_ENGINES_REFLOW_DURATION_MS = 280
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DURATION_MS = 180
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_IN_DELAY_MS = 40
 private const val ONE_HANDED_COMPACT_ENGINES_FADE_OUT_DURATION_MS = 130
+private const val BOTTOM_BAR_SWIPE_THRESHOLD_PX = 24f
 
 private fun HomeSwipeGestureAction.performHomeGesture(
     actionJson: String?,
@@ -167,6 +171,7 @@ internal fun SearchScreenContent(
         onRestoreSearchKeyboardHandled: () -> Unit = {},
         onStartupKeyboardVisible: () -> Unit = {},
         onClearQuery: () -> Unit,
+        onVoiceClick: () -> Unit,
         onSettingsClick: () -> Unit,
         onAppClick: (com.tk.quicksearch.search.models.AppInfo) -> Unit,
         onRequestUsagePermission: () -> Unit,
@@ -1331,6 +1336,82 @@ internal fun SearchScreenContent(
         )
     }
 
+    val onLauncherSwipeUp: () -> Unit = {
+        when {
+            swipeUpAction == SwipeGestureAction.OPEN_KEYBOARD && !isImeVisible -> {
+                searchFocusRequester.requestFocus()
+                keyboardController?.show()
+            }
+            swipeUpAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
+                keyboardController?.hide()
+            }
+            swipeUpAction == SwipeGestureAction.SEARCH_ENGINE || swipeUpAction == SwipeGestureAction.TOOL ->
+                swipeUpAliasTarget?.let { onGestureAliasTarget(swipeUpAction, it) }
+            else ->
+                homeSwipeUpAction.performHomeGesture(
+                    homeSwipeUpCustomActionJson,
+                    homeSwipeUpAliasTarget,
+                    context,
+                    { action, target -> onGestureAliasTarget(action, target) },
+                    onCloseQuickSearch,
+                )
+        }
+    }
+    val onLauncherSwipeDown: () -> Unit = {
+        when {
+            swipeDownAction == SwipeGestureAction.OPEN_KEYBOARD && !isImeVisible -> {
+                searchFocusRequester.requestFocus()
+                keyboardController?.show()
+            }
+            swipeDownAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
+                keyboardController?.hide()
+            }
+            swipeDownAction == SwipeGestureAction.SEARCH_ENGINE || swipeDownAction == SwipeGestureAction.TOOL ->
+                swipeDownAliasTarget?.let { onGestureAliasTarget(swipeDownAction, it) }
+            else ->
+                homeSwipeDownAction.performHomeGesture(
+                    homeSwipeDownCustomActionJson,
+                    homeSwipeDownAliasTarget,
+                    context,
+                    { action, target -> onGestureAliasTarget(action, target) },
+                    onCloseQuickSearch,
+                )
+        }
+    }
+    // The engine strip and bottom search bar sit outside the results area, so they need
+    // their own vertical drag detector to forward the same swipe gestures. Their inner
+    // scrollers are horizontal only, so vertical drags reach this detector unconsumed.
+    // Swipe up mirrors the results area: it only fires on an empty query.
+    val currentOnLauncherSwipeUp by rememberUpdatedState(onLauncherSwipeUp)
+    val currentOnLauncherSwipeDown by rememberUpdatedState(onLauncherSwipeDown)
+    val bottomBarSwipeUpEnabled = state.query.isBlank() && expandedSection == ExpandedSection.NONE
+    val bottomBarSwipeModifier =
+        Modifier.pointerInput(bottomBarSwipeUpEnabled) {
+            var accumulatedDragY = 0f
+            var gestureHandled = false
+            detectVerticalDragGestures(
+                onDragStart = {
+                    accumulatedDragY = 0f
+                    gestureHandled = false
+                },
+                onVerticalDrag = { change, dragAmount ->
+                    change.consume()
+                    if (gestureHandled) return@detectVerticalDragGestures
+                    accumulatedDragY += dragAmount
+                    when {
+                        accumulatedDragY < -BOTTOM_BAR_SWIPE_THRESHOLD_PX -> {
+                            if (bottomBarSwipeUpEnabled) currentOnLauncherSwipeUp()
+                            gestureHandled = true
+                        }
+                        accumulatedDragY > BOTTOM_BAR_SWIPE_THRESHOLD_PX -> {
+                            currentOnLauncherSwipeDown()
+                            gestureHandled = true
+                        }
+                    }
+                },
+            )
+        }
+
     CompositionLocalProvider(
         LocalSearchColorTheme provides searchColorTheme,
         LocalAmoledThemeActive provides amoledSurfacesActive,
@@ -1409,48 +1490,8 @@ internal fun SearchScreenContent(
                     searchFocusRequester.requestFocus()
                     keyboardController?.show()
                 },
-                onLauncherOverscrollUp = {
-                    when {
-                        swipeUpAction == SwipeGestureAction.OPEN_KEYBOARD && !isImeVisible -> {
-                            searchFocusRequester.requestFocus()
-                            keyboardController?.show()
-                        }
-                        swipeUpAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
-                            keyboardController?.hide()
-                        }
-                        swipeUpAction == SwipeGestureAction.SEARCH_ENGINE || swipeUpAction == SwipeGestureAction.TOOL ->
-                            swipeUpAliasTarget?.let { onGestureAliasTarget(swipeUpAction, it) }
-                        else ->
-                            homeSwipeUpAction.performHomeGesture(
-                                homeSwipeUpCustomActionJson,
-                                homeSwipeUpAliasTarget,
-                                context,
-                                { action, target -> onGestureAliasTarget(action, target) },
-                                onCloseQuickSearch,
-                            )
-                    }
-                },
-                onLauncherOverscrollDown = {
-                    when {
-                        swipeDownAction == SwipeGestureAction.OPEN_KEYBOARD && !isImeVisible -> {
-                            searchFocusRequester.requestFocus()
-                            keyboardController?.show()
-                        }
-                        swipeDownAction == SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS && isImeVisible -> {
-                            keyboardController?.hide()
-                        }
-                        swipeDownAction == SwipeGestureAction.SEARCH_ENGINE || swipeDownAction == SwipeGestureAction.TOOL ->
-                            swipeDownAliasTarget?.let { onGestureAliasTarget(swipeDownAction, it) }
-                        else ->
-                            homeSwipeDownAction.performHomeGesture(
-                                homeSwipeDownCustomActionJson,
-                                homeSwipeDownAliasTarget,
-                                context,
-                                { action, target -> onGestureAliasTarget(action, target) },
-                                onCloseQuickSearch,
-                            )
-                    }
-                },
+                onLauncherOverscrollUp = onLauncherSwipeUp,
+                onLauncherOverscrollDown = onLauncherSwipeDown,
                 onHomeDoubleTap = {
                     homeDoubleTapAction.performHomeGesture(
                         homeDoubleTapCustomActionJson,
@@ -1531,7 +1572,7 @@ internal fun SearchScreenContent(
                     } else {
                         AnimatedContent(
                             targetState = state.searchEnginesState,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().then(bottomBarSwipeModifier),
                             contentKey = { it::class },
                             transitionSpec = {
                                 if (
@@ -1727,7 +1768,7 @@ internal fun SearchScreenContent(
         if (showSearchField && showBottomSearchBar) {
             // The compact engine strip carries its own rounded background, so the search bar
             // stays transparent over the wallpaper instead of sitting on a full-bleed band.
-            Box(modifier = Modifier.fillMaxWidth()) {
+            Box(modifier = Modifier.fillMaxWidth().then(bottomBarSwipeModifier)) {
                 searchFieldContent()
             }
             if (useInsetEngineStrip) {
@@ -1790,6 +1831,7 @@ internal fun SearchScreenContent(
             ) {
                 OpenKeyboardAction(
                         text = openKeyboardText,
+                        onVoiceClick = onVoiceClick,
                         showWallpaperBackground = state.showWallpaperBackground,
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {

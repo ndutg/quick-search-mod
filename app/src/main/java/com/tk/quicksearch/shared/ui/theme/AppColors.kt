@@ -236,6 +236,22 @@ object AppColors {
                 MaterialTheme.colorScheme.primary
             }
 
+    /**
+     * Tint for long-press menu option icons whose setting is active (pinned, trigger set, SpeedBump
+     * on, …). Uses the wallpaper/custom/device accent when one is applied; otherwise a softer green
+     * tuned for the light or dark theme.
+     */
+    val ItemMenuActiveIconTint: Color
+        @Composable
+        get() =
+            if (LocalWallpaperDynamicAccentActive.current || LocalDeviceDynamicColorsActive.current) {
+                MaterialTheme.colorScheme.primary
+            } else if (LocalAppIsDarkTheme.current) {
+                Color(0xFF81C784)
+            } else {
+                Color(0xFF388E3C)
+            }
+
     // Icon tints ---------------------------------------------------------------------------
 
     /**

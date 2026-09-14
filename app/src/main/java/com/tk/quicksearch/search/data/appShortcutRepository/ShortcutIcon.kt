@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -68,13 +69,13 @@ internal fun rememberShortcutIcon(
     iconSizePx: Int,
 ): ImageBitmap? {
     val context = LocalContext.current
+    val cacheKey = remember(shortcut, iconSizePx) { shortcutIconCacheKey(shortcut, iconSizePx) }
+    val cachedIcon = remember(cacheKey) { ShortcutIconMemoryCache.get(cacheKey) }
+    // Keyed per shortcut: shortcuts of one app can share every icon source field, so a slot
+    // reused by a different shortcut (e.g. after one is disabled) must still reload.
     val iconState =
-        produceState<ImageBitmap?>(
-            initialValue = null,
-            key1 = shortcut.packageName,
-            key2 = shortcut.iconResId,
-            key3 = (shortcut.iconBase64?.hashCode() ?: 0) to iconSizePx,
-        ) {
+        produceState(initialValue = cachedIcon, key1 = cacheKey) {
+            value = cachedIcon
             value =
                 withContext(Dispatchers.IO) {
                     loadShortcutIconBitmap(
@@ -100,6 +101,7 @@ private fun loadShortcutIconBitmap(
         val decoded = kotlin.runCatching { Base64.decode(embedded, Base64.DEFAULT) }.getOrNull()
         val bitmap =
             decoded?.let { bytes -> decodeScaledBitmap(bytes, iconSizePx) }
+                ?.takeUnless { it.isFullyTransparent() }
         return bitmap?.asImageBitmap()?.also { ShortcutIconMemoryCache.put(cacheKey, it) }
     }
 
@@ -112,6 +114,12 @@ private fun loadShortcutIconBitmap(
     val targetContext =
         kotlin.runCatching { context.createPackageContext(shortcut.packageName, 0) }.getOrNull()
             ?: return null
+    // Shortcut drawables often reference theme attributes, which only resolve against the
+    // owning app's theme; the bare package context theme leaves them transparent.
+    val appTheme = targetContext.applicationInfo.theme
+    if (appTheme != 0) {
+        kotlin.runCatching { targetContext.setTheme(appTheme) }
+    }
 
     val drawable =
         kotlin.runCatching { targetContext.resources.getDrawable(resId, targetContext.theme) }
@@ -119,9 +127,18 @@ private fun loadShortcutIconBitmap(
             ?: return null
 
     val sizePx = iconSizePx.coerceAtLeast(1)
-    return kotlin.runCatching { drawable.toBitmap(width = sizePx, height = sizePx).asImageBitmap() }
+    return kotlin.runCatching { drawable.toBitmap(width = sizePx, height = sizePx) }
         .getOrNull()
+        ?.takeUnless { it.isFullyTransparent() }
+        ?.asImageBitmap()
         ?.also { ShortcutIconMemoryCache.put(cacheKey, it) }
+}
+
+internal fun Bitmap.isFullyTransparent(): Boolean {
+    if (!hasAlpha()) return false
+    val pixels = IntArray(width * height)
+    getPixels(pixels, 0, width, 0, 0, width, height)
+    return pixels.all { pixel -> pixel ushr 24 == 0 }
 }
 
 private fun shortcutIconCacheKey(shortcut: StaticShortcut, iconSizePx: Int): String {
@@ -227,8 +244,10 @@ private fun loadLauncherAppsShortcutIcon(
         runCatching { launcherApps.getShortcutIconDrawable(info, density) }.getOrNull()
             ?: return null
     val sizePx = iconSizePx.coerceAtLeast(1)
-    return runCatching { drawable.toBitmap(width = sizePx, height = sizePx).asImageBitmap() }
+    return runCatching { drawable.toBitmap(width = sizePx, height = sizePx) }
         .getOrNull()
+        ?.takeUnless { it.isFullyTransparent() }
+        ?.asImageBitmap()
 }
 
 private object ShortcutIconMemoryCache {

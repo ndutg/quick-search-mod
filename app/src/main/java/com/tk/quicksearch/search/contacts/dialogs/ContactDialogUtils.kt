@@ -13,6 +13,7 @@ import com.tk.quicksearch.search.contacts.utils.TelegramContactUtils
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlin.reflect.KClass
 
 // ============================================================================
@@ -146,7 +147,7 @@ internal inline fun renderMethodRow(
     if (filteredMethods.isNotEmpty()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             verticalAlignment = Alignment.Top,
         ) {
             filteredMethods.forEach { method ->
@@ -154,6 +155,7 @@ internal inline fun renderMethodRow(
                     method = method,
                     onClick = { onMethodClick(method) },
                     onLongClick = onMethodLongClick?.let { { it(method) } },
+                    modifier = Modifier.weight(1f),
                 )
             }
         }

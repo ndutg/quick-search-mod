@@ -17,6 +17,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.AppShortcutRepository.isFullyTransparent
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.ContactInfo
@@ -255,7 +256,7 @@ class AddToHomeHandler(private val context: Context) {
         shortcut.iconBase64?.let { encoded ->
             val decoded = runCatching { Base64.decode(encoded, Base64.DEFAULT) }.getOrNull()
             val bitmap = decoded?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
-            if (bitmap != null) {
+            if (bitmap != null && !bitmap.isFullyTransparent()) {
                 return runCatching { Icon.createWithBitmap(bitmap) }.getOrNull()
             }
         }
@@ -265,10 +266,14 @@ class AddToHomeHandler(private val context: Context) {
         val targetContext =
                 runCatching { context.createPackageContext(shortcut.packageName, 0) }.getOrNull()
                         ?: return null
+        val appTheme = targetContext.applicationInfo.theme
+        if (appTheme != 0) {
+            runCatching { targetContext.setTheme(appTheme) }
+        }
 
         return runCatching {
                     val drawable = targetContext.resources.getDrawable(resId, targetContext.theme)
-                    Icon.createWithBitmap(drawable.toBitmap())
+                    drawable.toBitmap().takeUnless { it.isFullyTransparent() }?.let(Icon::createWithBitmap)
                 }
                 .getOrNull()
     }

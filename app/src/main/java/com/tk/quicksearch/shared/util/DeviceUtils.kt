@@ -1,9 +1,12 @@
 package com.tk.quicksearch.shared.util
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.hardware.input.InputManager
+import android.os.Build
 import android.view.InputDevice
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -17,6 +20,37 @@ import androidx.compose.ui.platform.LocalContext
 /**
  * Utility functions for device detection and configuration.
  */
+
+/**
+ * Locks the activity to portrait on phones; larger form factors (tablets, unfolded foldables) keep
+ * free rotation. Done in code rather than the manifest because most activities use a translucent
+ * theme, and Android 8.0 (API 26) throws when a translucent activity requests a fixed orientation.
+ * Activities are recreated on fold/unfold, so this re-evaluates on every posture change.
+ */
+fun Activity.lockPortraitOrientationOnPhones() {
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) return
+    requestedOrientation =
+        if (isPhoneFormFactor()) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+}
+
+/**
+ * Uses the display's maximum window bounds rather than the current window configuration so a
+ * tablet in split-screen or freeform mode is not misclassified as a phone.
+ */
+private fun Activity.isPhoneFormFactor(): Boolean {
+    val smallestWidthDp =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val bounds = windowManager.maximumWindowMetrics.bounds
+            minOf(bounds.width(), bounds.height()) / resources.displayMetrics.density
+        } else {
+            resources.configuration.smallestScreenWidthDp.toFloat()
+        }
+    return smallestWidthDp < 600f
+}
 
 /**
  * Checks if the current device is a tablet based on screen size.

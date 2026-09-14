@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.speech.RecognizerIntent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,6 +16,8 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import com.tk.quicksearch.shared.ui.components.LocalPopupOverlayContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -46,18 +49,21 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.app.UpdateHelper
 import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.core.ItemCustomizationRemover
+import com.tk.quicksearch.search.core.LocalItemCustomizationRemover
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
-import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
+import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
+import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
@@ -98,6 +104,8 @@ import com.tk.quicksearch.search.searchScreen.SearchScreen as SearchScreenCompos
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
 import com.tk.quicksearch.search.searchScreen.ExcludeUndoSnackbarHost
+import com.tk.quicksearch.search.searchScreen.UndoSnackbarVisuals
+import androidx.compose.material.icons.rounded.Block
 import kotlinx.coroutines.launch
 
 private const val SWIPE_NAVIGATION_THRESHOLD_PX = 140f
@@ -162,6 +170,29 @@ fun SearchRoute(
     }
     val searchScreenState = searchScreenSnapshot ?: uiState
     val context = LocalContext.current
+    val voiceInputLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data
+                ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                ?.firstOrNull()
+                ?.takeIf(String::isNotBlank)
+                ?.let(viewModel::onQueryChange)
+        }
+    val startVoiceInput: () -> Unit = {
+        val intent =
+            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM,
+                )
+                putExtra(RecognizerIntent.EXTRA_PROMPT, context.getString(R.string.app_name))
+            }
+        try {
+            voiceInputLauncher.launch(intent)
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(context, R.string.voice_input_not_available, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val nicknameUpdateVersion = uiState.nicknameUpdateVersion
     val getAppNickname: (String) -> String? =
@@ -204,20 +235,48 @@ fun SearchRoute(
     val snackbarHostState = remember { SnackbarHostState() }
     val effectiveSnackbarHostState = overlaySnackbarHostState ?: snackbarHostState
     val snackbarScope = rememberCoroutineScope()
+    // Mirrors the undo snackbar inside popups so it isn't hidden behind them.
+    val popupUndoSnackbar: @Composable BoxScope.() -> Unit =
+        remember(effectiveSnackbarHostState) {
+            {
+                ExcludeUndoSnackbarHost(
+                    hostState = effectiveSnackbarHostState,
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(
+                                start = DesignTokens.SpacingLarge,
+                                end = DesignTokens.SpacingLarge,
+                                bottom = DesignTokens.SpacingHuge,
+                            ),
+                )
+            }
+        }
     val undoLabel = stringResource(R.string.action_undo)
 
-    val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo ->
+    val showUndoSnackbarVisuals: (UndoSnackbarVisuals, () -> Unit) -> Unit = { visuals, onUndo ->
         snackbarScope.launch {
-            val result =
-                effectiveSnackbarHostState.showSnackbar(
-                    message = message,
-                    actionLabel = undoLabel,
-                    duration = androidx.compose.material3.SnackbarDuration.Short,
-                )
+            val result = effectiveSnackbarHostState.showSnackbar(visuals)
             if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
                 onUndo()
             }
         }
+    }
+
+    val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo ->
+        showUndoSnackbarVisuals(UndoSnackbarVisuals(message = message, actionLabel = undoLabel), onUndo)
+    }
+
+    val showAppShortcutDisabledSnackbar: (() -> Unit) -> Unit = @Suppress("LocalContextGetResourceValueCall") { onUndo ->
+        showUndoSnackbarVisuals(
+            UndoSnackbarVisuals(
+                message = context.getString(R.string.snackbar_app_shortcut_disabled_title),
+                supportingText = context.getString(R.string.snackbar_app_shortcut_disabled_supporting),
+                icon = androidx.compose.material.icons.Icons.Rounded.Block,
+                actionLabel = undoLabel,
+            ),
+            onUndo,
+        )
     }
 
     val onHideAppWithUndo: (AppInfo) -> Unit = @Suppress("LocalContextGetResourceValueCall") { app ->
@@ -278,15 +337,23 @@ fun SearchRoute(
         }
     }
 
-    val onExcludeAppShortcutWithUndo: (com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut) -> Unit = @Suppress("LocalContextGetResourceValueCall") { shortcut ->
-        viewModel.excludeAppShortcut(shortcut)
-        showUndoSnackbar(
-            context.getString(
-                R.string.toast_excluded_from_results,
-                shortcutDisplayName(shortcut),
-            ),
-        ) {
-            viewModel.removeExcludedAppShortcut(shortcut)
+    val onDisableAppShortcut: (com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut) -> Unit = @Suppress("LocalContextGetResourceValueCall") { shortcut ->
+        viewModel.setAppShortcutEnabled(shortcut, false)
+        showAppShortcutDisabledSnackbar {
+            viewModel.setAppShortcutEnabled(shortcut, true)
+        }
+    }
+
+    val onDisableAllAppShortcutsForApp: (com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut) -> Unit = @Suppress("LocalContextGetResourceValueCall") { shortcut ->
+        // Only shortcuts this action disables are re-enabled on undo.
+        val newlyDisabledIds =
+            uiState.allAppShortcuts
+                .filter { it.packageName == shortcut.packageName }
+                .map { shortcutKey(it) }
+                .filterNot { it in uiState.disabledAppShortcutIds }
+        viewModel.setAppShortcutsEnabled(newlyDisabledIds, false)
+        showAppShortcutDisabledSnackbar {
+            viewModel.setAppShortcutsEnabled(newlyDisabledIds, true)
         }
     }
 
@@ -800,11 +867,27 @@ fun SearchRoute(
         }
     }
 
+    val itemCustomizationRemover = remember(viewModel) {
+        ItemCustomizationRemover(
+            removeAppNickname = { viewModel.setAppNickname(it, null) },
+            removeAppTrigger = { viewModel.setAppTrigger(it, null) },
+            removeAppShortcutNickname = { viewModel.setAppShortcutNickname(it, null) },
+            removeAppShortcutTrigger = { viewModel.setAppShortcutTrigger(it, null) },
+            removeContactNickname = { viewModel.setContactNickname(it, null) },
+            removeContactTrigger = { viewModel.setContactTrigger(it, null) },
+            removeFileNickname = { viewModel.setFileNickname(it, null) },
+            removeFileTrigger = { viewModel.setFileTrigger(it, null) },
+        )
+    }
+
     Box(modifier = containerModifier) {
         CompositionLocalProvider(
             LocalHomeHorizontalSwipeHandler provides handleHomeHorizontalSwipe,
+            LocalItemCustomizationRemover provides itemCustomizationRemover,
             LocalAppLockAuthenticator provides requestBiometricAuthentication,
             LocalAppLockCredentialAuthenticator provides requestDeviceCredentialAuthentication,
+            LocalOpenAppSettingDestination provides onOpenAppSettingDestination,
+            LocalPopupOverlayContent provides popupUndoSnackbar,
         ) {
             SearchScreenComposable(
                 modifier =
@@ -819,6 +902,7 @@ fun SearchRoute(
             onRestoreSearchKeyboardHandled = viewModel::consumeSearchKeyboardRestoreRequest,
             onStartupKeyboardVisible = viewModel::notifyStartupKeyboardVisible,
             onClearQuery = viewModel::clearQuery,
+            onVoiceClick = startVoiceInput,
             onRequestUsagePermission = { viewModel.openUsageAccessSettings() },
             onToggleOtherSearchItemPin = viewModel::toggleOtherSearchItemPin,
             onSettingsClick = onSettingsClick,
@@ -937,8 +1021,8 @@ fun SearchRoute(
             onPinAppShortcut = viewModel::pinAppShortcut,
             onUnpinAppShortcut = viewModel::unpinAppShortcut,
             onMovePinnedAppShortcut = viewModel::movePinnedAppShortcut,
-            onExcludeAppShortcut = onExcludeAppShortcutWithUndo,
-            onIncludeAppShortcut = viewModel::removeExcludedAppShortcut,
+            onDisableAppShortcut = onDisableAppShortcut,
+            onDisableAllAppShortcutsForApp = onDisableAllAppShortcutsForApp,
             onAppShortcutAppInfoClick = { shortcut: com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut ->
                 viewModel.openAppInfo(shortcut.packageName)
             },

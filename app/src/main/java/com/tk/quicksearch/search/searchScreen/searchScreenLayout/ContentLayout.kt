@@ -731,6 +731,7 @@ fun ContentLayout(
             showWallpaperBackground = effectiveShowWallpaperBackground,
             showTopResultIndicator =
                 state.topResultIndicatorEnabled || isPhysicalKeyboardConnected,
+            showHeader = !state.oneHandedMode || !isLocalSearchRefreshing,
             selectedMatchIndex = selectedTopMatchIndex,
             reverseOrder = isReversed,
             screenTimeState = state.screenTimeState,

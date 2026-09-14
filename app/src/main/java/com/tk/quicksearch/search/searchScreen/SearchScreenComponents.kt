@@ -175,11 +175,13 @@ internal fun PhoneCallPill(
 internal fun OpenKeyboardAction(
     text: String,
     onClick: () -> Unit,
+    onVoiceClick: () -> Unit,
     showWallpaperBackground: Boolean,
     modifier: Modifier = Modifier,
 ) = com.tk.quicksearch.search.searchScreen.components.OpenKeyboardAction(
     text = text,
     onClick = onClick,
+    onVoiceClick = onVoiceClick,
     showWallpaperBackground = showWallpaperBackground,
     modifier = modifier,
 )

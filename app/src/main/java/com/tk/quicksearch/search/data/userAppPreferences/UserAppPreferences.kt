@@ -516,6 +516,11 @@ class UserAppPreferences(
             enabled: Boolean,
     ): Set<String> = appShortcutPreferences.setAppShortcutEnabled(id, enabled)
 
+    fun setAppShortcutsEnabled(
+            ids: Collection<String>,
+            enabled: Boolean,
+    ): Set<String> = appShortcutPreferences.setAppShortcutsEnabled(ids, enabled)
+
     fun getAppShortcutIconOverride(id: String): String? =
             appShortcutPreferences.getAppShortcutIconOverride(id)
 

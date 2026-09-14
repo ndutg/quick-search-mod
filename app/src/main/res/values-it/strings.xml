@@ -69,6 +69,10 @@
     <string name="action_add_to_home">Aggiungi a Home</string>
     <string name="action_add_trigger">Aggiungi trigger</string>
     <string name="action_app_info">Info app</string>
+    <string name="action_manage_all_apps">Gestisci tutte le app</string>
+    <string name="action_app_shortcuts_settings">Impostazioni scorciatoie app</string>
+    <string name="action_files_settings">Impostazioni file</string>
+    <string name="action_contacts_settings">Impostazioni contatti</string>
     <string name="action_lock_app">Blocca</string>
     <string name="action_unlock_app">Sblocca</string>
     <string name="app_lock_prompt_lock">Blocca %1$s</string>
@@ -82,8 +86,8 @@
     <string name="action_edit_icon">Modifica icona</string>
     <string name="action_edit_nickname">Modifica soprannome</string>
     <string name="action_edit_trigger">Modifica trigger</string>
-    <string name="action_exclude_extension">Escludi file .%s</string>
-    <string name="action_exclude_generic">Escludi</string>
+    <string name="action_exclude_extension">Nascondi file .%s</string>
+    <string name="action_exclude_generic">Nascondi</string>
     <string name="action_expand_more">Altro</string>
     <string name="action_expand_more_app_settings">Altre impostazioni app</string>
     <string name="action_expand_more_contacts">Altri contatti</string>
@@ -93,7 +97,7 @@
     <string name="action_expand_more_notes">Altre note</string>
     <string name="action_expand_more_shortcuts">Altre scorciatoie</string>
     <string name="action_file_info">Info file</string>
-    <string name="action_include_generic">Includi</string>
+    <string name="action_include_generic">Mostra</string>
     <string name="action_more_search_history">Più cronologia</string>
     <string name="action_open">Apri</string>
     <string name="action_open_in_split_screen">Schermo diviso</string>
@@ -209,12 +213,12 @@
     <string name="dialog_trigger_error_taken">Questo trigger è già in uso.</string>
     <string name="dialog_trigger_hint">Parola chiave trigger</string>
     <string name="dialog_trigger_message">Inserisci una sola parola come trigger per "%1$s".</string>
-    <string name="exclude_marker"> escluso da </string>
+    <string name="exclude_marker"> nascosto dai </string>
     <string name="permission_action_manage_android">Gestisci nelle impostazioni Android</string>
     <string name="permission_settings_dialog_message">Questa azione richiede l\u2019autorizzazione %1$s. Verrai reindirizzato alle impostazioni di sistema per concederla.</string>
     <string name="permission_settings_dialog_title">Autorizzazione %1$s richiesta</string>
-    <string name="toast_excluded_from_results">%1$s escluso dai risultati</string>
-    <string name="toast_excluded_from_suggestions">%1$s escluso dai suggerimenti</string>
+    <string name="toast_excluded_from_results">%1$s nascosto dai risultati</string>
+    <string name="toast_excluded_from_suggestions">%1$s nascosto dai suggerimenti</string>
 
     <!-- ============================================================================
          Accessibility
@@ -309,6 +313,10 @@
     <string name="app_menu_section_shortcuts">Scorciatoie</string>
     <string name="app_menu_value_on">Attivo</string>
     <string name="action_uninstall_named">Disinstalla %1$s</string>
+    <string name="action_disable_app_shortcut">Disattiva</string>
+    <string name="action_disable_all_app_shortcuts_named">Disattiva tutte le scorciatoie di %1$s</string>
+    <string name="snackbar_app_shortcut_disabled_title">Scorciatoia disattivata</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Puoi riattivarla più tardi nelle impostazioni delle scorciatoie app.</string>
     <string name="apps_refreshed_successfully">App aggiornate con successo</string>
     <string name="error_loading_user_apps">Impossibile caricare le tue app. Riprova tra un momento.</string>
     <string name="error_uninstall_app">Impossibile disinstallare %1$s</string>
@@ -481,7 +489,7 @@
     <string name="file_type_videos">Video</string>
     <string name="files_refreshed_successfully">File aggiornati con successo</string>
     <string name="files_section_permission_subtitle">L\u2019autorizzazione file è richiesta per eseguire la ricerca nei file</string>
-    <string name="settings_excluded_extensions_title">Estensioni file escluse</string>
+    <string name="settings_excluded_extensions_title">Estensioni file nascoste</string>
     <string name="settings_file_types_title">File e cartelle</string>
     <string name="settings_folder_blacklist_add">Aggiungi cartella bloccata</string>
     <string name="settings_folder_blacklist_helper">Queste cartelle verranno ignorate durante la ricerca</string>
@@ -1087,11 +1095,11 @@
     <string name="settings_custom_tool_name_label">Nome strumento</string>
     <string name="settings_custom_tool_prompt_hint">Descrivi cosa fa questo strumento. Questo prompt guiderà l\u2019AI quando lo strumento viene attivato.\n\nUsa {time} per includere la data e l\u2019ora correnti nel prompt.</string>
     <string name="settings_custom_tool_prompt_label">Prompt di sistema</string>
-    <string name="settings_excluded_items_clear_all">Cancella tutte le esclusioni</string>
-    <string name="settings_excluded_items_clear_all_confirmation">Sei sicuro di voler cancellare tutti gli elementi esclusi? Questa azione non può essere annullata.</string>
-    <string name="settings_excluded_items_desc">Visualizza e gestisci gli elementi che hai escluso</string>
-    <string name="settings_excluded_items_empty">Non hai elementi esclusi.</string>
-    <string name="settings_excluded_items_title">Elementi esclusi</string>
+    <string name="settings_excluded_items_clear_all">Mostra tutti gli elementi</string>
+    <string name="settings_excluded_items_clear_all_confirmation">Sei sicuro di voler cancellare tutti gli elementi nascosti? Questa azione non può essere annullata.</string>
+    <string name="settings_excluded_items_desc">Visualizza e gestisci gli elementi che hai nascosto</string>
+    <string name="settings_excluded_items_empty">Non hai elementi nascosti.</string>
+    <string name="settings_excluded_items_title">Elementi nascosti</string>
     <string name="settings_manage_calls_texts_contacts_desc">Gestisci chiamate e SMS per i contatti</string>
     <string name="settings_manage_files_desc">Gestisci quali tipi di file visualizzare nei risultati</string>
     <string name="settings_manage_shortcuts_desc">Gestisci le tue scorciatoie dell\u2019app</string>

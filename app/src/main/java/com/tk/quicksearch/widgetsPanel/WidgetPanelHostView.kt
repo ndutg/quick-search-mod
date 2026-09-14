@@ -4,14 +4,20 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
+import android.graphics.Outline
 import android.os.SystemClock
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewConfiguration
+import android.view.ViewOutlineProvider
 import com.tk.quicksearch.shared.util.MemoryDiagnostics
 import kotlin.math.abs
 
 private const val WIDGET_EDIT_LONG_PRESS_CONFIRMATION_MS = 100L
+
+// Matches DesignTokens.ExtraLargeCardShape used by the Quick Note card.
+private const val WIDGET_CORNER_RADIUS_DP = 28f
 
 /**
  * Host that vends a host view capable of detecting long-press regardless of whether the widget's
@@ -135,6 +141,24 @@ private class WidgetPanelHostView(
         info: AppWidgetProviderInfo?,
     ) {
         super.setAppWidget(appWidgetId, info)
+        // Drop the framework's default widget padding so the widget fills its grid cell and lines
+        // up with the Quick Note card; the rounded outline below then clips the widget's own
+        // background instead of an inset square.
+        setPadding(0, 0, 0, 0)
+    }
+
+    init {
+        val cornerRadiusPx = WIDGET_CORNER_RADIUS_DP * resources.displayMetrics.density
+        outlineProvider =
+            object : ViewOutlineProvider() {
+                override fun getOutline(
+                    view: View,
+                    outline: Outline,
+                ) {
+                    outline.setRoundRect(0, 0, view.width, view.height, cornerRadiusPx)
+                }
+            }
+        clipToOutline = true
     }
 
     private val longPressTimeout = ViewConfiguration.getLongPressTimeout().toLong()

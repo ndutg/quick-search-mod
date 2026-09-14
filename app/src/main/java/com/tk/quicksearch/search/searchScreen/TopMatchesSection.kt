@@ -492,6 +492,7 @@ internal fun TopMatchesSection(
     params: SectionRenderParams,
     showWallpaperBackground: Boolean,
     showTopResultIndicator: Boolean,
+    showHeader: Boolean = true,
     selectedMatchIndex: Int? = null,
     reverseOrder: Boolean = false,
     screenTimeState: ScreenTimeState,
@@ -507,7 +508,9 @@ internal fun TopMatchesSection(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
     ) {
-        TopMatchesHeader()
+        if (showHeader) {
+            TopMatchesHeader()
+        }
 
         displayedMatches.forEach { item ->
             key(item.stableKey()) {
@@ -665,8 +668,8 @@ private fun TopMatchRow(
                 hasTrigger = appShortcutsParams.getShortcutTrigger(id)?.word?.isNotBlank() == true,
                 onShortcutClick = appShortcutsParams.onShortcutClick,
                 onTogglePin = appShortcutsParams.onTogglePin,
-                onExclude = appShortcutsParams.onExclude,
-                onInclude = appShortcutsParams.onInclude,
+                onDisable = appShortcutsParams.onDisable,
+                onDisableAllForApp = appShortcutsParams.onDisableAllForApp,
                 onAppInfoClick = appShortcutsParams.onAppInfoClick,
                 onNicknameClick = appShortcutsParams.onNicknameClick,
                 onTriggerClick = appShortcutsParams.onTriggerClick,
@@ -807,6 +810,7 @@ private fun TopMatchAppGrid(
         onAppInfoClick = params.onAppInfoClick,
         onUninstallClick = params.onUninstallClick,
         onHideApp = params.onHideApp,
+        onDisableAppShortcut = params.onDisableAppShortcut,
         onPinApp = params.onPinApp,
         onUnpinApp = params.onUnpinApp,
         onReorderPinnedApps = params.onReorderPinnedApps,
@@ -929,6 +933,7 @@ private fun TopMatchAppRow(
             onShortcutClick = params.onAppShortcutClick,
             onAppInfoClick = { params.onAppInfoClick(app) },
             onHideApp = { params.onHideApp(app) },
+            onDisableShortcut = params.onDisableAppShortcut,
             onPinApp = { params.onPinApp(app) },
             onUnpinApp = { params.onUnpinApp(app) },
             onUninstallClick = { params.onUninstallClick(app) },
