@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -26,12 +27,12 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PinEnd
-import androidx.compose.material.icons.rounded.Visibility
-import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,9 +56,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
+import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressOption
 import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
 import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
+import com.tk.quicksearch.shared.ui.components.itemMenuRemoveOption
 import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.apps.rememberAppIcon
@@ -68,6 +71,10 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.ShortcutIcon
 import com.tk.quicksearch.search.data.AppShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
+import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.appSettings.AppSettingsDestination
+import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
+import com.tk.quicksearch.search.core.LocalItemCustomizationRemover
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
@@ -94,8 +101,8 @@ fun AppShortcutResultsSection(
         onShortcutClick: (StaticShortcut) -> Unit,
         onTogglePin: (StaticShortcut) -> Unit,
         onMovePinned: (StaticShortcut, Boolean) -> Unit = { _, _ -> },
-        onExclude: (StaticShortcut) -> Unit,
-        onInclude: (StaticShortcut) -> Unit,
+        onDisable: (StaticShortcut) -> Unit,
+        onDisableAllForApp: (StaticShortcut) -> Unit,
         onAppInfoClick: (StaticShortcut) -> Unit,
         onNicknameClick: (StaticShortcut) -> Unit,
         onTriggerClick: (StaticShortcut) -> Unit,
@@ -168,8 +175,8 @@ fun AppShortcutResultsSection(
                                         onShortcutClick = onShortcutClick,
                                         onTogglePin = onTogglePin,
                                         onMovePinned = onMovePinned,
-                                        onExclude = onExclude,
-                                        onInclude = onInclude,
+                                        onDisable = onDisable,
+                                        onDisableAllForApp = onDisableAllForApp,
                                         onAppInfoClick = onAppInfoClick,
                                         onNicknameClick = onNicknameClick,
                                         onTriggerClick = onTriggerClick,
@@ -205,8 +212,8 @@ private fun AppShortcutsCardContent(
         onShortcutClick: (StaticShortcut) -> Unit,
         onTogglePin: (StaticShortcut) -> Unit,
         onMovePinned: (StaticShortcut, Boolean) -> Unit,
-        onExclude: (StaticShortcut) -> Unit,
-        onInclude: (StaticShortcut) -> Unit,
+        onDisable: (StaticShortcut) -> Unit,
+        onDisableAllForApp: (StaticShortcut) -> Unit,
         onAppInfoClick: (StaticShortcut) -> Unit,
         onNicknameClick: (StaticShortcut) -> Unit,
         onTriggerClick: (StaticShortcut) -> Unit,
@@ -243,8 +250,8 @@ private fun AppShortcutsCardContent(
                                         onShortcutClick = onShortcutClick,
                                         onTogglePin = onTogglePin,
                                         onMovePinned = onMovePinned,
-                                        onExclude = onExclude,
-                                        onInclude = onInclude,
+                                        onDisable = onDisable,
+                                        onDisableAllForApp = onDisableAllForApp,
                                         onAppInfoClick = onAppInfoClick,
                                         onNicknameClick = onNicknameClick,
                                         onTriggerClick = onTriggerClick,
@@ -285,8 +292,8 @@ internal fun AppShortcutRow(
         onShortcutClick: (StaticShortcut) -> Unit,
         onTogglePin: (StaticShortcut) -> Unit,
         onMovePinned: (StaticShortcut, Boolean) -> Unit = { _, _ -> },
-        onExclude: (StaticShortcut) -> Unit,
-        onInclude: (StaticShortcut) -> Unit,
+        onDisable: (StaticShortcut) -> Unit,
+        onDisableAllForApp: (StaticShortcut) -> Unit,
         onAppInfoClick: (StaticShortcut) -> Unit,
         onNicknameClick: (StaticShortcut) -> Unit,
         onTriggerClick: (StaticShortcut) -> Unit = {},
@@ -303,6 +310,7 @@ internal fun AppShortcutRow(
         showPinnedItemMenu: Boolean = false,
 ) {
         val context = androidx.compose.ui.platform.LocalContext.current
+        val customizationRemover = LocalItemCustomizationRemover.current
         val addToHomeHandler =
                 remember(context) { com.tk.quicksearch.search.common.AddToHomeHandler(context) }
         var showOptions by remember { mutableStateOf(false) }
@@ -316,12 +324,7 @@ internal fun AppShortcutRow(
                         iconPackPackage = iconPackPackage
                 )
         val hasEmbeddedOrOverrideIcon = !shortcut.iconBase64.isNullOrBlank()
-        val displayIcon =
-                if (hasEmbeddedOrOverrideIcon) {
-                    iconBitmap
-                } else {
-                    iconBitmap ?: appIconResult.bitmap
-                }
+        val displayIcon = iconBitmap ?: appIconResult.bitmap
         if (displayIcon == null && icon == null && !hasEmbeddedOrOverrideIcon) return
 
         Row(
@@ -399,17 +402,18 @@ internal fun AppShortcutRow(
                                 expanded = showOptions,
                                 onDismissRequest = { showOptions = false },
                                 isPinned = isPinned,
-                                isExcluded = isExcluded,
                                 hasNickname = hasNickname,
                                 hasTrigger = hasTrigger,
                                 onTogglePin = { onTogglePin(shortcut) },
                                 onMoveUp = { onMovePinned(shortcut, true) },
                                 onMoveDown = { onMovePinned(shortcut, false) },
-                                onExclude = { onExclude(shortcut) },
-                                onInclude = { onInclude(shortcut) },
+                                onDisable = { onDisable(shortcut) },
+                                onDisableAllForApp = { onDisableAllForApp(shortcut) },
                                 onAppInfoClick = { onAppInfoClick(shortcut) },
                                 onNicknameClick = { onNicknameClick(shortcut) },
                                 onTriggerClick = { onTriggerClick(shortcut) },
+                                onRemoveNickname = customizationRemover?.let { remover -> { remover.removeAppShortcutNickname(shortcut) } },
+                                onRemoveTrigger = customizationRemover?.let { remover -> { remover.removeAppShortcutTrigger(shortcut) } },
                                 onEditCustomShortcut = onEditCustomShortcut,
                                 onEditShortcutIcon = onEditShortcutIcon,
                                 onAddToHome = { addToHomeHandler.addAppShortcutToHome(shortcut) },
@@ -426,6 +430,7 @@ private data class AppShortcutMenuItem(
         val onClick: () -> Unit,
         val group: ItemMenuGroup = ItemMenuGroup.ACTIONS,
         val textArg: String? = null,
+        val longPressOption: ItemMenuLongPressOption? = null,
 )
 
 /** Where an item appears in the long-press [ItemMenuPopup]. */
@@ -442,17 +447,19 @@ private fun AppShortcutDropdownMenu(
         expanded: Boolean,
         onDismissRequest: () -> Unit,
         isPinned: Boolean,
-        isExcluded: Boolean,
         hasNickname: Boolean,
         hasTrigger: Boolean,
         onTogglePin: () -> Unit,
         onMoveUp: () -> Unit = {},
         onMoveDown: () -> Unit = {},
-        onExclude: () -> Unit,
-        onInclude: () -> Unit,
+        onDisable: () -> Unit,
+        onDisableAllForApp: () -> Unit,
         onAppInfoClick: () -> Unit,
         onNicknameClick: () -> Unit,
         onTriggerClick: () -> Unit,
+        /** Clears the nickname or trigger from a long press on its tile; null hides that option. */
+        onRemoveNickname: (() -> Unit)? = null,
+        onRemoveTrigger: (() -> Unit)? = null,
         onEditCustomShortcut: (StaticShortcut) -> Unit,
         onEditShortcutIcon: (StaticShortcut) -> Unit,
         onAddToHome: () -> Unit,
@@ -462,10 +469,10 @@ private fun AppShortcutDropdownMenu(
         val context = LocalContext.current
         val displayName = shortcutDisplayName(shortcut)
         val density = LocalDensity.current
-        val iconSizePx = remember(density) { with(density) { 48.dp.roundToPx().coerceAtLeast(1) } }
+        val iconSizePx = remember(density) { with(density) { 40.dp.roundToPx().coerceAtLeast(1) } }
         val iconBitmap = rememberShortcutIcon(shortcut = shortcut, iconSizePx = iconSizePx)
         val appIconResult = rememberAppIcon(packageName = shortcut.packageName, iconPackPackage = iconPackPackage)
-        val headerIcon = if (!shortcut.iconBase64.isNullOrBlank()) iconBitmap else (iconBitmap ?: appIconResult.bitmap)
+        val headerIcon = iconBitmap ?: appIconResult.bitmap
         val isUserCreated = isUserCreatedShortcut(shortcut)
         val notificationAction = CustomWidgetButtonAction.AppShortcut(
                 packageName = shortcut.packageName,
@@ -479,12 +486,27 @@ private fun AppShortcutDropdownMenu(
                 intents = shortcut.intents,
         )
         val isPinnedToNotifications = PinnedNotifications.isPinned(context, notificationAction)
+        val openAppSettingDestination = LocalOpenAppSettingDestination.current
+        val hasIconOverride = remember(shortcut, expanded) {
+                !UserAppPreferences(context).getAppShortcutIconOverride(shortcutKey(shortcut)).isNullOrBlank()
+        }
 
+        // Removing keeps the menu open, so the menu tracks it until it's next opened.
+        var triggerRemoved by remember(expanded) { mutableStateOf(false) }
+        var nicknameRemoved by remember(expanded) { mutableStateOf(false) }
+        val triggerSet = hasTrigger && !triggerRemoved
+        val nicknameSet = hasNickname && !nicknameRemoved
+        val removeTriggerOption = itemMenuRemoveOption(
+                onRemoveTrigger?.takeIf { triggerSet }?.let { remove -> { triggerRemoved = true; remove() } },
+        )
+        val removeNicknameOption = itemMenuRemoveOption(
+                onRemoveNickname?.takeIf { nicknameSet }?.let { remove -> { nicknameRemoved = true; remove() } },
+        )
         val menuItems = buildList {
                 if (showPinnedItemMenu && isPinned) {
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_unpin_app,
-                                icon = { Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null) },
+                                icon = { Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null, tint = AppColors.ItemMenuActiveIconTint) },
                                 onClick = { onDismissRequest(); onTogglePin() },
                         ))
                         add(AppShortcutMenuItem(
@@ -505,27 +527,29 @@ private fun AppShortcutDropdownMenu(
                                 Icon(
                                         painter = painterResource(if (isPinned) R.drawable.ic_unpin else R.drawable.ic_pin),
                                         contentDescription = null,
+                                        tint = if (isPinned) AppColors.ItemMenuActiveIconTint else LocalContentColor.current,
                                 )
                         },
                         onClick = { onDismissRequest(); onTogglePin() },
                 ))
                 add(AppShortcutMenuItem(
-                        textResId = if (hasTrigger) R.string.action_edit_trigger else R.string.action_add_trigger,
-                        icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null) },
+                        textResId = R.string.action_add_trigger,
+                        icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                         onClick = { onDismissRequest(); onTriggerClick() },
+                        longPressOption = removeTriggerOption,
                 ))
                 add(AppShortcutMenuItem(
-                        textResId = if (hasNickname) R.string.action_edit_nickname else R.string.common_nickname,
-                        icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                        textResId = R.string.common_nickname,
+                        icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                         onClick = { onDismissRequest(); onNicknameClick() },
+                        longPressOption = removeNicknameOption,
+                ))
+                add(AppShortcutMenuItem(
+                        textResId = R.string.action_disable_app_shortcut,
+                        icon = { Icon(imageVector = Icons.Rounded.Block, contentDescription = null) },
+                        onClick = { onDismissRequest(); onDisable() },
                 ))
 
-                add(AppShortcutMenuItem(
-                        textResId = R.string.action_add_to_home,
-                        icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
-                        onClick = { onDismissRequest(); onAddToHome() },
-                        group = ItemMenuGroup.APPEARANCE,
-                ))
                 if (isUserCreated) {
                         add(AppShortcutMenuItem(
                                 textResId = R.string.settings_edit_label,
@@ -536,7 +560,7 @@ private fun AppShortcutDropdownMenu(
                 } else {
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_edit_icon,
-                                icon = { Icon(imageVector = Icons.Rounded.Image, contentDescription = null) },
+                                icon = { Icon(imageVector = Icons.Rounded.Image, contentDescription = null, tint = if (hasIconOverride) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                                 onClick = { onDismissRequest(); onEditShortcutIcon(shortcut) },
                                 group = ItemMenuGroup.APPEARANCE,
                         ))
@@ -545,7 +569,7 @@ private fun AppShortcutDropdownMenu(
                         textResId = if (isPinnedToNotifications) R.string.action_unpin_from_notifications else R.string.action_pin_to_notifications,
                         icon = {
                             if (isPinnedToNotifications) {
-                                Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null)
+                                Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null, tint = AppColors.ItemMenuActiveIconTint)
                             } else {
                                 Icon(imageVector = Icons.Rounded.PinEnd, contentDescription = null)
                             }
@@ -555,21 +579,30 @@ private fun AppShortcutDropdownMenu(
                 ))
 
                 add(AppShortcutMenuItem(
-                        textResId = if (isExcluded) R.string.action_include_generic else R.string.action_exclude_generic,
-                        icon = {
-                                Icon(
-                                        imageVector = if (isExcluded) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
-                                        contentDescription = null,
-                                )
-                        },
-                        onClick = { onDismissRequest(); if (isExcluded) onInclude() else onExclude() },
+                        textResId = R.string.action_add_to_home,
+                        icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                        onClick = { onDismissRequest(); onAddToHome() },
                         group = ItemMenuGroup.BEHAVIOR,
                 ))
-
                 add(AppShortcutMenuItem(
                         textResId = R.string.action_app_info,
                         icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
                         onClick = { onDismissRequest(); onAppInfoClick() },
+                        group = ItemMenuGroup.BEHAVIOR,
+                ))
+                openAppSettingDestination?.let { openDestination ->
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.action_app_shortcuts_settings,
+                                icon = { Icon(imageVector = Icons.Rounded.Settings, contentDescription = null) },
+                                onClick = { onDismissRequest(); openDestination(AppSettingsDestination.APP_SHORTCUTS) },
+                                group = ItemMenuGroup.BEHAVIOR,
+                        ))
+                }
+                add(AppShortcutMenuItem(
+                        textResId = R.string.action_disable_all_app_shortcuts_named,
+                        textArg = shortcut.appLabel,
+                        icon = { Icon(imageVector = Icons.Rounded.Block, contentDescription = null) },
+                        onClick = { onDismissRequest(); onDisableAllForApp() },
                         group = ItemMenuGroup.SYSTEM,
                 ))
                 if (!isUserCreated && shortcut.packageName != context.packageName) {
@@ -624,8 +657,7 @@ private fun AppShortcutDropdownMenu(
                                         icon = item.icon,
                                         onClick = item.onClick,
                                         destructive = item.textResId == R.string.action_uninstall_app ||
-                                                item.textResId == R.string.action_uninstall_named,
-                                )
+                                                item.textResId == R.string.action_uninstall_named,                                )
                         }
                 }
                 ItemMenuPopup(
@@ -635,7 +667,7 @@ private fun AppShortcutDropdownMenu(
                                         Image(
                                                 bitmap = bitmap,
                                                 contentDescription = displayName,
-                                                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)),
+                                                modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp)),
                                                 contentScale = ContentScale.Fit,
                                         )
                                 }
@@ -644,10 +676,10 @@ private fun AppShortcutDropdownMenu(
                                 Column {
                                         Text(
                                                 text = displayName,
-                                                style = MaterialTheme.typography.titleLarge,
+                                                style = MaterialTheme.typography.titleMedium,
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = MaterialTheme.colorScheme.onSurface,
-                                                maxLines = 1,
+                                                maxLines = 2,
                                                 overflow = TextOverflow.Ellipsis,
                                         )
                                         shortcut.appLabel?.let { label ->
@@ -666,6 +698,7 @@ private fun AppShortcutDropdownMenu(
                                         label = stringResource(item.textResId),
                                         icon = item.icon,
                                         onClick = item.onClick,
+                                        longPressOption = item.longPressOption,
                                 )
                         },
                         rows = listOf(ItemMenuGroup.APPEARANCE, ItemMenuGroup.BEHAVIOR, ItemMenuGroup.SYSTEM).flatMap { rowsByGroup[it].orEmpty() },

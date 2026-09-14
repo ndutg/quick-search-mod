@@ -30,6 +30,7 @@ import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import kotlinx.coroutines.launch
+import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
 
 class WidgetActionActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -39,6 +40,7 @@ class WidgetActionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AppLanguageManager.applySavedAppLanguage(this)
         super.onCreate(savedInstanceState)
+        lockPortraitOrientationOnPhones()
         val action =
             CustomWidgetButtonAction.fromJson(
                 intent.getStringExtra(EXTRA_CUSTOM_BUTTON_ACTION),

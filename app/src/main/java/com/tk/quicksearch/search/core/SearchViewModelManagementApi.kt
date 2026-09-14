@@ -224,6 +224,9 @@ internal interface SearchViewModelManagementApi {
     fun setAppShortcutEnabled(shortcut: StaticShortcut, enabled: Boolean) =
         managementApiDelegate.setAppShortcutEnabled(shortcut, enabled)
 
+    fun setAppShortcutsEnabled(shortcutIds: Collection<String>, enabled: Boolean) =
+        managementApiDelegate.setAppShortcutsEnabled(shortcutIds, enabled)
+
     fun setAppShortcutIconOverride(shortcut: StaticShortcut, iconBase64: String?) =
         managementApiDelegate.setAppShortcutIconOverride(shortcut, iconBase64)
 
@@ -742,6 +745,10 @@ class SearchViewModelManagementApiDelegate internal constructor(
 
     fun setAppShortcutEnabled(shortcut: StaticShortcut, enabled: Boolean) {
         staticDataDelegate.setAppShortcutEnabled(shortcut, enabled)
+    }
+
+    fun setAppShortcutsEnabled(shortcutIds: Collection<String>, enabled: Boolean) {
+        staticDataDelegate.setAppShortcutsEnabled(shortcutIds, enabled)
     }
 
     fun setAppShortcutIconOverride(shortcut: StaticShortcut, iconBase64: String?) {

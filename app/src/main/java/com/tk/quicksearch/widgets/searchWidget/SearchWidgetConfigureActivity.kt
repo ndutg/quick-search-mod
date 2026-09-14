@@ -43,6 +43,7 @@ import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceive
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
 import com.tk.quicksearch.widgets.utils.toWidgetPreferences
 import kotlinx.coroutines.launch
+import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
 
 /** Activity for configuring widget preferences when a widget is added or reconfigured. */
 class SearchWidgetConfigureActivity : ComponentActivity() {
@@ -65,6 +66,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
         )
         super.onCreate(savedInstanceState)
+        lockPortraitOrientationOnPhones()
         setResult(Activity.RESULT_CANCELED)
 
         appWidgetId =

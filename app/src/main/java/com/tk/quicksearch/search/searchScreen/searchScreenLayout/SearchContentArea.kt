@@ -556,6 +556,9 @@ fun SearchContentArea(
                                                     } else {
                                                         expandedSectionBottomInset
                                                     }
+                                                } else if (alignResultsToBottom) {
+                                                    // Bottom-anchored results sit closer to the search bar.
+                                                    DesignTokens.SpacingXXSmall
                                                 } else {
                                                     DesignTokens
                                                         .SpacingMedium

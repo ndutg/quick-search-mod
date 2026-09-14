@@ -71,6 +71,10 @@
     <string name="action_add_to_home">إضافة إلى الشاشة الرئيسية</string>
     <string name="action_add_trigger">إضافة كلمة تشغيل</string>
     <string name="action_app_info">معلومات التطبيق</string>
+    <string name="action_manage_all_apps">إدارة كل التطبيقات</string>
+    <string name="action_app_shortcuts_settings">إعدادات اختصارات التطبيقات</string>
+    <string name="action_files_settings">إعدادات الملفات</string>
+    <string name="action_contacts_settings">إعدادات جهات الاتصال</string>
     <string name="action_lock_app">قفل</string>
     <string name="action_unlock_app">إلغاء القفل</string>
     <string name="app_lock_prompt_lock">قفل %1$s</string>
@@ -84,8 +88,8 @@
     <string name="action_edit_icon">تعديل الأيقونة</string>
     <string name="action_edit_nickname">تعديل اللقب</string>
     <string name="action_edit_trigger">تعديل كلمة التشغيل</string>
-    <string name="action_exclude_extension">استبعاد ملفات .%s</string>
-    <string name="action_exclude_generic">استبعاد</string>
+    <string name="action_exclude_extension">إخفاء ملفات .%s</string>
+    <string name="action_exclude_generic">إخفاء</string>
     <string name="action_expand_more">المزيد</string>
     <string name="action_expand_more_app_settings">المزيد من إعدادات التطبيقات</string>
     <string name="action_expand_more_contacts">المزيد من جهات الاتصال</string>
@@ -95,7 +99,7 @@
     <string name="action_expand_more_notes">المزيد من الملاحظات</string>
     <string name="action_expand_more_shortcuts">المزيد من الاختصارات</string>
     <string name="action_file_info">معلومات الملف</string>
-    <string name="action_include_generic">تضمين</string>
+    <string name="action_include_generic">إظهار</string>
     <string name="action_more_search_history">المزيد من سجل البحث</string>
     <string name="action_open">فتح</string>
     <string name="action_open_in_split_screen">تقسيم الشاشة</string>
@@ -211,12 +215,12 @@
     <string name="dialog_trigger_error_taken">كلمة التشغيل هذه مستخدمة بالفعل.</string>
     <string name="dialog_trigger_hint">كلمة التشغيل</string>
     <string name="dialog_trigger_message">أدخل كلمة تشغيل من كلمة واحدة لـ "%1$s".</string>
-    <string name="exclude_marker">تم استبعاده من</string>
+    <string name="exclude_marker">تم إخفاؤه من</string>
     <string name="permission_action_manage_android">إدارة من إعدادات Android</string>
     <string name="permission_settings_dialog_message">يتطلب هذا الإجراء إذن %1$s. سيتم توجيهك إلى إعدادات النظام لمنحه.</string>
     <string name="permission_settings_dialog_title">مطلوب إذن %1$s</string>
-    <string name="toast_excluded_from_results">تم استبعاد %1$s من النتائج</string>
-    <string name="toast_excluded_from_suggestions">تم استبعاد %1$s من الاقتراحات</string>
+    <string name="toast_excluded_from_results">تم إخفاء %1$s من النتائج</string>
+    <string name="toast_excluded_from_suggestions">تم إخفاء %1$s من الاقتراحات</string>
 
     <!-- ============================================================================
          Accessibility
@@ -311,6 +315,10 @@
     <string name="app_menu_section_shortcuts">الاختصارات</string>
     <string name="app_menu_value_on">مفعّل</string>
     <string name="action_uninstall_named">إلغاء تثبيت %1$s</string>
+    <string name="action_disable_app_shortcut">تعطيل</string>
+    <string name="action_disable_all_app_shortcuts_named">تعطيل جميع اختصارات %1$s</string>
+    <string name="snackbar_app_shortcut_disabled_title">تم تعطيل اختصار التطبيق</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">يمكنك تفعيله لاحقًا من إعدادات اختصارات التطبيقات.</string>
     <string name="apps_refreshed_successfully">تم تحديث التطبيقات بنجاح</string>
     <string name="error_loading_user_apps">عذراً، تعذر تحميل تطبيقاتك. يرجى المحاولة مرة أخرى بعد قليل.</string>
     <string name="error_uninstall_app">تعذر إلغاء تثبيت %1$s</string>
@@ -483,7 +491,7 @@
     <string name="file_type_videos">الفيديو</string>
     <string name="files_refreshed_successfully">تم تحديث الملفات بنجاح</string>
     <string name="files_section_permission_subtitle">إذن الوصول إلى الملفات مطلوب لإجراء البحث في الملفات</string>
-    <string name="settings_excluded_extensions_title">امتدادات الملفات المستبعدة</string>
+    <string name="settings_excluded_extensions_title">امتدادات الملفات المخفية</string>
     <string name="settings_file_types_title">الملفات والمجلدات</string>
     <string name="settings_folder_blacklist_add">إضافة مجلد إلى القائمة السوداء</string>
     <string name="settings_folder_blacklist_helper">سيتم تجاهل هذه المجلدات عند البحث</string>
@@ -1089,11 +1097,11 @@
     <string name="settings_custom_tool_name_label">اسم الأداة</string>
     <string name="settings_custom_tool_prompt_hint">وصف وظيفة هذه الأداة. ستقوم هذه التوجيهات بإرشاد AI عند تفعيل الأداة.\n\nاستخدم {time} لتضمين التاريخ والوقت الحاليين في التوجيه.</string>
     <string name="settings_custom_tool_prompt_label">توجيه النظام (System Prompt)</string>
-    <string name="settings_excluded_items_clear_all">مسح كافة العناصر المستبعدة</string>
-    <string name="settings_excluded_items_clear_all_confirmation">هل أنت متأكد من رغبتك في مسح كافة العناصر المستبعدة؟ لا يمكن التراجع عن هذا الإجراء.</string>
-    <string name="settings_excluded_items_desc">عرض وإدارة العناصر التي قمت باستبعادها</string>
-    <string name="settings_excluded_items_empty">ليس لديك أي عناصر مستبعدة.</string>
-    <string name="settings_excluded_items_title">العناصر المستبعدة</string>
+    <string name="settings_excluded_items_clear_all">إظهار كافة العناصر</string>
+    <string name="settings_excluded_items_clear_all_confirmation">هل أنت متأكد من رغبتك في مسح كافة العناصر المخفية؟ لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="settings_excluded_items_desc">عرض وإدارة العناصر التي قمت بإخفائها</string>
+    <string name="settings_excluded_items_empty">ليس لديك أي عناصر مخفية.</string>
+    <string name="settings_excluded_items_title">العناصر المخفية</string>
     <string name="settings_manage_calls_texts_contacts_desc">إدارة المكالمات والرسائل النصية لجهات الاتصال</string>
     <string name="settings_manage_files_desc">إدارة أنواع الملفات التي تظهر في النتائج</string>
     <string name="settings_manage_shortcuts_desc">إدارة اختصارات تطبيقاتك</string>

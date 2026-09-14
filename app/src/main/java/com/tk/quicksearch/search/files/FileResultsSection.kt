@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.FileIntents
+import com.tk.quicksearch.search.core.LocalItemCustomizationRemover
 import com.tk.quicksearch.search.contacts.components.ContactUiConstants
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
@@ -737,6 +738,7 @@ internal fun FileResultRow(
         showPinnedItemMenu: Boolean = false,
 ) {
     val context = LocalContext.current
+    val customizationRemover = LocalItemCustomizationRemover.current
     val addToHomeHandler =
             remember(context) { com.tk.quicksearch.search.common.AddToHomeHandler(context) }
     var showOptions by remember { mutableStateOf(false) }
@@ -821,6 +823,8 @@ internal fun FileResultRow(
                     onExcludeExtension = { onExcludeExtension(deviceFile) },
                     onNicknameClick = { onNicknameClick(deviceFile) },
                     onTriggerClick = { onTriggerClick(deviceFile) },
+                    onRemoveNickname = customizationRemover?.let { remover -> { remover.removeFileNickname(deviceFile) } },
+                    onRemoveTrigger = customizationRemover?.let { remover -> { remover.removeFileTrigger(deviceFile) } },
                     onOpenFolderClick = { onOpenFolder(deviceFile) },
                     onFileInfoClick = { showFileInfoDialog = true },
                     onShareClick = { FileIntents.shareFile(context, deviceFile) },

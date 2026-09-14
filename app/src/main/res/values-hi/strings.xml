@@ -70,6 +70,10 @@
     <string name="action_add_to_home">होम में जोड़ें</string>
     <string name="action_add_trigger">ट्रिगर जोड़ें</string>
     <string name="action_app_info">ऐप जानकारी</string>
+    <string name="action_manage_all_apps">सभी ऐप्स प्रबंधित करें</string>
+    <string name="action_app_shortcuts_settings">ऐप शॉर्टकट सेटिंग्स</string>
+    <string name="action_files_settings">फ़ाइल सेटिंग्स</string>
+    <string name="action_contacts_settings">संपर्क सेटिंग्स</string>
     <string name="action_lock_app">लॉक करें</string>
     <string name="action_unlock_app">अनलॉक करें</string>
     <string name="app_lock_prompt_lock">%1$s को लॉक करें</string>
@@ -83,8 +87,8 @@
     <string name="action_edit_icon">आइकन संपादित करें</string>
     <string name="action_edit_nickname">निकनेम संपादित करें</string>
     <string name="action_edit_trigger">ट्रिगर संपादित करें</string>
-    <string name="action_exclude_extension">.%s फाइलों को बाहर रखें</string>
-    <string name="action_exclude_generic">बाहर रखें</string>
+    <string name="action_exclude_extension">.%s फाइलों को छिपाएँ</string>
+    <string name="action_exclude_generic">छिपाएँ</string>
     <string name="action_expand_more">और देखें</string>
     <string name="action_expand_more_app_settings">अधिक ऐप सेटिंग्स</string>
     <string name="action_expand_more_contacts">अधिक कॉन्टैक्ट्स</string>
@@ -94,7 +98,7 @@
     <string name="action_expand_more_notes">अधिक नोट्स</string>
     <string name="action_expand_more_shortcuts">अधिक शॉर्टकट्स</string>
     <string name="action_file_info">फाइल जानकारी</string>
-    <string name="action_include_generic">शामिल करें</string>
+    <string name="action_include_generic">दिखाएँ</string>
     <string name="action_more_search_history">अधिक इतिहास</string>
     <string name="action_open">खोलें</string>
     <string name="action_open_in_split_screen">स्प्लिट स्क्रीन</string>
@@ -210,12 +214,12 @@
     <string name="dialog_trigger_error_taken">यह ट्रिगर पहले से लिया जा चुका है।</string>
     <string name="dialog_trigger_hint">ट्रिगर शब्द</string>
     <string name="dialog_trigger_message">\"%1$s\" के लिए एक-शब्द ट्रिगर दर्ज करें।</string>
-    <string name="exclude_marker"> से बाहर रखा गया </string>
+    <string name="exclude_marker"> को </string>
     <string name="permission_action_manage_android">Android सेटिंग्स में प्रबंधित करें</string>
     <string name="permission_settings_dialog_message">इस क्रिया के लिए %1$s अनुमति चाहिए। इसे देने के लिए आपको सिस्टम सेटिंग्स में ले जाया जाएगा।</string>
     <string name="permission_settings_dialog_title">%1$s अनुमति आवश्यक</string>
-    <string name="toast_excluded_from_results">%1$s को परिणामों से बाहर रखा गया</string>
-    <string name="toast_excluded_from_suggestions">%1$s को सुझावों से बाहर रखा गया</string>
+    <string name="toast_excluded_from_results">%1$s को परिणामों से छिपाया गया</string>
+    <string name="toast_excluded_from_suggestions">%1$s को सुझावों से छिपाया गया</string>
 
     <!-- ============================================================================
          Accessibility
@@ -310,6 +314,10 @@
     <string name="app_menu_section_shortcuts">शॉर्टकट्स</string>
     <string name="app_menu_value_on">चालू</string>
     <string name="action_uninstall_named">%1$s अनइंस्टॉल करें</string>
+    <string name="action_disable_app_shortcut">अक्षम करें</string>
+    <string name="action_disable_all_app_shortcuts_named">%1$s के सभी शॉर्टकट अक्षम करें</string>
+    <string name="snackbar_app_shortcut_disabled_title">ऐप शॉर्टकट अक्षम किया गया</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">आप इसे बाद में ऐप शॉर्टकट सेटिंग्स में सक्षम कर सकते हैं।</string>
     <string name="apps_refreshed_successfully">ऐप्स सफलतापूर्वक रिफ्रेश हो गए</string>
     <string name="error_loading_user_apps">आपके ऐप्स लोड नहीं हो सके। थोड़ी देर बाद फिर कोशिश करें।</string>
     <string name="error_uninstall_app">%1$s अनइंस्टॉल नहीं हो सका</string>
@@ -482,7 +490,7 @@
     <string name="file_type_videos">वीडियो</string>
     <string name="files_refreshed_successfully">फाइलें सफलतापूर्वक रिफ्रेश हो गईं</string>
     <string name="files_section_permission_subtitle">फाइल खोज के लिए फाइल अनुमति आवश्यक है</string>
-    <string name="settings_excluded_extensions_title">बहिष्कृत फाइल एक्सटेंशन्स</string>
+    <string name="settings_excluded_extensions_title">छिपे हुए फाइल एक्सटेंशन्स</string>
     <string name="settings_file_types_title">फाइलें और फोल्डर्स</string>
     <string name="settings_folder_blacklist_add">ब्लॉक फोल्डर जोड़ें</string>
     <string name="settings_folder_blacklist_helper">खोजते समय इन फोल्डरों को अनदेखा किया जाएगा</string>
@@ -1088,11 +1096,11 @@
     <string name="settings_custom_tool_name_label">टूल नाम</string>
     <string name="settings_custom_tool_prompt_hint">बताएं कि यह टूल क्या करता है। टूल ट्रिगर होने पर यह प्रॉम्प्ट AI को मार्गदर्शन देता है।\n\nप्रॉम्प्ट में वर्तमान तारीख और समय शामिल करने के लिए {time} का उपयोग करें।</string>
     <string name="settings_custom_tool_prompt_label">सिस्टम प्रॉम्प्ट</string>
-    <string name="settings_excluded_items_clear_all">सभी बहिष्करण साफ करें</string>
-    <string name="settings_excluded_items_clear_all_confirmation">क्या आप वाकई सभी बहिष्कृत आइटम साफ करना चाहते हैं? यह क्रिया वापस नहीं ली जा सकती।</string>
-    <string name="settings_excluded_items_desc">आपके द्वारा बहिष्कृत आइटम देखें और प्रबंधित करें</string>
-    <string name="settings_excluded_items_empty">आपके पास कोई बहिष्कृत आइटम नहीं है।</string>
-    <string name="settings_excluded_items_title">बहिष्कृत आइटम</string>
+    <string name="settings_excluded_items_clear_all">सभी आइटम दिखाएँ</string>
+    <string name="settings_excluded_items_clear_all_confirmation">क्या आप वाकई सभी छिपे हुए आइटम साफ करना चाहते हैं? यह क्रिया वापस नहीं ली जा सकती।</string>
+    <string name="settings_excluded_items_desc">आपके द्वारा छिपाए गए आइटम देखें और प्रबंधित करें</string>
+    <string name="settings_excluded_items_empty">आपके पास कोई छिपा हुआ आइटम नहीं है।</string>
+    <string name="settings_excluded_items_title">छिपे हुए आइटम</string>
     <string name="settings_manage_calls_texts_contacts_desc">कॉन्टैक्ट्स के लिए कॉल्स और टेक्स्ट्स प्रबंधित करें</string>
     <string name="settings_manage_files_desc">परिणामों में दिखने वाले फाइल प्रकार प्रबंधित करें</string>
     <string name="settings_manage_shortcuts_desc">अपने ऐप शॉर्टकट्स प्रबंधित करें</string>

@@ -831,13 +831,7 @@ fun ShortcutToggleRow(
         }
     val iconBitmap = rememberShortcutIcon(shortcut = shortcut, iconSizePx = iconSizePx)
     val appIconResult = rememberAppIcon(packageName = shortcut.packageName, iconPackPackage = iconPackPackage)
-    val hasEmbeddedOrOverrideIcon = !shortcut.iconBase64.isNullOrBlank()
-    val displayIcon =
-        if (hasEmbeddedOrOverrideIcon) {
-            iconBitmap
-        } else {
-            iconBitmap ?: appIconResult.bitmap
-        }
+    val displayIcon = iconBitmap ?: appIconResult.bitmap
 
     Row(
         modifier =

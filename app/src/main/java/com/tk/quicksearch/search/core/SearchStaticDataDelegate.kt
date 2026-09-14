@@ -273,6 +273,20 @@ internal class SearchStaticDataDelegate(
         }
     }
 
+    fun setAppShortcutsEnabled(
+        shortcutIds: Collection<String>,
+        enabled: Boolean,
+    ) {
+        if (shortcutIds.isEmpty()) return
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setAppShortcutsEnabled(shortcutIds, enabled)
+            withContext(Dispatchers.Main) {
+                refreshAppShortcutsState()
+                refreshRecentItems()
+            }
+        }
+    }
+
     fun setAppShortcutIconOverride(
         shortcut: StaticShortcut,
         iconBase64: String?,

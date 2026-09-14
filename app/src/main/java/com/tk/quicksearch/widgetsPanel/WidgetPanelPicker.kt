@@ -9,6 +9,13 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RemoteViews
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +36,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Search
@@ -51,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -79,6 +86,7 @@ private const val MAX_WIDGET_PREVIEW_PIXELS = 1_048_576
 private val WIDGET_PANEL_GRID_ROW_HEIGHT_DP = 80f
 private val WIDGET_PANEL_GRID_GAP_DP = 8f
 private val WidgetPickerHeight = 720.dp
+private const val WIDGET_PICKER_EXPAND_DURATION_MS = 220
 
 private data class WidgetPickerApp(
     val packageName: String,
@@ -298,7 +306,7 @@ private fun QuickNotePickerRow(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = DesignTokens.ExtraLargeCardShape,
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = AppColors.getSettingsCardContainerColor(),
     ) {
         Row(
             modifier =
@@ -333,7 +341,7 @@ private fun WidgetPickerSearchField(
     Surface(
         modifier = modifier,
         shape = DesignTokens.ShapeXXLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        color = AppColors.getSettingsCardContainerColor(),
     ) {
         Row(
             modifier =
@@ -385,10 +393,15 @@ private fun WidgetPickerAppGroup(
     onSelectWidget: (AppWidgetProviderInfo) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        animationSpec = tween(WIDGET_PICKER_EXPAND_DURATION_MS),
+        label = "widgetPickerChevronRotation",
+    )
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = DesignTokens.ExtraLargeCardShape,
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = AppColors.getSettingsCardContainerColor(),
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -425,22 +438,33 @@ private fun WidgetPickerAppGroup(
                     )
                 }
                 Icon(
-                    imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                    imageVector = Icons.Rounded.ExpandMore,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.rotate(chevronRotation),
                 )
             }
 
-            if (isExpanded) {
-                app.widgets.forEachIndexed { index, provider ->
-                    if (index > 0) {
-                        HorizontalDivider(color = AppColors.SettingsDivider)
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter =
+                    expandVertically(animationSpec = tween(WIDGET_PICKER_EXPAND_DURATION_MS)) +
+                        fadeIn(animationSpec = tween(WIDGET_PICKER_EXPAND_DURATION_MS)),
+                exit =
+                    shrinkVertically(animationSpec = tween(WIDGET_PICKER_EXPAND_DURATION_MS)) +
+                        fadeOut(animationSpec = tween(WIDGET_PICKER_EXPAND_DURATION_MS)),
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    app.widgets.forEachIndexed { index, provider ->
+                        if (index > 0) {
+                            HorizontalDivider(color = AppColors.SettingsDivider)
+                        }
+                        WidgetPickerRow(
+                            provider = provider,
+                            packageManager = packageManager,
+                            onClick = { onSelectWidget(provider) },
+                        )
                     }
-                    WidgetPickerRow(
-                        provider = provider,
-                        packageManager = packageManager,
-                        onClick = { onSelectWidget(provider) },
-                    )
                 }
             }
         }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,6 +68,7 @@ import kotlin.math.roundToInt
  * @param maxInnerCardHeight Optional max height for the inner content card. If null, defaults to
  *   72% of screen height.
  * @param contentBottomPadding Padding below the scrollable content, inside the card.
+ * @param contentHorizontalPadding Padding on both sides of the scrollable content, inside the card.
  * @param contentTopPadding Padding above scrollable content when there is no fixed top content.
  * @param content Content rendered inside the scrollable dark card.
  */
@@ -87,6 +90,7 @@ fun AppBottomPopup(
     headerSpacing: Dp = 16.dp,
     contentTopPadding: Dp = 20.dp,
     contentBottomPadding: Dp = 24.dp,
+    contentHorizontalPadding: Dp = 16.dp,
     contentScrollable: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -203,9 +207,9 @@ fun AppBottomPopup(
                                                 else Modifier.fillMaxSize(),
                                             )
                                         .padding(
-                                            start = 16.dp,
+                                            start = contentHorizontalPadding,
                                             top = contentTopPadding,
-                                            end = 16.dp,
+                                            end = contentHorizontalPadding,
                                             bottom = contentBottomPadding,
                                         ),
                                 verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -262,6 +266,12 @@ fun AppBottomPopup(
                     }
                 }
             }
+            // Dialogs are separate windows, so screen-level overlays (e.g. the undo snackbar)
+            // must be drawn here to appear above the popup.
+            LocalPopupOverlayContent.current?.invoke(this)
         }
     }
 }
+
+/** Content drawn above every [AppBottomPopup], in the popup's own window. */
+val LocalPopupOverlayContent = staticCompositionLocalOf<(@Composable BoxScope.() -> Unit)?> { null }

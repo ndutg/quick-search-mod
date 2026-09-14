@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -161,6 +163,7 @@ internal fun PhoneCallPill(
 internal fun OpenKeyboardAction(
     text: String,
     onClick: () -> Unit,
+    onVoiceClick: () -> Unit,
     showWallpaperBackground: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -175,32 +178,45 @@ internal fun OpenKeyboardAction(
             Color.Black
         }
     Surface(
-        modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
+        modifier = modifier.fillMaxWidth(),
         color = backgroundColor,
         tonalElevation = DesignTokens.ElevationLevel0,
     ) {
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 75.dp)
-                    .padding(vertical = DesignTokens.SpacingXSmall),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Keyboard,
-                contentDescription = null,
-                tint = labelColor,
-                modifier = Modifier.size(DesignTokens.IconSize),
-            )
-            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = labelColor,
-                fontWeight = FontWeight.Medium,
-            )
+        Box(modifier = Modifier.fillMaxWidth().heightIn(min = 75.dp)) {
+            Row(
+                modifier = Modifier.matchParentSize().clickable(onClick = onClick),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Keyboard,
+                    contentDescription = null,
+                    tint = labelColor,
+                    modifier = Modifier.size(DesignTokens.IconSize),
+                )
+                Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = labelColor,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
+            Surface(
+                onClick = onVoiceClick,
+                modifier = Modifier.align(Alignment.CenterStart).padding(start = DesignTokens.SpacingXLarge).size(40.dp),
+                shape = CircleShape,
+                color = labelColor.copy(alpha = 0.1f),
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Rounded.Mic,
+                        contentDescription = stringResource(R.string.desc_voice_search_icon),
+                        tint = labelColor,
+                        modifier = Modifier.size(DesignTokens.IconSize),
+                    )
+                }
+            }
         }
     }
 }

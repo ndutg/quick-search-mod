@@ -70,6 +70,10 @@
 <string name="action_add_to_home">Ajouter à l\'écran d\'accueil</string>
 <string name="action_add_trigger">Ajouter un déclencheur</string>
 <string name="action_app_info">Infos sur l\'application</string>
+<string name="action_manage_all_apps">Gérer toutes les applis</string>
+<string name="action_app_shortcuts_settings">Paramètres des raccourcis d\'applis</string>
+<string name="action_files_settings">Paramètres des fichiers</string>
+<string name="action_contacts_settings">Paramètres des contacts</string>
     <string name="action_lock_app">Verrouiller</string>
     <string name="action_unlock_app">Déverrouiller</string>
     <string name="app_lock_prompt_lock">Verrouiller %1$s</string>
@@ -83,8 +87,8 @@
 <string name="action_edit_icon">Modifier l\'icône</string>
 <string name="action_edit_nickname">Modifier le surnom</string>
 <string name="action_edit_trigger">Modifier le déclencheur</string>
-<string name="action_exclude_extension">Exclure les fichiers .%s</string>
-<string name="action_exclude_generic">Exclure</string>
+<string name="action_exclude_extension">Masquer les fichiers .%s</string>
+<string name="action_exclude_generic">Masquer</string>
 <string name="action_expand_more">Plus</string>
 <string name="action_expand_more_app_settings">Plus de paramètres de l\'app</string>
 <string name="action_expand_more_contacts">Plus de contacts</string>
@@ -94,7 +98,7 @@
 <string name="action_expand_more_notes">Plus de notes</string>
 <string name="action_expand_more_shortcuts">Plus de raccourcis</string>
 <string name="action_file_info">Infos sur le fichier</string>
-<string name="action_include_generic">Inclure</string>
+<string name="action_include_generic">Afficher</string>
 <string name="action_more_search_history">Plus d\'historique</string>
 <string name="action_open">Ouvrir</string>
     <string name="action_open_in_split_screen">Écran partagé</string>
@@ -210,12 +214,12 @@
 <string name="dialog_trigger_error_taken">Ce déclencheur est déjà utilisé.</string>
 <string name="dialog_trigger_hint">Mot déclencheur</string>
 <string name="dialog_trigger_message">Saisissez un déclencheur en un seul mot pour « %1$s ».</string>
-<string name="exclude_marker"> exclu de </string>
+<string name="exclude_marker"> masqué des </string>
 <string name="permission_action_manage_android">Gérer dans les paramètres Android</string>
 <string name="permission_settings_dialog_message">Cette action nécessite l\'autorisation %1$s. Vous allez être redirigé vers les paramètres système pour l\'accorder.</string>
 <string name="permission_settings_dialog_title">Autorisation %1$s requise</string>
-<string name="toast_excluded_from_results">%1$s exclu des résultats</string>
-<string name="toast_excluded_from_suggestions">%1$s exclu des suggestions</string>
+<string name="toast_excluded_from_results">%1$s masqué des résultats</string>
+<string name="toast_excluded_from_suggestions">%1$s masqué des suggestions</string>
 
 <!-- ============================================================================
      Accessibility
@@ -310,6 +314,10 @@
 <string name="app_menu_section_shortcuts">Raccourcis</string>
 <string name="app_menu_value_on">Activé</string>
 <string name="action_uninstall_named">Désinstaller %1$s</string>
+<string name="action_disable_app_shortcut">Désactiver</string>
+<string name="action_disable_all_app_shortcuts_named">Désactiver tous les raccourcis %1$s</string>
+<string name="snackbar_app_shortcut_disabled_title">Raccourci désactivé</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Vous pourrez le réactiver plus tard dans les paramètres des raccourcis d\'apps.</string>
 <string name="apps_refreshed_successfully">Applications actualisées avec succès</string>
 <string name="error_loading_user_apps">Impossible de charger vos applications. Réessayez dans un instant.</string>
 <string name="error_uninstall_app">Impossible de désinstaller %1$s</string>
@@ -482,7 +490,7 @@
 <string name="file_type_videos">Vidéos</string>
 <string name="files_refreshed_successfully">Fichiers actualisés avec succès</string>
 <string name="files_section_permission_subtitle">L\'autorisation d\'accès aux fichiers est requise pour effectuer une recherche de fichiers</string>
-<string name="settings_excluded_extensions_title">Extensions de fichiers exclues</string>
+<string name="settings_excluded_extensions_title">Extensions de fichiers masquées</string>
 <string name="settings_file_types_title">Fichiers &amp; Dossiers</string>
 <string name="settings_folder_blacklist_add">Ajouter un dossier bloqué</string>
 <string name="settings_folder_blacklist_helper">Ces dossiers seront ignorés lors de la recherche</string>
@@ -1088,11 +1096,11 @@
 <string name="settings_custom_tool_name_label">Nom de l\'outil</string>
 <string name="settings_custom_tool_prompt_hint">Décrivez ce que fait cet outil. Cette consigne guidera l\'AI lorsque l\'outil sera déclenché.\n\nUtilisez {time} pour inclure la date et l\'heure actuelles dans la consigne.</string>
 <string name="settings_custom_tool_prompt_label">Prompt système</string>
-<string name="settings_excluded_items_clear_all">Effacer toutes les exclusions</string>
-<string name="settings_excluded_items_clear_all_confirmation">Voulez-vous vraiment supprimer toutes les exclusions ? Cette action est irréversible.</string>
-<string name="settings_excluded_items_desc">Afficher et gérer les éléments que vous avez exclus</string>
-<string name="settings_excluded_items_empty">Vous n\'avez aucun élément exclu.</string>
-<string name="settings_excluded_items_title">Éléments exclus</string>
+<string name="settings_excluded_items_clear_all">Afficher tous les éléments</string>
+<string name="settings_excluded_items_clear_all_confirmation">Voulez-vous vraiment effacer tous les éléments masqués ? Cette action est irréversible.</string>
+<string name="settings_excluded_items_desc">Afficher et gérer les éléments que vous avez masqués</string>
+<string name="settings_excluded_items_empty">Vous n\'avez aucun élément masqué.</string>
+<string name="settings_excluded_items_title">Éléments masqués</string>
 <string name="settings_manage_calls_texts_contacts_desc">Gérer les appels &amp; SMS pour les contacts</string>
 <string name="settings_manage_files_desc">Gérer les types de fichiers qui apparaissent dans les résultats</string>
 <string name="settings_manage_shortcuts_desc">Gérer vos raccourcis d\'applications</string>

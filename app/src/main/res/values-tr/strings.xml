@@ -69,6 +69,10 @@
 <string name="action_add_to_home">Ana ekrana ekle</string>
 <string name="action_add_trigger">Tetikleyici</string>
 <string name="action_app_info">Uygulama bilgisi</string>
+<string name="action_manage_all_apps">Tüm uygulamaları yönet</string>
+<string name="action_app_shortcuts_settings">Uygulama kısayolu ayarları</string>
+<string name="action_files_settings">Dosya ayarları</string>
+<string name="action_contacts_settings">Kişi ayarları</string>
     <string name="action_lock_app">Kilitle</string>
     <string name="action_unlock_app">Kilidi aç</string>
     <string name="app_lock_prompt_lock">%1$s uygulamasını kilitle</string>
@@ -82,8 +86,8 @@
 <string name="action_edit_icon">Simgeyi düzenle</string>
 <string name="action_edit_nickname">Takma adı düzenle</string>
 <string name="action_edit_trigger">Tetikleyiciyi düzenle</string>
-<string name="action_exclude_extension">.%s dosyalarını hariç tut</string>
-<string name="action_exclude_generic">Hariç tut</string>
+<string name="action_exclude_extension">.%s dosyalarını gizle</string>
+<string name="action_exclude_generic">Gizle</string>
 <string name="action_expand_more">Daha fazla</string>
 <string name="action_expand_more_app_settings">Daha fazla uygulama ayarı</string>
 <string name="action_expand_more_contacts">Daha fazla kişi</string>
@@ -93,7 +97,7 @@
 <string name="action_expand_more_notes">Daha fazla not</string>
 <string name="action_expand_more_shortcuts">Daha fazla kısayol</string>
 <string name="action_file_info">Dosya bilgisi</string>
-<string name="action_include_generic">Dahil et</string>
+<string name="action_include_generic">Göster</string>
 <string name="action_more_search_history">Daha fazla geçmiş</string>
 <string name="action_open">Aç</string>
     <string name="action_open_in_split_screen">Bölünmüş ekran</string>
@@ -213,8 +217,8 @@
 <string name="permission_action_manage_android">Android ayarlarından yönet</string>
 <string name="permission_settings_dialog_message">Bu işlem %1$s izni gerektiriyor. İzin vermek için sistem ayarlarına yönlendirileceksiniz.</string>
 <string name="permission_settings_dialog_title">%1$s İzni Gerekli</string>
-<string name="toast_excluded_from_results">%1$s - sonuçlardan hariç tutuldu</string>
-<string name="toast_excluded_from_suggestions">%1$s - önerilerden hariç tutuldu</string>
+<string name="toast_excluded_from_results">%1$s - sonuçlardan gizlendi</string>
+<string name="toast_excluded_from_suggestions">%1$s - önerilerden gizlendi</string>
 
 <!-- ============================================================================
      Accessibility
@@ -309,6 +313,10 @@
 <string name="app_menu_section_shortcuts">Kısayollar</string>
 <string name="app_menu_value_on">Açık</string>
 <string name="action_uninstall_named">%1$s uygulamasını kaldır</string>
+<string name="action_disable_app_shortcut">Devre dışı bırak</string>
+<string name="action_disable_all_app_shortcuts_named">Tüm %1$s kısayollarını devre dışı bırak</string>
+<string name="snackbar_app_shortcut_disabled_title">Uygulama kısayolu devre dışı bırakıldı</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Daha sonra Uygulama kısayolu ayarlarından etkinleştirebilirsiniz.</string>
 <string name="apps_refreshed_successfully">Uygulamalar başarıyla yenilendi</string>
 <string name="error_loading_user_apps">Uygulamalarınız yüklenemedi. Birazdan tekrar deneyin.</string>
 <string name="error_uninstall_app">%1$s kaldırılamadı</string>
@@ -481,7 +489,7 @@
 <string name="file_type_videos">Videolar</string>
 <string name="files_refreshed_successfully">Dosyalar başarıyla yenilendi</string>
 <string name="files_section_permission_subtitle">Dosya araması yapabilmek için dosya izni gereklidir</string>
-<string name="settings_excluded_extensions_title">Hariç tutulan dosya uzantıları</string>
+<string name="settings_excluded_extensions_title">Gizlenen dosya uzantıları</string>
 <string name="settings_file_types_title">Dosyalar &amp; Klasörler</string>
 <string name="settings_folder_blacklist_add">Engellenen klasör ekle</string>
 <string name="settings_folder_blacklist_helper">Bu klasörler arama yapılırken göz ardı edilir.</string>
@@ -1087,11 +1095,11 @@
 <string name="settings_custom_tool_name_label">Araç adı</string>
 <string name="settings_custom_tool_prompt_hint">Bu aracın ne işe yaradığını açıkla. Bu yönlendirme, araç tetiklendiğinde AI\'a rehberlik eder.\n\nİstemine geçerli tarih ve saati eklemek için {time} kullanın.</string>
 <string name="settings_custom_tool_prompt_label">Sistem yönlendirmesi</string>
-<string name="settings_excluded_items_clear_all">Tüm hariç tutulanları temizle</string>
-<string name="settings_excluded_items_clear_all_confirmation">Hariç tutulan tüm öğeleri temizlemek istediğinden emin misin? Bu işlem geri alınamaz.</string>
-<string name="settings_excluded_items_desc">Hariç tuttuğun öğeleri görüntüle ve yönet</string>
-<string name="settings_excluded_items_empty">Hariç tutulan bir öğen bulunmuyor.</string>
-<string name="settings_excluded_items_title">Hariç tutulan öğeler</string>
+<string name="settings_excluded_items_clear_all">Tüm öğeleri göster</string>
+<string name="settings_excluded_items_clear_all_confirmation">Gizlenen tüm öğeleri temizlemek istediğinden emin misin? Bu işlem geri alınamaz.</string>
+<string name="settings_excluded_items_desc">Gizlediğin öğeleri görüntüle ve yönet</string>
+<string name="settings_excluded_items_empty">Gizlenen bir öğen bulunmuyor.</string>
+<string name="settings_excluded_items_title">Gizlenen öğeler</string>
 <string name="settings_manage_calls_texts_contacts_desc">Kişiler için Arama &amp; Mesaj işlemlerini yönet</string>
 <string name="settings_manage_files_desc">Hangi dosya türlerinin sonuçlarda görüneceğini yönet</string>
 <string name="settings_manage_shortcuts_desc">Uygulama kısayollarını yönet</string>

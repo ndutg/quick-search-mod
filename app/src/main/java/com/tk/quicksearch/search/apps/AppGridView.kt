@@ -158,6 +158,8 @@ private enum class AppIconDisplayMode {
 private data class PinnedAppDragState(
         val key: String,
         val startIndex: Int,
+        val originIndex: Int,
+        val originApps: List<AppInfo>,
         val offsetX: Float = 0f,
         val offsetY: Float = 0f,
 )
@@ -175,6 +177,7 @@ private data class AppActions(
         val onAppInfoClick: () -> Unit,
         val onUninstallClick: () -> Unit,
         val onHideApp: () -> Unit,
+        val onDisableAppShortcut: (StaticShortcut) -> Unit,
         val onPinApp: () -> Unit,
         val onUnpinApp: () -> Unit,
         val onNicknameClick: () -> Unit,
@@ -214,6 +217,7 @@ fun AppGridView(
         onAppInfoClick: (AppInfo) -> Unit,
         onUninstallClick: (AppInfo) -> Unit,
         onHideApp: (AppInfo) -> Unit,
+        onDisableAppShortcut: (StaticShortcut) -> Unit = {},
         onPinApp: (AppInfo) -> Unit,
         onUnpinApp: (AppInfo) -> Unit,
         onReorderPinnedApps: (List<AppInfo>) -> Unit,
@@ -518,6 +522,7 @@ fun AppGridView(
                                 onAppInfoClick = onAppInfoClick,
                                 onUninstallClick = onUninstallClick,
                                 onHideApp = onHideApp,
+                                onDisableAppShortcut = onDisableAppShortcut,
                                 onPinApp = onPinApp,
                                 onUnpinApp = onUnpinApp,
                                 onReorderPinnedApps = onReorderPinnedApps,
@@ -555,6 +560,7 @@ fun AppGridView(
                             onAppInfoClick = onAppInfoClick,
                             onUninstallClick = onUninstallClick,
                             onHideApp = onHideApp,
+                            onDisableAppShortcut = onDisableAppShortcut,
                             onPinApp = onPinApp,
                             onUnpinApp = onUnpinApp,
                             onReorderPinnedApps = onReorderPinnedApps,
@@ -621,6 +627,7 @@ fun AppGridView(
                 onAppInfoClick = onAppInfoClick,
                 onUninstallClick = onUninstallClick,
                 onHideApp = onHideApp,
+                onDisableAppShortcut = onDisableAppShortcut,
                 onPinApp = onPinApp,
                 onUnpinApp = onUnpinApp,
                 onNicknameClick = onNicknameClick,
@@ -649,6 +656,7 @@ private fun AllAppsDialog(
         onAppInfoClick: (AppInfo) -> Unit,
         onUninstallClick: (AppInfo) -> Unit,
         onHideApp: (AppInfo) -> Unit,
+        onDisableAppShortcut: (StaticShortcut) -> Unit = {},
         onPinApp: (AppInfo) -> Unit,
         onUnpinApp: (AppInfo) -> Unit,
         onNicknameClick: (AppInfo) -> Unit,
@@ -721,6 +729,7 @@ private fun AllAppsDialog(
                                                     onAppInfoClick = { onAppInfoClick(app) },
                                                     onUninstallClick = { onUninstallClick(app) },
                                                     onHideApp = { onHideApp(app) },
+                                                    onDisableAppShortcut = onDisableAppShortcut,
                                                     onPinApp = { onPinApp(app) },
                                                     onUnpinApp = { onUnpinApp(app) },
                                                     onNicknameClick = { onNicknameClick(app) },
@@ -867,6 +876,7 @@ private fun AllAppsDialogGridItem(
                 onShortcutClick = appActions.onShortcutClick,
                 onAppInfoClick = appActions.onAppInfoClick,
                 onHideApp = appActions.onHideApp,
+                onDisableShortcut = appActions.onDisableAppShortcut,
                 onPinApp = appActions.onPinApp,
                 onUnpinApp = appActions.onUnpinApp,
                 onUninstallClick = appActions.onUninstallClick,
@@ -992,6 +1002,7 @@ private fun AppGrid(
         onAppInfoClick: (AppInfo) -> Unit,
         onUninstallClick: (AppInfo) -> Unit,
         onHideApp: (AppInfo) -> Unit,
+        onDisableAppShortcut: (StaticShortcut) -> Unit = {},
         onPinApp: (AppInfo) -> Unit,
         onUnpinApp: (AppInfo) -> Unit,
         onReorderPinnedApps: (List<AppInfo>) -> Unit,
@@ -1114,18 +1125,26 @@ private fun AppGrid(
                             (AppGridRowSpacing * (visibleRows - 1).coerceAtLeast(0))
                 }
 
-        fun movePinnedApp(fromVisualIndex: Int, toVisualIndex: Int) {
-            if (!reorderPinnedApps || fromVisualIndex == toVisualIndex) return
-            val currentVisualOrder =
-                    appsInVisualGridOrder(displayedApps, columns, oneHandedMode)
-            if (fromVisualIndex !in currentVisualOrder.indices ||
-                    toVisualIndex !in currentVisualOrder.indices
+        // Rearranges relative to the order at drag start: moving to a different row swaps the
+        // two apps, moving within the same row shifts the apps in between.
+        fun movePinnedApp(state: PinnedAppDragState, toVisualIndex: Int) {
+            if (!reorderPinnedApps) return
+            val originVisualOrder =
+                    appsInVisualGridOrder(state.originApps, columns, oneHandedMode)
+            val fromVisualIndex = state.originIndex
+            if (fromVisualIndex !in originVisualOrder.indices ||
+                    toVisualIndex !in originVisualOrder.indices
             ) {
                 return
             }
             val reorderedVisualApps =
-                    currentVisualOrder.toMutableList().apply {
-                        add(toVisualIndex, removeAt(fromVisualIndex))
+                    originVisualOrder.toMutableList().apply {
+                        if (fromVisualIndex / columns != toVisualIndex / columns) {
+                            this[fromVisualIndex] = originVisualOrder[toVisualIndex]
+                            this[toVisualIndex] = originVisualOrder[fromVisualIndex]
+                        } else if (fromVisualIndex != toVisualIndex) {
+                            add(toVisualIndex, removeAt(fromVisualIndex))
+                        }
                     }
             displayedApps =
                     appsInPersistedGridOrder(reorderedVisualApps, columns, oneHandedMode)
@@ -1158,6 +1177,7 @@ private fun AppGrid(
                         onAppInfoClick,
                         onUninstallClick,
                         onHideApp,
+                        onDisableAppShortcut,
                         onPinApp,
                         onUnpinApp,
                         onNicknameClick,
@@ -1172,6 +1192,7 @@ private fun AppGrid(
                                 onAppInfoClick = { onAppInfoClick(app) },
                                 onUninstallClick = { onUninstallClick(app) },
                                 onHideApp = { onHideApp(app) },
+                                onDisableAppShortcut = onDisableAppShortcut,
                                 onPinApp = { onPinApp(app) },
                                 onUnpinApp = { onUnpinApp(app) },
                                 onNicknameClick = { onNicknameClick(app) },
@@ -1206,7 +1227,13 @@ private fun AppGrid(
                         it.launchCountKey() == app.launchCountKey()
                     }
             if (index >= 0) {
-                dragState = PinnedAppDragState(app.launchCountKey(), index)
+                dragState =
+                        PinnedAppDragState(
+                                key = app.launchCountKey(),
+                                startIndex = index,
+                                originIndex = index,
+                                originApps = displayedApps,
+                        )
             }
         }
         val handleDrag: (Float, Float) -> Unit = handleDrag@{ dragX, dragY ->
@@ -1231,7 +1258,7 @@ private fun AppGrid(
                 val newRow = targetIndex / columns
                 val layoutShiftX = (newCol - oldCol) * (rowItemWidthPx + spacingPx)
                 val layoutShiftY = (newRow - oldRow) * (itemHeightPx + spacingPx)
-                movePinnedApp(currentIndex, targetIndex)
+                movePinnedApp(updatedState, targetIndex)
                 dragState =
                         updatedState.copy(
                                 startIndex = targetIndex,
@@ -1572,6 +1599,7 @@ private fun AppGridItem(
                 onShortcutClick = appActions.onShortcutClick,
                 onAppInfoClick = appActions.onAppInfoClick,
                 onHideApp = appActions.onHideApp,
+                onDisableShortcut = appActions.onDisableAppShortcut,
                 onPinApp = appActions.onPinApp,
                 onUnpinApp = appActions.onUnpinApp,
                 onUninstallClick = appActions.onUninstallClick,

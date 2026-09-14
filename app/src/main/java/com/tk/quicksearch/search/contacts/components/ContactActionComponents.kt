@@ -2,15 +2,14 @@ package com.tk.quicksearch.search.contacts.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Email
@@ -18,18 +17,20 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
@@ -39,6 +40,7 @@ import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.shared.ui.components.AppVoiceCallIcon
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.hapticConfirm
 
 // ============================================================================
 // Contact Action Button (Messaging App Style)
@@ -83,47 +85,43 @@ internal fun ContactActionButton(
 
             is ContactMethod.ViewInContactsApp -> AppColors.ActionView
         }
-    val actionButtonBorderColor = AppColors.OnboardingBubbleBorder
-    val actionButtonContainerColor = Color.Transparent
-    val actionButtonTextColor = AppColors.DialogText
+    val view = LocalView.current
 
-    Surface(
+    // Matches the tiles in the shared item long-press menu.
+    Column(
         modifier =
             modifier
-                .width(90.dp)
-                .height(80.dp)
-                .combinedClickable(onClick = onClick, onLongClick = onLongClick)
-                .border(
-                    width = DesignTokens.BorderWidth,
-                    color = actionButtonBorderColor,
-                    shape = DesignTokens.ShapeSmall,
-                ),
-        shape = DesignTokens.ShapeSmall,
-        color = actionButtonContainerColor,
+                .fillMaxWidth()
+                .clip(DesignTokens.ShapeSmall)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+                .combinedClickable(
+                    onClick = onClick,
+                    onLongClick =
+                        onLongClick?.let { onLongClick ->
+                            {
+                                hapticConfirm(view)()
+                                onLongClick()
+                            }
+                        },
+                ).padding(vertical = DesignTokens.SpacingMedium, horizontal = DesignTokens.SpacingXSmall),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            ContactMethodIcon(
-                method = method,
-                usePhoneIconForCallActions = usePhoneIconForCallActions,
-                tintOverride = iconColor,
-                iconSize = DesignTokens.LargeIconSize,
-            )
-            Text(
-                text = getActionButtonLabel(method),
-                style = MaterialTheme.typography.bodySmall,
-                color = actionButtonTextColor,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                lineHeight = MaterialTheme.typography.bodySmall.lineHeight * 0.9f,
-            )
-        }
+        ContactMethodIcon(
+            method = method,
+            usePhoneIconForCallActions = usePhoneIconForCallActions,
+            tintOverride = iconColor,
+            iconSize = 24.dp,
+        )
+        Text(
+            text = getActionButtonLabel(method),
+            style = MaterialTheme.typography.labelMedium,
+            color = AppColors.DialogText,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Clip,
+            modifier = Modifier.basicMarquee(),
+        )
     }
 }
 

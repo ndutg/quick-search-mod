@@ -70,6 +70,10 @@
     <string name="action_add_to_home">Adicionar à tela inicial</string>
     <string name="action_add_trigger">Ativador</string>
     <string name="action_app_info">Informações do app</string>
+    <string name="action_manage_all_apps">Gerenciar todos os apps</string>
+    <string name="action_app_shortcuts_settings">Configurações de atalhos de apps</string>
+    <string name="action_files_settings">Configurações de arquivos</string>
+    <string name="action_contacts_settings">Configurações de contatos</string>
     <string name="action_lock_app">Bloquear</string>
     <string name="action_unlock_app">Desbloquear</string>
     <string name="app_lock_prompt_lock">Bloquear %1$s</string>
@@ -83,8 +87,8 @@
     <string name="action_edit_icon">Editar ícone</string>
     <string name="action_edit_nickname">Editar apelido</string>
     <string name="action_edit_trigger">Editar ativador</string>
-    <string name="action_exclude_extension">Excluir arquivos .%s</string>
-    <string name="action_exclude_generic">Excluir</string>
+    <string name="action_exclude_extension">Ocultar arquivos .%s</string>
+    <string name="action_exclude_generic">Ocultar</string>
     <string name="action_expand_more">Mais</string>
     <string name="action_expand_more_app_settings">Mais configurações de apps</string>
     <string name="action_expand_more_contacts">Mais contatos</string>
@@ -94,7 +98,7 @@
     <string name="action_expand_more_notes">Mais notas</string>
     <string name="action_expand_more_shortcuts">Mais atalhos</string>
     <string name="action_file_info">Informações do arquivo</string>
-    <string name="action_include_generic">Incluir</string>
+    <string name="action_include_generic">Mostrar</string>
     <string name="action_more_search_history">Mais histórico</string>
     <string name="action_open">Abrir</string>
     <string name="action_open_in_split_screen">Tela dividida</string>
@@ -210,12 +214,12 @@
     <string name="dialog_trigger_error_taken">Este ativador já está em uso.</string>
     <string name="dialog_trigger_hint">Palavra de ativação</string>
     <string name="dialog_trigger_message">Insira uma palavra de ativação para "%1$s".</string>
-    <string name="exclude_marker"> excluído de </string>
+    <string name="exclude_marker"> ocultado </string>
     <string name="permission_action_manage_android">Gerenciar nas configurações do Android</string>
     <string name="permission_settings_dialog_message">Esta ação requer a permissão %1$s. Você será levado às configurações do sistema para concedê-la.</string>
     <string name="permission_settings_dialog_title">Permissão de %1$s necessária</string>
-    <string name="toast_excluded_from_results">%1$s excluído dos resultados</string>
-    <string name="toast_excluded_from_suggestions">%1$s excluído das sugestões</string>
+    <string name="toast_excluded_from_results">%1$s ocultado dos resultados</string>
+    <string name="toast_excluded_from_suggestions">%1$s ocultado das sugestões</string>
 
     <!-- ============================================================================
          Accessibility
@@ -310,6 +314,10 @@
     <string name="app_menu_section_shortcuts">Atalhos</string>
     <string name="app_menu_value_on">Ativado</string>
     <string name="action_uninstall_named">Desinstalar %1$s</string>
+    <string name="action_disable_app_shortcut">Desativar</string>
+    <string name="action_disable_all_app_shortcuts_named">Desativar todos os atalhos de %1$s</string>
+    <string name="snackbar_app_shortcut_disabled_title">Atalho desativado</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Você pode ativá-lo depois nas configurações de atalhos de apps.</string>
     <string name="apps_refreshed_successfully">Apps atualizados com sucesso</string>
     <string name="error_loading_user_apps">Não foi possível carregar seus apps. Tente novamente em alguns instantes.</string>
     <string name="error_uninstall_app">Não foi possível desinstalar %1$s</string>
@@ -482,7 +490,7 @@
     <string name="file_type_videos">Vídeos</string>
     <string name="files_refreshed_successfully">Arquivos atualizados com sucesso</string>
     <string name="files_section_permission_subtitle">A permissão de arquivos é necessária para realizar a pesquisa de arquivos</string>
-    <string name="settings_excluded_extensions_title">Extensões de arquivo excluídas</string>
+    <string name="settings_excluded_extensions_title">Extensões de arquivo ocultas</string>
     <string name="settings_file_types_title">Arquivos e Pastas</string>
     <string name="settings_folder_blacklist_add">Adicionar pasta bloqueada</string>
     <string name="settings_folder_blacklist_helper">Estas pastas serão ignoradas ao pesquisar</string>
@@ -1088,11 +1096,11 @@
     <string name="settings_custom_tool_name_label">Nome da ferramenta</string>
     <string name="settings_custom_tool_prompt_hint">Descreva o que esta ferramenta faz. Este comando guiará a IA quando a ferramenta for acionada.\n\nUse {time} para incluir a data e a hora atuais no comando.</string>
     <string name="settings_custom_tool_prompt_label">Prompt do sistema (System Prompt)</string>
-    <string name="settings_excluded_items_clear_all">Limpar todas as exclusões</string>
-    <string name="settings_excluded_items_clear_all_confirmation">Tem certeza de que deseja limpar todos os itens excluídos? Esta ação não pode ser desfeita.</string>
-    <string name="settings_excluded_items_desc">Ver e gerenciar itens que você excluiu</string>
-    <string name="settings_excluded_items_empty">Você não tem itens excluídos.</string>
-    <string name="settings_excluded_items_title">Itens excluídos</string>
+    <string name="settings_excluded_items_clear_all">Mostrar todos os itens</string>
+    <string name="settings_excluded_items_clear_all_confirmation">Tem certeza de que deseja limpar todos os itens ocultos? Esta ação não pode ser desfeita.</string>
+    <string name="settings_excluded_items_desc">Ver e gerenciar itens que você ocultou</string>
+    <string name="settings_excluded_items_empty">Você não tem itens ocultos.</string>
+    <string name="settings_excluded_items_title">Itens ocultos</string>
     <string name="settings_manage_calls_texts_contacts_desc">Gerenciar chamadas e mensagens para contatos</string>
     <string name="settings_manage_files_desc">Gerenciar quais tipos de arquivos aparecem nos resultados</string>
     <string name="settings_manage_shortcuts_desc">Gerencie seus atalhos de apps</string>

@@ -70,6 +70,10 @@
     <string name="action_add_to_home">Προσθήκη στην αρχική οθόνη</string>
     <string name="action_add_trigger">Ενεργοποίηση</string>
     <string name="action_app_info">Πληροφορίες εφαρμογής</string>
+    <string name="action_manage_all_apps">Διαχείριση όλων των εφαρμογών</string>
+    <string name="action_app_shortcuts_settings">Ρυθμίσεις συντομεύσεων εφαρμογών</string>
+    <string name="action_files_settings">Ρυθμίσεις αρχείων</string>
+    <string name="action_contacts_settings">Ρυθμίσεις επαφών</string>
     <string name="action_lock_app">Κλείδωμα</string>
     <string name="action_unlock_app">Ξεκλείδωμα</string>
     <string name="app_lock_prompt_lock">Κλείδωμα %1$s</string>
@@ -83,8 +87,8 @@
     <string name="action_edit_icon">Επεξεργασία εικονιδίου</string>
     <string name="action_edit_nickname">Επεξεργασία ψευδωνύμου</string>
     <string name="action_edit_trigger">Επεξεργασία ενεργοποίησης</string>
-    <string name="action_exclude_extension">Εξαίρεση αρχείων .%s</string>
-    <string name="action_exclude_generic">Εξαίρεση</string>
+    <string name="action_exclude_extension">Απόκρυψη αρχείων .%s</string>
+    <string name="action_exclude_generic">Απόκρυψη</string>
     <string name="action_expand_more">Περισσότερα</string>
     <string name="action_expand_more_app_settings">Περισσότερες ρυθμίσεις εφαρμογών</string>
     <string name="action_expand_more_contacts">Περισσότερες επαφές</string>
@@ -94,7 +98,7 @@
     <string name="action_expand_more_notes">Περισσότερες σημειώσεις</string>
     <string name="action_expand_more_shortcuts">Περισσότερες συντομεύσεις</string>
     <string name="action_file_info">Πληροφορίες αρχείου</string>
-    <string name="action_include_generic">Συμπερίληψη</string>
+    <string name="action_include_generic">Εμφάνιση</string>
     <string name="action_more_search_history">Περισσότερο ιστορικό</string>
     <string name="action_open">Άνοιγμα</string>
     <string name="action_open_in_split_screen">Διαιρεμένη οθόνη</string>
@@ -210,12 +214,12 @@
     <string name="dialog_trigger_error_taken">Αυτή η ενεργοποίηση χρησιμοποιείται ήδη.</string>
     <string name="dialog_trigger_hint">Λέξη ενεργοποίησης</string>
     <string name="dialog_trigger_message">Εισαγάγετε μια μονολεκτική λέξη ενεργοποίησης για το "%1$s".</string>
-    <string name="exclude_marker"> εξαιρέθηκε από </string>
+    <string name="exclude_marker"> αποκρύφτηκε από </string>
     <string name="permission_action_manage_android">Διαχείριση στις ρυθμίσεις Android</string>
     <string name="permission_settings_dialog_message">Αυτή η ενέργεια απαιτεί την άδεια %1$s. Θα μεταφερθείτε στις ρυθμίσεις συστήματος για να τη χορηγήσετε.</string>
     <string name="permission_settings_dialog_title">Απαιτείται άδεια %1$s</string>
-    <string name="toast_excluded_from_results">Το %1$s εξαιρέθηκε από τα αποτελέσματα</string>
-    <string name="toast_excluded_from_suggestions">Το %1$s εξαιρέθηκε από τις προτάσεις</string>
+    <string name="toast_excluded_from_results">Το %1$s αποκρύφτηκε από τα αποτελέσματα</string>
+    <string name="toast_excluded_from_suggestions">Το %1$s αποκρύφτηκε από τις προτάσεις</string>
 
     <!-- ============================================================================
          Accessibility
@@ -310,6 +314,10 @@
     <string name="app_menu_section_shortcuts">Συντομεύσεις</string>
     <string name="app_menu_value_on">Ενεργό</string>
     <string name="action_uninstall_named">Απεγκατάσταση %1$s</string>
+    <string name="action_disable_app_shortcut">Απενεργοποίηση</string>
+    <string name="action_disable_all_app_shortcuts_named">Απενεργοποίηση όλων των συντομεύσεων %1$s</string>
+    <string name="snackbar_app_shortcut_disabled_title">Η συντόμευση απενεργοποιήθηκε</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις συντομεύσεων εφαρμογών.</string>
     <string name="apps_refreshed_successfully">Επιτυχής ανανέωση εφαρμογών</string>
     <string name="error_loading_user_apps">Δεν ήταν δυνατή η φόρτωση των εφαρμογών σας. Δοκιμάστε ξανά σε λίγο.</string>
     <string name="error_uninstall_app">Αδυναμία απεγκατάστασης του %1$s</string>
@@ -482,7 +490,7 @@
     <string name="file_type_videos">Βίντεο</string>
     <string name="files_refreshed_successfully">Επιτυχής ανανέωση αρχείων</string>
     <string name="files_section_permission_subtitle">Απαιτείται η άδεια αρχείων για την εκτέλεση αναζήτησης αρχείων</string>
-    <string name="settings_excluded_extensions_title">Εξαιρούμενες επεκτάσεις αρχείων</string>
+    <string name="settings_excluded_extensions_title">Κρυφές επεκτάσεις αρχείων</string>
     <string name="settings_file_types_title">Αρχεία &amp; Φάκελοι</string>
     <string name="settings_folder_blacklist_add">Προσθήκη αποκλεισμένου φακέλου</string>
     <string name="settings_folder_blacklist_helper">Αυτοί οι φάκελοι θα αγνοούνται κατά την αναζήτηση</string>
@@ -1088,11 +1096,11 @@
     <string name="settings_custom_tool_name_label">Όνομα εργαλείου</string>
     <string name="settings_custom_tool_prompt_hint">Περιγράψτε τι κάνει αυτό το εργαλείο. Αυτή η προτροπή (prompt) καθοδηγεί την AI όταν ενεργοποιείται το εργαλείο.\n\nΧρησιμοποιήστε το {time} για να συμπεριλάβετε την τρέχουσα ημερομηνία και ώρα στην προτροπή.</string>
     <string name="settings_custom_tool_prompt_label">Προτροπή συστήματος</string>
-    <string name="settings_excluded_items_clear_all">Εκκαθάριση όλων των εξαιρέσεων</string>
-    <string name="settings_excluded_items_clear_all_confirmation">Είστε βέβαιοι ότι θέλετε να εκκαθαρίσετε όλα τα εξαιρούμενα στοιχεία; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</string>
-    <string name="settings_excluded_items_desc">Δείτε και διαχειριστείτε τα στοιχεία που έχετε εξαιρέσει</string>
-    <string name="settings_excluded_items_empty">Δεν έχετε εξαιρούμενα στοιχεία.</string>
-    <string name="settings_excluded_items_title">Εξαιρούμενα στοιχεία</string>
+    <string name="settings_excluded_items_clear_all">Εμφάνιση όλων των στοιχείων</string>
+    <string name="settings_excluded_items_clear_all_confirmation">Είστε βέβαιοι ότι θέλετε να εκκαθαρίσετε όλα τα κρυφά στοιχεία; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</string>
+    <string name="settings_excluded_items_desc">Δείτε και διαχειριστείτε τα στοιχεία που έχετε αποκρύψει</string>
+    <string name="settings_excluded_items_empty">Δεν έχετε κρυφά στοιχεία.</string>
+    <string name="settings_excluded_items_title">Κρυφά στοιχεία</string>
     <string name="settings_manage_calls_texts_contacts_desc">Διαχείριση κλήσεων &amp; μηνυμάτων για επαφές</string>
     <string name="settings_manage_files_desc">Διαχείριση των τύπων αρχείων που εμφανίζονται στα αποτελέσματα</string>
     <string name="settings_manage_shortcuts_desc">Διαχειριστείτε τις συντομεύσεις των εφαρμογών σας</string>
