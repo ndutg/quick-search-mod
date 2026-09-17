@@ -1,0 +1,1184 @@
+<resources>
+
+    <!-- Language: Polish -->
+
+    <!-- Translation Guidelines:
+         - Translate user-facing text into this locale.
+         - Do not translate brand/product names and technical identifiers (e.g., Quick Search, AI, API, Gemini, Android, Amazon, USD, INR, lbs, kgs).
+         - Do not translate placeholders or format specifiers (%1$s, %1$d, %s, %%).
+         - In search_hints_cycle, keep the example queries in English.
+    -->
+
+    <!-- ============================================================================
+         App &amp; Search Entry
+         ============================================================================ -->
+    <string name="app_name">Quick Search</string>
+    <string name="direct_answer_contact_name">Odpowiedź AI</string>
+    <string name="direct_search_enter_query">Wpisz zapytanie do wyszukania.</string>
+    <string name="direct_search_ask_follow_up">Zadaj pytanie dodatkowe</string>
+    <string name="direct_search_follow_up_hint">Zadaj pytanie dodatkowe</string>
+    <string name="direct_search_error_generic">Nie udało się pobrać odpowiedzi AI. Spróbuj ponownie.</string>
+    <string name="direct_search_error_no_key">Dodaj klucz API w ustawieniach (Dostawca AI), aby pobierać odpowiedzi AI.</string>
+    <string name="gemini_web_search_quota_fallback_tip">Limit wyszukiwania w sieci Gemini został osiągnięty, więc ta odpowiedź została wygenerowana bez wyszukiwania w sieci.</string>
+    <string name="direct_search_powered_by">Obsługiwane przez</string>
+    <string name="empty_state_subtitle">Uruchom aplikację lub doprecyzuj wyszukiwanie, aby zobaczyć sugestie.</string>
+    <string name="empty_state_title">Nic tu jeszcze nie ma</string>
+    <string name="error_action_not_available">Działanie niedostępne</string>
+    <string name="error_gemini_empty_response">Pusta odpowiedź z Gemini</string>
+    <string name="error_gemini_load_models_failed">Nie udało się załadować modeli Gemini</string>
+    <string name="error_gemini_request_failed">Żądanie nie powiodło się (%1$d)</string>
+    <string name="error_unknown">Nieznany błąd</string>
+    <string name="gemini_model_flash_latest">Gemini Flash (Najnowszy)</string>
+    <string name="keyboard_switch_back">Zwykła klawiatura</string>
+    <string name="keyboard_switch_to_number">Klawiatura numeryczna</string>
+    <string name="no_results_found">Brak wyników. Dotknij wyszukiwarki poniżej, aby przeszukać sieć.</string>
+    <string name="search_hint">Szukaj czegokolwiek…</string>
+    <string name="search_hint_app_settings">Szukaj w ustawieniach aplikacji…</string>
+    <string name="search_hint_app_shortcuts">Szukaj skrótów aplikacji…</string>
+    <string name="search_hint_apps">Szukaj aplikacji…</string>
+    <string name="search_hint_calendar">Szukaj wydarzeń z kalendarza…</string>
+    <string name="search_hint_contacts">Szukaj kontaktów…</string>
+    <string name="search_hint_currency_converter">Przeliczaj waluty, np. 100 USD to INR</string>
+    <string name="search_hint_dictionary">Wpisz dowolne słowo</string>
+    <string name="search_hint_weather">Wpisz lokalizację lub użyj domyślnej</string>
+    <string name="search_hint_files">Szukaj plików…</string>
+    <string name="search_hint_notes">Szukaj notatek…</string>
+    <string name="search_hint_settings">Szukaj w ustawieniach urządzenia…</string>
+    <string name="search_hint_static">Szukaj czegokolwiek</string>
+    <string name="search_hint_world_clock">Wpisz dowolne miejsce, aby sprawdzić czas lokalny</string>
+    <string-array name="search_hints_cycle">
+        <item >Szukaj kontaktów</item>
+        <item >Szukaj plików</item>
+        <item >Wydarzenia z kalendarza</item>
+        <item >Szukaj aplikacji</item>
+        <item >Szukaj skrótów aplikacji</item>
+        <item >Szukaj w ustawieniach</item>
+        <item >5 USD to INR</item>
+        <item >5 lbs in kgs</item>
+        <item >3 months from now</item>
+        <item >225 + 456</item>
+        <item >Time in UK</item>
+        <item >Define Serendipity</item>
+        <item >Weather in New York</item>
+    </string-array>
+    <string name="search_provider_description">Szukaj aplikacji, kontaktów, plików, ustawień i innych za pomocą Quick Search.</string>
+
+    <!-- ============================================================================
+         Common Actions, Labels &amp; Dialogs
+         ============================================================================ -->
+    <string name="action_add_to_home">Dodaj do ekranu głównego</string>
+    <string name="action_add_trigger">Wyzwalacz</string>
+    <string name="action_app_info">Informacje o aplikacji</string>
+    <string name="action_manage_all_apps">Zarządzaj wszystkimi aplikacjami</string>
+    <string name="action_app_shortcuts_settings">Ustawienia skrótów aplikacji</string>
+    <string name="action_files_settings">Ustawienia plików</string>
+    <string name="action_contacts_settings">Ustawienia kontaktów</string>
+    <string name="action_lock_app">Zablokuj</string>
+    <string name="action_unlock_app">Odblokuj</string>
+    <string name="app_lock_prompt_lock">Zablokuj %1$s</string>
+    <string name="app_lock_prompt_unlock">Odblokuj %1$s</string>
+    <string name="action_change_icon">Zmień ikonę</string>
+    <string name="icon_picker_no_icon_packs">Brak zainstalowanych pakietów ikon do zmiany ikony aplikacji.</string>
+    <string name="icon_picker_download_icon_packs">Pobierz</string>
+    <string name="icon_picker_search">Szukaj ikon</string>
+    <string name="icon_picker_title">Zmień ikonę dla "%1$s"</string>
+    <string name="action_change_wallpaper">Zmień tapetę</string>
+    <string name="action_clear_all_history">Wyczyść historię</string>
+    <string name="action_copy_content">Kopiuj treść</string>
+    <string name="action_edit_icon">Edytuj ikonę</string>
+    <string name="action_edit_nickname">Edytuj pseudonim</string>
+    <string name="action_edit_trigger">Edytuj wyzwalacz</string>
+    <string name="action_exclude_extension">Ukryj pliki .%s</string>
+    <string name="action_exclude_generic">Ukryj</string>
+    <string name="action_expand_more">Więcej</string>
+    <string name="action_expand_more_app_settings">Więcej ustawień aplikacji</string>
+    <string name="action_expand_more_contacts">Więcej kontaktów</string>
+    <string name="action_expand_more_device_settings">Więcej ustawień</string>
+    <string name="action_expand_more_events">Więcej wydarzeń</string>
+    <string name="action_expand_more_files">Więcej plików</string>
+    <string name="action_expand_more_notes">Więcej notatek</string>
+    <string name="action_expand_more_shortcuts">Więcej skrótów</string>
+    <string name="action_file_info">Informacje o pliku</string>
+    <string name="action_include_generic">Odkryj</string>
+    <string name="action_more_search_history">Więcej historii</string>
+    <string name="action_open">Otwórz</string>
+    <string name="action_open_in_split_screen">Podzielony ekran</string>
+    <string name="action_open_folder">Otwórz folder</string>
+    <string name="action_open_keyboard">Otwórz klawiaturę</string>
+    <string name="action_open_settings">Otwórz ustawienia</string>
+    <string name="settings_gestures_title">Gesty</string>
+    <string name="settings_gestures_desc">Dostosuj gesty przesunięcia</string>
+    <string name="settings_gesture_swipe_right">Przesunięcie w prawo</string>
+    <string name="settings_gesture_widget_panel">Panel widżetów</string>
+    <string name="settings_gesture_swipe_left">Przesunięcie w lewo</string>
+    <string name="settings_gesture_swipe_up">Przesunięcie w górę</string>
+    <string name="settings_gesture_swipe_down">Przesunięcie w dół</string>
+    <string name="settings_gesture_swipe_up_home">Przesunięcie w górę (Ekran główny)</string>
+    <string name="settings_gesture_swipe_down_home">Przesunięcie w dół (Ekran główny)</string>
+    <string name="settings_gesture_close_quick_search">Zamknij Quick Search</string>
+    <string name="settings_gesture_double_tap_home">Dwukrotne dotknięcie (Ekran główny)</string>
+    <string name="settings_gesture_settings">Ustawienia</string>
+    <string name="settings_gesture_close_keyboard_notifications">Zamknij klawiaturę / Otwórz powiadomienia</string>
+    <string name="settings_gesture_close_keyboard">Zamknij klawiaturę</string>
+    <string name="settings_gesture_notification_panel">Panel powiadomień</string>
+    <string name="settings_gesture_lock_screen">Zablokuj ekran</string>
+    <string name="settings_gesture_lock_screen_requires_accessibility">Wymaga uprawnienia ułatwień dostępu</string>
+    <string name="accessibility_lock_screen_service_label">Blokada ekranu Quick Search</string>
+    <string name="accessibility_lock_screen_service_description">Umożliwia aplikacji Quick Search blokowanie ekranu za pomocą gestu dwukrotnego dotknięcia na ekranie głównym. Nie odczytuje zawartości ekranu.</string>
+    <string name="accessibility_permission_disclaimer_title">Informacja o uprawnieniu ułatwień dostępu</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search korzysta z interfejsu AccessibilityService API wyłącznie do blokowania urządzenia po dwukrotnym dotknięciu ekranu głównego. Za pośrednictwem tej usługi Quick Search nie odczytuje, nie gromadzi, nie przechowuje ani nie udostępnia zawartości ekranu ani innych danych osobowych.</string>
+    <string name="settings_gesture_none">Brak</string>
+    <string name="settings_gesture_custom">Własne (Aplikacje, Pliki itp.)</string>
+    <string name="settings_keyboard_gestures_title">Gesty klawiatury (Ekran główny)</string>
+    <string name="settings_keyboard_gestures_desc">Dostępne tylko wtedy, gdy na ekranie głównym nie ma przewijanej zawartości</string>
+    <string name="action_pin_app">Przypnij</string>
+    <string name="action_pin_to_notifications">Przypnij do powiadomień</string>
+    <string name="action_unpin_from_notifications">Odepnij z powiadomień</string>
+    <string name="pinned_notifications_channel_description">Szybki dostęp do przypiętych wyników wyszukiwania</string>
+    <string name="pinned_notifications_title">Przypięte skróty</string>
+    <string name="notification_pinned_items_title">Przypięte elementy w powiadomieniach</string>
+    <string name="notification_pinned_items_description">Zarządzaj przypiętymi elementami widocznymi w panelu powiadomień</string>
+    <string name="notification_pinned_items_remove">Usuń %1$s z powiadomień</string>
+    <string name="notification_pinned_item_type_app">Aplikacja</string>
+    <string name="notification_pinned_item_type_app_shortcut">Skrót do aplikacji</string>
+    <string name="notification_pinned_item_type_contact">Kontakt</string>
+    <string name="notification_pinned_item_type_file">Plik</string>
+    <string name="notification_pinned_item_type_note">Notatka</string>
+    <string name="action_remove">Usuń</string>
+    <string name="app_swipe_current_action">Bieżące działanie</string>
+    <string name="app_swipe_up_picker_title">Wybierz działanie gestu w górę dla %1$s</string>
+    <string name="app_swipe_down_picker_title">Wybierz działanie gestu w dół dla %1$s</string>
+    <string name="app_swipe_picker_tip">Przesunięcie palcem po ikonie aplikacji otworzy wybrany element zarówno w sugestiach aplikacji, jak i w wynikach wyszukiwania</string>
+    <string name="app_swipe_picker_search_hint">Szukaj aplikacji, kontaktów itp.</string>
+    <string name="app_swipe_up_set_toast">Ustawiono gest przesunięcia w górę dla %1$s</string>
+    <string name="app_swipe_down_set_toast">Ustawiono gest przesunięcia w dół dla %1$s</string>
+    <string name="action_remove_from_history">Usuń z historii</string>
+    <string name="action_reset_app_shortcut_icon">Przywróć domyślną ikonę</string>
+    <string name="action_retry">Ponów</string>
+    <string name="action_share">Udostępnij</string>
+    <string name="action_move_up">Przenieś w górę</string>
+    <string name="action_move_down">Przenieś w dół</string>
+    <string name="action_undo">Cofnij</string>
+    <string name="action_uninstall_app">Odinstaluj</string>
+    <string name="action_rate">Oceń teraz</string>
+    <string name="action_not_now">Nie teraz</string>
+    <string name="action_agree">Zgadzam się</string>
+    <string name="action_unpin_app">Odepnij</string>
+    <string name="alias_trigger_after_space">Wyzwalaj po spacji</string>
+    <string name="common_action_add">Dodaj</string>
+    <string name="common_action_clear">Wyczyść</string>
+    <string name="common_ai_provider">Dostawca AI</string>
+    <string name="common_api_key_setup">Konfiguracja klucza API</string>
+    <string name="common_close">Zamknij</string>
+    <string name="common_custom">Własny</string>
+    <string name="common_error_unable_to_open">Nie można otworzyć %1$s</string>
+    <string name="common_most_used">Najczęściej używane</string>
+    <string name="common_nickname">Pseudonim</string>
+    <string name="common_search">Szukaj</string>
+    <string name="common_theme_dark">Ciemny</string>
+    <string name="common_theme_device">Urządzenie</string>
+    <string name="common_theme_light">Jasny</string>
+    <string name="common_theme_system">Systemowy</string>
+    <string name="common_time">Czas</string>
+    <string name="dialog_add_alias_for_search_type_title">Dodaj alias dla "%1$s"</string>
+    <string name="dialog_alias_info_search_engine">Wpisz ten alias na początku lub na końcu zapytania, aby szybko rozpocząć wyszukiwanie w %1$s.</string>
+    <string name="dialog_alias_info_search_engine_start_only">Wpisz ten alias na początku zapytania, aby szybko rozpocząć wyszukiwanie w %1$s.</string>
+    <string name="dialog_alias_info_search_type">Wpisz ten alias na początku zapytania, aby uruchomić wyszukiwanie %1$s.</string>
+    <string name="dialog_alias_info_tool">Wpisz ten alias na początku zapytania, aby przejść do trybu %1$s.</string>
+    <string name="dialog_app_shortcut_icon_message">Wybierz obraz dla "%1$s". Zmienia to tylko wygląd skrótu w Quick Search.</string>
+    <string name="dialog_cancel">Anuluj</string>
+    <string name="dialog_choose_contact_action_title">Wybierz działanie zastępujące %1$s</string>
+    <string name="dialog_clear_all_history_message">Czy na pewno chcesz wyczyścić całą historię wyszukiwania? Tej operacji nie można cofnąć.</string>
+    <string name="dialog_clear_all_history_title">Wyczyścić całą historię?</string>
+    <string name="dialog_delete">Usuń</string>
+    <string name="dialog_direct_dial_change_later">Możesz to zmienić w dowolnym momencie w Ustawieniach.</string>
+    <string name="dialog_direct_dial_option_dialer">Otwórz dialer</string>
+    <string name="dialog_direct_dial_option_dialer_desc">Sprawdź numer w aplikacji telefonu przed nawiązaniem połączenia.</string>
+    <string name="dialog_direct_dial_option_direct">Zadzwoń bezpośrednio</string>
+    <string name="dialog_direct_dial_option_direct_desc">Nawiąż połączenie od razu (wymaga uprawnienia do wykonywania połączeń).</string>
+    <string name="dialog_direct_dial_title">Wybierz sposób dzwonienia</string>
+    <string name="dialog_done">Gotowe</string>
+    <string name="dialog_edit_alias_error_prefix">Ten alias jest już zajęty.</string>
+    <string name="dialog_edit_alias_error_trigger_conflict">Ten alias pokrywa się z istniejącym wyzwalaczem.</string>
+    <string name="dialog_edit_alias_for_search_type_title">Edytuj alias dla "%1$s"</string>
+    <string name="dialog_edit_alias_title">Edytuj alias</string>
+    <string name="dialog_edit_amazon_domain_error">Nieprawidłowa domena</string>
+    <string name="dialog_edit_amazon_domain_hint">Przykłady: amazon.pl, amazon.de, amazon.com itp.</string>
+    <string name="dialog_edit_amazon_domain_message">Zaktualizuj domenę Amazon dla swojego kraju.</string>
+    <string name="dialog_edit_amazon_domain_title">Edytuj domenę Amazon</string>
+    <string name="dialog_gemini_model_picker_title">Wybierz model</string>
+    <string name="dialog_nickname_message">Wpisz pseudonim dla "%1$s". Będzie można wyszukiwać tę pozycję za pomocą tego pseudonimu.</string>
+    <string name="dialog_ok">Dalej</string>
+    <string name="dialog_okay">OK</string>
+    <string name="dialog_remember_choice">Zapamiętaj ten wybór</string>
+    <string name="dialog_save">Zapisz</string>
+    <string name="dialog_select_phone_number_message">Wybierz numer dla %1$s</string>
+    <string name="dialog_select_phone_number_title">Wybierz numer telefonu</string>
+    <string name="dialog_send">Wyślij</string>
+    <string name="dialog_trigger_error_alias_conflict">Ten wyzwalacz pokrywa się z istniejącym aliasem.</string>
+    <string name="dialog_trigger_error_taken">Ten wyzwalacz jest już zajęty.</string>
+    <string name="dialog_trigger_hint">Słowo wyzwalające</string>
+    <string name="dialog_trigger_message">Wpisz jednowyrazowy wyzwalacz dla "%1$s".</string>
+    <string name="exclude_marker"> ukryto w </string>
+    <string name="permission_action_manage_android">Zarządzaj w ustawieniach Androida</string>
+    <string name="permission_settings_dialog_message">To działanie wymaga uprawnienia %1$s. Nastąpi przekierowanie do ustawień systemowych, aby je przyznać.</string>
+    <string name="permission_settings_dialog_title">Wymagane uprawnienie: %1$s</string>
+    <string name="toast_excluded_from_results">%1$s ukryto w wynikach</string>
+    <string name="toast_excluded_from_suggestions">%1$s ukryto w sugestiach</string>
+
+    <!-- ============================================================================
+         Accessibility
+         ============================================================================ -->
+    <string name="desc_clear_search">Wyczyść tekst wyszukiwania</string>
+    <string name="desc_collapse">Zwiń</string>
+    <string name="desc_expand">Rozwiń</string>
+    <string name="desc_launch_app">Otwórz %1$s</string>
+    <string name="desc_navigate_back">Przejdź wstecz</string>
+    <string name="desc_navigate_forward">Przejdź dalej</string>
+    <string name="desc_open_settings">Otwórz ustawienia Quick Search</string>
+    <string name="desc_selected">Wybrano</string>
+    <string name="desc_voice_search_icon">Rozpocznij wyszukiwanie głosowe</string>
+
+    <!-- ============================================================================
+         Search Result Sections &amp; Ranking
+         ============================================================================ -->
+    <string name="app_suggestions_tab_new_updated">Nowe/Zaktualizowane</string>
+    <string name="app_suggestions_tab_pinned">Przypięte</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Przypięte aplikacje nadal będą widoczne na karcie %1$s</string>
+    <string name="app_suggestions_tab_recent">Ostatnie</string>
+    <string name="app_suggestions_tabs_dialog_message">Wybierz karty sugestii aplikacji, które mają być widoczne na ekranie głównym.</string>
+    <string name="app_suggestions_tabs_dialog_title">Karty sugestii aplikacji</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">Wybierz karty</string>
+    <string name="app_suggestions_tab_required_toast">Co najmniej jedna karta sugestii aplikacji musi być włączona</string>
+    <string name="app_suggestions_toggle_desc">Pokaż lub ukryj sugerowane aplikacje na ekranie głównym</string>
+    <string name="app_suggestions_toggle_title">Sugestie aplikacji</string>
+    <string name="show_all_apps_button_toggle_desc">Pokaż przycisk Wszystkie aplikacje pod sugestiami aplikacji</string>
+    <string name="app_suggestions_usage_access_link">dostęp do danych o użyciu</string>
+    <string name="app_suggestions_usage_access_tip">Przyznaj dostęp do danych o użyciu, aby widzieć bardziej trafne sugestie</string>
+    <string name="clear_query_toggle_desc">Automatycznie czyść poprzednie zapytanie po uruchomieniu aplikacji</string>
+    <string name="clear_query_toggle_title">Czyść zapytanie</string>
+    <string name="more_results_title">Więcej wyników</string>
+    <string name="open_keyboard_toggle_desc">Automatycznie otwieraj klawiaturę po uruchomieniu aplikacji</string>
+    <string name="recent_queries_toggle_desc">Liczba elementów wyświetlanych przed rozwinięciem</string>
+    <string name="fuzzy_search_toggle_title">Wyszukiwanie rozmyte</string>
+    <string name="fuzzy_search_toggle_desc">Znajduj wyniki nawet wtedy, gdy w zapytaniu pojawi się literówka.</string>
+    <string name="secondary_ranking_title">Sortowanie wyników wyszukiwania</string>
+    <string name="secondary_ranking_dialog_desc">Wybierz sposób porządkowania wyników o tym samym dopasowaniu.</string>
+    <string name="secondary_ranking_recency">Ostatnio używane</string>
+    <string name="secondary_ranking_most_opened">Najczęściej otwierane</string>
+    <string name="recent_queries_toggle_title">Historia wyszukiwania</string>
+    <string name="search_history_tab_recently_opened">Wyniki</string>
+    <string name="search_history_tab_searches">Wyszukiwania</string>
+    <string name="search_section_app_settings_toggle_desc">Włącz lub wyłącz wyszukiwanie w ustawieniach aplikacji</string>
+    <string name="search_section_app_settings_toggle_title">Wyszukiwanie w ustawieniach aplikacji</string>
+    <string name="search_section_app_shortcuts_toggle_desc">Włącz lub wyłącz wyszukiwanie skrótów aplikacji</string>
+    <string name="search_section_app_shortcuts_toggle_title">Wyszukiwanie skrótów aplikacji</string>
+    <string name="search_section_apps_toggle_desc">Włącz lub wyłącz wyszukiwanie aplikacji</string>
+    <string name="search_section_apps_toggle_title">Wyszukiwanie aplikacji</string>
+    <string name="search_section_calendar_toggle_desc">Włącz lub wyłącz wyszukiwanie w kalendarzu</string>
+    <string name="search_section_calendar_toggle_title">Wyszukiwanie w kalendarzu</string>
+    <string name="search_section_contacts_toggle_desc">Włącz lub wyłącz wyszukiwanie kontaktów</string>
+    <string name="search_section_contacts_toggle_title">Wyszukiwanie kontaktów</string>
+    <string name="search_section_device_settings_toggle_desc">Włącz lub wyłącz wyszukiwanie w ustawieniach urządzenia</string>
+    <string name="search_section_device_settings_toggle_title">Wyszukiwanie w ustawieniach urządzenia</string>
+    <string name="search_section_files_toggle_desc">Włącz lub wyłącz wyszukiwanie plików</string>
+    <string name="search_section_files_toggle_title">Wyszukiwanie plików</string>
+    <string name="search_section_notes_toggle_desc">Włącz lub wyłącz wyszukiwanie notatek</string>
+    <string name="search_section_notes_toggle_title">Wyszukiwanie notatek</string>
+    <string name="section_app_settings">Ustawienia aplikacji</string>
+    <string name="section_app_shortcuts">Skróty aplikacji</string>
+    <string name="section_apps">Aplikacje</string>
+    <string name="section_calendar">Wydarzenia z kalendarza</string>
+    <string name="section_files">Pliki</string>
+    <string name="section_notes">Notatki</string>
+    <string name="section_settings">Ustawienia urządzenia</string>
+    <string name="top_match_title">Najlepsze dopasowanie</string>
+    <string name="top_matches_count_label">Liczba dopasowań</string>
+    <string name="top_matches_priority_desc">Zmień priorytet i wyłączaj elementy w najlepszych dopasowaniach</string>
+    <string name="top_matches_priority_dialog_info">Przytrzymaj i przeciągnij, aby zmienić priorytet, oraz użyj przełącznika, aby włączyć lub wyłączyć określone typy wyników.</string>
+    <string name="top_matches_priority_title">Zarządzaj najlepszymi dopasowaniami</string>
+    <string name="top_matches_title">Najlepsze dopasowania</string>
+    <string name="top_matches_toggle_desc">Pokaż najlepiej dopasowane wyniki ze wszystkich typów na jednej liście</string>
+    <string name="top_result_indicator_toggle_desc">Wyróżnij najlepszy wynik, który można otworzyć za pomocą klawiatury.</string>
+    <string name="top_result_indicator_toggle_title">Wskaźnik najlepszego wyniku</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Otwórz najlepszy wynik za pomocą klawiatury</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Klawisz Enter/Gotowe na klawiaturze otworzy najlepszy wynik</string>
+    <string name="include_non_launchable_apps_toggle_title">Aplikacje bez widoku uruchamiania</string>
+    <string name="include_non_launchable_apps_toggle_desc">Uwzględniaj w wynikach wyszukiwania aplikacje, które nie mają aktywności uruchamiania.</string>
+    <string name="notification_dots_toggle_title">Kropki powiadomień</string>
+    <string name="notification_dots_toggle_desc">Pokazuj kropki powiadomień na aplikacjach, które mają powiadomienia</string>
+    <string name="desc_notification_dot">Ma powiadomienia</string>
+    <string name="show_in_recents_toggle_title">Pokaż w ostatnich</string>
+    <string name="show_in_recents_toggle_desc">Pokaż Quick Search na ekranie ostatnich aplikacji urządzenia</string>
+    <string name="web_search_suggestions_title">Sugestie sieciowe</string>
+
+    <!-- ============================================================================
+         Apps
+         ============================================================================ -->
+    <string name="app_menu_section_actions">Działania</string>
+    <string name="app_menu_section_shortcuts">Skróty</string>
+    <string name="app_menu_value_on">Wł.</string>
+    <string name="action_uninstall_named">Odinstaluj %1$s</string>
+    <string name="action_disable_app_shortcut">Wyłącz</string>
+    <string name="action_disable_all_app_shortcuts_named">Wyłącz wszystkie skróty %1$s</string>
+    <string name="snackbar_app_shortcut_disabled_title">Skrót aplikacji wyłączony</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Możesz włączyć ten skrót później w Ustawieniach skrótów aplikacji.</string>
+    <string name="apps_refreshed_successfully">Pomyślnie odświeżono aplikacje</string>
+    <string name="error_loading_user_apps">Nie udało się załadować aplikacji. Spróbuj ponownie za chwilę.</string>
+    <string name="error_uninstall_app">Nie można odinstalować %1$s</string>
+    <string name="error_uninstall_self">Nie możesz odinstalować Quick Search z tego miejsca.</string>
+    <string name="failed_to_refresh_apps">Nie udało się odświeżyć aplikacji</string>
+    <string name="settings_app_apk_size_format">Rozmiar APK: %1$.2f MB</string>
+    <string name="settings_app_columns_4">4</string>
+    <string name="settings_app_columns_5">5</string>
+    <string name="settings_app_columns_title">Aplikacji w rzędzie</string>
+    <string name="settings_app_result_rows_title">Rzędy wyników aplikacji</string>
+    <string name="settings_app_icon_size_percent">%1$d%%</string>
+    <string name="settings_app_icon_size_title">Rozmiar ikon aplikacji</string>
+    <string name="settings_app_info_install_date">Data instalacji</string>
+    <string name="settings_app_info_last_update">Ostatnia aktualizacja</string>
+    <string name="settings_app_info_minimum_sdk">Minimalny SDK</string>
+    <string name="settings_app_info_not_available">Niedostępne</string>
+    <string name="settings_app_info_package_name">Nazwa pakietu</string>
+    <string name="settings_app_info_target_sdk">Docelowy SDK</string>
+    <string name="settings_app_info_version">Wersja</string>
+    <string name="settings_app_info_version_code">Kod wersji</string>
+    <string name="settings_app_sort_api_level">Poziom API</string>
+    <string name="settings_app_sort_apk_size">Rozmiar APK</string>
+    <string name="settings_app_sort_ascending">Sortuj rosnąco</string>
+    <string name="settings_app_sort_by_format">Sortuj według: %1$s</string>
+    <string name="settings_app_sort_descending">Sortuj malejąco</string>
+    <string name="settings_app_sort_least_used">Najmniej używane</string>
+    <string name="settings_app_sort_name">Nazwa</string>
+    <string name="settings_app_uninstall_selected_format">Odinstaluj (%1$d)</string>
+    <string name="settings_apps_empty">Nie znaleziono aplikacji.</string>
+    <string name="settings_manage_apps_desc">Zarządzaj swoimi aplikacjami</string>
+    <string name="settings_manage_apps_title">Zarządzaj aplikacjami</string>
+    <string name="settings_refresh_apps_disabled">Wyszukiwanie aplikacji jest wyłączone, nie można odświeżyć danych aplikacji</string>
+    <string name="settings_refresh_apps_title">Przeładuj aplikacje</string>
+    <string name="usage_permission_subtitle">Jeśli chcesz widzieć ostatnio używane aplikacje w sugestiach, przyznaj dostęp do danych o użyciu.</string>
+    <string name="usage_permission_title">Przyznaj dostęp do danych o użyciu</string>
+
+    <!-- ============================================================================
+         App Shortcuts
+         ============================================================================ -->
+    <string name="error_shortcut_activity_not_exported">Docelowa aktywność nie jest wyeksportowana.</string>
+    <string name="error_shortcut_creation_failed">Nie udało się utworzyć skrótu</string>
+    <string name="error_shortcut_disabled">Skrót jest wyłączony.</string>
+    <string name="error_shortcut_launch_failed">Nie udało się uruchomić skrótu: %1$s.</string>
+    <string name="error_shortcut_no_activity_resolves">Żadna aktywność nie obsługuje intencji.</string>
+    <string name="error_shortcut_requires_permission">Skrót wymaga uprawnienia: %1$s.</string>
+    <string name="error_shortcuts_not_supported">Dodawanie skrótów do ekranu głównego nie jest obsługiwane na tym urządzeniu</string>
+    <string name="pin_shortcut_request_added">Dodano „%1$s” do Quick Search</string>
+    <string name="pin_shortcut_request_added_generic">Dodano skrót do Quick Search</string>
+    <string name="settings_app_shortcuts_activity_dialog_title">Wybierz aktywność aplikacji</string>
+    <string name="settings_app_shortcuts_activity_empty">Brak dostępnych aktywności aplikacji.</string>
+    <string name="settings_app_shortcuts_activity_warning">Niektóre aktywności mogą nie działać zgodnie z oczekiwaniami</string>
+    <string name="settings_app_shortcuts_add_button">Dodaj skrót</string>
+    <string name="settings_app_shortcuts_add_deep_link">Głęboki link aplikacji</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_message">Dodaj obsługiwany link URL lub intencję, która otwiera konkretny ekran w aplikacji. Nieobsługiwane linki zostaną otwarte w przeglądarce.</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_title">Dodaj głęboki link aplikacji</string>
+    <string name="settings_app_shortcuts_add_dialog_title">Wybierz źródło skrótu</string>
+    <string name="settings_app_shortcuts_add_failed">Nie udało się dodać skrótu.</string>
+    <string name="settings_app_shortcuts_add_query_dialog_title">Dodaj skrót własnego zapytania do %1$s</string>
+    <string name="settings_app_shortcuts_add_query_shortcut">Własne zapytanie wyszukiwania</string>
+    <string name="settings_app_shortcuts_add_success">Dodano skrót.</string>
+    <string name="settings_app_shortcuts_add_success_with_app_name">Nowy skrót został dodany do %1$s</string>
+    <string name="settings_app_shortcuts_add_url_dialog_title">Dodaj skrót URL do %1$s</string>
+    <string name="settings_app_shortcuts_add_url_shortcut">Własny URL</string>
+    <plurals name="settings_app_shortcuts_card_count">
+        <item quantity="one">%d skrót</item>
+        <item quantity="few">%d skróty</item>
+        <item quantity="many">%d skrótów</item>
+        <item quantity="other">%d skrótu</item>
+    </plurals>
+    <string name="settings_app_shortcuts_collapse_all">Zwiń wszystko</string>
+    <string name="settings_app_shortcuts_create_not_supported">Żadna aplikacja nie obsługuje tworzenia skrótów na tym urządzeniu.</string>
+    <string name="settings_app_shortcuts_deep_link_label">URL lub intencja</string>
+    <string name="settings_app_shortcuts_delete_action">Usuń skrót</string>
+    <string name="settings_app_shortcuts_delete_success">Usunięto skrót.</string>
+    <string name="settings_app_shortcuts_description_with_count">Dotknij dowolnej aplikacji, aby wyświetlić jej skróty. Włączaj, wyłączaj lub dodawaj własne skróty.
+
+Dostępne skróty: %1$s</string>
+    <string name="settings_app_shortcuts_edit_dialog_title">Edytuj skrót</string>
+    <string name="settings_app_shortcuts_empty">Nie znaleziono skrótów aplikacji.</string>
+    <string name="settings_app_shortcuts_expand_all">Rozwiń wszystko</string>
+    <string name="settings_app_shortcuts_filter_all_apps">Wszystkie aplikacje</string>
+    <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Aplikacje ze skrótami</string>
+    <string name="settings_app_shortcuts_filter_browsers">Przeglądarki</string>
+    <string name="settings_app_shortcuts_filter_search_engines">Wyszukiwarki</string>
+    <string name="settings_app_shortcuts_query_label">Zapytanie</string>
+    <string name="settings_app_shortcuts_shortcut_name_label">Nazwa skrótu</string>
+    <string name="settings_app_shortcuts_update_failed">Nie udało się zaktualizować skrótu.</string>
+    <string name="settings_app_shortcuts_update_success">Zaktualizowano skrót.</string>
+    <string name="settings_app_shortcuts_url_label">URL</string>
+    <string name="shortcut_song_search_label">Wyszukiwanie utworów</string>
+    <string name="shortcut_watch_later_label">Do obejrzenia</string>
+
+    <!-- ============================================================================
+         Contacts &amp; Calls
+         ============================================================================ -->
+    <string name="contact_method_call_label">Połączenie</string>
+    <string name="contact_method_email_label">E-mail</string>
+    <string name="contact_method_fallback_label">Inne</string>
+    <string name="contact_method_google_meet_label">Google Meet</string>
+    <string name="contact_method_message_label">Wiadomość</string>
+    <string name="contact_method_signal_message_label">Signal</string>
+    <string name="contact_method_signal_video_call_label">Rozmowa wideo Signal</string>
+    <string name="contact_method_signal_voice_call_label">Rozmowa głosowa Signal</string>
+    <string name="contact_method_telegram_message_label">Telegram</string>
+    <string name="contact_method_telegram_video_call_label">Rozmowa wideo Telegram</string>
+    <string name="contact_method_telegram_voice_call_label">Rozmowa głosowa Telegram</string>
+    <string name="contact_method_view_in_contacts_label">Pokaż w aplikacji Kontakty</string>
+    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
+    <string name="contact_method_whatsapp_video_call_label">Rozmowa wideo WhatsApp</string>
+    <string name="contact_method_whatsapp_voice_call_label">Rozmowa głosowa WhatsApp</string>
+    <string name="contacts_action_button_chat">Czat</string>
+    <string name="contacts_action_button_contacts">Kontakty</string>
+    <string name="contacts_action_button_meet">Meet</string>
+    <string name="contacts_action_button_video_call">Rozmowa wideo</string>
+    <string name="contacts_action_button_voice_call">Rozmowa głosowa</string>
+    <string name="contacts_action_call">Zadzwoń do kontaktu</string>
+    <string name="contacts_action_hint_message">Wskazówka: naciśnij i przytrzymaj dowolne działanie tutaj, aby dostosować je dla poszczególnych kontaktów.</string>
+    <string name="contacts_action_next_number">Następny numer telefonu</string>
+    <string name="contacts_action_previous_number">Poprzedni numer telefonu</string>
+    <string name="contacts_action_signal">Kontakt w Signal</string>
+    <string name="contacts_action_sms">Wyślij wiadomość do kontaktu</string>
+    <string name="contacts_action_telegram">Kontakt w Telegramie</string>
+    <string name="contacts_action_whatsapp">Kontakt w WhatsApp</string>
+    <string name="contacts_no_methods_available">Brak dostępnych metod kontaktu</string>
+    <string name="contacts_refreshed_successfully">Pomyślnie odświeżono kontakty</string>
+    <string name="contacts_section_permission_subtitle">Uprawnienie do kontaktów jest wymagane do wyszukiwania kontaktów</string>
+    <string name="error_call_permission_required">To działanie wymaga uprawnienia do telefonu</string>
+    <string name="error_google_meet_call_failed">Połączenie Google Meet nie powiodło się – aplikacja może nie obsługiwać tej metody</string>
+    <string name="error_google_meet_no_phone">Nie można nawiązać połączenia Google Meet – brak numeru telefonu</string>
+    <string name="error_google_meet_not_installed">Aplikacja Google Meet nie jest zainstalowana</string>
+    <string name="error_google_meet_video_call_failed">Nie udało się rozpocząć rozmowy wideo Google Meet</string>
+    <string name="error_missing_phone_number">Brak dostępnego numeru telefonu</string>
+    <string name="error_open_contact">Nie można otworzyć tego kontaktu</string>
+    <string name="error_signal_call_failed">Połączenie Signal nie powiodło się. Upewnij się, że aplikacja Signal jest zainstalowana.</string>
+    <string name="error_signal_chat_failed">Nie udało się otworzyć czatu Signal</string>
+    <string name="error_signal_not_installed">Aplikacja Signal nie jest zainstalowana</string>
+    <string name="error_signal_video_call_failed">Nie udało się rozpocząć rozmowy wideo Signal</string>
+    <string name="error_telegram_call_failed">Połączenie Telegram nie powiodło się. Upewnij się, że aplikacja Telegram jest zainstalowana.</string>
+    <string name="error_telegram_chat_failed">Nie udało się otworzyć czatu Telegram</string>
+    <string name="error_telegram_not_installed">Aplikacja Telegram nie jest zainstalowana</string>
+    <string name="error_whatsapp_call_failed">Połączenie WhatsApp nie powiodło się. Upewnij się, że aplikacja WhatsApp jest zainstalowana.</string>
+    <string name="error_whatsapp_chat_failed">Nie udało się otworzyć czatu WhatsApp</string>
+    <string name="error_whatsapp_not_installed">Aplikacja WhatsApp nie jest zainstalowana</string>
+    <string name="error_whatsapp_video_call_failed">Nie udało się rozpocząć rozmowy wideo WhatsApp</string>
+    <string name="error_whatsapp_video_call_missing_data">Nie można nawiązać rozmowy wideo WhatsApp – brak danych kontaktu</string>
+    <string name="error_whatsapp_video_call_unavailable">WhatsApp jest niedostępny dla rozmów wideo</string>
+    <string name="settings_call_permission_title">Telefon</string>
+    <string name="permissions_background_usage_title">Zezwól na działanie w tle</string>
+    <string name="permissions_background_usage_desc">Zezwól na działanie w tle, aby przyspieszyć uruchamianie aplikacji.</string>
+    <string name="settings_calling_card_title">Domyślna aplikacja do połączeń</string>
+    <string name="settings_calls_texts_title">Połączenia i wiadomości</string>
+    <string name="settings_direct_dial_desc">Nawiązuj połączenia bezpośrednio, bez otwierania dialera.</string>
+    <string name="settings_direct_dial_title">Bezpośrednie wybieranie</string>
+    <string name="settings_number_search_title">Wyszukiwanie po numerze</string>
+    <string name="settings_number_search_desc">Wyszukuj kontakty za pomocą ich numerów telefonów.</string>
+    <string name="settings_messaging_app_not_installed">Aplikacja %s nie jest zainstalowana na Twoim urządzeniu</string>
+    <string name="settings_messaging_card_title">Domyślna aplikacja do wiadomości</string>
+    <string name="settings_messaging_option_messages">Wiadomości</string>
+
+    <!-- ============================================================================
+         Files &amp; Folders
+         ============================================================================ -->
+    <string name="excluded_item_type_file_extension">Rozszerzenie pliku</string>
+    <string name="excluded_item_type_folder">Folder</string>
+    <string name="file_extension_label">Pliki .%s</string>
+    <string name="file_info_file_type">Typ pliku</string>
+    <string name="file_info_modified">Zmodyfikowano</string>
+    <string name="file_info_path">Ścieżka</string>
+    <string name="file_info_size">Rozmiar</string>
+    <string name="file_info_type">Typ</string>
+    <string name="file_type_apks">Pliki APK</string>
+    <string name="file_type_audio">Dźwięk</string>
+    <string name="file_type_documents">Dokumenty</string>
+    <string name="file_type_pictures">Obrazy</string>
+    <string name="file_type_videos">Wideo</string>
+    <string name="files_refreshed_successfully">Pomyślnie odświeżono pliki</string>
+    <string name="files_section_permission_subtitle">Uprawnienie do plików jest wymagane do wyszukiwania plików</string>
+    <string name="settings_excluded_extensions_title">Ukryte rozszerzenia plików</string>
+    <string name="settings_file_types_title">Pliki i foldery</string>
+    <string name="settings_folder_blacklist_add">Dodaj zablokowany folder</string>
+    <string name="settings_folder_blacklist_helper">Te foldery będą ignorowane podczas wyszukiwania</string>
+    <string name="settings_folder_blacklist_title">Czarna lista</string>
+    <string name="settings_folder_filter_helper">Wyszukuj foldery i dodawaj je, aby określić, skąd mają pochodzić wyniki plików i folderów.</string>
+    <string name="settings_folder_filters_title">Filtry ścieżek folderów</string>
+    <string name="settings_folder_search_hint">Wyszukaj folder do dodania</string>
+    <string name="settings_folder_search_no_results">Nie znaleziono folderów</string>
+    <string name="settings_folder_whitelist_add">Dodaj dozwolony folder</string>
+    <string name="settings_folder_whitelist_helper">Wyszukiwanie plików i folderów obejmie tylko te foldery</string>
+    <string name="settings_folder_whitelist_title">Biała lista</string>
+    <string name="settings_folders_toggle">Foldery</string>
+    <string name="settings_file_previews_toggle">Podgląd plików</string>
+    <string name="settings_file_previews_description">Podglądaj obrazy i pliki PDF przed ich otwarciem.</string>
+    <string name="settings_refresh_files_disabled">Wyszukiwanie plików jest wyłączone, nie można odświeżyć danych plików</string>
+    <string name="settings_refresh_files_title">Przeładuj pliki</string>
+    <string name="settings_system_files_toggle">Pliki systemowe</string>
+
+    <!-- ============================================================================
+         Calendar
+         ============================================================================ -->
+    <string name="app_settings_create_calendar_event_desc">Utwórz i dodaj nowe wydarzenie</string>
+    <string name="app_settings_create_calendar_event_title">Nowe wydarzenie w kalendarzu</string>
+    <string name="agenda_title">Dzisiejszy plan</string>
+    <string name="calendar_create_event_name_hint">Nazwa wydarzenia</string>
+    <string name="calendar_create_event_select_date">Wybierz datę</string>
+    <string name="calendar_create_event_sync_notice">To wydarzenie nie zsynchronizuje się z kalendarzem urządzenia</string>
+    <string name="calendar_create_event_title">Nowe wydarzenie</string>
+    <string name="calendar_edit_event_title">Edytuj wydarzenie</string>
+    <string name="calendar_relative_ago_format">%1$s temu</string>
+    <plurals name="calendar_relative_days">
+        <item quantity="one">%d dzień</item>
+        <item quantity="few">%d dni</item>
+        <item quantity="many">%d dni</item>
+        <item quantity="other">%d dnia</item>
+    </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d godzina</item>
+        <item quantity="few">%d godziny</item>
+        <item quantity="many">%d godzin</item>
+        <item quantity="other">%d godziny</item>
+    </plurals>
+    <string name="calendar_relative_in_format">za %1$s</string>
+    <string name="calendar_relative_in_minutes">za %1$d minut</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d minuta</item>
+        <item quantity="few">%d minuty</item>
+        <item quantity="many">%d minut</item>
+        <item quantity="other">%d minuty</item>
+    </plurals>
+    <string name="calendar_relative_now">Teraz</string>
+    <plurals name="calendar_relative_months">
+        <item quantity="one">%d miesiąc</item>
+        <item quantity="few">%d miesiące</item>
+        <item quantity="many">%d miesięcy</item>
+        <item quantity="other">%d miesiąca</item>
+    </plurals>
+    <string name="calendar_relative_today">Dzisiaj</string>
+    <string name="calendar_relative_tomorrow">Jutro</string>
+    <plurals name="calendar_relative_years">
+        <item quantity="one">%d rok</item>
+        <item quantity="few">%d lata</item>
+        <item quantity="many">%d lat</item>
+        <item quantity="other">%d roku</item>
+    </plurals>
+    <string name="calendar_relative_yesterday">Wczoraj</string>
+    <string name="calendar_repeats_daily">Codziennie</string>
+    <plurals name="calendar_repeats_every_days">
+        <item quantity="one">Co %d dzień</item>
+        <item quantity="few">Co %d dni</item>
+        <item quantity="many">Co %d dni</item>
+        <item quantity="other">Co %d dnia</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_months">
+        <item quantity="one">Co %d miesiąc</item>
+        <item quantity="few">Co %d miesiące</item>
+        <item quantity="many">Co %d miesięcy</item>
+        <item quantity="other">Co %d miesiąca</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_weeks">
+        <item quantity="one">Co %d tydzień</item>
+        <item quantity="few">Co %d tygodnie</item>
+        <item quantity="many">Co %d tygodni</item>
+        <item quantity="other">Co %d tygodnia</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_years">
+        <item quantity="one">Co %d rok</item>
+        <item quantity="few">Co %d lata</item>
+        <item quantity="many">Co %d lat</item>
+        <item quantity="other">Co %d roku</item>
+    </plurals>
+    <string name="calendar_repeats_generic">Cykliczne</string>
+    <string name="calendar_repeats_monthly">Co miesiąc</string>
+    <string name="calendar_repeats_weekly">Co tydzień</string>
+    <string name="calendar_repeats_yearly">Co rok</string>
+    <string name="calendar_section_permission_subtitle">Uprawnienie do kalendarza jest wymagane do wyszukiwania w kalendarzu</string>
+    <string name="error_open_calendar_event">Nie można otworzyć wydarzenia w kalendarzu</string>
+    <string name="settings_calendar_events_empty">Brak dostępnych wydarzeń w kalendarzu.</string>
+    <string name="settings_calendar_include_past_events_desc">Uwzględniaj przeszłe wydarzenia w wynikach wyszukiwania.</string>
+    <string name="settings_calendar_include_past_events_title">Przeszłe wydarzenia</string>
+    <string name="settings_calendar_permission_title">Kalendarz</string>
+    <string name="settings_calendar_show_today_events_desc">Pokazuj dzisiejsze wydarzenia na ekranie głównym.</string>
+    <string name="settings_calendar_show_today_events_title">Pokaż dzisiejsze wydarzenia</string>
+    <string name="settings_calendar_default_title">Otwórz wydarzenia w…</string>
+    <string name="settings_calendar_view_all_events_desc">Wyświetl wszystkie wydarzenia</string>
+
+    <!-- ============================================================================
+         Notes
+         ============================================================================ -->
+    <string name="app_settings_search_create_note_desc">Rozpocznij nową notatkę w edytorze</string>
+    <string name="app_settings_search_create_note_title">Utwórz notatkę</string>
+    <string name="notes_body_hint">Wpisz treść notatki tutaj</string>
+    <string name="notes_create_note_cta">Nowa notatka</string>
+    <string name="notes_delete_confirm_message">Ta notatka zostanie trwale usunięta.</string>
+    <string name="notes_delete_confirm_title">Usunąć tę notatkę?</string>
+    <string name="notes_delete_note_desc">Usuń notatkę</string>
+    <string name="notes_delete_selected_confirm_message">Te notatki zostaną trwale usunięte.</string>
+    <string name="notes_delete_selected_confirm_title">Usunąć zaznaczone notatki?</string>
+    <string name="notes_editor_action_open_link">Otwórz link</string>
+    <string name="notes_editor_action_send_email">Wyślij e-mail</string>
+    <string name="notes_editor_title">Edytor notatek</string>
+    <string name="notes_empty_note_subtext">Pusta notatka</string>
+    <string name="notes_quick_note_title">Szybka notatka</string>
+    <string name="notes_quick_note_toggle_desc">Otwieraj Szybką notatkę gestem nawigacji</string>
+    <string name="notes_title_hint">Tytuł</string>
+    <string name="notes_untitled">Bez tytułu</string>
+    <string name="settings_notes_view_all_desc">Wyświetl wszystkie notatki</string>
+
+    <!-- ============================================================================
+         Device Settings Shortcuts
+         ============================================================================ -->
+    <string name="device_settings_category_apps_permissions">Aplikacje i uprawnienia</string>
+    <string name="device_settings_category_battery_performance">Bateria i wydajność</string>
+    <string name="device_settings_category_developer_advanced">Dla programistów i zaawansowane</string>
+    <string name="device_settings_category_language_input">Język i wprowadzanie</string>
+    <string name="device_settings_category_network_connectivity">Sieć i łączność</string>
+    <string name="device_settings_category_notifications_accessibility">Powiadomienia i ułatwienia dostępu</string>
+    <string name="device_settings_category_security_privacy">Bezpieczeństwo i prywatność</string>
+    <string name="device_settings_category_system_device">System i urządzenie</string>
+    <string name="settings_device_settings_empty">Brak dostępnych ustawień urządzenia.</string>
+    <string name="settings_shortcut_about_phone">Informacje o telefonie</string>
+    <string name="settings_shortcut_accessibility">Ułatwienia dostępu</string>
+    <string name="settings_shortcut_airplane">Tryb samolotowy</string>
+    <string name="settings_shortcut_all_files">Dostęp do wszystkich plików</string>
+    <string name="settings_shortcut_battery_optimization">Optymalizacja baterii</string>
+    <string name="settings_shortcut_battery_saver">Oszczędzanie baterii</string>
+    <string name="settings_shortcut_battery_usage">Zużycie baterii</string>
+    <string name="settings_shortcut_bluetooth">Bluetooth</string>
+    <string name="settings_shortcut_cast">Przesyłaj ekran</string>
+    <string name="settings_shortcut_data_usage">Użycie danych</string>
+    <string name="settings_shortcut_date_time">Data i godzina</string>
+    <string name="settings_shortcut_default_apps">Domyślne aplikacje</string>
+    <string name="settings_shortcut_developer_options">Opcje programistyczne</string>
+    <string name="settings_shortcut_display">Wyświetlacz</string>
+    <string name="settings_shortcut_do_not_disturb">Nie przeszkadzać</string>
+    <string name="settings_shortcut_hotspot">Hotspot i tethering</string>
+    <string name="settings_shortcut_locale">Język</string>
+    <string name="settings_shortcut_location">Lokalizacja</string>
+    <string name="settings_shortcut_mobile_data">Dane komórkowe</string>
+    <string name="settings_shortcut_network">Sieć i internet</string>
+    <string name="settings_shortcut_nfc">NFC</string>
+    <string name="settings_shortcut_notification_listener">Dostęp do powiadomień</string>
+    <string name="settings_shortcut_notifications">Powiadomienia</string>
+    <string name="settings_shortcut_overlay_permission">Wyświetlanie nad innymi aplikacjami</string>
+    <string name="settings_shortcut_privacy">Prywatność</string>
+    <string name="settings_shortcut_security">Bezpieczeństwo</string>
+    <string name="settings_shortcut_sound">Dźwięk i wibracje</string>
+    <string name="settings_shortcut_storage">Pamięć</string>
+    <string name="settings_shortcut_usage_access">Dostęp do danych o użyciu</string>
+    <string name="settings_shortcut_voice_input">Asystent cyfrowy</string>
+    <string name="settings_shortcut_vpn">VPN</string>
+    <string name="settings_shortcut_wifi">Wi‑Fi</string>
+    <string name="settings_unable_to_open_settings">Nie można otworzyć ustawień</string>
+
+    <!-- ============================================================================
+         App Settings Search
+         ============================================================================ -->
+    <string name="settings_all_quick_search_features">Lista funkcji</string>
+    <string name="settings_all_quick_search_features_desc">Wyświetl pełną listę funkcji i możliwości</string>
+    <string name="settings_more_apps_from_developer_title">Więcej aplikacji od dewelopera</string>
+    <string name="settings_app_settings_desc">Szukaj w ustawieniach Quick Search</string>
+    <string name="settings_features_load_failed">Nie udało się załadować dokumentacji funkcji.</string>
+    <string name="settings_features_sections_title">Spis treści</string>
+    <string name="settings_search_description_change_app_theme">Zmień motyw aplikacji</string>
+    <string name="settings_search_description_change_font_size">Zmień rozmiar czcionki aplikacji</string>
+    <string name="settings_search_description_change_icon_pack">Zmień pakiet ikon</string>
+    <string name="settings_search_description_change_layout">Zmień opcje układu aplikacji</string>
+    <string name="settings_search_description_change_wallpaper">Zmień wygląd tapety</string>
+    <string name="settings_search_dynamic_description_template">Zarządzaj ustawieniami: %1$s</string>
+    <string name="settings_view_all_desc">Wyświetl wszystkie ustawienia</string>
+
+    <!-- ============================================================================
+         Settings - Main Navigation &amp; Appearance
+         ============================================================================ -->
+    <string name="customize_search_engines">Dostosuj wyszukiwarki</string>
+    <string name="settings_app_theme_aurora">Zorza</string>
+    <string name="settings_app_theme_forest">Las</string>
+    <string name="settings_app_theme_monochrome">Mono</string>
+    <string name="settings_app_theme_sunset">Zachód słońca</string>
+    <string name="settings_app_theme_title">Motyw</string>
+    <string name="settings_appearance_desc">Tapeta, style wyszukiwarek, tryb obsługi jedną ręką itp.</string>
+    <string name="settings_appearance_title">Wygląd</string>
+    <string name="settings_assistant_voice_mode_desc">Uruchamiaj wprowadzanie głosowe po otwarciu jako asystent cyfrowy</string>
+    <string name="settings_assistant_voice_mode_title">Tryb głosowy asystenta</string>
+    <string name="settings_beta_features_disabled">Funkcje beta są wyłączone</string>
+    <string name="settings_beta_features_enabled">Nowe funkcje beta są włączone</string>
+    <string name="settings_beta_features_unavailable">Brak nowych funkcji</string>
+    <string name="settings_beta_tag">Beta</string>
+    <string name="settings_bottom_searchbar_desc">Umieść pasek wyszukiwania na dole ekranu</string>
+    <string name="settings_bottom_searchbar_title">Dolny pasek wyszukiwania</string>
+    <string name="settings_cache_cleared_toast">Pamięć podręczna wyczyszczona. Odbudowywanie indeksu aplikacji…</string>
+    <string name="settings_circular_app_icons_desc">Wymuś okrągłe ikony aplikacji</string>
+    <string name="settings_circular_app_icons_title">Okrągłe ikony aplikacji</string>
+    <string name="settings_compact_rows_one_row">Jeden rząd</string>
+    <string name="settings_compact_rows_two_rows">Dwa rzędy</string>
+    <string name="settings_default_assistant_desc">Ustaw tę aplikację jako domyślnego asystenta cyfrowego.</string>
+    <string name="settings_default_assistant_desc_change">Zmień domyślną aplikację asystenta cyfrowego.</string>
+    <string name="settings_default_assistant_title">Domyślny asystent</string>
+    <string name="settings_default_launcher_desc">Ustaw tę aplikację jako domyślną aplikację ekranu głównego.</string>
+    <string name="settings_default_launcher_title">Domyślny program uruchamiający</string>
+    <string name="settings_amoled_theme_desc">Używaj prawdziwej czerni dla motywu Mono</string>
+    <string name="settings_amoled_theme_title">Motyw AMOLED</string>
+    <string name="settings_device_theme_blocked_toast">Wyłączone, gdy włączony jest motyw Material You</string>
+    <string name="settings_device_theme_desc">Użyj dynamicznej palety kolorów urządzenia jako motywu aplikacji</string>
+    <string name="settings_device_theme_title">Material You</string>
+    <string name="settings_edit_label">Edytuj</string>
+    <string name="settings_font_size_big">Duży</string>
+    <string name="settings_font_size_medium">Średni</string>
+    <string name="settings_font_size_small">Mały</string>
+    <string name="settings_font_size_title">Rozmiar czcionki</string>
+    <string name="settings_home_screen_widget_confirm_message">Zamierzasz dodać widżet Quick Search do ekranu głównego. Przytrzymaj widżet, aby przejść do strony ustawień widżetu z wieloma opcjami dostosowywania.</string>
+    <string name="settings_home_screen_widget_desc">Dodaj widżet Quick Search do ekranu głównego.</string>
+    <string name="settings_home_screen_widget_title">Widżet ekranu głównego</string>
+    <string name="settings_icon_desc">Pokaż/ukryj ikonę koła zębatego na pasku wyszukiwania. Przejdź do ustawień w dowolnym momencie przesuwając w lewo lub przez wyszukiwanie.</string>
+    <string name="settings_icon_required_by_gesture_desc">Ustaw gest przesunięcia w lewo na Otwórz ustawienia, aby wyłączyć tę ikonę.</string>
+    <string name="settings_icon_pack_empty">Nie znaleziono pakietów ikon.</string>
+    <string name="settings_icon_pack_description_no_packs">Ustaw pakiet ikon dla ikon aplikacji.</string>
+    <string name="settings_icon_pack_mask_unsupported_icons">Maskuj nieobsługiwane ikony</string>
+    <string name="settings_icon_pack_option_system">Ikony systemowe</string>
+    <string name="settings_icon_pack_picker_title">Wybierz pakiet ikon</string>
+    <string name="settings_icon_pack_reset_all_icons">Zresetuj wszystkie ikony</string>
+    <string name="settings_icon_pack_search_query">Darmowe pakiety ikon</string>
+    <string name="settings_icon_pack_title">Pakiet ikon</string>
+    <string name="settings_icon_title">Ikona ustawień</string>
+    <string name="settings_launch_options_desc">Różne sposoby uruchamiania tej aplikacji</string>
+    <string name="settings_launch_options_title">Opcje uruchamiania</string>
+    <string name="settings_app_language_title">Język aplikacji</string>
+    <string name="settings_app_language_desc">Bieżący: %1$s</string>
+    <string name="settings_app_language_picker_title">Wybierz język aplikacji</string>
+    <string name="settings_app_language_system_default">Domyślny systemowy</string>
+    <string name="settings_launcher_icon_reset_default">Przywróć domyślną</string>
+    <string name="settings_launcher_icon_title">Ikona aplikacji programu uruchamiającego</string>
+    <string name="settings_layout_option_bottom_desc">Najważniejsze elementy pojawiają się na dole dla łatwiejszego dostępu</string>
+    <string name="settings_layout_option_bottom_title">Tryb obsługi jedną ręką</string>
+    <string name="settings_unified_pinned_items_title">Ujednolicone przypięte elementy</string>
+    <string name="settings_unified_pinned_items_desc">Pokazuj przypięte elementy jako jedną ujednoliconą listę na ekranie głównym.</string>
+    <string name="settings_more_options_desc">Różne opcje dostosowywania</string>
+    <string name="settings_more_options_title">Więcej opcji</string>
+    <string name="settings_overlay_assistant_setup_now">Skonfiguruj teraz</string>
+    <string name="settings_overlay_assistant_tip">Wskazówka: ustaw tę aplikację jako asystenta cyfrowego, aby otwierać nakładkę z dowolnego miejsca.</string>
+    <string name="settings_overlay_mode_desc">Pasek wyszukiwania otwiera się jako nakładka na inne aplikacje</string>
+    <string name="settings_overlay_mode_desc_launcher_blocked">Niedostępne, gdy Quick Search jest domyślnym programem uruchamiającym</string>
+    <string name="settings_overlay_mode_title">Tryb nakładki</string>
+    <string name="settings_overlay_source_add_custom">Dodaj własny obraz</string>
+    <string name="settings_overlay_source_custom_save_failed">Nie udało się użyć tego obrazu.</string>
+    <string name="settings_overlay_source_edit_custom">Edytuj własny obraz</string>
+    <string name="settings_overlay_source_needs_permission">Wymaga uprawnienia</string>
+    <string name="settings_overlay_source_wallpaper">Tapeta</string>
+    <string name="settings_overlay_theme_tone_darker">Ciemniejszy</string>
+    <string name="settings_overlay_theme_tone_lighter">Jaśniejszy</string>
+    <string name="settings_permissions_desc">Uprawnienia potrzebne do działania poszczególnych funkcji</string>
+    <string name="settings_permissions_title">Uprawnienia</string>
+    <string name="settings_quick_settings_tile_desc">Dodaj Quick Search do kafelków szybkich ustawień.</string>
+    <string name="settings_quick_settings_tile_title">Kafelek szybkich ustawień</string>
+    <string name="settings_refresh_contacts_disabled">Wyszukiwanie kontaktów jest wyłączone, nie można odświeżyć danych kontaktów</string>
+    <string name="settings_refresh_contacts_title">Przeładuj kontakty</string>
+    <string name="settings_refresh_data_note">Dane są odświeżane automatycznie. Użyj tych przycisków, aby wymusić ręczne odświeżenie.</string>
+    <string name="settings_refresh_data_title">Odśwież dane</string>
+    <string name="settings_refresh_icon_packs">Odśwież pakiety ikon</string>
+    <string name="settings_refreshing_icon_packs">Odświeżanie listy pakietów ikon</string>
+    <string name="settings_scroll_to_top">Przewiń na górę</string>
+    <string name="settings_search_hints_desc">Włącz/wyłącz cykliczne podpowiedzi wyszukiwania</string>
+    <string name="settings_search_hints_title">Podpowiedzi wyszukiwania</string>
+    <string name="settings_search_results_desc">Zarządzaj typami wyników, sugestiami sieciowymi i historią wyszukiwania</string>
+    <string name="settings_search_results_title">Wyniki wyszukiwania</string>
+    <string name="settings_sections_at_least_one_required">Co najmniej jeden element musi być włączony</string>
+    <string name="settings_show_app_labels_desc">Pokazuj nazwy aplikacji w sugestiach i wynikach</string>
+    <string name="settings_show_app_labels_title">Etykiety aplikacji</string>
+    <string name="settings_themed_icons_desc">Dopasuj kolor ikon aplikacji do motywu</string>
+    <string name="settings_themed_icons_title">Ikony z motywem</string>
+    <string name="settings_tools_desc">Kalkulator, konwerter jednostek, słownik i inne</string>
+    <string name="settings_tools_gemini_api_desc">Dodanie klucza API odblokowuje więcej narzędzi.</string>
+    <string name="settings_tools_gemini_api_title">Skonfiguruj dostawcę AI</string>
+    <string name="settings_tools_info_examples_header">Oto kilka przykładów zapytań, które możesz wpisać w pasku wyszukiwania</string>
+    <string name="settings_tools_title">Narzędzia</string>
+    <string name="settings_use_system_font_desc">Używaj czcionki systemowej urządzenia</string>
+    <string name="settings_use_system_font_title">Użyj czcionki systemowej</string>
+    <string name="settings_accent_color_from_wallpaper">Tapeta</string>
+    <string name="settings_accent_color_none">Brak</string>
+    <string name="settings_accent_color_picker_title">Kolor akcentu</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Najpierw ustaw tło z tapety</string>
+    <string name="settings_wallpaper_accent_desc">Pobierz kolor akcentu z tapety lub wybierz własny kolor</string>
+    <string name="settings_wallpaper_accent_title">Kolor akcentu</string>
+    <string name="settings_wallpaper_blur_label">Rozmycie</string>
+    <string name="settings_wallpaper_card_title">Tło tapety</string>
+    <string name="settings_wallpaper_transparency_label">Przezroczystość</string>
+
+    <!-- ============================================================================
+         Settings - Search Engines &amp; AI Provider
+         ============================================================================ -->
+    <string name="error_open_email">Nie znaleziono aplikacji pocztowej do wysłania wiadomości.</string>
+    <string name="settings_add_alias">Ustaw alias</string>
+    <string name="settings_add_custom_provider_desc">Dodaj dostawcę zgodnego z OpenAI.</string>
+    <string name="settings_add_custom_provider_title">Dodaj własnego dostawcę</string>
+    <string name="settings_add_search_engine_button">Dodaj wyszukiwarkę</string>
+    <string name="settings_add_search_engine_dialog_message">Wpisz URL lub szablon intencji Androida z symbolem zastępczym zapytania.
+
+Przykład:
+www.google.com/search?q={{query}}</string>
+    <string name="settings_add_search_engine_error_multiple_placeholders">Użyj {{query}} tylko raz.</string>
+    <string name="settings_add_search_engine_error_placeholder">URL musi zawierać {{query}}</string>
+    <string name="settings_add_search_engine_error_required">Wprowadź szablon adresu URL.</string>
+    <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_openai">OpenAI</string>
+    <string name="settings_alias_label">Alias:</string>
+    <string name="settings_amazon_domain_default">amazon.com</string>
+    <string name="settings_amazon_domain_label">Domena:</string>
+    <string name="settings_api_key_saved_last4">Zapisany klucz z końcówką ****%1$s</string>
+    <string name="settings_api_key_setup_desc">Skonfiguruj klucze API, aby uzyskać dostęp do modeli odpowiedniego dostawcy AI.</string>
+    <string name="settings_api_key_setup_nav_desc">Dodaj lub usuń klucze API dostawców</string>
+    <string name="settings_configure_api_key_title">Skonfiguruj klucz API</string>
+    <string name="settings_custom_provider_base_url_hint">Przykład: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_input_label">Podstawowy adres URL</string>
+    <string name="settings_custom_provider_advanced_payload_desc">Dołączane do każdego żądania wysyłanego przez tego dostawcę.</string>
+    <string name="settings_custom_provider_advanced_payload_error">Wprowadź prawidłowy obiekt JSON.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">Zaawansowane dane żądania</string>
+    <string name="settings_free_api_key_tip_description">Instrukcja bezpłatnego uzyskania klucza Gemini API.</string>
+    <string name="settings_open_free_api_key_guide">Otwórz poradnik darmowego klucza API</string>
+    <string name="settings_direct_search_grounding_label">Wyszukiwanie w sieci</string>
+    <string name="settings_direct_search_how_to">Uzyskaj darmowy klucz API</string>
+    <string name="settings_direct_search_model_label">Model</string>
+    <string name="settings_direct_search_personal_context">Kontekst osobisty</string>
+    <string name="settings_direct_search_personal_context_hint">Dodaj kontekst, z którego AI ma korzystać podczas generowania odpowiedzi.</string>
+    <string name="settings_direct_search_personal_context_unsupported">Kontekst osobisty nie jest dostępny dla tego modelu.</string>
+    <string name="settings_direct_search_setup_nav_desc">Dodaj klucz API, aby włączyć wyszukiwanie oparte na AI</string>
+    <string name="settings_direct_search_setup_nav_title">Wyszukiwanie AI</string>
+    <string name="settings_direct_search_thinking_label">Myślenie</string>
+    <string name="settings_edit_search_engine_dialog_title">Edytuj wyszukiwarkę</string>
+    <string name="settings_gemini_api_config_desc">Skonfiguruj dostawcę AI dla wyszukiwania opartego na AI i narzędzi</string>
+    <string name="settings_gemini_api_desc">Skonfiguruj dostawcę AI</string>
+    <string name="settings_gemini_api_key_paste_hint">Dotknij, aby wkleić klucz</string>
+    <string name="settings_gemini_api_key_reset">Zresetuj klucz</string>
+    <string name="settings_gemini_api_key_saving">Zapisywanie...</string>
+    <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
+    <string name="settings_model_picker_search_hint">Szukaj modeli</string>
+    <string name="settings_search_engine_alias_suffix_desc">Uruchamia wyszukiwarkę po dodaniu aliasu na końcu zapytania. Aliasy zawsze działają na początku.</string>
+    <string name="settings_search_engine_alias_suffix_title">Alias po zapytaniu</string>
+    <string name="settings_search_engine_browser_default">Domyślna przeglądarka</string>
+    <string name="settings_search_engine_browser_label">Otwórz w</string>
+    <string name="settings_search_engine_display_compact_desc">Zawsze widoczne nad klawiaturą w postaci poziomej listy</string>
+    <string name="settings_search_engine_display_compact_title">Kompaktowy</string>
+    <string name="settings_search_engine_display_inline_desc">Wyświetlane jako karty w obszarze wyników podczas wyszukiwania</string>
+    <string name="settings_search_engine_display_inline_title">W linii</string>
+    <string name="settings_search_engine_display_title">Styl wyszukiwarek</string>
+    <string name="settings_search_engines_desc">Zarządzaj wyszukiwarkami i zmieniaj ich kolejność</string>
+    <string name="settings_search_engines_more_search_engines">Więcej wyszukiwarek</string>
+
+    <!-- ============================================================================
+         Settings - Backup, Feedback &amp; About
+         ============================================================================ -->
+    <string name="release_notes_action_all_features">Wszystkie funkcje</string>
+    <string name="release_notes_action_more">Zobacz starsze wersje</string>
+    <string name="release_notes_previous_versions">Poprzednie wersje</string>
+    <string name="release_notes_previous_versions_unavailable">Nie udało się załadować poprzednich wersji</string>
+    <string name="release_notes_action_got_it">Rozumiem</string>
+    <string name="settings_release_notes_title">Informacje o wydaniu</string>
+    <string name="settings_release_notes_desc">Zobacz informacje o wydaniu dla tej wersji</string>
+    <string name="update_card_title">Dostępna jest nowa aktualizacja Quick Search!</string>
+    <string name="action_update">Aktualizuj</string>
+    <string name="release_notes_title">Informacje o wydaniu Quick Search v%1$s</string>
+    <string name="release_notes_title_no_version">Informacje o wydaniu Quick Search</string>
+    <string name="settings_backup_export_api_key_warning_message">Kontynuujesz na własne ryzyko. Wyeksportowany klucz API nie jest szyfrowany i każdy, kto ma dostęp do Twojego pliku kopii zapasowej, może go odczytać.</string>
+    <string name="settings_backup_export_button">Eksportuj</string>
+    <string name="settings_backup_export_failed">Nie udało się wyeksportować ustawień.</string>
+    <string name="settings_backup_export_option_pinned_items_title">Przypięte elementy</string>
+    <string name="settings_backup_export_selection_title">Eksportuj dane</string>
+    <string name="settings_backup_export_success">Ustawienia zostały pomyślnie wyeksportowane.</string>
+    <string name="settings_backup_import_button">Importuj</string>
+    <string name="settings_backup_import_failed">Nie udało się zaimportować ustawień.</string>
+    <string name="settings_backup_import_success">Ustawienia zostały pomyślnie zaimportowane.</string>
+    <string name="settings_backup_import_warning_message">Spowoduje to zastąpienie dotychczasowych ustawień.</string>
+    <string name="settings_backup_import_warning_title">Zaimportować ustawienia?</string>
+    <string name="settings_backup_restore_desc">Eksportuj lub importuj ustawienia aplikacji</string>
+    <string name="settings_backup_restore_title">Kopia zapasowa i przywracanie</string>
+    <string name="settings_feedback_developer_desc">Stworzone przez: %1$s</string>
+    <string name="settings_feedback_developer_name">Teja Karlapudi</string>
+    <string name="settings_feedback_developer_title">%1$s v%2$s</string>
+    <string name="settings_feedback_github_desc">Zobacz kod źródłowy projektu na GitHubie</string>
+    <string name="settings_feedback_github_title">Rozwój projektu</string>
+    <string name="settings_feedback_rate_desc">Wystaw ocenę 5 gwiazdek, jeśli ta aplikacja jest dla Ciebie przydatna</string>
+    <string name="settings_feedback_rate_title">Oceń Quick Search</string>
+    <string name="settings_feedback_send_desc">Zgłaszaj błędy lub proponuj nowe funkcje</string>
+    <string name="settings_feedback_send_title">Prześlij opinię</string>
+    <string name="settings_open_source_licenses_load_failed">Nie udało się załadować licencji.</string>
+    <string name="settings_open_source_licenses_loading">Ładowanie licencji…</string>
+    <string name="settings_open_source_licenses_tap_to_view">Dotknij, aby wyświetlić tekst licencji</string>
+    <string name="settings_open_source_licenses_title">Licencje open source</string>
+
+    <!-- ============================================================================
+         Tools - Calculator, Converter, Time &amp; Dictionary
+         ============================================================================ -->
+    <string name="calculator_enter_math_expression_hint">Wpisz wyrażenie matematyczne</string>
+    <string name="calculator_invalid_or_unsupported_expression">Nieprawidłowe lub nieobsługiwane wyrażenie</string>
+    <string name="calculator_toggle_desc">Wyniki dla podstawowych wyrażeń matematycznych</string>
+    <string name="calculator_toggle_title">Kalkulator</string>
+    <string name="currency_converter_invalid_input">Nieprawidłowe dane przeliczania walut</string>
+    <string name="currency_converter_requires_gemini_key">Wymaga klucza API dostawcy AI</string>
+    <string name="currency_converter_toggle_desc">Przykład: 100 USD to INR</string>
+    <string name="currency_converter_toggle_title">Przelicznik walut</string>
+    <string name="color_visualizer_toggle_title">Wizualizator kolorów</string>
+    <string name="color_visualizer_toggle_desc">Przykłady: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Wpisz kolor szesnastkowy lub RGB</string>
+    <string name="currency_converter_updated">Zaktualizowano %1$s</string>
+    <string name="date_calculator_category_absolute_time">Czas bezwzględny</string>
+    <string name="date_calculator_category_date_differences">Różnice dat</string>
+    <string name="date_calculator_category_named_dates">Nazwane daty</string>
+    <string name="date_calculator_category_offset_from_date">Przesunięcie względem daty</string>
+    <string name="date_calculator_category_relative_dates">Daty względne</string>
+    <string name="date_calculator_category_time_arithmetic">Arytmetyka czasu</string>
+    <string name="date_calculator_category_time_offset">Przesunięcie czasu</string>
+    <string name="date_calculator_category_time_ranges">Zakresy czasu</string>
+    <string name="date_calculator_info_title">Kalkulator daty i czasu</string>
+    <string name="date_calculator_invalid_date">Nieprawidłowa lub nierozpoznana data lub godzina</string>
+    <string name="date_calculator_toggle_action_desc">Włącz lub wyłącz kalkulator daty i czasu</string>
+    <string name="date_calculator_toggle_desc">Przykłady użycia</string>
+    <string name="dictionary_example_label">Przykład: %1$s</string>
+    <string name="dictionary_synonyms_label">Synonimy: %1$s</string>
+    <string name="dictionary_toggle_desc">Przykład: define serendipity</string>
+    <string name="dictionary_toggle_title">Słownik</string>
+    <string name="weather_toggle_title">Pogoda</string>
+    <string name="weather_toggle_desc">Dzisiejsza pogoda dla wybranej lokalizacji</string>
+    <string name="weather_location_label">Domyślna lokalizacja</string>
+    <string name="weather_location_hint">Przykład: Warszawa, PL</string>
+    <string name="weather_error_location_required">Wpisz lokalizację lub skonfiguruj domyślną lokalizację w Ustawieniach</string>
+    <string name="get_weather">Sprawdź pogodę</string>
+    <string name="weather_in_location">Pogoda w: %1$s</string>
+    <string name="weather_temperature_unit_label">Jednostka temperatury</string>
+    <string name="weather_temperature_unit_celsius">Celsjusz (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
+    <string name="get_currency_value">Pobierz kurs waluty</string>
+    <string name="get_time">Sprawdź godzinę</string>
+    <string name="search_in_dictionary">Szukaj w słowniku</string>
+    <string name="unit_converter_category_angle">Kąt</string>
+    <string name="unit_converter_category_area">Powierzchnia</string>
+    <string name="unit_converter_category_data">Dane</string>
+    <string name="unit_converter_category_energy">Energia</string>
+    <string name="unit_converter_category_frequency">Częstotliwość</string>
+    <string name="unit_converter_category_length">Długość</string>
+    <string name="unit_converter_category_power">Moc</string>
+    <string name="unit_converter_category_pressure">Ciśnienie</string>
+    <string name="unit_converter_category_speed">Prędkość</string>
+    <string name="unit_converter_category_temperature">Temperatura</string>
+    <string name="unit_converter_category_volume">Objętość</string>
+    <string name="unit_converter_category_weight_mass">Waga / Masa</string>
+    <string name="unit_converter_enter_conversion_hint">Wpisz przeliczenie (np. 5lbs in kgs)</string>
+    <string name="unit_converter_info_title">Konwerter jednostek</string>
+    <string name="unit_converter_invalid_or_unsupported_query">Nieprawidłowe lub nieobsługiwane przeliczenie</string>
+    <string name="unit_converter_toggle_action_desc">Włącz lub wyłącz konwerter jednostek</string>
+    <string name="world_clock_error_not_recognized">Nie udało się rozpoznać zapytania o czas. Podaj miasto, kraj, strefę czasową lub dokładny czas.</string>
+    <string name="world_clock_toggle_desc">Przykład: Time in Tokyo</string>
+    <string name="world_clock_toggle_title">Zegar światowy</string>
+
+    <!-- ============================================================================
+         Widgets &amp; Shortcuts
+         ============================================================================ -->
+    <string name="home_screen_widget_error">Nie udało się dodać widżetu. Spróbuj ponownie.</string>
+    <string name="home_screen_widget_not_supported">Bezpośrednie przypinanie widżetów nie jest obsługiwane w tej wersji Androida. Dodaj go z listy widżetów ekranu głównego.</string>
+    <string name="quick_settings_tile_added">Dodano kafelek Quick Search</string>
+    <string name="quick_settings_tile_already_added">Kafelek Quick Search jest już dodany</string>
+    <string name="quick_settings_tile_error">Nie udało się dodać kafelka szybkich ustawień. Spróbuj ponownie.</string>
+    <string name="quick_settings_tile_not_added">Nie dodano kafelka</string>
+    <string name="quick_settings_tile_not_supported">Bezpośrednie dodawanie kafelków nie jest obsługiwane w tej wersji Androida. Użyj edycji szybkich ustawień, aby go dodać.</string>
+    <string name="shortcut_voice_search_disabled_message">Skrót wyszukiwania głosowego jest niedostępny.</string>
+    <string name="shortcut_voice_search_long_label">Otwórz wyszukiwanie głosowe</string>
+    <string name="shortcut_voice_search_short_label">Wyszukiwanie głosowe</string>
+    <string name="voice_input_not_available">Wprowadzanie głosowe jest teraz niedostępne.</string>
+    <string name="widget_background_color_custom_dialog_title">Własny kolor</string>
+    <string name="widget_border_color">Kolor obramowania</string>
+    <string name="widget_custom_button_add_desc">Dodaj własny przycisk</string>
+    <string name="widget_custom_button_change_colour">Zmień kolor</string>
+    <string name="widget_custom_button_choose_colour">Wybierz kolor folderu</string>
+    <string name="widget_custom_buttons_dialog_hint">Szukaj aplikacji, skrótów aplikacji, kontaktów, plików, folderów, notatek i ustawień urządzenia.</string>
+    <string name="widget_custom_buttons_dialog_title">Wybierz działanie</string>
+    <string name="widget_custom_buttons_no_results">Nie znaleziono wyników.</string>
+    <string name="widget_custom_buttons_filter_all">Wszystkie</string>
+    <string name="widget_custom_buttons_restriction">Niedostępne, gdy aktywne są własne przyciski.</string>
+    <string name="widget_custom_buttons_title">Własne przyciski</string>
+    <string name="widget_custom_buttons_widget_title">Widżet własnych przycisków</string>
+    <string name="widget_icon_center">Środek</string>
+    <string name="widget_icon_left">Lewo</string>
+    <string name="widget_icon_off">Wył.</string>
+    <string name="widget_loading_state">Ładowanie ustawień widżetu…</string>
+    <string name="widget_mic_action_default">Domyślne</string>
+    <string name="widget_mic_action_digital_assistant">Asystent</string>
+    <string name="widget_mic_action_digital_assistant_limitation">Ze względu na ograniczenia Androida nie można uruchomić asystenta, jeśli Google nie jest ustawiony jako aplikacja asystenta cyfrowego.</string>
+    <string name="widget_mic_action_digital_assistant_link_phrase">aplikacja asystenta cyfrowego</string>
+    <string name="widget_mic_icon">Ikona mikrofonu</string>
+    <string name="widget_search_icon">Ikona wyszukiwania</string>
+    <string name="widget_settings_title">Widżet wyszukiwania</string>
+    <string name="widget_slider_border">Grubość obramowania</string>
+    <string name="widget_slider_icon_size">Rozmiar ikony</string>
+    <string name="widget_slider_internal_padding">Margines zewnętrzny</string>
+    <string name="widget_slider_internal_padding_horizontal">Poziomo</string>
+    <string name="widget_slider_internal_padding_vertical">Pionowo</string>
+    <string name="widget_slider_radius">Promień zaokrąglenia narożników</string>
+    <string name="widget_slider_transparency_background">Tło</string>
+    <string name="widget_slider_transparency_border">Obramowanie</string>
+    <string name="widget_text_icon_color">Kolor tekstu i ikon</string>
+    <string name="widget_text_icon_color_black">Czarny</string>
+    <string name="widget_text_icon_color_white">Biały</string>
+    <string name="widget_toggle_show_label">Napis Quick Search</string>
+    <string name="widgets_panel_title">Widżety</string>
+    <string name="widgets_picker_empty">Nie znaleziono widżetów.</string>
+    <string name="widgets_picker_loading">Ładowanie widżetów...</string>
+    <string name="widgets_picker_preview_unavailable">Podgląd niedostępny</string>
+    <string name="widgets_picker_title">Dodaj widżet</string>
+    <string name="widgets_picker_widget_count">%1$d widżetów</string>
+    <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+
+    <!-- ============================================================================
+         Permissions &amp; Onboarding
+         ============================================================================ -->
+    <string name="permissions_calendar_desc">Wymagane do wyszukiwania wydarzeń w kalendarzu.</string>
+    <string name="permissions_calling_desc">Wymagane do dzwonienia do kontaktów bezpośrednio bez otwierania dialera.</string>
+    <string name="settings_notifications_permission_title">Wysyłanie powiadomień</string>
+    <string name="permissions_notifications_desc">Wymagane do przypinania wyników wyszukiwania do panelu powiadomień</string>
+    <string name="permissions_notification_access_desc">Wymagane do pokazywania kropek powiadomień na aplikacjach, które mają powiadomienia.</string>
+    <string name="permissions_accessibility_lock_screen_title">Ułatwienia dostępu</string>
+    <string name="permissions_accessibility_lock_screen_desc">Umożliwia blokowanie urządzenia za pomocą gestu dwukrotnego dotknięcia.</string>
+    <string name="permissions_contacts_desc">Wymagane do wyszukiwania kontaktów.</string>
+    <string name="permissions_files_desc">Wymagane do przeszukiwania dokumentów i innych plików.</string>
+    <string name="permissions_files_title">Dostęp do plików</string>
+    <string name="permissions_granted">Przyznano</string>
+    <string name="permissions_mandatory_indicator">*</string>
+    <string name="permissions_reminder_dialog_message">Jeśli później zmienisz zdanie w sprawie uprawnienia %1$s, możesz je przyznać w ustawieniach aplikacji.</string>
+    <string name="permissions_reminder_dialog_title">Uprawnienia nieprzyznane</string>
+    <string name="permissions_screen_subtitle">Wszystkie uprawnienia tutaj są opcjonalne. Służą wyłącznie do odblokowania dodatkowych funkcji. Twoje dane pozostają na Twoim urządzeniu.</string>
+    <string name="permissions_screen_optional_emphasis">opcjonalne</string>
+    <string name="permissions_usage_desc">Wymagane do pokazywania ostatnio używanych aplikacji w sugestiach.</string>
+    <string name="setup_action_next">Dalej</string>
+    <string name="setup_action_start">Rozpocznij wyszukiwanie!</string>
+    <string name="setup_final_title">Prawie gotowe!</string>
+    <string name="setup_import_backup_found_subtitle">Czy chcesz przywrócić ustawienia z tego pliku?</string>
+    <string name="setup_import_backup_found_title">Znaleziono plik kopii zapasowej</string>
+    <string name="setup_import_button">Importuj ustawienia</string>
+    <string name="setup_import_description_subtitle">Zaimportuj ustawienia Quick Search przy użyciu wcześniej wyeksportowanego pliku kopii zapasowej.</string>
+    <string name="setup_import_description_title">Masz kopię zapasową?</string>
+    <string name="setup_import_error_subtitle">Nie udało się odczytać pliku kopii zapasowej. Spróbuj ponownie.</string>
+    <string name="setup_import_error_title">Import nie powiódł się</string>
+    <string name="setup_import_importing">Importowanie ustawień…</string>
+    <string name="setup_import_restore_button">Przywróć</string>
+    <string name="setup_import_skip">Pomiń</string>
+    <string name="setup_import_success_subtitle">Twoje ustawienia zostały zaimportowane. Dotknij poniżej, aby zacząć wyszukiwać.</string>
+    <string name="setup_import_success_title">Ustawienia przywrócone</string>
+    <string name="setup_import_title">Przywróć ustawienia</string>
+    <string name="setup_search_engines_subtitle">Włącz potrzebne wyszukiwarki i zmień ich kolejność według upodobań.</string>
+
+    <!-- ============================================================================
+         Search Engines
+         ============================================================================ -->
+    <string name="browser_brave_name">Brave Browser</string>
+    <string name="browser_in_app_name">Przeglądarka w aplikacji</string>
+    <string name="open_with_engine">Otwórz w: %1$s</string>
+    <string name="search_engine_ai_mode">Tryb AI</string>
+    <string name="search_engine_amazon">Amazon</string>
+    <string name="search_engine_bing">Bing</string>
+    <string name="search_engine_brave">Brave Search</string>
+    <string name="search_engine_chatgpt">ChatGPT</string>
+    <string name="search_engine_claude">Claude</string>
+    <string name="search_engine_custom">Własne wyszukiwanie</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
+    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+    <string name="search_engine_gemini">Gemini</string>
+    <string name="search_engine_google">Google</string>
+    <string name="search_engine_google_drive">Dysk Google</string>
+    <string name="search_engine_google_maps">Mapy Google</string>
+    <string name="search_engine_google_photos">Zdjęcia Google</string>
+    <string name="search_engine_google_translate">Tłumacz Google</string>
+    <string name="search_engine_google_play">Google Play</string>
+    <string name="search_engine_grok">Grok</string>
+    <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
+    <string name="search_engine_onboarding_description">Gdy wpiszesz zapytanie i dotkniesz dowolnej z tych wyszukiwarek, wyszukiwanie zostanie uruchomione w tych aplikacjach. Możesz je modyfikować przez długie naciśnięcie.</string>
+    <string name="search_engine_perplexity">Perplexity</string>
+    <string name="search_engine_reddit">Reddit</string>
+    <string name="search_engine_spotify">Spotify</string>
+    <string name="search_engine_startpage">Startpage</string>
+    <string name="search_engine_waze">Waze</string>
+    <string name="search_engine_wikipedia">Wikipedia</string>
+    <string name="search_engine_x">X</string>
+    <string name="search_engine_you_com">You.com</string>
+    <string name="search_engine_youtube">YouTube</string>
+    <string name="search_engine_youtube_music">YouTube Music</string>
+    <string name="search_on_engine">Szukaj w %1$s</string>
+
+    <!-- ============================================================================
+         Miscellaneous
+         ============================================================================ -->
+    <string name="auto_close_overlay_toggle_desc">Automatycznie zamykaj aplikację po otwarciu wyniku</string>
+    <string name="auto_close_overlay_toggle_title">Autozamykanie aplikacji</string>
+    <string name="excluded_item_type_app_results">Aplikacja (Wyniki)</string>
+    <string name="excluded_item_type_app_shortcut">Skrót aplikacji</string>
+    <string name="excluded_item_type_app_suggestions">Aplikacja (Sugestie)</string>
+    <string name="excluded_item_type_setting">Ustawienie</string>
+    <string name="permission_required_title">Wymagane uprawnienie</string>
+    <string name="settings_action_clear_all">Wyczyść wszystko</string>
+    <string name="settings_action_move_down">Przenieś na dół</string>
+    <string name="settings_action_move_up">Przenieś na górę</string>
+    <string name="settings_action_reorder">Przeciągnij, aby zmienić kolejność</string>
+    <string name="settings_create_new_tool_button">Utwórz nowe narzędzie</string>
+    <string name="settings_custom_tool_alias_hint">Słowo kluczowe wyzwalające to narzędzie</string>
+    <string name="settings_custom_tool_alias_label">Alias</string>
+    <string name="settings_home_text_color_title">Kolor tekstu na ekranie głównym</string>
+    <string name="settings_home_text_color_desc">Etykiety aplikacji, tytuły sekcji itp.</string>
+    <string name="settings_custom_tool_delete_button">Usuń narzędzie</string>
+    <string name="settings_custom_tool_editor_title">Własne narzędzie</string>
+    <string name="settings_custom_tool_name_label">Nazwa narzędzia</string>
+    <string name="settings_custom_tool_prompt_hint">Opisz, co robi to narzędzie. Ten monit kieruje AI, gdy narzędzie zostanie wyzwolone.
+
+ Użyj {time}, aby uwzględnić bieżącą datę i godzinę w monicie.</string>
+    <string name="settings_custom_tool_prompt_label">Monit systemowy</string>
+    <string name="settings_excluded_items_clear_all">Odkryj wszystkie elementy</string>
+    <string name="settings_excluded_items_clear_all_confirmation">Czy na pewno chcesz wyczyścić wszystkie ukryte elementy? Tej operacji nie można cofnąć.</string>
+    <string name="settings_excluded_items_desc">Przeglądaj ukryte elementy i zarządzaj nimi</string>
+    <string name="settings_excluded_items_empty">Nie masz żadnych ukrytych elementów.</string>
+    <string name="settings_excluded_items_title">Ukryte elementy</string>
+    <string name="settings_manage_calls_texts_contacts_desc">Zarządzaj połączeniami i wiadomościami dla kontaktów</string>
+    <string name="settings_manage_files_desc">Zarządzaj typami plików wyświetlanymi w wynikach</string>
+    <string name="settings_manage_shortcuts_desc">Zarządzaj skrótami aplikacji</string>
+    <string name="settings_nicknames_desc">Przeglądaj własne pseudonimy i zarządzaj nimi</string>
+    <string name="settings_nicknames_empty">Nie masz ustawionych żadnych pseudonimów.</string>
+    <string name="settings_nicknames_title">Pseudonimy</string>
+    <string name="settings_search_tip_banner_message">Wskazówka: możesz wyszukiwać ustawienia bezpośrednio z paska wyszukiwania.</string>
+    <string name="settings_triggers_desc">Przeglądaj słowa wyzwalające i zarządzaj nimi</string>
+    <string name="settings_triggers_empty">Nie masz ustawionych żadnych słów wyzwalających.</string>
+    <string name="settings_triggers_title">Wyzwalacze</string>
+    <string name="tasker_integration_title">Akcje Taskera</string>
+    <string name="tasker_integration_description">Twórz akcje Taskera za pomocą intencji rozgłoszeniowych.</string>
+    <string name="tasker_add_intent_title">Dodaj intencję rozgłoszeniową Taskera</string>
+    <string name="tasker_add_intent_description">W aplikacji Tasker utwórz profil Intent Received z tą samą akcją. Quick Search wysyła zapytanie w dodatku "query".</string>
+    <string name="tasker_alias_conflict">Ten alias jest już używany</string>
+    <string name="tasker_intent_name_label">Nazwa intencji rozgłoszeniowej</string>
+    <string name="tasker_broadcast_action_label">Akcja rozgłoszenia</string>
+    <string name="tasker_add_intent_button">Dodaj intencję</string>
+    <string name="tasker_saved_alias">Alias: %1$s</string>
+    <string name="tasker_delete_intent">Usuń intencję Taskera</string>
+    <string name="tasker_intent_action">Intencja Taskera (%1$s)</string>
+    <string name="tasker_not_installed">Tasker nie jest zainstalowany</string>
+    <string name="tasker_broadcast_failed">Nie udało się wysłać komunikatu rozgłoszeniowego Taskera</string>
+    <string name="app_menu_usage_today">Czas użycia dzisiaj: %1$s · %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d otwarcie</item><item quantity="few">%d otwarcia</item><item quantity="many">%d otwarć</item><item quantity="other">%d otwarcia</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d godz.</item><item quantity="few">%d godz.</item><item quantity="many">%d godz.</item><item quantity="other">%d godz.</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="few">%d min</item><item quantity="many">%d min</item><item quantity="other">%d min</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s godz.</string>
+    <string name="other_screen_time_today_title">Dzisiejszy czas przed ekranem</string>
+    <string name="other_screen_time_hours_minutes">%1$d godz. %2$d min</string>
+    <string name="pin_notification_dialog_title">Przypnij do powiadomień</string>
+    <string name="pin_notification_with_other_items">Przypnij razem z innymi elementami</string>
+    <string name="pin_notification_separately">Przypnij osobno</string>
+    <string name="speed_bump_dont_open">Nie otwieraj</string>
+    <string name="speed_bump_explainer_body">Ta funkcja dodaje krótkie opóźnienie przed otwarciem aplikacji, dając chwilę na zastanowienie się, czy naprawdę chcesz ją otworzyć. Pomaga to zapobiegać nawykowemu otwieraniu aplikacji i ograniczać uzależniające nawyki.</string>
+    <string name="speed_bump_explainer_just_enabled">Właśnie włączono dla: %1$s</string>
+    <string name="speed_bump_overlay_prompt">Otwieranie %1$s za chwilę…</string>
+    <string name="speed_bump_overlay_title">Weź głęboki oddech</string>
+    <string name="speed_bump_title">SpeedBump</string>
+</resources>

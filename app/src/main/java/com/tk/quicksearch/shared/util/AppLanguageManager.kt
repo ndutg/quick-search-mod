@@ -29,6 +29,7 @@ object AppLanguageManager {
             "fr",
             "hi",
             "it",
+            "pl",
             "pt-BR",
             "ru",
             "te",
