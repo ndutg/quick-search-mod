@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
 import android.os.Bundle
 import android.os.Trace
@@ -422,12 +423,22 @@ open class MainActivity : FragmentActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun updateRecentsVisibility(showInRecents: Boolean) {
         if (this is HomeActivity) return
         val appTask =
             (getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager)
                 .appTasks
-                .firstOrNull { it.taskInfo?.taskId == taskId }
+                .firstOrNull { appTask ->
+                    val taskInfo = appTask.taskInfo ?: return@firstOrNull false
+                    val appTaskId =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            taskInfo.taskId
+                        } else {
+                            taskInfo.id
+                        }
+                    appTaskId == taskId
+                }
         appTask?.setExcludeFromRecents(!showInRecents)
     }
 
