@@ -78,6 +78,7 @@ android {
                 "fr",
                 "hi",
                 "it",
+                "nl",
                 "pl",
                 "pt-rBR",
                 "ru",
