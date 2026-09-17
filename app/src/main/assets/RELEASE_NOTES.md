@@ -1,9 +1,9 @@
-- Option to Lock apps with biometrics. This works only when Quick Search is set as your launcher.
-- New search engines: Muse and Kagi assistant. Requires apps to be installed.
+- Option to Lock apps with biometrics when Quick Search is set as your launcher.
+- New search engines: Muse and Kagi assistant (app should be installed).
 - App icon swipe gestures: Swipe up or down on an app icon to trigger any item you choose.
-- Option to choose which calendar app opens your events.
-- Option to show a notification dot on apps.
-- Option to close Quick Search with gestures.
+- Choose which calendar app opens your events.
+- Notification dots support for apps.
+- Close Quick Search with gestures.
 - New tool: Visualize color hex and RGB codes right from search.
 - Copy Content button in the long-press menu for notes.
 - UI updates, performance improvements, and bug fixes.
