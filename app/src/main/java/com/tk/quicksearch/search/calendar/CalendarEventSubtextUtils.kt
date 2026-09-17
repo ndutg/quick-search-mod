@@ -176,7 +176,7 @@ private fun calendarRelativeDateLabel(
 }
 
 @Composable
-private fun calendarRelativeTimeLabel(
+internal fun calendarRelativeTimeLabel(
     eventStartMillis: Long,
     nowMillis: Long,
 ): String {

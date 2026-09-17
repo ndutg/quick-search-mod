@@ -125,6 +125,8 @@ private object WidgetKeys {
         floatPreferencesKey("quick_search_widget_internal_vertical_padding")
     val USE_DEVICE_THEME_BACKGROUND =
         booleanPreferencesKey("quick_search_widget_use_device_theme_background")
+    val USE_HOME_SCREEN_APPEARANCE =
+        booleanPreferencesKey("quick_search_widget_use_home_screen_appearance")
     val CUSTOM_BUTTON_0 = stringPreferencesKey("quick_search_widget_custom_button_0")
     val CUSTOM_BUTTON_1 = stringPreferencesKey("quick_search_widget_custom_button_1")
     val CUSTOM_BUTTON_2 = stringPreferencesKey("quick_search_widget_custom_button_2")
@@ -153,6 +155,8 @@ data class WidgetPreferences(
     val internalHorizontalPaddingDp: Float = WidgetDefaults.INTERNAL_HORIZONTAL_PADDING_DP,
     val internalVerticalPaddingDp: Float = WidgetDefaults.INTERNAL_VERTICAL_PADDING_DP,
     val useDeviceThemeBackground: Boolean = WidgetDefaults.USE_DEVICE_THEME_BACKGROUND,
+    /** Keeps this widget's surface in sync with the selected Home appearance. */
+    val useHomeScreenAppearance: Boolean = false,
     val customButtons: List<CustomWidgetButtonAction?> = WidgetDefaults.CUSTOM_BUTTONS,
 ) : Parcelable {
     companion object {
@@ -294,6 +298,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         useDeviceThemeBackground =
             this[WidgetKeys.USE_DEVICE_THEME_BACKGROUND]
                 ?: WidgetDefaults.USE_DEVICE_THEME_BACKGROUND,
+        useHomeScreenAppearance = this[WidgetKeys.USE_HOME_SCREEN_APPEARANCE] ?: false,
         customButtons = customButtons,
     ).coerceToValidRanges()
 }
@@ -320,6 +325,7 @@ fun MutablePreferences.applyWidgetPreferences(
     this[WidgetKeys.INTERNAL_HORIZONTAL_PADDING] = validated.internalHorizontalPaddingDp
     this[WidgetKeys.INTERNAL_VERTICAL_PADDING] = validated.internalVerticalPaddingDp
     this[WidgetKeys.USE_DEVICE_THEME_BACKGROUND] = validated.useDeviceThemeBackground
+    this[WidgetKeys.USE_HOME_SCREEN_APPEARANCE] = validated.useHomeScreenAppearance
     val customButtons = normalizeCustomButtons(validated.customButtons, WidgetButtonSlotConfig.MAX_COUNT)
     customButtons.getOrNull(0)?.let { action -> this[WidgetKeys.CUSTOM_BUTTON_0] = action.toManagedJson(context) }
         ?: remove(WidgetKeys.CUSTOM_BUTTON_0)

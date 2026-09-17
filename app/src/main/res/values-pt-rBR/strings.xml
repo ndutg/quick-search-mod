@@ -1152,4 +1152,5 @@
     <string name="speed_bump_overlay_prompt">%1$s vai abrir em instantes…</string>
     <string name="speed_bump_overlay_title">Respire fundo</string>
     <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">Próximo alarme</string>
 </resources>

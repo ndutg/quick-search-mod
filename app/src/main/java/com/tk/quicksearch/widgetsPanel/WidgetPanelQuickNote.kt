@@ -43,8 +43,10 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import kotlin.math.max
 
 private const val QUICK_NOTE_SAVE_DELAY_MS = 450L
+private const val QUICK_NOTE_MINIMUM_CONTAINER_ALPHA = 0.78f
 private val QuickNoteHeight = 164.dp
 private val QuickNoteFocusedHeight = 280.dp
 
@@ -128,7 +130,10 @@ internal fun CompactQuickNoteWidget(
     Surface(
         modifier = surfaceModifier,
         shape = DesignTokens.ExtraLargeCardShape,
-        color = AppColors.getSettingsCardContainerColor(),
+        color =
+            AppColors.getSettingsCardContainerColor().let { containerColor ->
+                containerColor.copy(alpha = max(containerColor.alpha, QUICK_NOTE_MINIMUM_CONTAINER_ALPHA))
+            },
     ) {
         Column(
             modifier =

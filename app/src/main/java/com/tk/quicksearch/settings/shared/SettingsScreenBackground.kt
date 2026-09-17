@@ -2,11 +2,13 @@ package com.tk.quicksearch.settings.shared
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.luminance
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.BackgroundSource
@@ -23,6 +25,11 @@ fun SettingsScreenBackground(
     overlayThemeIntensity: Float,
     deviceThemeEnabled: Boolean = false,
     amoledThemeEnabled: Boolean = false,
+    backgroundSource: BackgroundSource = BackgroundSource.THEME,
+    wallpaperBitmap: ImageBitmap? = null,
+    wallpaperBackgroundAlpha: Float = 0f,
+    wallpaperBlurRadius: Float = 0f,
+    useSystemWallpaperBackdrop: Boolean = false,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -33,15 +40,16 @@ fun SettingsScreenBackground(
             theme = appTheme,
             isDarkMode = isDarkMode,
             deviceThemeEnabled = deviceThemeEnabled,
+            backgroundSource = backgroundSource,
         )
     val searchColorTheme =
-        remember(appTheme, overlayThemeIntensity, isDarkMode, deviceThemeEnabled, amoledThemeEnabled) {
+        remember(appTheme, overlayThemeIntensity, isDarkMode, deviceThemeEnabled, amoledThemeEnabled, backgroundSource) {
             if (deviceThemeEnabled) {
                 null
             } else {
                 resolveSearchColorTheme(
                     theme = appTheme,
-                    backgroundSource = BackgroundSource.THEME,
+                    backgroundSource = backgroundSource,
                     isDarkMode = isDarkMode,
                     intensity = overlayThemeIntensity,
                     amoledThemeEnabled = amoledThemeEnabled,
@@ -55,17 +63,34 @@ fun SettingsScreenBackground(
     ) {
         Box(modifier = modifier.fillMaxSize()) {
             SearchScreenBackground(
-                showWallpaperBackground = false,
-                wallpaperBitmap = null,
-                wallpaperBackgroundAlpha = 0f,
-                wallpaperBlurRadius = 0f,
-                fallbackBackgroundAlpha = if (deviceThemeEnabled) 1f else ThemeModeFallbackBackgroundAlpha,
-                useGradientFallback = !deviceThemeEnabled,
+                showWallpaperBackground = !useSystemWallpaperBackdrop,
+                wallpaperBitmap = wallpaperBitmap,
+                wallpaperBackgroundAlpha = wallpaperBackgroundAlpha,
+                wallpaperBlurRadius = wallpaperBlurRadius,
+                fallbackBackgroundAlpha =
+                    if (deviceThemeEnabled || backgroundSource != BackgroundSource.THEME) {
+                        1f
+                    } else {
+                        ThemeModeFallbackBackgroundAlpha
+                    },
+                useGradientFallback = !deviceThemeEnabled && backgroundSource == BackgroundSource.THEME,
                 appTheme = appTheme,
                 overlayThemeIntensity = overlayThemeIntensity,
                 amoledThemeEnabled = amoledThemeEnabled,
                 modifier = Modifier.fillMaxSize(),
             )
+            if (useSystemWallpaperBackdrop) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(
+                                com.tk.quicksearch.shared.ui.theme.AppColors.WallpaperOverlayTint.copy(
+                                    alpha = wallpaperBackgroundAlpha.coerceIn(0f, 1f),
+                                ),
+                            ),
+                )
+            }
             content()
         }
     }
