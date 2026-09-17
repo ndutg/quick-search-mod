@@ -77,6 +77,8 @@ android {
                 "es",
                 "fr",
                 "hi",
+                "id",
+                "in",
                 "it",
                 "ja",
                 "nl",
