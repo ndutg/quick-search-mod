@@ -55,11 +55,13 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -97,9 +99,16 @@ import androidx.compose.ui.zIndex
 import androidx.core.os.bundleOf
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
+import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.data.preferences.NotesPreferences
+import com.tk.quicksearch.search.searchScreen.SearchScreenWallpaperLogic
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
+import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
+import com.tk.quicksearch.shared.ui.theme.homeTextColor
+import com.tk.quicksearch.shared.util.ImageAppearanceUtils
 import android.util.SizeF
 import kotlin.math.roundToInt
 
@@ -148,10 +157,7 @@ private enum class ResizeEdge(
 @Composable
 fun WidgetsPanelScreen(
     onNavigateToSearch: () -> Unit,
-    appTheme: AppTheme,
-    overlayThemeIntensity: Float,
-    deviceThemeEnabled: Boolean,
-    amoledThemeEnabled: Boolean = false,
+    uiState: SearchUiState,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -165,6 +171,18 @@ fun WidgetsPanelScreen(
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, WIDGET_PANEL_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
     val notesPreferences = remember(appContext) { NotesPreferences(appContext) }
+    val wallpaperState = SearchScreenWallpaperLogic(state = uiState)
+    val imageBackgroundIsDark =
+        remember(wallpaperState.imageBitmap, wallpaperState.usesWallpaperBackground) {
+            if (wallpaperState.usesWallpaperBackground && wallpaperState.imageBitmap != null) {
+                ImageAppearanceUtils.fromImageBitmap(wallpaperState.imageBitmap)?.isDark
+            } else {
+                null
+            }
+        }
+    val effectiveBackgroundSource =
+        if (wallpaperState.usesMonoThemeFallback) BackgroundSource.THEME else uiState.backgroundSource
+    val effectiveAppTheme = if (wallpaperState.usesMonoThemeFallback) AppTheme.MONOCHROME else uiState.appTheme
     var isQuickNoteEnabled by remember(appContext) {
         mutableStateOf(notesPreferences.isQuickNoteEnabled())
     }
@@ -402,13 +420,22 @@ fun WidgetsPanelScreen(
             )
         }
 
-    SettingsScreenBackground(
-        appTheme = appTheme,
-        overlayThemeIntensity = overlayThemeIntensity,
-        deviceThemeEnabled = deviceThemeEnabled,
-        amoledThemeEnabled = amoledThemeEnabled,
-        modifier = modifier.fillMaxSize(),
+    CompositionLocalProvider(
+        LocalImageBackgroundIsDark provides imageBackgroundIsDark,
+        LocalHomeTextColorOverride provides uiState.homeTextColorOverride,
     ) {
+        SettingsScreenBackground(
+            appTheme = effectiveAppTheme,
+            overlayThemeIntensity = uiState.overlayThemeIntensity,
+            deviceThemeEnabled = uiState.deviceThemeEnabled,
+            amoledThemeEnabled = uiState.amoledThemeEnabled,
+            backgroundSource = effectiveBackgroundSource,
+            wallpaperBitmap = wallpaperState.imageBitmap,
+            wallpaperBackgroundAlpha = uiState.wallpaperBackgroundAlpha,
+            wallpaperBlurRadius = uiState.wallpaperBlurRadius,
+            useSystemWallpaperBackdrop = wallpaperState.usesSystemWallpaperBackdrop,
+            modifier = modifier.fillMaxSize(),
+        ) {
         Box(
             modifier =
                 Modifier
@@ -575,6 +602,7 @@ fun WidgetsPanelScreen(
                 )
             }
         }
+        }
     }
 }
 
@@ -598,15 +626,21 @@ private fun WidgetsPanelHeader(
         Text(
             text = stringResource(R.string.widgets_panel_title),
             style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = homeTextColor(),
             modifier = Modifier.weight(1f),
         )
         if (inEditMode) {
-            TextButton(onClick = onExitEditMode) {
+            TextButton(
+                onClick = onExitEditMode,
+                colors = ButtonDefaults.textButtonColors(contentColor = homeTextColor()),
+            ) {
                 Text(text = stringResource(R.string.dialog_done))
             }
         } else {
-            TextButton(onClick = onAddWidget) {
+            TextButton(
+                onClick = onAddWidget,
+                colors = ButtonDefaults.textButtonColors(contentColor = homeTextColor()),
+            ) {
                 Text(text = stringResource(R.string.common_action_add))
             }
         }
