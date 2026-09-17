@@ -1181,4 +1181,5 @@ www.google.com/search?q={{query}}</string>
     <string name="speed_bump_overlay_prompt">Otwieranie %1$s za chwilę…</string>
     <string name="speed_bump_overlay_title">Weź głęboki oddech</string>
     <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">Nadchodzący alarm</string>
 </resources>

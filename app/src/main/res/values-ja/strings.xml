@@ -1161,4 +1161,5 @@ www.google.com/search?q={{query}}</string>
     <string name="speed_bump_overlay_prompt">まもなく「%1$s」を開きます…</string>
     <string name="speed_bump_overlay_title">深呼吸してください</string>
     <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">次のアラーム</string>
 </resources>

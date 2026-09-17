@@ -1151,4 +1151,5 @@
     <string name="speed_bump_overlay_prompt">%1$s birazdan açılacak…</string>
     <string name="speed_bump_overlay_title">Derin bir nefes al</string>
     <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">Yaklaşan alarm</string>
 </resources>

@@ -12,6 +12,7 @@ internal fun homeLayoutOrder(
         buildList {
             add(ItemPriorityConfig.ItemType.ERROR_BANNER)
             add(ItemPriorityConfig.ItemType.APPS_SECTION)
+            add(ItemPriorityConfig.ItemType.UPCOMING_ALARM)
             add(ItemPriorityConfig.ItemType.RECENT_QUERIES)
             addAll(baseLayoutOrder.filter { it == ItemPriorityConfig.ItemType.OTHER_RESULTS })
             addAll(

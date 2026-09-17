@@ -44,6 +44,7 @@ object ItemPriorityConfig {
 
         // Section groups (contain multiple search results)
         APPS_SECTION,
+        UPCOMING_ALARM,
         APP_SHORTCUTS_SECTION,
         FILES_SECTION,
         CONTACTS_SECTION,

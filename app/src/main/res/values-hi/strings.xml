@@ -1152,4 +1152,5 @@
     <string name="speed_bump_overlay_prompt">%1$s जल्द ही खुलेगा…</string>
     <string name="speed_bump_overlay_title">एक गहरी सांस लें</string>
     <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">आगामी अलार्म</string>
 </resources>
