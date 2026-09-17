@@ -47,7 +47,7 @@ Use this file as the repository-specific playbook. Prefer the current code and b
 - Main search composition: `SearchScreen.kt`, `SearchScreenContent.kt`, `SectionRenderingComposables.kt`, and `searchScreenLayout/`.
 - Settings routes and destinations: `settings/shared/`, `settings/navigation/`, and feature-specific settings packages.
 - Reuse `shared/ui/components/`, `shared/ui/theme/DesignTokens.kt`, and `shared/ui/theme/AppColors.kt`. Account for wallpaper, custom-background, one-handed/bottom-search-bar, tablet, and overlay modes when the changed path is shared.
-- Put user-facing strings in resources. When adding or changing copy, update the base file and all 16 localized `values-*` `strings.xml` files unless the user narrows the scope.
+- Put user-facing strings in resources. Do not add duplicate existing strings, try to reuse existing ones when the content exactly matched. Also, when adding or changing copy, update the base file and all 16 localized `values-*` `strings.xml` files unless the user narrows the scope.
 
 ### Startup and process-wide caches
 
