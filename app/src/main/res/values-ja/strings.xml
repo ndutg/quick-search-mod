@@ -1,0 +1,1164 @@
+<resources>
+
+    <!-- Language: Japanese -->
+
+    <!-- Translation Guidelines:
+         - Translate user-facing text into this locale.
+         - Do not translate brand/product names and technical identifiers (e.g., Quick Search, AI, API, Gemini, Android, Amazon, USD, INR, lbs, kgs).
+         - Do not translate placeholders or format specifiers (%1, %1, %s, %%).
+         - In search_hints_cycle, keep the example queries in English.
+    -->
+
+    <!-- ============================================================================
+         App &amp; Search Entry
+         ============================================================================ -->
+    <string name="app_name">Quick Search</string>
+    <string name="direct_answer_contact_name">AIの回答</string>
+    <string name="direct_search_enter_query">検索キーワードを入力してください。</string>
+    <string name="direct_search_ask_follow_up">続けて質問する</string>
+    <string name="direct_search_follow_up_hint">追加の質問を入力</string>
+    <string name="direct_search_error_generic">AIの回答を取得できませんでした。もう一度お試しください。</string>
+    <string name="direct_search_error_no_key">設定（AIプロバイダー）でAPIキーを追加して、AIの回答を取得してください。</string>
+    <string name="gemini_web_search_quota_fallback_tip">Geminiのウェブ検索クォータ上限に達したため、ウェブ検索を使用せずにこの回答を生成しました。</string>
+    <string name="direct_search_powered_by">提供元:</string>
+    <string name="empty_state_subtitle">アプリを起動するか、検索キーワードを入力すると候補が表示されます。</string>
+    <string name="empty_state_title">表示する項目がまだありません</string>
+    <string name="error_action_not_available">操作を利用できません</string>
+    <string name="error_gemini_empty_response">Geminiからの応答が空です</string>
+    <string name="error_gemini_load_models_failed">Geminiモデルを読み込めません</string>
+    <string name="error_gemini_request_failed">リクエストに失敗しました (%1$d)</string>
+    <string name="error_unknown">不明なエラー</string>
+    <string name="gemini_model_flash_latest">Gemini Flash（最新）</string>
+    <string name="keyboard_switch_back">標準キーボード</string>
+    <string name="keyboard_switch_to_number">テンキー</string>
+    <string name="no_results_found">結果が見つかりませんでした。下の検索エンジンをタップしてウェブを検索してみてください。</string>
+    <string name="search_hint">何でも検索…</string>
+    <string name="search_hint_app_settings">アプリ設定を検索…</string>
+    <string name="search_hint_app_shortcuts">アプリのショートカットを検索…</string>
+    <string name="search_hint_apps">アプリを検索…</string>
+    <string name="search_hint_calendar">カレンダーの予定を検索…</string>
+    <string name="search_hint_contacts">連絡先を検索…</string>
+    <string name="search_hint_currency_converter">通貨を換算（例: 100 USD to INR）</string>
+    <string name="search_hint_dictionary">単語を入力</string>
+    <string name="search_hint_weather">場所を入力するか、デフォルトの場所を使用</string>
+    <string name="search_hint_files">ファイルを検索…</string>
+    <string name="search_hint_notes">メモを検索…</string>
+    <string name="search_hint_settings">端末の設定を検索…</string>
+    <string name="search_hint_static">何でも検索</string>
+    <string name="search_hint_world_clock">都市名を入力して現地時間を表示</string>
+    <string-array name="search_hints_cycle">
+        <item >連絡先を検索</item>
+        <item >ファイルを検索</item>
+        <item >カレンダーの予定</item>
+        <item >アプリを検索</item>
+        <item >アプリのショートカットを検索</item>
+        <item >設定を検索</item>
+        <item >5 USD to INR</item>
+        <item >5 lbs in kgs</item>
+        <item >3 months from now</item>
+        <item >225 + 456</item>
+        <item >Time in UK</item>
+        <item >Define Serendipity</item>
+        <item >Weather in New York</item>
+    </string-array>
+    <string name="search_provider_description">Quick Searchでアプリ、連絡先、ファイル、設定などを検索します。</string>
+
+    <!-- ============================================================================
+         Common Actions, Labels &amp; Dialogs
+         ============================================================================ -->
+    <string name="action_add_to_home">ホーム画面に追加</string>
+    <string name="action_add_trigger">トリガー</string>
+    <string name="action_app_info">アプリ情報</string>
+    <string name="action_manage_all_apps">すべてのアプリを管理</string>
+    <string name="action_app_shortcuts_settings">アプリのショートカット設定</string>
+    <string name="action_files_settings">ファイル設定</string>
+    <string name="action_contacts_settings">連絡先設定</string>
+    <string name="action_lock_app">ロック</string>
+    <string name="action_unlock_app">ロック解除</string>
+    <string name="app_lock_prompt_lock">%1$s をロック</string>
+    <string name="app_lock_prompt_unlock">%1$s のロックを解除</string>
+    <string name="action_change_icon">アイコンを変更</string>
+    <string name="icon_picker_no_icon_packs">アプリアイコンを変更するためのアイコンパックがインストールされていません。</string>
+    <string name="icon_picker_download_icon_packs">ダウンロード</string>
+    <string name="icon_picker_search">アイコンを検索</string>
+    <string name="icon_picker_title">「%1$s」のアイコンを変更</string>
+    <string name="action_change_wallpaper">壁紙を変更</string>
+    <string name="action_clear_all_history">履歴を消去</string>
+    <string name="action_copy_content">内容をコピー</string>
+    <string name="action_edit_icon">アイコンを編集</string>
+    <string name="action_edit_nickname">ニックネームを編集</string>
+    <string name="action_edit_trigger">トリガーを編集</string>
+    <string name="action_exclude_extension">.%sファイルを非表示</string>
+    <string name="action_exclude_generic">非表示</string>
+    <string name="action_expand_more">その他</string>
+    <string name="action_expand_more_app_settings">その他のアプリ設定</string>
+    <string name="action_expand_more_contacts">その他の連絡先</string>
+    <string name="action_expand_more_device_settings">その他の設定</string>
+    <string name="action_expand_more_events">その他の予定</string>
+    <string name="action_expand_more_files">その他のファイル</string>
+    <string name="action_expand_more_notes">その他のメモ</string>
+    <string name="action_expand_more_shortcuts">その他のショートカット</string>
+    <string name="action_file_info">ファイル情報</string>
+    <string name="action_include_generic">再表示</string>
+    <string name="action_more_search_history">その他の履歴</string>
+    <string name="action_open">開く</string>
+    <string name="action_open_in_split_screen">分割画面</string>
+    <string name="action_open_folder">フォルダを開く</string>
+    <string name="action_open_keyboard">キーボードを開く</string>
+    <string name="action_open_settings">設定を開く</string>
+    <string name="settings_gestures_title">ジェスチャー</string>
+    <string name="settings_gestures_desc">スワイプ操作をカスタマイズ</string>
+    <string name="settings_gesture_swipe_right">右にスワイプ</string>
+    <string name="settings_gesture_widget_panel">ウィジェットパネル</string>
+    <string name="settings_gesture_swipe_left">左にスワイプ</string>
+    <string name="settings_gesture_swipe_up">上にスワイプ</string>
+    <string name="settings_gesture_swipe_down">下にスワイプ</string>
+    <string name="settings_gesture_swipe_up_home">上にスワイプ（ホーム）</string>
+    <string name="settings_gesture_swipe_down_home">下にスワイプ（ホーム）</string>
+    <string name="settings_gesture_close_quick_search">Quick Searchを閉じる</string>
+    <string name="settings_gesture_double_tap_home">ダブルタップ（ホーム）</string>
+    <string name="settings_gesture_settings">設定</string>
+    <string name="settings_gesture_close_keyboard_notifications">キーボードを閉じる / 通知を開く</string>
+    <string name="settings_gesture_close_keyboard">キーボードを閉じる</string>
+    <string name="settings_gesture_notification_panel">通知パネル</string>
+    <string name="settings_gesture_lock_screen">画面をロック</string>
+    <string name="settings_gesture_lock_screen_requires_accessibility">ユーザー補助の権限が必要です</string>
+    <string name="accessibility_lock_screen_service_label">Quick Search 画面ロック</string>
+    <string name="accessibility_lock_screen_service_description">ホーム画面のダブルタップジェスチャーで画面をロックできるようにします。画面の内容は読み取りません。</string>
+    <string name="accessibility_permission_disclaimer_title">ユーザー補助の権限に関する免責事項</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Searchは、ホーム画面をダブルタップした際に端末をロックする目的でのみAndroidのAccessibilityService APIを使用します。このサービスを通じて、画面の内容や個人データを読み取り、収集、保存、共有することはありません。</string>
+    <string name="settings_gesture_none">なし</string>
+    <string name="settings_gesture_custom">カスタム（アプリ、ファイルなど）</string>
+    <string name="settings_keyboard_gestures_title">キーボードジェスチャー（ホーム）</string>
+    <string name="settings_keyboard_gestures_desc">ホーム画面にスクロール可能なコンテンツがない場合のみ利用可能</string>
+    <string name="action_pin_app">固定</string>
+    <string name="action_pin_to_notifications">通知に固定</string>
+    <string name="action_unpin_from_notifications">通知から固定解除</string>
+    <string name="pinned_notifications_channel_description">固定された検索結果へのクイックアクセス</string>
+    <string name="pinned_notifications_title">固定されたショートカット</string>
+    <string name="notification_pinned_items_title">通知の固定アイテム</string>
+    <string name="notification_pinned_items_description">通知パネルに表示する固定アイテムを管理</string>
+    <string name="notification_pinned_items_remove">通知から「%1$s」を削除</string>
+    <string name="notification_pinned_item_type_app">アプリ</string>
+    <string name="notification_pinned_item_type_app_shortcut">アプリのショートカット</string>
+    <string name="notification_pinned_item_type_contact">連絡先</string>
+    <string name="notification_pinned_item_type_file">ファイル</string>
+    <string name="notification_pinned_item_type_note">メモ</string>
+    <string name="action_remove">削除</string>
+    <string name="app_swipe_current_action">現在のアクション</string>
+    <string name="app_swipe_up_picker_title">「%1$s」の上スワイプ操作を選択</string>
+    <string name="app_swipe_down_picker_title">「%1$s」の下スワイプ操作を選択</string>
+    <string name="app_swipe_picker_tip">アプリアイコンをスワイプすると、アプリ候補と検索結果の両方で選択したアイテムが開きます</string>
+    <string name="app_swipe_picker_search_hint">アプリや連絡先などを検索</string>
+    <string name="app_swipe_up_set_toast">「%1$s」の上スワイプ操作を設定しました</string>
+    <string name="app_swipe_down_set_toast">「%1$s」の下スワイプ操作を設定しました</string>
+    <string name="action_remove_from_history">履歴から削除</string>
+    <string name="action_reset_app_shortcut_icon">デフォルトのアイコンに戻す</string>
+    <string name="action_retry">再試行</string>
+    <string name="action_share">共有</string>
+    <string name="action_move_up">上へ移動</string>
+    <string name="action_move_down">下へ移動</string>
+    <string name="action_undo">元に戻す</string>
+    <string name="action_uninstall_app">アンインストール</string>
+    <string name="action_rate">今すぐ評価</string>
+    <string name="action_not_now">後で</string>
+    <string name="action_agree">同意する</string>
+    <string name="action_unpin_app">固定解除</string>
+    <string name="alias_trigger_after_space">スペース入力後に起動</string>
+    <string name="common_action_add">追加</string>
+    <string name="common_action_clear">クリア</string>
+    <string name="common_ai_provider">AIプロバイダー</string>
+    <string name="common_api_key_setup">APIキーの設定</string>
+    <string name="common_close">閉じる</string>
+    <string name="common_custom">カスタム</string>
+    <string name="common_error_unable_to_open">%1$s を開けません</string>
+    <string name="common_most_used">よく使う項目</string>
+    <string name="common_nickname">ニックネーム</string>
+    <string name="common_search">検索</string>
+    <string name="common_theme_dark">ダーク</string>
+    <string name="common_theme_device">デバイス</string>
+    <string name="common_theme_light">ライト</string>
+    <string name="common_theme_system">システム</string>
+    <string name="common_time">時間</string>
+    <string name="dialog_add_alias_for_search_type_title">「%1$s」のエイリアスを追加</string>
+    <string name="dialog_alias_info_search_engine">検索キーワードの先頭または末尾にこのエイリアスを入力すると、%1$sで素早く検索を開始できます。</string>
+    <string name="dialog_alias_info_search_engine_start_only">検索キーワードの先頭にこのエイリアスを入力すると、%1$sで素早く検索を開始できます。</string>
+    <string name="dialog_alias_info_search_type">検索キーワードの先頭にこのエイリアスを入力すると、%1$sの検索を起動できます。</string>
+    <string name="dialog_alias_info_tool">検索キーワードの先頭にこのエイリアスを入力すると、%1$sモードに入ります。</string>
+    <string name="dialog_app_shortcut_icon_message">「%1$s」の画像を選択してください。これはQuick Search内での表示のみを変更します。</string>
+    <string name="dialog_cancel">キャンセル</string>
+    <string name="dialog_choose_contact_action_title">「%1$s」の代わりとなる操作を選択</string>
+    <string name="dialog_clear_all_history_message">すべての検索履歴を消去してもよろしいですか？この操作は元に戻せません。</string>
+    <string name="dialog_clear_all_history_title">すべての履歴を消去しますか？</string>
+    <string name="dialog_delete">削除</string>
+    <string name="dialog_direct_dial_change_later">これは設定でいつでも変更できます。</string>
+    <string name="dialog_direct_dial_option_dialer">ダイヤラーを開く</string>
+    <string name="dialog_direct_dial_option_dialer_desc">発信前にダイヤラーで番号を確認します。</string>
+    <string name="dialog_direct_dial_option_direct">直接発信</string>
+    <string name="dialog_direct_dial_option_direct_desc">すぐに電話をかけます（通話権限が必要です）。</string>
+    <string name="dialog_direct_dial_title">通話方法を選択</string>
+    <string name="dialog_done">完了</string>
+    <string name="dialog_edit_alias_error_prefix">このエイリアスは既に使用されています。</string>
+    <string name="dialog_edit_alias_error_trigger_conflict">このエイリアスは既存のトリガーと重複しています。</string>
+    <string name="dialog_edit_alias_for_search_type_title">「%1$s」のエイリアスを編集</string>
+    <string name="dialog_edit_alias_title">エイリアスを編集</string>
+    <string name="dialog_edit_amazon_domain_error">無効なドメインです</string>
+    <string name="dialog_edit_amazon_domain_hint">例: amazon.co.jp, amazon.com, amazon.in など</string>
+    <string name="dialog_edit_amazon_domain_message">お住まいの地域のAmazonドメインを更新します。</string>
+    <string name="dialog_edit_amazon_domain_title">Amazonドメインを編集</string>
+    <string name="dialog_gemini_model_picker_title">モデルを選択</string>
+    <string name="dialog_nickname_message">「%1$s」のニックネームを入力してください。このニックネームで検索できるようになります。</string>
+    <string name="dialog_ok">続行</string>
+    <string name="dialog_okay">OK</string>
+    <string name="dialog_remember_choice">この選択を記憶する</string>
+    <string name="dialog_save">保存</string>
+    <string name="dialog_select_phone_number_message">「%1$s」の電話番号を選択</string>
+    <string name="dialog_select_phone_number_title">電話番号を選択</string>
+    <string name="dialog_send">送信</string>
+    <string name="dialog_trigger_error_alias_conflict">このトリガーは既存のエイリアスと重複しています。</string>
+    <string name="dialog_trigger_error_taken">このトリガーは既に使用されています。</string>
+    <string name="dialog_trigger_hint">トリガーワード</string>
+    <string name="dialog_trigger_message">「%1$s」のトリガー（1単語）を入力してください。</string>
+    <string name="exclude_marker"> を</string>
+    <string name="permission_action_manage_android">Androidの設定で管理</string>
+    <string name="permission_settings_dialog_message">この操作には %1$s の権限が必要です。権限を許可するためシステム設定へ移動します。</string>
+    <string name="permission_settings_dialog_title">%1$s の権限が必要です</string>
+    <string name="toast_excluded_from_results">%1$s を検索結果から非表示にしました</string>
+    <string name="toast_excluded_from_suggestions">%1$s を候補から非表示にしました</string>
+
+    <!-- ============================================================================
+         Accessibility
+         ============================================================================ -->
+    <string name="desc_clear_search">検索テキストを消去</string>
+    <string name="desc_collapse">折りたたむ</string>
+    <string name="desc_expand">展開</string>
+    <string name="desc_launch_app">%1$s を開く</string>
+    <string name="desc_navigate_back">戻る</string>
+    <string name="desc_navigate_forward">進む</string>
+    <string name="desc_open_settings">Quick Searchの設定を開く</string>
+    <string name="desc_selected">選択中</string>
+    <string name="desc_voice_search_icon">音声検索を開始</string>
+
+    <!-- ============================================================================
+         Search Result Sections &amp; Ranking
+         ============================================================================ -->
+    <string name="app_suggestions_tab_new_updated">新規/更新</string>
+    <string name="app_suggestions_tab_pinned">固定</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">固定されたアプリは引き続き「%1$s」タブに表示されます</string>
+    <string name="app_suggestions_tab_recent">最近</string>
+    <string name="app_suggestions_tabs_dialog_message">ホーム画面に表示するアプリ候補タブを選択してください。</string>
+    <string name="app_suggestions_tabs_dialog_title">アプリ候補タブ</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">タブを選択</string>
+    <string name="app_suggestions_tab_required_toast">少なくとも1つのアプリ候補タブを有効にしてください</string>
+    <string name="app_suggestions_toggle_desc">ホーム画面に候補アプリを表示または非表示にします</string>
+    <string name="app_suggestions_toggle_title">アプリ候補</string>
+    <string name="show_all_apps_button_toggle_desc">アプリ候補の下に「すべてのアプリ」ボタンを表示</string>
+    <string name="app_suggestions_usage_access_link">使用状況へのアクセス権限</string>
+    <string name="app_suggestions_usage_access_tip">使用状況へのアクセス権限を許可すると、より適切な候補が表示されます</string>
+    <string name="clear_query_toggle_desc">アプリ起動時に前回の検索クエリを自動的に消去</string>
+    <string name="clear_query_toggle_title">クエリを消去</string>
+    <string name="more_results_title">その他の検索結果</string>
+    <string name="open_keyboard_toggle_desc">アプリ起動時にキーボードを自動で開く</string>
+    <string name="recent_queries_toggle_desc">展開前に表示する項目数</string>
+    <string name="fuzzy_search_toggle_title">あいまい検索</string>
+    <string name="fuzzy_search_toggle_desc">スペルミスがあっても検索結果を見つけます。</string>
+    <string name="secondary_ranking_title">検索結果の表示順</string>
+    <string name="secondary_ranking_dialog_desc">一致度が同じ結果の並び順を選択します。</string>
+    <string name="secondary_ranking_recency">最近使用した順</string>
+    <string name="secondary_ranking_most_opened">起動回数順</string>
+    <string name="recent_queries_toggle_title">検索履歴</string>
+    <string name="search_history_tab_recently_opened">結果</string>
+    <string name="search_history_tab_searches">検索</string>
+    <string name="search_section_app_settings_toggle_desc">アプリ設定の検索のオン/オフを切り替え</string>
+    <string name="search_section_app_settings_toggle_title">アプリ設定の検索</string>
+    <string name="search_section_app_shortcuts_toggle_desc">アプリショートカットの検索のオン/オフを切り替え</string>
+    <string name="search_section_app_shortcuts_toggle_title">アプリショートカットの検索</string>
+    <string name="search_section_apps_toggle_desc">アプリ検索のオン/オフを切り替え</string>
+    <string name="search_section_apps_toggle_title">アプリ検索</string>
+    <string name="search_section_calendar_toggle_desc">カレンダー検索のオン/オフを切り替え</string>
+    <string name="search_section_calendar_toggle_title">カレンダー検索</string>
+    <string name="search_section_contacts_toggle_desc">連絡先検索のオン/オフを切り替え</string>
+    <string name="search_section_contacts_toggle_title">連絡先検索</string>
+    <string name="search_section_device_settings_toggle_desc">端末設定の検索のオン/オフを切り替え</string>
+    <string name="search_section_device_settings_toggle_title">端末設定の検索</string>
+    <string name="search_section_files_toggle_desc">ファイル検索のオン/オフを切り替え</string>
+    <string name="search_section_files_toggle_title">ファイル検索</string>
+    <string name="search_section_notes_toggle_desc">メモ検索のオン/オフを切り替え</string>
+    <string name="search_section_notes_toggle_title">メモ検索</string>
+    <string name="section_app_settings">アプリ設定</string>
+    <string name="section_app_shortcuts">アプリのショートカット</string>
+    <string name="section_apps">アプリ</string>
+    <string name="section_calendar">カレンダーの予定</string>
+    <string name="section_files">ファイル</string>
+    <string name="section_notes">メモ</string>
+    <string name="section_settings">端末の設定</string>
+    <string name="top_match_title">ベストマッチ</string>
+    <string name="top_matches_count_label">表示件数</string>
+    <string name="top_matches_priority_desc">ベストマッチの優先順位を変更し、項目を無効化</string>
+    <string name="top_matches_priority_dialog_info">長押ししてドラッグすると優先順位を変更できます。スイッチを使って特定の結果タイプを有効または無効にできます。</string>
+    <string name="top_matches_priority_title">ベストマッチの管理</string>
+    <string name="top_matches_title">ベストマッチ</string>
+    <string name="top_matches_toggle_desc">すべてのタイプで最も一致した結果を1つのリストに表示</string>
+    <string name="top_result_indicator_toggle_desc">キーボードで開くことができる最上位の結果を強調表示</string>
+    <string name="top_result_indicator_toggle_title">最上位の結果インジケーター</string>
+    <string name="open_top_result_using_keyboard_toggle_title">キーボードで最上位の結果を開く</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">キーボードのEnter/完了キーで最上位の結果を開きます</string>
+    <string name="include_non_launchable_apps_toggle_title">起動アクティビティのないアプリ</string>
+    <string name="include_non_launchable_apps_toggle_desc">起動アクティビティを持たないアプリを検索結果に含めます。</string>
+    <string name="notification_dots_toggle_title">通知ドット</string>
+    <string name="notification_dots_toggle_desc">通知のあるアプリに通知ドットを表示</string>
+    <string name="desc_notification_dot">通知あり</string>
+    <string name="show_in_recents_toggle_title">最近使用したアプリに表示</string>
+    <string name="show_in_recents_toggle_desc">端末の最近使用したアプリ画面にQuick Searchを表示</string>
+    <string name="web_search_suggestions_title">ウェブ検索候補</string>
+
+    <!-- ============================================================================
+         Apps
+         ============================================================================ -->
+    <string name="app_menu_section_actions">アクション</string>
+    <string name="app_menu_section_shortcuts">ショートカット</string>
+    <string name="app_menu_value_on">オン</string>
+    <string name="action_uninstall_named">%1$s をアンインストール</string>
+    <string name="action_disable_app_shortcut">無効化</string>
+    <string name="action_disable_all_app_shortcuts_named">「%1$s」のすべてのショートカットを無効化</string>
+    <string name="snackbar_app_shortcut_disabled_title">アプリのショートカットを無効にしました</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">このショートカットは後でアプリのショートカット設定で再度有効にできます。</string>
+    <string name="apps_refreshed_successfully">アプリを正常に更新しました</string>
+    <string name="error_loading_user_apps">アプリを読み込めませんでした。しばらくしてからもう一度お試しください。</string>
+    <string name="error_uninstall_app">%1$s をアンインストールできません</string>
+    <string name="error_uninstall_self">ここからQuick Searchをアンインストールすることはできません。</string>
+    <string name="failed_to_refresh_apps">アプリの更新に失敗しました</string>
+    <string name="settings_app_apk_size_format">APKサイズ: %1$.2f MB</string>
+    <string name="settings_app_columns_4">4</string>
+    <string name="settings_app_columns_5">5</string>
+    <string name="settings_app_columns_title">1行あたりのアプリ数</string>
+    <string name="settings_app_result_rows_title">アプリ結果の行数</string>
+    <string name="settings_app_icon_size_percent">%1$d%%</string>
+    <string name="settings_app_icon_size_title">アプリアイコンのサイズ</string>
+    <string name="settings_app_info_install_date">インストール日</string>
+    <string name="settings_app_info_last_update">最終更新日</string>
+    <string name="settings_app_info_minimum_sdk">最小SDK</string>
+    <string name="settings_app_info_not_available">利用不可</string>
+    <string name="settings_app_info_package_name">パッケージ名</string>
+    <string name="settings_app_info_target_sdk">ターゲットSDK</string>
+    <string name="settings_app_info_version">バージョン</string>
+    <string name="settings_app_info_version_code">バージョンコード</string>
+    <string name="settings_app_sort_api_level">APIレベル</string>
+    <string name="settings_app_sort_apk_size">APKサイズ</string>
+    <string name="settings_app_sort_ascending">昇順で並べ替え</string>
+    <string name="settings_app_sort_by_format">並べ替え基準: %1$s</string>
+    <string name="settings_app_sort_descending">降順で並べ替え</string>
+    <string name="settings_app_sort_least_used">使用頻度の低い順</string>
+    <string name="settings_app_sort_name">名前</string>
+    <string name="settings_app_uninstall_selected_format">アンインストール (%1$d)</string>
+    <string name="settings_apps_empty">アプリが見つかりません。</string>
+    <string name="settings_manage_apps_desc">アプリを管理</string>
+    <string name="settings_manage_apps_title">アプリの管理</string>
+    <string name="settings_refresh_apps_disabled">アプリ検索が無効になっているため、アプリデータを更新できません</string>
+    <string name="settings_refresh_apps_title">アプリを再読み込み</string>
+    <string name="usage_permission_subtitle">候補に最近使用したアプリを表示する場合は、使用状況へのアクセスを許可してください。</string>
+    <string name="usage_permission_title">使用状況へのアクセスを許可</string>
+
+    <!-- ============================================================================
+         App Shortcuts
+         ============================================================================ -->
+    <string name="error_shortcut_activity_not_exported">解決されたアクティビティはエクスポートされていません。</string>
+    <string name="error_shortcut_creation_failed">ショートカットの作成に失敗しました</string>
+    <string name="error_shortcut_disabled">ショートカットは無効です。</string>
+    <string name="error_shortcut_launch_failed">ショートカットの起動に失敗しました: %1$s</string>
+    <string name="error_shortcut_no_activity_resolves">インテントを解決するアクティビティがありません。</string>
+    <string name="error_shortcut_requires_permission">ショートカットには権限が必要です: %1$s</string>
+    <string name="error_shortcuts_not_supported">この端末ではホーム画面へのショートカット追加はサポートされていません</string>
+    <string name="pin_shortcut_request_added">「%1$s」をQuick Searchに追加しました</string>
+    <string name="pin_shortcut_request_added_generic">ショートカットをQuick Searchに追加しました</string>
+    <string name="settings_app_shortcuts_activity_dialog_title">アプリアクティビティを選択</string>
+    <string name="settings_app_shortcuts_activity_empty">利用可能なアプリアクティビティがありません。</string>
+    <string name="settings_app_shortcuts_activity_warning">一部のアクティビティは正常に動作しない場合があります</string>
+    <string name="settings_app_shortcuts_add_button">ショートカットを追加</string>
+    <string name="settings_app_shortcuts_add_deep_link">アプリのディープリンク</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_message">アプリ内の特定の画面を開くURLまたはインテントリンクを入力してください。非対応のリンクはブラウザで開かれます。</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_title">アプリのディープリンクを追加</string>
+    <string name="settings_app_shortcuts_add_dialog_title">ショートカットの種類を選択</string>
+    <string name="settings_app_shortcuts_add_failed">ショートカットを追加できません。</string>
+    <string name="settings_app_shortcuts_add_query_dialog_title">「%1$s」にカスタム検索クエリショートカットを追加</string>
+    <string name="settings_app_shortcuts_add_query_shortcut">カスタム検索クエリ</string>
+    <string name="settings_app_shortcuts_add_success">ショートカットを追加しました。</string>
+    <string name="settings_app_shortcuts_add_success_with_app_name">「%1$s」に新しいショートカットを追加しました</string>
+    <string name="settings_app_shortcuts_add_url_dialog_title">「%1$s」にURLショートカットを追加</string>
+    <string name="settings_app_shortcuts_add_url_shortcut">カスタムURL</string>
+    <plurals name="settings_app_shortcuts_card_count">
+        <item quantity="one">%d件のショートカット</item>
+        <item quantity="other">%d件のショートカット</item>
+    </plurals>
+    <string name="settings_app_shortcuts_collapse_all">すべて折りたたむ</string>
+    <string name="settings_app_shortcuts_create_not_supported">この端末でショートカット作成に対応しているアプリはありません。</string>
+    <string name="settings_app_shortcuts_deep_link_label">URLまたはインテント</string>
+    <string name="settings_app_shortcuts_delete_action">ショートカットを削除</string>
+    <string name="settings_app_shortcuts_delete_success">ショートカットを削除しました。</string>
+    <string name="settings_app_shortcuts_description_with_count">アプリをタップしてショートカットを表示します。カスタムショートカットの有効化、無効化、追加が可能です。
+
+利用可能なショートカット: %1$s</string>
+    <string name="settings_app_shortcuts_edit_dialog_title">ショートカットを編集</string>
+    <string name="settings_app_shortcuts_empty">アプリのショートカットが見つかりません。</string>
+    <string name="settings_app_shortcuts_expand_all">すべて展開</string>
+    <string name="settings_app_shortcuts_filter_all_apps">すべてのアプリ</string>
+    <string name="settings_app_shortcuts_filter_apps_with_shortcuts">ショートカット付きアプリ</string>
+    <string name="settings_app_shortcuts_filter_browsers">ブラウザ</string>
+    <string name="settings_app_shortcuts_filter_search_engines">検索エンジン</string>
+    <string name="settings_app_shortcuts_query_label">クエリ</string>
+    <string name="settings_app_shortcuts_shortcut_name_label">ショートカット名</string>
+    <string name="settings_app_shortcuts_update_failed">ショートカットを更新できません。</string>
+    <string name="settings_app_shortcuts_update_success">ショートカットを更新しました。</string>
+    <string name="settings_app_shortcuts_url_label">URL</string>
+    <string name="shortcut_song_search_label">曲名検索</string>
+    <string name="shortcut_watch_later_label">後で見る</string>
+
+    <!-- ============================================================================
+         Contacts &amp; Calls
+         ============================================================================ -->
+    <string name="contact_method_call_label">通話</string>
+    <string name="contact_method_email_label">メール</string>
+    <string name="contact_method_fallback_label">その他</string>
+    <string name="contact_method_google_meet_label">Google Meet</string>
+    <string name="contact_method_message_label">メッセージ</string>
+    <string name="contact_method_signal_message_label">Signal</string>
+    <string name="contact_method_signal_video_call_label">Signal ビデオ通話</string>
+    <string name="contact_method_signal_voice_call_label">Signal 音声通話</string>
+    <string name="contact_method_telegram_message_label">Telegram</string>
+    <string name="contact_method_telegram_video_call_label">Telegram ビデオ通話</string>
+    <string name="contact_method_telegram_voice_call_label">Telegram 音声通話</string>
+    <string name="contact_method_view_in_contacts_label">連絡先アプリで表示</string>
+    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
+    <string name="contact_method_whatsapp_video_call_label">WhatsApp ビデオ通話</string>
+    <string name="contact_method_whatsapp_voice_call_label">WhatsApp 音声通話</string>
+    <string name="contacts_action_button_chat">チャット</string>
+    <string name="contacts_action_button_contacts">連絡先</string>
+    <string name="contacts_action_button_meet">Meet</string>
+    <string name="contacts_action_button_video_call">ビデオ通話</string>
+    <string name="contacts_action_button_voice_call">音声通話</string>
+    <string name="contacts_action_call">連絡先に発信</string>
+    <string name="contacts_action_hint_message">ヒント: アクションを長押しすると、連絡先ごとにカスタマイズできます。</string>
+    <string name="contacts_action_next_number">次の電話番号</string>
+    <string name="contacts_action_previous_number">前の電話番号</string>
+    <string name="contacts_action_signal">Signal 連絡先</string>
+    <string name="contacts_action_sms">メッセージ連絡先</string>
+    <string name="contacts_action_telegram">Telegram 連絡先</string>
+    <string name="contacts_action_whatsapp">WhatsApp 連絡先</string>
+    <string name="contacts_no_methods_available">利用可能な連絡方法がありません</string>
+    <string name="contacts_refreshed_successfully">連絡先を正常に更新しました</string>
+    <string name="contacts_section_permission_subtitle">連絡先検索を行うには連絡先へのアクセス権限が必要です</string>
+    <string name="error_call_permission_required">この操作には電話の権限が必要です</string>
+    <string name="error_google_meet_call_failed">Google Meetの通話に失敗しました - アプリが非対応の可能性があります</string>
+    <string name="error_google_meet_no_phone">Google Meetで発信できません - 電話番号が見つかりません</string>
+    <string name="error_google_meet_not_installed">Google Meetがインストールされていません</string>
+    <string name="error_google_meet_video_call_failed">Google Meetビデオ通話の開始に失敗しました</string>
+    <string name="error_missing_phone_number">利用可能な電話番号がありません</string>
+    <string name="error_open_contact">連絡先を開けません</string>
+    <string name="error_signal_call_failed">Signalの通話に失敗しました。Signalがインストールされていることを確認してください。</string>
+    <string name="error_signal_chat_failed">Signalチャットを開けませんでした</string>
+    <string name="error_signal_not_installed">Signalがインストールされていません</string>
+    <string name="error_signal_video_call_failed">Signalビデオ通話の開始に失敗しました</string>
+    <string name="error_telegram_call_failed">Telegramの通話に失敗しました。Telegramがインストールされていることを確認してください。</string>
+    <string name="error_telegram_chat_failed">Telegramチャットを開けませんでした</string>
+    <string name="error_telegram_not_installed">Telegramがインストールされていません</string>
+    <string name="error_whatsapp_call_failed">WhatsAppの通話に失敗しました。WhatsAppがインストールされていることを確認してください。</string>
+    <string name="error_whatsapp_chat_failed">WhatsAppチャットを開けませんでした</string>
+    <string name="error_whatsapp_not_installed">WhatsAppがインストールされていません</string>
+    <string name="error_whatsapp_video_call_failed">WhatsAppビデオ通話の開始に失敗しました</string>
+    <string name="error_whatsapp_video_call_missing_data">WhatsAppビデオ通話を開始できません - 連絡先データが不足しています</string>
+    <string name="error_whatsapp_video_call_unavailable">WhatsAppビデオ通話を利用できません</string>
+    <string name="settings_call_permission_title">電話</string>
+    <string name="permissions_background_usage_title">バックグラウンドでの使用を許可</string>
+    <string name="permissions_background_usage_desc">アプリの起動を高速化するため、バックグラウンドでの使用を許可します。</string>
+    <string name="settings_calling_card_title">デフォルトの通話アプリ</string>
+    <string name="settings_calls_texts_title">通話とSMS</string>
+    <string name="settings_direct_dial_desc">ダイヤラーを開かずに直接電話をかけます。</string>
+    <string name="settings_direct_dial_title">直接発信</string>
+    <string name="settings_number_search_title">電話番号検索</string>
+    <string name="settings_number_search_desc">電話番号で連絡先を検索します。</string>
+    <string name="settings_messaging_app_not_installed">%s は端末にインストールされていません</string>
+    <string name="settings_messaging_card_title">デフォルトのメッセージアプリ</string>
+    <string name="settings_messaging_option_messages">メッセージ</string>
+
+    <!-- ============================================================================
+         Files &amp; Folders
+         ============================================================================ -->
+    <string name="excluded_item_type_file_extension">ファイル拡張子</string>
+    <string name="excluded_item_type_folder">フォルダ</string>
+    <string name="file_extension_label">.%sファイル</string>
+    <string name="file_info_file_type">ファイルの種類</string>
+    <string name="file_info_modified">更新日時</string>
+    <string name="file_info_path">パス</string>
+    <string name="file_info_size">サイズ</string>
+    <string name="file_info_type">種類</string>
+    <string name="file_type_apks">APK</string>
+    <string name="file_type_audio">音声</string>
+    <string name="file_type_documents">ドキュメント</string>
+    <string name="file_type_pictures">画像</string>
+    <string name="file_type_videos">動画</string>
+    <string name="files_refreshed_successfully">ファイルを正常に更新しました</string>
+    <string name="files_section_permission_subtitle">ファイル検索を行うにはファイルへのアクセス権限が必要です</string>
+    <string name="settings_excluded_extensions_title">非表示のファイル拡張子</string>
+    <string name="settings_file_types_title">ファイルとフォルダ</string>
+    <string name="settings_folder_blacklist_add">除外フォルダを追加</string>
+    <string name="settings_folder_blacklist_helper">これらのフォルダは検索時に無視されます</string>
+    <string name="settings_folder_blacklist_title">ブラックリスト</string>
+    <string name="settings_folder_filter_helper">フォルダを検索して追加し、ファイルやフォルダの結果が表示される場所を制御します。</string>
+    <string name="settings_folder_filters_title">フォルダパスフィルター</string>
+    <string name="settings_folder_search_hint">追加するフォルダを検索</string>
+    <string name="settings_folder_search_no_results">フォルダが見つかりません</string>
+    <string name="settings_folder_whitelist_add">対象フォルダを追加</string>
+    <string name="settings_folder_whitelist_helper">ファイルおよびフォルダの検索では、これらのフォルダのみが検索されます</string>
+    <string name="settings_folder_whitelist_title">ホワイトリスト</string>
+    <string name="settings_folders_toggle">フォルダ</string>
+    <string name="settings_file_previews_toggle">ファイルのプレビュー</string>
+    <string name="settings_file_previews_description">画像やPDFを開く前にプレビューします。</string>
+    <string name="settings_refresh_files_disabled">ファイル検索が無効になっているため、ファイルデータを更新できません</string>
+    <string name="settings_refresh_files_title">ファイルを再読み込み</string>
+    <string name="settings_system_files_toggle">システムファイル</string>
+
+    <!-- ============================================================================
+         Calendar
+         ============================================================================ -->
+    <string name="app_settings_create_calendar_event_desc">新しい予定を作成して追加</string>
+    <string name="app_settings_create_calendar_event_title">新しいカレンダーの予定</string>
+    <string name="agenda_title">本日の予定</string>
+    <string name="calendar_create_event_name_hint">予定名</string>
+    <string name="calendar_create_event_select_date">日付を選択</string>
+    <string name="calendar_create_event_sync_notice">この予定は端末のカレンダーには同期されません</string>
+    <string name="calendar_create_event_title">新しい予定</string>
+    <string name="calendar_edit_event_title">予定を編集</string>
+    <string name="calendar_relative_ago_format">%1$s前</string>
+    <plurals name="calendar_relative_days">
+        <item quantity="one">%d日</item>
+        <item quantity="other">%d日</item>
+    </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d時間</item>
+        <item quantity="other">%d時間</item>
+    </plurals>
+    <string name="calendar_relative_in_format">%1$s後</string>
+    <string name="calendar_relative_in_minutes">%1$d分後</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d分</item>
+        <item quantity="other">%d分</item>
+    </plurals>
+    <string name="calendar_relative_now">現在</string>
+    <plurals name="calendar_relative_months">
+        <item quantity="one">%dか月</item>
+        <item quantity="other">%dか月</item>
+    </plurals>
+    <string name="calendar_relative_today">今日</string>
+    <string name="calendar_relative_tomorrow">明日</string>
+    <plurals name="calendar_relative_years">
+        <item quantity="one">%d年</item>
+        <item quantity="other">%d年</item>
+    </plurals>
+    <string name="calendar_relative_yesterday">昨日</string>
+    <string name="calendar_repeats_daily">毎日</string>
+    <plurals name="calendar_repeats_every_days">
+        <item quantity="one">%d日ごと</item>
+        <item quantity="other">%d日ごと</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_months">
+        <item quantity="one">%dか月ごと</item>
+        <item quantity="other">%dか月ごと</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_weeks">
+        <item quantity="one">%d週間ごと</item>
+        <item quantity="other">%d週間ごと</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_years">
+        <item quantity="one">%d年ごと</item>
+        <item quantity="other">%d年ごと</item>
+    </plurals>
+    <string name="calendar_repeats_generic">定期的な繰り返し</string>
+    <string name="calendar_repeats_monthly">毎月</string>
+    <string name="calendar_repeats_weekly">毎週</string>
+    <string name="calendar_repeats_yearly">毎年</string>
+    <string name="calendar_section_permission_subtitle">カレンダー検索を行うにはカレンダーへのアクセス権限が必要です</string>
+    <string name="error_open_calendar_event">カレンダーの予定を開けません</string>
+    <string name="settings_calendar_events_empty">利用可能なカレンダーの予定はありません。</string>
+    <string name="settings_calendar_include_past_events_desc">検索結果に過去の予定を含めます。</string>
+    <string name="settings_calendar_include_past_events_title">過去の予定</string>
+    <string name="settings_calendar_permission_title">カレンダー</string>
+    <string name="settings_calendar_show_today_events_desc">ホーム画面に今日の予定を表示します。</string>
+    <string name="settings_calendar_show_today_events_title">今日の予定を表示</string>
+    <string name="settings_calendar_default_title">予定を開くアプリ...</string>
+    <string name="settings_calendar_view_all_events_desc">すべての予定を表示</string>
+
+    <!-- ============================================================================
+         Notes
+         ============================================================================ -->
+    <string name="app_settings_search_create_note_desc">エディタで新しいメモを作成</string>
+    <string name="app_settings_search_create_note_title">メモを作成</string>
+    <string name="notes_body_hint">ここにメモを入力</string>
+    <string name="notes_create_note_cta">新規メモ</string>
+    <string name="notes_delete_confirm_message">このメモは完全に削除されます。</string>
+    <string name="notes_delete_confirm_title">このメモを削除しますか？</string>
+    <string name="notes_delete_note_desc">メモを削除</string>
+    <string name="notes_delete_selected_confirm_message">選択したメモは完全に削除されます。</string>
+    <string name="notes_delete_selected_confirm_title">選択したメモを削除しますか？</string>
+    <string name="notes_editor_action_open_link">リンクを開く</string>
+    <string name="notes_editor_action_send_email">メールを送信</string>
+    <string name="notes_editor_title">メモエディタ</string>
+    <string name="notes_empty_note_subtext">空のメモ</string>
+    <string name="notes_quick_note_title">クイックメモ</string>
+    <string name="notes_quick_note_toggle_desc">スワイプナビゲーションからクイックメモを開く</string>
+    <string name="notes_title_hint">タイトル</string>
+    <string name="notes_untitled">無題</string>
+    <string name="settings_notes_view_all_desc">すべてのメモを表示</string>
+
+    <!-- ============================================================================
+         Device Settings Shortcuts
+         ============================================================================ -->
+    <string name="device_settings_category_apps_permissions">アプリと権限</string>
+    <string name="device_settings_category_battery_performance">バッテリーとパフォーマンス</string>
+    <string name="device_settings_category_developer_advanced">開発者向けと詳細設定</string>
+    <string name="device_settings_category_language_input">言語と入力</string>
+    <string name="device_settings_category_network_connectivity">ネットワークと接続</string>
+    <string name="device_settings_category_notifications_accessibility">通知とユーザー補助</string>
+    <string name="device_settings_category_security_privacy">セキュリティとプライバシー</string>
+    <string name="device_settings_category_system_device">システムと端末</string>
+    <string name="settings_device_settings_empty">利用可能な端末設定はありません。</string>
+    <string name="settings_shortcut_about_phone">端末情報</string>
+    <string name="settings_shortcut_accessibility">ユーザー補助</string>
+    <string name="settings_shortcut_airplane">機内モード</string>
+    <string name="settings_shortcut_all_files">すべてのファイルへのアクセス</string>
+    <string name="settings_shortcut_battery_optimization">電池の最適化</string>
+    <string name="settings_shortcut_battery_saver">バッテリーセーバー</string>
+    <string name="settings_shortcut_battery_usage">バッテリー使用量</string>
+    <string name="settings_shortcut_bluetooth">Bluetooth</string>
+    <string name="settings_shortcut_cast">キャスト</string>
+    <string name="settings_shortcut_data_usage">データ使用量</string>
+    <string name="settings_shortcut_date_time">日付と時刻</string>
+    <string name="settings_shortcut_default_apps">デフォルトのアプリ</string>
+    <string name="settings_shortcut_developer_options">開発者向けオプション</string>
+    <string name="settings_shortcut_display">ディスプレイ</string>
+    <string name="settings_shortcut_do_not_disturb">サイレントモード</string>
+    <string name="settings_shortcut_hotspot">アクセスポイントとテザリング</string>
+    <string name="settings_shortcut_locale">言語</string>
+    <string name="settings_shortcut_location">位置情報</string>
+    <string name="settings_shortcut_mobile_data">モバイルデータ</string>
+    <string name="settings_shortcut_network">ネットワークとインターネット</string>
+    <string name="settings_shortcut_nfc">NFC</string>
+    <string name="settings_shortcut_notification_listener">通知へのアクセス</string>
+    <string name="settings_shortcut_notifications">通知</string>
+    <string name="settings_shortcut_overlay_permission">他のアプリの上に重ねて表示</string>
+    <string name="settings_shortcut_privacy">プライバシー</string>
+    <string name="settings_shortcut_security">セキュリティ</string>
+    <string name="settings_shortcut_sound">音とバイブレーション</string>
+    <string name="settings_shortcut_storage">ストレージ</string>
+    <string name="settings_shortcut_usage_access">使用状況へのアクセス</string>
+    <string name="settings_shortcut_voice_input">デジタルアシスタント</string>
+    <string name="settings_shortcut_vpn">VPN</string>
+    <string name="settings_shortcut_wifi">Wi‑Fi</string>
+    <string name="settings_unable_to_open_settings">設定を開けません</string>
+
+    <!-- ============================================================================
+         App Settings Search
+         ============================================================================ -->
+    <string name="settings_all_quick_search_features">機能一覧</string>
+    <string name="settings_all_quick_search_features_desc">すべての機能と性能の一覧を表示</string>
+    <string name="settings_more_apps_from_developer_title">開発者のその他のアプリ</string>
+    <string name="settings_app_settings_desc">Quick Searchの設定を検索</string>
+    <string name="settings_features_load_failed">機能の説明を読み込めませんでした。</string>
+    <string name="settings_features_sections_title">目次</string>
+    <string name="settings_search_description_change_app_theme">アプリのテーマを変更</string>
+    <string name="settings_search_description_change_font_size">アプリのフォントサイズを変更</string>
+    <string name="settings_search_description_change_icon_pack">アイコンパックを変更</string>
+    <string name="settings_search_description_change_layout">アプリのレイアウトオプションを変更</string>
+    <string name="settings_search_description_change_wallpaper">壁紙の表示を変更</string>
+    <string name="settings_search_dynamic_description_template">%1$s の設定を管理</string>
+    <string name="settings_view_all_desc">すべての設定を表示</string>
+
+    <!-- ============================================================================
+         Settings - Main Navigation &amp; Appearance
+         ============================================================================ -->
+    <string name="customize_search_engines">検索エンジンのカスタマイズ</string>
+    <string name="settings_app_theme_aurora">オーロラ</string>
+    <string name="settings_app_theme_forest">フォレスト</string>
+    <string name="settings_app_theme_monochrome">モノクロ</string>
+    <string name="settings_app_theme_sunset">サンセット</string>
+    <string name="settings_app_theme_title">テーマ</string>
+    <string name="settings_appearance_desc">壁紙、検索エンジンスタイル、片手モードなど</string>
+    <string name="settings_appearance_title">外観</string>
+    <string name="settings_assistant_voice_mode_desc">デジタルアシスタントとして起動したときに音声入力を開始</string>
+    <string name="settings_assistant_voice_mode_title">アシスタント音声モード</string>
+    <string name="settings_beta_features_disabled">ベータ機能は無効です</string>
+    <string name="settings_beta_features_enabled">新しいベータ機能が有効です</string>
+    <string name="settings_beta_features_unavailable">利用可能な新機能はありません</string>
+    <string name="settings_beta_tag">ベータ</string>
+    <string name="settings_bottom_searchbar_desc">検索バーを画面下部に配置</string>
+    <string name="settings_bottom_searchbar_title">画面下部の検索バー</string>
+    <string name="settings_cache_cleared_toast">キャッシュを消去しました。アプリインデックスを再構築中…</string>
+    <string name="settings_circular_app_icons_desc">アプリアイコンを円形に統一する</string>
+    <string name="settings_circular_app_icons_title">円形アプリアイコン</string>
+    <string name="settings_compact_rows_one_row">1行</string>
+    <string name="settings_compact_rows_two_rows">2行</string>
+    <string name="settings_default_assistant_desc">このアプリをデフォルトのデジタルアシスタントアプリとして設定します。</string>
+    <string name="settings_default_assistant_desc_change">デフォルトのデジタルアシスタントアプリを変更します。</string>
+    <string name="settings_default_assistant_title">デフォルトのアシスタント</string>
+    <string name="settings_default_launcher_desc">このアプリをデフォルトのホームアプリとして設定します。</string>
+    <string name="settings_default_launcher_title">デフォルトのランチャー</string>
+    <string name="settings_amoled_theme_desc">モノクロテーマで完全な黒（True Black）の背景を使用</string>
+    <string name="settings_amoled_theme_title">AMOLEDテーマ</string>
+    <string name="settings_device_theme_blocked_toast">Material Youテーマが有効な間は無効です</string>
+    <string name="settings_device_theme_desc">端末のダイナミックカラーパレットをアプリのテーマとして使用</string>
+    <string name="settings_device_theme_title">Material You</string>
+    <string name="settings_edit_label">編集</string>
+    <string name="settings_font_size_big">大</string>
+    <string name="settings_font_size_medium">中</string>
+    <string name="settings_font_size_small">小</string>
+    <string name="settings_font_size_title">フォントサイズ</string>
+    <string name="settings_home_screen_widget_confirm_message">ホーム画面にQuick Searchウィジェットを追加しようとしています。ウィジェットを長押しすると、多くのカスタマイズオプションがあるウィジェット設定ページにアクセスできます。</string>
+    <string name="settings_home_screen_widget_desc">ホーム画面にQuick Searchウィジェットを追加します。</string>
+    <string name="settings_home_screen_widget_title">ホーム画面ウィジェット</string>
+    <string name="settings_icon_desc">検索バーの歯車アイコンを表示/非表示にします。左スワイプまたは検索からいつでも設定にアクセスできます。</string>
+    <string name="settings_icon_required_by_gesture_desc">このアイコンを非表示にするには、左スワイプジェスチャーを「設定を開く」に設定してください。</string>
+    <string name="settings_icon_pack_empty">アイコンパックが見つかりません。</string>
+    <string name="settings_icon_pack_description_no_packs">アプリアイコンのアイコンパックを設定します。</string>
+    <string name="settings_icon_pack_mask_unsupported_icons">非対応アイコンをマスクする</string>
+    <string name="settings_icon_pack_option_system">システムアイコン</string>
+    <string name="settings_icon_pack_picker_title">アイコンパックを選択</string>
+    <string name="settings_icon_pack_reset_all_icons">すべてのアイコンをリセット</string>
+    <string name="settings_icon_pack_search_query">無料 アイコンパック</string>
+    <string name="settings_icon_pack_title">アイコンパック</string>
+    <string name="settings_icon_title">設定アイコン</string>
+    <string name="settings_launch_options_desc">このアプリのさまざまな起動方法</string>
+    <string name="settings_launch_options_title">起動オプション</string>
+    <string name="settings_app_language_title">アプリの言語</string>
+    <string name="settings_app_language_desc">現在: %1$s</string>
+    <string name="settings_app_language_picker_title">アプリの言語を選択</string>
+    <string name="settings_app_language_system_default">システムのデフォルト</string>
+    <string name="settings_launcher_icon_reset_default">デフォルトに戻す</string>
+    <string name="settings_launcher_icon_title">ランチャーアプリアイコン</string>
+    <string name="settings_layout_option_bottom_desc">アクセスしやすいよう関連性の高い項目を画面下部に表示</string>
+    <string name="settings_layout_option_bottom_title">片手モード</string>
+    <string name="settings_unified_pinned_items_title">固定アイテムの統合</string>
+    <string name="settings_unified_pinned_items_desc">ホーム画面に固定アイテムを1つの統合リストとして表示します。</string>
+    <string name="settings_more_options_desc">その他のカスタマイズオプション</string>
+    <string name="settings_more_options_title">その他のオプション</string>
+    <string name="settings_overlay_assistant_setup_now">今すぐ設定</string>
+    <string name="settings_overlay_assistant_tip">ヒント: このアプリをデジタルアシスタントとして設定すると、どこからでもオーバーレイを開くことができます。</string>
+    <string name="settings_overlay_mode_desc">検索バーを他のアプリの上にオーバーレイとして開く</string>
+    <string name="settings_overlay_mode_desc_launcher_blocked">Quick Searchがデフォルトのランチャーに設定されている間は利用できません</string>
+    <string name="settings_overlay_mode_title">オーバーレイモード</string>
+    <string name="settings_overlay_source_add_custom">カスタム画像を追加</string>
+    <string name="settings_overlay_source_custom_save_failed">その画像を使用できません。</string>
+    <string name="settings_overlay_source_edit_custom">カスタム画像を編集</string>
+    <string name="settings_overlay_source_needs_permission">権限が必要です</string>
+    <string name="settings_overlay_source_wallpaper">壁紙</string>
+    <string name="settings_overlay_theme_tone_darker">暗め</string>
+    <string name="settings_overlay_theme_tone_lighter">明るめ</string>
+    <string name="settings_permissions_desc">アプリの機能を有効にするために必要な権限</string>
+    <string name="settings_permissions_title">権限</string>
+    <string name="settings_quick_settings_tile_desc">クイック設定パネルにQuick Searchのタイルを追加します。</string>
+    <string name="settings_quick_settings_tile_title">クイック設定タイル</string>
+    <string name="settings_refresh_contacts_disabled">連絡先検索が無効になっているため、連絡先データを更新できません</string>
+    <string name="settings_refresh_contacts_title">連絡先を再読み込み</string>
+    <string name="settings_refresh_data_note">データは自動的に更新されます。手動で強制更新するにはこれらのボタンを使用してください。</string>
+    <string name="settings_refresh_data_title">データを更新</string>
+    <string name="settings_refresh_icon_packs">アイコンパックを更新</string>
+    <string name="settings_refreshing_icon_packs">アイコンパック一覧を更新中</string>
+    <string name="settings_scroll_to_top">一番上までスクロール</string>
+    <string name="settings_search_hints_desc">検索ヒントのローテーションを有効/無効にする</string>
+    <string name="settings_search_hints_title">検索ヒント</string>
+    <string name="settings_search_results_desc">結果タイプ、ウェブ検索候補、検索履歴を管理</string>
+    <string name="settings_search_results_title">検索結果</string>
+    <string name="settings_sections_at_least_one_required">少なくとも1つの項目を有効にする必要があります</string>
+    <string name="settings_show_app_labels_desc">候補と検索結果にアプリ名を表示</string>
+    <string name="settings_show_app_labels_title">アプリ名</string>
+    <string name="settings_themed_icons_desc">テーマに合わせてアプリアイコンに色合いを付ける</string>
+    <string name="settings_themed_icons_title">テーマアプリアイコン</string>
+    <string name="settings_tools_desc">電卓、単位換算、辞書など</string>
+    <string name="settings_tools_gemini_api_desc">APIキーを追加すると、さらに多くのツールが有効になります。</string>
+    <string name="settings_tools_gemini_api_title">AIプロバイダーを設定</string>
+    <string name="settings_tools_info_examples_header">検索バーに入力できる質問の例です</string>
+    <string name="settings_tools_title">ツール</string>
+    <string name="settings_use_system_font_desc">端末のフォントスタイルに従う</string>
+    <string name="settings_use_system_font_title">システムフォントを使用</string>
+    <string name="settings_accent_color_from_wallpaper">壁紙</string>
+    <string name="settings_accent_color_none">なし</string>
+    <string name="settings_accent_color_picker_title">アクセントカラー</string>
+    <string name="settings_accent_color_wallpaper_required_toast">最初に壁紙の背景を設定してください</string>
+    <string name="settings_wallpaper_accent_desc">壁紙からアクセントカラーを抽出するか、カスタムカラーを選択</string>
+    <string name="settings_wallpaper_accent_title">アクセントカラー</string>
+    <string name="settings_wallpaper_blur_label">ぼかし</string>
+    <string name="settings_wallpaper_card_title">壁紙の背景</string>
+    <string name="settings_wallpaper_transparency_label">透明度</string>
+
+    <!-- ============================================================================
+         Settings - Search Engines &amp; AI Provider
+         ============================================================================ -->
+    <string name="error_open_email">メールを送信するメールアプリが見つかりません。</string>
+    <string name="settings_add_alias">エイリアスを設定</string>
+    <string name="settings_add_custom_provider_desc">OpenAI互換のプロバイダーを追加します。</string>
+    <string name="settings_add_custom_provider_title">カスタムプロバイダーを追加</string>
+    <string name="settings_add_search_engine_button">検索エンジンを追加</string>
+    <string name="settings_add_search_engine_dialog_message">クエリプレースホルダーを含むURLまたはAndroidインテントテンプレートを入力してください。
+
+例:
+www.google.com/search?q={{query}}</string>
+    <string name="settings_add_search_engine_error_multiple_placeholders">{{query}} は1回のみ使用してください。</string>
+    <string name="settings_add_search_engine_error_placeholder">URLには {{query}} を含める必要があります</string>
+    <string name="settings_add_search_engine_error_required">URLテンプレートを入力してください。</string>
+    <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_openai">OpenAI</string>
+    <string name="settings_alias_label">エイリアス:</string>
+    <string name="settings_amazon_domain_default">amazon.com</string>
+    <string name="settings_amazon_domain_label">ドメイン:</string>
+    <string name="settings_api_key_saved_last4">末尾が ****%1$s の保存済みキー</string>
+    <string name="settings_api_key_setup_desc">各AIプロバイダーのモデルにアクセスするためのAPIキーを設定します。</string>
+    <string name="settings_api_key_setup_nav_desc">プロバイダーのAPIキーの追加または削除</string>
+    <string name="settings_configure_api_key_title">APIキーを設定</string>
+    <string name="settings_custom_provider_base_url_hint">例: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_input_label">ベースURL</string>
+    <string name="settings_custom_provider_advanced_payload_desc">このプロバイダー経由で送信される各リクエストに結合されます。</string>
+    <string name="settings_custom_provider_advanced_payload_error">有効なJSONオブジェクトを入力してください。</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { "tools": [{ "type": "openrouter:web_search" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">高度なリクエストペイロード</string>
+    <string name="settings_free_api_key_tip_description">Gemini APIキーを無料で取得する手順。</string>
+    <string name="settings_open_free_api_key_guide">無料APIキーガイドを開く</string>
+    <string name="settings_direct_search_grounding_label">ウェブ検索</string>
+    <string name="settings_direct_search_how_to">無料APIキーを取得</string>
+    <string name="settings_direct_search_model_label">モデル</string>
+    <string name="settings_direct_search_personal_context">個人コンテキスト</string>
+    <string name="settings_direct_search_personal_context_hint">回答生成時にAIに参照させたいコンテキストを追加します。</string>
+    <string name="settings_direct_search_personal_context_unsupported">このモデルでは個人コンテキストは利用できません。</string>
+    <string name="settings_direct_search_setup_nav_desc">APIキーを追加してAI検索を有効にする</string>
+    <string name="settings_direct_search_setup_nav_title">AI検索</string>
+    <string name="settings_direct_search_thinking_label">思考プロセス</string>
+    <string name="settings_edit_search_engine_dialog_title">検索エンジンを編集</string>
+    <string name="settings_gemini_api_config_desc">AI検索やツール用のAIプロバイダーを設定</string>
+    <string name="settings_gemini_api_desc">AIプロバイダーを設定</string>
+    <string name="settings_gemini_api_key_paste_hint">タップしてキーを貼り付け</string>
+    <string name="settings_gemini_api_key_reset">キーをリセット</string>
+    <string name="settings_gemini_api_key_saving">保存中...</string>
+    <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
+    <string name="settings_model_picker_search_hint">モデルを検索</string>
+    <string name="settings_search_engine_alias_suffix_desc">検索キーワードの末尾にエイリアスを入力した場合にも検索エンジンを起動します。エイリアスは先頭でも常に機能します。</string>
+    <string name="settings_search_engine_alias_suffix_title">クエリの後にエイリアス</string>
+    <string name="settings_search_engine_browser_default">デフォルトのブラウザ</string>
+    <string name="settings_search_engine_browser_label">開くアプリ</string>
+    <string name="settings_search_engine_display_compact_desc">キーボードの上に水平リストとして常に表示</string>
+    <string name="settings_search_engine_display_compact_title">コンパクト</string>
+    <string name="settings_search_engine_display_inline_desc">検索時に検索結果エリア内にカードとして表示</string>
+    <string name="settings_search_engine_display_inline_title">インライン</string>
+    <string name="settings_search_engine_display_title">検索エンジンの表示形式</string>
+    <string name="settings_search_engines_desc">検索エンジンの管理と並べ替え</string>
+    <string name="settings_search_engines_more_search_engines">その他の検索エンジン</string>
+
+    <!-- ============================================================================
+         Settings - Backup, Feedback &amp; About
+         ============================================================================ -->
+    <string name="release_notes_action_all_features">すべての機能</string>
+    <string name="release_notes_action_more">過去のバージョンを表示</string>
+    <string name="release_notes_previous_versions">過去のバージョン</string>
+    <string name="release_notes_previous_versions_unavailable">過去のバージョンを読み込めませんでした</string>
+    <string name="release_notes_action_got_it">了解</string>
+    <string name="settings_release_notes_title">リリースノート</string>
+    <string name="settings_release_notes_desc">このバージョンのリリースノートを表示</string>
+    <string name="update_card_title">Quick Searchの新しいアップデートが利用可能です！</string>
+    <string name="action_update">アップデート</string>
+    <string name="release_notes_title">Quick Search v%1$s リリースノート</string>
+    <string name="release_notes_title_no_version">Quick Search リリースノート</string>
+    <string name="settings_backup_export_api_key_warning_message">自己責任で続行してください。エクスポートされたAPIキーは暗号化されず、バックアップファイルにアクセスできるすべての人が閲覧できます。</string>
+    <string name="settings_backup_export_button">エクスポート</string>
+    <string name="settings_backup_export_failed">設定をエクスポートできません。</string>
+    <string name="settings_backup_export_option_pinned_items_title">固定アイテム</string>
+    <string name="settings_backup_export_selection_title">データをエクスポート</string>
+    <string name="settings_backup_export_success">設定を正常にエクスポートしました。</string>
+    <string name="settings_backup_import_button">インポート</string>
+    <string name="settings_backup_import_failed">設定をインポートできません。</string>
+    <string name="settings_backup_import_success">設定を正常にインポートしました。</string>
+    <string name="settings_backup_import_warning_message">これにより、既存の設定が上書きされます。</string>
+    <string name="settings_backup_import_warning_title">設定をインポートしますか？</string>
+    <string name="settings_backup_restore_desc">アプリ設定のエクスポートまたはインポート</string>
+    <string name="settings_backup_restore_title">バックアップと復元</string>
+    <string name="settings_feedback_developer_desc">制作者: %1$s</string>
+    <string name="settings_feedback_developer_name">Teja Karlapudi</string>
+    <string name="settings_feedback_developer_title">%1$s v%2$s</string>
+    <string name="settings_feedback_github_desc">GitHubでこのプロジェクトのソースコードを表示</string>
+    <string name="settings_feedback_github_title">開発</string>
+    <string name="settings_feedback_rate_desc">このアプリが役に立った場合は、ぜひ星5つの評価をお願いします</string>
+    <string name="settings_feedback_rate_title">Quick Searchを評価</string>
+    <string name="settings_feedback_send_desc">バグの報告や機能のリクエスト</string>
+    <string name="settings_feedback_send_title">フィードバックを送信</string>
+    <string name="settings_open_source_licenses_load_failed">ライセンスを読み込めませんでした。</string>
+    <string name="settings_open_source_licenses_loading">ライセンスを読み込み中…</string>
+    <string name="settings_open_source_licenses_tap_to_view">タップしてライセンス本文を表示</string>
+    <string name="settings_open_source_licenses_title">オープンソースライセンス</string>
+
+    <!-- ============================================================================
+         Tools - Calculator, Converter, Time &amp; Dictionary
+         ============================================================================ -->
+    <string name="calculator_enter_math_expression_hint">数式を入力</string>
+    <string name="calculator_invalid_or_unsupported_expression">無効またはサポートされていない数式です</string>
+    <string name="calculator_toggle_desc">基本的な計算結果を表示</string>
+    <string name="calculator_toggle_title">電卓</string>
+    <string name="currency_converter_invalid_input">無効な通貨換算の入力です</string>
+    <string name="currency_converter_requires_gemini_key">AIプロバイダーのAPIキーが必要です</string>
+    <string name="currency_converter_toggle_desc">例: 100 USD to JPY</string>
+    <string name="currency_converter_toggle_title">通貨換算</string>
+    <string name="color_visualizer_toggle_title">カラービジュアライザー</string>
+    <string name="color_visualizer_toggle_desc">例: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">16進数またはRGBカラーを入力</string>
+    <string name="currency_converter_updated">%1$s 更新</string>
+    <string name="date_calculator_category_absolute_time">絶対時間</string>
+    <string name="date_calculator_category_date_differences">日付の差</string>
+    <string name="date_calculator_category_named_dates">特定の日付</string>
+    <string name="date_calculator_category_offset_from_date">日付からのオフセット</string>
+    <string name="date_calculator_category_relative_dates">相対的な日付</string>
+    <string name="date_calculator_category_time_arithmetic">時間の計算</string>
+    <string name="date_calculator_category_time_offset">時間のオフセット</string>
+    <string name="date_calculator_category_time_ranges">時間範囲</string>
+    <string name="date_calculator_info_title">日時計算</string>
+    <string name="date_calculator_invalid_date">無効または認識できない日時です</string>
+    <string name="date_calculator_toggle_action_desc">日時計算のオン/オフを切り替え</string>
+    <string name="date_calculator_toggle_desc">使用例</string>
+    <string name="dictionary_example_label">例文: %1$s</string>
+    <string name="dictionary_synonyms_label">類義語: %1$s</string>
+    <string name="dictionary_toggle_desc">例: define serendipity</string>
+    <string name="dictionary_toggle_title">辞書</string>
+    <string name="weather_toggle_title">天気</string>
+    <string name="weather_toggle_desc">指定された場所の今日の天気</string>
+    <string name="weather_location_label">デフォルトの場所</string>
+    <string name="weather_location_hint">例: 東京都, New York など</string>
+    <string name="weather_error_location_required">場所を入力するか、設定でデフォルトの場所を設定してください</string>
+    <string name="get_weather">天気を取得</string>
+    <string name="weather_in_location">%1$s の天気</string>
+    <string name="weather_temperature_unit_label">温度の単位</string>
+    <string name="weather_temperature_unit_celsius">摂氏 (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">華氏 (°F)</string>
+    <string name="get_currency_value">為替レートを取得</string>
+    <string name="get_time">時間を取得</string>
+    <string name="search_in_dictionary">辞書で検索</string>
+    <string name="unit_converter_category_angle">角度</string>
+    <string name="unit_converter_category_area">面積</string>
+    <string name="unit_converter_category_data">データ量</string>
+    <string name="unit_converter_category_energy">エネルギー</string>
+    <string name="unit_converter_category_frequency">周波数</string>
+    <string name="unit_converter_category_length">長さ</string>
+    <string name="unit_converter_category_power">電力</string>
+    <string name="unit_converter_category_pressure">圧力</string>
+    <string name="unit_converter_category_speed">速度</string>
+    <string name="unit_converter_category_temperature">温度</string>
+    <string name="unit_converter_category_volume">体積 / 容量</string>
+    <string name="unit_converter_category_weight_mass">重量 / 質量</string>
+    <string name="unit_converter_enter_conversion_hint">換算を入力（例: 5lbs in kgs）</string>
+    <string name="unit_converter_info_title">単位換算</string>
+    <string name="unit_converter_invalid_or_unsupported_query">無効またはサポートされていない単位換算です</string>
+    <string name="unit_converter_toggle_action_desc">単位換算のオン/オフを切り替え</string>
+    <string name="world_clock_error_not_recognized">時刻を特定できませんでした。都市名、国名、タイムゾーン、または明確な日時を入力してください。</string>
+    <string name="world_clock_toggle_desc">例: 東京の時間</string>
+    <string name="world_clock_toggle_title">世界時計</string>
+
+    <!-- ============================================================================
+         Widgets &amp; Shortcuts
+         ============================================================================ -->
+    <string name="home_screen_widget_error">ウィジェットの追加を要求できませんでした。もう一度お試しください。</string>
+    <string name="home_screen_widget_not_supported">このAndroidバージョンではウィジェットの直接配置がサポートされていません。ホーム画面のウィジェット一覧から追加してください。</string>
+    <string name="quick_settings_tile_added">Quick Searchタイルを追加しました</string>
+    <string name="quick_settings_tile_already_added">Quick Searchタイルは既に追加されています</string>
+    <string name="quick_settings_tile_error">クイック設定タイルの追加を要求できませんでした。もう一度お試しください。</string>
+    <string name="quick_settings_tile_not_added">タイルは追加されませんでした</string>
+    <string name="quick_settings_tile_not_supported">このAndroidバージョンではタイルの直接追加に対応していません。クイック設定の編集画面から追加してください。</string>
+    <string name="shortcut_voice_search_disabled_message">音声検索ショートカットは利用できません。</string>
+    <string name="shortcut_voice_search_long_label">音声検索を開く</string>
+    <string name="shortcut_voice_search_short_label">音声検索</string>
+    <string name="voice_input_not_available">現在音声入力は利用できません。</string>
+    <string name="widget_background_color_custom_dialog_title">カスタムカラー</string>
+    <string name="widget_border_color">枠線の色</string>
+    <string name="widget_custom_button_add_desc">カスタムボタンを追加</string>
+    <string name="widget_custom_button_change_colour">色を変更</string>
+    <string name="widget_custom_button_choose_colour">フォルダの色を選択</string>
+    <string name="widget_custom_buttons_dialog_hint">アプリ、ショートカット、連絡先、ファイル、フォルダ、メモ、端末設定を検索。</string>
+    <string name="widget_custom_buttons_dialog_title">アクションを選択</string>
+    <string name="widget_custom_buttons_no_results">結果が見つかりませんでした。</string>
+    <string name="widget_custom_buttons_filter_all">すべて</string>
+    <string name="widget_custom_buttons_restriction">カスタムボタンが有効な場合は利用できません。</string>
+    <string name="widget_custom_buttons_title">カスタムボタン</string>
+    <string name="widget_custom_buttons_widget_title">カスタムボタンウィジェット</string>
+    <string name="widget_icon_center">中央</string>
+    <string name="widget_icon_left">左</string>
+    <string name="widget_icon_off">オフ</string>
+    <string name="widget_loading_state">ウィジェット設定を読み込み中…</string>
+    <string name="widget_mic_action_default">デフォルト</string>
+    <string name="widget_mic_action_digital_assistant">アシスタント</string>
+    <string name="widget_mic_action_digital_assistant_limitation">Androidの制限により、Googleがデジタルアシスタントアプリとして設定されていない限り、アシスタントを起動することはできません。</string>
+    <string name="widget_mic_action_digital_assistant_link_phrase">デジタルアシスタントアプリ</string>
+    <string name="widget_mic_icon">マイクアイコン</string>
+    <string name="widget_search_icon">検索アイコン</string>
+    <string name="widget_settings_title">検索ウィジェット</string>
+    <string name="widget_slider_border">枠線の太さ</string>
+    <string name="widget_slider_icon_size">アイコンのサイズ</string>
+    <string name="widget_slider_internal_padding">外側の余白</string>
+    <string name="widget_slider_internal_padding_horizontal">水平方向</string>
+    <string name="widget_slider_internal_padding_vertical">垂直方向</string>
+    <string name="widget_slider_radius">角の丸み</string>
+    <string name="widget_slider_transparency_background">背景</string>
+    <string name="widget_slider_transparency_border">枠線</string>
+    <string name="widget_text_icon_color">テキストとアイコンの色</string>
+    <string name="widget_text_icon_color_black">黒</string>
+    <string name="widget_text_icon_color_white">白</string>
+    <string name="widget_toggle_show_label">「Quick Search」テキスト</string>
+    <string name="widgets_panel_title">ウィジェット</string>
+    <string name="widgets_picker_empty">ウィジェットが見つかりません。</string>
+    <string name="widgets_picker_loading">ウィジェットを読み込み中...</string>
+    <string name="widgets_picker_preview_unavailable">プレビューを利用できません</string>
+    <string name="widgets_picker_title">ウィジェットを追加</string>
+    <string name="widgets_picker_widget_count">%1$d個のウィジェット</string>
+    <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+
+    <!-- ============================================================================
+         Permissions &amp; Onboarding
+         ============================================================================ -->
+    <string name="permissions_calendar_desc">カレンダーの予定を検索するために必要です。</string>
+    <string name="permissions_calling_desc">ダイヤラーを開かずに連絡先に直接電話をかけるために必要です。</string>
+    <string name="settings_notifications_permission_title">通知の送信</string>
+    <string name="permissions_notifications_desc">検索結果を通知パネルに固定するために必要です。</string>
+    <string name="permissions_notification_access_desc">通知があるアプリに通知ドットを表示するために必要です。</string>
+    <string name="permissions_accessibility_lock_screen_title">ユーザー補助</string>
+    <string name="permissions_accessibility_lock_screen_desc">ダブルタップジェスチャーで端末をロックできるようにします。</string>
+    <string name="permissions_contacts_desc">連絡先を検索するために必要です。</string>
+    <string name="permissions_files_desc">ドキュメントやその他のファイルを検索するために必要です。</string>
+    <string name="permissions_files_title">ファイルへのアクセス</string>
+    <string name="permissions_granted">許可済み</string>
+    <string name="permissions_mandatory_indicator">*</string>
+    <string name="permissions_reminder_dialog_message">後から %1$s の権限が必要になった場合は、アプリの設定からいつでも許可できます。</string>
+    <string name="permissions_reminder_dialog_title">権限が許可されていません</string>
+    <string name="permissions_screen_subtitle">ここにあるすべての権限は任意です。追加機能を利用するためにのみ使用され、データが端末外に送信されることはありません。</string>
+    <string name="permissions_screen_optional_emphasis">任意</string>
+    <string name="permissions_usage_desc">候補に最近使用したアプリを表示するために必要です。</string>
+    <string name="setup_action_next">次へ</string>
+    <string name="setup_action_start">検索を開始！</string>
+    <string name="setup_final_title">もうすぐ完了です！</string>
+    <string name="setup_import_backup_found_subtitle">このファイルから設定を復元しますか？</string>
+    <string name="setup_import_backup_found_title">バックアップファイルが見つかりました</string>
+    <string name="setup_import_button">設定をインポート</string>
+    <string name="setup_import_description_subtitle">以前にエクスポートしたバックアップファイルを使用して、Quick Searchの設定をインポートします。</string>
+    <string name="setup_import_description_title">バックアップをお持ちですか？</string>
+    <string name="setup_import_error_subtitle">バックアップファイルを読み込めませんでした。もう一度お試しください。</string>
+    <string name="setup_import_error_title">インポートに失敗しました</string>
+    <string name="setup_import_importing">設定をインポート中…</string>
+    <string name="setup_import_restore_button">復元</string>
+    <string name="setup_import_skip">スキップ</string>
+    <string name="setup_import_success_subtitle">設定がインポートされました。下をタップして検索を開始してください。</string>
+    <string name="setup_import_success_title">設定を復元しました</string>
+    <string name="setup_import_title">設定を復元</string>
+    <string name="setup_search_engines_subtitle">必要な検索エンジンを有効にし、好みの順序に並べ替えます。</string>
+
+    <!-- ============================================================================
+         Search Engines
+         ============================================================================ -->
+    <string name="browser_brave_name">Braveブラウザ</string>
+    <string name="browser_in_app_name">アプリ内ブラウザ</string>
+    <string name="open_with_engine">%1$sで開く</string>
+    <string name="search_engine_ai_mode">AIモード</string>
+    <string name="search_engine_amazon">Amazon</string>
+    <string name="search_engine_bing">Bing</string>
+    <string name="search_engine_brave">Brave Search</string>
+    <string name="search_engine_chatgpt">ChatGPT</string>
+    <string name="search_engine_claude">Claude</string>
+    <string name="search_engine_custom">カスタム検索</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
+    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+    <string name="search_engine_gemini">Gemini</string>
+    <string name="search_engine_google">Google</string>
+    <string name="search_engine_google_drive">Google ドライブ</string>
+    <string name="search_engine_google_maps">Google マップ</string>
+    <string name="search_engine_google_photos">Google フォト</string>
+    <string name="search_engine_google_translate">Google 翻訳</string>
+    <string name="search_engine_google_play">Google Play</string>
+    <string name="search_engine_grok">Grok</string>
+    <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
+    <string name="search_engine_onboarding_description">検索クエリを入力してこれらの検索エンジンのいずれかをタップすると、該当アプリ内で検索が実行されます。長押しで変更できます。</string>
+    <string name="search_engine_perplexity">Perplexity</string>
+    <string name="search_engine_reddit">Reddit</string>
+    <string name="search_engine_spotify">Spotify</string>
+    <string name="search_engine_startpage">Startpage</string>
+    <string name="search_engine_waze">Waze</string>
+    <string name="search_engine_wikipedia">Wikipedia</string>
+    <string name="search_engine_x">X</string>
+    <string name="search_engine_you_com">You.com</string>
+    <string name="search_engine_youtube">YouTube</string>
+    <string name="search_engine_youtube_music">YouTube Music</string>
+    <string name="search_on_engine">%1$sで検索</string>
+
+    <!-- ============================================================================
+         Miscellaneous
+         ============================================================================ -->
+    <string name="auto_close_overlay_toggle_desc">検索結果を開いた後にアプリを自動的に閉じる</string>
+    <string name="auto_close_overlay_toggle_title">アプリの自動終了</string>
+    <string name="excluded_item_type_app_results">アプリ（検索結果）</string>
+    <string name="excluded_item_type_app_shortcut">アプリのショートカット</string>
+    <string name="excluded_item_type_app_suggestions">アプリ（候補）</string>
+    <string name="excluded_item_type_setting">設定</string>
+    <string name="permission_required_title">権限が必要です</string>
+    <string name="settings_action_clear_all">すべて消去</string>
+    <string name="settings_action_move_down">一番下に移動</string>
+    <string name="settings_action_move_up">一番上に移動</string>
+    <string name="settings_action_reorder">ドラッグして並べ替え</string>
+    <string name="settings_create_new_tool_button">新しいツールを作成</string>
+    <string name="settings_custom_tool_alias_hint">このツールを起動するキーワード</string>
+    <string name="settings_custom_tool_alias_label">エイリアス</string>
+    <string name="settings_home_text_color_title">ホームの文字色</string>
+    <string name="settings_home_text_color_desc">アプリ名、セクションタイトルなど</string>
+    <string name="settings_custom_tool_delete_button">ツールを削除</string>
+    <string name="settings_custom_tool_editor_title">カスタムツール</string>
+    <string name="settings_custom_tool_name_label">ツール名</string>
+    <string name="settings_custom_tool_prompt_hint">このツールの動作を説明してください。このプロンプトはツール起動時にAIへの指示として使用されます。
+
+プロンプト内に現在の日時を含めるには {time} を使用します。</string>
+    <string name="settings_custom_tool_prompt_label">システムプロンプト</string>
+    <string name="settings_excluded_items_clear_all">すべての項目を再表示</string>
+    <string name="settings_excluded_items_clear_all_confirmation">非表示にした項目をすべてクリアしてもよろしいですか？この操作は元に戻せません。</string>
+    <string name="settings_excluded_items_desc">非表示にした項目の確認と管理</string>
+    <string name="settings_excluded_items_empty">非表示の項目はありません。</string>
+    <string name="settings_excluded_items_title">非表示の項目</string>
+    <string name="settings_manage_calls_texts_contacts_desc">連絡先の通話とSMSを管理</string>
+    <string name="settings_manage_files_desc">検索結果に表示するファイルの種類を管理</string>
+    <string name="settings_manage_shortcuts_desc">アプリのショートカットを管理</string>
+    <string name="settings_nicknames_desc">設定したカスタムニックネームの確認と管理</string>
+    <string name="settings_nicknames_empty">設定されたニックネームはありません。</string>
+    <string name="settings_nicknames_title">ニックネーム</string>
+    <string name="settings_search_tip_banner_message">ヒント: 検索バーから直接設定を検索できます。</string>
+    <string name="settings_triggers_desc">設定したトリガーワードの確認と管理</string>
+    <string name="settings_triggers_empty">設定されたトリガーはありません。</string>
+    <string name="settings_triggers_title">トリガー</string>
+    <string name="tasker_integration_title">Tasker アクション</string>
+    <string name="tasker_integration_description">ブロードキャストインテントを使用してTaskerアクションを作成します。</string>
+    <string name="tasker_add_intent_title">Tasker ブロードキャストインテントを追加</string>
+    <string name="tasker_add_intent_description">Taskerアプリで、同じアクションを持つ「Intent Received」プロファイルを作成します。Quick Searchは "query" エクストラで検索クエリを送信します。</string>
+    <string name="tasker_alias_conflict">このエイリアスは既に使用されています</string>
+    <string name="tasker_intent_name_label">ブロードキャストインテント名</string>
+    <string name="tasker_broadcast_action_label">ブロードキャストアクション</string>
+    <string name="tasker_add_intent_button">インテントを追加</string>
+    <string name="tasker_saved_alias">エイリアス: %1$s</string>
+    <string name="tasker_delete_intent">Taskerインテントを削除</string>
+    <string name="tasker_intent_action">Tasker インテント (%1$s)</string>
+    <string name="tasker_not_installed">Tasker がインストールされていません</string>
+    <string name="tasker_broadcast_failed">Tasker ブロードキャストを送信できませんでした</string>
+    <string name="app_menu_usage_today">本日 %1$s使用 · %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d回起動</item><item quantity="other">%d回起動</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d時間</item><item quantity="other">%d時間</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d分</item><item quantity="other">%d分</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s時間</string>
+    <string name="other_screen_time_today_title">本日のスクリーンタイム</string>
+    <string name="other_screen_time_hours_minutes">%1$d時間%2$d分</string>
+    <string name="pin_notification_dialog_title">通知に固定</string>
+    <string name="pin_notification_with_other_items">他のアイテムと一緒に固定</string>
+    <string name="pin_notification_separately">個別に固定</string>
+    <string name="speed_bump_dont_open">開かない</string>
+    <string name="speed_bump_explainer_body">この機能は、アプリを開く前に短い待機時間を設けることで、本当に開く必要があるかを考える時間を作ります。衝動的な起動を防ぎ、使いすぎや依存的な習慣を減らすのに役立ちます。</string>
+    <string name="speed_bump_explainer_just_enabled">「%1$s」に対して有効にしました</string>
+    <string name="speed_bump_overlay_prompt">まもなく「%1$s」を開きます…</string>
+    <string name="speed_bump_overlay_title">深呼吸してください</string>
+    <string name="speed_bump_title">SpeedBump</string>
+</resources>
