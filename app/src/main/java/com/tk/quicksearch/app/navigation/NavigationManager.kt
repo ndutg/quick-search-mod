@@ -558,10 +558,7 @@ private fun NavigationContent(
                         rootAnimationDirectionOverride = SwipeAnimationDirection.LEFT
                         onDestinationChange(RootDestination.Search)
                     },
-                    appTheme = uiState.appTheme,
-                    overlayThemeIntensity = uiState.overlayThemeIntensity,
-                    deviceThemeEnabled = uiState.deviceThemeEnabled,
-                    amoledThemeEnabled = uiState.amoledThemeEnabled,
+                    uiState = uiState,
                 )
             }
 

@@ -19,7 +19,7 @@ data class AppLanguageOption(
 )
 
 object AppLanguageManager {
-    private val supportedLanguageTags =
+    internal val supportedLanguageTags =
         listOf(
             "en",
             "ar",
@@ -28,7 +28,11 @@ object AppLanguageManager {
             "es",
             "fr",
             "hi",
+            "id",
             "it",
+            "ja",
+            "nl",
+            "pl",
             "pt-BR",
             "ru",
             "te",
@@ -44,7 +48,7 @@ object AppLanguageManager {
         val activeResourceLanguage =
             context.resources.configuration.locales.get(0)?.language.orEmpty()
         val savedLanguage = savedLanguageTag?.let(Locale::forLanguageTag)?.language.orEmpty()
-        if (savedLanguage.isNotEmpty() && activeResourceLanguage == savedLanguage) return
+        if (savedLanguage.isNotEmpty() && isSameLanguage(activeResourceLanguage, savedLanguage)) return
 
         AppCompatDelegate.setApplicationLocales(targetLocales)
     }
@@ -68,19 +72,21 @@ object AppLanguageManager {
         context: Context,
         languageTag: String?,
     ) {
-        BootstrapPreferences.setAppLanguageTag(context, languageTag)
+        val normalizedTag = normalizeLanguageTag(languageTag)
+        BootstrapPreferences.setAppLanguageTag(context, normalizedTag)
         // Keep the legacy value for one release so downgrade and v1 backup behavior is stable.
-        com.tk.quicksearch.search.data.UserAppPreferences(context).setAppLanguageTag(languageTag)
-        AppCompatDelegate.setApplicationLocales(languageTag.toLocaleListCompat())
+        com.tk.quicksearch.search.data.UserAppPreferences(context).setAppLanguageTag(normalizedTag)
+        AppCompatDelegate.setApplicationLocales(normalizedTag.toLocaleListCompat())
         context.findActivity()?.recreate()
     }
 
     fun getSelectedLanguageTag(context: Context): String? {
         val appLocales = AppCompatDelegate.getApplicationLocales().toLanguageTags()
-        return when {
+        val rawTag = when {
             appLocales.isBlank() -> BootstrapPreferences.getAppLanguageTag(context)
             else -> appLocales.substringBefore(',').ifBlank { null }
         }
+        return normalizeLanguageTag(rawTag)
     }
 
     fun getAvailableLanguages(context: Context): List<AppLanguageOption> {
@@ -139,4 +145,15 @@ object AppLanguageManager {
                 char.toString()
             }
         }
+
+    internal fun normalizeLanguageTag(tag: String?): String? =
+        when (tag) {
+            "in" -> "id"
+            else -> tag
+        }
+
+    internal fun isSameLanguage(lang1: String, lang2: String): Boolean =
+        lang1 == lang2 || (lang1 in idLanguageTags && lang2 in idLanguageTags)
+
+    private val idLanguageTags = setOf("id", "in")
 }

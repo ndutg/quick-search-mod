@@ -1152,4 +1152,5 @@
     <string name="speed_bump_overlay_prompt">%1$s wird gleich geöffnet…</string>
     <string name="speed_bump_overlay_title">Atme tief durch</string>
     <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">Anstehender Wecker</string>
 </resources>

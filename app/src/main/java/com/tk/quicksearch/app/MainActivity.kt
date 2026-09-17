@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.OpenableColumns
 import android.os.Bundle
 import android.os.Trace
@@ -67,6 +68,8 @@ open class MainActivity : FragmentActivity() {
 
     companion object {
         const val ACTION_VOICE_SEARCH_SHORTCUT = "com.tk.quicksearch.action.VOICE_SEARCH_SHORTCUT"
+        /** Public intent action that opens the hosted Widgets panel. */
+        const val ACTION_OPEN_WIDGETS_PANEL = "com.tk.quicksearch.action.OPEN_WIDGETS_PANEL"
         const val ACTION_SEARCH_TARGET_SHORTCUT = "com.tk.quicksearch.action.SEARCH_TARGET_SHORTCUT"
         const val EXTRA_SHORTCUT_QUERY = "com.tk.quicksearch.extra.SHORTCUT_QUERY"
         const val EXTRA_SHORTCUT_TARGET_ENGINE = "com.tk.quicksearch.extra.SHORTCUT_TARGET_ENGINE"
@@ -238,6 +241,8 @@ open class MainActivity : FragmentActivity() {
                 ?: false
         if (!forceNormalLaunch && userPreferences.isOverlayModeEnabled()) {
             val isVoiceShortcutLaunch = intent?.action == ACTION_VOICE_SEARCH_SHORTCUT
+            val isWidgetsPanelLaunch = intent?.action == ACTION_OPEN_WIDGETS_PANEL
+            if (isWidgetsPanelLaunch) return false
             val isAssistantLaunch = intent?.action == Intent.ACTION_ASSIST
             val startVoiceForAssistant =
                 isAssistantLaunch && userPreferences.isAssistantLaunchVoiceModeEnabled()
@@ -422,12 +427,22 @@ open class MainActivity : FragmentActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun updateRecentsVisibility(showInRecents: Boolean) {
         if (this is HomeActivity) return
         val appTask =
             (getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager)
                 .appTasks
-                .firstOrNull { it.taskInfo?.taskId == taskId }
+                .firstOrNull { appTask ->
+                    val taskInfo = appTask.taskInfo ?: return@firstOrNull false
+                    val appTaskId =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            taskInfo.taskId
+                        } else {
+                            taskInfo.id
+                        }
+                    appTaskId == taskId
+                }
         appTask?.setExcludeFromRecents(!showInRecents)
     }
 
@@ -521,6 +536,9 @@ open class MainActivity : FragmentActivity() {
         }
         if (intent?.action == ACTION_VOICE_SEARCH_SHORTCUT) {
             voiceSearchHandler.handleMicAction(MicAction.DEFAULT_VOICE_SEARCH)
+        }
+        if (intent?.action == ACTION_OPEN_WIDGETS_PANEL) {
+            navigationRequest.value = NavigationRequest(destination = RootDestination.WidgetsPanel)
         }
         if (
             intent?.action == Intent.ACTION_ASSIST &&

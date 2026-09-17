@@ -9,7 +9,15 @@
         android:shortcutDisabledMessage="@string/shortcut_voice_search_disabled_message">
         <intent
             android:action="com.tk.quicksearch.action.VOICE_SEARCH_SHORTCUT"
-            android:targetClass="com.tk.quicksearch.app.MainActivity"
-            android:targetPackage="com.tk.quicksearch" />
+            android:targetClass="com.tk.quicksearch.app.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="widgets"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_widgets"
+        android:shortcutShortLabel="@string/widgets_panel_title">
+        <intent
+            android:action="com.tk.quicksearch.action.OPEN_WIDGETS_PANEL"
+            android:targetClass="com.tk.quicksearch.app.MainActivity" />
     </shortcut>
 </shortcuts>

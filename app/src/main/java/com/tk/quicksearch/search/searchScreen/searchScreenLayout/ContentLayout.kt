@@ -875,33 +875,6 @@ fun ContentLayout(
                 ) {
                     return@forEach
                 }
-                if (
-                    shouldRenderStandaloneTodayAgendaBeforeApps(isReversed) &&
-                        section == SearchSection.APPS &&
-                        hasStandaloneTodayCalendarSection &&
-                        !standaloneTodayCalendarRendered
-                ) {
-                    if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
-                        renderSearchHistoryBlock()
-                        deferredSearchHistoryRendered = true
-                    }
-                    HomeLoadingAnimatedContent(
-                        animationKey = "home-today-calendar",
-                        enabled = animateHomeLoadingContent,
-                        appearedKeys = appearedHomeContentKeys,
-                    ) {
-                        renderSection(
-                            section = SearchSection.CALENDAR,
-                            params = regularSectionParams,
-                            sectionContext =
-                                sectionContextForRecentHistoryExpansion.copy(
-                                    shouldRenderCalendar = false,
-                                    calendarEventsList = emptyList(),
-                                ),
-                        )
-                    }
-                    standaloneTodayCalendarRendered = true
-                }
                 val homeSectionContentReady =
                     section != SearchSection.APPS ||
                         (
@@ -926,42 +899,60 @@ fun ContentLayout(
                         }
                     }
                 }
-                if (
-                    !isReversed &&
-                    section == SearchSection.APPS &&
-                        hasStandaloneTodayCalendarSection &&
-                        !standaloneTodayCalendarRendered
-                ) {
-                    HomeLoadingAnimatedContent(
-                        animationKey = "home-today-calendar",
-                        enabled = animateHomeLoadingContent,
-                        appearedKeys = appearedHomeContentKeys,
-                    ) {
-                        renderSection(
-                            section = SearchSection.CALENDAR,
-                            params = regularSectionParams,
-                            sectionContext =
-                                sectionContextForRecentHistoryExpansion.copy(
-                                    shouldRenderCalendar = false,
-                                    calendarEventsList = emptyList(),
-                                ),
-                        )
-                    }
-                    standaloneTodayCalendarRendered = true
-                    if (
-                        shouldDeferSearchHistoryUntilTodayEvents &&
-                            !deferredSearchHistoryRendered
-                    ) {
-                        renderSearchHistoryBlock()
-                        deferredSearchHistoryRendered = true
-                    }
-                }
                 return@forEach
             }
 
             if (hideOtherContent) return@forEach
 
             when (itemType) {
+                ItemPriorityConfig.ItemType.UPCOMING_ALARM -> {
+                    if (!hasQuery && !isHomeCalendarExpanded && !hidePinnedAndAppsWhenSearchHistoryExpanded) {
+                        if (isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
+                            if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                                renderSearchHistoryBlock()
+                                deferredSearchHistoryRendered = true
+                            }
+                            HomeLoadingAnimatedContent(
+                                animationKey = "home-today-calendar",
+                                enabled = animateHomeLoadingContent,
+                                appearedKeys = appearedHomeContentKeys,
+                            ) {
+                                renderSection(
+                                    section = SearchSection.CALENDAR,
+                                    params = regularSectionParams,
+                                    sectionContext = sectionContextForRecentHistoryExpansion.copy(
+                                        shouldRenderCalendar = false,
+                                        calendarEventsList = emptyList(),
+                                    ),
+                                )
+                            }
+                            standaloneTodayCalendarRendered = true
+                        }
+                        UpcomingAlarmSection(showWallpaperBackground = effectiveShowWallpaperBackground)
+                        if (!isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
+                            HomeLoadingAnimatedContent(
+                                animationKey = "home-today-calendar",
+                                enabled = animateHomeLoadingContent,
+                                appearedKeys = appearedHomeContentKeys,
+                            ) {
+                                renderSection(
+                                    section = SearchSection.CALENDAR,
+                                    params = regularSectionParams,
+                                    sectionContext = sectionContextForRecentHistoryExpansion.copy(
+                                        shouldRenderCalendar = false,
+                                        calendarEventsList = emptyList(),
+                                    ),
+                                )
+                            }
+                            standaloneTodayCalendarRendered = true
+                            if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                                renderSearchHistoryBlock()
+                                deferredSearchHistoryRendered = true
+                            }
+                        }
+                    }
+                }
+
                 ItemPriorityConfig.ItemType.ERROR_BANNER -> {
                     if (state.screenState is ScreenVisibilityState.Error) {
                         InfoBanner(

@@ -1,0 +1,1158 @@
+<resources>
+
+    <!-- Language: Indonesian -->
+
+    <!-- Translation Guidelines:
+         - Translate user-facing text into this locale.
+         - Do not translate brand/product names and technical identifiers (e.g., Quick Search, AI, API, Gemini, Android, Amazon, USD, INR, lbs, kgs).
+         - Do not translate placeholders or format specifiers (%1$s, %1$d, %s, %%).
+         - In search_hints_cycle, keep the example queries in English.
+    -->
+    <!-- ============================================================================
+         App &amp; Search Entry
+         ============================================================================ -->
+    <string name="app_name">Quick Search</string>
+    <string name="direct_answer_contact_name">Jawaban AI</string>
+    <string name="direct_search_enter_query">Silakan masukkan kueri untuk mencari.</string>
+    <string name="direct_search_ask_follow_up">Ajukan pertanyaan lanjutan</string>
+    <string name="direct_search_follow_up_hint">Ajukan pertanyaan lanjutan</string>
+    <string name="direct_search_error_generic">Tidak dapat mengambil jawaban AI. Coba lagi.</string>
+    <string name="direct_search_error_no_key">Tambahkan kunci API di pengaturan (Penyedia AI) untuk mengambil jawaban AI.</string>
+    <string name="gemini_web_search_quota_fallback_tip">Kuota pencarian web Gemini telah tercapai, jadi jawaban ini dibuat tanpa pencarian web.</string>
+    <string name="direct_search_powered_by">Didukung oleh</string>
+    <string name="empty_state_subtitle">Buka aplikasi atau sesuaikan pencarian Anda untuk melihat saran.</string>
+    <string name="empty_state_title">Belum ada yang ditampilkan</string>
+    <string name="error_action_not_available">Tindakan tidak tersedia</string>
+    <string name="error_gemini_empty_response">Respons kosong dari Gemini</string>
+    <string name="error_gemini_load_models_failed">Tidak dapat memuat model Gemini</string>
+    <string name="error_gemini_request_failed">Permintaan gagal (%1$d)</string>
+    <string name="error_unknown">Kesalahan tidak diketahui</string>
+    <string name="gemini_model_flash_latest">Gemini Flash (Terbaru)</string>
+    <string name="keyboard_switch_back">Keyboard Biasa</string>
+    <string name="keyboard_switch_to_number">Keyboard Angka</string>
+    <string name="no_results_found">Hasil tidak ditemukan. Coba ketuk mesin pencari di bawah untuk mencari di web.</string>
+    <string name="search_hint">Cari Apa Saja…</string>
+    <string name="search_hint_app_settings">Cari Pengaturan Aplikasi…</string>
+    <string name="search_hint_app_shortcuts">Cari Pintasan Aplikasi…</string>
+    <string name="search_hint_apps">Cari Aplikasi…</string>
+    <string name="search_hint_calendar">Cari Acara Kalender…</string>
+    <string name="search_hint_contacts">Cari Kontak…</string>
+    <string name="search_hint_currency_converter">Konversi Mata Uang, mis. 100 USD ke INR</string>
+    <string name="search_hint_dictionary">Masukkan kata apa saja</string>
+    <string name="search_hint_weather">Masukkan lokasi atau gunakan lokasi default Anda</string>
+    <string name="search_hint_files">Cari File…</string>
+    <string name="search_hint_notes">Cari Catatan…</string>
+    <string name="search_hint_settings">Cari Pengaturan Perangkat…</string>
+    <string name="search_hint_static">Cari Apa Saja</string>
+    <string name="search_hint_world_clock">Masukkan tempat mana saja untuk melihat waktu setempat</string>
+    <string-array name="search_hints_cycle">
+        <item >Cari Kontak</item>
+        <item >Cari File</item>
+        <item >Acara Kalender</item>
+        <item >Cari Aplikasi</item>
+        <item >Cari Pintasan Aplikasi</item>
+        <item >Cari Pengaturan</item>
+        <!-- These examples should not be translated -->
+        <item >5 USD to INR</item>
+        <item >5 lbs in kgs</item>
+        <item >3 months from now</item>
+        <item >225 + 456</item>
+        <item >Time in UK</item>
+        <item >Define Serendipity</item>
+        <item >Weather in New York</item>
+    </string-array>
+    <string name="search_provider_description">Cari aplikasi, kontak, file, pengaturan, dan lainnya dengan Quick Search.</string>
+
+    <!-- ============================================================================
+         Common Actions, Labels &amp; Dialogs
+         ============================================================================ -->
+    <string name="action_add_to_home">Tambahkan ke Layar Utama</string>
+    <string name="action_add_trigger">Pemicu</string>
+    <string name="action_app_info">Info Aplikasi</string>
+    <string name="action_manage_all_apps">Kelola Semua Aplikasi</string>
+    <string name="action_app_shortcuts_settings">Pengaturan pintasan aplikasi</string>
+    <string name="action_files_settings">Pengaturan file</string>
+    <string name="action_contacts_settings">Pengaturan kontak</string>
+    <string name="action_lock_app">Kunci</string>
+    <string name="action_unlock_app">Buka Kunci</string>
+    <string name="app_lock_prompt_lock">Kunci %1$s</string>
+    <string name="app_lock_prompt_unlock">Buka kunci %1$s</string>
+    <string name="action_change_icon">Ubah Ikon</string>
+    <string name="icon_picker_no_icon_packs">Tidak ada paket ikon yang terpasang untuk mengubah ikon aplikasi.</string>
+    <string name="icon_picker_download_icon_packs">Unduh</string>
+    <string name="icon_picker_search">Cari ikon</string>
+    <string name="icon_picker_title">Ubah ikon untuk "%1$s"</string>
+    <string name="action_change_wallpaper">Ubah Wallpaper</string>
+    <string name="action_clear_all_history">Hapus Riwayat</string>
+    <string name="action_copy_content">Salin Konten</string>
+    <string name="action_edit_icon">Edit Ikon</string>
+    <string name="action_edit_nickname">Edit Nama Panggilan</string>
+    <string name="action_edit_trigger">Edit Pemicu</string>
+    <string name="action_exclude_extension">Sembunyikan file .%s</string>
+    <string name="action_exclude_generic">Sembunyikan</string>
+    <string name="action_expand_more">Lainnya</string>
+    <string name="action_expand_more_app_settings">Pengaturan Aplikasi Lainnya</string>
+    <string name="action_expand_more_contacts">Kontak Lainnya</string>
+    <string name="action_expand_more_device_settings">Pengaturan Lainnya</string>
+    <string name="action_expand_more_events">Acara Lainnya</string>
+    <string name="action_expand_more_files">File Lainnya</string>
+    <string name="action_expand_more_notes">Catatan Lainnya</string>
+    <string name="action_expand_more_shortcuts">Pintasan Lainnya</string>
+    <string name="action_file_info">Info File</string>
+    <string name="action_include_generic">Tampilkan</string>
+    <string name="action_more_search_history">Riwayat Lainnya</string>
+    <string name="action_open">Buka</string>
+    <string name="action_open_in_split_screen">Layar Terpisah</string>
+    <string name="action_open_folder">Buka Folder</string>
+    <string name="action_open_keyboard">Buka Keyboard</string>
+    <string name="action_open_settings">Buka pengaturan</string>
+    <string name="settings_gestures_title">Gestur</string>
+    <string name="settings_gestures_desc">Sesuaikan tindakan geser</string>
+    <string name="settings_gesture_swipe_right">Geser ke Kanan</string>
+    <string name="settings_gesture_widget_panel">Panel Widget</string>
+    <string name="settings_gesture_swipe_left">Geser ke Kiri</string>
+    <string name="settings_gesture_swipe_up">Geser ke Atas</string>
+    <string name="settings_gesture_swipe_down">Geser ke Bawah</string>
+    <string name="settings_gesture_swipe_up_home">Geser ke Atas (Layar Utama)</string>
+    <string name="settings_gesture_swipe_down_home">Geser ke Bawah (Layar Utama)</string>
+    <string name="settings_gesture_close_quick_search">Tutup Quick Search</string>
+    <string name="settings_gesture_double_tap_home">Ketuk Dua Kali (Layar Utama)</string>
+    <string name="settings_gesture_settings">Pengaturan</string>
+    <string name="settings_gesture_close_keyboard_notifications">Tutup Keyboard / Buka Notifikasi</string>
+    <string name="settings_gesture_close_keyboard">Tutup Keyboard</string>
+    <string name="settings_gesture_notification_panel">Panel Notifikasi</string>
+    <string name="settings_gesture_lock_screen">Kunci Layar</string>
+    <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
+    <string name="accessibility_lock_screen_service_label">Kunci Layar Quick Search</string>
+    <string name="accessibility_lock_screen_service_description">Mengizinkan Quick Search mengunci layar dari gestur ketuk dua kali di Layar Utama. Fitur ini tidak membaca konten layar.</string>
+    <string name="accessibility_permission_disclaimer_title">Pernyataan Izin Aksesibilitas</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search menggunakan API AccessibilityService Android hanya untuk mengunci perangkat saat Anda mengetuk dua kali di Layar Utama. Melalui layanan ini, Quick Search tidak membaca, mengumpulkan, menyimpan, atau membagikan konten layar atau data pribadi lainnya.</string>
+    <string name="settings_gesture_none">Tidak ada</string>
+    <string name="settings_gesture_custom">Kustom (Aplikasi, File, dll.)</string>
+    <string name="settings_keyboard_gestures_title">Gestur Keyboard (Layar Utama)</string>
+    <string name="settings_keyboard_gestures_desc">Hanya tersedia jika tidak ada konten yang dapat digulir di layar utama</string>
+    <string name="action_pin_app">Sematkan</string>
+    <string name="action_pin_to_notifications">Sematkan ke Notifikasi</string>
+    <string name="action_unpin_from_notifications">Lepas Sematan dari Notifikasi</string>
+    <string name="pinned_notifications_channel_description">Akses cepat ke hasil pencarian yang disematkan</string>
+    <string name="pinned_notifications_title">Pintasan yang disematkan</string>
+    <string name="notification_pinned_items_title">Item Notifikasi yang Disematkan</string>
+    <string name="notification_pinned_items_description">Kelola item yang disematkan di panel notifikasi Anda</string>
+    <string name="notification_pinned_items_remove">Hapus %1$s dari notifikasi</string>
+    <string name="notification_pinned_item_type_app">Aplikasi</string>
+    <string name="notification_pinned_item_type_app_shortcut">Pintasan aplikasi</string>
+    <string name="notification_pinned_item_type_contact">Kontak</string>
+    <string name="notification_pinned_item_type_file">File</string>
+    <string name="notification_pinned_item_type_note">Catatan</string>
+    <string name="action_remove">Hapus</string>
+    <string name="app_swipe_current_action">Tindakan Saat Ini</string>
+    <string name="app_swipe_up_picker_title">Pilih tindakan Geser ke atas untuk %1$s</string>
+    <string name="app_swipe_down_picker_title">Pilih tindakan Geser ke bawah untuk %1$s</string>
+    <string name="app_swipe_picker_tip">Menggeser ikon aplikasi akan membuka item yang dipilih, baik di saran aplikasi maupun di hasil pencarian</string>
+    <string name="app_swipe_picker_search_hint">Cari Aplikasi, Kontak, dll.</string>
+    <string name="app_swipe_up_set_toast">Gestur Geser ke Atas telah diatur untuk %1$s</string>
+    <string name="app_swipe_down_set_toast">Gestur Geser ke Bawah telah diatur untuk %1$s</string>
+    <string name="action_remove_from_history">Hapus dari Riwayat</string>
+    <string name="action_reset_app_shortcut_icon">Reset ke ikon default</string>
+    <string name="action_retry">Coba lagi</string>
+    <string name="action_share">Bagikan</string>
+    <string name="action_move_up">Pindahkan ke Atas</string>
+    <string name="action_move_down">Pindahkan ke Bawah</string>
+    <string name="action_undo">Urungkan</string>
+    <string name="action_uninstall_app">Copot pemasangan</string>
+    <string name="action_rate">Beri Nilai Sekarang</string>
+    <string name="action_not_now">Jangan sekarang</string>
+    <string name="action_agree">Setuju</string>
+    <string name="action_unpin_app">Lepas sematan</string>
+    <string name="alias_trigger_after_space">Picu setelah spasi</string>
+    <string name="common_action_add">Tambah</string>
+    <string name="common_action_clear">Hapus</string>
+    <string name="common_ai_provider">Penyedia AI</string>
+    <string name="common_api_key_setup">Penyiapan Kunci API</string>
+    <string name="common_close">Tutup</string>
+    <string name="common_custom">Kustom</string>
+    <string name="common_error_unable_to_open">Tidak dapat membuka %1$s</string>
+    <string name="common_most_used">Paling Sering Digunakan</string>
+    <string name="common_nickname">Nama Panggilan</string>
+    <string name="common_search">Cari</string>
+    <string name="common_theme_dark">Gelap</string>
+    <string name="common_theme_device">Perangkat</string>
+    <string name="common_theme_light">Terang</string>
+    <string name="common_theme_system">Sistem</string>
+    <string name="common_time">Waktu</string>
+    <string name="dialog_add_alias_for_search_type_title">Tambah Alias untuk "%1$s"</string>
+    <string name="dialog_alias_info_search_engine">Ketik alias ini di awal atau akhir kueri untuk memulai pencarian dengan cepat menggunakan %1$s.</string>
+    <string name="dialog_alias_info_search_engine_start_only">Ketik alias ini di awal kueri untuk memulai pencarian dengan cepat menggunakan %1$s.</string>
+    <string name="dialog_alias_info_search_type">Ketik alias ini di awal kueri untuk memicu pencarian %1$s.</string>
+    <string name="dialog_alias_info_tool">Ketik alias ini di awal kueri untuk masuk ke mode %1$s.</string>
+    <string name="dialog_app_shortcut_icon_message">Pilih gambar untuk \"%1$s\". Ini hanya mengubah tampilan pintasan di Quick Search.</string>
+    <string name="dialog_cancel">Batal</string>
+    <string name="dialog_choose_contact_action_title">Pilih Tindakan untuk Mengganti %1$s</string>
+    <string name="dialog_clear_all_history_message">Yakin ingin menghapus semua riwayat pencarian? Tindakan ini tidak dapat diurungkan.</string>
+    <string name="dialog_clear_all_history_title">Hapus Semua Riwayat?</string>
+    <string name="dialog_delete">Hapus</string>
+    <string name="dialog_direct_dial_change_later">Anda dapat mengubahnya kapan saja di Pengaturan.</string>
+    <string name="dialog_direct_dial_option_dialer">Buka Dialer</string>
+    <string name="dialog_direct_dial_option_dialer_desc">Tinjau nomor di dialer sebelum melakukan panggilan.</string>
+    <string name="dialog_direct_dial_option_direct">Panggilan Langsung</string>
+    <string name="dialog_direct_dial_option_direct_desc">Lakukan panggilan langsung (memerlukan izin panggilan telepon).</string>
+    <string name="dialog_direct_dial_title">Pilih cara menelepon</string>
+    <string name="dialog_done">Selesai</string>
+    <string name="dialog_edit_alias_error_prefix">Alias ini sudah digunakan.</string>
+    <string name="dialog_edit_alias_error_trigger_conflict">Alias ini sama dengan pemicu yang sudah ada.</string>
+    <string name="dialog_edit_alias_for_search_type_title">Edit Alias untuk "%1$s"</string>
+    <string name="dialog_edit_alias_title">Edit alias</string>
+    <string name="dialog_edit_amazon_domain_error">Domain tidak valid</string>
+    <string name="dialog_edit_amazon_domain_hint">Contoh: amazon.com, amazon.co.id, amazon.in, dll.</string>
+    <string name="dialog_edit_amazon_domain_message">Perbarui domain Amazon untuk negara Anda.</string>
+    <string name="dialog_edit_amazon_domain_title">Edit Domain Amazon</string>
+    <string name="dialog_gemini_model_picker_title">Pilih Model</string>
+    <string name="dialog_nickname_message">Masukkan nama panggilan untuk "%1$s". Anda dapat mencarinya menggunakan nama panggilan ini.</string>
+    <string name="dialog_ok">Lanjutkan</string>
+    <string name="dialog_okay">Oke</string>
+    <string name="dialog_remember_choice">Ingat pilihan ini</string>
+    <string name="dialog_save">Simpan</string>
+    <string name="dialog_select_phone_number_message">Pilih nomor untuk %1$s</string>
+    <string name="dialog_select_phone_number_title">Pilih nomor telepon</string>
+    <string name="dialog_send">Kirim</string>
+    <string name="dialog_trigger_error_alias_conflict">Pemicu ini sama dengan alias yang sudah ada.</string>
+    <string name="dialog_trigger_error_taken">Pemicu ini sudah digunakan.</string>
+    <string name="dialog_trigger_hint">Kata pemicu</string>
+    <string name="dialog_trigger_message">Masukkan satu kata pemicu untuk "%1$s".</string>
+    <string name="exclude_marker"> disembunyikan dari </string>
+    <string name="permission_action_manage_android">Kelola di pengaturan Android</string>
+    <string name="permission_settings_dialog_message">Tindakan ini memerlukan izin %1$s. Anda akan diarahkan ke pengaturan sistem untuk memberikannya.</string>
+    <string name="permission_settings_dialog_title">Izin %1$s Diperlukan</string>
+    <string name="toast_excluded_from_results">%1$s disembunyikan dari hasil</string>
+    <string name="toast_excluded_from_suggestions">%1$s disembunyikan dari saran</string>
+
+    <!-- ============================================================================
+         Accessibility
+         ============================================================================ -->
+    <string name="desc_clear_search">Hapus teks pencarian</string>
+    <string name="desc_collapse">Ciutkan</string>
+    <string name="desc_expand">Perluas</string>
+    <string name="desc_launch_app">Buka %1$s</string>
+    <string name="desc_navigate_back">Kembali</string>
+    <string name="desc_navigate_forward">Maju</string>
+    <string name="desc_open_settings">Buka pengaturan Quick Search</string>
+    <string name="desc_selected">Dipilih</string>
+    <string name="desc_voice_search_icon">Mulai pencarian suara</string>
+
+    <!-- ============================================================================
+         Search Result Sections &amp; Ranking
+         ============================================================================ -->
+    <string name="app_suggestions_tab_new_updated">Baru/Diperbarui</string>
+    <string name="app_suggestions_tab_pinned">Disematkan</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Aplikasi yang disematkan akan tetap muncul di tab %1$s</string>
+    <string name="app_suggestions_tab_recent">Terbaru</string>
+    <string name="app_suggestions_tabs_dialog_message">Pilih tab saran aplikasi yang ditampilkan di layar utama.</string>
+    <string name="app_suggestions_tabs_dialog_title">Tab Saran Aplikasi</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">Pilih Tab</string>
+    <string name="app_suggestions_tab_required_toast">Minimal satu tab saran aplikasi harus tetap aktif</string>
+    <string name="app_suggestions_toggle_desc">Tampilkan atau sembunyikan aplikasi yang disarankan di layar utama</string>
+    <string name="app_suggestions_toggle_title">Saran Aplikasi</string>
+    <string name="show_all_apps_button_toggle_desc">Tampilkan tombol Semua Aplikasi di bawah saran aplikasi</string>
+    <string name="app_suggestions_usage_access_link">izin akses penggunaan</string>
+    <string name="app_suggestions_usage_access_tip">Berikan izin akses penggunaan untuk melihat saran yang lebih sesuai</string>
+    <string name="clear_query_toggle_desc">Hapus kueri lama secara otomatis saat aplikasi dibuka</string>
+    <string name="clear_query_toggle_title">Hapus Kueri</string>
+    <string name="more_results_title">Hasil Lainnya</string>
+    <string name="open_keyboard_toggle_desc">Buka keyboard secara otomatis saat aplikasi dibuka</string>
+    <string name="recent_queries_toggle_desc">Jumlah item yang ditampilkan sebelum diperluas</string>
+    <string name="fuzzy_search_toggle_title">Pencarian Fuzzy</string>
+    <string name="fuzzy_search_toggle_desc">Temukan hasil meskipun pencarian Anda mengandung salah ketik.</string>
+    <string name="secondary_ranking_title">Pengurutan Sekunder</string>
+    <string name="secondary_ranking_dialog_desc">Pilih cara mengurutkan hasil dengan kualitas kecocokan yang sama.</string>
+    <string name="secondary_ranking_recency">Terbaru</string>
+    <string name="secondary_ranking_most_opened">Paling Sering Dibuka</string>
+    <string name="recent_queries_toggle_title">Riwayat Pencarian</string>
+    <string name="search_history_tab_recently_opened">Hasil</string>
+    <string name="search_history_tab_searches">Pencarian</string>
+    <string name="search_section_app_settings_toggle_desc">Aktifkan atau nonaktifkan pencarian pengaturan aplikasi</string>
+    <string name="search_section_app_settings_toggle_title">Pencarian Pengaturan Aplikasi</string>
+    <string name="search_section_app_shortcuts_toggle_desc">Aktifkan atau nonaktifkan pencarian pintasan aplikasi</string>
+    <string name="search_section_app_shortcuts_toggle_title">Pencarian Pintasan Aplikasi</string>
+    <string name="search_section_apps_toggle_desc">Aktifkan atau nonaktifkan pencarian aplikasi</string>
+    <string name="search_section_apps_toggle_title">Pencarian Aplikasi</string>
+    <string name="search_section_calendar_toggle_desc">Aktifkan atau nonaktifkan pencarian kalender</string>
+    <string name="search_section_calendar_toggle_title">Pencarian Kalender</string>
+    <string name="search_section_contacts_toggle_desc">Aktifkan atau nonaktifkan pencarian kontak</string>
+    <string name="search_section_contacts_toggle_title">Pencarian Kontak</string>
+    <string name="search_section_device_settings_toggle_desc">Aktifkan atau nonaktifkan pencarian pengaturan perangkat</string>
+    <string name="search_section_device_settings_toggle_title">Pencarian Pengaturan Perangkat</string>
+    <string name="search_section_files_toggle_desc">Aktifkan atau nonaktifkan pencarian file</string>
+    <string name="search_section_files_toggle_title">Pencarian File</string>
+    <string name="search_section_notes_toggle_desc">Aktifkan atau nonaktifkan pencarian catatan</string>
+    <string name="search_section_notes_toggle_title">Pencarian Catatan</string>
+    <string name="section_app_settings">Pengaturan Aplikasi</string>
+    <string name="section_app_shortcuts">Pintasan Aplikasi</string>
+    <string name="section_apps">Aplikasi</string>
+    <string name="section_calendar">Acara Kalender</string>
+    <string name="section_files">File</string>
+    <string name="section_notes">Catatan</string>
+    <string name="section_settings">Pengaturan Perangkat</string>
+    <string name="top_match_title">Kecocokan Teratas</string>
+    <string name="top_matches_count_label">Jumlah kecocokan</string>
+    <string name="top_matches_priority_desc">Ubah prioritas dan nonaktifkan item dalam kecocokan teratas</string>
+    <string name="top_matches_priority_dialog_info">Tahan dan seret untuk mengubah prioritas, dan gunakan tombol untuk mengaktifkan atau menonaktifkan jenis hasil tertentu.</string>
+    <string name="top_matches_priority_title">Kelola Kecocokan Teratas</string>
+    <string name="top_matches_title">Kecocokan Teratas</string>
+    <string name="top_matches_toggle_desc">Tampilkan hasil kecocokan teratas dari semua jenis dalam satu daftar</string>
+    <string name="top_result_indicator_toggle_desc">Sorot hasil teratas yang dapat dibuka dengan keyboard.</string>
+    <string name="top_result_indicator_toggle_title">Indikator Hasil Teratas</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Buka Hasil Teratas dengan Keyboard</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Tombol Enter/Selesai pada keyboard akan membuka hasil teratas</string>
+    <string name="include_non_launchable_apps_toggle_title">Aplikasi Tanpa Peluncur</string>
+    <string name="include_non_launchable_apps_toggle_desc">Sertakan aplikasi yang tidak memiliki aktivitas peluncuran dalam hasil pencarian.</string>
+    <string name="notification_dots_toggle_title">Titik Notifikasi</string>
+    <string name="notification_dots_toggle_desc">Tampilkan titik notifikasi pada aplikasi yang memiliki notifikasi</string>
+    <string name="desc_notification_dot">Ada notifikasi</string>
+    <string name="show_in_recents_toggle_title">Tampilkan di Aplikasi Terbaru</string>
+    <string name="show_in_recents_toggle_desc">Tampilkan Quick Search di aplikasi terbaru perangkat Anda</string>
+    <string name="web_search_suggestions_title">Saran Web</string>
+
+    <!-- ============================================================================
+         Apps
+         ============================================================================ -->
+    <string name="app_menu_section_actions">Tindakan</string>
+    <string name="app_menu_section_shortcuts">Pintasan</string>
+    <string name="app_menu_value_on">Aktif</string>
+    <string name="action_uninstall_named">Copot pemasangan %1$s</string>
+    <string name="action_disable_app_shortcut">Nonaktifkan</string>
+    <string name="action_disable_all_app_shortcuts_named">Nonaktifkan semua pintasan %1$s</string>
+    <string name="snackbar_app_shortcut_disabled_title">Pintasan aplikasi dinonaktifkan</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Anda dapat mengaktifkan pintasan ini nanti di pengaturan Pintasan aplikasi.</string>
+    <string name="apps_refreshed_successfully">Aplikasi berhasil diperbarui</string>
+    <string name="error_loading_user_apps">Kami tidak dapat memuat aplikasi Anda. Coba lagi beberapa saat lagi.</string>
+    <string name="error_uninstall_app">Tidak dapat mencopot pemasangan %1$s</string>
+    <string name="error_uninstall_self">Anda tidak dapat mencopot pemasangan Quick Search dari sini.</string>
+    <string name="failed_to_refresh_apps">Gagal memperbarui aplikasi</string>
+    <string name="settings_app_apk_size_format">Ukuran APK: %1$.2f Mb</string>
+    <string name="settings_app_columns_4">4</string>
+    <string name="settings_app_columns_5">5</string>
+    <string name="settings_app_columns_title">Aplikasi Per Baris</string>
+    <string name="settings_app_result_rows_title">Baris Hasil Aplikasi</string>
+    <string name="settings_app_icon_size_percent">%1$d%%</string>
+    <string name="settings_app_icon_size_title">Ukuran Ikon Aplikasi</string>
+    <string name="settings_app_info_install_date">Tanggal Pemasangan</string>
+    <string name="settings_app_info_last_update">Pembaruan Terakhir</string>
+    <string name="settings_app_info_minimum_sdk">SDK Minimum</string>
+    <string name="settings_app_info_not_available">Tidak tersedia</string>
+    <string name="settings_app_info_package_name">Nama Paket</string>
+    <string name="settings_app_info_target_sdk">SDK Target</string>
+    <string name="settings_app_info_version">Versi</string>
+    <string name="settings_app_info_version_code">Kode Versi</string>
+    <string name="settings_app_sort_api_level">Tingkat API</string>
+    <string name="settings_app_sort_apk_size">Ukuran APK</string>
+    <string name="settings_app_sort_ascending">Urutkan naik</string>
+    <string name="settings_app_sort_by_format">Urutkan berdasarkan: %1$s</string>
+    <string name="settings_app_sort_descending">Urutkan turun</string>
+    <string name="settings_app_sort_least_used">Paling Jarang Digunakan</string>
+    <string name="settings_app_sort_name">Nama</string>
+    <string name="settings_app_uninstall_selected_format">Copot pemasangan (%1$d)</string>
+    <string name="settings_apps_empty">Aplikasi tidak ditemukan.</string>
+    <string name="settings_manage_apps_desc">Kelola aplikasi Anda</string>
+    <string name="settings_manage_apps_title">Kelola Aplikasi</string>
+    <string name="settings_refresh_apps_disabled">Pencarian aplikasi dinonaktifkan, tidak dapat memuat ulang data aplikasi</string>
+    <string name="settings_refresh_apps_title">Muat Ulang Aplikasi</string>
+    <string name="usage_permission_subtitle">Jika Anda ingin melihat aplikasi yang baru saja digunakan dalam saran, berikan akses penggunaan.</string>
+    <string name="usage_permission_title">Berikan akses penggunaan</string>
+
+    <!-- ============================================================================
+         App Shortcuts
+         ============================================================================ -->
+    <string name="error_shortcut_activity_not_exported">Aktivitas tujuan tidak diekspor.</string>
+    <string name="error_shortcut_creation_failed">Gagal membuat pintasan</string>
+    <string name="error_shortcut_disabled">Pintasan dinonaktifkan.</string>
+    <string name="error_shortcut_launch_failed">Gagal membuka pintasan: %1$s.</string>
+    <string name="error_shortcut_no_activity_resolves">Tidak ada aktivitas yang dapat menangani intent.</string>
+    <string name="error_shortcut_requires_permission">Pintasan memerlukan izin: %1$s.</string>
+    <string name="error_shortcuts_not_supported">Menambahkan pintasan ke layar utama tidak didukung di perangkat ini</string>
+    <string name="pin_shortcut_request_added">\"%1$s\" ditambahkan ke Quick Search</string>
+    <string name="pin_shortcut_request_added_generic">Pintasan ditambahkan ke Quick Search</string>
+    <string name="settings_app_shortcuts_activity_dialog_title">Pilih Aktivitas Aplikasi</string>
+    <string name="settings_app_shortcuts_activity_empty">Tidak ada aktivitas aplikasi yang tersedia.</string>
+    <string name="settings_app_shortcuts_activity_warning">Beberapa aktivitas mungkin tidak berfungsi seperti yang diharapkan</string>
+    <string name="settings_app_shortcuts_add_button">Tambah Pintasan</string>
+    <string name="settings_app_shortcuts_add_deep_link">Tautan Dalam Aplikasi</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_message">Tambahkan tautan URL atau intent yang didukung untuk membuka layar tertentu di aplikasi. Tautan yang tidak didukung akan dibuka di browser Anda.</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_title">Tambah Tautan Dalam Aplikasi</string>
+    <string name="settings_app_shortcuts_add_dialog_title">Pilih Sumber Pintasan</string>
+    <string name="settings_app_shortcuts_add_failed">Tidak dapat menambahkan pintasan.</string>
+    <string name="settings_app_shortcuts_add_query_dialog_title">Tambah Pintasan Kueri Pencarian Kustom untuk %1$s</string>
+    <string name="settings_app_shortcuts_add_query_shortcut">Kueri Pencarian Kustom</string>
+    <string name="settings_app_shortcuts_add_success">Pintasan berhasil ditambahkan.</string>
+    <string name="settings_app_shortcuts_add_success_with_app_name">Pintasan baru berhasil ditambahkan untuk %1$s</string>
+    <string name="settings_app_shortcuts_add_url_dialog_title">Tambah Pintasan URL untuk %1$s</string>
+    <string name="settings_app_shortcuts_add_url_shortcut">URL Kustom</string>
+    <plurals name="settings_app_shortcuts_card_count">
+        <item quantity="one">%d pintasan</item>
+        <item quantity="other">%d pintasan</item>
+    </plurals>
+    <string name="settings_app_shortcuts_collapse_all">Ciutkan semua</string>
+    <string name="settings_app_shortcuts_create_not_supported">Tidak ada aplikasi yang mendukung pembuatan pintasan di perangkat ini.</string>
+    <string name="settings_app_shortcuts_deep_link_label">URL atau Intent</string>
+    <string name="settings_app_shortcuts_delete_action">Hapus pintasan</string>
+    <string name="settings_app_shortcuts_delete_success">Pintasan berhasil dihapus.</string>
+    <string name="settings_app_shortcuts_description_with_count">Ketuk aplikasi apa saja untuk melihat pintasannya. Aktifkan, nonaktifkan, atau tambahkan pintasan kustom.\n\nPintasan yang Tersedia: %1$s</string>
+    <string name="settings_app_shortcuts_edit_dialog_title">Edit Pintasan</string>
+    <string name="settings_app_shortcuts_empty">Pintasan aplikasi tidak ditemukan.</string>
+    <string name="settings_app_shortcuts_expand_all">Perluas semua</string>
+    <string name="settings_app_shortcuts_filter_all_apps">Semua Aplikasi</string>
+    <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Aplikasi dengan Pintasan</string>
+    <string name="settings_app_shortcuts_filter_browsers">Browser</string>
+    <string name="settings_app_shortcuts_filter_search_engines">Mesin Pencari</string>
+    <string name="settings_app_shortcuts_query_label">Kueri</string>
+    <string name="settings_app_shortcuts_shortcut_name_label">Nama Pintasan</string>
+    <string name="settings_app_shortcuts_update_failed">Tidak dapat memperbarui pintasan.</string>
+    <string name="settings_app_shortcuts_update_success">Pintasan berhasil diperbarui.</string>
+    <string name="settings_app_shortcuts_url_label">URL</string>
+    <string name="shortcut_song_search_label">Pencarian Lagu</string>
+    <string name="shortcut_watch_later_label">Tonton Nanti</string>
+
+    <!-- ============================================================================
+         Contacts &amp; Calls
+         ============================================================================ -->
+    <string name="contact_method_call_label">Telepon</string>
+    <string name="contact_method_email_label">Email</string>
+    <string name="contact_method_fallback_label">Lainnya</string>
+    <string name="contact_method_google_meet_label">Google Meet</string>
+    <string name="contact_method_message_label">Pesan</string>
+    <string name="contact_method_signal_message_label">Signal</string>
+    <string name="contact_method_signal_video_call_label">Panggilan video Signal</string>
+    <string name="contact_method_signal_voice_call_label">Panggilan suara Signal</string>
+    <string name="contact_method_telegram_message_label">Telegram</string>
+    <string name="contact_method_telegram_video_call_label">Panggilan video Telegram</string>
+    <string name="contact_method_telegram_voice_call_label">Panggilan suara Telegram</string>
+    <string name="contact_method_view_in_contacts_label">Lihat di aplikasi kontak</string>
+    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
+    <string name="contact_method_whatsapp_video_call_label">Panggilan video WhatsApp</string>
+    <string name="contact_method_whatsapp_voice_call_label">Panggilan suara WhatsApp</string>
+    <string name="contacts_action_button_chat">Chat</string>
+    <string name="contacts_action_button_contacts">Kontak</string>
+    <string name="contacts_action_button_meet">Meet</string>
+    <string name="contacts_action_button_video_call">Panggilan Video</string>
+    <string name="contacts_action_button_voice_call">Panggilan Suara</string>
+    <string name="contacts_action_call">Telepon kontak</string>
+    <string name="contacts_action_hint_message">Tips: Tekan dan tahan tindakan apa pun di sini untuk menyesuaikannya bagi masing-masing kontak.</string>
+    <string name="contacts_action_next_number">Nomor telepon berikutnya</string>
+    <string name="contacts_action_previous_number">Nomor telepon sebelumnya</string>
+    <string name="contacts_action_signal">Kontak Signal</string>
+    <string name="contacts_action_sms">Kirim pesan ke kontak</string>
+    <string name="contacts_action_telegram">Kontak Telegram</string>
+    <string name="contacts_action_whatsapp">Kontak WhatsApp</string>
+    <string name="contacts_no_methods_available">Tidak ada metode kontak yang tersedia</string>
+    <string name="contacts_refreshed_successfully">Kontak berhasil diperbarui</string>
+    <string name="contacts_section_permission_subtitle">Izin kontak diperlukan untuk melakukan pencarian kontak</string>
+    <string name="error_call_permission_required">Izin telepon diperlukan untuk tindakan ini</string>
+    <string name="error_google_meet_call_failed">Panggilan Google Meet gagal - aplikasi mungkin tidak mendukung metode ini</string>
+    <string name="error_google_meet_no_phone">Tidak dapat melakukan panggilan Google Meet - nomor telepon tidak ditemukan</string>
+    <string name="error_google_meet_not_installed">Google Meet tidak terpasang</string>
+    <string name="error_google_meet_video_call_failed">Gagal membuka panggilan video Google Meet</string>
+    <string name="error_missing_phone_number">Nomor telepon tidak tersedia</string>
+    <string name="error_open_contact">Tidak dapat membuka kontak tersebut</string>
+    <string name="error_signal_call_failed">Panggilan Signal gagal. Pastikan Signal telah terpasang.</string>
+    <string name="error_signal_chat_failed">Gagal membuka chat Signal</string>
+    <string name="error_signal_not_installed">Signal tidak terpasang</string>
+    <string name="error_signal_video_call_failed">Gagal membuka panggilan video Signal</string>
+    <string name="error_telegram_call_failed">Panggilan Telegram gagal. Pastikan Telegram telah terpasang.</string>
+    <string name="error_telegram_chat_failed">Gagal membuka chat Telegram</string>
+    <string name="error_telegram_not_installed">Telegram tidak terpasang</string>
+    <string name="error_whatsapp_call_failed">Panggilan WhatsApp gagal. Pastikan WhatsApp telah terpasang.</string>
+    <string name="error_whatsapp_chat_failed">Gagal membuka chat WhatsApp</string>
+    <string name="error_whatsapp_not_installed">WhatsApp tidak terpasang</string>
+    <string name="error_whatsapp_video_call_failed">Gagal membuka panggilan video WhatsApp</string>
+    <string name="error_whatsapp_video_call_missing_data">Tidak dapat melakukan panggilan video WhatsApp - data kontak tidak lengkap</string>
+    <string name="error_whatsapp_video_call_unavailable">WhatsApp tidak tersedia untuk panggilan video</string>
+    <string name="settings_call_permission_title">Telepon</string>
+    <string name="permissions_background_usage_title">Izinkan Penggunaan di Latar Belakang</string>
+    <string name="permissions_background_usage_desc">Izinkan penggunaan di latar belakang untuk peluncuran aplikasi yang lebih cepat.</string>
+    <string name="settings_calling_card_title">Aplikasi Panggilan Default</string>
+    <string name="settings_calls_texts_title">Panggilan &amp; SMS</string>
+    <string name="settings_direct_dial_desc">Lakukan panggilan langsung tanpa membuka dialer.</string>
+    <string name="settings_direct_dial_title">Panggilan Langsung</string>
+    <string name="settings_number_search_title">Pencarian Nomor</string>
+    <string name="settings_number_search_desc">Cari kontak menggunakan nomor telepon mereka.</string>
+    <string name="settings_messaging_app_not_installed">%s tidak terpasang di perangkat Anda</string>
+    <string name="settings_messaging_card_title">Aplikasi Pesan Default</string>
+    <string name="settings_messaging_option_messages">Pesan</string>
+
+    <!-- ============================================================================
+         Files &amp; Folders
+         ============================================================================ -->
+    <string name="excluded_item_type_file_extension">Ekstensi File</string>
+    <string name="excluded_item_type_folder">Folder</string>
+    <string name="file_extension_label">File .%s</string>
+    <string name="file_info_file_type">Jenis file</string>
+    <string name="file_info_modified">Diubah</string>
+    <string name="file_info_path">Jalur</string>
+    <string name="file_info_size">Ukuran</string>
+    <string name="file_info_type">Jenis</string>
+    <string name="file_type_apks">APK</string>
+    <string name="file_type_audio">Audio</string>
+    <string name="file_type_documents">Dokumen</string>
+    <string name="file_type_pictures">Gambar</string>
+    <string name="file_type_videos">Video</string>
+    <string name="files_refreshed_successfully">File berhasil diperbarui</string>
+    <string name="files_section_permission_subtitle">Izin file diperlukan untuk melakukan pencarian file</string>
+    <string name="settings_excluded_extensions_title">Ekstensi File Tersembunyi</string>
+    <string name="settings_file_types_title">File &amp; Folder</string>
+    <string name="settings_folder_blacklist_add">Tambah folder yang diblokir</string>
+    <string name="settings_folder_blacklist_helper">Folder ini akan diabaikan saat mencari</string>
+    <string name="settings_folder_blacklist_title">Daftar Blokir</string>
+    <string name="settings_folder_filter_helper">Cari folder dan tambahkan untuk mengontrol tempat munculnya hasil file dan folder.</string>
+    <string name="settings_folder_filters_title">Filter Jalur Folder</string>
+    <string name="settings_folder_search_hint">Cari folder untuk ditambahkan</string>
+    <string name="settings_folder_search_no_results">Folder tidak ditemukan</string>
+    <string name="settings_folder_whitelist_add">Tambah folder yang diizinkan</string>
+    <string name="settings_folder_whitelist_helper">Hanya folder ini yang akan dicari untuk pencarian file &amp; folder</string>
+    <string name="settings_folder_whitelist_title">Daftar yang Diizinkan</string>
+    <string name="settings_folders_toggle">Folder</string>
+    <string name="settings_file_previews_toggle">Pratinjau File</string>
+    <string name="settings_file_previews_description">Pratinjau gambar dan PDF sebelum membukanya.</string>
+    <string name="settings_refresh_files_disabled">Pencarian file dinonaktifkan, tidak dapat memuat ulang data file</string>
+    <string name="settings_refresh_files_title">Muat Ulang File</string>
+    <string name="settings_system_files_toggle">File Sistem</string>
+
+    <!-- ============================================================================
+         Calendar
+         ============================================================================ -->
+    <string name="app_settings_create_calendar_event_desc">Buat dan tambahkan acara baru</string>
+    <string name="app_settings_create_calendar_event_title">Acara Kalender Baru</string>
+    <string name="agenda_title">Agenda Hari Ini</string>
+    <string name="calendar_create_event_name_hint">Nama acara</string>
+    <string name="calendar_create_event_select_date">Pilih tanggal</string>
+    <string name="calendar_create_event_sync_notice">Acara ini tidak akan disinkronkan ke kalender perangkat Anda</string>
+    <string name="calendar_create_event_title">Acara Baru</string>
+    <string name="calendar_edit_event_title">Edit Acara</string>
+    <string name="calendar_relative_ago_format">%1$s yang lalu</string>
+    <plurals name="calendar_relative_days">
+        <item quantity="one">%d hari</item>
+        <item quantity="other">%d hari</item>
+    </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d jam</item>
+        <item quantity="other">%d jam</item>
+    </plurals>
+    <string name="calendar_relative_in_format">dalam %1$s</string>
+    <string name="calendar_relative_in_minutes">dalam %1$d menit</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d menit</item>
+        <item quantity="other">%d menit</item>
+    </plurals>
+    <string name="calendar_relative_now">Sekarang</string>
+    <plurals name="calendar_relative_months">
+        <item quantity="one">%d bulan</item>
+        <item quantity="other">%d bulan</item>
+    </plurals>
+    <string name="calendar_relative_today">Hari Ini</string>
+    <string name="calendar_relative_tomorrow">Besok</string>
+    <plurals name="calendar_relative_years">
+        <item quantity="one">%d tahun</item>
+        <item quantity="other">%d tahun</item>
+    </plurals>
+    <string name="calendar_relative_yesterday">Kemarin</string>
+    <string name="calendar_repeats_daily">Setiap Hari</string>
+    <plurals name="calendar_repeats_every_days">
+        <item quantity="one">Setiap %d hari</item>
+        <item quantity="other">Setiap %d hari</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_months">
+        <item quantity="one">Setiap %d bulan</item>
+        <item quantity="other">Setiap %d bulan</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_weeks">
+        <item quantity="one">Setiap %d minggu</item>
+        <item quantity="other">Setiap %d minggu</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_years">
+        <item quantity="one">Setiap %d tahun</item>
+        <item quantity="other">Setiap %d tahun</item>
+    </plurals>
+    <string name="calendar_repeats_generic">Berulang</string>
+    <string name="calendar_repeats_monthly">Bulanan</string>
+    <string name="calendar_repeats_weekly">Mingguan</string>
+    <string name="calendar_repeats_yearly">Tahunan</string>
+    <string name="calendar_section_permission_subtitle">Izin kalender diperlukan untuk melakukan pencarian kalender</string>
+    <string name="error_open_calendar_event">Tidak dapat membuka acara kalender</string>
+    <string name="settings_calendar_events_empty">Tidak ada acara kalender yang tersedia.</string>
+    <string name="settings_calendar_include_past_events_desc">Sertakan acara terdahulu dalam hasil pencarian.</string>
+    <string name="settings_calendar_include_past_events_title">Acara Terdahulu</string>
+    <string name="settings_calendar_permission_title">Kalender</string>
+    <string name="settings_calendar_show_today_events_desc">Tampilkan acara hari ini di layar utama.</string>
+    <string name="settings_calendar_show_today_events_title">Tampilkan Acara Hari Ini</string>
+    <string name="settings_calendar_default_title">Buka Acara di…</string>
+    <string name="settings_calendar_view_all_events_desc">Lihat semua acara</string>
+
+    <!-- ============================================================================
+         Notes
+         ============================================================================ -->
+    <string name="app_settings_search_create_note_desc">Mulai catatan baru di editor</string>
+    <string name="app_settings_search_create_note_title">Buat catatan</string>
+    <string name="notes_body_hint">Tulis catatan Anda di sini</string>
+    <string name="notes_create_note_cta">Catatan Baru</string>
+    <string name="notes_delete_confirm_message">Catatan ini akan dihapus secara permanen.</string>
+    <string name="notes_delete_confirm_title">Hapus catatan ini?</string>
+    <string name="notes_delete_note_desc">Hapus catatan</string>
+    <string name="notes_delete_selected_confirm_message">Catatan yang dipilih akan dihapus secara permanen.</string>
+    <string name="notes_delete_selected_confirm_title">Hapus catatan yang dipilih?</string>
+    <string name="notes_editor_action_open_link">Buka tautan</string>
+    <string name="notes_editor_action_send_email">Kirim email</string>
+    <string name="notes_editor_title">Editor Catatan</string>
+    <string name="notes_empty_note_subtext">Catatan kosong</string>
+    <string name="notes_quick_note_title">Catatan Cepat</string>
+    <string name="notes_quick_note_toggle_desc">Buka Catatan Cepat dari navigasi geser</string>
+    <string name="notes_title_hint">Judul</string>
+    <string name="notes_untitled">Tanpa judul</string>
+    <string name="settings_notes_view_all_desc">Lihat semua catatan</string>
+
+    <!-- ============================================================================
+         Device Settings Shortcuts
+         ============================================================================ -->
+    <string name="device_settings_category_apps_permissions">Aplikasi &amp; Izin</string>
+    <string name="device_settings_category_battery_performance">Baterai &amp; Performa</string>
+    <string name="device_settings_category_developer_advanced">Pengembang &amp; Lanjutan</string>
+    <string name="device_settings_category_language_input">Bahasa &amp; Masukan</string>
+    <string name="device_settings_category_network_connectivity">Jaringan &amp; Konektivitas</string>
+    <string name="device_settings_category_notifications_accessibility">Notifikasi &amp; Aksesibilitas</string>
+    <string name="device_settings_category_security_privacy">Keamanan &amp; Privasi</string>
+    <string name="device_settings_category_system_device">Sistem &amp; Perangkat</string>
+    <string name="settings_device_settings_empty">Pengaturan perangkat tidak tersedia.</string>
+    <string name="settings_shortcut_about_phone">Tentang Ponsel</string>
+    <string name="settings_shortcut_accessibility">Aksesibilitas</string>
+    <string name="settings_shortcut_airplane">Mode Pesawat</string>
+    <string name="settings_shortcut_all_files">Akses Semua File</string>
+    <string name="settings_shortcut_battery_optimization">Pengoptimalan Baterai</string>
+    <string name="settings_shortcut_battery_saver">Penghemat Baterai</string>
+    <string name="settings_shortcut_battery_usage">Penggunaan Baterai</string>
+    <string name="settings_shortcut_bluetooth">Bluetooth</string>
+    <string name="settings_shortcut_cast">Transmisikan</string>
+    <string name="settings_shortcut_data_usage">Penggunaan Data</string>
+    <string name="settings_shortcut_date_time">Tanggal &amp; Waktu</string>
+    <string name="settings_shortcut_default_apps">Aplikasi Default</string>
+    <string name="settings_shortcut_developer_options">Opsi Pengembang</string>
+    <string name="settings_shortcut_display">Tampilan</string>
+    <string name="settings_shortcut_do_not_disturb">Jangan Ganggu</string>
+    <string name="settings_shortcut_hotspot">Hotspot &amp; Penambatan</string>
+    <string name="settings_shortcut_locale">Bahasa</string>
+    <string name="settings_shortcut_location">Lokasi</string>
+    <string name="settings_shortcut_mobile_data">Data Seluler</string>
+    <string name="settings_shortcut_network">Jaringan &amp; Internet</string>
+    <string name="settings_shortcut_nfc">NFC</string>
+    <string name="settings_shortcut_notification_listener">Akses Notifikasi</string>
+    <string name="settings_shortcut_notifications">Notifikasi</string>
+    <string name="settings_shortcut_overlay_permission">Tampilkan di Atas Aplikasi Lain</string>
+    <string name="settings_shortcut_privacy">Privasi</string>
+    <string name="settings_shortcut_security">Keamanan</string>
+    <string name="settings_shortcut_sound">Suara &amp; Getaran</string>
+    <string name="settings_shortcut_storage">Penyimpanan</string>
+    <string name="settings_shortcut_usage_access">Akses Penggunaan</string>
+    <string name="settings_shortcut_voice_input">Asisten Digital</string>
+    <string name="settings_shortcut_vpn">VPN</string>
+    <string name="settings_shortcut_wifi">Wi‑Fi</string>
+    <string name="settings_unable_to_open_settings">Tidak dapat membuka pengaturan</string>
+
+    <!-- ============================================================================
+         App Settings Search
+         ============================================================================ -->
+    <string name="settings_all_quick_search_features">Daftar Fitur</string>
+    <string name="settings_all_quick_search_features_desc">Lihat daftar lengkap fitur dan kemampuan</string>
+    <string name="settings_more_apps_from_developer_title">Aplikasi Lainnya dari Pengembang</string>
+    <string name="settings_app_settings_desc">Cari pengaturan Quick Search</string>
+    <string name="settings_features_load_failed">Tidak dapat memuat dokumentasi fitur.</string>
+    <string name="settings_features_sections_title">Daftar Isi</string>
+    <string name="settings_search_description_change_app_theme">Ubah tema aplikasi</string>
+    <string name="settings_search_description_change_font_size">Ubah ukuran font aplikasi</string>
+    <string name="settings_search_description_change_icon_pack">Ubah paket ikon</string>
+    <string name="settings_search_description_change_layout">Ubah opsi tata letak aplikasi</string>
+    <string name="settings_search_description_change_wallpaper">Ubah tampilan wallpaper</string>
+    <string name="settings_search_dynamic_description_template">Kelola pengaturan %1$s</string>
+    <string name="settings_view_all_desc">Lihat semua pengaturan</string>
+
+    <!-- ============================================================================
+         Settings - Main Navigation &amp; Appearance
+         ============================================================================ -->
+    <string name="customize_search_engines">Sesuaikan Mesin Pencari</string>
+    <string name="settings_app_theme_aurora">Aurora</string>
+    <string name="settings_app_theme_forest">Forest</string>
+    <string name="settings_app_theme_monochrome">Mono</string>
+    <string name="settings_app_theme_sunset">Sunset</string>
+    <string name="settings_app_theme_title">Tema</string>
+    <string name="settings_appearance_desc">Wallpaper, gaya mesin pencari, mode satu tangan, dll.</string>
+    <string name="settings_appearance_title">Tampilan</string>
+    <string name="settings_assistant_voice_mode_desc">Mulai pengetikan suara saat dibuka sebagai asisten digital</string>
+    <string name="settings_assistant_voice_mode_title">Mode Suara Asisten</string>
+    <string name="settings_beta_features_disabled">Fitur beta dinonaktifkan</string>
+    <string name="settings_beta_features_enabled">Fitur beta baru diaktifkan</string>
+    <string name="settings_beta_features_unavailable">Tidak ada fitur baru yang tersedia</string>
+    <string name="settings_beta_tag">Beta</string>
+    <string name="settings_bottom_searchbar_desc">Tempatkan bilah pencarian di bagian bawah layar</string>
+    <string name="settings_bottom_searchbar_title">Bilah Pencarian Bawah</string>
+    <string name="settings_cache_cleared_toast">Cache dihapus. Membuat ulang indeks aplikasi…</string>
+    <string name="settings_circular_app_icons_desc">Terapkan bentuk bulat pada ikon aplikasi</string>
+    <string name="settings_circular_app_icons_title">Ikon Aplikasi Bulat</string>
+    <string name="settings_compact_rows_one_row">Satu Baris</string>
+    <string name="settings_compact_rows_two_rows">Dua Baris</string>
+    <string name="settings_default_assistant_desc">Jadikan aplikasi ini sebagai aplikasi asisten digital default Anda.</string>
+    <string name="settings_default_assistant_desc_change">Ubah aplikasi asisten digital default Anda.</string>
+    <string name="settings_default_assistant_title">Asisten Default</string>
+    <string name="settings_default_launcher_desc">Jadikan aplikasi ini sebagai aplikasi layar utama default Anda.</string>
+    <string name="settings_default_launcher_title">Peluncur Default</string>
+    <string name="settings_amoled_theme_desc">Gunakan latar belakang Hitam Pekat untuk Tema Mono</string>
+    <string name="settings_amoled_theme_title">Tema AMOLED</string>
+    <string name="settings_device_theme_blocked_toast">Dinonaktifkan saat tema Material You aktif</string>
+    <string name="settings_device_theme_desc">Gunakan palet warna dinamis perangkat Anda sebagai tema aplikasi</string>
+    <string name="settings_device_theme_title">Material You</string>
+    <string name="settings_edit_label">Edit</string>
+    <string name="settings_font_size_big">Besar</string>
+    <string name="settings_font_size_medium">Sedang</string>
+    <string name="settings_font_size_small">Kecil</string>
+    <string name="settings_font_size_title">Ukuran Font</string>
+    <string name="settings_home_screen_widget_confirm_message">Anda akan menambahkan widget Quick Search ke layar utama. Tekan lama widget untuk membuka pengaturan widget dengan beragam opsi penyesuaian.</string>
+    <string name="settings_home_screen_widget_desc">Tambahkan widget Quick Search ke layar utama Anda.</string>
+    <string name="settings_home_screen_widget_title">Widget Layar Utama</string>
+    <string name="settings_icon_desc">Tampilkan/sembunyikan ikon pengaturan di bilah pencarian. Buka pengaturan kapan saja dengan menggeser ke kiri atau melalui pencarian.</string>
+    <string name="settings_icon_required_by_gesture_desc">Atur Gestur Geser ke Kiri ke "Buka Pengaturan" untuk menonaktifkan ikon ini.</string>
+    <string name="settings_icon_pack_empty">Paket ikon tidak ditemukan.</string>
+    <string name="settings_icon_pack_description_no_packs">Atur paket ikon untuk ikon aplikasi.</string>
+    <string name="settings_icon_pack_mask_unsupported_icons">Sesuaikan bentuk ikon yang tidak didukung</string>
+    <string name="settings_icon_pack_option_system">Ikon sistem</string>
+    <string name="settings_icon_pack_picker_title">Pilih Paket Ikon</string>
+    <string name="settings_icon_pack_reset_all_icons">Reset semua ikon</string>
+    <string name="settings_icon_pack_search_query">Paket ikon gratis</string>
+    <string name="settings_icon_pack_title">Paket Ikon</string>
+    <string name="settings_icon_title">Ikon Pengaturan</string>
+    <string name="settings_launch_options_desc">Berbagai cara untuk membuka aplikasi ini</string>
+    <string name="settings_launch_options_title">Opsi Peluncuran</string>
+    <string name="settings_app_language_title">Bahasa Aplikasi</string>
+    <string name="settings_app_language_desc">Saat ini: %1$s</string>
+    <string name="settings_app_language_picker_title">Pilih Bahasa Aplikasi</string>
+    <string name="settings_app_language_system_default">Default sistem</string>
+    <string name="settings_launcher_icon_reset_default">Reset ke default</string>
+    <string name="settings_launcher_icon_title">Ikon Aplikasi Peluncur</string>
+    <string name="settings_layout_option_bottom_desc">Item paling relevan muncul di bagian bawah agar mudah dijangkau</string>
+    <string name="settings_layout_option_bottom_title">Mode Satu Tangan</string>
+    <string name="settings_unified_pinned_items_title">Item Sematan Terpadu</string>
+    <string name="settings_unified_pinned_items_desc">Tampilkan item yang disematkan sebagai satu daftar terpadu di layar utama.</string>
+    <string name="settings_more_options_desc">Opsi penyesuaian lainnya</string>
+    <string name="settings_more_options_title">Opsi Lainnya</string>
+    <string name="settings_overlay_assistant_setup_now">Siapkan Sekarang</string>
+    <string name="settings_overlay_assistant_tip">Tips: Jadikan aplikasi ini sebagai asisten digital Anda untuk membuka overlay dari mana saja.</string>
+    <string name="settings_overlay_mode_desc">Bilah pencarian terbuka sebagai overlay di atas aplikasi lain</string>
+    <string name="settings_overlay_mode_desc_launcher_blocked">Tidak tersedia saat Quick Search menjadi peluncur default Anda</string>
+    <string name="settings_overlay_mode_title">Mode Overlay</string>
+    <string name="settings_overlay_source_add_custom">Tambah gambar kustom</string>
+    <string name="settings_overlay_source_custom_save_failed">Tidak dapat menggunakan gambar tersebut.</string>
+    <string name="settings_overlay_source_edit_custom">Edit gambar kustom</string>
+    <string name="settings_overlay_source_needs_permission">Memerlukan izin</string>
+    <string name="settings_overlay_source_wallpaper">Wallpaper</string>
+    <string name="settings_overlay_theme_tone_darker">Lebih Gelap</string>
+    <string name="settings_overlay_theme_tone_lighter">Lebih Terang</string>
+    <string name="settings_permissions_desc">Izin yang dibutuhkan aplikasi ini untuk mengaktifkan fitur</string>
+    <string name="settings_permissions_title">Izin</string>
+    <string name="settings_quick_settings_tile_desc">Tambahkan Quick Search ke kartu Pengaturan Cepat.</string>
+    <string name="settings_quick_settings_tile_title">Kartu Pengaturan Cepat</string>
+    <string name="settings_refresh_contacts_disabled">Pencarian kontak dinonaktifkan, tidak dapat memuat ulang data kontak</string>
+    <string name="settings_refresh_contacts_title">Muat Ulang Kontak</string>
+    <string name="settings_refresh_data_note">Data diperbarui secara otomatis. Gunakan tombol ini untuk memuat ulang secara manual.</string>
+    <string name="settings_refresh_data_title">Muat Ulang Data</string>
+    <string name="settings_refresh_icon_packs">Muat ulang paket ikon</string>
+    <string name="settings_refreshing_icon_packs">Memuat ulang daftar paket ikon</string>
+    <string name="settings_scroll_to_top">Gulir ke atas</string>
+    <string name="settings_search_hints_desc">Aktifkan/Nonaktifkan petunjuk pencarian bergilir</string>
+    <string name="settings_search_hints_title">Petunjuk Pencarian</string>
+    <string name="settings_search_results_desc">Kelola jenis hasil, saran web, dan riwayat pencarian</string>
+    <string name="settings_search_results_title">Hasil Pencarian</string>
+    <string name="settings_sections_at_least_one_required">Setidaknya satu item harus diaktifkan</string>
+    <string name="settings_show_app_labels_desc">Tampilkan nama aplikasi di saran dan hasil</string>
+    <string name="settings_show_app_labels_title">Label Aplikasi</string>
+    <string name="settings_themed_icons_desc">Sesuaikan warna ikon aplikasi dengan tema Anda</string>
+    <string name="settings_themed_icons_title">Ikon Aplikasi Bertema</string>
+    <string name="settings_tools_desc">Kalkulator, Konverter satuan, Kamus, dan lainnya</string>
+    <string name="settings_tools_gemini_api_desc">Menambahkan kunci API akan mengaktifkan lebih banyak fitur.</string>
+    <string name="settings_tools_gemini_api_title">Konfigurasi Penyedia AI</string>
+    <string name="settings_tools_info_examples_header">Berikut beberapa contoh yang dapat Anda tanyakan di bilah pencarian</string>
+    <string name="settings_tools_title">Alat</string>
+    <string name="settings_use_system_font_desc">Gunakan gaya font perangkat Anda</string>
+    <string name="settings_use_system_font_title">Gunakan Font Sistem</string>
+    <string name="settings_accent_color_from_wallpaper">Wallpaper</string>
+    <string name="settings_accent_color_none">Tidak ada</string>
+    <string name="settings_accent_color_picker_title">Warna Aksen</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Atur latar belakang wallpaper terlebih dahulu</string>
+    <string name="settings_wallpaper_accent_desc">Ambil warna aksen dari wallpaper atau pilih warna kustom</string>
+    <string name="settings_wallpaper_accent_title">Warna Aksen</string>
+    <string name="settings_wallpaper_blur_label">Buram</string>
+    <string name="settings_wallpaper_card_title">Latar Belakang Wallpaper</string>
+    <string name="settings_wallpaper_transparency_label">Transparansi</string>
+
+    <!-- ============================================================================
+         Settings - Search Engines &amp; AI Provider
+         ============================================================================ -->
+    <string name="error_open_email">Aplikasi email tidak ditemukan untuk mengirim email.</string>
+    <string name="settings_add_alias">Atur Alias</string>
+    <string name="settings_add_custom_provider_desc">Tambahkan penyedia yang kompatibel dengan OpenAI.</string>
+    <string name="settings_add_custom_provider_title">Tambah Penyedia Kustom</string>
+    <string name="settings_add_search_engine_button">Tambah Mesin Pencari</string>
+    <string name="settings_add_search_engine_dialog_message">Masukkan URL atau template intent Android dengan placeholder kueri.\n\nContoh:\nwww.google.com/search?q={{query}}</string>
+    <string name="settings_add_search_engine_error_multiple_placeholders">Gunakan {{query}} hanya satu kali.</string>
+    <string name="settings_add_search_engine_error_placeholder">URL harus menyertakan {{query}}</string>
+    <string name="settings_add_search_engine_error_required">Silakan masukkan template URL.</string>
+    <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_openai">OpenAI</string>
+    <string name="settings_alias_label">Alias:</string>
+    <string name="settings_amazon_domain_default">amazon.com</string>
+    <string name="settings_amazon_domain_label">Domain:</string>
+    <string name="settings_api_key_saved_last4">Kunci tersimpan berakhiran ****%1$s</string>
+    <string name="settings_api_key_setup_desc">Konfigurasikan kunci API untuk mengakses model dari penyedia AI masing-masing.</string>
+    <string name="settings_api_key_setup_nav_desc">Tambah atau hapus kunci API penyedia</string>
+    <string name="settings_configure_api_key_title">Konfigurasi Kunci API</string>
+    <string name="settings_custom_provider_base_url_hint">Contoh: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_input_label">URL Dasar</string>
+    <string name="settings_custom_provider_advanced_payload_desc">Digabungkan ke dalam setiap permintaan yang dikirim melalui penyedia ini.</string>
+    <string name="settings_custom_provider_advanced_payload_error">Masukkan objek JSON yang valid.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Contoh: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">Payload Permintaan Lanjutan</string>
+    <string name="settings_free_api_key_tip_description">Langkah-langkah untuk mendapatkan Kunci API Gemini secara gratis.</string>
+    <string name="settings_open_free_api_key_guide">Buka panduan kunci API gratis</string>
+    <string name="settings_direct_search_grounding_label">Pencarian Web</string>
+    <string name="settings_direct_search_how_to">Dapatkan Kunci API Gratis</string>
+    <string name="settings_direct_search_model_label">Model</string>
+    <string name="settings_direct_search_personal_context">Konteks Pribadi</string>
+    <string name="settings_direct_search_personal_context_hint">Tambahkan konteks apa pun yang ingin digunakan AI saat menghasilkan jawaban.</string>
+    <string name="settings_direct_search_personal_context_unsupported">Konteks pribadi tidak tersedia untuk model ini.</string>
+    <string name="settings_direct_search_setup_nav_desc">Tambahkan kunci API untuk mengaktifkan pencarian bertenaga AI</string>
+    <string name="settings_direct_search_setup_nav_title">Pencarian AI</string>
+    <string name="settings_direct_search_thinking_label">Berpikir</string>
+    <string name="settings_edit_search_engine_dialog_title">Edit Mesin Pencari</string>
+    <string name="settings_gemini_api_config_desc">Konfigurasikan penyedia AI Anda untuk pencarian dan alat bertenaga AI</string>
+    <string name="settings_gemini_api_desc">Konfigurasi penyedia AI</string>
+    <string name="settings_gemini_api_key_paste_hint">Ketuk untuk menempelkan kunci</string>
+    <string name="settings_gemini_api_key_reset">Reset Kunci</string>
+    <string name="settings_gemini_api_key_saving">Menyimpan...</string>
+    <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
+    <string name="settings_model_picker_search_hint">Cari model</string>
+    <string name="settings_search_engine_alias_suffix_desc">Picu mesin pencari saat Anda menambahkan alias di akhir kueri. Alias akan selalu berfungsi di awal.</string>
+    <string name="settings_search_engine_alias_suffix_title">Alias Setelah Kueri</string>
+    <string name="settings_search_engine_browser_default">Browser Default</string>
+    <string name="settings_search_engine_browser_label">Buka di</string>
+    <string name="settings_search_engine_display_compact_desc">Selalu terlihat di atas keyboard sebagai daftar horizontal</string>
+    <string name="settings_search_engine_display_compact_title">Ringkas</string>
+    <string name="settings_search_engine_display_inline_desc">Ditampilkan sebagai kartu di area hasil saat mencari</string>
+    <string name="settings_search_engine_display_inline_title">Inline</string>
+    <string name="settings_search_engine_display_title">Gaya Mesin Pencari</string>
+    <string name="settings_search_engines_desc">Kelola dan susun ulang mesin pencari</string>
+    <string name="settings_search_engines_more_search_engines">Mesin Pencari Lainnya</string>
+
+    <!-- ============================================================================
+         Settings - Backup, Feedback &amp; About
+         ============================================================================ -->
+    <string name="release_notes_action_all_features">Semua Fitur</string>
+    <string name="release_notes_action_more">Lihat versi sebelumnya</string>
+    <string name="release_notes_previous_versions">Versi sebelumnya</string>
+    <string name="release_notes_previous_versions_unavailable">Tidak dapat memuat versi sebelumnya</string>
+    <string name="release_notes_action_got_it">Mengerti</string>
+    <string name="settings_release_notes_title">Catatan Rilis</string>
+    <string name="settings_release_notes_desc">Lihat catatan rilis untuk versi ini</string>
+    <string name="update_card_title">Pembaruan baru tersedia untuk Quick Search!</string>
+    <string name="action_update">Perbarui</string>
+    <string name="release_notes_title">Catatan Rilis Quick Search v%1$s</string>
+    <string name="release_notes_title_no_version">Catatan Rilis Quick Search</string>
+    <string name="settings_backup_export_api_key_warning_message">Lanjutkan dengan risiko Anda sendiri. Kunci API yang diekspor tidak dienkripsi dan dapat diakses oleh siapa saja yang memiliki akses ke file cadangan Anda.</string>
+    <string name="settings_backup_export_button">Ekspor</string>
+    <string name="settings_backup_export_failed">Tidak dapat mengekspor pengaturan.</string>
+    <string name="settings_backup_export_option_pinned_items_title">Item yang disematkan</string>
+    <string name="settings_backup_export_selection_title">Ekspor Data</string>
+    <string name="settings_backup_export_success">Pengaturan berhasil diekspor.</string>
+    <string name="settings_backup_import_button">Impor</string>
+    <string name="settings_backup_import_failed">Tidak dapat mengimpor pengaturan.</string>
+    <string name="settings_backup_import_success">Pengaturan berhasil diimpor.</string>
+    <string name="settings_backup_import_warning_message">Ini akan menimpa pengaturan Anda yang sudah ada.</string>
+    <string name="settings_backup_import_warning_title">Impor pengaturan?</string>
+    <string name="settings_backup_restore_desc">Ekspor atau impor pengaturan aplikasi Anda</string>
+    <string name="settings_backup_restore_title">Cadangkan &amp; Pulihkan</string>
+    <string name="settings_feedback_developer_desc">Dibuat oleh %1$s</string>
+    <string name="settings_feedback_developer_name">Teja Karlapudi</string>
+    <string name="settings_feedback_developer_title">%1$s v%2$s</string>
+    <string name="settings_feedback_github_desc">Lihat kode sumber proyek ini di GitHub</string>
+    <string name="settings_feedback_github_title">Pengembangan</string>
+    <string name="settings_feedback_rate_desc">Beri rating bintang 5 jika Anda merasa aplikasi ini bermanfaat</string>
+    <string name="settings_feedback_rate_title">Beri Nilai Quick Search</string>
+    <string name="settings_feedback_send_desc">Laporkan bug atau minta fitur baru</string>
+    <string name="settings_feedback_send_title">Kirim Masukan</string>
+    <string name="settings_open_source_licenses_load_failed">Tidak dapat memuat lisensi.</string>
+    <string name="settings_open_source_licenses_loading">Memuat lisensi…</string>
+    <string name="settings_open_source_licenses_tap_to_view">Ketuk untuk melihat teks lisensi</string>
+    <string name="settings_open_source_licenses_title">Lisensi Sumber Terbuka</string>
+
+    <!-- ============================================================================
+         Tools - Calculator, Converter, Time &amp; Dictionary
+         ============================================================================ -->
+    <string name="calculator_enter_math_expression_hint">Masukkan ekspresi matematika</string>
+    <string name="calculator_invalid_or_unsupported_expression">Ekspresi tidak valid atau tidak didukung</string>
+    <string name="calculator_toggle_desc">Hasil untuk ekspresi matematika dasar</string>
+    <string name="calculator_toggle_title">Kalkulator</string>
+    <string name="currency_converter_invalid_input">Input konversi mata uang tidak valid</string>
+    <string name="currency_converter_requires_gemini_key">Memerlukan kunci API penyedia AI</string>
+    <string name="currency_converter_toggle_desc">Contoh: 100 USD ke INR</string>
+    <string name="currency_converter_toggle_title">Konverter Mata Uang</string>
+    <string name="color_visualizer_toggle_title">Visualisasi Warna</string>
+    <string name="color_visualizer_toggle_desc">Contoh: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Masukkan warna heksadesimal atau RGB</string>
+    <string name="currency_converter_updated">Diperbarui %1$s</string>
+    <string name="date_calculator_category_absolute_time">Waktu Mutlak</string>
+    <string name="date_calculator_category_date_differences">Selisih Tanggal</string>
+    <string name="date_calculator_category_named_dates">Tanggal Bernama</string>
+    <string name="date_calculator_category_offset_from_date">Selisih dari Tanggal</string>
+    <string name="date_calculator_category_relative_dates">Tanggal Relatif</string>
+    <string name="date_calculator_category_time_arithmetic">Aritmetika Waktu</string>
+    <string name="date_calculator_category_time_offset">Selisih Waktu</string>
+    <string name="date_calculator_category_time_ranges">Rentang Waktu</string>
+    <string name="date_calculator_info_title">Kalkulator Tanggal &amp; Waktu</string>
+    <string name="date_calculator_invalid_date">Tanggal atau waktu tidak valid atau tidak dikenali</string>
+    <string name="date_calculator_toggle_action_desc">Aktifkan atau nonaktifkan kalkulator tanggal &amp; waktu</string>
+    <string name="date_calculator_toggle_desc">Contoh penggunaan</string>
+    <string name="dictionary_example_label">Contoh: %1$s</string>
+    <string name="dictionary_synonyms_label">Sinonim: %1$s</string>
+    <string name="dictionary_toggle_desc">Contoh: define serendipity</string>
+    <string name="dictionary_toggle_title">Kamus</string>
+    <string name="weather_toggle_title">Cuaca</string>
+    <string name="weather_toggle_desc">Cuaca hari ini untuk lokasi yang ditentukan</string>
+    <string name="weather_location_label">Lokasi Default</string>
+    <string name="weather_location_hint">Contoh: Jakarta, Indonesia</string>
+    <string name="weather_error_location_required">Masukkan lokasi atau atur lokasi default di Pengaturan</string>
+    <string name="get_weather">Dapatkan info cuaca</string>
+    <string name="weather_in_location">Cuaca di %1$s</string>
+    <string name="weather_temperature_unit_label">Satuan Suhu</string>
+    <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
+    <string name="get_currency_value">Lihat Nilai Mata Uang</string>
+    <string name="get_time">Lihat Waktu</string>
+    <string name="search_in_dictionary">Cari di Kamus</string>
+    <string name="unit_converter_category_angle">Sudut</string>
+    <string name="unit_converter_category_area">Luas</string>
+    <string name="unit_converter_category_data">Data</string>
+    <string name="unit_converter_category_energy">Energi</string>
+    <string name="unit_converter_category_frequency">Frekuensi</string>
+    <string name="unit_converter_category_length">Panjang</string>
+    <string name="unit_converter_category_power">Daya</string>
+    <string name="unit_converter_category_pressure">Tekanan</string>
+    <string name="unit_converter_category_speed">Kecepatan</string>
+    <string name="unit_converter_category_temperature">Suhu</string>
+    <string name="unit_converter_category_volume">Volume</string>
+    <string name="unit_converter_category_weight_mass">Berat / Massa</string>
+    <string name="unit_converter_enter_conversion_hint">Masukkan konversi (mis., 5lbs in kgs)</string>
+    <string name="unit_converter_info_title">Konverter Satuan</string>
+    <string name="unit_converter_invalid_or_unsupported_query">Konversi tidak valid atau tidak didukung</string>
+    <string name="unit_converter_toggle_action_desc">Aktifkan atau nonaktifkan konverter satuan</string>
+    <string name="world_clock_error_not_recognized">Tidak dapat mengenali permintaan waktu tersebut. Coba kota, negara, zona waktu, atau waktu eksplisit.</string>
+    <string name="world_clock_toggle_desc">Contoh: Time in Tokyo</string>
+    <string name="world_clock_toggle_title">Jam Dunia</string>
+
+    <!-- ============================================================================
+         Widgets &amp; Shortcuts
+         ============================================================================ -->
+    <string name="home_screen_widget_error">Gagal meminta widget. Coba lagi.</string>
+    <string name="home_screen_widget_not_supported">Penyematan widget langsung tidak didukung pada versi Android ini. Tambahkan dari daftar widget layar utama Anda.</string>
+    <string name="quick_settings_tile_added">Kartu Quick Search ditambahkan</string>
+    <string name="quick_settings_tile_already_added">Kartu Quick Search sudah ditambahkan</string>
+    <string name="quick_settings_tile_error">Tidak dapat meminta kartu Pengaturan Cepat. Coba lagi.</string>
+    <string name="quick_settings_tile_not_added">Kartu tidak ditambahkan</string>
+    <string name="quick_settings_tile_not_supported">Permintaan kartu langsung tidak didukung pada versi Android ini. Gunakan edit Pengaturan Cepat untuk menambahkannya.</string>
+    <string name="shortcut_voice_search_disabled_message">Pintasan Pencarian Suara tidak tersedia.</string>
+    <string name="shortcut_voice_search_long_label">Buka Pencarian Suara</string>
+    <string name="shortcut_voice_search_short_label">Pencarian Suara</string>
+    <string name="voice_input_not_available">Pengetikan suara tidak tersedia saat ini.</string>
+    <string name="widget_background_color_custom_dialog_title">Warna Kustom</string>
+    <string name="widget_border_color">Warna Bingkai</string>
+    <string name="widget_custom_button_add_desc">Tambah tombol kustom</string>
+    <string name="widget_custom_button_change_colour">Ubah warna</string>
+    <string name="widget_custom_button_choose_colour">Pilih warna folder</string>
+    <string name="widget_custom_buttons_dialog_hint">Cari Aplikasi, Pintasan Aplikasi, Kontak, File, Folder, Catatan &amp; Pengaturan perangkat.</string>
+    <string name="widget_custom_buttons_dialog_title">Pilih Tindakan</string>
+    <string name="widget_custom_buttons_no_results">Hasil tidak ditemukan.</string>
+    <string name="widget_custom_buttons_filter_all">Semua</string>
+    <string name="widget_custom_buttons_restriction">Tidak tersedia saat tombol kustom aktif.</string>
+    <string name="widget_custom_buttons_title">Tombol Kustom</string>
+    <string name="widget_custom_buttons_widget_title">Widget Tombol Kustom</string>
+    <string name="widget_icon_center">Tengah</string>
+    <string name="widget_icon_left">Kiri</string>
+    <string name="widget_icon_off">Mati</string>
+    <string name="widget_loading_state">Memuat pengaturan widget…</string>
+    <string name="widget_mic_action_default">Default</string>
+    <string name="widget_mic_action_digital_assistant">Asisten</string>
+    <string name="widget_mic_action_digital_assistant_limitation">Karena keterbatasan Android, Anda tidak dapat memicu asisten kecuali Google ditetapkan sebagai aplikasi asisten digital.</string>
+    <string name="widget_mic_action_digital_assistant_link_phrase">aplikasi asisten digital</string>
+    <string name="widget_mic_icon">Ikon Mikrofon</string>
+    <string name="widget_search_icon">Ikon Pencarian</string>
+    <string name="widget_settings_title">Widget Pencarian</string>
+    <string name="widget_slider_border">Ketebalan Bingkai</string>
+    <string name="widget_slider_icon_size">Ukuran Ikon</string>
+    <string name="widget_slider_internal_padding">Padding Luar</string>
+    <string name="widget_slider_internal_padding_horizontal">Horizontal</string>
+    <string name="widget_slider_internal_padding_vertical">Vertikal</string>
+    <string name="widget_slider_radius">Radius Sudut</string>
+    <string name="widget_slider_transparency_background">Latar Belakang</string>
+    <string name="widget_slider_transparency_border">Bingkai</string>
+    <string name="widget_text_icon_color">Warna Teks &amp; Ikon</string>
+    <string name="widget_text_icon_color_black">Hitam</string>
+    <string name="widget_text_icon_color_white">Putih</string>
+    <string name="widget_toggle_show_label">Teks Quick Search</string>
+    <string name="widgets_panel_title">Widget</string>
+    <string name="widgets_picker_empty">Widget tidak ditemukan.</string>
+    <string name="widgets_picker_loading">Memuat Widget…</string>
+    <string name="widgets_picker_preview_unavailable">Pratinjau tidak tersedia</string>
+    <string name="widgets_picker_title">Tambah Widget</string>
+    <string name="widgets_picker_widget_count">%1$d widget</string>
+    <string name="widgets_picker_widget_grid_size">%1$d x %2$d</string>
+
+    <!-- ============================================================================
+         Permissions &amp; Onboarding
+         ============================================================================ -->
+    <string name="permissions_calendar_desc">Diperlukan untuk mencari acara kalender Anda.</string>
+    <string name="permissions_calling_desc">Diperlukan untuk menelepon kontak secara langsung tanpa membuka dialer.</string>
+    <string name="settings_notifications_permission_title">Kirim Notifikasi</string>
+    <string name="permissions_notifications_desc">Diperlukan untuk menyematkan hasil pencarian ke panel notifikasi</string>
+    <string name="permissions_notification_access_desc">Diperlukan untuk menampilkan titik notifikasi pada aplikasi yang memiliki notifikasi.</string>
+    <string name="permissions_accessibility_lock_screen_title">Aksesibilitas</string>
+    <string name="permissions_accessibility_lock_screen_desc">Mengizinkan gestur ketuk dua kali untuk mengunci perangkat Anda.</string>
+    <string name="permissions_contacts_desc">Diperlukan untuk mencari kontak Anda.</string>
+    <string name="permissions_files_desc">Diperlukan untuk mencari dokumen dan file lainnya.</string>
+    <string name="permissions_files_title">Akses File</string>
+    <string name="permissions_granted">Diberikan</string>
+    <string name="permissions_mandatory_indicator">*</string>
+    <string name="permissions_reminder_dialog_message">Jika nanti Anda berubah pikiran mengenai izin %1$s, Anda dapat memberikannya di pengaturan aplikasi.</string>
+    <string name="permissions_reminder_dialog_title">Izin Tidak Diberikan</string>
+    <string name="permissions_screen_subtitle">Semua izin di sini bersifat opsional. Izin hanya digunakan untuk membuka fitur tambahan. Data Anda tetap tersimpan di perangkat Anda.</string>
+    <string name="permissions_screen_optional_emphasis">opsional</string>
+    <string name="permissions_usage_desc">Diperlukan untuk menampilkan aplikasi yang baru saja digunakan dalam saran.</string>
+    <string name="setup_action_next">Berikutnya</string>
+    <string name="setup_action_start">Mulai Mencari!</string>
+    <string name="setup_final_title">Hampir Selesai!</string>
+    <string name="setup_import_backup_found_subtitle">Apakah Anda ingin memulihkan pengaturan dari file ini?</string>
+    <string name="setup_import_backup_found_title">File Cadangan Ditemukan</string>
+    <string name="setup_import_button">Impor Pengaturan</string>
+    <string name="setup_import_description_subtitle">Impor pengaturan Quick Search Anda menggunakan file cadangan yang telah Anda ekspor sebelumnya.</string>
+    <string name="setup_import_description_title">Punya cadangan?</string>
+    <string name="setup_import_error_subtitle">Tidak dapat membaca file cadangan. Silakan coba lagi.</string>
+    <string name="setup_import_error_title">Impor Gagal</string>
+    <string name="setup_import_importing">Mengimpor pengaturan…</string>
+    <string name="setup_import_restore_button">Pulihkan</string>
+    <string name="setup_import_skip">Lewati</string>
+    <string name="setup_import_success_subtitle">Pengaturan Anda telah diimpor. Ketuk di bawah untuk mulai mencari.</string>
+    <string name="setup_import_success_title">Pengaturan Dipulihkan</string>
+    <string name="setup_import_title">Pulihkan Pengaturan</string>
+    <string name="setup_search_engines_subtitle">Aktifkan mesin pencari yang Anda butuhkan dan susun ulang sesuai keinginan.</string>
+
+    <!-- ============================================================================
+         Search Engines
+         ============================================================================ -->
+    <string name="browser_brave_name">Brave Browser</string>
+    <string name="browser_in_app_name">Browser Dalam Aplikasi</string>
+    <string name="open_with_engine">Buka dengan %1$s</string>
+    <string name="search_engine_ai_mode">Mode AI</string>
+    <string name="search_engine_amazon">Amazon</string>
+    <string name="search_engine_bing">Bing</string>
+    <string name="search_engine_brave">Brave Search</string>
+    <string name="search_engine_chatgpt">ChatGPT</string>
+    <string name="search_engine_claude">Claude</string>
+    <string name="search_engine_custom">Pencarian Kustom</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
+    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+    <string name="search_engine_gemini">Gemini</string>
+    <string name="search_engine_google">Google</string>
+    <string name="search_engine_google_drive">Google Drive</string>
+    <string name="search_engine_google_maps">Google Maps</string>
+    <string name="search_engine_google_photos">Google Foto</string>
+    <string name="search_engine_google_translate">Google Terjemahan</string>
+    <string name="search_engine_google_play">Google Play</string>
+    <string name="search_engine_grok">Grok</string>
+    <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Asisten Kagi</string>
+    <string name="search_engine_muse">Muse</string>
+    <string name="search_engine_onboarding_description">Saat Anda mengetik kueri pencarian dan mengetuk salah satu mesin pencari ini, pencarian akan dijalankan di dalam aplikasi tersebut. Anda dapat mengubahnya dengan menekan lama.</string>
+    <string name="search_engine_perplexity">Perplexity</string>
+    <string name="search_engine_reddit">Reddit</string>
+    <string name="search_engine_spotify">Spotify</string>
+    <string name="search_engine_startpage">Startpage</string>
+    <string name="search_engine_waze">Waze</string>
+    <string name="search_engine_wikipedia">Wikipedia</string>
+    <string name="search_engine_x">X</string>
+    <string name="search_engine_you_com">You.com</string>
+    <string name="search_engine_youtube">YouTube</string>
+    <string name="search_engine_youtube_music">YouTube Music</string>
+    <string name="search_on_engine">Cari di %1$s</string>
+
+    <!-- ============================================================================
+         Miscellaneous
+         ============================================================================ -->
+    <string name="auto_close_overlay_toggle_desc">Tutup aplikasi secara otomatis setelah hasil dibuka</string>
+    <string name="auto_close_overlay_toggle_title">Tutup Otomatis Aplikasi</string>
+    <string name="excluded_item_type_app_results">Aplikasi (Hasil)</string>
+    <string name="excluded_item_type_app_shortcut">Pintasan Aplikasi</string>
+    <string name="excluded_item_type_app_suggestions">Aplikasi (Saran)</string>
+    <string name="excluded_item_type_setting">Pengaturan</string>
+    <string name="permission_required_title">Izin diperlukan</string>
+    <string name="settings_action_clear_all">Hapus Semua</string>
+    <string name="settings_action_move_down">Pindahkan ke bawah</string>
+    <string name="settings_action_move_up">Pindahkan ke atas</string>
+    <string name="settings_action_reorder">Seret untuk menyusun ulang</string>
+    <string name="settings_create_new_tool_button">Buat Alat Baru</string>
+    <string name="settings_custom_tool_alias_hint">Kata kunci untuk memicu alat ini</string>
+    <string name="settings_custom_tool_alias_label">Alias</string>
+    <string name="settings_home_text_color_title">Warna Teks di Layar Utama</string>
+    <string name="settings_home_text_color_desc">Label aplikasi, judul bagian, dll.</string>
+    <string name="settings_custom_tool_delete_button">Hapus Alat</string>
+    <string name="settings_custom_tool_editor_title">Alat Kustom</string>
+    <string name="settings_custom_tool_name_label">Nama Alat</string>
+    <string name="settings_custom_tool_prompt_hint">Jelaskan apa yang dilakukan alat ini. Perintah ini memandu AI saat alat dipicu.\n\n Gunakan {time} untuk menyertakan tanggal dan waktu saat ini dalam prompt.</string>
+    <string name="settings_custom_tool_prompt_label">Prompt Sistem</string>
+    <string name="settings_excluded_items_clear_all">Tampilkan semua item</string>
+    <string name="settings_excluded_items_clear_all_confirmation">Apakah Anda yakin ingin menghapus semua item yang disembunyikan? Tindakan ini tidak dapat diurungkan.</string>
+    <string name="settings_excluded_items_desc">Lihat dan kelola item yang telah Anda sembunyikan</string>
+    <string name="settings_excluded_items_empty">Anda tidak memiliki item tersembunyi.</string>
+    <string name="settings_excluded_items_title">Item Tersembunyi</string>
+    <string name="settings_manage_calls_texts_contacts_desc">Kelola Panggilan &amp; SMS untuk kontak</string>
+    <string name="settings_manage_files_desc">Kelola jenis file yang ditampilkan dalam hasil</string>
+    <string name="settings_manage_shortcuts_desc">Kelola pintasan aplikasi Anda</string>
+    <string name="settings_nicknames_desc">Lihat dan kelola nama panggilan kustom yang telah Anda atur</string>
+    <string name="settings_nicknames_empty">Anda belum mengatur nama panggilan.</string>
+    <string name="settings_nicknames_title">Nama Panggilan</string>
+    <string name="settings_search_tip_banner_message">Tips: Anda dapat mencari pengaturan langsung dari bilah pencarian.</string>
+    <string name="settings_triggers_desc">Lihat dan kelola kata pemicu yang telah Anda atur</string>
+    <string name="settings_triggers_empty">Anda belum mengatur pemicu.</string>
+    <string name="settings_triggers_title">Pemicu</string>
+    <string name="tasker_integration_title">Tindakan Tasker</string>
+    <string name="tasker_integration_description">Buat tindakan Tasker menggunakan broadcast intent.</string>
+    <string name="tasker_add_intent_title">Tambah Broadcast Intent Tasker</string>
+    <string name="tasker_add_intent_description">Di aplikasi Tasker, buat profil Intent Received dengan tindakan yang sama. Quick Search mengirim kueri dalam ekstra \"query\".</string>
+    <string name="tasker_alias_conflict">Alias ini sudah digunakan</string>
+    <string name="tasker_intent_name_label">Nama Broadcast Intent</string>
+    <string name="tasker_broadcast_action_label">Tindakan Broadcast</string>
+    <string name="tasker_add_intent_button">Tambah Intent</string>
+    <string name="tasker_saved_alias">Alias: %1$s</string>
+    <string name="tasker_delete_intent">Hapus intent Tasker</string>
+    <string name="tasker_intent_action">Intent Tasker (%1$s)</string>
+    <string name="tasker_not_installed">Tasker tidak terpasang</string>
+    <string name="tasker_broadcast_failed">Tidak dapat mengirim broadcast Tasker</string>
+    <string name="app_menu_usage_today">Digunakan selama %1$s hari ini · %2$s</string>
+    <plurals name="app_menu_opened_count"><item quantity="one">%d kali dibuka</item><item quantity="other">%d kali dibuka</item></plurals>
+    <plurals name="app_menu_usage_hours"><item quantity="one">%d jam</item><item quantity="other">%d jam</item></plurals>
+    <plurals name="app_menu_usage_minutes"><item quantity="one">%d mnt</item><item quantity="other">%d mnt</item></plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s jam</string>
+    <string name="other_screen_time_today_title">Waktu Layar Hari Ini</string>
+    <string name="other_screen_time_hours_minutes">%1$d jam %2$d mnt</string>
+    <string name="pin_notification_dialog_title">Sematkan ke Notifikasi</string>
+    <string name="pin_notification_with_other_items">Sematkan bersama item lain</string>
+    <string name="pin_notification_separately">Sematkan secara terpisah</string>
+    <string name="speed_bump_dont_open">Jangan Buka</string>
+    <string name="speed_bump_explainer_body">Fitur ini menambahkan jeda singkat sebelum membuka aplikasi, memberi Anda waktu sejenak untuk memutuskan apakah Anda benar-benar ingin membukanya. Ini dapat membantu mencegah pembukaan aplikasi secara kompulsif dan mengurangi kebiasaan adiktif.</string>
+    <string name="speed_bump_explainer_just_enabled">Anda baru saja mengaktifkannya untuk %1$s</string>
+    <string name="speed_bump_overlay_prompt">Membuka %1$s sebentar lagi…</string>
+    <string name="speed_bump_overlay_title">Tarik napas dalam-dalam</string>
+    <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">Alarm mendatang</string>
+</resources>

@@ -1,0 +1,1213 @@
+<resources>
+
+    <!-- Language: Dutch -->
+
+    <!-- Translation Guidelines:
+         - Translate user-facing text into this locale.
+         - Do not translate brand/product names and technical identifiers (e.g., Quick Search, AI, API, Gemini, Android, Amazon, USD, INR, lbs, kgs).
+         - Do not translate placeholders or format specifiers (%1$s, %1$d, %s, %%).
+         - In search_hints_cycle, keep the example queries in English.
+    -->
+
+    <!-- ============================================================================
+         App &amp; Search Entry
+         ============================================================================ -->
+
+    <string name="app_name">Quick Search</string>
+    <string name="direct_answer_contact_name">AI-antwoord</string>
+    <string name="direct_search_enter_query">Voer een zoekopdracht in.</string>
+    <string name="direct_search_ask_follow_up">Vervolgvraag stellen</string>
+    <string name="direct_search_follow_up_hint">Stel een vervolgvraag</string>
+    <string name="direct_search_error_generic">Kan AI-antwoord niet ophalen. Probeer het opnieuw.</string>
+    <string name="direct_search_error_no_key">Voeg een API-sleutel toe in de instellingen (AI-provider) om AI-antwoorden op te halen.</string>
+    <string name="gemini_web_search_quota_fallback_tip">Het webzoekquotum van Gemini is bereikt, daarom is dit antwoord gegenereerd zonder webzoekopdracht.</string>
+    <string name="direct_search_powered_by">Mogelijk gemaakt door</string>
+    <string name="empty_state_subtitle">Open een app of verfijn je zoekopdracht om suggesties te zien.</string>
+    <string name="empty_state_title">Nog niets te zien</string>
+    <string name="error_action_not_available">Actie niet beschikbaar</string>
+    <string name="error_gemini_empty_response">Leeg antwoord van Gemini</string>
+    <string name="error_gemini_load_models_failed">Kan Gemini-modellen niet laden</string>
+    <string name="error_gemini_request_failed">Verzoek mislukt (%1$d)</string>
+    <string name="error_unknown">Onbekende fout</string>
+    <string name="gemini_model_flash_latest">Gemini Flash (Nieuwste)</string>
+    <string name="keyboard_switch_back">Normaal toetsenbord</string>
+    <string name="keyboard_switch_to_number">Cijfertoetsenbord</string>
+    <string name="no_results_found">Geen resultaten gevonden. Tik hieronder op een zoekmachine om op het web te zoeken.</string>
+    <string name="search_hint">Alles doorzoeken…</string>
+    <string name="search_hint_app_settings">App-instellingen doorzoeken…</string>
+    <string name="search_hint_app_shortcuts">App-snelkoppelingen doorzoeken…</string>
+    <string name="search_hint_apps">Apps doorzoeken…</string>
+    <string name="search_hint_calendar">Agenda-afspraken doorzoeken…</string>
+    <string name="search_hint_contacts">Contacten doorzoeken…</string>
+    <string name="search_hint_currency_converter">Valuta omrekenen, bijv. 100 USD naar INR</string>
+    <string name="search_hint_dictionary">Voer een woord in</string>
+    <string name="search_hint_weather">Voer een locatie in of gebruik je standaardlocatie</string>
+    <string name="search_hint_files">Bestanden doorzoeken…</string>
+    <string name="search_hint_notes">Notities doorzoeken…</string>
+    <string name="search_hint_settings">Apparaatinstellingen doorzoeken…</string>
+    <string name="search_hint_static">Alles doorzoeken</string>
+    <string name="search_hint_world_clock">Voer een plaats in om de lokale tijd te zien</string>
+    <string-array name="search_hints_cycle">
+        <item >Contacten doorzoeken</item>
+        <item >Bestanden doorzoeken</item>
+        <item >Agenda-afspraken</item>
+        <item >Apps doorzoeken</item>
+        <item >App-snelkoppelingen doorzoeken</item>
+        <item >Instellingen doorzoeken</item>
+        <item >5 USD to INR</item>
+        <item >5 lbs in kgs</item>
+        <item >3 months from now</item>
+        <item >225 + 456</item>
+        <item >Time in UK</item>
+        <item >Define Serendipity</item>
+        <item >Weather in New York</item>
+    </string-array>
+    <string name="search_provider_description">Doorzoek apps, contacten, bestanden, instellingen en meer met Quick Search.</string>
+
+    
+    <!-- ============================================================================
+         Common Actions, Labels &amp; Dialogs
+         ============================================================================ -->
+
+    <string name="action_add_to_home">Toevoegen aan startscherm</string>
+    <string name="action_add_trigger">Trigger</string>
+    <string name="action_app_info">App-info</string>
+    <string name="action_manage_all_apps">Alle apps beheren</string>
+    <string name="action_app_shortcuts_settings">Instellingen app-snelkoppelingen</string>
+    <string name="action_files_settings">Bestandsinstellingen</string>
+    <string name="action_contacts_settings">Contactinstellingen</string>
+    <string name="action_lock_app">Vergrendelen</string>
+    <string name="action_unlock_app">Ontgrendelen</string>
+    <string name="app_lock_prompt_lock">%1$s vergrendelen</string>
+    <string name="app_lock_prompt_unlock">%1$s ontgrendelen</string>
+    <string name="action_change_icon">Icoon wijzigen</string>
+    <string name="icon_picker_no_icon_packs">Er zijn geen icoonpakketten geïnstalleerd om het app-icoon te wijzigen.</string>
+    <string name="icon_picker_download_icon_packs">Downloaden</string>
+    <string name="icon_picker_search">Iconen zoeken</string>
+    <string name="icon_picker_title">Icoon wijzigen voor \"%1$s\"</string>
+    <string name="action_change_wallpaper">Achtergrond wijzigen</string>
+    <string name="action_clear_all_history">Geschiedenis wissen</string>
+    <string name="action_copy_content">Inhoud kopiëren</string>
+    <string name="action_edit_icon">Icoon bewerken</string>
+    <string name="action_edit_nickname">Bijnaam bewerken</string>
+    <string name="action_edit_trigger">Trigger bewerken</string>
+    <string name="action_exclude_extension">.%s-bestanden verbergen</string>
+    <string name="action_exclude_generic">Verbergen</string>
+    <string name="action_expand_more">Meer</string>
+    <string name="action_expand_more_app_settings">Meer app-instellingen</string>
+    <string name="action_expand_more_contacts">Meer contacten</string>
+    <string name="action_expand_more_device_settings">Meer apparaatinstellingen</string>
+    <string name="action_expand_more_events">Meer afspraken</string>
+    <string name="action_expand_more_files">Meer bestanden</string>
+    <string name="action_expand_more_notes">Meer notities</string>
+    <string name="action_expand_more_shortcuts">Meer snelkoppelingen</string>
+    <string name="action_file_info">Bestandsinfo</string>
+    <string name="action_include_generic">Zichtbaar maken</string>
+    <string name="action_more_search_history">Meer geschiedenis</string>
+    <string name="action_open">Openen</string>
+    <string name="action_open_in_split_screen">Gesplitst scherm</string>
+    <string name="action_open_folder">Map openen</string>
+    <string name="action_open_keyboard">Toetsenbord openen</string>
+    <string name="action_open_settings">Instellingen openen</string>
+    <string name="settings_gestures_title">Gebaren</string>
+    <string name="settings_gestures_desc">Veegacties aanpassen</string>
+    <string name="settings_gesture_swipe_right">Naar rechts vegen</string>
+    <string name="settings_gesture_widget_panel">Widgetpaneel</string>
+    <string name="settings_gesture_swipe_left">Naar links vegen</string>
+    <string name="settings_gesture_swipe_up">Omhoog vegen</string>
+    <string name="settings_gesture_swipe_down">Omlaag vegen</string>
+    <string name="settings_gesture_swipe_up_home">Omhoog vegen (Start)</string>
+    <string name="settings_gesture_swipe_down_home">Omlaag vegen (Start)</string>
+    <string name="settings_gesture_close_quick_search">Quick Search sluiten</string>
+    <string name="settings_gesture_double_tap_home">Dubbeltikken (Start)</string>
+    <string name="settings_gesture_settings">Instellingen</string>
+    <string name="settings_gesture_close_keyboard_notifications">Toetsenbord sluiten / Meldingen openen</string>
+    <string name="settings_gesture_close_keyboard">Toetsenbord sluiten</string>
+    <string name="settings_gesture_notification_panel">Meldingenpaneel</string>
+    <string name="settings_gesture_lock_screen">Scherm vergrendelen</string>
+    <string name="settings_gesture_lock_screen_requires_accessibility">Vereist toegankelijkheidsmachtiging</string>
+    <string name="accessibility_lock_screen_service_label">Quick Search Schermvergrendeling</string>
+    <string name="accessibility_lock_screen_service_description">Hiermee kan Quick Search het scherm vergrendelen via het dubbeltik-gebaar op het startscherm. Het leest geen scherminhoud.</string>
+    <string name="accessibility_permission_disclaimer_title">Disclaimer toegankelijkheidsmachtiging</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search gebruikt de AccessibilityService-API van Android alleen om je apparaat te vergrendelen wanneer je dubbeltikt op het startscherm. Via deze service leest, verzamelt, bewaart of deelt Quick Search je scherminhoud of andere persoonlijke gegevens niet.</string>
+    <string name="settings_gesture_none">Geen</string>
+    <string name="settings_gesture_custom">Aangepast (Apps, bestanden enz.)</string>
+    <string name="settings_keyboard_gestures_title">Toetsenbordgebaren (Start)</string>
+    <string name="settings_keyboard_gestures_desc">Alleen beschikbaar als er geen scrollbare inhoud op het startscherm is</string>
+    <string name="action_pin_app">Vastmaken</string>
+    <string name="action_pin_to_notifications">Vastmaken aan meldingen</string>
+    <string name="action_unpin_from_notifications">Losmaken van meldingen</string>
+    <string name="pinned_notifications_channel_description">Snelle toegang tot vastgemaakte zoekresultaten</string>
+    <string name="pinned_notifications_title">Vastgemaakte snelkoppelingen</string>
+    <string name="notification_pinned_items_title">Vastgemaakte meldingsitems</string>
+    <string name="notification_pinned_items_description">Beheer vastgemaakte items die in je meldingenpaneel worden weergegeven</string>
+    <string name="notification_pinned_items_remove">%1$s verwijderen uit meldingen</string>
+    <string name="notification_pinned_item_type_app">App</string>
+    <string name="notification_pinned_item_type_app_shortcut">App-snelkoppeling</string>
+    <string name="notification_pinned_item_type_contact">Contact</string>
+    <string name="notification_pinned_item_type_file">Bestand</string>
+    <string name="notification_pinned_item_type_note">Notitie</string>
+    <string name="action_remove">Verwijderen</string>
+    <string name="app_swipe_current_action">Huidige actie</string>
+    <string name="app_swipe_up_picker_title">Kies actie bij omhoog vegen voor %1$s</string>
+    <string name="app_swipe_down_picker_title">Kies actie bij omlaag vegen voor %1$s</string>
+    <string name="app_swipe_picker_tip">Vegen over het app-icoon opent het geselecteerde item zowel in appsuggesties als in zoekresultaten</string>
+    <string name="app_swipe_picker_search_hint">Zoek apps, contacten enz.</string>
+    <string name="app_swipe_up_set_toast">Gebaar \'Omhoog vegen\' is ingesteld voor %1$s</string>
+    <string name="app_swipe_down_set_toast">Gebaar \'Omlaag vegen\' is ingesteld voor %1$s</string>
+    <string name="action_remove_from_history">Verwijderen uit geschiedenis</string>
+    <string name="action_reset_app_shortcut_icon">Herstellen naar standaardicoon</string>
+    <string name="action_retry">Opnieuw proberen</string>
+    <string name="action_share">Delen</string>
+    <string name="action_move_up">Omhoog verplaatsen</string>
+    <string name="action_move_down">Omlaag verplaatsen</string>
+    <string name="action_undo">Ongedaan maken</string>
+    <string name="action_uninstall_app">Verwijderen</string>
+    <string name="action_rate">Nu beoordelen</string>
+    <string name="action_not_now">Niet nu</string>
+    <string name="action_agree">Akkoord</string>
+    <string name="action_unpin_app">Losmaken</string>
+    <string name="alias_trigger_after_space">Activeren na spatie</string>
+    <string name="common_action_add">Toevoegen</string>
+    <string name="common_action_clear">Wissen</string>
+    <string name="common_ai_provider">AI-provider</string>
+    <string name="common_api_key_setup">API-sleutel instellen</string>
+    <string name="common_close">Sluiten</string>
+    <string name="common_custom">Aangepast</string>
+    <string name="common_error_unable_to_open">Kan %1$s niet openen</string>
+    <string name="common_most_used">Meest gebruikt</string>
+    <string name="common_nickname">Bijnaam</string>
+    <string name="common_search">Zoeken</string>
+    <string name="common_theme_dark">Donker</string>
+    <string name="common_theme_device">Apparaat</string>
+    <string name="common_theme_light">Licht</string>
+    <string name="common_theme_system">Systeem</string>
+    <string name="common_time">Tijd</string>
+    <string name="dialog_add_alias_for_search_type_title">Alias toevoegen voor \"%1$s\"</string>
+    <string name="dialog_alias_info_search_engine">Typ deze alias aan het begin of einde van je zoekopdracht om snel te zoeken met %1$s.</string>
+    <string name="dialog_alias_info_search_engine_start_only">Typ deze alias aan het begin van je zoekopdracht om snel te zoeken met %1$s.</string>
+    <string name="dialog_alias_info_search_type">Typ deze alias aan het begin van je zoekopdracht om het zoeken naar %1$s te starten.</string>
+    <string name="dialog_alias_info_tool">Typ deze alias aan het begin van je zoekopdracht om de %1$s-modus te openen.</string>
+    <string name="dialog_app_shortcut_icon_message">Kies een afbeelding voor \"%1$s\". Dit verandert alleen hoe de snelkoppeling wordt weergegeven in Quick Search.</string>
+    <string name="dialog_cancel">Annuleren</string>
+    <string name="dialog_choose_contact_action_title">Kies een actie om %1$s te vervangen</string>
+    <string name="dialog_clear_all_history_message">Weet je zeker dat je je hele zoekgeschiedenis wilt wissen? Deze actie kan niet ongedaan worden gemaakt.</string>
+    <string name="dialog_clear_all_history_title">Hele geschiedenis wissen?</string>
+    <string name="dialog_delete">Verwijderen</string>
+    <string name="dialog_direct_dial_change_later">Je kunt dit altijd wijzigen in de instellingen.</string>
+    <string name="dialog_direct_dial_option_dialer">Kiezer openen</string>
+    <string name="dialog_direct_dial_option_dialer_desc">Controleer het nummer in je kiezer voordat je belt.</string>
+    <string name="dialog_direct_dial_option_direct">Direct bellen</string>
+    <string name="dialog_direct_dial_option_direct_desc">Plaats de oproep direct (vereist belmachtiging).</string>
+    <string name="dialog_direct_dial_title">Kies hoe je wilt bellen</string>
+    <string name="dialog_done">Gereed</string>
+    <string name="dialog_edit_alias_error_prefix">Deze alias is al in gebruik.</string>
+    <string name="dialog_edit_alias_error_trigger_conflict">Deze alias komt overeen met een bestaande trigger.</string>
+    <string name="dialog_edit_alias_for_search_type_title">Alias bewerken voor \"%1$s\"</string>
+    <string name="dialog_edit_alias_title">Alias bewerken</string>
+    <string name="dialog_edit_amazon_domain_error">Ongeldig domein</string>
+    <string name="dialog_edit_amazon_domain_hint">Voorbeelden: amazon.nl, amazon.de, amazon.com enz.</string>
+    <string name="dialog_edit_amazon_domain_message">Amazon-domein bijwerken voor jouw land.</string>
+    <string name="dialog_edit_amazon_domain_title">Amazon-domein bewerken</string>
+    <string name="dialog_gemini_model_picker_title">Model selecteren</string>
+    <string name="dialog_nickname_message">Voer een bijnaam in voor \"%1$s\". Je kunt ernaar zoeken met deze bijnaam.</string>
+    <string name="dialog_ok">Doorgaan</string>
+    <string name="dialog_okay">OK</string>
+    <string name="dialog_remember_choice">Deze keuze onthouden</string>
+    <string name="dialog_save">Opslaan</string>
+    <string name="dialog_select_phone_number_message">Kies een nummer voor %1$s</string>
+    <string name="dialog_select_phone_number_title">Telefoonnummer selecteren</string>
+    <string name="dialog_send">Verzenden</string>
+    <string name="dialog_trigger_error_alias_conflict">Deze trigger komt overeen met een bestaande alias.</string>
+    <string name="dialog_trigger_error_taken">Deze trigger is al in gebruik.</string>
+    <string name="dialog_trigger_hint">Triggerwoord</string>
+    <string name="dialog_trigger_message">Voer een trigger van één woord in voor \"%1$s\".</string>
+    <string name="exclude_marker"> verborgen in </string>
+    <string name="permission_action_manage_android">Beheren in Android-instellingen</string>
+    <string name="permission_settings_dialog_message">Deze actie vereist de machtiging %1$s. Je wordt naar de systeeminstellingen geleid om deze te verlenen.</string>
+    <string name="permission_settings_dialog_title">Machtiging %1$s vereist</string>
+    <string name="toast_excluded_from_results">%1$s verborgen in resultaten</string>
+    <string name="toast_excluded_from_suggestions">%1$s verborgen in suggesties</string>
+
+    
+    <!-- ============================================================================
+         Accessibility
+         ============================================================================ -->
+
+    <string name="desc_clear_search">Zoektekst wissen</string>
+    <string name="desc_collapse">Samenvouwen</string>
+    <string name="desc_expand">Uitvouwen</string>
+    <string name="desc_launch_app">%1$s openen</string>
+    <string name="desc_navigate_back">Terug navigeren</string>
+    <string name="desc_navigate_forward">Vooruit navigeren</string>
+    <string name="desc_open_settings">Instellingen openen</string>
+    <string name="desc_selected">Geselecteerd</string>
+    <string name="desc_voice_search_icon">Spraakgestuurd zoeken starten</string>
+
+    
+    <!-- ============================================================================
+         Search Result Sections &amp; Ranking
+         ============================================================================ -->
+
+    <string name="app_suggestions_tab_new_updated">Nieuw/Bijgewerkt</string>
+    <string name="app_suggestions_tab_pinned">Vastgemaakt</string>
+    <string name="app_suggestions_tab_pinned_disabled_description">Vastgemaakte apps verschijnen nog steeds op het tabblad %1$s</string>
+    <string name="app_suggestions_tab_recent">Recent</string>
+    <string name="app_suggestions_tabs_dialog_message">Kies welke appsuggestie-tabbladen op het startscherm worden weergegeven.</string>
+    <string name="app_suggestions_tabs_dialog_title">Suggestietabbladen</string>
+    <string name="app_suggestions_enabled_tabs_picker_hint">Tabbladen kiezen</string>
+    <string name="app_suggestions_tab_required_toast">Er moet ten minste één tabblad ingeschakeld zijn</string>
+    <string name="app_suggestions_toggle_desc">Aanbevolen apps op het startscherm tonen of verbergen</string>
+    <string name="app_suggestions_toggle_title">Appsuggesties</string>
+    <string name="show_all_apps_button_toggle_desc">Toon een knop om alle apps te openen</string>
+    <string name="app_suggestions_usage_access_link">Toegang tot gebruiksstatistieken verlenen</string>
+    <string name="app_suggestions_usage_access_tip">Verleen toegang tot gebruiksstatistieken om je recent gebruikte apps te zien.</string>
+    <string name="clear_query_toggle_desc">Oude zoekopdracht automatisch wissen wanneer de app wordt geopend</string>
+    <string name="clear_query_toggle_title">Zoekopdracht wissen</string>
+    <string name="more_results_title">Meer resultaten</string>
+    <string name="open_keyboard_toggle_desc">Toon het toetsenbord automatisch wanneer Quick Search wordt geopend</string>
+    <string name="recent_queries_toggle_desc">Aantal getoonde items vóór uitvouwen</string>
+    <string name="fuzzy_search_toggle_title">Fuzzy zoeken</string>
+    <string name="fuzzy_search_toggle_desc">Resultaten vinden, zelfs bij typefouten</string>
+    <string name="secondary_ranking_title">Secundaire sortering</string>
+    <string name="secondary_ranking_dialog_desc">Kies de secundaire sorteervolgorde voor resultaten met dezelfde relevantie.</string>
+    <string name="secondary_ranking_recency">Recentheid</string>
+    <string name="secondary_ranking_most_opened">Meest geopend</string>
+    <string name="recent_queries_toggle_title">Zoekgeschiedenis</string>
+    <string name="search_history_tab_recently_opened">Recent geopend</string>
+    <string name="search_history_tab_searches">Zoekopdrachten</string>
+    <string name="search_section_app_settings_toggle_desc">Zoeken in app-instellingen in- of uitschakelen</string>
+    <string name="search_section_app_settings_toggle_title">Zoeken in app-instellingen</string>
+    <string name="search_section_app_shortcuts_toggle_desc">Zoeken naar app-snelkoppelingen in- of uitschakelen</string>
+    <string name="search_section_app_shortcuts_toggle_title">Zoeken naar app-snelkoppelingen</string>
+    <string name="search_section_apps_toggle_desc">Zoeken naar apps in- of uitschakelen</string>
+    <string name="search_section_apps_toggle_title">Zoeken naar apps</string>
+    <string name="search_section_calendar_toggle_desc">Zoeken in agenda in- of uitschakelen</string>
+    <string name="search_section_calendar_toggle_title">Zoeken in agenda</string>
+    <string name="search_section_contacts_toggle_desc">Zoeken naar contacten in- of uitschakelen</string>
+    <string name="search_section_contacts_toggle_title">Zoeken naar contacten</string>
+    <string name="search_section_device_settings_toggle_desc">Zoeken in apparaatinstellingen in- of uitschakelen</string>
+    <string name="search_section_device_settings_toggle_title">Zoeken in apparaatinstellingen</string>
+    <string name="search_section_files_toggle_desc">Zoeken naar bestanden in- of uitschakelen</string>
+    <string name="search_section_files_toggle_title">Zoeken naar bestanden</string>
+    <string name="search_section_notes_toggle_desc">Zoeken in notities in- of uitschakelen</string>
+    <string name="search_section_notes_toggle_title">Zoeken in notities</string>
+    <string name="section_app_settings">App-instellingen</string>
+    <string name="section_app_shortcuts">App-snelkoppelingen</string>
+    <string name="section_apps">Apps</string>
+    <string name="section_calendar">Agenda-afspraken</string>
+    <string name="section_files">Bestanden</string>
+    <string name="section_notes">Notities</string>
+    <string name="section_settings">Apparaatinstellingen</string>
+    <string name="top_match_title">Beste overeenkomst</string>
+    <string name="top_matches_count_label">Aantal resultaten</string>
+    <string name="top_matches_priority_desc">Prioriteit wijzigen en items in topresultaten in- of uitschakelen</string>
+    <string name="top_matches_priority_dialog_info">Houd ingedrukt en sleep om de prioriteit te wijzigen, en gebruik de schakelaar om bepaalde resultaattypen in of uit te schakelen.</string>
+    <string name="top_matches_priority_title">Topresultaten beheren</string>
+    <string name="top_matches_title">Topresultaten</string>
+    <string name="top_matches_toggle_desc">Toon de beste resultaten van alle typen in één lijst</string>
+    <string name="top_result_indicator_toggle_desc">Markeer het beste resultaat dat met het toetsenbord kan worden geopend.</string>
+    <string name="top_result_indicator_toggle_title">Indicator voor beste resultaat</string>
+    <string name="open_top_result_using_keyboard_toggle_title">Beste resultaat openen met toetsenbord</string>
+    <string name="open_top_result_using_keyboard_toggle_desc">Enter/Gereed-toets opent het beste resultaat</string>
+    <string name="include_non_launchable_apps_toggle_title">Niet-startbare apps</string>
+    <string name="include_non_launchable_apps_toggle_desc">Apps zonder startactiviteit opnemen in zoekresultaten.</string>
+    <string name="notification_dots_toggle_title">Meldingsstippen</string>
+    <string name="notification_dots_toggle_desc">Meldingsstippen tonen op apps met meldingen</string>
+    <string name="desc_notification_dot">Heeft meldingen</string>
+    <string name="show_in_recents_toggle_title">In Recente apps tonen</string>
+    <string name="show_in_recents_toggle_desc">Quick Search tonen in recente apps van je apparaat</string>
+    <string name="web_search_suggestions_title">Websuggesties</string>
+
+    
+    <!-- ============================================================================
+         Apps
+         ============================================================================ -->
+
+    <string name="app_menu_section_actions">Acties</string>
+    <string name="app_menu_section_shortcuts">Snelkoppelingen</string>
+    <string name="app_menu_value_on">Aan</string>
+    <string name="action_uninstall_named">%1$s verwijderen</string>
+    <string name="action_disable_app_shortcut">Uitschakelen</string>
+    <string name="action_disable_all_app_shortcuts_named">Alle %1$s-snelkoppelingen uitschakelen</string>
+    <string name="snackbar_app_shortcut_disabled_title">App-snelkoppeling uitgeschakeld</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Je kunt deze snelkoppeling later weer inschakelen in de instellingen voor app-snelkoppelingen.</string>
+    <string name="apps_refreshed_successfully">Apps succesvol vernieuwd</string>
+    <string name="error_loading_user_apps">We konden je apps niet laden. Probeer het over een ogenblik opnieuw.</string>
+    <string name="error_uninstall_app">Kan %1$s niet verwijderen</string>
+    <string name="error_uninstall_self">Je kunt Quick Search hier niet verwijderen.</string>
+    <string name="failed_to_refresh_apps">Vernieuwen van apps mislukt</string>
+    <string name="settings_app_apk_size_format">APK-grootte: %1$.2f MB</string>
+    <string name="settings_app_columns_4">4</string>
+    <string name="settings_app_columns_5">5</string>
+    <string name="settings_app_columns_title">Apps per rij</string>
+    <string name="settings_app_result_rows_title">Rijen met app-resultaten</string>
+    <string name="settings_app_icon_size_percent">%1$d%%</string>
+    <string name="settings_app_icon_size_title">App-icoongrootte</string>
+    <string name="settings_app_info_install_date">Installatiedatum</string>
+    <string name="settings_app_info_last_update">Laatste update</string>
+    <string name="settings_app_info_minimum_sdk">Minimale SDK</string>
+    <string name="settings_app_info_not_available">Niet beschikbaar</string>
+    <string name="settings_app_info_package_name">Pakketnaam</string>
+    <string name="settings_app_info_target_sdk">Doel-SDK</string>
+    <string name="settings_app_info_version">Versie</string>
+    <string name="settings_app_info_version_code">Versiecode</string>
+    <string name="settings_app_sort_api_level">API-niveau</string>
+    <string name="settings_app_sort_apk_size">APK-grootte</string>
+    <string name="settings_app_sort_ascending">Oplopend sorteren</string>
+    <string name="settings_app_sort_by_format">Sorteren op: %1$s</string>
+    <string name="settings_app_sort_descending">Aflopend sorteren</string>
+    <string name="settings_app_sort_least_used">Minst gebruikt</string>
+    <string name="settings_app_sort_name">Naam</string>
+    <string name="settings_app_uninstall_selected_format">Verwijderen (%1$d)</string>
+    <string name="settings_apps_empty">Geen apps gevonden.</string>
+    <string name="settings_manage_apps_desc">Beheer je apps</string>
+    <string name="settings_manage_apps_title">Apps beheren</string>
+    <string name="settings_refresh_apps_disabled">App-zoeken is uitgeschakeld, kan app-gegevens niet vernieuwen</string>
+    <string name="settings_refresh_apps_title">Apps opnieuw laden</string>
+    <string name="usage_permission_subtitle">Als je je recent gebruikte apps in suggesties wilt zien, verleen dan toegang tot gebruiksstatistieken.</string>
+    <string name="usage_permission_title">Toegang tot gebruiksstatistieken verlenen</string>
+
+    
+    <!-- ============================================================================
+         App Shortcuts
+         ============================================================================ -->
+
+    <string name="error_shortcut_activity_not_exported">Gevonden activiteit is niet geëxporteerd.</string>
+    <string name="error_shortcut_creation_failed">Aanmaken van snelkoppeling mislukt</string>
+    <string name="error_shortcut_disabled">Snelkoppeling is uitgeschakeld.</string>
+    <string name="error_shortcut_launch_failed">Starten van snelkoppeling mislukt: %1$s.</string>
+    <string name="error_shortcut_no_activity_resolves">Geen activiteit verwerkt de intent.</string>
+    <string name="error_shortcut_requires_permission">Snelkoppeling vereist machtiging: %1$s.</string>
+    <string name="error_shortcuts_not_supported">Het toevoegen van snelkoppelingen aan het startscherm wordt niet ondersteund op dit apparaat</string>
+    <string name="pin_shortcut_request_added">\"%1$s\" toegevoegd aan Quick Search</string>
+    <string name="pin_shortcut_request_added_generic">Snelkoppeling toegevoegd aan Quick Search</string>
+    <string name="settings_app_shortcuts_activity_dialog_title">App-activiteit kiezen</string>
+    <string name="settings_app_shortcuts_activity_empty">Geen app-activiteiten beschikbaar.</string>
+    <string name="settings_app_shortcuts_activity_warning">Sommige activiteiten werken mogelijk niet zoals verwacht</string>
+    <string name="settings_app_shortcuts_add_button">Snelkoppeling toevoegen</string>
+    <string name="settings_app_shortcuts_add_deep_link">App-deeplink</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_message">Voeg een ondersteunde URL- of intent-link toe die een specifiek scherm in de app opent. Niet-ondersteunde links worden geopend in je browser.</string>
+    <string name="settings_app_shortcuts_add_deep_link_dialog_title">App-deeplink toevoegen</string>
+    <string name="settings_app_shortcuts_add_dialog_title">Snelkoppelingsbron kiezen</string>
+    <string name="settings_app_shortcuts_add_failed">Kan snelkoppeling niet toevoegen.</string>
+    <string name="settings_app_shortcuts_add_query_dialog_title">Aangepaste zoekopdracht-snelkoppeling toevoegen aan %1$s</string>
+    <string name="settings_app_shortcuts_add_query_shortcut">Aangepaste zoekopdracht</string>
+    <string name="settings_app_shortcuts_add_success">Snelkoppeling toegevoegd.</string>
+    <string name="settings_app_shortcuts_add_success_with_app_name">Nieuwe snelkoppeling toegevoegd aan %1$s</string>
+    <string name="settings_app_shortcuts_add_url_dialog_title">URL-snelkoppeling toevoegen aan %1$s</string>
+    <string name="settings_app_shortcuts_add_url_shortcut">Aangepaste URL</string>
+    <plurals name="settings_app_shortcuts_card_count">
+        <item quantity="one">%d snelkoppeling</item>
+        <item quantity="other">%d snelkoppelingen</item>
+    </plurals>
+    <string name="settings_app_shortcuts_collapse_all">Alles samenvouwen</string>
+    <string name="settings_app_shortcuts_create_not_supported">Geen app ondersteunt het maken van snelkoppelingen op dit apparaat.</string>
+    <string name="settings_app_shortcuts_deep_link_label">URL of intent</string>
+    <string name="settings_app_shortcuts_delete_action">Snelkoppeling verwijderen</string>
+    <string name="settings_app_shortcuts_delete_success">Snelkoppeling verwijderd.</string>
+    <string name="settings_app_shortcuts_description_with_count">Tik op een app om de bijbehorende snelkoppelingen te bekijken. Schakel snelkoppelingen in, uit of voeg aangepaste snelkoppelingen toe.
+
+Beschikbare snelkoppelingen: %1$s</string>
+    <string name="settings_app_shortcuts_edit_dialog_title">Snelkoppeling bewerken</string>
+    <string name="settings_app_shortcuts_empty">Geen app-snelkoppelingen gevonden.</string>
+    <string name="settings_app_shortcuts_expand_all">Alles uitvouwen</string>
+    <string name="settings_app_shortcuts_filter_all_apps">Alle apps</string>
+    <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Apps met snelkoppelingen</string>
+    <string name="settings_app_shortcuts_filter_browsers">Browsers</string>
+    <string name="settings_app_shortcuts_filter_search_engines">Zoekmachines</string>
+    <string name="settings_app_shortcuts_query_label">Zoekopdracht</string>
+    <string name="settings_app_shortcuts_shortcut_name_label">Naam snelkoppeling</string>
+    <string name="settings_app_shortcuts_update_failed">Kan snelkoppeling niet bijwerken.</string>
+    <string name="settings_app_shortcuts_update_success">Snelkoppeling bijgewerkt.</string>
+    <string name="settings_app_shortcuts_url_label">URL</string>
+    <string name="shortcut_song_search_label">Nummer zoeken</string>
+    <string name="shortcut_watch_later_label">Later bekijken</string>
+
+    
+    <!-- ============================================================================
+         Contacts &amp; Calls
+         ============================================================================ -->
+
+    <string name="contact_method_call_label">Bellen</string>
+    <string name="contact_method_email_label">E-mail</string>
+    <string name="contact_method_fallback_label">Overig</string>
+    <string name="contact_method_google_meet_label">Google Meet</string>
+    <string name="contact_method_message_label">Bericht</string>
+    <string name="contact_method_signal_message_label">Signal</string>
+    <string name="contact_method_signal_video_call_label">Signal-videogesprek</string>
+    <string name="contact_method_signal_voice_call_label">Signal-spraakoproep</string>
+    <string name="contact_method_telegram_message_label">Telegram</string>
+    <string name="contact_method_telegram_video_call_label">Telegram-videogesprek</string>
+    <string name="contact_method_telegram_voice_call_label">Telegram-spraakoproep</string>
+    <string name="contact_method_view_in_contacts_label">In Contacten-app bekijken</string>
+    <string name="contact_method_whatsapp_message_label">WhatsApp</string>
+    <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
+    <string name="contact_method_whatsapp_video_call_label">WhatsApp-videogesprek</string>
+    <string name="contact_method_whatsapp_voice_call_label">WhatsApp-spraakoproep</string>
+    <string name="contacts_action_button_chat">Chatten</string>
+    <string name="contacts_action_button_contacts">Contacten</string>
+    <string name="contacts_action_button_meet">Meet</string>
+    <string name="contacts_action_button_video_call">Videogesprek</string>
+    <string name="contacts_action_button_voice_call">Spraakoproep</string>
+    <string name="contacts_action_call">Contact bellen</string>
+    <string name="contacts_action_hint_message">Tip: Houd een actie ingedrukt om deze voor individuele contacten aan te passen.</string>
+    <string name="contacts_action_next_number">Volgend telefoonnummer</string>
+    <string name="contacts_action_previous_number">Vorig telefoonnummer</string>
+    <string name="contacts_action_signal">Signal-contact</string>
+    <string name="contacts_action_sms">Bericht sturen naar contact</string>
+    <string name="contacts_action_telegram">Telegram-contact</string>
+    <string name="contacts_action_whatsapp">WhatsApp-contact</string>
+    <string name="contacts_no_methods_available">Geen contactmethoden beschikbaar</string>
+    <string name="contacts_refreshed_successfully">Contacten succesvol vernieuwd</string>
+    <string name="contacts_section_permission_subtitle">Contactmachtiging is vereist om contacten te doorzoeken</string>
+    <string name="error_call_permission_required">Telefoonmachtiging is vereist voor deze actie</string>
+    <string name="error_google_meet_call_failed">Google Meet-oproep mislukt – app ondersteunt deze methode mogelijk niet</string>
+    <string name="error_google_meet_no_phone">Kan Google Meet-oproep niet plaatsen – geen telefoonnummer gevonden</string>
+    <string name="error_google_meet_not_installed">Google Meet is niet geïnstalleerd</string>
+    <string name="error_google_meet_video_call_failed">Openen van Google Meet-videogesprek mislukt</string>
+    <string name="error_missing_phone_number">Geen telefoonnummer beschikbaar</string>
+    <string name="error_open_contact">Kan dit contact niet openen</string>
+    <string name="error_signal_call_failed">Signal-oproep mislukt. Controleer of Signal is geïnstalleerd.</string>
+    <string name="error_signal_chat_failed">Openen van Signal-chat mislukt</string>
+    <string name="error_signal_not_installed">Signal is niet geïnstalleerd</string>
+    <string name="error_signal_video_call_failed">Openen van Signal-videogesprek mislukt</string>
+    <string name="error_telegram_call_failed">Telegram-oproep mislukt. Controleer of Telegram is geïnstalleerd.</string>
+    <string name="error_telegram_chat_failed">Openen van Telegram-chat mislukt</string>
+    <string name="error_telegram_not_installed">Telegram is niet geïnstalleerd</string>
+    <string name="error_whatsapp_call_failed">WhatsApp-oproep mislukt. Controleer of WhatsApp is geïnstalleerd.</string>
+    <string name="error_whatsapp_chat_failed">Openen van WhatsApp-chat mislukt</string>
+    <string name="error_whatsapp_not_installed">WhatsApp is niet geïnstalleerd</string>
+    <string name="error_whatsapp_video_call_failed">Openen van WhatsApp-videogesprek mislukt</string>
+    <string name="error_whatsapp_video_call_missing_data">Kan WhatsApp-videogesprek niet plaatsen – contactgegevens ontbreken</string>
+    <string name="error_whatsapp_video_call_unavailable">WhatsApp is niet beschikbaar voor videogesprekken</string>
+    <string name="settings_call_permission_title">Telefoon</string>
+    <string name="permissions_background_usage_title">Achtergrondgebruik toestaan</string>
+    <string name="permissions_background_usage_desc">Achtergrondgebruik toestaan voor sneller opstarten van de app.</string>
+    <string name="settings_calling_card_title">Standaard bel-app</string>
+    <string name="settings_calls_texts_title">Oproepen &amp; berichten</string>
+    <string name="settings_direct_dial_desc">Direct bellen zonder de kiezer te openen.</string>
+    <string name="settings_direct_dial_title">Direct bellen</string>
+    <string name="settings_number_search_title">Zoeken op nummer</string>
+    <string name="settings_number_search_desc">Contacten zoeken op basis van hun telefoonnummers.</string>
+    <string name="settings_messaging_app_not_installed">%s is niet geïnstalleerd op je apparaat</string>
+    <string name="settings_messaging_card_title">Standaard berichten-app</string>
+    <string name="settings_messaging_option_messages">Berichten</string>
+
+    
+    <!-- ============================================================================
+         Files &amp; Folders
+         ============================================================================ -->
+
+    <string name="excluded_item_type_file_extension">Bestandsextensie</string>
+    <string name="excluded_item_type_folder">Map</string>
+    <string name="file_extension_label">.%s-bestanden</string>
+    <string name="file_info_file_type">Bestandstype</string>
+    <string name="file_info_modified">Gewijzigd</string>
+    <string name="file_info_path">Pad</string>
+    <string name="file_info_size">Grootte</string>
+    <string name="file_info_type">Type</string>
+    <string name="file_type_apks">APK\'s</string>
+    <string name="file_type_audio">Audio</string>
+    <string name="file_type_documents">Documenten</string>
+    <string name="file_type_pictures">Afbeeldingen</string>
+    <string name="file_type_videos">Video\'s</string>
+    <string name="files_refreshed_successfully">Bestanden succesvol vernieuwd</string>
+    <string name="files_section_permission_subtitle">Bestandsmachtiging is vereist om bestanden te doorzoeken</string>
+    <string name="settings_excluded_extensions_title">Verborgen bestandsextensies</string>
+    <string name="settings_file_types_title">Bestanden &amp; mappen</string>
+    <string name="settings_folder_blacklist_add">Geblokkeerde map toevoegen</string>
+    <string name="settings_folder_blacklist_helper">Deze mappen worden genegeerd bij het zoeken</string>
+    <string name="settings_folder_blacklist_title">Zwarte lijst</string>
+    <string name="settings_folder_filter_helper">Zoek mappen en voeg ze toe om te bepalen waar bestands- en mapresultaten worden weergegeven.</string>
+    <string name="settings_folder_filters_title">Mappadfilters</string>
+    <string name="settings_folder_search_hint">Zoek een map om toe te voegen</string>
+    <string name="settings_folder_search_no_results">Geen mappen gevonden</string>
+    <string name="settings_folder_whitelist_add">Toegestane map toevoegen</string>
+    <string name="settings_folder_whitelist_helper">Alleen in deze mappen wordt gezocht naar bestanden &amp; mappen</string>
+    <string name="settings_folder_whitelist_title">Witte lijst</string>
+    <string name="settings_folders_toggle">Mappen</string>
+    <string name="settings_file_previews_toggle">Bestandsvoorbeelden</string>
+    <string name="settings_file_previews_description">Bekijk een voorbeeld van afbeeldingen en pdf\'s voordat je ze opent.</string>
+    <string name="settings_refresh_files_disabled">Bestanden zoeken is uitgeschakeld, kan bestandsgegevens niet vernieuwen</string>
+    <string name="settings_refresh_files_title">Bestanden opnieuw laden</string>
+    <string name="settings_system_files_toggle">Systeembestanden</string>
+
+    
+    <!-- ============================================================================
+         Calendar
+         ============================================================================ -->
+
+    <string name="app_settings_create_calendar_event_desc">Een nieuwe afspraak maken en toevoegen</string>
+    <string name="app_settings_create_calendar_event_title">Nieuwe agenda-afspraak</string>
+    <string name="agenda_title">Agenda van vandaag</string>
+    <string name="calendar_create_event_name_hint">Afspraaknaam</string>
+    <string name="calendar_create_event_select_date">Datum selecteren</string>
+    <string name="calendar_create_event_sync_notice">Deze afspraak wordt niet gesynchroniseerd met je apparaatagenda</string>
+    <string name="calendar_create_event_title">Nieuwe afspraak</string>
+    <string name="calendar_edit_event_title">Afspraak bewerken</string>
+    <string name="calendar_relative_ago_format">%1$s geleden</string>
+    <plurals name="calendar_relative_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dagen</item>
+    </plurals>
+    <plurals name="calendar_relative_hours">
+        <item quantity="one">%d uur</item>
+        <item quantity="other">%d uur</item>
+    </plurals>
+    <string name="calendar_relative_in_format">over %1$s</string>
+    <string name="calendar_relative_in_minutes">over %1$d minuten</string>
+    <plurals name="calendar_relative_minutes">
+        <item quantity="one">%d minuut</item>
+        <item quantity="other">%d minuten</item>
+    </plurals>
+    <string name="calendar_relative_now">Nu</string>
+    <plurals name="calendar_relative_months">
+        <item quantity="one">%d maand</item>
+        <item quantity="other">%d maanden</item>
+    </plurals>
+    <string name="calendar_relative_today">Vandaag</string>
+    <string name="calendar_relative_tomorrow">Morgen</string>
+    <plurals name="calendar_relative_years">
+        <item quantity="one">%d jaar</item>
+        <item quantity="other">%d jaar</item>
+    </plurals>
+    <string name="calendar_relative_yesterday">Gisteren</string>
+    <string name="calendar_repeats_daily">Dagelijks</string>
+    <plurals name="calendar_repeats_every_days">
+        <item quantity="one">Elke %d dag</item>
+        <item quantity="other">Elke %d dagen</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_months">
+        <item quantity="one">Elke %d maand</item>
+        <item quantity="other">Elke %d maanden</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_weeks">
+        <item quantity="one">Elke %d week</item>
+        <item quantity="other">Elke %d weken</item>
+    </plurals>
+    <plurals name="calendar_repeats_every_years">
+        <item quantity="one">Elk %d jaar</item>
+        <item quantity="other">Elke %d jaar</item>
+    </plurals>
+    <string name="calendar_repeats_generic">Terugkerend</string>
+    <string name="calendar_repeats_monthly">Maandelijks</string>
+    <string name="calendar_repeats_weekly">Wekelijks</string>
+    <string name="calendar_repeats_yearly">Jaarlijks</string>
+    <string name="calendar_section_permission_subtitle">Agendamachtiging is vereist om agenda-afspraken te doorzoeken</string>
+    <string name="error_open_calendar_event">Kan agenda-afspraak niet openen</string>
+    <string name="settings_calendar_events_empty">Geen agenda-afspraken beschikbaar.</string>
+    <string name="settings_calendar_include_past_events_desc">Afgelopen afspraken opnemen in zoekresultaten.</string>
+    <string name="settings_calendar_include_past_events_title">Afgelopen afspraken</string>
+    <string name="settings_calendar_permission_title">Agenda</string>
+    <string name="settings_calendar_show_today_events_desc">Toon de afspraken van vandaag op het startscherm.</string>
+    <string name="settings_calendar_show_today_events_title">Afspraken van vandaag tonen</string>
+    <string name="settings_calendar_default_title">Afspraken openen in…</string>
+    <string name="settings_calendar_view_all_events_desc">Alle afspraken bekijken</string>
+
+    
+    <!-- ============================================================================
+         Notes
+         ============================================================================ -->
+
+    <string name="app_settings_search_create_note_desc">Een nieuwe notitie starten in de editor</string>
+    <string name="app_settings_search_create_note_title">Notitie maken</string>
+    <string name="notes_body_hint">Schrijf hier je notitie</string>
+    <string name="notes_create_note_cta">Nieuwe notitie</string>
+    <string name="notes_delete_confirm_message">Deze notitie wordt permanent verwijderd.</string>
+    <string name="notes_delete_confirm_title">Deze notitie verwijderen?</string>
+    <string name="notes_delete_note_desc">Notitie verwijderen</string>
+    <string name="notes_delete_selected_confirm_message">Deze notities worden permanent verwijderd.</string>
+    <string name="notes_delete_selected_confirm_title">Geselecteerde notities verwijderen?</string>
+    <string name="notes_editor_action_open_link">Link openen</string>
+    <string name="notes_editor_action_send_email">E-mail verzenden</string>
+    <string name="notes_editor_title">Notitie-editor</string>
+    <string name="notes_empty_note_subtext">Lege notitie</string>
+    <string name="notes_quick_note_title">Snelle notitie</string>
+    <string name="notes_quick_note_toggle_desc">Snelle notitie openen via veegnavigatie</string>
+    <string name="notes_title_hint">Titel</string>
+    <string name="notes_untitled">Naamloos</string>
+    <string name="settings_notes_view_all_desc">Alle notities bekijken</string>
+
+    
+    <!-- ============================================================================
+         Device Settings Shortcuts
+         ============================================================================ -->
+
+    <string name="device_settings_category_apps_permissions">Apps &amp; machtigingen</string>
+    <string name="device_settings_category_battery_performance">Batterij &amp; prestaties</string>
+    <string name="device_settings_category_developer_advanced">Ontwikkelaar &amp; geavanceerd</string>
+    <string name="device_settings_category_language_input">Taal &amp; invoer</string>
+    <string name="device_settings_category_network_connectivity">Netwerk &amp; connectiviteit</string>
+    <string name="device_settings_category_notifications_accessibility">Meldingen &amp; toegankelijkheid</string>
+    <string name="device_settings_category_security_privacy">Beveiliging &amp; privacy</string>
+    <string name="device_settings_category_system_device">Systeem &amp; apparaat</string>
+    <string name="settings_device_settings_empty">Geen apparaatinstellingen beschikbaar.</string>
+    <string name="settings_shortcut_about_phone">Over de telefoon</string>
+    <string name="settings_shortcut_accessibility">Toegankelijkheid</string>
+    <string name="settings_shortcut_airplane">Vliegtuigmodus</string>
+    <string name="settings_shortcut_all_files">Toegang tot alle bestanden</string>
+    <string name="settings_shortcut_battery_optimization">Batterijoptimalisatie</string>
+    <string name="settings_shortcut_battery_saver">Batterijbesparing</string>
+    <string name="settings_shortcut_battery_usage">Batterijverbruik</string>
+    <string name="settings_shortcut_bluetooth">Bluetooth</string>
+    <string name="settings_shortcut_cast">Casten</string>
+    <string name="settings_shortcut_data_usage">Dataverbruik</string>
+    <string name="settings_shortcut_date_time">Datum &amp; tijd</string>
+    <string name="settings_shortcut_default_apps">Standaard-apps</string>
+    <string name="settings_shortcut_developer_options">Ontwikkelaarsopties</string>
+    <string name="settings_shortcut_display">Weergave</string>
+    <string name="settings_shortcut_do_not_disturb">Niet storen</string>
+    <string name="settings_shortcut_hotspot">Hotspot &amp; tethering</string>
+    <string name="settings_shortcut_locale">Taal</string>
+    <string name="settings_shortcut_location">Locatie</string>
+    <string name="settings_shortcut_mobile_data">Mobiele gegevens</string>
+    <string name="settings_shortcut_network">Netwerk &amp; internet</string>
+    <string name="settings_shortcut_nfc">NFC</string>
+    <string name="settings_shortcut_notification_listener">Toegang tot meldingen</string>
+    <string name="settings_shortcut_notifications">Meldingen</string>
+    <string name="settings_shortcut_overlay_permission">Weergeven over andere apps</string>
+    <string name="settings_shortcut_privacy">Privacy</string>
+    <string name="settings_shortcut_security">Beveiliging</string>
+    <string name="settings_shortcut_sound">Geluid &amp; trillen</string>
+    <string name="settings_shortcut_storage">Opslag</string>
+    <string name="settings_shortcut_usage_access">Toegang tot gebruiksstatistieken</string>
+    <string name="settings_shortcut_voice_input">Digitale assistent</string>
+    <string name="settings_shortcut_vpn">VPN</string>
+    <string name="settings_shortcut_wifi">Wifi</string>
+    <string name="settings_unable_to_open_settings">Kan instellingen niet openen</string>
+
+    
+    <!-- ============================================================================
+         App Settings Search
+         ============================================================================ -->
+
+    <string name="settings_all_quick_search_features">Functielijst</string>
+    <string name="settings_all_quick_search_features_desc">Bekijk de volledige lijst met functies en mogelijkheden</string>
+    <string name="settings_more_apps_from_developer_title">Meer apps van de ontwikkelaar</string>
+    <string name="settings_app_settings_desc">Zoek naar Quick Search-instellingen</string>
+    <string name="settings_features_load_failed">Kan functiedocumentatie niet laden.</string>
+    <string name="settings_features_sections_title">Inhoud</string>
+    <string name="settings_search_description_change_app_theme">App-thema wijzigen</string>
+    <string name="settings_search_description_change_font_size">App-lettergrootte wijzigen</string>
+    <string name="settings_search_description_change_icon_pack">Icoonpakket wijzigen</string>
+    <string name="settings_search_description_change_layout">App-lay-outopties wijzigen</string>
+    <string name="settings_search_description_change_wallpaper">Achtergrondweergave wijzigen</string>
+    <string name="settings_search_dynamic_description_template">%1$s-instellingen beheren</string>
+    <string name="settings_view_all_desc">Alle instellingen bekijken</string>
+
+    
+    <!-- ============================================================================
+         Settings - Main Navigation &amp; Appearance
+         ============================================================================ -->
+
+    <string name="customize_search_engines">Zoekmachines aanpassen</string>
+    <string name="settings_app_theme_aurora">Aurora</string>
+    <string name="settings_app_theme_forest">Bos</string>
+    <string name="settings_app_theme_monochrome">Mono</string>
+    <string name="settings_app_theme_sunset">Zonsondergang</string>
+    <string name="settings_app_theme_title">Thema</string>
+    <string name="settings_appearance_desc">Achtergrond, zoekmachinestijlen, eenhandige modus enz.</string>
+    <string name="settings_appearance_title">Weergave</string>
+    <string name="settings_assistant_voice_mode_desc">Spraakinvoer starten wanneer geopend als digitale assistent</string>
+    <string name="settings_assistant_voice_mode_title">Spraakmodus van assistent</string>
+    <string name="settings_beta_features_disabled">Bètafuncties zijn uitgeschakeld</string>
+    <string name="settings_beta_features_enabled">Nieuwe bètafuncties zijn ingeschakeld</string>
+    <string name="settings_beta_features_unavailable">Er zijn geen nieuwe functies beschikbaar</string>
+    <string name="settings_beta_tag">Bèta</string>
+    <string name="settings_bottom_searchbar_desc">Plaats de zoekbalk onderaan het scherm</string>
+    <string name="settings_bottom_searchbar_title">Zoekbalk onderaan</string>
+    <string name="settings_cache_cleared_toast">Cache gewist. App-index wordt opnieuw opgebouwd…</string>
+    <string name="settings_circular_app_icons_desc">Ronde app-iconen forceren</string>
+    <string name="settings_circular_app_icons_title">Ronde app-iconen</string>
+    <string name="settings_compact_rows_one_row">Eén rij</string>
+    <string name="settings_compact_rows_two_rows">Twee rijen</string>
+    <string name="settings_default_assistant_desc">Stel deze app in als je standaard digitale assistent-app.</string>
+    <string name="settings_default_assistant_desc_change">Wijzig je standaard digitale assistent-app.</string>
+    <string name="settings_default_assistant_title">Standaardassistent</string>
+    <string name="settings_default_launcher_desc">Stel deze app in als je standaard start-app.</string>
+    <string name="settings_default_launcher_title">Standaard launcher</string>
+    <string name="settings_amoled_theme_desc">Gebruik een echt zwarte achtergrond voor het Mono-thema</string>
+    <string name="settings_amoled_theme_title">AMOLED-thema</string>
+    <string name="settings_device_theme_blocked_toast">Uitgeschakeld zolang het Material You-thema is ingeschakeld</string>
+    <string name="settings_device_theme_desc">Gebruik het dynamische kleurenpalet van je apparaat als app-thema</string>
+    <string name="settings_device_theme_title">Material You</string>
+    <string name="settings_edit_label">Bewerken</string>
+    <string name="settings_font_size_big">Groot</string>
+    <string name="settings_font_size_medium">Gemiddeld</string>
+    <string name="settings_font_size_small">Klein</string>
+    <string name="settings_font_size_title">Lettergrootte</string>
+    <string name="settings_home_screen_widget_confirm_message">Je staat op het punt de Quick Search-widget toe te voegen aan je startscherm. Houd de widget ingedrukt om naar de instellingenpagina van de widget te gaan met vele aanpassingsopties.</string>
+    <string name="settings_home_screen_widget_desc">Voeg de Quick Search-widget toe aan je startscherm.</string>
+    <string name="settings_home_screen_widget_title">Startscherm-widget</string>
+    <string name="settings_icon_desc">Toon/verberg het tandwiel-icoon in de zoekbalk. Open instellingen altijd door naar links te vegen of door te zoeken.</string>
+    <string name="settings_icon_required_by_gesture_desc">Stel het gebaar \'Naar links vegen\' in op \'Instellingen openen\' om dit icoon uit te schakelen.</string>
+    <string name="settings_icon_pack_empty">Geen icoonpakketten gevonden.</string>
+    <string name="settings_icon_pack_description_no_packs">Stel een icoonpakket in voor de app-iconen.</string>
+    <string name="settings_icon_pack_mask_unsupported_icons">Niet-ondersteunde iconen maskeren</string>
+    <string name="settings_icon_pack_option_system">Systeemiconen</string>
+    <string name="settings_icon_pack_picker_title">Icoonpakket kiezen</string>
+    <string name="settings_icon_pack_reset_all_icons">Alle iconen herstellen</string>
+    <string name="settings_icon_pack_search_query">Gratis icoonpakketten</string>
+    <string name="settings_icon_pack_title">Icoonpakket</string>
+    <string name="settings_icon_title">Instellingen-icoon</string>
+    <string name="settings_launch_options_desc">Verschillende manieren om deze app te starten</string>
+    <string name="settings_launch_options_title">Startopties</string>
+    <string name="settings_app_language_title">App-taal</string>
+    <string name="settings_app_language_desc">Huidig: %1$s</string>
+    <string name="settings_app_language_picker_title">App-taal kiezen</string>
+    <string name="settings_app_language_system_default">Systeemstandaard</string>
+    <string name="settings_launcher_icon_reset_default">Herstellen naar standaard</string>
+    <string name="settings_launcher_icon_title">Launcher-app-icoon</string>
+    <string name="settings_layout_option_bottom_desc">Meest relevante items verschijnen onderaan voor eenvoudige toegang</string>
+    <string name="settings_layout_option_bottom_title">Eenhandige modus</string>
+    <string name="settings_unified_pinned_items_title">Gecombineerde vastgemaakte items</string>
+    <string name="settings_unified_pinned_items_desc">Toon vastgemaakte items als één gecombineerde lijst op het startscherm.</string>
+    <string name="settings_more_options_desc">Diverse aanpassingsopties</string>
+    <string name="settings_more_options_title">Meer opties</string>
+    <string name="settings_overlay_assistant_setup_now">Nu instellen</string>
+    <string name="settings_overlay_assistant_tip">Tip: Stel deze app in als je digitale assistent om de overlay overal te openen.</string>
+    <string name="settings_overlay_mode_desc">Zoekbalk opent als een overlay over andere apps</string>
+    <string name="settings_overlay_mode_desc_launcher_blocked">Niet beschikbaar zolang Quick Search je standaard launcher is</string>
+    <string name="settings_overlay_mode_title">Overlay-modus</string>
+    <string name="settings_overlay_source_add_custom">Aangepaste afbeelding toevoegen</string>
+    <string name="settings_overlay_source_custom_save_failed">Kan die afbeelding niet gebruiken.</string>
+    <string name="settings_overlay_source_edit_custom">Aangepaste afbeelding bewerken</string>
+    <string name="settings_overlay_source_needs_permission">Machtiging vereist</string>
+    <string name="settings_overlay_source_wallpaper">Achtergrond</string>
+    <string name="settings_overlay_theme_tone_darker">Donkerder</string>
+    <string name="settings_overlay_theme_tone_lighter">Lichter</string>
+    <string name="settings_permissions_desc">Machtigingen die deze app nodig heeft om functies in te schakelen</string>
+    <string name="settings_permissions_title">Machtigingen</string>
+    <string name="settings_quick_settings_tile_desc">Voeg Quick Search toe aan de Snelle instellingen-tegels.</string>
+    <string name="settings_quick_settings_tile_title">Snelle instellingen-tegel</string>
+    <string name="settings_refresh_contacts_disabled">Contacten zoeken is uitgeschakeld, kan contactgegevens niet vernieuwen</string>
+    <string name="settings_refresh_contacts_title">Contacten opnieuw laden</string>
+    <string name="settings_refresh_data_note">Gegevens worden automatisch vernieuwd. Gebruik deze knoppen om handmatig opnieuw te laden.</string>
+    <string name="settings_refresh_data_title">Gegevens vernieuwen</string>
+    <string name="settings_refresh_icon_packs">Icoonpakketten vernieuwen</string>
+    <string name="settings_refreshing_icon_packs">Lijst met icoonpakketten vernieuwen</string>
+    <string name="settings_scroll_to_top">Naar boven scrollen</string>
+    <string name="settings_search_hints_desc">Wisselende zoekhints in- of uitschakelen</string>
+    <string name="settings_search_hints_title">Zoekhints</string>
+    <string name="settings_search_results_desc">Beheer resultaattypen, websuggesties en zoekgeschiedenis</string>
+    <string name="settings_search_results_title">Zoekresultaten</string>
+    <string name="settings_sections_at_least_one_required">Ten minste één item moet ingeschakeld zijn</string>
+    <string name="settings_show_app_labels_desc">App-namen tonen in suggesties en resultaten</string>
+    <string name="settings_show_app_labels_title">App-labels</string>
+    <string name="settings_themed_icons_desc">Kleur app-iconen in volgens je thema</string>
+    <string name="settings_themed_icons_title">Thema-app-iconen</string>
+    <string name="settings_tools_desc">Rekenmachine, eenheden omrekenen, woordenboek en meer</string>
+    <string name="settings_tools_gemini_api_desc">Het toevoegen van een API-sleutel activeert meer hulpmiddelen.</string>
+    <string name="settings_tools_gemini_api_title">AI-provider configureren</string>
+    <string name="settings_tools_info_examples_header">Hier zijn enkele voorbeelden van wat je in de zoekbalk kunt vragen</string>
+    <string name="settings_tools_title">Hulpmiddelen</string>
+    <string name="settings_use_system_font_desc">Het lettertype van je apparaat volgen</string>
+    <string name="settings_use_system_font_title">Systeemlettertype gebruiken</string>
+    <string name="settings_accent_color_from_wallpaper">Achtergrond</string>
+    <string name="settings_accent_color_none">Geen</string>
+    <string name="settings_accent_color_picker_title">Accentkleur</string>
+    <string name="settings_accent_color_wallpaper_required_toast">Stel eerst een achtergrond in</string>
+    <string name="settings_wallpaper_accent_desc">Leid accentkleur af van de achtergrond of kies een aangepaste kleur</string>
+    <string name="settings_wallpaper_accent_title">Accentkleur</string>
+    <string name="settings_wallpaper_blur_label">Vervaging</string>
+    <string name="settings_wallpaper_card_title">Achtergrondafbeelding</string>
+    <string name="settings_wallpaper_transparency_label">Transparantie</string>
+
+    
+    <!-- ============================================================================
+         Settings - Search Engines &amp; AI Provider
+         ============================================================================ -->
+
+    <string name="error_open_email">Geen e-mailapp gevonden om e-mail te verzenden.</string>
+    <string name="settings_add_alias">Alias instellen</string>
+    <string name="settings_add_custom_provider_desc">Voeg een OpenAI-compatibele provider toe.</string>
+    <string name="settings_add_custom_provider_title">Aangepaste provider toevoegen</string>
+    <string name="settings_add_search_engine_button">Zoekmachine toevoegen</string>
+    <string name="settings_add_search_engine_dialog_message">Voer een URL of een Android-intentsjabloon met zoekaanduiding in.
+
+Voorbeeld:
+www.google.com/search?q={{query}}</string>
+    <string name="settings_add_search_engine_error_multiple_placeholders">Gebruik {{query}} slechts één keer.</string>
+    <string name="settings_add_search_engine_error_placeholder">URL moet {{query}} bevatten</string>
+    <string name="settings_add_search_engine_error_required">Voer een URL-sjabloon in.</string>
+    <string name="settings_ai_provider_groq">Groq</string>
+    <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_openai">OpenAI</string>
+    <string name="settings_alias_label">Alias:</string>
+    <string name="settings_amazon_domain_default">amazon.com</string>
+    <string name="settings_amazon_domain_label">Domein:</string>
+    <string name="settings_api_key_saved_last4">Opgeslagen sleutel eindigend op ****%1$s</string>
+    <string name="settings_api_key_setup_desc">Configureer API-sleutels om toegang te krijgen tot modellen van de respectieve AI-provider.</string>
+    <string name="settings_api_key_setup_nav_desc">Provider-API-sleutels toevoegen of verwijderen</string>
+    <string name="settings_configure_api_key_title">API-sleutel configureren</string>
+    <string name="settings_custom_provider_base_url_hint">Voorbeeld: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_input_label">Basis-URL</string>
+    <string name="settings_custom_provider_advanced_payload_desc">Wordt toegevoegd aan elk verzoek dat via deze provider wordt verzonden.</string>
+    <string name="settings_custom_provider_advanced_payload_error">Voer een geldig JSON-object in.</string>
+    <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
+    <string name="settings_custom_provider_advanced_payload_title">Geavanceerde verzoek-payload</string>
+    <string name="settings_free_api_key_tip_description">Stappen om gratis een Gemini-API-sleutel te verkrijgen.</string>
+    <string name="settings_open_free_api_key_guide">Handleiding voor gratis API-sleutel openen</string>
+    <string name="settings_direct_search_grounding_label">Webzoekopdracht</string>
+    <string name="settings_direct_search_how_to">Gratis API-sleutel ophalen</string>
+    <string name="settings_direct_search_model_label">Model</string>
+    <string name="settings_direct_search_personal_context">Persoonlijke context</string>
+    <string name="settings_direct_search_personal_context_hint">Voeg context toe die de AI moet gebruiken bij het genereren van antwoorden.</string>
+    <string name="settings_direct_search_personal_context_unsupported">Persoonlijke context is niet beschikbaar voor dit model.</string>
+    <string name="settings_direct_search_setup_nav_desc">Voeg een API-sleutel toe om AI-gestuurd zoeken in te schakelen</string>
+    <string name="settings_direct_search_setup_nav_title">AI-zoekopdracht</string>
+    <string name="settings_direct_search_thinking_label">Nadenken</string>
+    <string name="settings_edit_search_engine_dialog_title">Zoekmachine bewerken</string>
+    <string name="settings_gemini_api_config_desc">Configureer je AI-provider voor AI-gestuurd zoeken en tools</string>
+    <string name="settings_gemini_api_desc">AI-provider configureren</string>
+    <string name="settings_gemini_api_key_paste_hint">Tik om de sleutel te plakken</string>
+    <string name="settings_gemini_api_key_reset">Sleutel resetten</string>
+    <string name="settings_gemini_api_key_saving">Opslaan…</string>
+    <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
+    <string name="settings_model_picker_search_hint">Modellen zoeken</string>
+    <string name="settings_search_engine_alias_suffix_desc">Activeert de zoekmachine wanneer je een alias aan het einde van de zoekopdracht toevoegt. Aliassen werken altijd aan het begin.</string>
+    <string name="settings_search_engine_alias_suffix_title">Alias na zoekopdracht</string>
+    <string name="settings_search_engine_browser_default">Standaardbrowser</string>
+    <string name="settings_search_engine_browser_label">Openen in</string>
+    <string name="settings_search_engine_display_compact_desc">Altijd zichtbaar boven het toetsenbord als een horizontale lijst</string>
+    <string name="settings_search_engine_display_compact_title">Compact</string>
+    <string name="settings_search_engine_display_inline_desc">Weergegeven als kaarten in het resultatengebied tijdens het zoeken</string>
+    <string name="settings_search_engine_display_inline_title">Inline</string>
+    <string name="settings_search_engine_display_title">Zoekmachinestijl</string>
+    <string name="settings_search_engines_desc">Zoekmachines beheren en herschikken</string>
+    <string name="settings_search_engines_more_search_engines">Meer zoekmachines</string>
+
+    
+    <!-- ============================================================================
+         Settings - Backup, Feedback &amp; About
+         ============================================================================ -->
+
+    <string name="release_notes_action_all_features">Alle functies</string>
+    <string name="release_notes_action_more">Oudere versies bekijken</string>
+    <string name="release_notes_previous_versions">Vorige versies</string>
+    <string name="release_notes_previous_versions_unavailable">Kan vorige versies niet laden</string>
+    <string name="release_notes_action_got_it">Begrepen</string>
+    <string name="settings_release_notes_title">Releaseopmerkingen</string>
+    <string name="settings_release_notes_desc">Bekijk de releaseopmerkingen voor deze versie</string>
+    <string name="update_card_title">Er is een nieuwe update beschikbaar voor Quick Search!</string>
+    <string name="action_update">Bijwerken</string>
+    <string name="release_notes_title">Quick Search v%1$s Releaseopmerkingen</string>
+    <string name="release_notes_title_no_version">Quick Search Releaseopmerkingen</string>
+    <string name="settings_backup_export_api_key_warning_message">Doorgaan op eigen risico. De geëxporteerde API-sleutel is niet versleuteld en kan worden bekeken door iedereen die toegang heeft tot je back-upbestand.</string>
+    <string name="settings_backup_export_button">Exporteren</string>
+    <string name="settings_backup_export_failed">Kan instellingen niet exporteren.</string>
+    <string name="settings_backup_export_option_pinned_items_title">Vastgemaakte items</string>
+    <string name="settings_backup_export_selection_title">Gegevens exporteren</string>
+    <string name="settings_backup_export_success">Instellingen succesvol geëxporteerd.</string>
+    <string name="settings_backup_import_button">Importeren</string>
+    <string name="settings_backup_import_failed">Kan instellingen niet importeren.</string>
+    <string name="settings_backup_import_success">Instellingen succesvol geïmporteerd.</string>
+    <string name="settings_backup_import_warning_message">Dit overschrijft je huidige instellingen.</string>
+    <string name="settings_backup_import_warning_title">Instellingen importeren?</string>
+    <string name="settings_backup_restore_desc">Exporteer of importeer je app-instellingen</string>
+    <string name="settings_backup_restore_title">Back-up &amp; herstel</string>
+    <string name="settings_feedback_developer_desc">Gemaakt door %1$s</string>
+    <string name="settings_feedback_developer_name">Teja Karlapudi</string>
+    <string name="settings_feedback_developer_title">%1$s v%2$s</string>
+    <string name="settings_feedback_github_desc">Bekijk de broncode van dit project op GitHub</string>
+    <string name="settings_feedback_github_title">Ontwikkeling</string>
+    <string name="settings_feedback_rate_desc">Laat een 5-sterrenbeoordeling achter als je deze app nuttig vindt</string>
+    <string name="settings_feedback_rate_title">Quick Search beoordelen</string>
+    <string name="settings_feedback_send_desc">Meld bugs of vraag nieuwe functies aan</string>
+    <string name="settings_feedback_send_title">Feedback verzenden</string>
+    <string name="settings_open_source_licenses_load_failed">Kan licenties niet laden.</string>
+    <string name="settings_open_source_licenses_loading">Licenties laden…</string>
+    <string name="settings_open_source_licenses_tap_to_view">Tik om de licentietekst te bekijken</string>
+    <string name="settings_open_source_licenses_title">Open source-licenties</string>
+
+    
+    <!-- ============================================================================
+         Tools - Calculator, Converter, Time &amp; Dictionary
+         ============================================================================ -->
+
+    <string name="calculator_enter_math_expression_hint">Voer een wiskundige berekening in</string>
+    <string name="calculator_invalid_or_unsupported_expression">Ongeldige of niet-ondersteunde berekening</string>
+    <string name="calculator_toggle_desc">Resultaten voor eenvoudige wiskundige berekeningen</string>
+    <string name="calculator_toggle_title">Rekenmachine</string>
+    <string name="currency_converter_invalid_input">Ongeldige valuta-invoer</string>
+    <string name="currency_converter_requires_gemini_key">Vereist een API-sleutel van een AI-provider</string>
+    <string name="currency_converter_toggle_desc">Voorbeeld: 100 USD to INR</string>
+    <string name="currency_converter_toggle_title">Valutaconverter</string>
+    <string name="color_visualizer_toggle_title">Kleurvisualisatie</string>
+    <string name="color_visualizer_toggle_desc">Voorbeelden: #FF0000, rgb(255, 0, 0)</string>
+    <string name="color_visualizer_invalid_input">Voer een hex- of RGB-kleur in</string>
+    <string name="currency_converter_updated">Bijgewerkt op %1$s</string>
+    <string name="date_calculator_category_absolute_time">Absolute tijd</string>
+    <string name="date_calculator_category_date_differences">Datumverschillen</string>
+    <string name="date_calculator_category_named_dates">Benoemde data</string>
+    <string name="date_calculator_category_offset_from_date">Verschil vanaf een datum</string>
+    <string name="date_calculator_category_relative_dates">Relatieve data</string>
+    <string name="date_calculator_category_time_arithmetic">Tijdberekeningen</string>
+    <string name="date_calculator_category_time_offset">Tijdverschil</string>
+    <string name="date_calculator_category_time_ranges">Tijdsbereiken</string>
+    <string name="date_calculator_info_title">Datum- &amp; tijdcalculator</string>
+    <string name="date_calculator_invalid_date">Ongeldige of niet-herkende datum of tijd</string>
+    <string name="date_calculator_toggle_action_desc">Datum- &amp; tijdcalculator in- of uitschakelen</string>
+    <string name="date_calculator_toggle_desc">Gebruiksvoorbeelden</string>
+    <string name="dictionary_example_label">Voorbeeld: %1$s</string>
+    <string name="dictionary_synonyms_label">Synoniemen: %1$s</string>
+    <string name="dictionary_toggle_desc">Voorbeeld: define serendipity</string>
+    <string name="dictionary_toggle_title">Woordenboek</string>
+    <string name="weather_toggle_title">Weer</string>
+    <string name="weather_toggle_desc">Het weer van vandaag voor de opgegeven locatie</string>
+    <string name="weather_location_label">Standaardlocatie</string>
+    <string name="weather_location_hint">Voorbeeld: Amsterdam</string>
+    <string name="weather_error_location_required">Voer een locatie in of stel een standaardlocatie in via Instellingen</string>
+    <string name="get_weather">Weer ophalen</string>
+    <string name="weather_in_location">Weer in %1$s</string>
+    <string name="weather_temperature_unit_label">Temperatuureenheid</string>
+    <string name="weather_temperature_unit_celsius">Celsius (°C)</string>
+    <string name="weather_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
+    <string name="get_currency_value">Valutawaarde ophalen</string>
+    <string name="get_time">Tijd ophalen</string>
+    <string name="search_in_dictionary">In woordenboek zoeken</string>
+    <string name="unit_converter_category_angle">Hoek</string>
+    <string name="unit_converter_category_area">Oppervlakte</string>
+    <string name="unit_converter_category_data">Data</string>
+    <string name="unit_converter_category_energy">Energie</string>
+    <string name="unit_converter_category_frequency">Frequentie</string>
+    <string name="unit_converter_category_length">Lengte</string>
+    <string name="unit_converter_category_power">Vermogen</string>
+    <string name="unit_converter_category_pressure">Druk</string>
+    <string name="unit_converter_category_speed">Snelheid</string>
+    <string name="unit_converter_category_temperature">Temperatuur</string>
+    <string name="unit_converter_category_volume">Volume</string>
+    <string name="unit_converter_category_weight_mass">Gewicht / massa</string>
+    <string name="unit_converter_enter_conversion_hint">Voer een omrekening in (bijv. 5lbs in kgs)</string>
+    <string name="unit_converter_info_title">Eenhedenconverter</string>
+    <string name="unit_converter_invalid_or_unsupported_query">Ongeldige of niet-ondersteunde omrekening</string>
+    <string name="unit_converter_toggle_action_desc">Eenhedenconverter in- of uitschakelen</string>
+    <string name="world_clock_error_not_recognized">Kan dit tijdverzoek niet verwerken. Probeer een stad, land, tijdzone of exacte tijd.</string>
+    <string name="world_clock_toggle_desc">Voorbeeld: Time in Tokyo</string>
+    <string name="world_clock_toggle_title">Wereldklok</string>
+
+    
+    <!-- ============================================================================
+         Widgets &amp; Shortcuts
+         ============================================================================ -->
+
+    <string name="home_screen_widget_error">Kan de widget niet aanvragen. Probeer het opnieuw.</string>
+    <string name="home_screen_widget_not_supported">Direct vastmaken van widgets wordt niet ondersteund op deze Android-versie. Voeg deze toe via de widgetlijst van je startscherm.</string>
+    <string name="quick_settings_tile_added">Quick Search-tegel toegevoegd</string>
+    <string name="quick_settings_tile_already_added">Quick Search-tegel is al toegevoegd</string>
+    <string name="quick_settings_tile_error">Kan de Snelle instellingen-tegel niet aanvragen. Probeer het opnieuw.</string>
+    <string name="quick_settings_tile_not_added">Tegel niet toegevoegd</string>
+    <string name="quick_settings_tile_not_supported">Directe tegelaanvragen worden niet ondersteund op deze Android-versie. Gebruik Snelle instellingen bewerken om toe te voegen.</string>
+    <string name="shortcut_voice_search_disabled_message">Snelkoppeling voor spraakgestuurd zoeken is niet beschikbaar.</string>
+    <string name="shortcut_voice_search_long_label">Spraakgestuurd zoeken openen</string>
+    <string name="shortcut_voice_search_short_label">Spraakgestuurd zoeken</string>
+    <string name="voice_input_not_available">Spraakinvoer is momenteel niet beschikbaar.</string>
+    <string name="widget_background_color_custom_dialog_title">Aangepaste kleur</string>
+    <string name="widget_border_color">Randkleur</string>
+    <string name="widget_custom_button_add_desc">Aangepaste knop toevoegen</string>
+    <string name="widget_custom_button_change_colour">Kleur wijzigen</string>
+    <string name="widget_custom_button_choose_colour">Mapkleur kiezen</string>
+    <string name="widget_custom_buttons_dialog_hint">Zoek apps, app-snelkoppelingen, contacten, bestanden, mappen, notities en apparaatinstellingen.</string>
+    <string name="widget_custom_buttons_dialog_title">Actie selecteren</string>
+    <string name="widget_custom_buttons_no_results">Geen resultaten gevonden.</string>
+    <string name="widget_custom_buttons_filter_all">Alles</string>
+    <string name="widget_custom_buttons_restriction">Niet beschikbaar wanneer aangepaste knoppen actief zijn.</string>
+    <string name="widget_custom_buttons_title">Aangepaste knoppen</string>
+    <string name="widget_custom_buttons_widget_title">Widget voor aangepaste knoppen</string>
+    <string name="widget_icon_center">Midden</string>
+    <string name="widget_icon_left">Links</string>
+    <string name="widget_icon_off">Uit</string>
+    <string name="widget_loading_state">Widget-instellingen laden…</string>
+    <string name="widget_mic_action_default">Standaard</string>
+    <string name="widget_mic_action_digital_assistant">Assistent</string>
+    <string name="widget_mic_action_digital_assistant_limitation">Vanwege Android-beperkingen kan de assistent niet worden gestart tenzij Google is ingesteld als de digitale assistent-app.</string>
+    <string name="widget_mic_action_digital_assistant_link_phrase">digitale assistent-app</string>
+    <string name="widget_mic_icon">Microfoon-icoon</string>
+    <string name="widget_search_icon">Zoek-icoon</string>
+    <string name="widget_settings_title">Zoekwidget</string>
+    <string name="widget_slider_border">Randdikte</string>
+    <string name="widget_slider_icon_size">Icoongrootte</string>
+    <string name="widget_slider_internal_padding">Buitenmarge</string>
+    <string name="widget_slider_internal_padding_horizontal">Horizontaal</string>
+    <string name="widget_slider_internal_padding_vertical">Verticaal</string>
+    <string name="widget_slider_radius">Hoekradius</string>
+    <string name="widget_slider_transparency_background">Achtergrond</string>
+    <string name="widget_slider_transparency_border">Rand</string>
+    <string name="widget_text_icon_color">Tekst- en icoonkleur</string>
+    <string name="widget_text_icon_color_black">Zwart</string>
+    <string name="widget_text_icon_color_white">Wit</string>
+    <string name="widget_toggle_show_label">Quick Search-tekst</string>
+    <string name="widgets_panel_title">Widgets</string>
+    <string name="widgets_picker_empty">Geen widgets gevonden.</string>
+    <string name="widgets_picker_loading">Widgets laden…</string>
+    <string name="widgets_picker_preview_unavailable">Voorbeeld niet beschikbaar</string>
+    <string name="widgets_picker_title">Widget toevoegen</string>
+    <string name="widgets_picker_widget_count">%1$d widgets</string>
+    <string name="widgets_picker_widget_grid_size">%1$d × %2$d</string>
+
+    
+    <!-- ============================================================================
+         Permissions &amp; Onboarding
+         ============================================================================ -->
+
+    <string name="permissions_calendar_desc">Vereist om je agenda-afspraken te doorzoeken.</string>
+    <string name="permissions_calling_desc">Vereist om je contacten direct te bellen zonder de kiezer te openen.</string>
+    <string name="settings_notifications_permission_title">Meldingen sturen</string>
+    <string name="permissions_notifications_desc">Vereist om zoekresultaten aan het meldingenpaneel vast te maken</string>
+    <string name="permissions_notification_access_desc">Vereist om meldingsstippen te tonen op apps met meldingen.</string>
+    <string name="permissions_accessibility_lock_screen_title">Toegankelijkheid</string>
+    <string name="permissions_accessibility_lock_screen_desc">Hiermee kan het apparaat worden vergrendeld met het dubbeltik-gebaar.</string>
+    <string name="permissions_contacts_desc">Vereist om je contacten te doorzoeken.</string>
+    <string name="permissions_files_desc">Vereist om je documenten en andere bestanden te doorzoeken.</string>
+    <string name="permissions_files_title">Bestandstoegang</string>
+    <string name="permissions_granted">Verleend</string>
+    <string name="permissions_mandatory_indicator">*</string>
+    <string name="permissions_reminder_dialog_message">Als je later van gedachten verandert over de machtiging %1$s, kun je deze verlenen via de app-instellingen.</string>
+    <string name="permissions_reminder_dialog_title">Machtigingen niet verleend</string>
+    <string name="permissions_screen_subtitle">Alle machtigingen hier zijn optioneel. Ze worden alleen gebruikt om extra functies te ontgrendelen. Je gegevens blijven op je apparaat.</string>
+    <string name="permissions_screen_optional_emphasis">optioneel</string>
+    <string name="permissions_usage_desc">Vereist om je recent gebruikte apps in suggesties te tonen.</string>
+    <string name="setup_action_next">Volgende</string>
+    <string name="setup_action_start">Begin met zoeken!</string>
+    <string name="setup_final_title">Bijna klaar!</string>
+    <string name="setup_import_backup_found_subtitle">Wil je je instellingen herstellen vanuit dit bestand?</string>
+    <string name="setup_import_backup_found_title">Back-upbestand gevonden</string>
+    <string name="setup_import_button">Instellingen importeren</string>
+    <string name="setup_import_description_subtitle">Importeer je Quick Search-instellingen met behulp van een eerder geëxporteerd back-upbestand.</string>
+    <string name="setup_import_description_title">Heb je een back-up?</string>
+    <string name="setup_import_error_subtitle">Kan het back-upbestand niet lezen. Probeer het opnieuw.</string>
+    <string name="setup_import_error_title">Importeren mislukt</string>
+    <string name="setup_import_importing">Instellingen importeren…</string>
+    <string name="setup_import_restore_button">Herstellen</string>
+    <string name="setup_import_skip">Overslaan</string>
+    <string name="setup_import_success_subtitle">Je instellingen zijn geïmporteerd. Tik hieronder om te beginnen met zoeken.</string>
+    <string name="setup_import_success_title">Instellingen hersteld</string>
+    <string name="setup_import_title">Instellingen herstellen</string>
+    <string name="setup_search_engines_subtitle">Schakel zoekmachines in die je nodig hebt en orden ze zoals je wilt.</string>
+
+    
+    <!-- ============================================================================
+         Search Engines
+         ============================================================================ -->
+
+    <string name="browser_brave_name">Brave Browser</string>
+    <string name="browser_in_app_name">In-app browser</string>
+    <string name="open_with_engine">Openen met %1$s</string>
+    <string name="search_engine_ai_mode">AI-modus</string>
+    <string name="search_engine_amazon">Amazon</string>
+    <string name="search_engine_bing">Bing</string>
+    <string name="search_engine_brave">Brave</string>
+    <string name="search_engine_chatgpt">ChatGPT</string>
+    <string name="search_engine_claude">Claude</string>
+    <string name="search_engine_custom">Aangepast zoeken</string>
+    <string name="search_engine_duckduckgo">DuckDuckGo</string>
+    <string name="search_engine_fdroid">F-Droid</string>
+    <string name="search_engine_facebook_marketplace">Facebook Marketplace</string>
+    <string name="search_engine_gemini">Gemini</string>
+    <string name="search_engine_google">Google</string>
+    <string name="search_engine_google_drive">Google Drive</string>
+    <string name="search_engine_google_maps">Google Maps</string>
+    <string name="search_engine_google_photos">Google Foto\'s</string>
+    <string name="search_engine_google_translate">Google Translate</string>
+    <string name="search_engine_google_play">Google Play</string>
+    <string name="search_engine_grok">Grok</string>
+    <string name="search_engine_kagi">Kagi</string>
+    <string name="search_engine_kagi_assistant">Kagi Assistant</string>
+    <string name="search_engine_muse">Muse</string>
+    <string name="search_engine_onboarding_description">Wanneer je een zoekopdracht typt en op een van deze zoekmachines tikt, wordt het zoeken in die apps geactiveerd. Je kunt ze aanpassen door ze lang ingedrukt te houden.</string>
+    <string name="search_engine_perplexity">Perplexity</string>
+    <string name="search_engine_reddit">Reddit</string>
+    <string name="search_engine_spotify">Spotify</string>
+    <string name="search_engine_startpage">Startpage</string>
+    <string name="search_engine_waze">Waze</string>
+    <string name="search_engine_wikipedia">Wikipedia</string>
+    <string name="search_engine_x">X</string>
+    <string name="search_engine_you_com">You.com</string>
+    <string name="search_engine_youtube">YouTube</string>
+    <string name="search_engine_youtube_music">YouTube Music</string>
+    <string name="search_on_engine">Zoeken op %1$s</string>
+
+    
+    <!-- ============================================================================
+         Miscellaneous
+         ============================================================================ -->
+
+    <string name="auto_close_overlay_toggle_desc">Sluit de app automatisch nadat een resultaat is geopend</string>
+    <string name="auto_close_overlay_toggle_title">App automatisch sluiten</string>
+    <string name="excluded_item_type_app_results">App (Resultaten)</string>
+    <string name="excluded_item_type_app_shortcut">App-snelkoppeling</string>
+    <string name="excluded_item_type_app_suggestions">App (Suggesties)</string>
+    <string name="excluded_item_type_setting">Instelling</string>
+    <string name="permission_required_title">Machtiging vereist</string>
+    <string name="settings_action_clear_all">Alles wissen</string>
+    <string name="settings_action_move_down">Naar beneden verplaatsen</string>
+    <string name="settings_action_move_up">Naar boven verplaatsen</string>
+    <string name="settings_action_reorder">Slepen om opnieuw te ordenen</string>
+    <string name="settings_create_new_tool_button">Nieuw hulpmiddel maken</string>
+    <string name="settings_custom_tool_alias_hint">Een trefwoord om dit hulpmiddel te activeren</string>
+    <string name="settings_custom_tool_alias_label">Alias</string>
+    <string name="settings_home_text_color_title">Tekstkleur op startscherm</string>
+    <string name="settings_home_text_color_desc">App-labels, sectietitels enz.</string>
+    <string name="settings_custom_tool_delete_button">Hulpmiddel verwijderen</string>
+    <string name="settings_custom_tool_editor_title">Aangepast hulpmiddel</string>
+    <string name="settings_custom_tool_name_label">Naam van hulpmiddel</string>
+    <string name="settings_custom_tool_prompt_hint">Beschrijf wat dit hulpmiddel doet. Deze instructie stuurt de AI wanneer het hulpmiddel wordt geactiveerd.
+
+Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
+    <string name="settings_custom_tool_prompt_label">Systeemprompt</string>
+    <string name="settings_excluded_items_clear_all">Alle items weergeven</string>
+    <string name="settings_excluded_items_clear_all_confirmation">Weet je zeker dat je alle verborgen items wilt wissen? Deze actie kan niet ongedaan worden gemaakt.</string>
+    <string name="settings_excluded_items_desc">Bekijk en beheer items die je hebt verborgen</string>
+    <string name="settings_excluded_items_empty">Je hebt geen verborgen items.</string>
+    <string name="settings_excluded_items_title">Verborgen items</string>
+    <string name="settings_manage_calls_texts_contacts_desc">Beheer oproepen en berichten voor contacten</string>
+    <string name="settings_manage_files_desc">Beheer welke bestandstypen in de resultaten verschijnen</string>
+    <string name="settings_manage_shortcuts_desc">Beheer je app-snelkoppelingen</string>
+    <string name="settings_nicknames_desc">Bekijk en beheer aangepaste bijnamen die je hebt ingesteld</string>
+    <string name="settings_nicknames_empty">Je hebt geen bijnamen ingesteld.</string>
+    <string name="settings_nicknames_title">Bijnamen</string>
+    <string name="settings_search_tip_banner_message">Tip: Je kunt rechtstreeks vanuit de zoekbalk naar instellingen zoeken.</string>
+    <string name="settings_triggers_desc">Bekijk en beheer triggerwoorden die je hebt ingesteld</string>
+    <string name="settings_triggers_empty">Je hebt geen triggers ingesteld.</string>
+    <string name="settings_triggers_title">Triggers</string>
+    <string name="tasker_integration_title">Tasker-acties</string>
+    <string name="tasker_integration_description">Maak Tasker-acties met behulp van broadcast intents.</string>
+    <string name="tasker_add_intent_title">Tasker Broadcast Intent toevoegen</string>
+    <string name="tasker_add_intent_description">Maak in de Tasker-app een \'Intent Received\'-profiel aan met dezelfde actie. Quick Search verzendt de zoekopdracht in de extra \'query\'.</string>
+    <string name="tasker_alias_conflict">Deze alias is al in gebruik</string>
+    <string name="tasker_intent_name_label">Broadcast Intent-naam</string>
+    <string name="tasker_broadcast_action_label">Broadcast-actie</string>
+    <string name="tasker_add_intent_button">Intent toevoegen</string>
+    <string name="tasker_saved_alias">Alias: %1$s</string>
+    <string name="tasker_delete_intent">Tasker-intent verwijderen</string>
+    <string name="tasker_intent_action">Tasker-intent (%1$s)</string>
+    <string name="tasker_not_installed">Tasker is niet geïnstalleerd</string>
+    <string name="tasker_broadcast_failed">Kan de Tasker-broadcast niet verzenden</string>
+    <string name="app_menu_usage_today">Vandaag %1$s gebruikt · %2$s</string>
+    <plurals name="app_menu_opened_count">
+        <item quantity="one">%d keer geopend</item>
+        <item quantity="other">%d keer geopend</item>
+    </plurals>
+    <plurals name="app_menu_usage_hours">
+        <item quantity="one">%d uur</item>
+        <item quantity="other">%d uur</item>
+    </plurals>
+    <plurals name="app_menu_usage_minutes">
+        <item quantity="one">%d min.</item>
+        <item quantity="other">%d min.</item>
+    </plurals>
+    <string name="app_menu_usage_hours_decimal">%1$s uur</string>
+    <string name="other_screen_time_today_title">Schermtijd van vandaag</string>
+    <string name="other_screen_time_hours_minutes">%1$d uur %2$d min.</string>
+    <string name="pin_notification_dialog_title">Aan meldingen vastmaken</string>
+    <string name="pin_notification_with_other_items">Samen met andere items vastmaken</string>
+    <string name="pin_notification_separately">Afzonderlijk vastmaken</string>
+    <string name="speed_bump_dont_open">Niet openen</string>
+    <string name="speed_bump_explainer_body">Deze functie voegt een korte vertraging toe voordat een app wordt geopend, zodat je even kunt nadenken of je de app echt wilt openen. Het kan helpen dwangmatig openen van apps te voorkomen en verslavende gewoonten te verminderen.</string>
+    <string name="speed_bump_explainer_just_enabled">Je hebt dit zojuist ingeschakeld voor %1$s</string>
+    <string name="speed_bump_overlay_prompt">%1$s wordt zo geopend…</string>
+    <string name="speed_bump_overlay_title">Haal even adem</string>
+    <string name="speed_bump_title">SpeedBump</string>
+    <string name="home_upcoming_alarm">Aankomende wekker</string>
+</resources>

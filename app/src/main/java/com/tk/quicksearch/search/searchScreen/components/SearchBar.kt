@@ -60,6 +60,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -308,6 +309,29 @@ internal fun PersistentSearchBar(
                 )
         }
         previousLeadingIconState = leadingIconState
+    }
+
+    // Pending-ack deferral only protects in-flight typing/voice input. Once the surface stops, the
+    // ViewModel is authoritative (e.g. clear-query-on-launch runs in onStop), so drop any stale ack
+    // and resync on return in case a clear was deferred before the stop.
+    val latestQuery by rememberUpdatedState(query)
+    DisposableEffect(lifecycleOwner) {
+        val observer =
+            LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_STOP -> localInputAwaitingStateAck = null
+                    Lifecycle.Event.ON_START -> {
+                        localInputAwaitingStateAck = null
+                        if (textFieldValue.text != latestQuery) {
+                            textFieldValue =
+                                TextFieldValue(latestQuery, TextRange(latestQuery.length))
+                        }
+                    }
+                    else -> Unit
+                }
+            }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     LaunchedEffect(selectRetainedQuery, query) {
@@ -583,8 +607,12 @@ internal fun PersistentSearchBar(
                 if (textFieldValue.text.isEmpty() && newValue.text.isNotEmpty()) {
                     StartupTrace.mark("QS.Home.FirstInputAccepted")
                 }
+                // Selection/composition-only changes never produce a query update, so marking them
+                // as awaiting ack would leave a stale ack that swallows a later external clear.
+                if (newValue.text != textFieldValue.text) {
+                    localInputAwaitingStateAck = newValue.text
+                }
                 textFieldValue = newValue
-                localInputAwaitingStateAck = newValue.text
                 onQueryChange(newValue.text)
             },
             modifier =
