@@ -804,7 +804,7 @@
     <string name="settings_api_key_setup_desc">配置 API 密钥以访问对应 AI 提供商的模型。</string>
     <string name="settings_api_key_setup_nav_desc">添加或移除提供商的 API 密钥</string>
     <string name="settings_configure_api_key_title">配置 API 密钥</string>
-    <string name="settings_custom_provider_base_url_hint">例如：https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_hint">例如：https://api.openai.com/v1\n例如：https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">接口根地址 (Base URL)</string>
     <string name="settings_custom_provider_advanced_payload_desc">合并到通过此提供商发送的每个请求中。</string>
     <string name="settings_custom_provider_advanced_payload_error">请输入有效的 JSON 对象。</string>

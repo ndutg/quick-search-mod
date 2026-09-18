@@ -2,6 +2,13 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +23,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -387,6 +396,11 @@ private fun AddCustomProviderCard(
     val clipboardManager = LocalClipboardManager.current
     var baseUrlInput by rememberSaveable { mutableStateOf("") }
     var apiKeyInput by rememberSaveable { mutableStateOf("") }
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label = "customProviderChevronRotation",
+    )
     val canSave =
         baseUrlInput.trim().isNotBlank() &&
             apiKeyInput.trim().isNotBlank()
@@ -409,109 +423,137 @@ private fun AddCustomProviderCard(
                         horizontal = DesignTokens.CardHorizontalPadding,
                         vertical = CardContentVerticalPadding,
                     ),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         ) {
-            Text(
-                text = stringResource(R.string.settings_add_custom_provider_title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = stringResource(R.string.settings_add_custom_provider_desc),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = stringResource(R.string.settings_custom_provider_base_url_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            OutlinedTextField(
-                value = baseUrlInput,
-                onValueChange = { baseUrlInput = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(text = stringResource(R.string.settings_custom_provider_base_url_input_label))
-                },
-                placeholder = {
-                    Text(text = stringResource(R.string.settings_custom_provider_base_url_input_label))
-                },
-                singleLine = true,
-                colors = dialogTextFieldColors(),
-            )
-            OutlinedTextField(
-                value = apiKeyInput,
-                onValueChange = {},
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .pointerInput(apiKeyInput) {
-                            detectTapGestures {
-                                if (apiKeyInput.isEmpty()) {
-                                    pasteKeyFromClipboard()
-                                } else {
-                                    apiKeyInput = ""
-                                }
-                            }
-                        },
-                leadingIcon =
-                    if (apiKeyInput.isEmpty()) {
-                        {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                TextButton(
-                                    enabled = !isSaving,
-                                    onClick = { pasteKeyFromClipboard() },
-                                    modifier = Modifier.wrapContentWidth(),
-                                ) {
-                                    Text(text = stringResource(R.string.settings_gemini_api_key_paste_hint))
-                                }
-                            }
-                        }
-                    } else {
-                        null
-                    },
-                singleLine = true,
-                readOnly = true,
-                colors =
-                    dialogTextFieldColors(
-                        unfocusedIndicatorColor =
-                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                    ),
-            )
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth().clickable { isExpanded = !isExpanded },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                TextButton(
-                    enabled = !isSaving && (baseUrlInput.isNotBlank() || apiKeyInput.isNotBlank()),
-                    onClick = {
-                        baseUrlInput = ""
-                        apiKeyInput = ""
-                    },
-                ) {
-                    Text(text = stringResource(R.string.common_action_clear))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.settings_add_custom_provider_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_add_custom_provider_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
-                Button(
-                    enabled = !isSaving && canSave,
-                    onClick = {
-                        onSave(
-                            baseUrlInput.trim(),
-                            apiKeyInput.trim(),
-                        )
-                    },
+                IconButton(onClick = { isExpanded = !isExpanded }) {
+                    Icon(
+                        imageVector = Icons.Rounded.ExpandMore,
+                        contentDescription =
+                            stringResource(
+                                if (isExpanded) R.string.desc_collapse else R.string.desc_expand,
+                            ),
+                        modifier = Modifier.rotate(chevronRotation),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut(),
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 ) {
                     Text(
-                        text =
-                            if (isSaving) {
-                                stringResource(R.string.settings_gemini_api_key_saving)
-                            } else {
-                                stringResource(R.string.dialog_save)
-                            },
+                        text = stringResource(R.string.settings_custom_provider_base_url_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                    OutlinedTextField(
+                        value = baseUrlInput,
+                        onValueChange = { baseUrlInput = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(text = stringResource(R.string.settings_custom_provider_base_url_input_label))
+                        },
+                        placeholder = {
+                            Text(text = stringResource(R.string.settings_custom_provider_base_url_input_label))
+                        },
+                        singleLine = true,
+                        colors = dialogTextFieldColors(),
+                    )
+                    OutlinedTextField(
+                        value = apiKeyInput,
+                        onValueChange = {},
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .pointerInput(apiKeyInput) {
+                                    detectTapGestures {
+                                        if (apiKeyInput.isEmpty()) {
+                                            pasteKeyFromClipboard()
+                                        } else {
+                                            apiKeyInput = ""
+                                        }
+                                    }
+                                },
+                        leadingIcon =
+                            if (apiKeyInput.isEmpty()) {
+                                {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center,
+                                    ) {
+                                        TextButton(
+                                            enabled = !isSaving,
+                                            onClick = { pasteKeyFromClipboard() },
+                                            modifier = Modifier.wrapContentWidth(),
+                                        ) {
+                                            Text(text = stringResource(R.string.settings_gemini_api_key_paste_hint))
+                                        }
+                                    }
+                                }
+                            } else {
+                                null
+                            },
+                        singleLine = true,
+                        readOnly = true,
+                        colors =
+                            dialogTextFieldColors(
+                                unfocusedIndicatorColor =
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            ),
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TextButton(
+                            enabled = !isSaving && (baseUrlInput.isNotBlank() || apiKeyInput.isNotBlank()),
+                            onClick = {
+                                baseUrlInput = ""
+                                apiKeyInput = ""
+                            },
+                        ) {
+                            Text(text = stringResource(R.string.common_action_clear))
+                        }
+                        Button(
+                            enabled = !isSaving && canSave,
+                            onClick = {
+                                onSave(
+                                    baseUrlInput.trim(),
+                                    apiKeyInput.trim(),
+                                )
+                            },
+                        ) {
+                            Text(
+                                text =
+                                    if (isSaving) {
+                                        stringResource(R.string.settings_gemini_api_key_saving)
+                                    } else {
+                                        stringResource(R.string.dialog_save)
+                                    },
+                            )
+                        }
+                    }
                 }
             }
         }

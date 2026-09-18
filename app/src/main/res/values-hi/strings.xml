@@ -814,7 +814,7 @@
     <string name="settings_api_key_setup_desc">संबंधित AI provider के मॉडल्स तक पहुंच के लिए API keys कॉन्फ़िगर करें।</string>
     <string name="settings_api_key_setup_nav_desc">provider API keys जोड़ें या हटाएं</string>
     <string name="settings_configure_api_key_title">API key कॉन्फ़िगर करें</string>
-    <string name="settings_custom_provider_base_url_hint">उदाहरण: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_hint">उदाहरण: https://api.openai.com/v1\nउदाहरण: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">बेस URL</string>
     <string name="settings_custom_provider_advanced_payload_desc">इस प्रदाता के माध्यम से भेजे गए प्रत्येक अनुरोध में विलय कर दिया गया।</string>
     <string name="settings_custom_provider_advanced_payload_error">एक मान्य JSON ऑब्जेक्ट दर्ज करें।</string>
