@@ -190,6 +190,12 @@ object DesignTokens {
      */
     val SearchResultCardShape: Shape = ExtraLargeCardShape
 
+    /** Corner radius for widgets and cards shown in the widgets panel. */
+    val WidgetPanelCornerRadius = 20.dp
+
+    /** Shape for widgets and cards shown in the widgets panel. */
+    val WidgetPanelCardShape: Shape = RoundedCornerShape(WidgetPanelCornerRadius)
+
     /**
      * Mix factor for [androidx.compose.material3.MaterialTheme.colorScheme] `primary` into the
      * neutral top-result highlight (wallpaper-aware white/black and elevated cards).

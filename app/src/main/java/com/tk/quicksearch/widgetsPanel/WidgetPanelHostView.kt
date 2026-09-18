@@ -11,13 +11,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewOutlineProvider
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.MemoryDiagnostics
 import kotlin.math.abs
 
 private const val WIDGET_EDIT_LONG_PRESS_CONFIRMATION_MS = 100L
 
-// Matches DesignTokens.ExtraLargeCardShape used by the Quick Note card.
-private const val WIDGET_CORNER_RADIUS_DP = 28f
+// Matches DesignTokens.WidgetPanelCardShape used by the Quick Note card.
+private val widgetCornerRadiusDp = DesignTokens.WidgetPanelCornerRadius.value
 
 /**
  * Host that vends a host view capable of detecting long-press regardless of whether the widget's
@@ -148,7 +149,7 @@ private class WidgetPanelHostView(
     }
 
     init {
-        val cornerRadiusPx = WIDGET_CORNER_RADIUS_DP * resources.displayMetrics.density
+        val cornerRadiusPx = widgetCornerRadiusDp * resources.displayMetrics.density
         outlineProvider =
             object : ViewOutlineProvider() {
                 override fun getOutline(
