@@ -655,6 +655,12 @@
 <string name="settings_shortcut_network">Сеть и интернет</string>
 <string name="settings_shortcut_nfc">NFC</string>
 <string name="settings_shortcut_notification_listener">Доступ к уведомлениям</string>
+    <string name="settings_shortcut_notification_history">История уведомлений</string>
+    <string name="notification_history_permission_desc">Разрешите доступ к уведомлениям, чтобы собирать их здесь. В этом списке отображаются только уведомления, полученные после предоставления доступа.</string>
+    <string name="notification_history_empty">Уведомлений пока нет.</string>
+    <string name="notification_history_app_filter_title">Показывать уведомления от</string>
+    <string name="notification_history_search_hint">Поиск уведомлений</string>
+    <string name="notification_history_hide_app">Скрыть уведомления от %1$s</string>
 <string name="settings_shortcut_notifications">Уведомления</string>
 <string name="settings_shortcut_overlay_permission">Отображение поверх других приложений</string>
 <string name="settings_shortcut_privacy">Конфиденциальность</string>
@@ -1025,7 +1031,7 @@
 <string name="permissions_calling_desc">Требуется для совершения звонков контактам напрямую без открытия номеронабирателя.</string>
 <string name="settings_notifications_permission_title">Отправка уведомлений</string>
 <string name="permissions_notifications_desc">Требуется для закрепления результатов поиска на панели уведомлений</string>
-    <string name="permissions_notification_access_desc">Требуется для отображения точек уведомлений на приложениях с уведомлениями.</string>
+    <string name="permissions_notification_access_desc">Требуется для значков уведомлений и истории уведомлений</string>
 <string name="permissions_accessibility_lock_screen_title">Специальные возможности</string>
 <string name="permissions_accessibility_lock_screen_desc">Позволяет блокировать устройство с помощью жеста двойного нажатия.</string>
 <string name="permissions_contacts_desc">Требуется для поиска по вашим контактам.</string>

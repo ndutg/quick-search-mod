@@ -635,6 +635,12 @@
     <string name="settings_shortcut_network">Rede e internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Acesso a notificações</string>
+    <string name="settings_shortcut_notification_history">Histórico de notificações</string>
+    <string name="notification_history_permission_desc">Permita o acesso às notificações para coletá-las aqui. Somente notificações recebidas após a concessão do acesso aparecem nesta lista.</string>
+    <string name="notification_history_empty">Nenhuma notificação ainda.</string>
+    <string name="notification_history_app_filter_title">Mostrar notificações de</string>
+    <string name="notification_history_search_hint">Pesquisar notificações</string>
+    <string name="notification_history_hide_app">Ocultar notificações de %1$s</string>
     <string name="settings_shortcut_notifications">Notificações</string>
     <string name="settings_shortcut_overlay_permission">Sobrepor a outros apps</string>
     <string name="settings_shortcut_privacy">Privacidade</string>
@@ -1005,7 +1011,7 @@
     <string name="permissions_calling_desc">Necessário para ligar para seus contatos diretamente sem abrir o discador.</string>
     <string name="settings_notifications_permission_title">Publicar notificações</string>
     <string name="permissions_notifications_desc">Necessário para fixar resultados da pesquisa no painel de notificações</string>
-    <string name="permissions_notification_access_desc">Necessário para mostrar pontos de notificação nos apps que têm notificações.</string>
+    <string name="permissions_notification_access_desc">Necessário para ativar os pontos de notificação e o histórico de notificações</string>
     <string name="permissions_accessibility_lock_screen_title">Acessibilidade</string>
     <string name="permissions_accessibility_lock_screen_desc">Permite que o gesto de toque duplo bloqueie seu dispositivo.</string>
     <string name="permissions_contacts_desc">Necessário para pesquisar seus contatos.</string>

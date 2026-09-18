@@ -139,6 +139,7 @@ fun SearchRoute(
     onOpenReleaseNotesFeatures: () -> Unit = {},
     onOpenAppSettingDestination: (AppSettingsDestination) -> Unit = {},
     onOpenNotesDetail: (Long?) -> Unit = {},
+    onOpenNotificationHistory: () -> Unit = {},
     onOpenWidgetsPanelFromSwipe: (() -> Unit)? = null,
     onOverlayDismissRequest: (() -> Unit)? = null,
     onCloseAppRequest: (() -> Unit)? = null,
@@ -998,7 +999,15 @@ fun SearchRoute(
             onExcludeFile = onExcludeFileWithUndo,
             onExcludeFileExtension = onExcludeFileExtensionWithUndo,
             onSettingClick = { setting: com.tk.quicksearch.search.deviceSettings.DeviceSetting ->
-                viewModel.openSetting(setting)
+                // Notification History is a Quick Search screen, so it navigates in-app instead of
+                // starting an Activity the way every other device setting does.
+                if (setting.id ==
+                    com.tk.quicksearch.search.deviceSettings.NOTIFICATION_HISTORY_SETTING_ID
+                ) {
+                    onOpenNotificationHistory()
+                } else {
+                    viewModel.openSetting(setting)
+                }
             },
             onAppSettingClick = onAppSettingClick,
             onAppSettingToggle = onAppSettingToggle,

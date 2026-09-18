@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -212,6 +214,7 @@ internal fun SettingResultRow(
                 remember(context) { com.tk.quicksearch.search.common.AddToHomeHandler(context) }
         var showOptions by remember { mutableStateOf(false) }
         val view = LocalView.current
+
         Row(
                 modifier =
                         Modifier.fillMaxWidth()
@@ -266,6 +269,16 @@ internal fun SettingResultRow(
                                         )
                                 }
                         }
+                }
+
+                if (shortcut.showsNavigationChevron) {
+                        Icon(
+                                imageVector = Icons.Rounded.ChevronRight,
+                                contentDescription =
+                                        stringResource(R.string.desc_navigate_forward),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(end = 6.dp),
+                        )
                 }
 
                 if (enableLongPress && onLongPressOverride == null) {

@@ -634,6 +634,12 @@
 <string name="settings_shortcut_network">Ağ &amp; İnternet</string>
 <string name="settings_shortcut_nfc">NFC</string>
 <string name="settings_shortcut_notification_listener">Bildirim erişimi</string>
+    <string name="settings_shortcut_notification_history">Bildirim Geçmişi</string>
+    <string name="notification_history_permission_desc">Bildirimleri burada toplamak için bildirim erişimine izin verin. Bu listede yalnızca erişim verildikten sonra alınan bildirimler görünür.</string>
+    <string name="notification_history_empty">Henüz bildirim yok.</string>
+    <string name="notification_history_app_filter_title">Şu uygulamaların bildirimlerini göster</string>
+    <string name="notification_history_search_hint">Bildirimlerde ara</string>
+    <string name="notification_history_hide_app">%1$s bildirimlerini gizle</string>
 <string name="settings_shortcut_notifications">Bildirimler</string>
 <string name="settings_shortcut_overlay_permission">Diğer uygulamaların üzerinde göster</string>
 <string name="settings_shortcut_privacy">Gizlilik</string>
@@ -1004,7 +1010,7 @@
 <string name="permissions_calling_desc">Arama ekranını açmadan kişilerini doğrudan aramak için gereklidir.</string>
 <string name="settings_notifications_permission_title">Bildirim gönderme</string>
 <string name="permissions_notifications_desc">Arama sonuçlarını bildirim paneline sabitlemek için gereklidir</string>
-    <string name="permissions_notification_access_desc">Bildirimi olan uygulamalarda bildirim noktalarını göstermek için gereklidir.</string>
+    <string name="permissions_notification_access_desc">Bildirim noktaları ve bildirim geçmişi özelliklerini etkinleştirmek için gereklidir</string>
 <string name="permissions_accessibility_lock_screen_title">Erişilebilirlik</string>
 <string name="permissions_accessibility_lock_screen_desc">Çift dokunma hareketinin cihazınızı kilitlemesini sağlar.</string>
 <string name="permissions_contacts_desc">Kişilerinde arama yapmak için gereklidir.</string>

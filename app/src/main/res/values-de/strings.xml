@@ -635,6 +635,12 @@
     <string name="settings_shortcut_network">Netzwerk &amp; Internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Benachrichtigungszugriff</string>
+    <string name="settings_shortcut_notification_history">Benachrichtigungsverlauf</string>
+    <string name="notification_history_permission_desc">Erlaube den Zugriff auf Benachrichtigungen, um sie hier zu sammeln. Nur Benachrichtigungen, die nach der Freigabe eingehen, erscheinen in dieser Liste.</string>
+    <string name="notification_history_empty">Noch keine Benachrichtigungen.</string>
+    <string name="notification_history_app_filter_title">Benachrichtigungen anzeigen von</string>
+    <string name="notification_history_search_hint">Benachrichtigungen durchsuchen</string>
+    <string name="notification_history_hide_app">Benachrichtigungen von %1$s ausblenden</string>
     <string name="settings_shortcut_notifications">Benachrichtigungen</string>
     <string name="settings_shortcut_overlay_permission">Über anderen Apps anzeigen</string>
     <string name="settings_shortcut_privacy">Datenschutz</string>
@@ -1005,7 +1011,7 @@
     <string name="permissions_calling_desc">Erforderlich, um Kontakte direkt anzurufen, ohne die Telefon-App zu öffnen.</string>
     <string name="settings_notifications_permission_title">Benachrichtigungen senden</string>
     <string name="permissions_notifications_desc">Erforderlich, um Suchergebnisse im Benachrichtigungsfeld anzuheften</string>
-    <string name="permissions_notification_access_desc">Erforderlich, um Benachrichtigungspunkte auf Apps mit Benachrichtigungen anzuzeigen.</string>
+    <string name="permissions_notification_access_desc">Erforderlich für Benachrichtigungspunkte und den Benachrichtigungsverlauf</string>
     <string name="permissions_accessibility_lock_screen_title">Bedienungshilfen</string>
     <string name="permissions_accessibility_lock_screen_desc">Ermöglicht es, das Gerät mit der Doppeltipp-Geste zu sperren.</string>
     <string name="permissions_contacts_desc">Erforderlich, um Kontakte zu durchsuchen.</string>

@@ -540,6 +540,7 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.NICKNAMES,
                     SettingsDetailType.TRIGGERS,
                     SettingsDetailType.GESTURES,
+                    SettingsDetailType.NOTIFICATION_HISTORY,
                     -> Unit
                 }
             }

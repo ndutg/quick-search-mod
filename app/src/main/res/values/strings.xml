@@ -633,6 +633,12 @@
     <string name="settings_shortcut_network">Network &amp; internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Notification Access</string>
+    <string name="settings_shortcut_notification_history">Notification History</string>
+    <string name="notification_history_permission_desc">Allow notification access to collect notifications here. Only notifications received after access is granted appear in this list.</string>
+    <string name="notification_history_empty">No notifications yet.</string>
+    <string name="notification_history_app_filter_title">Show notifications from</string>
+    <string name="notification_history_search_hint">Search Notifications</string>
+    <string name="notification_history_hide_app">Hide notifications from %1$s</string>
     <string name="settings_shortcut_notifications">Notifications</string>
     <string name="settings_shortcut_overlay_permission">Display Over Other Apps</string>
     <string name="settings_shortcut_privacy">Privacy</string>
@@ -1006,7 +1012,7 @@
     <string name="permissions_calling_desc">Required to call your contacts directly without opening the dialer.</string>
     <string name="settings_notifications_permission_title">Post Notifications</string>
     <string name="permissions_notifications_desc">Required to pin search results to notification panel</string>
-    <string name="permissions_notification_access_desc">Required to show notification dots on apps that have notifications.</string>
+    <string name="permissions_notification_access_desc">Required to enable notification dots and notification history features</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibility</string>
     <string name="permissions_accessibility_lock_screen_desc">Allows the double-tap gesture to lock your device.</string>
     <string name="permissions_contacts_desc">Required to search your contacts.</string>

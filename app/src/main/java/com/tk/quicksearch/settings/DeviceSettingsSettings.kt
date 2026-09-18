@@ -15,15 +15,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
+import com.tk.quicksearch.search.deviceSettings.DeviceSettingsRepository
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun DeviceSettingsSettingsSection(
@@ -31,7 +39,29 @@ fun DeviceSettingsSettingsSection(
     onSettingClick: (DeviceSetting) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (settings.isEmpty()) {
+    val context = LocalContext.current
+
+    // Search state populates this list during startup, which has not necessarily run when this
+    // screen is opened directly (for example when a cold launch restores it). Load the catalog
+    // here so the screen always lists the settings the user can search and open.
+    val fallbackSettings by produceState(initialValue = emptyList(), settings.isEmpty(), context) {
+        value =
+            if (settings.isEmpty()) {
+                withContext(Dispatchers.IO) {
+                    DeviceSettingsRepository(context).loadShortcuts().sortedBy {
+                        it.title.lowercase(Locale.getDefault())
+                    }
+                }
+            } else {
+                emptyList()
+            }
+    }
+
+    val displayedSettings = remember(settings, fallbackSettings) {
+        settings.ifEmpty { fallbackSettings }
+    }
+
+    if (displayedSettings.isEmpty()) {
         Text(
             text = stringResource(R.string.settings_device_settings_empty),
             style = MaterialTheme.typography.bodyMedium,
@@ -45,7 +75,7 @@ fun DeviceSettingsSettingsSection(
         modifier = modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            settings.forEachIndexed { index, setting ->
+            displayedSettings.forEachIndexed { index, setting ->
                 Row(
                     modifier =
                         Modifier
@@ -82,7 +112,7 @@ fun DeviceSettingsSettingsSection(
                     }
                 }
 
-                if (index != settings.lastIndex) {
+                if (index != displayedSettings.lastIndex) {
                     HorizontalDivider(color = AppColors.SettingsDivider)
                 }
             }

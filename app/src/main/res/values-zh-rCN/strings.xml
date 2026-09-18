@@ -625,6 +625,12 @@
     <string name="settings_shortcut_network">网络和互联网</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">通知访问权限</string>
+    <string name="settings_shortcut_notification_history">通知历史</string>
+    <string name="notification_history_permission_desc">允许通知访问权限以在此收集通知。此列表中仅显示授予访问权限后收到的通知。</string>
+    <string name="notification_history_empty">暂无通知。</string>
+    <string name="notification_history_app_filter_title">显示以下应用的通知</string>
+    <string name="notification_history_search_hint">搜索通知</string>
+    <string name="notification_history_hide_app">隐藏来自 %1$s 的通知</string>
     <string name="settings_shortcut_notifications">通知</string>
     <string name="settings_shortcut_overlay_permission">显示在其他应用上层</string>
     <string name="settings_shortcut_privacy">隐私</string>
@@ -995,7 +1001,7 @@
     <string name="permissions_calling_desc">允许直接呼叫您的联系人，省去跳转并开启系统拨号盘的步骤。</string>
     <string name="settings_notifications_permission_title">发送通知</string>
     <string name="permissions_notifications_desc">用于将搜索结果固定到通知面板</string>
-    <string name="permissions_notification_access_desc">用于在有通知的应用上显示通知圆点。</string>
+    <string name="permissions_notification_access_desc">启用通知圆点和通知历史记录功能所需</string>
     <string name="permissions_accessibility_lock_screen_title">无障碍</string>
     <string name="permissions_accessibility_lock_screen_desc">允许使用双击手势锁定设备。</string>
     <string name="permissions_contacts_desc">允许检索、匹配并展示您设备通讯录中的联系人信息。</string>

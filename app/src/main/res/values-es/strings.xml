@@ -635,6 +635,12 @@
     <string name="settings_shortcut_network">Redes e internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Acceso a notificaciones</string>
+    <string name="settings_shortcut_notification_history">Historial de notificaciones</string>
+    <string name="notification_history_permission_desc">Permite el acceso a las notificaciones para recopilarlas aquí. Solo aparecerán en esta lista las notificaciones recibidas después de conceder el acceso.</string>
+    <string name="notification_history_empty">Todavía no hay notificaciones.</string>
+    <string name="notification_history_app_filter_title">Mostrar notificaciones de</string>
+    <string name="notification_history_search_hint">Buscar notificaciones</string>
+    <string name="notification_history_hide_app">Ocultar notificaciones de %1$s</string>
     <string name="settings_shortcut_notifications">Notificaciones</string>
     <string name="settings_shortcut_overlay_permission">Mostrar sobre otras apps</string>
     <string name="settings_shortcut_privacy">Privacidad</string>
@@ -1005,7 +1011,7 @@
     <string name="permissions_calling_desc">Necesario para llamar a tus contactos directamente sin abrir el teclado de marcación.</string>
     <string name="settings_notifications_permission_title">Publicar notificaciones</string>
     <string name="permissions_notifications_desc">Necesario para fijar resultados de búsqueda en el panel de notificaciones</string>
-    <string name="permissions_notification_access_desc">Necesario para mostrar puntos de notificación en las apps que tienen notificaciones.</string>
+    <string name="permissions_notification_access_desc">Necesario para activar los puntos de notificación y el historial de notificaciones</string>
     <string name="permissions_accessibility_lock_screen_title">Accesibilidad</string>
     <string name="permissions_accessibility_lock_screen_desc">Permite que el gesto de doble toque bloquee el dispositivo.</string>
     <string name="permissions_contacts_desc">Necesario para buscar tus contactos.</string>

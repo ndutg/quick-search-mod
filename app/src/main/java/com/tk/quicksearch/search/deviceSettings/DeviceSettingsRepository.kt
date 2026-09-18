@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.MainActivity
 
 /**
  * Provides a curated list of Settings shortcuts that can be surfaced in search.
@@ -419,6 +420,17 @@ class DeviceSettingsRepository(
                 action = Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS,
             ),
         )
+
+        add(
+            createShortcut(
+                id = NOTIFICATION_HISTORY_SETTING_ID,
+                titleRes = R.string.settings_shortcut_notification_history,
+                descriptionRes = R.string.device_settings_category_notifications_accessibility,
+                keywords = listOf("history", "past", "recent", "log", "notifications"),
+                action = MainActivity.ACTION_OPEN_NOTIFICATION_HISTORY,
+                showsNavigationChevron = true,
+            ),
+        )
     }
 
     private fun MutableList<DeviceSetting>.addDeveloperShortcuts() {
@@ -442,6 +454,7 @@ class DeviceSettingsRepository(
         data: String? = null,
         extras: Map<String, Any>? = null,
         minSdk: Int = Build.VERSION_CODES.BASE,
+        showsNavigationChevron: Boolean = false,
     ): DeviceSetting =
         DeviceSetting(
             id = id,
@@ -452,5 +465,6 @@ class DeviceSettingsRepository(
             data = data,
             extras = extras.orEmpty(),
             minSdk = minSdk,
+            showsNavigationChevron = showsNavigationChevron,
         )
 }

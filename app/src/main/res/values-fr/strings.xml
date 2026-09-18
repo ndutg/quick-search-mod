@@ -635,6 +635,12 @@
 <string name="settings_shortcut_network">Réseau &amp; Internet</string>
 <string name="settings_shortcut_nfc">NFC</string>
 <string name="settings_shortcut_notification_listener">Accès aux notifications</string>
+    <string name="settings_shortcut_notification_history">Historique des notifications</string>
+    <string name="notification_history_permission_desc">Autorisez l\'accès aux notifications pour les collecter ici. Seules les notifications reçues après l\'autorisation apparaissent dans cette liste.</string>
+    <string name="notification_history_empty">Aucune notification pour le moment.</string>
+    <string name="notification_history_app_filter_title">Afficher les notifications de</string>
+    <string name="notification_history_search_hint">Rechercher des notifications</string>
+    <string name="notification_history_hide_app">Masquer les notifications de %1$s</string>
 <string name="settings_shortcut_notifications">Notifications</string>
 <string name="settings_shortcut_overlay_permission">Afficher par-dessus d\'autres applications</string>
 <string name="settings_shortcut_privacy">Confidentialité</string>
@@ -1005,7 +1011,7 @@
 <string name="permissions_calling_desc">Requis pour appeler vos contacts directement sans ouvrir le clavier numérique.</string>
 <string name="settings_notifications_permission_title">Publier des notifications</string>
 <string name="permissions_notifications_desc">Requis pour épingler les résultats de recherche dans le panneau de notifications</string>
-    <string name="permissions_notification_access_desc">Requis pour afficher des points de notification sur les applications qui ont des notifications.</string>
+    <string name="permissions_notification_access_desc">Requis pour activer les pastilles de notification et l\'historique des notifications</string>
 <string name="permissions_accessibility_lock_screen_title">Accessibilité</string>
 <string name="permissions_accessibility_lock_screen_desc">Permet au geste de double appui de verrouiller votre appareil.</string>
 <string name="permissions_contacts_desc">Requis pour rechercher vos contacts.</string>

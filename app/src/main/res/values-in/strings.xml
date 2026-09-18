@@ -642,6 +642,12 @@
     <string name="settings_shortcut_network">Jaringan &amp; Internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Akses Notifikasi</string>
+    <string name="settings_shortcut_notification_history">Riwayat Notifikasi</string>
+    <string name="notification_history_permission_desc">Izinkan akses notifikasi untuk mengumpulkan notifikasi di sini. Hanya notifikasi yang diterima setelah akses diberikan yang muncul di daftar ini.</string>
+    <string name="notification_history_empty">Belum ada notifikasi.</string>
+    <string name="notification_history_app_filter_title">Tampilkan notifikasi dari</string>
+    <string name="notification_history_search_hint">Cari notifikasi</string>
+    <string name="notification_history_hide_app">Sembunyikan notifikasi dari %1$s</string>
     <string name="settings_shortcut_notifications">Notifikasi</string>
     <string name="settings_shortcut_overlay_permission">Tampilkan di Atas Aplikasi Lain</string>
     <string name="settings_shortcut_privacy">Privasi</string>
@@ -1015,7 +1021,7 @@
     <string name="permissions_calling_desc">Diperlukan untuk menelepon kontak secara langsung tanpa membuka dialer.</string>
     <string name="settings_notifications_permission_title">Kirim Notifikasi</string>
     <string name="permissions_notifications_desc">Diperlukan untuk menyematkan hasil pencarian ke panel notifikasi</string>
-    <string name="permissions_notification_access_desc">Diperlukan untuk menampilkan titik notifikasi pada aplikasi yang memiliki notifikasi.</string>
+    <string name="permissions_notification_access_desc">Diperlukan untuk mengaktifkan titik notifikasi dan fitur riwayat notifikasi</string>
     <string name="permissions_accessibility_lock_screen_title">Aksesibilitas</string>
     <string name="permissions_accessibility_lock_screen_desc">Mengizinkan gestur ketuk dua kali untuk mengunci perangkat Anda.</string>
     <string name="permissions_contacts_desc">Diperlukan untuk mencari kontak Anda.</string>

@@ -635,6 +635,12 @@
     <string name="settings_shortcut_network">నెట్‌వర్క్ &amp; ఇంటర్నెట్</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">నోటిఫికేషన్ యాక్సెస్</string>
+    <string name="settings_shortcut_notification_history">నోటిఫికేషన్ చరిత్ర</string>
+    <string name="notification_history_permission_desc">నోటిఫికేషన్‌లను ఇక్కడ సేకరించడానికి నోటిఫికేషన్ యాక్సెస్‌ను అనుమతించండి. యాక్సెస్ ఇచ్చిన తర్వాత వచ్చిన నోటిఫికేషన్‌లు మాత్రమే ఈ జాబితాలో కనిపిస్తాయి.</string>
+    <string name="notification_history_empty">ఇంకా నోటిఫికేషన్‌లు లేవు.</string>
+    <string name="notification_history_app_filter_title">వీటి నుండి నోటిఫికేషన్‌లను చూపు</string>
+    <string name="notification_history_search_hint">నోటిఫికేషన్‌లను శోధించండి</string>
+    <string name="notification_history_hide_app">%1$s నుండి నోటిఫికేషన్‌లను దాచు</string>
     <string name="settings_shortcut_notifications">నోటిఫికేషన్‌లు</string>
     <string name="settings_shortcut_overlay_permission">ఇతర యాప్‌ల పైన ప్రదర్శించు</string>
     <string name="settings_shortcut_privacy">గోప్యత</string>
@@ -1005,7 +1011,7 @@
     <string name="permissions_calling_desc">డయలర్ తెరవకుండానే మీ పరిచయాలకు నేరుగా కాల్ చేయడానికి అవసరం.</string>
     <string name="settings_notifications_permission_title">పోస్ట్ నోటిఫికేషన్‌లు</string>
     <string name="permissions_notifications_desc">శోధన ఫలితాలను నోటిఫికేషన్ ప్యానెల్‌కు పిన్ చేయడానికి అవసరం</string>
-    <string name="permissions_notification_access_desc">నోటిఫికేషన్‌లు ఉన్న యాప్‌లపై నోటిఫికేషన్ డాట్‌లను చూపించడానికి అవసరం.</string>
+    <string name="permissions_notification_access_desc">నోటిఫికేషన్ డాట్‌లు మరియు నోటిఫికేషన్ చరిత్ర ఫీచర్‌లను ప్రారంభించడానికి అవసరం</string>
     <string name="permissions_accessibility_lock_screen_title">యాక్సెసిబిలిటీ</string>
     <string name="permissions_accessibility_lock_screen_desc">రెండుసార్లు ట్యాప్ చేసే సంజ్ఞతో మీ పరికరాన్ని లాక్ చేయడానికి అనుమతిస్తుంది.</string>
     <string name="permissions_contacts_desc">మీ పరిచయాలను శోధించడానికి అవసరం.</string>

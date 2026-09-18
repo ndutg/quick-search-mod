@@ -33,6 +33,7 @@ enum class SettingsDetailType {
     NICKNAMES,
     TRIGGERS,
     GESTURES,
+    NOTIFICATION_HISTORY,
 }
 
 internal data class SettingsDestinationSpec(
@@ -196,6 +197,11 @@ internal object SettingsDestinationRegistry {
             SettingsDetailType.GESTURES to
                 SettingsDestinationSpec(
                     titleResId = R.string.settings_gestures_title,
+                    level = 2,
+                ),
+            SettingsDetailType.NOTIFICATION_HISTORY to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_shortcut_notification_history,
                     level = 2,
                 ),
         )

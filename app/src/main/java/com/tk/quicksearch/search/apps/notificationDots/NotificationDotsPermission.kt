@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.apps.notificationDots
 
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.ContextWrapper
@@ -20,8 +21,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
 object NotificationDotsPermission {
-    fun hasNotificationListenerAccess(context: Context): Boolean =
-        NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
+    fun hasNotificationListenerAccess(context: Context): Boolean {
+        // NotificationManagerCompat caches the enabled-listener list and can keep reporting access
+        // after it is revoked, so ask the platform directly where that API exists.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            val component = ComponentName(context, NotificationDotsListenerService::class.java)
+            runCatching { notificationManager?.isNotificationListenerAccessGranted(component) }
+                .getOrNull()
+                ?.let { return it }
+        }
+        return NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
+    }
 
     fun canEnableNotificationDots(context: Context): Boolean = hasNotificationListenerAccess(context)
 
