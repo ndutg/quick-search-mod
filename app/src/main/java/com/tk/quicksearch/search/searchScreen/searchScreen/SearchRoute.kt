@@ -1189,6 +1189,7 @@ fun SearchRoute(
             onOpenPermissionsSettings = {
                 onOpenAppSettingDestination(AppSettingsDestination.PERMISSIONS)
             },
+            onHomePinnedSectionOrderChange = viewModel::setHomePinnedSectionOrder,
             onChangeWallpaperClick = {
                 launchSystemWallpaperPicker(context)
             },

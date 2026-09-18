@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,9 @@ import com.tk.quicksearch.search.searchHistory.SearchHistorySection
 import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.searchEngines.compact.NoResultsSearchEngineCards
 import com.tk.quicksearch.search.webSuggestions.WebSuggestionsSection
+import com.tk.quicksearch.settings.settingsDetailScreen.PriorityReorderDialog
+import com.tk.quicksearch.settings.settingsDetailScreen.withHiddenPinnedSectionsRestored
+import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.tools.aiSearch.CurrencyConverterResult
@@ -129,6 +133,7 @@ fun ContentLayout(
     searchHistorySelectedTab: SearchHistoryTab = SearchHistoryTab.SEARCHES,
     onSearchHistorySelectedTabChange: (SearchHistoryTab) -> Unit = {},
     onOpenPermissionsSettings: () -> Unit = {},
+    onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit = {},
     selectedTopMatchIndex: Int? = null,
 ) {
     val context = LocalContext.current
@@ -489,6 +494,8 @@ fun ContentLayout(
             !isSectionAliasMode &&
             !hideHomeSectionTitleRows
 
+    var showPinnedSectionOrderDialog by rememberSaveable { mutableStateOf(false) }
+
     @Composable
     fun renderHomePinnedSection(
         section: SearchSection,
@@ -505,20 +512,21 @@ fun ContentLayout(
         val interactionSource = remember { MutableInteractionSource() }
         val metadata = SearchSectionUiMetadataRegistry.metadataFor(section)
         val sectionIcon = metadata.settingsIcon
-        val toggleExpanded = {
-            val newExpanded = !isExpanded
-            isExpanded = newExpanded
-            userPreferences.setHomePinnedSectionExpanded(section, newExpanded)
-        }
+        val headerGestures =
+            Modifier.combinedClickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {
+                    val newExpanded = !isExpanded
+                    isExpanded = newExpanded
+                    userPreferences.setHomePinnedSectionExpanded(section, newExpanded)
+                },
+                onLongClick = { showPinnedSectionOrderDialog = true },
+            )
         val headerContent: @Composable (Modifier) -> Unit = { modifier ->
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = toggleExpanded,
-                    )
                     .padding(
                         horizontal = DesignTokens.SpacingLarge,
                         vertical = DesignTokens.SpacingXXSmall,
@@ -559,7 +567,7 @@ fun ContentLayout(
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
         ) {
             if (isExpanded) {
-                headerContent(Modifier)
+                headerContent(headerGestures)
             } else {
                 SearchResultCard(
                     modifier = Modifier
@@ -570,7 +578,8 @@ fun ContentLayout(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(min = 60.dp),
+                            .heightIn(min = 60.dp)
+                            .then(headerGestures),
                         contentAlignment = Alignment.Center,
                     ) {
                         headerContent(
@@ -587,6 +596,25 @@ fun ContentLayout(
                 content()
             }
         }
+    }
+
+    if (showPinnedSectionOrderDialog) {
+        val pinnedSectionOrderItems =
+            state.homePinnedSectionOrder.filter { section ->
+                FeatureFlags.isSearchSectionEnabled(section) &&
+                    !(state.pinnedAppShortcutsInAppGrid && section == SearchSection.APP_SHORTCUTS)
+            }
+        PriorityReorderDialog(
+            items = pinnedSectionOrderItems,
+            onItemsChange = { order ->
+                onHomePinnedSectionOrderChange(
+                    withHiddenPinnedSectionsRestored(order, state.homePinnedSectionOrder),
+                )
+            },
+            onDismiss = { showPinnedSectionOrderDialog = false },
+            titleRes = R.string.settings_pinned_sections_order_title,
+            infoRes = R.string.settings_pinned_sections_order_dialog_info,
+        )
     }
 
     fun homePinnedSectionHasItems(

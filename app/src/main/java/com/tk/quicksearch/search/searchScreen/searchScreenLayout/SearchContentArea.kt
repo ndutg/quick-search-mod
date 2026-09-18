@@ -150,6 +150,7 @@ fun SearchContentArea(
     aiSearchState: AiSearchState? = null,
     isOverlayPresentation: Boolean = false,
     onOpenPermissionsSettings: () -> Unit = {},
+    onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit = {},
     onChangeWallpaperClick: () -> Unit = {},
     onOpenGesturesSettingsClick: () -> Unit = {},
     onOpenSettingsClick: () -> Unit = {},
@@ -678,6 +679,7 @@ fun SearchContentArea(
                                 searchHistorySelectedTab = searchHistorySelectedTab,
                                 onSearchHistorySelectedTabChange = { searchHistorySelectedTab = it },
                                 onOpenPermissionsSettings = onOpenPermissionsSettings,
+                                onHomePinnedSectionOrderChange = onHomePinnedSectionOrderChange,
                                 selectedTopMatchIndex = selectedTopMatchIndex,
                             )
                         }

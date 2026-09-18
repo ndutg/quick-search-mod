@@ -380,7 +380,7 @@ fun AppearanceSettingsSection(
 }
 
 /** Keeps sections hidden from the reorder dialog at their saved positions. */
-private fun withHiddenPinnedSectionsRestored(
+internal fun withHiddenPinnedSectionsRestored(
         visibleOrder: List<SearchSection>,
         fullOrder: List<SearchSection>,
 ): List<SearchSection> {
