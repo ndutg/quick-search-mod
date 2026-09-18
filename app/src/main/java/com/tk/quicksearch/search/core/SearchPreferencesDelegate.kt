@@ -380,6 +380,15 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setHomePinnedSectionOrder(order: List<SearchSection>) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setHomePinnedSectionOrder(order)
+            updateFeatureState {
+                it.copy(homePinnedSectionOrder = userPreferences.getHomePinnedSectionOrder())
+            }
+        }
+    }
+
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             val updated =

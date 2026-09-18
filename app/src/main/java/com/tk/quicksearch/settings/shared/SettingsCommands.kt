@@ -38,6 +38,8 @@ sealed interface SettingsCommand {
 
     data class TopMatchesSectionOrder(val order: List<SearchSection>) : SettingsCommand
 
+    data class HomePinnedSectionOrder(val order: List<SearchSection>) : SettingsCommand
+
     data class TopMatchesSectionEnabled(
         val section: SearchSection,
         val enabled: Boolean,
@@ -169,6 +171,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
             setAppSuggestionTabEnabled(command.tab, command.enabled)
         is SettingsCommand.TopMatchesLimit -> setTopMatchesLimit(command.limit)
         is SettingsCommand.TopMatchesSectionOrder -> setTopMatchesSectionOrder(command.order)
+        is SettingsCommand.HomePinnedSectionOrder -> setHomePinnedSectionOrder(command.order)
         is SettingsCommand.TopMatchesSectionEnabled ->
             setTopMatchesSectionEnabled(command.section, command.enabled)
         is SettingsCommand.PhoneAppGridColumns -> setPhoneAppGridColumns(command.columns)

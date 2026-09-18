@@ -771,6 +771,9 @@ Beschikbare snelkoppelingen: %1$s</string>
     <string name="settings_layout_option_bottom_title">Eenhandige modus</string>
     <string name="settings_unified_pinned_items_title">Gecombineerde vastgemaakte items</string>
     <string name="settings_unified_pinned_items_desc">Toon vastgemaakte items als één gecombineerde lijst op het startscherm.</string>
+    <string name="settings_pinned_sections_order_title">Volgorde vastgezette secties</string>
+    <string name="settings_pinned_sections_order_desc">Vastgezette secties op het startscherm herschikken</string>
+    <string name="settings_pinned_sections_order_dialog_info">Houd ingedrukt en sleep om de volgorde van vastgezette secties op het startscherm te wijzigen.</string>
     <string name="settings_more_options_desc">Diverse aanpassingsopties</string>
     <string name="settings_more_options_title">Meer opties</string>
     <string name="settings_overlay_assistant_setup_now">Nu instellen</string>

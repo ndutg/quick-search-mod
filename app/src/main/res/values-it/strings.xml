@@ -735,6 +735,9 @@
     <string name="settings_layout_option_bottom_title">Modalità a una mano</string>
     <string name="settings_unified_pinned_items_title">Elementi fissati unificati</string>
     <string name="settings_unified_pinned_items_desc">Mostra gli elementi fissati como un unico elenco unificato nella schermata iniziale.</string>
+    <string name="settings_pinned_sections_order_title">Ordine delle sezioni fissate</string>
+    <string name="settings_pinned_sections_order_desc">Riordina le sezioni fissate nella schermata home</string>
+    <string name="settings_pinned_sections_order_dialog_info">Tieni premuto e trascina per cambiare l\'ordine delle sezioni fissate nella schermata home.</string>
     <string name="settings_more_options_desc">Opzioni di personalizzazione varie</string>
     <string name="settings_more_options_title">Altre opzioni</string>
     <string name="settings_overlay_assistant_setup_now">Configura ora</string>

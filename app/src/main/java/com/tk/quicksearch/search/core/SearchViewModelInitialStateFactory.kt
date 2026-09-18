@@ -214,6 +214,7 @@ internal object SearchViewModelInitialStateFactory {
                 topMatchesLimit = startupPreferencesReader.getTopMatchesLimit(),
                 topMatchesSectionOrder = startupPreferencesReader.getTopMatchesSectionOrder(),
                 disabledTopMatchesSections = startupPreferencesReader.getDisabledTopMatchesSections(),
+                homePinnedSectionOrder = startupPreferencesReader.getHomePinnedSectionOrder(),
                 showRateQuickSearchCard = startupPreferencesReader.shouldShowRateQuickSearchCard(),
                 recentQueriesEnabled = startupPreferencesReader.areRecentQueriesEnabled(),
             )

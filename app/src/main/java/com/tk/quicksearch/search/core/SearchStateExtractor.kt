@@ -144,6 +144,7 @@ internal object SearchStateExtractor {
             topMatchesLimit = s.topMatchesLimit,
             topMatchesSectionOrder = s.topMatchesSectionOrder,
             disabledTopMatchesSections = s.disabledTopMatchesSections,
+            homePinnedSectionOrder = s.homePinnedSectionOrder,
             showTodayEvents = s.showTodayEvents,
             directDialEnabled = s.directDialEnabled,
             numberSearchEnabled = s.numberSearchEnabled,

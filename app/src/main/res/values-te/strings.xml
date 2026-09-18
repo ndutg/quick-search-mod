@@ -736,6 +736,9 @@
     <string name="settings_layout_option_bottom_title">వన్-హ్యాండెడ్ మోడ్</string>
     <string name="settings_unified_pinned_items_title">ఏకీకృత పిన్ చేసిన అంశాలు</string>
     <string name="settings_unified_pinned_items_desc">పిన్ చేసిన అంశాలను హోమ్ స్క్రీన్‌లో ఒకే ఏకీకృత జాబితాగా చూపించు.</string>
+    <string name="settings_pinned_sections_order_title">పిన్ చేసిన విభాగాల క్రమం</string>
+    <string name="settings_pinned_sections_order_desc">హోమ్‌లో పిన్ చేసిన విభాగాల క్రమాన్ని మార్చండి</string>
+    <string name="settings_pinned_sections_order_dialog_info">హోమ్‌లో పిన్ చేసిన విభాగాల క్రమాన్ని మార్చడానికి నొక్కి పట్టుకుని లాగండి.</string>
     <string name="settings_more_options_desc">ఇతర అనుకూలీకరణ ఎంపికలు</string>
     <string name="settings_more_options_title">మరిన్ని ఎంపికలు</string>
     <string name="settings_overlay_assistant_setup_now">ఇప్పుడే సెటప్ చేయండి</string>

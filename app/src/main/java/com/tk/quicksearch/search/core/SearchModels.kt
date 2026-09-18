@@ -692,6 +692,7 @@ data class SearchUiState(
         val topMatchesLimit: Int = UiPreferences.DEFAULT_TOP_MATCHES_LIMIT,
         val topMatchesSectionOrder: List<SearchSection> = UiPreferences.DEFAULT_TOP_MATCHES_SECTION_ORDER,
         val disabledTopMatchesSections: Set<SearchSection> = emptySet(),
+        val homePinnedSectionOrder: List<SearchSection> = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER,
         // Calendar
         val showTodayEvents: Boolean = true,
         // Usage permission banner
@@ -858,6 +859,7 @@ fun SearchUiState(
                 topMatchesLimit = features.topMatchesLimit,
                 topMatchesSectionOrder = features.topMatchesSectionOrder,
                 disabledTopMatchesSections = features.disabledTopMatchesSections,
+                homePinnedSectionOrder = features.homePinnedSectionOrder,
                 showTodayEvents = features.showTodayEvents,
                 directDialEnabled = features.directDialEnabled,
                 numberSearchEnabled = features.numberSearchEnabled,

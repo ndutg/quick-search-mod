@@ -1124,6 +1124,12 @@ class UserAppPreferences(
     fun setTopMatchesSectionOrder(order: List<SearchSection>) =
             uiPreferences.setTopMatchesSectionOrder(order)
 
+    fun getHomePinnedSectionOrder(): List<SearchSection> =
+            uiPreferences.getHomePinnedSectionOrder()
+
+    fun setHomePinnedSectionOrder(order: List<SearchSection>) =
+            uiPreferences.setHomePinnedSectionOrder(order)
+
     fun getDisabledTopMatchesSections(): Set<SearchSection> =
             uiPreferences.getDisabledTopMatchesSections()
 

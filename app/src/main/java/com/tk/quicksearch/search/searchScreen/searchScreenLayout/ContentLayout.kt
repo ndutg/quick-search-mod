@@ -211,7 +211,7 @@ fun ContentLayout(
     // reverseScrolling anchors content to the bottom but does not reverse child placement.
     val finalLayoutOrder =
         if (!hasQuery) {
-            homeLayoutOrder(baseLayoutOrder, isReversed)
+            homeLayoutOrder(baseLayoutOrder, isReversed, state.homePinnedSectionOrder)
         } else if (isReversed) {
             baseLayoutOrder.reversed()
         } else {

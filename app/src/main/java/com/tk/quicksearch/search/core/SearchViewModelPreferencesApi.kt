@@ -118,6 +118,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) =
         preferencesApiDelegate.setTopMatchesSectionEnabled(section, enabled)
 
+    fun setHomePinnedSectionOrder(order: List<SearchSection>) =
+        preferencesApiDelegate.setHomePinnedSectionOrder(order)
+
     fun setShowTodayEvents(enabled: Boolean) = preferencesApiDelegate.setShowTodayEvents(enabled)
 
 
@@ -511,6 +514,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) =
         preferencesDelegate.setTopMatchesSectionEnabled(section, enabled)
+
+    fun setHomePinnedSectionOrder(order: List<SearchSection>) =
+        preferencesDelegate.setHomePinnedSectionOrder(order)
 
     fun setAccentColorMode(mode: AccentColorMode) =
         preferencesDelegate.setAccentColorMode(mode)

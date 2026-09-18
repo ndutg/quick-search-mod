@@ -959,6 +959,7 @@ internal class SearchStartupLifecycleDelegate(
                 topMatchesLimit = userPreferences.getTopMatchesLimit(),
                 topMatchesSectionOrder = userPreferences.getTopMatchesSectionOrder(),
                 disabledTopMatchesSections = userPreferences.getDisabledTopMatchesSections(),
+                homePinnedSectionOrder = userPreferences.getHomePinnedSectionOrder(),
                 shouldShowUsagePermissionBanner = userPreferences.shouldShowUsagePermissionBanner(),
             )
         }

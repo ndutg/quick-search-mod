@@ -766,6 +766,9 @@ Dostępne skróty: %1$s</string>
     <string name="settings_layout_option_bottom_title">Tryb obsługi jedną ręką</string>
     <string name="settings_unified_pinned_items_title">Ujednolicone przypięte elementy</string>
     <string name="settings_unified_pinned_items_desc">Pokazuj przypięte elementy jako jedną ujednoliconą listę na ekranie głównym.</string>
+    <string name="settings_pinned_sections_order_title">Kolejność przypiętych sekcji</string>
+    <string name="settings_pinned_sections_order_desc">Zmień kolejność przypiętych sekcji na ekranie głównym</string>
+    <string name="settings_pinned_sections_order_dialog_info">Przytrzymaj i przeciągnij, aby zmienić kolejność przypiętych sekcji na ekranie głównym.</string>
     <string name="settings_more_options_desc">Różne opcje dostosowywania</string>
     <string name="settings_more_options_title">Więcej opcji</string>
     <string name="settings_overlay_assistant_setup_now">Skonfiguruj teraz</string>

@@ -726,6 +726,9 @@
     <string name="settings_layout_option_bottom_title">单手模式</string>
     <string name="settings_unified_pinned_items_title">统一固定项目</string>
     <string name="settings_unified_pinned_items_desc">在主屏幕上将固定项目显示为一个统一列表。</string>
+    <string name="settings_pinned_sections_order_title">固定分区顺序</string>
+    <string name="settings_pinned_sections_order_desc">重新排列主页上的固定分区</string>
+    <string name="settings_pinned_sections_order_dialog_info">长按并拖动以更改主页上固定分区的顺序。</string>
     <string name="settings_more_options_desc">其他杂项自定义选项</string>
     <string name="settings_more_options_title">更多选项</string>
     <string name="settings_overlay_assistant_setup_now">立即设置</string>

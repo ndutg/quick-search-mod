@@ -280,6 +280,12 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
+                            homePinnedSectionOrder = state.homePinnedSectionOrder,
+                            onHomePinnedSectionOrderChange = { order ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.HomePinnedSectionOrder(order),
+                                )
+                            },
                             searchHintsEnabled = state.searchHintsEnabled,
                             onToggleSearchHints = { enabled ->
                                 callbacks.onApplySettingsCommand(

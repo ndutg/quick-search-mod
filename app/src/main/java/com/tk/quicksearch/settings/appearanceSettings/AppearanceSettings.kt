@@ -3,6 +3,7 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,6 +12,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,6 +23,7 @@ import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.search.core.LauncherAppIcon
+import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.BasePreferences
@@ -31,8 +35,13 @@ import com.tk.quicksearch.settings.AppearanceSettings.AppLauncherIconCard
 import com.tk.quicksearch.settings.AppearanceSettings.AppThemeCard
 import com.tk.quicksearch.settings.AppearanceSettings.WallpaperCard
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.settings.shared.SettingsCardItem
+import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.settings.searchEnginesScreen.SearchEngineAppearanceCard
+import com.tk.quicksearch.shared.featureFlags.FeatureFlags
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /** Complete appearance settings section with all appearance-related components and dialogs. */
 @Composable
@@ -43,6 +52,8 @@ fun AppearanceSettingsSection(
         onToggleBottomSearchBar: (Boolean) -> Unit,
         unifiedPinnedItemsEnabled: Boolean,
         onToggleUnifiedPinnedItems: (Boolean) -> Unit,
+        homePinnedSectionOrder: List<SearchSection>,
+        onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit,
         searchHintsEnabled: Boolean,
         onToggleSearchHints: (Boolean) -> Unit,
         settingsIconEnabled: Boolean,
@@ -127,6 +138,11 @@ fun AppearanceSettingsSection(
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
     var showIconPackDialog by remember { mutableStateOf(false) }
+    var showPinnedSectionOrderDialog by rememberSaveable { mutableStateOf(false) }
+    val pinnedSectionOrderItems =
+        remember(homePinnedSectionOrder) {
+            homePinnedSectionOrder.filter { section -> FeatureFlags.isSearchSectionEnabled(section) }
+        }
 
     val hasIconPacks = availableIconPacks.isNotEmpty()
     val systemIconPackLabel = stringResource(R.string.settings_icon_pack_option_system)
@@ -228,6 +244,22 @@ fun AppearanceSettingsSection(
                         onCheckedChange = onToggleUnifiedPinnedItems,
                         extraVerticalPadding = 8.dp,
                 )
+                if (!unifiedPinnedItemsEnabled) {
+                    SettingsNavigationRow(
+                            item =
+                                    SettingsCardItem(
+                                            title = stringResource(R.string.settings_pinned_sections_order_title),
+                                            description = stringResource(R.string.settings_pinned_sections_order_desc),
+                                            actionOnPress = { showPinnedSectionOrderDialog = true },
+                                    ),
+                            contentPadding =
+                                    PaddingValues(
+                                            horizontal = DesignTokens.SpacingXXLarge,
+                                            vertical = DesignTokens.CardVerticalPadding + 8.dp,
+                                    ),
+                    )
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                }
                 SettingsToggleRow(
                         title = stringResource(R.string.settings_bottom_searchbar_title),
                         subtitle = stringResource(R.string.settings_bottom_searchbar_desc),
@@ -290,6 +322,16 @@ fun AppearanceSettingsSection(
                 },
                 appIconShape = appIconShape,
                 onSetAppIconShape = onSetAppIconShape,
+        )
+    }
+
+    if (showPinnedSectionOrderDialog) {
+        PriorityReorderDialog(
+                items = pinnedSectionOrderItems,
+                onItemsChange = onHomePinnedSectionOrderChange,
+                onDismiss = { showPinnedSectionOrderDialog = false },
+                titleRes = R.string.settings_pinned_sections_order_title,
+                infoRes = R.string.settings_pinned_sections_order_dialog_info,
         )
     }
 

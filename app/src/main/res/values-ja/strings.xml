@@ -746,6 +746,9 @@
     <string name="settings_layout_option_bottom_title">片手モード</string>
     <string name="settings_unified_pinned_items_title">固定アイテムの統合</string>
     <string name="settings_unified_pinned_items_desc">ホーム画面に固定アイテムを1つの統合リストとして表示します。</string>
+    <string name="settings_pinned_sections_order_title">固定セクションの順序</string>
+    <string name="settings_pinned_sections_order_desc">ホームの固定セクションを並べ替えます</string>
+    <string name="settings_pinned_sections_order_dialog_info">長押ししてドラッグすると、ホームの固定セクションの順序を変更できます。</string>
     <string name="settings_more_options_desc">その他のカスタマイズオプション</string>
     <string name="settings_more_options_title">その他のオプション</string>
     <string name="settings_overlay_assistant_setup_now">今すぐ設定</string>

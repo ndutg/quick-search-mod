@@ -736,6 +736,9 @@
     <string name="settings_layout_option_bottom_title">Modo de uma mão</string>
     <string name="settings_unified_pinned_items_title">Itens fixados unificados</string>
     <string name="settings_unified_pinned_items_desc">Mostrar itens fixados como uma lista unificada na tela inicial.</string>
+    <string name="settings_pinned_sections_order_title">Ordem das seções fixadas</string>
+    <string name="settings_pinned_sections_order_desc">Reordene as seções fixadas na tela inicial</string>
+    <string name="settings_pinned_sections_order_dialog_info">Toque e segure e arraste para alterar a ordem das seções fixadas na tela inicial.</string>
     <string name="settings_more_options_desc">Opções diversas de personalização</string>
     <string name="settings_more_options_title">Mais opções</string>
     <string name="settings_overlay_assistant_setup_now">Configurar agora</string>

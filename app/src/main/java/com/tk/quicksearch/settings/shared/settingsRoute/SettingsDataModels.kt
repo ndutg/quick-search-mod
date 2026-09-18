@@ -50,6 +50,8 @@ data class SettingsScreenState(
     val oneHandedMode: Boolean,
     val bottomSearchBarEnabled: Boolean = false,
     val unifiedPinnedItemsEnabled: Boolean = false,
+    val homePinnedSectionOrder: List<SearchSection> =
+        com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER,
     val searchHintsEnabled: Boolean = true,
     val settingsIconEnabled: Boolean = true,
     val overlayModeEnabled: Boolean,

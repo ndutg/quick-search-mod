@@ -30,6 +30,37 @@ class ContentLayoutPolicyTest {
     }
 
     @Test
+    fun homeLayoutFollowsCustomPinnedSectionOrder() {
+        val order =
+            homeLayoutOrder(
+                ItemPriorityConfig.APP_OPEN_STATE_LAYOUT,
+                isReversed = false,
+                pinnedSectionOrder =
+                    listOf(
+                        SearchSection.NOTES,
+                        SearchSection.CONTACTS,
+                        SearchSection.SETTINGS,
+                        SearchSection.APP_SHORTCUTS,
+                        SearchSection.CALENDAR,
+                        SearchSection.FILES,
+                    ),
+            )
+
+        assertEquals(
+            listOf(
+                ItemPriorityConfig.ItemType.NOTES_SECTION,
+                ItemPriorityConfig.ItemType.CONTACTS_SECTION,
+                ItemPriorityConfig.ItemType.SETTINGS_SECTION,
+                ItemPriorityConfig.ItemType.APP_SHORTCUTS_SECTION,
+                ItemPriorityConfig.ItemType.CALENDAR_SECTION,
+                ItemPriorityConfig.ItemType.FILES_SECTION,
+                ItemPriorityConfig.ItemType.APP_SETTINGS_SECTION,
+            ),
+            order.takeLast(7),
+        )
+    }
+
+    @Test
     fun oneHandedHomeLayoutReversesEveryHomeItem() {
         val regularOrder = homeLayoutOrder(ItemPriorityConfig.APP_OPEN_STATE_LAYOUT, isReversed = false)
 

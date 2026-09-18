@@ -744,6 +744,9 @@
     <string name="settings_layout_option_bottom_title">Mode Satu Tangan</string>
     <string name="settings_unified_pinned_items_title">Item Sematan Terpadu</string>
     <string name="settings_unified_pinned_items_desc">Tampilkan item yang disematkan sebagai satu daftar terpadu di layar utama.</string>
+    <string name="settings_pinned_sections_order_title">Urutan Bagian yang Disematkan</string>
+    <string name="settings_pinned_sections_order_desc">Atur ulang bagian yang disematkan di beranda</string>
+    <string name="settings_pinned_sections_order_dialog_info">Tahan dan seret untuk mengubah urutan bagian yang disematkan di beranda.</string>
     <string name="settings_more_options_desc">Opsi penyesuaian lainnya</string>
     <string name="settings_more_options_title">Opsi Lainnya</string>
     <string name="settings_overlay_assistant_setup_now">Siapkan Sekarang</string>

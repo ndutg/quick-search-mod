@@ -736,6 +736,9 @@
 <string name="settings_layout_option_bottom_title">Mode à une main</string>
 <string name="settings_unified_pinned_items_title">Éléments épinglés unifiés</string>
 <string name="settings_unified_pinned_items_desc">Afficher les éléments épinglés sous forme de liste unifiée sur l\'écran d\'accueil.</string>
+    <string name="settings_pinned_sections_order_title">Ordre des sections épinglées</string>
+    <string name="settings_pinned_sections_order_desc">Réorganiser les sections épinglées sur l\'accueil</string>
+    <string name="settings_pinned_sections_order_dialog_info">Appuyez longuement et faites glisser pour modifier l\'ordre des sections épinglées sur l\'accueil.</string>
 <string name="settings_more_options_desc">Options de personnalisation diverses</string>
 <string name="settings_more_options_title">Plus d\'options</string>
 <string name="settings_overlay_assistant_setup_now">Configurer maintenant</string>
