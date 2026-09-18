@@ -21,7 +21,7 @@ Use this file as the repository-specific playbook. Prefer the current code and b
   - regular launches, assistant/search/share/process-text/import flows: `app/MainActivity.kt`
   - launcher HOME role: `app/HomeActivity.kt`
   - draw-over-other-apps mode: `overlay/OverlayActivity.kt`
-- Persistence is primarily modular `SharedPreferences`; secrets use the existing encrypted preference path. Notes are stored with Room under `search/data/notes/`. The startup app catalog uses `search/data/AppCache.kt`.
+- Persistence is primarily modular `SharedPreferences`; secrets use the existing encrypted preference path. Notes are stored with Room under `search/data/notes/`; notification history uses its own Room database under `search/notificationHistory/`. The startup app catalog uses `search/data/AppCache.kt`.
 
 ## Architecture map
 

@@ -97,7 +97,11 @@ fun NotificationHistorySettingsSection(
     val listState = rememberLazyListState()
 
     val accessGranted by NotificationHistoryAccess.granted.collectAsState()
-    val entries by NotificationHistoryStore.entries.collectAsState()
+    // Null until the first database read completes, so the empty state doesn't flash.
+    val loadedEntries by
+        remember(context) { NotificationHistoryStore.entries(context) }
+            .collectAsState(initial = null)
+    val entries = loadedEntries.orEmpty()
     val hiddenPackages by NotificationHistoryStore.hiddenPackages.collectAsState()
 
     // Listener access is granted from a system screen, so re-check it every time we come back.
@@ -174,7 +178,7 @@ fun NotificationHistorySettingsSection(
             return@Column
         }
         // Access state is unknown until the first check completes; avoid flashing either state.
-        if (accessGranted == null) return@Column
+        if (accessGranted == null || loadedEntries == null) return@Column
 
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             if (filteredEntries.isEmpty()) {
