@@ -1167,4 +1167,9 @@
     <string name="speed_bump_overlay_title">Πάρε μια βαθιά ανάσα</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Επερχόμενο ξυπνητήρι</string>
+    <string name="settings_tavily_title">Tavily για αναζήτηση ιστού</string>
+    <string name="settings_tavily_desc">Προσθέστε κλειδί API του Tavily για υποστήριξη αναζήτησης ιστού σε μοντέλα που δεν την υποστηρίζουν.</string>
+    <string name="settings_tavily_mode_always">Να χρησιμοποιείται πάντα το Tavily για αναζήτηση ιστού</string>
+    <string name="settings_tavily_mode_when_unsupported">Χρήση μόνο όταν το μοντέλο δεν υποστηρίζει αναζήτηση ιστού</string>
+    <string name="tavily_search_failed_toast">Η αναζήτηση ιστού Tavily απέτυχε. Απάντηση χωρίς αποτελέσματα ιστού.</string>
 </resources>

@@ -1166,4 +1166,9 @@
     <string name="speed_bump_overlay_title">Derin bir nefes al</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Yaklaşan alarm</string>
+    <string name="settings_tavily_title">Web Araması için Tavily</string>
+    <string name="settings_tavily_desc">Web aramasını desteklemeyen modellere web araması eklemek için Tavily API anahtarı ekleyin.</string>
+    <string name="settings_tavily_mode_always">Web araması için her zaman Tavily kullan</string>
+    <string name="settings_tavily_mode_when_unsupported">Yalnızca model web aramasını desteklemediğinde kullan</string>
+    <string name="tavily_search_failed_toast">Tavily web araması başarısız oldu. Web sonuçları olmadan yanıtlanıyor.</string>
 </resources>

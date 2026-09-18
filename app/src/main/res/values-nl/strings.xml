@@ -1224,4 +1224,9 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="speed_bump_overlay_title">Haal even adem</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Aankomende wekker</string>
+    <string name="settings_tavily_title">Tavily voor webzoeken</string>
+    <string name="settings_tavily_desc">Voeg een Tavily API-sleutel toe om webzoeken toe te voegen aan modellen die dit niet ondersteunen.</string>
+    <string name="settings_tavily_mode_always">Altijd Tavily gebruiken voor webzoekopdrachten</string>
+    <string name="settings_tavily_mode_when_unsupported">Alleen gebruiken als het model geen webzoekfunctie ondersteunt</string>
+    <string name="tavily_search_failed_toast">Tavily-webzoekopdracht mislukt. Antwoord zonder webresultaten.</string>
 </resources>

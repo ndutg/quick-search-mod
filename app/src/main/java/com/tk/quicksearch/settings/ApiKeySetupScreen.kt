@@ -52,6 +52,17 @@ import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.RadioButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.semantics.Role
+import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.tools.aiSearch.TavilyWebSearchMode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val CardContentVerticalPadding = DesignTokens.CardVerticalPadding + DesignTokens.SpacingSmall
 
@@ -128,8 +139,245 @@ fun ApiKeySetupScreen(
             isSaving = isSavingApiKey,
             onSave = onAddCustomProvider,
         )
+
+        TavilyWebSearchSection()
     }
 }
+
+@Composable
+private fun TavilyWebSearchSection() {
+    val context = LocalContext.current
+    val preferences = remember(context) { UserAppPreferences(context.applicationContext) }
+    val coroutineScope = rememberCoroutineScope()
+    var apiKeyLast4 by remember { mutableStateOf<String?>(null) }
+    var mode by remember { mutableStateOf(TavilyWebSearchMode.DEFAULT) }
+    var isSaving by remember { mutableStateOf(false) }
+
+    LaunchedEffect(preferences) {
+        val (key, savedMode) =
+            withContext(Dispatchers.IO) {
+                preferences.getTavilyApiKey() to preferences.getTavilyWebSearchMode()
+            }
+        apiKeyLast4 = key?.trim()?.takeLast(4)
+        mode = savedMode
+    }
+
+    fun saveApiKey(key: String?) {
+        coroutineScope.launch {
+            isSaving = true
+            withContext(Dispatchers.IO) { preferences.setTavilyApiKey(key) }
+            apiKeyLast4 = key?.trim()?.takeIf { it.isNotEmpty() }?.takeLast(4)
+            isSaving = false
+        }
+    }
+
+    TavilyApiKeyCard(
+        apiKeyLast4 = apiKeyLast4,
+        isSaving = isSaving,
+        mode = mode,
+        onSaveApiKey = ::saveApiKey,
+        onModeChange = { selected ->
+            mode = selected
+            coroutineScope.launch(Dispatchers.IO) { preferences.setTavilyWebSearchMode(selected) }
+        },
+    )
+}
+
+@Composable
+private fun TavilyApiKeyCard(
+    apiKeyLast4: String?,
+    isSaving: Boolean,
+    mode: TavilyWebSearchMode,
+    onSaveApiKey: (String?) -> Unit,
+    onModeChange: (TavilyWebSearchMode) -> Unit,
+) {
+    val clipboardManager = LocalClipboardManager.current
+    var apiKeyInput by remember { mutableStateOf("") }
+    val trimmedKey = apiKeyInput.trim()
+    val hasSavedKey = apiKeyLast4 != null
+
+    fun pasteFromClipboard() {
+        apiKeyInput =
+            clipboardManager
+                .getText()
+                ?.text
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() }
+                .orEmpty()
+    }
+
+    SettingsCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(
+                        horizontal = DesignTokens.CardHorizontalPadding,
+                        vertical = DesignTokens.CardVerticalPadding,
+                    ),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_tavily_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text =
+                            if (hasSavedKey) {
+                                stringResource(R.string.settings_api_key_saved_last4, apiKeyLast4.orEmpty())
+                            } else {
+                                stringResource(R.string.settings_tavily_desc)
+                            },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                if (hasSavedKey) {
+                    IconButton(
+                        enabled = !isSaving,
+                        onClick = {
+                            apiKeyInput = ""
+                            onSaveApiKey(null)
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = stringResource(R.string.settings_gemini_api_key_reset),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
+            }
+
+            if (hasSavedKey) {
+                Column(modifier = Modifier.selectableGroup()) {
+                    TavilyWebSearchMode.entries.forEach { option ->
+                        TavilyModeOption(
+                            label = stringResource(option.labelResId()),
+                            selected = option == mode,
+                            onClick = { onModeChange(option) },
+                        )
+                    }
+                }
+            } else {
+                OutlinedTextField(
+                    value = apiKeyInput,
+                    onValueChange = {},
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .pointerInput(apiKeyInput) {
+                                detectTapGestures {
+                                    if (apiKeyInput.isEmpty()) {
+                                        pasteFromClipboard()
+                                    } else {
+                                        apiKeyInput = ""
+                                    }
+                                }
+                            },
+                    leadingIcon =
+                        if (apiKeyInput.isEmpty()) {
+                            {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center,
+                                ) {
+                                    TextButton(
+                                        enabled = !isSaving,
+                                        onClick = { pasteFromClipboard() },
+                                        modifier = Modifier.wrapContentWidth(),
+                                    ) {
+                                        Text(text = stringResource(R.string.settings_gemini_api_key_paste_hint))
+                                    }
+                                }
+                            }
+                        } else {
+                            null
+                        },
+                    shape = DesignTokens.ShapeXXLarge,
+                    colors =
+                        dialogTextFieldColors(
+                            unfocusedIndicatorColor =
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        ),
+                    singleLine = true,
+                    readOnly = true,
+                )
+
+                if (trimmedKey.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        TextButton(
+                            enabled = !isSaving,
+                            onClick = { apiKeyInput = "" },
+                        ) {
+                            Text(text = stringResource(R.string.common_action_clear))
+                        }
+                        Button(
+                            enabled = !isSaving,
+                            onClick = {
+                                onSaveApiKey(trimmedKey)
+                                apiKeyInput = ""
+                            },
+                        ) {
+                            Text(
+                                text =
+                                    if (isSaving) {
+                                        stringResource(R.string.settings_gemini_api_key_saving)
+                                    } else {
+                                        stringResource(R.string.dialog_save)
+                                    },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TavilyModeOption(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+                .padding(vertical = DesignTokens.SpacingSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
+        )
+    }
+}
+
+private fun TavilyWebSearchMode.labelResId(): Int =
+    when (this) {
+        TavilyWebSearchMode.ALWAYS -> R.string.settings_tavily_mode_always
+        TavilyWebSearchMode.WHEN_MODEL_UNSUPPORTED -> R.string.settings_tavily_mode_when_unsupported
+    }
 
 @Composable
 private fun AddCustomProviderCard(

@@ -1176,4 +1176,9 @@ www.google.com/search?q={{query}}</string>
     <string name="speed_bump_overlay_title">深呼吸してください</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">次のアラーム</string>
+    <string name="settings_tavily_title">ウェブ検索用 Tavily</string>
+    <string name="settings_tavily_desc">Tavily API キーを追加すると、ウェブ検索に対応していないモデルでもウェブ検索を利用できます。</string>
+    <string name="settings_tavily_mode_always">ウェブ検索には常に Tavily を使用</string>
+    <string name="settings_tavily_mode_when_unsupported">モデルがウェブ検索に対応していない場合のみ使用</string>
+    <string name="tavily_search_failed_toast">Tavily のウェブ検索に失敗しました。ウェブ結果なしで回答します。</string>
 </resources>

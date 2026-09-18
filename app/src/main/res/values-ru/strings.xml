@@ -1187,4 +1187,9 @@
     <string name="speed_bump_overlay_title">Сделайте глубокий вдох</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Ближайший будильник</string>
+    <string name="settings_tavily_title">Tavily для веб-поиска</string>
+    <string name="settings_tavily_desc">Добавьте API-ключ Tavily, чтобы добавить веб-поиск моделям, которые его не поддерживают.</string>
+    <string name="settings_tavily_mode_always">Всегда использовать Tavily для веб-поиска</string>
+    <string name="settings_tavily_mode_when_unsupported">Использовать, только если модель не поддерживает веб-поиск</string>
+    <string name="tavily_search_failed_toast">Веб-поиск Tavily не удался. Ответ без результатов из интернета.</string>
 </resources>

@@ -1196,4 +1196,9 @@ www.google.com/search?q={{query}}</string>
     <string name="speed_bump_overlay_title">Weź głęboki oddech</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Nadchodzący alarm</string>
+    <string name="settings_tavily_title">Tavily do wyszukiwania w sieci</string>
+    <string name="settings_tavily_desc">Dodaj klucz API Tavily, aby dodać wyszukiwanie w sieci do modeli, które go nie obsługują.</string>
+    <string name="settings_tavily_mode_always">Zawsze używaj Tavily do wyszukiwania w sieci</string>
+    <string name="settings_tavily_mode_when_unsupported">Używaj tylko, gdy model nie obsługuje wyszukiwania w sieci</string>
+    <string name="tavily_search_failed_toast">Wyszukiwanie Tavily nie powiodło się. Odpowiedź bez wyników z sieci.</string>
 </resources>

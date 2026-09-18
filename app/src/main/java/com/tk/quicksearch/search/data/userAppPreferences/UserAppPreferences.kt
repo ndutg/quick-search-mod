@@ -19,6 +19,7 @@ import com.tk.quicksearch.shared.util.isPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
 import com.tk.quicksearch.tools.aiSearch.OpenAiModelCatalog
+import com.tk.quicksearch.tools.aiSearch.TavilyWebSearchMode
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
 /**
@@ -57,6 +58,7 @@ class UserAppPreferences(
     private val groqPreferences by lazy { GroqPreferences(context) }
     private val metaPreferences by lazy { MetaPreferences(context) }
     private val customLlmProviderPreferences by lazy { CustomLlmProviderPreferences(context) }
+    private val tavilyPreferences by lazy { TavilyPreferences(context) }
     private val llmPreferences by lazy { LlmPreferences(context) }
     val uiPreferences by lazy { UiPreferences(context) }
     private val amazonPreferences by lazy { AmazonPreferences(context) }
@@ -980,6 +982,14 @@ class UserAppPreferences(
                     .putBoolean(KEY_HAS_CONFIGURED_AI_PROVIDER, configured)
                     .apply()
         }
+
+    fun getTavilyApiKey(): String? = tavilyPreferences.getApiKey()
+
+    fun setTavilyApiKey(key: String?) = tavilyPreferences.setApiKey(key)
+
+    fun getTavilyWebSearchMode(): TavilyWebSearchMode = tavilyPreferences.getWebSearchMode()
+
+    fun setTavilyWebSearchMode(mode: TavilyWebSearchMode) = tavilyPreferences.setWebSearchMode(mode)
 
     fun getLlmApiKeyLast4ByProvider(): Map<AiSearchLlmProviderId, String> =
         getConfiguredLlmProviderIds().mapNotNull { providerId ->

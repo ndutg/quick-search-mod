@@ -1167,4 +1167,9 @@
     <string name="speed_bump_overlay_title">एक गहरी सांस लें</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">आगामी अलार्म</string>
+    <string name="settings_tavily_title">वेब सर्च के लिए Tavily</string>
+    <string name="settings_tavily_desc">जो मॉडल वेब सर्च सपोर्ट नहीं करते, उनमें वेब सर्च जोड़ने के लिए Tavily API कुंजी जोड़ें।</string>
+    <string name="settings_tavily_mode_always">वेब सर्च के लिए हमेशा Tavily का उपयोग करें</string>
+    <string name="settings_tavily_mode_when_unsupported">केवल तब उपयोग करें जब मॉडल वेब सर्च सपोर्ट न करे</string>
+    <string name="tavily_search_failed_toast">Tavily वेब सर्च विफल रहा। वेब परिणामों के बिना उत्तर दिया जा रहा है।</string>
 </resources>

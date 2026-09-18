@@ -1169,4 +1169,9 @@
     <string name="speed_bump_overlay_title">Tarik napas dalam-dalam</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Alarm mendatang</string>
+    <string name="settings_tavily_title">Tavily untuk Penelusuran Web</string>
+    <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>
+    <string name="settings_tavily_mode_always">Selalu gunakan Tavily untuk penelusuran web</string>
+    <string name="settings_tavily_mode_when_unsupported">Gunakan hanya jika model tidak mendukung penelusuran web</string>
+    <string name="tavily_search_failed_toast">Penelusuran web Tavily gagal. Menjawab tanpa hasil web.</string>
 </resources>

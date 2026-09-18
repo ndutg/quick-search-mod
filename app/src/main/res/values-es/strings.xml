@@ -1167,4 +1167,9 @@
     <string name="speed_bump_overlay_title">Respira hondo</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Próxima alarma</string>
+    <string name="settings_tavily_title">Tavily para búsqueda web</string>
+    <string name="settings_tavily_desc">Añade una clave de API de Tavily para dar búsqueda web a los modelos que no la admiten.</string>
+    <string name="settings_tavily_mode_always">Usar siempre Tavily para la búsqueda web</string>
+    <string name="settings_tavily_mode_when_unsupported">Usar solo cuando el modelo no admita búsqueda web</string>
+    <string name="tavily_search_failed_toast">La búsqueda web de Tavily falló. Respondiendo sin resultados web.</string>
 </resources>

@@ -55,6 +55,8 @@ object SettingsBackupManager {
     // Legacy field: backups before multi-provider keys only carried the Gemini key.
     private const val FIELD_GEMINI_API_KEY = "geminiApiKey"
     private const val FIELD_LLM_API_KEYS = "llmApiKeys"
+    // Stored inside FIELD_LLM_API_KEYS alongside the LLM provider keys.
+    private const val TAVILY_API_KEY_FIELD = "tavily"
     private const val FIELD_LLM_PERSONAL_CONTEXTS = "llmPersonalContexts"
     private const val FIELD_CUSTOM_LLM_PROVIDERS = "customLlmProviders"
     private const val FIELD_SELECTED_EXPORT_ITEMS = "selectedExportItems"
@@ -486,6 +488,9 @@ object SettingsBackupManager {
                     userPreferences.setLlmApiKey(providerId, it)
                 }
             }
+            keys.optString(TAVILY_API_KEY_FIELD, "").takeIf { it.isNotBlank() }?.let {
+                userPreferences.setTavilyApiKey(it)
+            }
         }
         root.optJSONObject(FIELD_LLM_PERSONAL_CONTEXTS)?.let { contexts ->
             AiSearchLlmProviderId.entries.forEach { providerId ->
@@ -507,6 +512,9 @@ object SettingsBackupManager {
                 userPreferences.getLlmApiKey(providerId)?.takeIf { it.isNotBlank() }?.let {
                     put(providerId.storageValue, it)
                 }
+            }
+            userPreferences.getTavilyApiKey()?.takeIf { it.isNotBlank() }?.let {
+                put(TAVILY_API_KEY_FIELD, it)
             }
         }
 
