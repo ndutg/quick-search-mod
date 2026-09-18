@@ -234,6 +234,10 @@ private fun renderAppsSection(
             notificationDotsEnabled = appsParams.notificationDotsEnabled,
             onGridAppeared = appsParams.onGridAppeared,
             suppressSuggestionsEnterAnimation = appsParams.suppressSuggestionsEnterAnimation,
+            pinnedGridShortcuts = appsParams.pinnedGridAppShortcuts,
+            pinnedAppGridOrder = appsParams.pinnedAppGridOrder,
+            onReorderPinnedAppGrid = appsParams.onReorderPinnedAppGrid,
+            pinnedGridShortcutActions = appsParams.pinnedGridShortcutActions,
         )
         if (!renderPromptCardsFirst && shouldShowUpdateCard) {
             UpdateQuickSearchCard(

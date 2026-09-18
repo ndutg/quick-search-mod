@@ -739,6 +739,8 @@
     <string name="settings_pinned_sections_order_title">Orden de secciones fijadas</string>
     <string name="settings_pinned_sections_order_desc">Reordena las secciones fijadas en la pantalla de inicio</string>
     <string name="settings_pinned_sections_order_dialog_info">Mantén pulsado y arrastra para cambiar el orden de las secciones fijadas en la pantalla de inicio.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Accesos directos fijados en la cuadrícula de apps</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Muestra los accesos directos de apps fijados en la cuadrícula de apps junto con las apps.</string>
     <string name="settings_more_options_desc">Opciones de personalización misceláneas</string>
     <string name="settings_more_options_title">Más opciones</string>
     <string name="settings_overlay_assistant_setup_now">Configurar ahora</string>

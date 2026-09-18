@@ -262,6 +262,21 @@ class UiPreferences(
                 .filter { section -> section in defaultOrder }
     }
 
+    fun isPinnedAppShortcutsInAppGridEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID, false)
+
+    fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID, enabled)
+    }
+
+    /** Combined drag order of pinned apps and pinned shortcuts shown in the app grid. */
+    fun getPinnedAppGridOrder(): List<String> =
+            getStringListPref(UiPreferences.KEY_PINNED_APP_GRID_ORDER)
+
+    fun setPinnedAppGridOrder(order: List<String>) {
+        setStringListPref(UiPreferences.KEY_PINNED_APP_GRID_ORDER, order.distinct())
+    }
+
     fun setHomePinnedSectionOrder(order: List<SearchSection>) {
         val defaultOrder = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER
         val normalized =
@@ -1316,6 +1331,8 @@ class UiPreferences(
         const val KEY_TOP_MATCHES_SECTION_ORDER = "top_matches_section_order"
         const val KEY_DISABLED_TOP_MATCHES_SECTIONS = "disabled_top_matches_sections"
         const val KEY_HOME_PINNED_SECTION_ORDER = "home_pinned_section_order"
+        const val KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID = "pinned_app_shortcuts_in_app_grid"
+        const val KEY_PINNED_APP_GRID_ORDER = "pinned_app_grid_order"
         const val KEY_CLEAR_QUERY_ON_LAUNCH = "clear_query_on_launch"
         const val KEY_AUTO_CLOSE_OVERLAY = "auto_close_overlay"
         const val KEY_OVERLAY_MODE_ENABLED = "overlay_mode_enabled"

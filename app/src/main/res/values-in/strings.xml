@@ -747,6 +747,8 @@
     <string name="settings_pinned_sections_order_title">Urutan Bagian yang Disematkan</string>
     <string name="settings_pinned_sections_order_desc">Atur ulang bagian yang disematkan di beranda</string>
     <string name="settings_pinned_sections_order_dialog_info">Tahan dan seret untuk mengubah urutan bagian yang disematkan di beranda.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Pintasan Aplikasi Tersemat di Kisi Aplikasi</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Tampilkan pintasan aplikasi yang disematkan di kisi aplikasi bersama aplikasi.</string>
     <string name="settings_more_options_desc">Opsi penyesuaian lainnya</string>
     <string name="settings_more_options_title">Opsi Lainnya</string>
     <string name="settings_overlay_assistant_setup_now">Siapkan Sekarang</string>

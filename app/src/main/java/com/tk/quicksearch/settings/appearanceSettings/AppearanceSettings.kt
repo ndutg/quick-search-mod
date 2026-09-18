@@ -54,6 +54,8 @@ fun AppearanceSettingsSection(
         onToggleUnifiedPinnedItems: (Boolean) -> Unit,
         homePinnedSectionOrder: List<SearchSection>,
         onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit,
+        pinnedAppShortcutsInAppGrid: Boolean,
+        onTogglePinnedAppShortcutsInAppGrid: (Boolean) -> Unit,
         searchHintsEnabled: Boolean,
         onToggleSearchHints: (Boolean) -> Unit,
         settingsIconEnabled: Boolean,
@@ -140,8 +142,11 @@ fun AppearanceSettingsSection(
     var showIconPackDialog by remember { mutableStateOf(false) }
     var showPinnedSectionOrderDialog by rememberSaveable { mutableStateOf(false) }
     val pinnedSectionOrderItems =
-        remember(homePinnedSectionOrder) {
-            homePinnedSectionOrder.filter { section -> FeatureFlags.isSearchSectionEnabled(section) }
+        remember(homePinnedSectionOrder, pinnedAppShortcutsInAppGrid) {
+            homePinnedSectionOrder.filter { section ->
+                FeatureFlags.isSearchSectionEnabled(section) &&
+                    !(pinnedAppShortcutsInAppGrid && section == SearchSection.APP_SHORTCUTS)
+            }
         }
 
     val hasIconPacks = availableIconPacks.isNotEmpty()
@@ -261,6 +266,13 @@ fun AppearanceSettingsSection(
                     HorizontalDivider(color = AppColors.SettingsDivider)
                 }
                 SettingsToggleRow(
+                        title = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_title),
+                        subtitle = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_desc),
+                        checked = pinnedAppShortcutsInAppGrid,
+                        onCheckedChange = onTogglePinnedAppShortcutsInAppGrid,
+                        extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
                         title = stringResource(R.string.settings_bottom_searchbar_title),
                         subtitle = stringResource(R.string.settings_bottom_searchbar_desc),
                         checked = bottomSearchBarEnabled,
@@ -328,7 +340,11 @@ fun AppearanceSettingsSection(
     if (showPinnedSectionOrderDialog) {
         PriorityReorderDialog(
                 items = pinnedSectionOrderItems,
-                onItemsChange = onHomePinnedSectionOrderChange,
+                onItemsChange = { order ->
+                    onHomePinnedSectionOrderChange(
+                            withHiddenPinnedSectionsRestored(order, homePinnedSectionOrder),
+                    )
+                },
                 onDismiss = { showPinnedSectionOrderDialog = false },
                 titleRes = R.string.settings_pinned_sections_order_title,
                 infoRes = R.string.settings_pinned_sections_order_dialog_info,
@@ -351,4 +367,16 @@ fun AppearanceSettingsSection(
                 onDismiss = { showIconPackDialog = false },
         )
     }
+}
+
+/** Keeps sections hidden from the reorder dialog at their saved positions. */
+private fun withHiddenPinnedSectionsRestored(
+        visibleOrder: List<SearchSection>,
+        fullOrder: List<SearchSection>,
+): List<SearchSection> {
+    val result = visibleOrder.toMutableList()
+    fullOrder.forEachIndexed { index, section ->
+        if (section !in visibleOrder) result.add(index.coerceAtMost(result.size), section)
+    }
+    return result
 }

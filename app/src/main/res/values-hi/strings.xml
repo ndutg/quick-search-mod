@@ -739,6 +739,8 @@
     <string name="settings_pinned_sections_order_title">पिन किए गए सेक्शन का क्रम</string>
     <string name="settings_pinned_sections_order_desc">होम पर पिन किए गए सेक्शन का क्रम बदलें</string>
     <string name="settings_pinned_sections_order_dialog_info">होम पर पिन किए गए सेक्शन का क्रम बदलने के लिए दबाकर रखें और खींचें।</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">ऐप ग्रिड में पिन किए गए ऐप शॉर्टकट</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">पिन किए गए ऐप शॉर्टकट को ऐप ग्रिड में ऐप्स के साथ दिखाएं।</string>
     <string name="settings_more_options_desc">विविध कस्टमाइज़ेशन विकल्प</string>
     <string name="settings_more_options_title">और विकल्प</string>
     <string name="settings_overlay_assistant_setup_now">अभी सेटअप करें</string>

@@ -739,6 +739,8 @@
     <string name="settings_pinned_sections_order_title">Ordre des sections épinglées</string>
     <string name="settings_pinned_sections_order_desc">Réorganiser les sections épinglées sur l\'accueil</string>
     <string name="settings_pinned_sections_order_dialog_info">Appuyez longuement et faites glisser pour modifier l\'ordre des sections épinglées sur l\'accueil.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Raccourcis d\'applis épinglés dans la grille d\'applis</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Afficher les raccourcis d\'applis épinglés dans la grille d\'applis avec les applis.</string>
 <string name="settings_more_options_desc">Options de personnalisation diverses</string>
 <string name="settings_more_options_title">Plus d\'options</string>
 <string name="settings_overlay_assistant_setup_now">Configurer maintenant</string>

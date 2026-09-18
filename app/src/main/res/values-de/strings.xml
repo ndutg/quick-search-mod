@@ -739,6 +739,8 @@
     <string name="settings_pinned_sections_order_title">Reihenfolge angehefteter Bereiche</string>
     <string name="settings_pinned_sections_order_desc">Angeheftete Bereiche auf dem Startbildschirm neu anordnen</string>
     <string name="settings_pinned_sections_order_dialog_info">Gedrückt halten und ziehen, um die Reihenfolge der angehefteten Bereiche auf dem Startbildschirm zu ändern.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Angeheftete App-Verknüpfungen im App-Raster</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Angeheftete App-Verknüpfungen zusammen mit Apps im App-Raster anzeigen.</string>
     <string name="settings_more_options_desc">Verschiedene Anpassungsoptionen</string>
     <string name="settings_more_options_title">Weitere Optionen</string>
     <string name="settings_overlay_assistant_setup_now">Jetzt einrichten</string>

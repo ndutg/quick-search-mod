@@ -960,6 +960,8 @@ internal class SearchStartupLifecycleDelegate(
                 topMatchesSectionOrder = userPreferences.getTopMatchesSectionOrder(),
                 disabledTopMatchesSections = userPreferences.getDisabledTopMatchesSections(),
                 homePinnedSectionOrder = userPreferences.getHomePinnedSectionOrder(),
+                pinnedAppShortcutsInAppGrid = userPreferences.isPinnedAppShortcutsInAppGridEnabled(),
+                pinnedAppGridOrder = userPreferences.getPinnedAppGridOrder(),
                 shouldShowUsagePermissionBanner = userPreferences.shouldShowUsagePermissionBanner(),
             )
         }

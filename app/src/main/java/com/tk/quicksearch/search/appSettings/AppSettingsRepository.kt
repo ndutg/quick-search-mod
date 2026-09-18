@@ -346,6 +346,13 @@ class AppSettingsRepository(
                 keywords = listOf("pinned", "home", "sections", "list"),
             )
             addToggle(
+                id = "app_toggle_pinned_app_shortcuts_in_app_grid",
+                titleRes = R.string.settings_pinned_app_shortcuts_in_app_grid_title,
+                descriptionRes = R.string.settings_pinned_app_shortcuts_in_app_grid_desc,
+                toggleKey = AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID,
+                keywords = listOf("pinned", "shortcuts", "apps", "grid"),
+            )
+            addToggle(
                 id = "app_toggle_search_hints",
                 titleRes = R.string.settings_search_hints_title,
                 descriptionRes = R.string.settings_search_hints_desc,

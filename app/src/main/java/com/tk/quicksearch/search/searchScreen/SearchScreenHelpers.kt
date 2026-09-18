@@ -387,6 +387,11 @@ data class AppsSectionParams(
     val onUpdateNotNowClick: () -> Unit = {},
     val onGridAppeared: (() -> Unit)? = null,
     val suppressSuggestionsEnterAnimation: Boolean = false,
+    val pinnedGridAppShortcuts: List<StaticShortcut> = emptyList(),
+    val pinnedAppGridOrder: List<String> = emptyList(),
+    val onReorderPinnedAppGrid: (List<String>, List<AppInfo>, List<StaticShortcut>) -> Unit =
+        { _, _, _ -> },
+    val pinnedGridShortcutActions: com.tk.quicksearch.search.apps.AppGridShortcutActions? = null,
 )
 
 /** Data class for Calendar section parameters */
@@ -512,6 +517,7 @@ internal fun buildSectionParams(
     onPinApp: (AppInfo) -> Unit,
     onUnpinApp: (AppInfo) -> Unit,
     onReorderPinnedApps: (List<AppInfo>) -> Unit,
+    onReorderPinnedAppGrid: (List<String>, List<AppInfo>, List<StaticShortcut>) -> Unit,
     onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
     onRateQuickSearchClick: () -> Unit,
     onRateQuickSearchNotNowClick: () -> Unit,
@@ -985,6 +991,27 @@ internal fun buildSectionParams(
             showUpdateCard = state.showUpdateCard && !derivedState.isSearching && !isOverlayPresentation,
             onUpdateClick = onUpdateClick,
             onUpdateNotNowClick = onUpdateNotNowClick,
+            pinnedGridAppShortcuts =
+                if (state.pinnedAppShortcutsInAppGrid && !derivedState.isSearching) {
+                    state.pinnedAppShortcuts
+                } else {
+                    emptyList()
+                },
+            pinnedAppGridOrder = state.pinnedAppGridOrder,
+            onReorderPinnedAppGrid = onReorderPinnedAppGrid,
+            pinnedGridShortcutActions =
+                com.tk.quicksearch.search.apps.AppGridShortcutActions(
+                    onTogglePin = appShortcutParams.onTogglePin,
+                    onDisable = appShortcutParams.onDisable,
+                    onDisableAllForApp = appShortcutParams.onDisableAllForApp,
+                    onAppInfoClick = appShortcutParams.onAppInfoClick,
+                    onNicknameClick = appShortcutParams.onNicknameClick,
+                    onTriggerClick = appShortcutParams.onTriggerClick,
+                    onEditCustomShortcut = appShortcutParams.onEditCustomShortcut,
+                    onEditShortcutIcon = appShortcutParams.onEditShortcutIcon,
+                    getNickname = appShortcutParams.getShortcutNickname,
+                    getTrigger = appShortcutParams.getShortcutTrigger,
+                ),
         )
 
     val calendarParams =

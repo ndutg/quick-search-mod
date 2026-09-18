@@ -739,6 +739,8 @@
     <string name="settings_pinned_sections_order_title">Σειρά καρφιτσωμένων ενοτήτων</string>
     <string name="settings_pinned_sections_order_desc">Αναδιάταξη καρφιτσωμένων ενοτήτων στην αρχική</string>
     <string name="settings_pinned_sections_order_dialog_info">Πατήστε παρατεταμένα και σύρετε για να αλλάξετε τη σειρά των καρφιτσωμένων ενοτήτων στην αρχική.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Καρφιτσωμένες συντομεύσεις εφαρμογών στο πλέγμα εφαρμογών</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Εμφάνιση καρφιτσωμένων συντομεύσεων εφαρμογών στο πλέγμα εφαρμογών μαζί με τις εφαρμογές.</string>
     <string name="settings_more_options_desc">Διάφορες επιλογές προσαρμογής</string>
     <string name="settings_more_options_title">Περισσότερες επιλογές</string>
     <string name="settings_overlay_assistant_setup_now">Ρύθμιση τώρα</string>

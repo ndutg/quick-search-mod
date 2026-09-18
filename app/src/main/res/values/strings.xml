@@ -738,6 +738,8 @@
     <string name="settings_pinned_sections_order_title">Pinned Sections Order</string>
     <string name="settings_pinned_sections_order_desc">Reorder pinned sections on home</string>
     <string name="settings_pinned_sections_order_dialog_info">Hold and drag to change the order of pinned sections on home.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Pinned App Shortcuts in App Grid</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Show pinned app shortcuts in the app grid along with apps.</string>
     <string name="settings_more_options_desc">Miscellaneous customisation options</string>
     <string name="settings_more_options_title">More Options</string>
     <string name="settings_overlay_assistant_setup_now">Setup Now</string>

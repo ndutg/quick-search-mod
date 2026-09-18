@@ -738,6 +738,8 @@
     <string name="settings_pinned_sections_order_title">Ordine delle sezioni fissate</string>
     <string name="settings_pinned_sections_order_desc">Riordina le sezioni fissate nella schermata home</string>
     <string name="settings_pinned_sections_order_dialog_info">Tieni premuto e trascina per cambiare l\'ordine delle sezioni fissate nella schermata home.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Scorciatoie app fissate nella griglia delle app</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Mostra le scorciatoie delle app fissate nella griglia delle app insieme alle app.</string>
     <string name="settings_more_options_desc">Opzioni di personalizzazione varie</string>
     <string name="settings_more_options_title">Altre opzioni</string>
     <string name="settings_overlay_assistant_setup_now">Configura ora</string>

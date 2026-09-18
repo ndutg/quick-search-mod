@@ -931,6 +931,7 @@ fun SearchRoute(
             onPinApp = viewModel::pinApp,
             onUnpinApp = viewModel::unpinApp,
             onReorderPinnedApps = viewModel::reorderPinnedApps,
+            onReorderPinnedAppGrid = viewModel::reorderPinnedAppGrid,
             onSuggestionTabSelected = viewModel::setSelectedAppSuggestionTab,
             onRateQuickSearchClick = { onAppSettingClick(rateQuickSearchSetting) },
             onRateQuickSearchNotNowClick = {

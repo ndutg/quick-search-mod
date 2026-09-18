@@ -286,6 +286,15 @@ internal fun SettingsDetailLevel1Screen(
                                     SettingsCommand.HomePinnedSectionOrder(order),
                                 )
                             },
+                            pinnedAppShortcutsInAppGrid = state.pinnedAppShortcutsInAppGrid,
+                            onTogglePinnedAppShortcutsInAppGrid = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
                             searchHintsEnabled = state.searchHintsEnabled,
                             onToggleSearchHints = { enabled ->
                                 callbacks.onApplySettingsCommand(

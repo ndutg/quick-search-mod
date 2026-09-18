@@ -389,6 +389,13 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setPinnedAppShortcutsInAppGridEnabled(enabled)
+            updateFeatureState { it.copy(pinnedAppShortcutsInAppGrid = enabled) }
+        }
+    }
+
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             val updated =

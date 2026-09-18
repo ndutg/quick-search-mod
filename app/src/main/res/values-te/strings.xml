@@ -739,6 +739,8 @@
     <string name="settings_pinned_sections_order_title">పిన్ చేసిన విభాగాల క్రమం</string>
     <string name="settings_pinned_sections_order_desc">హోమ్‌లో పిన్ చేసిన విభాగాల క్రమాన్ని మార్చండి</string>
     <string name="settings_pinned_sections_order_dialog_info">హోమ్‌లో పిన్ చేసిన విభాగాల క్రమాన్ని మార్చడానికి నొక్కి పట్టుకుని లాగండి.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">యాప్ గ్రిడ్‌లో పిన్ చేసిన యాప్ షార్ట్‌కట్‌లు</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">పిన్ చేసిన యాప్ షార్ట్‌కట్‌లను యాప్‌లతో పాటు యాప్ గ్రిడ్‌లో చూపించు.</string>
     <string name="settings_more_options_desc">ఇతర అనుకూలీకరణ ఎంపికలు</string>
     <string name="settings_more_options_title">మరిన్ని ఎంపికలు</string>
     <string name="settings_overlay_assistant_setup_now">ఇప్పుడే సెటప్ చేయండి</string>

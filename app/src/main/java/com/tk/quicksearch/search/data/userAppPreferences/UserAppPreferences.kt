@@ -1130,6 +1130,16 @@ class UserAppPreferences(
     fun setHomePinnedSectionOrder(order: List<SearchSection>) =
             uiPreferences.setHomePinnedSectionOrder(order)
 
+    fun isPinnedAppShortcutsInAppGridEnabled(): Boolean =
+            uiPreferences.isPinnedAppShortcutsInAppGridEnabled()
+
+    fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) =
+            uiPreferences.setPinnedAppShortcutsInAppGridEnabled(enabled)
+
+    fun getPinnedAppGridOrder(): List<String> = uiPreferences.getPinnedAppGridOrder()
+
+    fun setPinnedAppGridOrder(order: List<String>) = uiPreferences.setPinnedAppGridOrder(order)
+
     fun getDisabledTopMatchesSections(): Set<SearchSection> =
             uiPreferences.getDisabledTopMatchesSections()
 

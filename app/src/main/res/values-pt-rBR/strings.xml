@@ -739,6 +739,8 @@
     <string name="settings_pinned_sections_order_title">Ordem das seções fixadas</string>
     <string name="settings_pinned_sections_order_desc">Reordene as seções fixadas na tela inicial</string>
     <string name="settings_pinned_sections_order_dialog_info">Toque e segure e arraste para alterar a ordem das seções fixadas na tela inicial.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Atalhos de apps fixados na grade de apps</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Mostrar atalhos de apps fixados na grade de apps junto com os apps.</string>
     <string name="settings_more_options_desc">Opções diversas de personalização</string>
     <string name="settings_more_options_title">Mais opções</string>
     <string name="settings_overlay_assistant_setup_now">Configurar agora</string>

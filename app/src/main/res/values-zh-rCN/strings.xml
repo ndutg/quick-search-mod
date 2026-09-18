@@ -729,6 +729,8 @@
     <string name="settings_pinned_sections_order_title">固定分区顺序</string>
     <string name="settings_pinned_sections_order_desc">重新排列主页上的固定分区</string>
     <string name="settings_pinned_sections_order_dialog_info">长按并拖动以更改主页上固定分区的顺序。</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">在应用网格中显示固定的应用快捷方式</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">在应用网格中与应用一起显示固定的应用快捷方式。</string>
     <string name="settings_more_options_desc">其他杂项自定义选项</string>
     <string name="settings_more_options_title">更多选项</string>
     <string name="settings_overlay_assistant_setup_now">立即设置</string>

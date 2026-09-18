@@ -145,6 +145,8 @@ internal object SearchStateExtractor {
             topMatchesSectionOrder = s.topMatchesSectionOrder,
             disabledTopMatchesSections = s.disabledTopMatchesSections,
             homePinnedSectionOrder = s.homePinnedSectionOrder,
+            pinnedAppShortcutsInAppGrid = s.pinnedAppShortcutsInAppGrid,
+            pinnedAppGridOrder = s.pinnedAppGridOrder,
             showTodayEvents = s.showTodayEvents,
             directDialEnabled = s.directDialEnabled,
             numberSearchEnabled = s.numberSearchEnabled,

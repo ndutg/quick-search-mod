@@ -749,6 +749,8 @@
     <string name="settings_pinned_sections_order_title">固定セクションの順序</string>
     <string name="settings_pinned_sections_order_desc">ホームの固定セクションを並べ替えます</string>
     <string name="settings_pinned_sections_order_dialog_info">長押ししてドラッグすると、ホームの固定セクションの順序を変更できます。</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">固定したアプリショートカットをアプリグリッドに表示</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">固定したアプリショートカットをアプリと一緒にアプリグリッドに表示します。</string>
     <string name="settings_more_options_desc">その他のカスタマイズオプション</string>
     <string name="settings_more_options_title">その他のオプション</string>
     <string name="settings_overlay_assistant_setup_now">今すぐ設定</string>

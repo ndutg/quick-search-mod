@@ -740,6 +740,8 @@
     <string name="settings_pinned_sections_order_title">ترتيب الأقسام المثبتة</string>
     <string name="settings_pinned_sections_order_desc">إعادة ترتيب الأقسام المثبتة في الشاشة الرئيسية</string>
     <string name="settings_pinned_sections_order_dialog_info">اضغط مطولًا واسحب لتغيير ترتيب الأقسام المثبتة في الشاشة الرئيسية.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">اختصارات التطبيقات المثبتة في شبكة التطبيقات</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">عرض اختصارات التطبيقات المثبتة في شبكة التطبيقات مع التطبيقات.</string>
     <string name="settings_more_options_desc">خيارات تخصيص إضافية</string>
     <string name="settings_more_options_title">المزيد من الخيارات</string>
     <string name="settings_overlay_assistant_setup_now">الإعداد الآن</string>

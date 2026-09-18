@@ -424,6 +424,51 @@ internal fun AppShortcutRow(
         }
 }
 
+/** The regular long-press options of an app shortcut result, for tiles outside the shortcuts list. */
+@Composable
+internal fun AppShortcutResultMenu(
+        shortcut: StaticShortcut,
+        expanded: Boolean,
+        onDismissRequest: () -> Unit,
+        isPinned: Boolean,
+        hasNickname: Boolean,
+        hasTrigger: Boolean,
+        onTogglePin: (StaticShortcut) -> Unit,
+        onDisable: (StaticShortcut) -> Unit,
+        onDisableAllForApp: (StaticShortcut) -> Unit,
+        onAppInfoClick: (StaticShortcut) -> Unit,
+        onNicknameClick: (StaticShortcut) -> Unit,
+        onTriggerClick: (StaticShortcut) -> Unit,
+        onEditCustomShortcut: (StaticShortcut) -> Unit,
+        onEditShortcutIcon: (StaticShortcut) -> Unit,
+        iconPackPackage: String?,
+) {
+        val context = LocalContext.current
+        val customizationRemover = LocalItemCustomizationRemover.current
+        val addToHomeHandler =
+                remember(context) { com.tk.quicksearch.search.common.AddToHomeHandler(context) }
+        AppShortcutDropdownMenu(
+                shortcut = shortcut,
+                expanded = expanded,
+                onDismissRequest = onDismissRequest,
+                isPinned = isPinned,
+                hasNickname = hasNickname,
+                hasTrigger = hasTrigger,
+                onTogglePin = { onTogglePin(shortcut) },
+                onDisable = { onDisable(shortcut) },
+                onDisableAllForApp = { onDisableAllForApp(shortcut) },
+                onAppInfoClick = { onAppInfoClick(shortcut) },
+                onNicknameClick = { onNicknameClick(shortcut) },
+                onTriggerClick = { onTriggerClick(shortcut) },
+                onRemoveNickname = customizationRemover?.let { remover -> { remover.removeAppShortcutNickname(shortcut) } },
+                onRemoveTrigger = customizationRemover?.let { remover -> { remover.removeAppShortcutTrigger(shortcut) } },
+                onEditCustomShortcut = onEditCustomShortcut,
+                onEditShortcutIcon = onEditShortcutIcon,
+                onAddToHome = { addToHomeHandler.addAppShortcutToHome(shortcut) },
+                iconPackPackage = iconPackPackage,
+        )
+}
+
 private data class AppShortcutMenuItem(
         val textResId: Int,
         val icon: @Composable () -> Unit,
