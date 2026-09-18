@@ -695,7 +695,6 @@ data class SearchUiState(
         val homePinnedSectionOrder: List<SearchSection> = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER,
         val pinnedAppShortcutsInAppGrid: Boolean = false,
         val pinnedAppGridOrder: List<String> = emptyList(),
-        val appFolders: List<com.tk.quicksearch.search.folders.AppFolder> = emptyList(),
         // Calendar
         val showTodayEvents: Boolean = true,
         // Usage permission banner
@@ -865,7 +864,6 @@ fun SearchUiState(
                 homePinnedSectionOrder = features.homePinnedSectionOrder,
                 pinnedAppShortcutsInAppGrid = features.pinnedAppShortcutsInAppGrid,
                 pinnedAppGridOrder = features.pinnedAppGridOrder,
-                appFolders = features.appFolders,
                 showTodayEvents = features.showTodayEvents,
                 directDialEnabled = features.directDialEnabled,
                 numberSearchEnabled = features.numberSearchEnabled,

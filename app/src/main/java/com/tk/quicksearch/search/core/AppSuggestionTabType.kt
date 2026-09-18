@@ -17,8 +17,7 @@ enum class AppSuggestionTabType {
                 rawValues
                 .mapNotNull { value -> (value as? String)?.let { runCatching { valueOf(it) }.getOrNull() } }
                 .toSet()
-            // The Pinned tab cannot be disabled.
-            return tabs.ifEmpty { DefaultEnabledTabs } + PINNED
+            return tabs.ifEmpty { DefaultEnabledTabs }
         }
     }
 }

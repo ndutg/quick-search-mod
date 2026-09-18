@@ -217,7 +217,6 @@ internal object SearchViewModelInitialStateFactory {
                 homePinnedSectionOrder = startupPreferencesReader.getHomePinnedSectionOrder(),
                 pinnedAppShortcutsInAppGrid = startupPreferencesReader.isPinnedAppShortcutsInAppGridEnabled(),
                 pinnedAppGridOrder = startupPreferencesReader.getPinnedAppGridOrder(),
-                appFolders = startupPreferencesReader.getAppFolders(),
                 showRateQuickSearchCard = startupPreferencesReader.shouldShowRateQuickSearchCard(),
                 recentQueriesEnabled = startupPreferencesReader.areRecentQueriesEnabled(),
             )

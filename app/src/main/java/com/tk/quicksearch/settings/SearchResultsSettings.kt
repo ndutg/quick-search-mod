@@ -707,10 +707,21 @@ private fun AppSuggestionTabsDialog(
     onDismiss: () -> Unit,
 ) {
     val tabLabels = rememberAppSuggestionTabLabels()
-    // The Pinned tab is always shown: it holds pinned apps, shortcuts, and folders.
+    val pinnedAppsFallbackTab =
+        if (AppSuggestionTabType.RECENTS in enabledTabs) {
+            requireNotNull(tabLabels[AppSuggestionTabType.RECENTS])
+        } else {
+            requireNotNull(tabLabels[AppSuggestionTabType.MOST_USED])
+        }
+    val pinnedTabDisabledDescription =
+        stringResource(
+            R.string.app_suggestions_tab_pinned_disabled_description,
+            pinnedAppsFallbackTab,
+        )
     val configurableTabs =
         remember(tabLabels) {
             listOf(
+                AppSuggestionTabType.PINNED to requireNotNull(tabLabels[AppSuggestionTabType.PINNED]),
                 AppSuggestionTabType.RECENTS to requireNotNull(tabLabels[AppSuggestionTabType.RECENTS]),
                 AppSuggestionTabType.NEW_UPDATED to requireNotNull(tabLabels[AppSuggestionTabType.NEW_UPDATED]),
                 AppSuggestionTabType.MOST_USED to requireNotNull(tabLabels[AppSuggestionTabType.MOST_USED]),
@@ -727,6 +738,13 @@ private fun AppSuggestionTabsDialog(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (AppSuggestionTabType.PINNED !in enabledTabs) {
+                    TipBanner(
+                        text = pinnedTabDisabledDescription,
+                        showDismissButton = false,
+                        modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
+                    )
+                }
                 configurableTabs.forEachIndexed { index, (tab, title) ->
                     if (index > 0) {
                         HorizontalDivider(color = AppColors.SettingsDivider)

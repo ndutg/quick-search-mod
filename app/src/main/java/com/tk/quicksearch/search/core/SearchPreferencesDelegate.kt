@@ -224,7 +224,6 @@ internal class SearchPreferencesDelegate(
         tab: AppSuggestionTabType,
         enabled: Boolean,
     ) {
-        if (tab == AppSuggestionTabType.PINNED && !enabled) return
         scope.launch(Dispatchers.IO) {
             val currentTabs = userPreferences.getEnabledAppSuggestionTabs()
             val updatedTabs =

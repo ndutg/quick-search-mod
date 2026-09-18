@@ -907,7 +907,14 @@ class UiPreferences(
             tabs
                 .ifEmpty { AppSuggestionTabType.DefaultEnabledTabs }
                 .toMutableSet()
-                .apply { add(AppSuggestionTabType.PINNED) }
+                .apply {
+                    if (
+                        AppSuggestionTabType.RECENTS !in this &&
+                            AppSuggestionTabType.MOST_USED !in this
+                    ) {
+                        add(AppSuggestionTabType.PINNED)
+                    }
+                }
         editor.putStringSet(
             UiPreferences.KEY_ENABLED_APP_SUGGESTION_TABS,
             normalizedTabs.map { it.name }.toSet(),
