@@ -93,6 +93,9 @@ class AppSettingsSearchHandler(
                 setting.toggleKey == AppSettingsToggleKey.TOP_RESULT_INDICATOR &&
                     (userPreferences.isPhysicalKeyboardConnected() ||
                         !userPreferences.isOpenTopResultUsingKeyboardEnabled())
+            val shouldHidePinnedSectionsOrder =
+                setting.id == PINNED_SECTIONS_ORDER_SETTING_ID &&
+                    userPreferences.isUnifiedPinnedItemsEnabled()
             val shouldHideFuzzySearch =
                 setting.toggleKey == AppSettingsToggleKey.FUZZY_SEARCH &&
                     isLowRamDevice
@@ -113,6 +116,7 @@ class AppSettingsSearchHandler(
                 !shouldHideNicknames &&
                 !shouldHideTriggers &&
                 !shouldHideTopResultIndicator &&
+                !shouldHidePinnedSectionsOrder &&
                 !shouldHideFuzzySearch &&
                 !shouldHideAppResultRows &&
                 !shouldHideAmoledTheme

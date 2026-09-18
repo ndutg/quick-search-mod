@@ -51,6 +51,7 @@ enum class AppSettingsDestination {
     NICKNAMES,
     TRIGGERS,
     GESTURES,
+    BACKUP_RESTORE,
 }
 
 enum class AppSettingsToggleKey {

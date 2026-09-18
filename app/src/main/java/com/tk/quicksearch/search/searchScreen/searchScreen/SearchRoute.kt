@@ -64,6 +64,7 @@ import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
+import com.tk.quicksearch.search.appSettings.LocalOnSettingsImported
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
@@ -888,6 +889,7 @@ fun SearchRoute(
             LocalAppLockAuthenticator provides requestBiometricAuthentication,
             LocalAppLockCredentialAuthenticator provides requestDeviceCredentialAuthentication,
             LocalOpenAppSettingDestination provides onOpenAppSettingDestination,
+            LocalOnSettingsImported provides viewModel::onSettingsImported,
             LocalPopupOverlayContent provides popupUndoSnackbar,
         ) {
             SearchScreenComposable(

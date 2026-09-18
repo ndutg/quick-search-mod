@@ -50,6 +50,7 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
+import com.tk.quicksearch.settings.settingsScreen.SettingsBackupButtons
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -206,6 +207,7 @@ internal fun AppSettingResultRow(
     val isWebSuggestionsToggle = setting.toggleKey == AppSettingsToggleKey.WEB_SUGGESTIONS
     val isAppsPerRowSetting = setting.toggleKey == AppSettingsToggleKey.APPS_PER_ROW
     val isAppResultRowsSetting = setting.toggleKey == AppSettingsToggleKey.APP_RESULT_ROWS
+    val isBackupSetting = setting.destination == AppSettingsDestination.BACKUP_RESTORE
     val context = LocalContext.current
     val isDefaultLauncher = context.isDefaultHomeApp()
     val isOverlayBlockedByLauncher =
@@ -227,7 +229,7 @@ internal fun AppSettingResultRow(
             .topPredictedRowContentPadding()
             .padding(vertical = DesignTokens.SpacingLarge)
             .combinedClickable(
-                enabled = !isBlockedByLauncher,
+                enabled = !isBlockedByLauncher && !isBackupSetting,
                 onClick = {
                     if (setting.isNavigateAction) {
                         hapticConfirm(view)()
@@ -284,6 +286,13 @@ internal fun AppSettingResultRow(
                     },
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            if (isBackupSetting) {
+                SettingsBackupButtons(
+                    onSettingsImported = LocalOnSettingsImported.current,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp, end = 6.dp),
                 )
             }
 
@@ -348,6 +357,8 @@ internal fun AppSettingResultRow(
                 selectedRowCount = appSettingAppResultRowCount,
                 onSelectRowCount = onAppSettingAppResultRowCountChange,
             )
+        } else if (isBackupSetting) {
+            Unit
         } else if (setting.isToggleAction) {
             Switch(
                 checked = checked,
