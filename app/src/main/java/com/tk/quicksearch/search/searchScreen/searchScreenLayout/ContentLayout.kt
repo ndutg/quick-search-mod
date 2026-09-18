@@ -499,9 +499,8 @@ fun ContentLayout(
             return
         }
 
-        var isExpanded by rememberSaveable(section.name) { mutableStateOf(true) }
-        LaunchedEffect(section) {
-            isExpanded = userPreferences.isHomePinnedSectionExpanded(section)
+        var isExpanded by rememberSaveable(section.name) {
+            mutableStateOf(userPreferences.isHomePinnedSectionExpanded(section))
         }
         val interactionSource = remember { MutableInteractionSource() }
         val metadata = SearchSectionUiMetadataRegistry.metadataFor(section)
@@ -1256,9 +1255,8 @@ private fun UnifiedPinnedItemsBlock(
     showWallpaperBackground: Boolean,
     content: @Composable () -> Unit,
 ) {
-    var isExpanded by rememberSaveable { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
-        isExpanded = userPreferences.isUnifiedPinnedItemsExpanded()
+    var isExpanded by rememberSaveable {
+        mutableStateOf(userPreferences.isUnifiedPinnedItemsExpanded())
     }
     val interactionSource = remember { MutableInteractionSource() }
     val toggleExpanded = {
