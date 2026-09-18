@@ -404,6 +404,11 @@ fun ContentLayout(
             !isExpanded &&
             !isSectionAliasMode
     val showTopMatches = canShowTopMatches && displayedTopMatches.isNotEmpty()
+    // Until a fresh query's top matches settle, the regular sections would render alone and then
+    // get shoved aside (and the app grid swapped for the top matches grid) a few frames later.
+    // Holding them back for that short window makes the whole result set appear at once.
+    val holdRegularSectionsForTopMatches =
+        canShowTopMatches && !settledTopMatches.isReady && displayedTopMatches.isEmpty()
     val showTopMatchesSection =
         canShowTopMatches && (showTopMatches || isLocalSearchRefreshing)
     val hasMoreResults =
@@ -780,6 +785,7 @@ fun ContentLayout(
                 if (isHomeCalendarExpanded && section != SearchSection.CALENDAR) return@forEach
                 if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
                 if (!shouldRenderSection(section)) return@forEach
+                if (holdRegularSectionsForTopMatches) return@forEach
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
                 if (
