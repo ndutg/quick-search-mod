@@ -216,6 +216,12 @@ internal interface SearchViewModelManagementApi {
     fun movePinnedAppShortcut(shortcut: StaticShortcut, moveUp: Boolean) =
         managementApiDelegate.movePinnedAppShortcut(shortcut, moveUp)
 
+    fun reorderPinnedAppGrid(
+        orderKeys: List<String>,
+        apps: List<AppInfo>,
+        shortcuts: List<StaticShortcut>,
+    ) = managementApiDelegate.reorderPinnedAppGrid(orderKeys, apps, shortcuts)
+
     fun excludeAppShortcut(shortcut: StaticShortcut) = managementApiDelegate.excludeAppShortcut(shortcut)
 
     fun setAppShortcutNickname(shortcut: StaticShortcut, nickname: String?) =
@@ -416,6 +422,25 @@ class SearchViewModelManagementApiDelegate internal constructor(
     fun unpinApp(appInfo: AppInfo) = appManager().unpinApp(appInfo)
 
     fun reorderPinnedApps(apps: List<AppInfo>) = appManager().reorderPinnedApps(apps)
+
+    /** Persists a drag reorder of the app grid's mixed pinned apps and pinned shortcuts. */
+    fun reorderPinnedAppGrid(
+        orderKeys: List<String>,
+        apps: List<AppInfo>,
+        shortcuts: List<StaticShortcut>,
+    ) {
+        updateFeatureState { it.copy(pinnedAppGridOrder = orderKeys) }
+        scope.launch(Dispatchers.IO) { userPreferences.setPinnedAppGridOrder(orderKeys) }
+        if (apps.isNotEmpty()) appManager().reorderPinnedApps(apps)
+        if (shortcuts.isEmpty()) return
+        val shortcutRank = shortcuts.withIndex().associate { (index, shortcut) -> shortcutKey(shortcut) to index }
+        updateUiState { state ->
+            val reordered =
+                state.pinnedAppShortcuts.sortedBy { shortcutRank[shortcutKey(it)] ?: Int.MAX_VALUE }
+            userPreferences.setPinnedAppShortcutOrder(reordered.map { shortcutKey(it) })
+            state.copy(pinnedAppShortcuts = reordered)
+        }
+    }
 
     fun setAppNickname(appInfo: AppInfo, nickname: String?) = appManager().setAppNickname(appInfo, nickname)
 

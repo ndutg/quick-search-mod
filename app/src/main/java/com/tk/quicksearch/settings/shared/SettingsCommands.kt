@@ -38,6 +38,8 @@ sealed interface SettingsCommand {
 
     data class TopMatchesSectionOrder(val order: List<SearchSection>) : SettingsCommand
 
+    data class HomePinnedSectionOrder(val order: List<SearchSection>) : SettingsCommand
+
     data class TopMatchesSectionEnabled(
         val section: SearchSection,
         val enabled: Boolean,
@@ -96,6 +98,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.BOTTOM_SEARCHBAR -> setBottomSearchBarEnabled(command.enabled)
                 AppSettingsToggleKey.UNIFIED_PINNED_ITEMS ->
                     setUnifiedPinnedItemsEnabled(command.enabled)
+                AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID ->
+                    setPinnedAppShortcutsInAppGridEnabled(command.enabled)
                 AppSettingsToggleKey.SEARCH_HINTS -> setSearchHintsEnabled(command.enabled)
                 AppSettingsToggleKey.SETTINGS_ICON -> setSettingsIconEnabled(command.enabled)
                 AppSettingsToggleKey.APP_LABELS -> setShowAppLabels(command.enabled)
@@ -169,6 +173,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
             setAppSuggestionTabEnabled(command.tab, command.enabled)
         is SettingsCommand.TopMatchesLimit -> setTopMatchesLimit(command.limit)
         is SettingsCommand.TopMatchesSectionOrder -> setTopMatchesSectionOrder(command.order)
+        is SettingsCommand.HomePinnedSectionOrder -> setHomePinnedSectionOrder(command.order)
         is SettingsCommand.TopMatchesSectionEnabled ->
             setTopMatchesSectionEnabled(command.section, command.enabled)
         is SettingsCommand.PhoneAppGridColumns -> setPhoneAppGridColumns(command.columns)
@@ -204,6 +209,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.ONE_HANDED_MODE -> oneHandedMode
         AppSettingsToggleKey.BOTTOM_SEARCHBAR -> bottomSearchBarEnabled
         AppSettingsToggleKey.UNIFIED_PINNED_ITEMS -> unifiedPinnedItemsEnabled
+        AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID -> pinnedAppShortcutsInAppGrid
         AppSettingsToggleKey.SEARCH_HINTS -> searchHintsEnabled
         AppSettingsToggleKey.SETTINGS_ICON -> settingsIconEnabled
         AppSettingsToggleKey.APP_LABELS -> showAppLabels

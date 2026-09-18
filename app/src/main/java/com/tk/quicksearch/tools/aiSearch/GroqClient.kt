@@ -233,7 +233,8 @@ class GroqClient(
         messages.put(JSONObject().put("role", "user").put("content", query))
 
         val root = JSONObject()
-        val normalizedModel = modelId.trim().ifBlank { GroqModelCatalog.DEFAULT_MODEL_ID }
+        val normalizedModel =
+            GroqModelCatalog.replaceRetiredModel(modelId.trim().ifBlank { GroqModelCatalog.DEFAULT_MODEL_ID })
         root.put("model", normalizedModel)
         root.put("messages", messages)
         root.put("temperature", 0.2)

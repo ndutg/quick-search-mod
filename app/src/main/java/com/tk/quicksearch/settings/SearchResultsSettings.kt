@@ -941,22 +941,28 @@ private fun TopMatchesLimitSlider(
     )
 }
 
+/**
+ * Drag-to-reorder dialog for search sections. Per-section enable switches are shown only when
+ * [onItemEnabledChange] is provided.
+ */
 @Composable
-private fun PriorityReorderDialog(
+internal fun PriorityReorderDialog(
     items: List<SearchSection>,
     onItemsChange: (List<SearchSection>) -> Unit,
-    disabledSections: Set<SearchSection>,
-    onItemEnabledChange: (SearchSection, Boolean) -> Unit,
     onDismiss: () -> Unit,
+    disabledSections: Set<SearchSection> = emptySet(),
+    onItemEnabledChange: ((SearchSection, Boolean) -> Unit)? = null,
+    titleRes: Int = R.string.top_matches_priority_title,
+    infoRes: Int = R.string.top_matches_priority_dialog_info,
 ) {
     val view = LocalView.current
     AppAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.top_matches_priority_title)) },
+        title = { Text(text = stringResource(titleRes)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall)) {
                 Text(
-                    text = stringResource(R.string.top_matches_priority_dialog_info),
+                    text = stringResource(infoRes),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -1004,7 +1010,12 @@ private fun PriorityReorderDialog(
                                         },
                                     )
                                     .padding(
-                                        vertical = DesignTokens.SpacingXSmall,
+                                        vertical =
+                                            if (onItemEnabledChange != null) {
+                                                DesignTokens.SpacingXSmall
+                                            } else {
+                                                DesignTokens.SpacingMedium
+                                            },
                                         horizontal = DesignTokens.SpacingSmall,
                                     ),
                             verticalAlignment = Alignment.CenterVertically,
@@ -1026,7 +1037,7 @@ private fun PriorityReorderDialog(
                                 color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.weight(1f),
                             )
-                            Switch(
+                            if (onItemEnabledChange != null) Switch(
                                 modifier = Modifier.scale(0.7f),
                                 checked = item !in disabledSections,
                                 onCheckedChange = { enabled ->

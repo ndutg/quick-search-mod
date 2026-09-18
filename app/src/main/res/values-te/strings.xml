@@ -635,6 +635,14 @@
     <string name="settings_shortcut_network">నెట్‌వర్క్ &amp; ఇంటర్నెట్</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">నోటిఫికేషన్ యాక్సెస్</string>
+    <string name="settings_shortcut_notification_history">నోటిఫికేషన్ చరిత్ర</string>
+    <string name="notification_history_permission_desc">నోటిఫికేషన్‌లను ఇక్కడ సేకరించడానికి నోటిఫికేషన్ యాక్సెస్‌ను అనుమతించండి. యాక్సెస్ ఇచ్చిన తర్వాత వచ్చిన నోటిఫికేషన్‌లు మాత్రమే ఈ జాబితాలో కనిపిస్తాయి.</string>
+    <string name="notification_history_empty">ఇంకా నోటిఫికేషన్‌లు లేవు.</string>
+    <string name="notification_history_app_filter_title">వీటి నుండి నోటిఫికేషన్‌లను చూపు</string>
+    <string name="notification_history_search_hint">నోటిఫికేషన్‌లను శోధించండి</string>
+    <string name="notification_history_hide_app">%1$s నుండి నోటిఫికేషన్‌లను దాచు</string>
+    <string name="notification_history_clear_all_title">అన్ని నోటిఫికేషన్‌లను క్లియర్ చేయాలా?</string>
+    <string name="notification_history_clear_all_message">మీరు మొత్తం నోటిఫికేషన్ చరిత్రను క్లియర్ చేయాలనుకుంటున్నారా? ఈ చర్యను రద్దు చేయలేరు.</string>
     <string name="settings_shortcut_notifications">నోటిఫికేషన్‌లు</string>
     <string name="settings_shortcut_overlay_permission">ఇతర యాప్‌ల పైన ప్రదర్శించు</string>
     <string name="settings_shortcut_privacy">గోప్యత</string>
@@ -728,6 +736,11 @@
     <string name="settings_layout_option_bottom_title">వన్-హ్యాండెడ్ మోడ్</string>
     <string name="settings_unified_pinned_items_title">ఏకీకృత పిన్ చేసిన అంశాలు</string>
     <string name="settings_unified_pinned_items_desc">పిన్ చేసిన అంశాలను హోమ్ స్క్రీన్‌లో ఒకే ఏకీకృత జాబితాగా చూపించు.</string>
+    <string name="settings_pinned_sections_order_title">పిన్ చేసిన విభాగాల క్రమం</string>
+    <string name="settings_pinned_sections_order_desc">హోమ్‌లో పిన్ చేసిన విభాగాల క్రమాన్ని మార్చండి</string>
+    <string name="settings_pinned_sections_order_dialog_info">హోమ్‌లో పిన్ చేసిన విభాగాల క్రమాన్ని మార్చడానికి నొక్కి పట్టుకుని లాగండి.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">యాప్ గ్రిడ్‌లో పిన్ చేసిన యాప్ షార్ట్‌కట్‌లు</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">పిన్ చేసిన యాప్ షార్ట్‌కట్‌లను యాప్‌లతో పాటు యాప్ గ్రిడ్‌లో చూపించు.</string>
     <string name="settings_more_options_desc">ఇతర అనుకూలీకరణ ఎంపికలు</string>
     <string name="settings_more_options_title">మరిన్ని ఎంపికలు</string>
     <string name="settings_overlay_assistant_setup_now">ఇప్పుడే సెటప్ చేయండి</string>
@@ -852,10 +865,11 @@
     <string name="action_update">అప్‌డేట్ చేయండి</string>
     <string name="release_notes_title">Quick Search v%1$s రిలీజ్ నోట్స్</string>
     <string name="release_notes_title_no_version">Quick Search రిలీజ్ నోట్స్</string>
-    <string name="settings_backup_export_api_key_warning_message">మీ స్వంత రిస్క్‌తోనే కొనసాగండి. ఎగుమతి చేసిన API కీ ఎన్‌క్రిప్ట్ చేయబడదు మరియు మీ బ్యాకప్ ఫైల్‌కు యాక్సెస్ ఉన్న ఎవరైనా దీనిని యాక్సెస్ చేయవచ్చు.</string>
+    <string name="settings_backup_export_api_key_warning_message">మీ స్వంత రిస్క్‌తోనే కొనసాగండి. ఎగుమతి చేసిన API కీలు ఎన్‌క్రిప్ట్ చేయబడవు మరియు మీ బ్యాకప్ ఫైల్‌కు యాక్సెస్ ఉన్న ఎవరైనా వాటిని యాక్సెస్ చేయవచ్చు.</string>
     <string name="settings_backup_export_button">ఎగుమతి చేయి</string>
     <string name="settings_backup_export_failed">సెట్టింగ్‌లను ఎగుమతి చేయడం సాధ్యపడలేదు.</string>
     <string name="settings_backup_export_option_pinned_items_title">పిన్ చేసిన అంశాలు</string>
+    <string name="settings_backup_export_option_api_keys">API కీలు</string>
     <string name="settings_backup_export_selection_title">డేటాను ఎగుమతి చేయి</string>
     <string name="settings_backup_export_success">సెట్టింగ్‌లు విజయవంతంగా ఎగుమతి చేయబడ్డాయి.</string>
     <string name="settings_backup_import_button">దిగుమతి చేయి</string>
@@ -1005,7 +1019,7 @@
     <string name="permissions_calling_desc">డయలర్ తెరవకుండానే మీ పరిచయాలకు నేరుగా కాల్ చేయడానికి అవసరం.</string>
     <string name="settings_notifications_permission_title">పోస్ట్ నోటిఫికేషన్‌లు</string>
     <string name="permissions_notifications_desc">శోధన ఫలితాలను నోటిఫికేషన్ ప్యానెల్‌కు పిన్ చేయడానికి అవసరం</string>
-    <string name="permissions_notification_access_desc">నోటిఫికేషన్‌లు ఉన్న యాప్‌లపై నోటిఫికేషన్ డాట్‌లను చూపించడానికి అవసరం.</string>
+    <string name="permissions_notification_access_desc">నోటిఫికేషన్ డాట్‌లు మరియు నోటిఫికేషన్ చరిత్ర ఫీచర్‌లను ప్రారంభించడానికి అవసరం</string>
     <string name="permissions_accessibility_lock_screen_title">యాక్సెసిబిలిటీ</string>
     <string name="permissions_accessibility_lock_screen_desc">రెండుసార్లు ట్యాప్ చేసే సంజ్ఞతో మీ పరికరాన్ని లాక్ చేయడానికి అనుమతిస్తుంది.</string>
     <string name="permissions_contacts_desc">మీ పరిచయాలను శోధించడానికి అవసరం.</string>
@@ -1153,4 +1167,9 @@
     <string name="speed_bump_overlay_title">ఒక దీర్ఘ శ్వాస తీసుకోండి</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">రాబోయే అలారం</string>
+    <string name="settings_tavily_title">వెబ్ సెర్చ్ కోసం Tavily</string>
+    <string name="settings_tavily_desc">వెబ్ సెర్చ్‌కు మద్దతు లేని మోడల్‌లకు వెబ్ సెర్చ్ జోడించడానికి Tavily API కీని జోడించండి.</string>
+    <string name="settings_tavily_mode_always">వెబ్ సెర్చ్ కోసం ఎల్లప్పుడూ Tavily ఉపయోగించండి</string>
+    <string name="settings_tavily_mode_when_unsupported">మోడల్ వెబ్ సెర్చ్‌కు మద్దతు ఇవ్వనప్పుడు మాత్రమే ఉపయోగించండి</string>
+    <string name="tavily_search_failed_toast">Tavily వెబ్ సెర్చ్ విఫలమైంది. వెబ్ ఫలితాలు లేకుండా సమాధానం ఇస్తోంది.</string>
 </resources>

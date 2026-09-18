@@ -3,11 +3,15 @@ package com.tk.quicksearch.settings.settingsScreen
 import android.content.Context
 import android.net.Uri
 import com.tk.quicksearch.search.data.preferences.BasePreferences
+import com.tk.quicksearch.search.data.preferences.CustomLlmProviderPreferences
 import com.tk.quicksearch.search.data.preferences.GeminiPreferences
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.data.notes.NotesRoomStore
+import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
+import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
+import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
 import java.io.File
 import java.io.IOException
 import org.json.JSONArray
@@ -19,20 +23,21 @@ import org.json.JSONObject
 object SettingsBackupManager {
     enum class ExportItem {
         SETTINGS,
-        SEARCH_HISTORY,
         PINNED_ITEMS,
         SHORTCUTS,
         NOTES,
         SEARCH_ENGINES,
-        GEMINI_API,
+        API_KEYS,
         CALENDAR_EVENTS,
     }
+
+    /** Export item names written by older app versions, mapped to their current item. */
+    private val legacyExportItemNames = mapOf("GEMINI_API" to ExportItem.API_KEYS)
 
     data class ExportOptions(
         val selectedItems: Set<ExportItem> =
             setOf(
                 ExportItem.SETTINGS,
-                ExportItem.SEARCH_HISTORY,
                 ExportItem.PINNED_ITEMS,
                 ExportItem.SHORTCUTS,
                 ExportItem.NOTES,
@@ -47,7 +52,13 @@ object SettingsBackupManager {
     private const val FIELD_FORMAT_VERSION = "formatVersion"
     private const val FIELD_EXPORTED_AT_EPOCH_MS = "exportedAtEpochMs"
     private const val FIELD_PREFERENCES = "preferences"
+    // Legacy field: backups before multi-provider keys only carried the Gemini key.
     private const val FIELD_GEMINI_API_KEY = "geminiApiKey"
+    private const val FIELD_LLM_API_KEYS = "llmApiKeys"
+    // Stored inside FIELD_LLM_API_KEYS alongside the LLM provider keys.
+    private const val TAVILY_API_KEY_FIELD = "tavily"
+    private const val FIELD_LLM_PERSONAL_CONTEXTS = "llmPersonalContexts"
+    private const val FIELD_CUSTOM_LLM_PROVIDERS = "customLlmProviders"
     private const val FIELD_SELECTED_EXPORT_ITEMS = "selectedExportItems"
     private const val FIELD_NOTES = "notes"
     private const val FIELD_TYPE = "type"
@@ -82,8 +93,6 @@ object SettingsBackupManager {
         setOf(
             BasePreferences.KEY_FIRST_LAUNCH,
             BasePreferences.KEY_INSTALL_TIME,
-            "hidden_packages_suggestions",
-            "hidden_packages_results",
             "excluded_contact_ids",
             "excluded_file_uris",
             "excluded_file_extensions",
@@ -103,6 +112,12 @@ object SettingsBackupManager {
             "default_engine_hint_banner_dismissed",
             "last_overlay_keyboard_open_height_dp",
             "update_check_shown_this_session",
+            // Personal contexts are exported from their encrypted store via FIELD_LLM_PERSONAL_CONTEXTS.
+            BasePreferences.KEY_GEMINI_PERSONAL_CONTEXT,
+            BasePreferences.KEY_OPENAI_PERSONAL_CONTEXT,
+            BasePreferences.KEY_ANTHROPIC_PERSONAL_CONTEXT,
+            BasePreferences.KEY_GROQ_PERSONAL_CONTEXT,
+            BasePreferences.KEY_META_PERSONAL_CONTEXT,
         )
 
     fun exportToUri(
@@ -110,12 +125,8 @@ object SettingsBackupManager {
         outputUri: Uri,
         options: ExportOptions = ExportOptions(),
     ) {
-        val geminiApiKey =
-            if (options.includes(ExportItem.GEMINI_API)) {
-                GeminiPreferences(context).getGeminiApiKey()?.takeIf { it.isNotBlank() }
-            } else {
-                null
-            }
+        val includeApiKeys = options.includes(ExportItem.API_KEYS)
+        val userPreferences = UserAppPreferences(context)
         val payload =
             JSONObject()
                 .put(FIELD_FORMAT_VERSION, FORMAT_VERSION)
@@ -125,8 +136,15 @@ object SettingsBackupManager {
                     FIELD_SELECTED_EXPORT_ITEMS,
                     JSONArray(options.selectedItems.map { it.name }.sorted()),
                 )
+                .put(FIELD_LLM_PERSONAL_CONTEXTS, serializePersonalContexts(userPreferences))
                 .apply {
-                    geminiApiKey?.let { put(FIELD_GEMINI_API_KEY, it) }
+                    if (includeApiKeys) {
+                        put(FIELD_LLM_API_KEYS, serializeApiKeys(userPreferences))
+                        put(
+                            FIELD_CUSTOM_LLM_PROVIDERS,
+                            serializeCustomLlmProviders(CustomLlmProviderPreferences(context).getProviders()),
+                        )
+                    }
                     if (options.includes(ExportItem.NOTES)) {
                         put(FIELD_NOTES, serializeNotes(NotesRepository(context).getAllNotes()))
                     }
@@ -157,10 +175,6 @@ object SettingsBackupManager {
         val preferencesJson = root.optJSONObject(FIELD_PREFERENCES)
             ?: throw IllegalArgumentException("Invalid backup file format")
         val selectedExportItems = parseSelectedExportItems(root)
-        val geminiApiKey =
-            root
-                .optString(FIELD_GEMINI_API_KEY, "")
-                .takeIf { it.isNotBlank() }
 
         val importedNames = preferencesJson.keys().asSequence().toSet()
         val preferenceNames =
@@ -223,9 +237,12 @@ object SettingsBackupManager {
             }
         }
 
-        if (root.has(FIELD_GEMINI_API_KEY)) {
-            GeminiPreferences(context).setGeminiApiKey(geminiApiKey)
-        }
+        importAiProviders(
+            context = context,
+            root = root,
+            includeCustomProviders =
+                selectedExportItems == null || ExportItem.API_KEYS in selectedExportItems,
+        )
 
         if (selectedExportItems == null || ExportItem.NOTES in selectedExportItems) {
             val notesStore = NotesRoomStore(context)
@@ -245,8 +262,7 @@ object SettingsBackupManager {
         return buildSet {
             for (index in 0 until itemsArray.length()) {
                 val itemName = itemsArray.optString(index)
-                runCatching { ExportItem.valueOf(itemName) }
-                    .getOrNull()
+                (legacyExportItemNames[itemName] ?: runCatching { ExportItem.valueOf(itemName) }.getOrNull())
                     ?.let { add(it) }
             }
         }
@@ -306,6 +322,8 @@ object SettingsBackupManager {
         prefName: String,
         key: String,
     ): Boolean {
+        // Search history is never backed up or restored, including from older backup files.
+        if (isSearchHistoryKey(prefName, key)) return true
         if (prefName != BasePreferences.PREFS_NAME) return false
         return key in excludedUserPreferenceKeys ||
             key.startsWith(FeatureFlags.PREFERENCE_KEY_PREFIX) ||
@@ -317,9 +335,6 @@ object SettingsBackupManager {
         key: String,
         options: ExportOptions,
     ): Boolean {
-        if (isSearchHistoryKey(prefName, key)) {
-            return options.includes(ExportItem.SEARCH_HISTORY)
-        }
         if (isPinnedItemKey(prefName, key)) {
             return options.includes(ExportItem.PINNED_ITEMS)
         }
@@ -331,9 +346,6 @@ object SettingsBackupManager {
         }
         if (isSearchEngineKey(prefName, key)) {
             return options.includes(ExportItem.SEARCH_ENGINES)
-        }
-        if (isGeminiKey(prefName, key)) {
-            return options.includes(ExportItem.GEMINI_API)
         }
         if (isCalendarEventsKey(prefName, key)) {
             return options.includes(ExportItem.CALENDAR_EVENTS)
@@ -415,16 +427,6 @@ object SettingsBackupManager {
             key.startsWith(BasePreferences.KEY_TRIGGER_NOTE_PREFIX)
     }
 
-    private fun isGeminiKey(
-        prefName: String,
-        key: String,
-    ): Boolean {
-        if (prefName != BasePreferences.PREFS_NAME) return false
-        return key == BasePreferences.KEY_GEMINI_PERSONAL_CONTEXT ||
-            key == BasePreferences.KEY_GEMINI_MODEL ||
-            key == BasePreferences.KEY_GEMINI_GROUNDING_ENABLED
-    }
-
     private fun isCalendarEventsKey(
         prefName: String,
         key: String,
@@ -472,6 +474,101 @@ object SettingsBackupManager {
     private fun sanitizeStringSetForExport(values: List<String>): List<String> {
         return values
     }
+
+    private fun importAiProviders(
+        context: Context,
+        root: JSONObject,
+        includeCustomProviders: Boolean,
+    ) {
+        val userPreferences = UserAppPreferences(context)
+
+        root.optString(FIELD_GEMINI_API_KEY, "").takeIf { it.isNotBlank() }?.let {
+            GeminiPreferences(context).setGeminiApiKey(it)
+        }
+        root.optJSONObject(FIELD_LLM_API_KEYS)?.let { keys ->
+            AiSearchLlmProviderId.entries.forEach { providerId ->
+                keys.optString(providerId.storageValue, "").takeIf { it.isNotBlank() }?.let {
+                    userPreferences.setLlmApiKey(providerId, it)
+                }
+            }
+            keys.optString(TAVILY_API_KEY_FIELD, "").takeIf { it.isNotBlank() }?.let {
+                userPreferences.setTavilyApiKey(it)
+            }
+        }
+        root.optJSONObject(FIELD_LLM_PERSONAL_CONTEXTS)?.let { contexts ->
+            AiSearchLlmProviderId.entries.forEach { providerId ->
+                if (contexts.has(providerId.storageValue)) {
+                    userPreferences.setLlmPersonalContext(providerId, contexts.optString(providerId.storageValue))
+                }
+            }
+        }
+        // Custom providers travel with API keys: skipped when the backup excluded keys.
+        if (includeCustomProviders) {
+            root.optJSONArray(FIELD_CUSTOM_LLM_PROVIDERS)?.let { array ->
+                CustomLlmProviderPreferences(context).importProviders(parseCustomLlmProviders(array))
+            }
+        }
+
+        userPreferences.refreshConfiguredAiProviderHint()
+    }
+
+    private fun serializeApiKeys(userPreferences: UserAppPreferences): JSONObject =
+        JSONObject().apply {
+            AiSearchLlmProviderId.entries.forEach { providerId ->
+                userPreferences.getLlmApiKey(providerId)?.takeIf { it.isNotBlank() }?.let {
+                    put(providerId.storageValue, it)
+                }
+            }
+            userPreferences.getTavilyApiKey()?.takeIf { it.isNotBlank() }?.let {
+                put(TAVILY_API_KEY_FIELD, it)
+            }
+        }
+
+    private fun serializePersonalContexts(userPreferences: UserAppPreferences): JSONObject =
+        JSONObject().apply {
+            AiSearchLlmProviderId.entries.forEach { providerId ->
+                userPreferences.getLlmPersonalContext(providerId)?.takeIf { it.isNotBlank() }?.let {
+                    put(providerId.storageValue, it)
+                }
+            }
+        }
+
+    private fun serializeCustomLlmProviders(providers: List<CustomLlmProviderConfig>): JSONArray =
+        JSONArray().apply {
+            providers.forEach { provider ->
+                put(
+                    JSONObject()
+                        .put("id", provider.id)
+                        .put("baseUrl", provider.baseUrl)
+                        .put("modelId", provider.modelId)
+                        .put("advancedPayload", provider.advancedPayload.orEmpty())
+                        .put("advancedPayloadEnabled", provider.advancedPayloadEnabled)
+                        .apply {
+                            if (provider.apiKey.isNotBlank()) put("apiKey", provider.apiKey)
+                        },
+                )
+            }
+        }
+
+    private fun parseCustomLlmProviders(array: JSONArray): List<CustomLlmProviderConfig> =
+        buildList {
+            for (index in 0 until array.length()) {
+                val item = array.optJSONObject(index) ?: continue
+                val id = item.optString("id").takeIf { it.isNotBlank() } ?: continue
+                val baseUrl = item.optString("baseUrl").takeIf { it.isNotBlank() } ?: continue
+                val modelId = item.optString("modelId").takeIf { it.isNotBlank() } ?: continue
+                add(
+                    CustomLlmProviderConfig(
+                        id = id,
+                        baseUrl = baseUrl,
+                        apiKey = item.optString("apiKey").orEmpty(),
+                        modelId = modelId,
+                        advancedPayload = item.optString("advancedPayload").takeIf { it.isNotBlank() },
+                        advancedPayloadEnabled = item.optBoolean("advancedPayloadEnabled", false),
+                    ),
+                )
+            }
+        }
 
     private fun serializeNotes(notes: List<NoteInfo>): JSONArray =
         JSONArray().apply {

@@ -64,6 +64,7 @@ import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
+import com.tk.quicksearch.search.appSettings.LocalOnSettingsImported
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
@@ -139,6 +140,7 @@ fun SearchRoute(
     onOpenReleaseNotesFeatures: () -> Unit = {},
     onOpenAppSettingDestination: (AppSettingsDestination) -> Unit = {},
     onOpenNotesDetail: (Long?) -> Unit = {},
+    onOpenNotificationHistory: () -> Unit = {},
     onOpenWidgetsPanelFromSwipe: (() -> Unit)? = null,
     onOverlayDismissRequest: (() -> Unit)? = null,
     onCloseAppRequest: (() -> Unit)? = null,
@@ -723,7 +725,7 @@ fun SearchRoute(
         mutableStateOf(gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher))
     }
     var homeDoubleTapAction by remember {
-        mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
+        mutableStateOf(gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context)))
     }
     var homeCustomSwipeActions by remember {
         mutableStateOf(
@@ -760,7 +762,7 @@ fun SearchRoute(
             swipeAliasTargets = listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
             homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
-            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
+            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context))
             homeCustomSwipeActions =
                 listOf(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
@@ -778,13 +780,14 @@ fun SearchRoute(
             if (event == Lifecycle.Event.ON_RESUME) {
                 isDefaultLauncher = context.isDefaultHomeApp()
                 homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
+                val isLockScreenAvailable = LockScreenAccessibilityService.isEnabled(context)
                 if (
-                    gesturePreferences.getHomeDoubleTapAction() == HomeSwipeGestureAction.LOCK_SCREEN &&
-                    !LockScreenAccessibilityService.isEnabled(context)
+                    !isLockScreenAvailable &&
+                    gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable) == HomeSwipeGestureAction.LOCK_SCREEN
                 ) {
                     gesturePreferences.setHomeDoubleTapAction(HomeSwipeGestureAction.NONE)
-                    homeDoubleTapAction = HomeSwipeGestureAction.NONE
                 }
+                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -887,6 +890,7 @@ fun SearchRoute(
             LocalAppLockAuthenticator provides requestBiometricAuthentication,
             LocalAppLockCredentialAuthenticator provides requestDeviceCredentialAuthentication,
             LocalOpenAppSettingDestination provides onOpenAppSettingDestination,
+            LocalOnSettingsImported provides viewModel::onSettingsImported,
             LocalPopupOverlayContent provides popupUndoSnackbar,
         ) {
             SearchScreenComposable(
@@ -930,6 +934,7 @@ fun SearchRoute(
             onPinApp = viewModel::pinApp,
             onUnpinApp = viewModel::unpinApp,
             onReorderPinnedApps = viewModel::reorderPinnedApps,
+            onReorderPinnedAppGrid = viewModel::reorderPinnedAppGrid,
             onSuggestionTabSelected = viewModel::setSelectedAppSuggestionTab,
             onRateQuickSearchClick = { onAppSettingClick(rateQuickSearchSetting) },
             onRateQuickSearchNotNowClick = {
@@ -998,7 +1003,15 @@ fun SearchRoute(
             onExcludeFile = onExcludeFileWithUndo,
             onExcludeFileExtension = onExcludeFileExtensionWithUndo,
             onSettingClick = { setting: com.tk.quicksearch.search.deviceSettings.DeviceSetting ->
-                viewModel.openSetting(setting)
+                // Notification History is a Quick Search screen, so it navigates in-app instead of
+                // starting an Activity the way every other device setting does.
+                if (setting.id ==
+                    com.tk.quicksearch.search.deviceSettings.NOTIFICATION_HISTORY_SETTING_ID
+                ) {
+                    onOpenNotificationHistory()
+                } else {
+                    viewModel.openSetting(setting)
+                }
             },
             onAppSettingClick = onAppSettingClick,
             onAppSettingToggle = onAppSettingToggle,
@@ -1176,8 +1189,12 @@ fun SearchRoute(
             onOpenPermissionsSettings = {
                 onOpenAppSettingDestination(AppSettingsDestination.PERMISSIONS)
             },
+            onHomePinnedSectionOrderChange = viewModel::setHomePinnedSectionOrder,
             onChangeWallpaperClick = {
                 launchSystemWallpaperPicker(context)
+            },
+            onOpenGesturesSettingsClick = {
+                onOpenAppSettingDestination(AppSettingsDestination.GESTURES)
             },
             swipeUpAction = swipeActions[2],
             swipeDownAction = swipeActions[3],

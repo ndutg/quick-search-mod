@@ -280,6 +280,21 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
+                            homePinnedSectionOrder = state.homePinnedSectionOrder,
+                            onHomePinnedSectionOrderChange = { order ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.HomePinnedSectionOrder(order),
+                                )
+                            },
+                            pinnedAppShortcutsInAppGrid = state.pinnedAppShortcutsInAppGrid,
+                            onTogglePinnedAppShortcutsInAppGrid = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
                             searchHintsEnabled = state.searchHintsEnabled,
                             onToggleSearchHints = { enabled ->
                                 callbacks.onApplySettingsCommand(
@@ -540,6 +555,7 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.NICKNAMES,
                     SettingsDetailType.TRIGGERS,
                     SettingsDetailType.GESTURES,
+                    SettingsDetailType.NOTIFICATION_HISTORY,
                     -> Unit
                 }
             }

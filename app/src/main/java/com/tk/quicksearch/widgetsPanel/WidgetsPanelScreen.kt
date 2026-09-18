@@ -123,9 +123,9 @@ private val WidgetResizeVisualShort = 8.dp
 private val WidgetActionButtonSize = 30.dp
 private val WidgetEditRingWidth = 2.dp
 
-// Centers action buttons on the 45° point of the 28dp card-corner arc
-// (28dp × (1 − 1/√2) ≈ 8dp in from each edge, minus the 15dp button radius).
-private val WidgetActionButtonCornerOffset = 7.dp
+// Centers action buttons on the 45° point of the 20dp card-corner arc
+// (20dp × (1 − 1/√2) ≈ 6dp in from each edge, minus the 15dp button radius).
+private val WidgetActionButtonCornerOffset = 9.dp
 private val WidgetEditBorderWidth = 1.dp
 
 // How far edit badges and resize handles can extend past a widget's top edge.
@@ -1356,7 +1356,7 @@ private fun BoxScope.WidgetEditBorder() {
                 .border(
                     width = WidgetEditBorderWidth,
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                    shape = DesignTokens.ExtraLargeCardShape,
+                    shape = DesignTokens.WidgetPanelCardShape,
                 ),
     )
 }

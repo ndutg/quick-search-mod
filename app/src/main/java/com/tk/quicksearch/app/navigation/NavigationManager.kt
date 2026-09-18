@@ -662,6 +662,9 @@ private fun NavigationContent(
                             navigateToSettings(destination)
                         }
                     },
+                    onOpenNotificationHistory = {
+                        navigateToSettings(SettingsDetailType.NOTIFICATION_HISTORY)
+                    },
                     onOpenWidgetsPanelFromSwipe = navigateToWidgetsPanelFromSwipeRight,
                     onSearchEngineLongPress = {
                         navigateToSettings(SettingsDetailType.SEARCH_ENGINES)

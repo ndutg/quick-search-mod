@@ -51,6 +51,7 @@ enum class AppSettingsDestination {
     NICKNAMES,
     TRIGGERS,
     GESTURES,
+    BACKUP_RESTORE,
 }
 
 enum class AppSettingsToggleKey {
@@ -58,6 +59,7 @@ enum class AppSettingsToggleKey {
     ONE_HANDED_MODE,
     BOTTOM_SEARCHBAR,
     UNIFIED_PINNED_ITEMS,
+    PINNED_APP_SHORTCUTS_IN_APP_GRID,
     SEARCH_HINTS,
     SETTINGS_ICON,
     APP_LABELS,

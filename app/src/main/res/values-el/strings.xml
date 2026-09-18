@@ -635,6 +635,14 @@
     <string name="settings_shortcut_network">Δίκτυο &amp; Διαδίκτυο</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Πρόσβαση στις ειδοποιήσεις</string>
+    <string name="settings_shortcut_notification_history">Ιστορικό ειδοποιήσεων</string>
+    <string name="notification_history_permission_desc">Επιτρέψτε την πρόσβαση στις ειδοποιήσεις για να συλλέγονται εδώ. Σε αυτή τη λίστα εμφανίζονται μόνο ειδοποιήσεις που λαμβάνονται μετά την παραχώρηση πρόσβασης.</string>
+    <string name="notification_history_empty">Δεν υπάρχουν ακόμη ειδοποιήσεις.</string>
+    <string name="notification_history_app_filter_title">Εμφάνιση ειδοποιήσεων από</string>
+    <string name="notification_history_search_hint">Αναζήτηση ειδοποιήσεων</string>
+    <string name="notification_history_hide_app">Απόκρυψη ειδοποιήσεων από %1$s</string>
+    <string name="notification_history_clear_all_title">Διαγραφή όλων των ειδοποιήσεων;</string>
+    <string name="notification_history_clear_all_message">Θέλετε σίγουρα να διαγράψετε όλο το ιστορικό ειδοποιήσεων; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</string>
     <string name="settings_shortcut_notifications">Ειδοποιήσεις</string>
     <string name="settings_shortcut_overlay_permission">Εμφάνιση πάνω από άλλες εφαρμογές</string>
     <string name="settings_shortcut_privacy">Απόρρητο</string>
@@ -728,6 +736,11 @@
     <string name="settings_layout_option_bottom_title">Λειτουργία ενός χεριού</string>
     <string name="settings_unified_pinned_items_title">Ενοποιημένα καρφιτσωμένα στοιχεία</string>
     <string name="settings_unified_pinned_items_desc">Εμφάνιση καρφιτσωμένων στοιχείων ως μία ενοποιημένη λίστα στην αρχική οθόνη.</string>
+    <string name="settings_pinned_sections_order_title">Σειρά καρφιτσωμένων ενοτήτων</string>
+    <string name="settings_pinned_sections_order_desc">Αναδιάταξη καρφιτσωμένων ενοτήτων στην αρχική</string>
+    <string name="settings_pinned_sections_order_dialog_info">Πατήστε παρατεταμένα και σύρετε για να αλλάξετε τη σειρά των καρφιτσωμένων ενοτήτων στην αρχική.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Καρφιτσωμένες συντομεύσεις εφαρμογών στο πλέγμα εφαρμογών</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Εμφάνιση καρφιτσωμένων συντομεύσεων εφαρμογών στο πλέγμα εφαρμογών μαζί με τις εφαρμογές.</string>
     <string name="settings_more_options_desc">Διάφορες επιλογές προσαρμογής</string>
     <string name="settings_more_options_title">Περισσότερες επιλογές</string>
     <string name="settings_overlay_assistant_setup_now">Ρύθμιση τώρα</string>
@@ -852,10 +865,11 @@
     <string name="action_update">Ενημέρωση</string>
     <string name="release_notes_title">Σημειώσεις έκδοσης Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Σημειώσεις έκδοσης Quick Search</string>
-    <string name="settings_backup_export_api_key_warning_message">Προχωρήστε με δική σας ευθύνη. Το εξαγόμενο κλειδί API δεν είναι κρυπτογραφημένο και μπορεί να προσπελαστεί από οποιονδήποτε έχει πρόσβαση στο αρχείο αντιγράφου ασφαλείας.</string>
+    <string name="settings_backup_export_api_key_warning_message">Προχωρήστε με δική σας ευθύνη. Τα εξαγόμενα κλειδιά API δεν είναι κρυπτογραφημένα και μπορούν να προσπελαστούν από οποιονδήποτε έχει πρόσβαση στο αρχείο αντιγράφου ασφαλείας.</string>
     <string name="settings_backup_export_button">Εξαγωγή</string>
     <string name="settings_backup_export_failed">Αδυναμία εξαγωγής ρυθμίσεων.</string>
     <string name="settings_backup_export_option_pinned_items_title">Καρφιτσωμένα στοιχεία</string>
+    <string name="settings_backup_export_option_api_keys">Κλειδιά API</string>
     <string name="settings_backup_export_selection_title">Εξαγωγή δεδομένων</string>
     <string name="settings_backup_export_success">Οι ρυθμίσεις εξήχθησαν επιτυχώς.</string>
     <string name="settings_backup_import_button">Εισαγωγή</string>
@@ -1005,7 +1019,7 @@
     <string name="permissions_calling_desc">Απαραίτητο για την απευθείας κλήση των επαφών σας χωρίς το άνοιγμα της εφαρμογής κλήσεων.</string>
     <string name="settings_notifications_permission_title">Δημοσίευση ειδοποιήσεων</string>
     <string name="permissions_notifications_desc">Απαιτείται για το καρφίτσωμα αποτελεσμάτων αναζήτησης στον πίνακα ειδοποιήσεων</string>
-    <string name="permissions_notification_access_desc">Απαιτείται για την εμφάνιση τελειών ειδοποιήσεων στις εφαρμογές που έχουν ειδοποιήσεις.</string>
+    <string name="permissions_notification_access_desc">Απαιτείται για την ενεργοποίηση των κουκκίδων ειδοποιήσεων και του ιστορικού ειδοποιήσεων</string>
     <string name="permissions_accessibility_lock_screen_title">Προσβασιμότητα</string>
     <string name="permissions_accessibility_lock_screen_desc">Επιτρέπει στη χειρονομία διπλού πατήματος να κλειδώνει τη συσκευή σας.</string>
     <string name="permissions_contacts_desc">Απαραίτητο για την αναζήτηση των επαφών σας.</string>
@@ -1153,4 +1167,9 @@
     <string name="speed_bump_overlay_title">Πάρε μια βαθιά ανάσα</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Επερχόμενο ξυπνητήρι</string>
+    <string name="settings_tavily_title">Tavily για αναζήτηση ιστού</string>
+    <string name="settings_tavily_desc">Προσθέστε κλειδί API του Tavily για υποστήριξη αναζήτησης ιστού σε μοντέλα που δεν την υποστηρίζουν.</string>
+    <string name="settings_tavily_mode_always">Να χρησιμοποιείται πάντα το Tavily για αναζήτηση ιστού</string>
+    <string name="settings_tavily_mode_when_unsupported">Χρήση μόνο όταν το μοντέλο δεν υποστηρίζει αναζήτηση ιστού</string>
+    <string name="tavily_search_failed_toast">Η αναζήτηση ιστού Tavily απέτυχε. Απάντηση χωρίς αποτελέσματα ιστού.</string>
 </resources>

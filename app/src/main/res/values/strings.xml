@@ -633,6 +633,14 @@
     <string name="settings_shortcut_network">Network &amp; internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Notification Access</string>
+    <string name="settings_shortcut_notification_history">Notification History</string>
+    <string name="notification_history_permission_desc">Allow notification access to collect notifications here. Only notifications received after access is granted appear in this list.</string>
+    <string name="notification_history_empty">No notifications yet.</string>
+    <string name="notification_history_app_filter_title">Show notifications from</string>
+    <string name="notification_history_search_hint">Search Notifications</string>
+    <string name="notification_history_hide_app">Hide notifications from %1$s</string>
+    <string name="notification_history_clear_all_title">Clear All Notifications?</string>
+    <string name="notification_history_clear_all_message">Are you sure you want to clear all notification history? This action cannot be undone.</string>
     <string name="settings_shortcut_notifications">Notifications</string>
     <string name="settings_shortcut_overlay_permission">Display Over Other Apps</string>
     <string name="settings_shortcut_privacy">Privacy</string>
@@ -727,6 +735,11 @@
     <string name="settings_layout_option_bottom_title">One-Handed Mode</string>
     <string name="settings_unified_pinned_items_title">Unified Pinned Items</string>
     <string name="settings_unified_pinned_items_desc">Show pinned items as one unified list in home.</string>
+    <string name="settings_pinned_sections_order_title">Pinned Sections Order</string>
+    <string name="settings_pinned_sections_order_desc">Reorder pinned sections on home</string>
+    <string name="settings_pinned_sections_order_dialog_info">Hold and drag to change the order of pinned sections on home.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Pinned App Shortcuts in App Grid</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Show pinned app shortcuts in the app grid along with apps.</string>
     <string name="settings_more_options_desc">Miscellaneous customisation options</string>
     <string name="settings_more_options_title">More Options</string>
     <string name="settings_overlay_assistant_setup_now">Setup Now</string>
@@ -821,6 +834,11 @@
     <string name="settings_gemini_api_config_desc">Configure your AI provider for AI-powered search and tools</string>
     <string name="settings_gemini_api_desc">Configure AI provider</string>
     <string name="settings_gemini_api_key_paste_hint">Tap to paste the key</string>
+    <string name="settings_tavily_title">Tavily for Web Search</string>
+    <string name="settings_tavily_desc">Add Tavily API key to add web search support for models that don\u2019t support it.</string>
+    <string name="settings_tavily_mode_always">Always use Tavily for web search</string>
+    <string name="settings_tavily_mode_when_unsupported">Use only when the model does not support web search</string>
+    <string name="tavily_search_failed_toast">Tavily web search failed. Answering without web results.</string>
     <string name="settings_gemini_api_key_reset">Reset Key</string>
     <string name="settings_gemini_api_key_saving">Saving...</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
@@ -851,10 +869,11 @@
     <string name="action_update">Update</string>
     <string name="release_notes_title">Quick Search v%1$s Release Notes</string>
     <string name="release_notes_title_no_version">Quick Search Release Notes</string>
-    <string name="settings_backup_export_api_key_warning_message">Proceed at your own risk. Exported API key is not encrypted and can be accessed by anyone who has access to your backup file.</string>
+    <string name="settings_backup_export_api_key_warning_message">Proceed at your own risk. Exported API keys are not encrypted and can be accessed by anyone who has access to your backup file.</string>
     <string name="settings_backup_export_button">Export</string>
     <string name="settings_backup_export_failed">Unable to export settings.</string>
     <string name="settings_backup_export_option_pinned_items_title">Pinned items</string>
+    <string name="settings_backup_export_option_api_keys">API Keys</string>
     <string name="settings_backup_export_selection_title">Export Data</string>
     <string name="settings_backup_export_success">Settings exported successfully.</string>
     <string name="settings_backup_import_button">Import</string>
@@ -1006,7 +1025,7 @@
     <string name="permissions_calling_desc">Required to call your contacts directly without opening the dialer.</string>
     <string name="settings_notifications_permission_title">Post Notifications</string>
     <string name="permissions_notifications_desc">Required to pin search results to notification panel</string>
-    <string name="permissions_notification_access_desc">Required to show notification dots on apps that have notifications.</string>
+    <string name="permissions_notification_access_desc">Required to enable notification dots and notification history features</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibility</string>
     <string name="permissions_accessibility_lock_screen_desc">Allows the double-tap gesture to lock your device.</string>
     <string name="permissions_contacts_desc">Required to search your contacts.</string>

@@ -634,6 +634,14 @@
     <string name="settings_shortcut_network">Rete e Internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Accesso alle notifiche</string>
+    <string name="settings_shortcut_notification_history">Cronologia notifiche</string>
+    <string name="notification_history_permission_desc">Consenti l\'accesso alle notifiche per raccoglierle qui. In questo elenco compaiono solo le notifiche ricevute dopo aver concesso l\'accesso.</string>
+    <string name="notification_history_empty">Ancora nessuna notifica.</string>
+    <string name="notification_history_app_filter_title">Mostra notifiche da</string>
+    <string name="notification_history_search_hint">Cerca notifiche</string>
+    <string name="notification_history_hide_app">Nascondi notifiche da %1$s</string>
+    <string name="notification_history_clear_all_title">Cancellare tutte le notifiche?</string>
+    <string name="notification_history_clear_all_message">Vuoi davvero cancellare tutta la cronologia delle notifiche? Questa azione non può essere annullata.</string>
     <string name="settings_shortcut_notifications">Notifiche</string>
     <string name="settings_shortcut_overlay_permission">Mostra sopra altre app</string>
     <string name="settings_shortcut_privacy">Privacy</string>
@@ -727,6 +735,11 @@
     <string name="settings_layout_option_bottom_title">Modalità a una mano</string>
     <string name="settings_unified_pinned_items_title">Elementi fissati unificati</string>
     <string name="settings_unified_pinned_items_desc">Mostra gli elementi fissati como un unico elenco unificato nella schermata iniziale.</string>
+    <string name="settings_pinned_sections_order_title">Ordine delle sezioni fissate</string>
+    <string name="settings_pinned_sections_order_desc">Riordina le sezioni fissate nella schermata home</string>
+    <string name="settings_pinned_sections_order_dialog_info">Tieni premuto e trascina per cambiare l\'ordine delle sezioni fissate nella schermata home.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Scorciatoie app fissate nella griglia delle app</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Mostra le scorciatoie delle app fissate nella griglia delle app insieme alle app.</string>
     <string name="settings_more_options_desc">Opzioni di personalizzazione varie</string>
     <string name="settings_more_options_title">Altre opzioni</string>
     <string name="settings_overlay_assistant_setup_now">Configura ora</string>
@@ -851,10 +864,11 @@
     <string name="action_update">Aggiorna</string>
     <string name="release_notes_title">Note di rilascio di Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Note di rilascio di Quick Search</string>
-    <string name="settings_backup_export_api_key_warning_message">Procedi a tuo rischio. La chiave API esportata non è crittografata e chiunque abbia accesso al file di backup potrà visualizzarla.</string>
+    <string name="settings_backup_export_api_key_warning_message">Procedi a tuo rischio. Le chiavi API esportate non sono crittografate e chiunque abbia accesso al file di backup potrà visualizzarle.</string>
     <string name="settings_backup_export_button">Esporta</string>
     <string name="settings_backup_export_failed">Impossibile esportare le impostazioni.</string>
     <string name="settings_backup_export_option_pinned_items_title">Elementi fissati</string>
+    <string name="settings_backup_export_option_api_keys">Chiavi API</string>
     <string name="settings_backup_export_selection_title">Esporta dati</string>
     <string name="settings_backup_export_success">Impostazioni esportate con successo.</string>
     <string name="settings_backup_import_button">Importa</string>
@@ -1004,7 +1018,7 @@
     <string name="permissions_calling_desc">Richiesta per chiamare i tuoi contatti direttamente senza aprire il tastierino telefonico.</string>
     <string name="settings_notifications_permission_title">Pubblica notifiche</string>
     <string name="permissions_notifications_desc">Necessario per fissare i risultati di ricerca nel pannello delle notifiche</string>
-    <string name="permissions_notification_access_desc">Necessario per mostrare i pallini di notifica sulle app che hanno notifiche.</string>
+    <string name="permissions_notification_access_desc">Necessario per attivare i punti di notifica e la cronologia delle notifiche</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibilità</string>
     <string name="permissions_accessibility_lock_screen_desc">Consente al gesto del doppio tocco di bloccare il dispositivo.</string>
     <string name="permissions_contacts_desc">Richiesta per cercare tra i tuoi contatti.</string>
@@ -1152,4 +1166,9 @@
     <string name="speed_bump_overlay_title">Fai un respiro profondo</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Prossima sveglia</string>
+    <string name="settings_tavily_title">Tavily per la ricerca web</string>
+    <string name="settings_tavily_desc">Aggiungi una chiave API Tavily per abilitare la ricerca web nei modelli che non la supportano.</string>
+    <string name="settings_tavily_mode_always">Usa sempre Tavily per la ricerca web</string>
+    <string name="settings_tavily_mode_when_unsupported">Usa solo quando il modello non supporta la ricerca web</string>
+    <string name="tavily_search_failed_toast">Ricerca web Tavily non riuscita. Risposta senza risultati web.</string>
 </resources>

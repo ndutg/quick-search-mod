@@ -655,6 +655,14 @@
 <string name="settings_shortcut_network">Сеть и интернет</string>
 <string name="settings_shortcut_nfc">NFC</string>
 <string name="settings_shortcut_notification_listener">Доступ к уведомлениям</string>
+    <string name="settings_shortcut_notification_history">История уведомлений</string>
+    <string name="notification_history_permission_desc">Разрешите доступ к уведомлениям, чтобы собирать их здесь. В этом списке отображаются только уведомления, полученные после предоставления доступа.</string>
+    <string name="notification_history_empty">Уведомлений пока нет.</string>
+    <string name="notification_history_app_filter_title">Показывать уведомления от</string>
+    <string name="notification_history_search_hint">Поиск уведомлений</string>
+    <string name="notification_history_hide_app">Скрыть уведомления от %1$s</string>
+    <string name="notification_history_clear_all_title">Очистить все уведомления?</string>
+    <string name="notification_history_clear_all_message">Вы уверены, что хотите очистить всю историю уведомлений? Это действие нельзя отменить.</string>
 <string name="settings_shortcut_notifications">Уведомления</string>
 <string name="settings_shortcut_overlay_permission">Отображение поверх других приложений</string>
 <string name="settings_shortcut_privacy">Конфиденциальность</string>
@@ -748,6 +756,11 @@
 <string name="settings_layout_option_bottom_title">Режим управления одной рукой</string>
 <string name="settings_unified_pinned_items_title">Объединенные закрепленные элементы</string>
 <string name="settings_unified_pinned_items_desc">Показывать закрепленные элементы единым списком на главном экране.</string>
+    <string name="settings_pinned_sections_order_title">Порядок закреплённых разделов</string>
+    <string name="settings_pinned_sections_order_desc">Изменить порядок закреплённых разделов на главном экране</string>
+    <string name="settings_pinned_sections_order_dialog_info">Нажмите и удерживайте, затем перетащите, чтобы изменить порядок закреплённых разделов на главном экране.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Закреплённые ярлыки приложений в сетке приложений</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Показывать закреплённые ярлыки приложений в сетке приложений вместе с приложениями.</string>
 <string name="settings_more_options_desc">Различные дополнительные параметры кастомизации</string>
 <string name="settings_more_options_title">Дополнительные параметры</string>
 <string name="settings_overlay_assistant_setup_now">Настроить сейчас</string>
@@ -872,10 +885,11 @@
 <string name="action_update">Обновить</string>
 <string name="release_notes_title">Примечания к релизу Quick Search v%1$s</string>
 <string name="release_notes_title_no_version">Примечания к релизу Quick Search</string>
-<string name="settings_backup_export_api_key_warning_message">Вы действуете на свой страх и риск. Экспортируемый API-ключ не зашифрован и может быть доступен любому, у кого есть доступ к вашему файлу резервной копии.</string>
+<string name="settings_backup_export_api_key_warning_message">Вы действуете на свой страх и риск. Экспортируемые API-ключи не зашифрованы и могут быть доступны любому, у кого есть доступ к вашему файлу резервной копии.</string>
 <string name="settings_backup_export_button">Экспорт</string>
 <string name="settings_backup_export_failed">Не удалось экспортировать настройки.</string>
 <string name="settings_backup_export_option_pinned_items_title">Закрепленные элементы</string>
+<string name="settings_backup_export_option_api_keys">API-ключи</string>
 <string name="settings_backup_export_selection_title">Экспорт данных</string>
 <string name="settings_backup_export_success">Настройки успешно экспортированы.</string>
 <string name="settings_backup_import_button">Импорт</string>
@@ -1025,7 +1039,7 @@
 <string name="permissions_calling_desc">Требуется для совершения звонков контактам напрямую без открытия номеронабирателя.</string>
 <string name="settings_notifications_permission_title">Отправка уведомлений</string>
 <string name="permissions_notifications_desc">Требуется для закрепления результатов поиска на панели уведомлений</string>
-    <string name="permissions_notification_access_desc">Требуется для отображения точек уведомлений на приложениях с уведомлениями.</string>
+    <string name="permissions_notification_access_desc">Требуется для значков уведомлений и истории уведомлений</string>
 <string name="permissions_accessibility_lock_screen_title">Специальные возможности</string>
 <string name="permissions_accessibility_lock_screen_desc">Позволяет блокировать устройство с помощью жеста двойного нажатия.</string>
 <string name="permissions_contacts_desc">Требуется для поиска по вашим контактам.</string>
@@ -1173,4 +1187,9 @@
     <string name="speed_bump_overlay_title">Сделайте глубокий вдох</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Ближайший будильник</string>
+    <string name="settings_tavily_title">Tavily для веб-поиска</string>
+    <string name="settings_tavily_desc">Добавьте API-ключ Tavily, чтобы добавить веб-поиск моделям, которые его не поддерживают.</string>
+    <string name="settings_tavily_mode_always">Всегда использовать Tavily для веб-поиска</string>
+    <string name="settings_tavily_mode_when_unsupported">Использовать, только если модель не поддерживает веб-поиск</string>
+    <string name="tavily_search_failed_toast">Веб-поиск Tavily не удался. Ответ без результатов из интернета.</string>
 </resources>

@@ -490,7 +490,16 @@ fun OverlayRoot(
                                                         )
                                                         handleClose()
                                                 },
-                                                onOpenWidgetsPanelFromSwipe = {
+                                                onOpenNotificationHistory = {
+                                                        OverlayModeController.openMainActivity(
+                                                                context,
+                                                                openSettings = true,
+                                                                settingsDetailType =
+                                                                        SettingsDetailType
+                                                                                .NOTIFICATION_HISTORY,
+                                                        )
+                                                        handleClose()
+                                                },                                                onOpenWidgetsPanelFromSwipe = {
                                                         OverlayModeController.openMainActivity(
                                                                 context,
                                                                 openWidgetsPanel = true,

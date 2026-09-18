@@ -635,6 +635,14 @@
     <string name="settings_shortcut_network">नेटवर्क और इंटरनेट</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">अधिसूचनाओं तक पहुंच</string>
+    <string name="settings_shortcut_notification_history">सूचना इतिहास</string>
+    <string name="notification_history_permission_desc">सूचनाएं यहां एकत्र करने के लिए सूचना एक्सेस की अनुमति दें। इस सूची में केवल एक्सेस मिलने के बाद प्राप्त सूचनाएं दिखाई देती हैं।</string>
+    <string name="notification_history_empty">अभी तक कोई सूचना नहीं।</string>
+    <string name="notification_history_app_filter_title">इनसे सूचनाएं दिखाएं</string>
+    <string name="notification_history_search_hint">सूचनाएं खोजें</string>
+    <string name="notification_history_hide_app">%1$s से सूचनाएं छिपाएं</string>
+    <string name="notification_history_clear_all_title">सभी सूचनाएं साफ़ करें?</string>
+    <string name="notification_history_clear_all_message">क्या आप वाकई पूरा सूचना इतिहास साफ़ करना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।</string>
     <string name="settings_shortcut_notifications">अधिसूचनाएं</string>
     <string name="settings_shortcut_overlay_permission">अन्य ऐप्स के ऊपर दिखाएं</string>
     <string name="settings_shortcut_privacy">गोपनीयता</string>
@@ -728,6 +736,11 @@
     <string name="settings_layout_option_bottom_title">एक-हाथ मोड</string>
     <string name="settings_unified_pinned_items_title">एकीकृत पिन किए गए आइटम</string>
     <string name="settings_unified_pinned_items_desc">पिन किए गए आइटम को होम स्क्रीन पर एक एकीकृत सूची के रूप में दिखाएं।</string>
+    <string name="settings_pinned_sections_order_title">पिन किए गए सेक्शन का क्रम</string>
+    <string name="settings_pinned_sections_order_desc">होम पर पिन किए गए सेक्शन का क्रम बदलें</string>
+    <string name="settings_pinned_sections_order_dialog_info">होम पर पिन किए गए सेक्शन का क्रम बदलने के लिए दबाकर रखें और खींचें।</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">ऐप ग्रिड में पिन किए गए ऐप शॉर्टकट</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">पिन किए गए ऐप शॉर्टकट को ऐप ग्रिड में ऐप्स के साथ दिखाएं।</string>
     <string name="settings_more_options_desc">विविध कस्टमाइज़ेशन विकल्प</string>
     <string name="settings_more_options_title">और विकल्प</string>
     <string name="settings_overlay_assistant_setup_now">अभी सेटअप करें</string>
@@ -852,10 +865,11 @@
     <string name="action_update">अपडेट करें</string>
     <string name="release_notes_title">Quick Search v%1$s रिलीज़ नोट्स</string>
     <string name="release_notes_title_no_version">Quick Search रिलीज़ नोट्स</string>
-    <string name="settings_backup_export_api_key_warning_message">अपने जोखिम पर आगे बढ़ें। एक्सपोर्ट की गई API key एन्क्रिप्टेड नहीं होती और आपकी बैकअप फाइल तक पहुंच रखने वाला कोई भी इसे देख सकता है।</string>
+    <string name="settings_backup_export_api_key_warning_message">अपने जोखिम पर आगे बढ़ें। एक्सपोर्ट की गई API keys एन्क्रिप्टेड नहीं होतीं और आपकी बैकअप फाइल तक पहुंच रखने वाला कोई भी इन्हें देख सकता है।</string>
     <string name="settings_backup_export_button">एक्सपोर्ट</string>
     <string name="settings_backup_export_failed">सेटिंग्स एक्सपोर्ट नहीं हो सकीं।</string>
     <string name="settings_backup_export_option_pinned_items_title">पिन किए गए आइटम</string>
+    <string name="settings_backup_export_option_api_keys">API keys</string>
     <string name="settings_backup_export_selection_title">डेटा एक्सपोर्ट करें</string>
     <string name="settings_backup_export_success">सेटिंग्स सफलतापूर्वक एक्सपोर्ट हो गईं।</string>
     <string name="settings_backup_import_button">इम्पोर्ट</string>
@@ -1005,7 +1019,7 @@
     <string name="permissions_calling_desc">डायलर खोले बिना आपके कॉन्टैक्ट्स को सीधे कॉल करने के लिए आवश्यक।</string>
     <string name="settings_notifications_permission_title">पोस्ट नोटिफ़िकेशन</string>
     <string name="permissions_notifications_desc">खोज परिणामों को सूचना पैनल में पिन करने के लिए आवश्यक</string>
-    <string name="permissions_notification_access_desc">जिन ऐप्स पर नोटिफ़िकेशन हैं उन पर नोटिफ़िकेशन डॉट्स दिखाने के लिए आवश्यक।</string>
+    <string name="permissions_notification_access_desc">सूचना बिंदु और सूचना इतिहास सुविधाएं चालू करने के लिए आवश्यक</string>
     <string name="permissions_accessibility_lock_screen_title">सुलभता</string>
     <string name="permissions_accessibility_lock_screen_desc">डबल-टैप जेस्चर से आपका डिवाइस लॉक किया जा सकता है।</string>
     <string name="permissions_contacts_desc">आपके कॉन्टैक्ट्स खोजने के लिए आवश्यक।</string>
@@ -1153,4 +1167,9 @@
     <string name="speed_bump_overlay_title">एक गहरी सांस लें</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">आगामी अलार्म</string>
+    <string name="settings_tavily_title">वेब सर्च के लिए Tavily</string>
+    <string name="settings_tavily_desc">जो मॉडल वेब सर्च सपोर्ट नहीं करते, उनमें वेब सर्च जोड़ने के लिए Tavily API कुंजी जोड़ें।</string>
+    <string name="settings_tavily_mode_always">वेब सर्च के लिए हमेशा Tavily का उपयोग करें</string>
+    <string name="settings_tavily_mode_when_unsupported">केवल तब उपयोग करें जब मॉडल वेब सर्च सपोर्ट न करे</string>
+    <string name="tavily_search_failed_toast">Tavily वेब सर्च विफल रहा। वेब परिणामों के बिना उत्तर दिया जा रहा है।</string>
 </resources>

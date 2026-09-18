@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ManageSearch
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Button
@@ -44,28 +43,16 @@ fun SettingsExportDialog(
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState()),
             ) {
+                // Settings are always exported; shown checked and locked so users know they're included.
                 SettingsCheckboxRow(
                     title = stringResource(R.string.settings_gesture_settings),
                     description = "",
-                    checked = selectionState.includeSettings,
-                    onCheckedChange = {
-                        onSelectionStateChange(selectionState.copy(includeSettings = it))
-                    },
+                    checked = true,
+                    onCheckedChange = {},
                     icon = Icons.Rounded.Tune,
                     isLastItem = false,
+                    enabled = false,
                 )
-                if (selectionState.showSearchHistoryOption) {
-                    SettingsCheckboxRow(
-                        title = stringResource(R.string.recent_queries_toggle_title),
-                        description = "",
-                        checked = selectionState.includeSearchHistory,
-                        onCheckedChange = {
-                            onSelectionStateChange(selectionState.copy(includeSearchHistory = it))
-                        },
-                        icon = Icons.Rounded.History,
-                        isLastItem = false,
-                    )
-                }
                 if (selectionState.showPinnedItemsOption) {
                     SettingsCheckboxRow(
                         title = stringResource(R.string.settings_backup_export_option_pinned_items_title),
@@ -86,7 +73,7 @@ fun SettingsExportDialog(
                         onSelectionStateChange(selectionState.copy(includeShortcuts = it))
                     },
                     icon = Icons.Rounded.Apps,
-                    isLastItem = false,
+                    isLastItem = !selectionState.showNotesOption && !selectionState.showCalendarEventsOption && !selectionState.showApiKeysOption,
                 )
                 if (selectionState.showNotesOption) {
                     SettingsCheckboxRow(
@@ -97,7 +84,7 @@ fun SettingsExportDialog(
                             onSelectionStateChange(selectionState.copy(includeNotes = it))
                         },
                         icon = Icons.Rounded.Description,
-                        isLastItem = false,
+                        isLastItem = !selectionState.showCalendarEventsOption && !selectionState.showApiKeysOption,
                     )
                 }
                 if (selectionState.showCalendarEventsOption) {
@@ -109,30 +96,22 @@ fun SettingsExportDialog(
                             onSelectionStateChange(selectionState.copy(includeCalendarEvents = it))
                         },
                         icon = Icons.Rounded.CalendarMonth,
-                        isLastItem = false,
+                        isLastItem = !selectionState.showApiKeysOption,
                     )
                 }
-                SettingsCheckboxRow(
-                    title = stringResource(R.string.settings_app_shortcuts_filter_search_engines),
-                    description = "",
-                    checked = selectionState.includeSearchEngines,
-                    onCheckedChange = {
-                        onSelectionStateChange(selectionState.copy(includeSearchEngines = it))
-                    },
-                    icon = Icons.AutoMirrored.Rounded.ManageSearch,
-                    isLastItem = false,
-                )
-                SettingsCheckboxRow(
-                    title = stringResource(R.string.common_ai_provider),
-                    description = "",
-                    checked = selectionState.includeGeminiApi,
-                    onCheckedChange = {
-                        onSelectionStateChange(selectionState.copy(includeGeminiApi = it))
-                    },
-                    iconResId = R.drawable.direct_search,
-                    isLastItem = true,
-                )
-                if (selectionState.includeGeminiApi) {
+                if (selectionState.showApiKeysOption) {
+                    SettingsCheckboxRow(
+                        title = stringResource(R.string.settings_backup_export_option_api_keys),
+                        description = "",
+                        checked = selectionState.includeApiKeys,
+                        onCheckedChange = {
+                            onSelectionStateChange(selectionState.copy(includeApiKeys = it))
+                        },
+                        icon = Icons.Rounded.Key,
+                        isLastItem = true,
+                    )
+                }
+                if (selectionState.showApiKeysOption && selectionState.includeApiKeys) {
                     Text(
                         text = stringResource(R.string.settings_backup_export_api_key_warning_message),
                         style = MaterialTheme.typography.bodySmall,
@@ -143,10 +122,7 @@ fun SettingsExportDialog(
             }
         },
         confirmButton = {
-            Button(
-                enabled = selectionState.hasAnySelection(),
-                onClick = onExport,
-            ) {
+            Button(onClick = onExport) {
                 Text(text = stringResource(R.string.settings_backup_export_button))
             }
         },
@@ -159,39 +135,26 @@ fun SettingsExportDialog(
 }
 
 data class ExportSelectionState(
-    val includeSettings: Boolean = true,
-    val includeSearchHistory: Boolean = true,
     val includePinnedItems: Boolean = true,
     val includeShortcuts: Boolean = true,
     val includeNotes: Boolean = true,
     val includeCalendarEvents: Boolean = true,
-    val includeSearchEngines: Boolean = true,
-    val includeGeminiApi: Boolean = false,
-    val showSearchHistoryOption: Boolean = true,
+    val includeApiKeys: Boolean = false,
     val showPinnedItemsOption: Boolean = true,
     val showNotesOption: Boolean = true,
     val showCalendarEventsOption: Boolean = false,
+    val showApiKeysOption: Boolean = false,
 ) {
-    fun hasAnySelection(): Boolean =
-        includeSettings ||
-            includeSearchHistory ||
-            includePinnedItems ||
-            includeShortcuts ||
-            includeNotes ||
-            includeCalendarEvents ||
-            includeSearchEngines ||
-            includeGeminiApi
-
     fun toExportOptions(): SettingsBackupManager.ExportOptions {
         val items = buildSet {
-            if (includeSettings) add(SettingsBackupManager.ExportItem.SETTINGS)
-            if (includeSearchHistory) add(SettingsBackupManager.ExportItem.SEARCH_HISTORY)
+            // Settings and search engines are always exported; search history never is.
+            add(SettingsBackupManager.ExportItem.SETTINGS)
+            add(SettingsBackupManager.ExportItem.SEARCH_ENGINES)
             if (includePinnedItems) add(SettingsBackupManager.ExportItem.PINNED_ITEMS)
             if (includeShortcuts) add(SettingsBackupManager.ExportItem.SHORTCUTS)
             if (includeNotes) add(SettingsBackupManager.ExportItem.NOTES)
             if (includeCalendarEvents) add(SettingsBackupManager.ExportItem.CALENDAR_EVENTS)
-            if (includeSearchEngines) add(SettingsBackupManager.ExportItem.SEARCH_ENGINES)
-            if (includeGeminiApi) add(SettingsBackupManager.ExportItem.GEMINI_API)
+            if (includeApiKeys && showApiKeysOption) add(SettingsBackupManager.ExportItem.API_KEYS)
         }
         return SettingsBackupManager.ExportOptions(selectedItems = items)
     }

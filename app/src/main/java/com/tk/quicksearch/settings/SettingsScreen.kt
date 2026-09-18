@@ -81,7 +81,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.searchScreen.dialogs.ReleaseNotesDrawer
-import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.shared.featureFlags.FeatureFlag
@@ -94,9 +93,6 @@ import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.AppLanguageOption
 import com.tk.quicksearch.shared.util.FeedbackUtils
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -157,65 +153,12 @@ fun SettingsScreen(
     var pendingImportSourceUri by remember { mutableStateOf<Uri?>(null) }
     var showExportSelectionDialog by remember { mutableStateOf(false) }
     var exportSelectionState by remember { mutableStateOf(ExportSelectionState()) }
-    val userPrefs =
-        remember(context) {
-            context.getSharedPreferences(BasePreferences.PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        }
-    val isSearchHistoryEnabledForExport =
-        remember(userPrefs) {
-            userPrefs.getBoolean(BasePreferences.KEY_RECENT_QUERIES_ENABLED, true)
-        }
-    val hasPinnedItemsForExport =
-        remember(userPrefs) {
-            listOf(
-                BasePreferences.KEY_PINNED,
-                BasePreferences.KEY_PINNED_CONTACT_IDS,
-                BasePreferences.KEY_PINNED_FILE_URIS,
-                BasePreferences.KEY_PINNED_SETTINGS,
-                BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS,
-                BasePreferences.KEY_PINNED_APP_SHORTCUTS,
-            ).any { key ->
-                userPrefs.getStringSet(key, emptySet()).orEmpty().isNotEmpty()
-            }
-        }
-    val hasNotesForExport =
-        remember(userPrefs) {
-            FeatureFlags.isSearchSectionEnabled(com.tk.quicksearch.search.core.SearchSection.NOTES) &&
-                run {
-                    val notesJson = userPrefs.getString(BasePreferences.KEY_NOTES_DATA, null).orEmpty()
-                    notesJson.isNotBlank() && notesJson != "[]"
-                }
-        }
-    val hasCustomCalendarEventsForExport =
-        remember(userPrefs) {
-            val eventsJson = userPrefs.getString(BasePreferences.KEY_CUSTOM_CALENDAR_EVENTS_DATA, null).orEmpty()
-            eventsJson.isNotBlank() && eventsJson != "[]"
-        }
-
     val exportLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.CreateDocument("application/octet-stream"),
         ) { uri ->
             if (uri == null) return@rememberLauncherForActivityResult
-            coroutineScope.launch(Dispatchers.IO) {
-                val isSuccess =
-                    runCatching {
-                        SettingsBackupManager.exportToUri(
-                            context = context,
-                            outputUri = uri,
-                            options = exportSelectionState.toExportOptions(),
-                        )
-                    }.isSuccess
-                withContext(Dispatchers.Main) {
-                    val messageResId =
-                        if (isSuccess) {
-                            R.string.settings_backup_export_success
-                        } else {
-                            R.string.settings_backup_export_failed
-                        }
-                    Toast.makeText(context, context.getString(messageResId), Toast.LENGTH_SHORT).show()
-                }
-            }
+            exportSettingsToUri(context, uri, exportSelectionState, coroutineScope)
         }
 
     val importLauncher =
@@ -522,22 +465,12 @@ fun SettingsScreen(
                             showImportWarningDialog = true
                         },
                         onExportClick = {
-                            exportSelectionState =
-                                ExportSelectionState(
-                                    includeSettings = true,
-                                    includeSearchHistory = isSearchHistoryEnabledForExport,
-                                    includePinnedItems = hasPinnedItemsForExport,
-                                    includeShortcuts = true,
-                                    includeNotes = hasNotesForExport,
-                                    includeCalendarEvents = hasCustomCalendarEventsForExport,
-                                    includeSearchEngines = true,
-                                    includeGeminiApi = false,
-                                    showSearchHistoryOption = isSearchHistoryEnabledForExport,
-                                    showPinnedItemsOption = hasPinnedItemsForExport,
-                                    showNotesOption = hasNotesForExport,
-                                    showCalendarEventsOption = hasCustomCalendarEventsForExport,
-                                )
-                            showExportSelectionDialog = true
+                            coroutineScope.launch {
+                                // API keys live in encrypted storage; keep keystore work off the main thread.
+                                exportSelectionState =
+                                    withContext(Dispatchers.IO) { loadExportSelectionState(context) }
+                                showExportSelectionDialog = true
+                            }
                         },
                     )
                 }
@@ -634,8 +567,7 @@ fun SettingsScreen(
             },
             onExport = {
                 showExportSelectionDialog = false
-                val defaultName = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
-                exportLauncher.launch("quick-search-settings-$defaultName.quicksearch")
+                exportLauncher.launch(defaultBackupFileName())
             },
         )
     }
@@ -652,37 +584,6 @@ fun SettingsScreen(
                 AppLanguageManager.setAppLanguage(context, languageTag)
             },
         )
-    }
-}
-
-private fun importSettingsFromUri(
-    context: android.content.Context,
-    uri: Uri,
-    onSuccess: () -> Unit,
-    coroutineScope: kotlinx.coroutines.CoroutineScope,
-) {
-    coroutineScope.launch(Dispatchers.IO) {
-        val isSuccess =
-            runCatching {
-                SettingsBackupManager.importFromUri(context, uri)
-            }.isSuccess
-        withContext(Dispatchers.Main) {
-            val messageResId =
-                if (isSuccess) {
-                    R.string.settings_backup_import_success
-                } else {
-                    R.string.settings_backup_import_failed
-                }
-            Toast
-                .makeText(
-                    context,
-                    context.getString(messageResId),
-                    Toast.LENGTH_SHORT,
-                ).show()
-            if (isSuccess) {
-                onSuccess()
-            }
-        }
     }
 }
 

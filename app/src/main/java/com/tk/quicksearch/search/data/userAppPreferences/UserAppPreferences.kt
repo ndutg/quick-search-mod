@@ -19,6 +19,7 @@ import com.tk.quicksearch.shared.util.isPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
 import com.tk.quicksearch.tools.aiSearch.OpenAiModelCatalog
+import com.tk.quicksearch.tools.aiSearch.TavilyWebSearchMode
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
 /**
@@ -57,6 +58,7 @@ class UserAppPreferences(
     private val groqPreferences by lazy { GroqPreferences(context) }
     private val metaPreferences by lazy { MetaPreferences(context) }
     private val customLlmProviderPreferences by lazy { CustomLlmProviderPreferences(context) }
+    private val tavilyPreferences by lazy { TavilyPreferences(context) }
     private val llmPreferences by lazy { LlmPreferences(context) }
     val uiPreferences by lazy { UiPreferences(context) }
     private val amazonPreferences by lazy { AmazonPreferences(context) }
@@ -472,7 +474,8 @@ class UserAppPreferences(
     fun getHomeSwipeDownAliasTarget(): String? = gesturesPreferences.getHomeSwipeDownAliasTarget()
     fun setHomeSwipeDownAliasTarget(targetId: String?) = gesturesPreferences.setHomeSwipeDownAliasTarget(targetId)
 
-    fun getHomeDoubleTapAction(): HomeSwipeGestureAction = gesturesPreferences.getHomeDoubleTapAction()
+    fun getHomeDoubleTapAction(isLockScreenAvailable: Boolean = false): HomeSwipeGestureAction =
+        gesturesPreferences.getHomeDoubleTapAction(isLockScreenAvailable)
 
     fun setHomeDoubleTapAction(action: HomeSwipeGestureAction) = gesturesPreferences.setHomeDoubleTapAction(action)
 
@@ -821,7 +824,7 @@ class UserAppPreferences(
      */
     fun getLlmApiKey(providerId: AiSearchLlmProviderId): String? =
         if (providerId.isCustom) {
-            customLlmProviderPreferences.getProvider(providerId)?.apiKey
+            customLlmProviderPreferences.getProvider(providerId)?.apiKey?.takeIf { it.isNotBlank() }
         } else {
             when (providerId) {
                 AiSearchLlmProviderId.GEMINI -> geminiPreferences.getGeminiApiKey()
@@ -837,8 +840,10 @@ class UserAppPreferences(
         if (providerId.isCustom) {
             if (key.isNullOrBlank()) {
                 customLlmProviderPreferences.removeProvider(providerId)
-                refreshConfiguredAiProviderHint()
+            } else {
+                customLlmProviderPreferences.setProviderApiKey(providerId, key)
             }
+            refreshConfiguredAiProviderHint()
             return
         }
         when (providerId) {
@@ -978,6 +983,14 @@ class UserAppPreferences(
                     .putBoolean(KEY_HAS_CONFIGURED_AI_PROVIDER, configured)
                     .apply()
         }
+
+    fun getTavilyApiKey(): String? = tavilyPreferences.getApiKey()
+
+    fun setTavilyApiKey(key: String?) = tavilyPreferences.setApiKey(key)
+
+    fun getTavilyWebSearchMode(): TavilyWebSearchMode = tavilyPreferences.getWebSearchMode()
+
+    fun setTavilyWebSearchMode(mode: TavilyWebSearchMode) = tavilyPreferences.setWebSearchMode(mode)
 
     fun getLlmApiKeyLast4ByProvider(): Map<AiSearchLlmProviderId, String> =
         getConfiguredLlmProviderIds().mapNotNull { providerId ->
@@ -1121,6 +1134,22 @@ class UserAppPreferences(
 
     fun setTopMatchesSectionOrder(order: List<SearchSection>) =
             uiPreferences.setTopMatchesSectionOrder(order)
+
+    fun getHomePinnedSectionOrder(): List<SearchSection> =
+            uiPreferences.getHomePinnedSectionOrder()
+
+    fun setHomePinnedSectionOrder(order: List<SearchSection>) =
+            uiPreferences.setHomePinnedSectionOrder(order)
+
+    fun isPinnedAppShortcutsInAppGridEnabled(): Boolean =
+            uiPreferences.isPinnedAppShortcutsInAppGridEnabled()
+
+    fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) =
+            uiPreferences.setPinnedAppShortcutsInAppGridEnabled(enabled)
+
+    fun getPinnedAppGridOrder(): List<String> = uiPreferences.getPinnedAppGridOrder()
+
+    fun setPinnedAppGridOrder(order: List<String>) = uiPreferences.setPinnedAppGridOrder(order)
 
     fun getDisabledTopMatchesSections(): Set<SearchSection> =
             uiPreferences.getDisabledTopMatchesSections()

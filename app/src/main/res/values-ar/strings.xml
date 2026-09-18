@@ -636,6 +636,14 @@
     <string name="settings_shortcut_network">الشبكة والإنترنت</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">الوصول إلى الإشعارات</string>
+    <string name="settings_shortcut_notification_history">سجل الإشعارات</string>
+    <string name="notification_history_permission_desc">اسمح بالوصول إلى الإشعارات لجمع الإشعارات هنا. تظهر في هذه القائمة الإشعارات المستلمة بعد منح الوصول فقط.</string>
+    <string name="notification_history_empty">لا توجد إشعارات بعد.</string>
+    <string name="notification_history_app_filter_title">عرض الإشعارات من</string>
+    <string name="notification_history_search_hint">البحث في الإشعارات</string>
+    <string name="notification_history_hide_app">إخفاء الإشعارات من %1$s</string>
+    <string name="notification_history_clear_all_title">مسح كل الإشعارات؟</string>
+    <string name="notification_history_clear_all_message">هل تريد بالتأكيد مسح سجل الإشعارات بالكامل؟ لا يمكن التراجع عن هذا الإجراء.</string>
     <string name="settings_shortcut_notifications">الإشعارات</string>
     <string name="settings_shortcut_overlay_permission">الظهور فوق التطبيقات الأخرى</string>
     <string name="settings_shortcut_privacy">الخصوصية</string>
@@ -729,6 +737,11 @@
     <string name="settings_layout_option_bottom_title">الوضع بيد واحدة</string>
     <string name="settings_unified_pinned_items_title">العناصر المثبتة الموحدة</string>
     <string name="settings_unified_pinned_items_desc">عرض العناصر المثبتة كقائمة موحدة واحدة في الشاشة الرئيسية.</string>
+    <string name="settings_pinned_sections_order_title">ترتيب الأقسام المثبتة</string>
+    <string name="settings_pinned_sections_order_desc">إعادة ترتيب الأقسام المثبتة في الشاشة الرئيسية</string>
+    <string name="settings_pinned_sections_order_dialog_info">اضغط مطولًا واسحب لتغيير ترتيب الأقسام المثبتة في الشاشة الرئيسية.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">اختصارات التطبيقات المثبتة في شبكة التطبيقات</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">عرض اختصارات التطبيقات المثبتة في شبكة التطبيقات مع التطبيقات.</string>
     <string name="settings_more_options_desc">خيارات تخصيص إضافية</string>
     <string name="settings_more_options_title">المزيد من الخيارات</string>
     <string name="settings_overlay_assistant_setup_now">الإعداد الآن</string>
@@ -853,10 +866,11 @@
     <string name="action_update">تحديث</string>
     <string name="release_notes_title">ملاحظات إصدار Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">ملاحظات إصدار Quick Search</string>
-    <string name="settings_backup_export_api_key_warning_message">المضي قدماً على مسؤوليتك الخاصة. مفتاح API المصدر لن يكون مشفراً ويمكن لأي شخص لديه وصول لملف النسخ الاحتياطي رؤيته.</string>
+    <string name="settings_backup_export_api_key_warning_message">المضي قدماً على مسؤوليتك الخاصة. مفاتيح API المصدرة لن تكون مشفرة ويمكن لأي شخص لديه وصول لملف النسخ الاحتياطي رؤيتها.</string>
     <string name="settings_backup_export_button">تصدير</string>
     <string name="settings_backup_export_failed">تعذر تصدير الإعدادات.</string>
     <string name="settings_backup_export_option_pinned_items_title">العناصر المثبتة</string>
+    <string name="settings_backup_export_option_api_keys">مفاتيح API</string>
     <string name="settings_backup_export_selection_title">تصدير البيانات</string>
     <string name="settings_backup_export_success">تم تصدير الإعدادات بنجاح.</string>
     <string name="settings_backup_import_button">استيراد</string>
@@ -1006,7 +1020,7 @@
     <string name="permissions_calling_desc">مطلوب للاتصال بجهات الاتصال الخاصة بك مباشرة دون فتح لوحة الاتصال.</string>
     <string name="settings_notifications_permission_title">نشر الإشعارات</string>
     <string name="permissions_notifications_desc">مطلوب لتثبيت نتائج البحث في لوحة الإشعارات</string>
-    <string name="permissions_notification_access_desc">مطلوب لإظهار نقاط الإشعارات على التطبيقات التي لديها إشعارات.</string>
+    <string name="permissions_notification_access_desc">مطلوب لتفعيل نقاط الإشعارات وميزة سجل الإشعارات</string>
     <string name="permissions_accessibility_lock_screen_title">إمكانية الوصول</string>
     <string name="permissions_accessibility_lock_screen_desc">يسمح لإيماءة النقر المزدوج بقفل جهازك.</string>
     <string name="permissions_contacts_desc">مطلوب للبحث في جهات الاتصال الخاصة بك.</string>
@@ -1155,4 +1169,9 @@
     <string name="speed_bump_overlay_title">خذ نفسًا عميقًا</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">المنبه القادم</string>
+    <string name="settings_tavily_title">Tavily للبحث على الويب</string>
+    <string name="settings_tavily_desc">أضف مفتاح Tavily API لإضافة دعم البحث على الويب للنماذج التي لا تدعمه.</string>
+    <string name="settings_tavily_mode_always">استخدم Tavily دائمًا للبحث على الويب</string>
+    <string name="settings_tavily_mode_when_unsupported">استخدمه فقط عندما لا يدعم النموذج البحث على الويب</string>
+    <string name="tavily_search_failed_toast">فشل البحث على الويب عبر Tavily. تتم الإجابة بدون نتائج الويب.</string>
 </resources>

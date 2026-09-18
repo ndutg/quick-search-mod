@@ -48,7 +48,8 @@ class GroqPreferences(
 
     fun getModel(): String {
         val model = prefs.getString(BasePreferences.KEY_GROQ_MODEL, null)?.trim()
-        return model.takeUnless { it.isNullOrEmpty() } ?: GroqModelCatalog.DEFAULT_MODEL_ID
+        return model.takeUnless { it.isNullOrEmpty() }?.let(GroqModelCatalog::replaceRetiredModel)
+            ?: GroqModelCatalog.DEFAULT_MODEL_ID
     }
 
     fun setModel(modelId: String?) {
