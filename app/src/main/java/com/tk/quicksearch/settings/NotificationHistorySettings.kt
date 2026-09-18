@@ -3,11 +3,30 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.Surface
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import kotlin.math.abs
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.draw.rotate
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -123,7 +142,9 @@ fun NotificationHistorySettingsSection(
     // Hidden apps have no entries left, but must stay in the filter dialog so they can be re-enabled.
     val packageNames =
         remember(entries, hiddenPackages) {
-            entries.mapTo(HashSet()) { it.packageName } + hiddenPackages
+            entries.mapTo(HashSet()) { it.packageName } +
+                hiddenPackages +
+                NotificationHistoryStore.DEFAULT_HIDDEN_PACKAGES
         }
     val appLabels by produceState(initialValue = emptyMap<String, String>(), packageNames) {
         value = withContext(Dispatchers.IO) { loadAppLabels(context, packageNames) }
@@ -213,33 +234,39 @@ fun NotificationHistorySettingsSection(
                 ) {
                     itemsIndexed(
                         items = filteredEntries,
-                        key = { index, entry -> "${entry.key}|${entry.postTime}|$index" },
+                        // Unique per row (matches the database's unique index), so removals animate.
+                        key = { _, entry -> "${entry.key}|${entry.title}|${entry.text}" },
                     ) { index, entry ->
                         val appLabel = appLabels[entry.packageName] ?: entry.packageName
-                        NotificationHistoryRow(
-                            entry = entry,
-                            appLabel = appLabel,
-                            timeLabel = formatNotificationTime(entry.postTime, use24Hour, locale),
-                            onClick = {
-                                if (!NotificationHistoryLauncher.open(context, entry)) {
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.common_error_unable_to_open, appLabel),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                }
-                            },
-                            onRemove = { NotificationHistoryStore.remove(context, entry) },
-                            onHideApp = {
-                                NotificationHistoryStore.setPackageHidden(
-                                    context,
-                                    entry.packageName,
-                                    hidden = true,
+                        Column(modifier = Modifier.animateItem()) {
+                            SwipeToDeleteContainer(
+                                onDelete = { NotificationHistoryStore.remove(context, entry) },
+                            ) {
+                                NotificationHistoryRow(
+                                    entry = entry,
+                                    appLabel = appLabel,
+                                    timeLabel = formatNotificationTime(entry.postTime, use24Hour, locale),
+                                    onClick = {
+                                        if (!NotificationHistoryLauncher.open(context, entry)) {
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.common_error_unable_to_open, appLabel),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        }
+                                    },
+                                    onHideApp = {
+                                        NotificationHistoryStore.setPackageHidden(
+                                            context,
+                                            entry.packageName,
+                                            hidden = true,
+                                        )
+                                    },
                                 )
-                            },
-                        )
-                        if (index < filteredEntries.lastIndex) {
-                            HorizontalDivider(color = AppColors.SettingsDivider)
+                            }
+                            if (index < filteredEntries.lastIndex) {
+                                HorizontalDivider(color = AppColors.SettingsDivider)
+                            }
                         }
                     }
                 }
@@ -248,16 +275,24 @@ fun NotificationHistorySettingsSection(
     }
 }
 
+private const val COLLAPSED_TEXT_MAX_LINES = 5
+
 @Composable
 private fun NotificationHistoryRow(
     entry: NotificationHistoryEntry,
     appLabel: String,
     timeLabel: String,
     onClick: () -> Unit,
-    onRemove: () -> Unit,
     onHideApp: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable(entry.key, entry.postTime) { mutableStateOf(false) }
+    // Stays true once the text overflowed, so the chevron remains to collapse it again.
+    var isTruncatable by remember(entry.text) { mutableStateOf(false) }
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        label = "notificationChevronRotation",
+    )
     val haptics = LocalHapticFeedback.current
 
     Box {
@@ -286,23 +321,42 @@ private fun NotificationHistoryRow(
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = appLabel,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f, fill = false),
-                    )
-                    Text(
-                        text = timeLabel,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                    )
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = appLabel,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        Text(
+                            text = timeLabel,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                        )
+                    }
+                    if (isTruncatable) {
+                        Icon(
+                            imageVector = Icons.Rounded.ExpandMore,
+                            contentDescription =
+                                stringResource(if (expanded) R.string.desc_collapse else R.string.desc_expand),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier =
+                                Modifier
+                                    .size(20.dp)
+                                    .rotate(chevronRotation)
+                                    .clip(CircleShape)
+                                    .clickable { expanded = !expanded },
+                        )
+                    }
                 }
 
                 if (entry.title.isNotBlank()) {
@@ -318,6 +372,12 @@ private fun NotificationHistoryRow(
                         text = entry.text,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = if (expanded) Int.MAX_VALUE else COLLAPSED_TEXT_MAX_LINES,
+                        modifier = Modifier.animateContentSize(),
+                        overflow = TextOverflow.Ellipsis,
+                        onTextLayout = { layout ->
+                            if (layout.hasVisualOverflow) isTruncatable = true
+                        },
                     )
                 }
             }
@@ -330,14 +390,6 @@ private fun NotificationHistoryRow(
             containerColor = AppColors.DialogBackground,
         ) {
             DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.action_remove)) },
-                leadingIcon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
-                onClick = {
-                    showMenu = false
-                    onRemove()
-                },
-            )
-            DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.notification_history_hide_app, appLabel)) },
                 leadingIcon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
                 onClick = {
@@ -346,6 +398,79 @@ private fun NotificationHistoryRow(
                 },
             )
         }
+    }
+}
+
+private const val SWIPE_DELETE_FRACTION = 0.5f
+
+/**
+ * Swiping either way shows a delete indicator on that side. Releasing past half the row's width
+ * deletes it; releasing earlier springs the row back.
+ */
+@Composable
+private fun SwipeToDeleteContainer(
+    onDelete: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    val density = LocalDensity.current
+    val haptics = LocalHapticFeedback.current
+    val state =
+        rememberSwipeToDismissBoxState(
+            positionalThreshold = { totalDistance -> totalDistance * SWIPE_DELETE_FRACTION },
+        )
+    val isPastDeleteThreshold = state.targetValue != SwipeToDismissBoxValue.Settled
+
+    LaunchedEffect(isPastDeleteThreshold) {
+        if (isPastDeleteThreshold) haptics.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+    }
+
+    val removeLabel = stringResource(R.string.action_remove)
+    SwipeToDismissBox(
+        state = state,
+        onDismiss = { onDelete() },
+        modifier =
+            Modifier.semantics {
+                customActions =
+                    listOf(
+                        CustomAccessibilityAction(removeLabel) {
+                            onDelete()
+                            true
+                        },
+                    )
+            },
+        backgroundContent = {
+            // Only the strip the row has uncovered is tinted; the row itself has no background.
+            val revealedPx = abs(runCatching { state.requireOffset() }.getOrDefault(0f))
+            if (revealedPx > 0f) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment =
+                        if (state.dismissDirection == SwipeToDismissBoxValue.StartToEnd) {
+                            Alignment.CenterStart
+                        } else {
+                            Alignment.CenterEnd
+                        },
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxHeight()
+                                .width(with(density) { revealedPx.toDp() })
+                                .clipToBounds()
+                                .background(MaterialTheme.colorScheme.error),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onError,
+                        )
+                    }
+                }
+            }
+        },
+    ) {
+        content()
     }
 }
 

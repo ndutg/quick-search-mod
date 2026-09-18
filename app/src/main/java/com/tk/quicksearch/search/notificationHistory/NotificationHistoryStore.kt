@@ -39,6 +39,10 @@ object NotificationHistoryStore {
     private const val KEY_HIDDEN_PACKAGES = "hidden_packages"
     private const val MAX_ENTRIES = 500
 
+    // Hidden until the user opts in; System UI mostly posts transient status notifications.
+    // Always listed in the app filter so it can be enabled before it has any history.
+    val DEFAULT_HIDDEN_PACKAGES = setOf("com.android.systemui")
+
     private val hiddenPackagesState = MutableStateFlow<Set<String>>(emptySet())
 
     // A single thread keeps writes in posting order without blocking the listener's main thread.
@@ -68,7 +72,12 @@ object NotificationHistoryStore {
         val appContext = context.applicationContext
         val loaded = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         dao = NotificationHistoryDatabase.get(appContext).notificationHistoryDao()
-        hiddenPackagesState.value = loaded.getStringSet(KEY_HIDDEN_PACKAGES, null).orEmpty().toSet()
+        val storedHidden = loaded.getStringSet(KEY_HIDDEN_PACKAGES, null)?.toSet()
+        hiddenPackagesState.value = storedHidden ?: DEFAULT_HIDDEN_PACKAGES
+        if (storedHidden == null) {
+            // Persist the defaults once so re-enabling a default app sticks.
+            loaded.edit().putStringSet(KEY_HIDDEN_PACKAGES, DEFAULT_HIDDEN_PACKAGES).apply()
+        }
         // History used to be one JSON blob in preferences; it now lives in Room.
         if (loaded.contains(KEY_LEGACY_ENTRIES)) loaded.edit().remove(KEY_LEGACY_ENTRIES).apply()
         prefs = loaded
