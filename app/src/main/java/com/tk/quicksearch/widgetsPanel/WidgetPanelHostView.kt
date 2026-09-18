@@ -88,7 +88,20 @@ internal class WidgetPanelHost(
         liveViews.forEach { it.cancelPendingLongPress() }
     }
 
+    /**
+     * Starts listening for widget updates. Every surface that hosts panel widgets (the panel and
+     * Home) uses the same host id, and the system keeps only the most recent listener per host id,
+     * so the newest surface takes over updates and hands them back when it is released.
+     */
+    fun startListeningShared() {
+        activeHosts.remove(this)
+        activeHosts.add(this)
+        startListening()
+    }
+
     fun release() {
+        val wasActiveListener = activeHosts.lastOrNull() === this
+        activeHosts.remove(this)
         val releasedViewCount = liveViews.size
         liveViews.toList().forEach { it.releaseCallbacks() }
         liveViews.clear()
@@ -97,10 +110,20 @@ internal class WidgetPanelHost(
         onWidgetDragEnd = null
         onWidgetTouch = null
         isScrollInProgressProvider = { false }
-        stopListening()
+        val nextListener = activeHosts.lastOrNull()
+        if (nextListener == null) {
+            stopListening()
+        } else if (wasActiveListener) {
+            nextListener.startListening()
+        }
         clearViews()
         MemoryDiagnostics.widgetViewsReleased(releasedViewCount)
         MemoryDiagnostics.widgetHostReleased()
+    }
+
+    private companion object {
+        // Main-thread only: hosts are created and released from composition effects.
+        val activeHosts = mutableListOf<WidgetPanelHost>()
     }
 }
 
