@@ -670,6 +670,8 @@ Dostępne skróty: %1$s</string>
     <string name="notification_history_app_filter_title">Pokaż powiadomienia z</string>
     <string name="notification_history_search_hint">Szukaj powiadomień</string>
     <string name="notification_history_hide_app">Ukryj powiadomienia z %1$s</string>
+    <string name="notification_history_clear_all_title">Wyczyścić wszystkie powiadomienia?</string>
+    <string name="notification_history_clear_all_message">Czy na pewno chcesz wyczyścić całą historię powiadomień? Tej operacji nie można cofnąć.</string>
     <string name="settings_shortcut_notifications">Powiadomienia</string>
     <string name="settings_shortcut_overlay_permission">Wyświetlanie nad innymi aplikacjami</string>
     <string name="settings_shortcut_privacy">Prywatność</string>

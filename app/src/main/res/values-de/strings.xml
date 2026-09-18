@@ -641,6 +641,8 @@
     <string name="notification_history_app_filter_title">Benachrichtigungen anzeigen von</string>
     <string name="notification_history_search_hint">Benachrichtigungen durchsuchen</string>
     <string name="notification_history_hide_app">Benachrichtigungen von %1$s ausblenden</string>
+    <string name="notification_history_clear_all_title">Alle Benachrichtigungen löschen?</string>
+    <string name="notification_history_clear_all_message">Möchtest du den gesamten Benachrichtigungsverlauf wirklich löschen? Dies kann nicht rückgängig gemacht werden.</string>
     <string name="settings_shortcut_notifications">Benachrichtigungen</string>
     <string name="settings_shortcut_overlay_permission">Über anderen Apps anzeigen</string>
     <string name="settings_shortcut_privacy">Datenschutz</string>

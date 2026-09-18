@@ -639,6 +639,8 @@
     <string name="notification_history_app_filter_title">Show notifications from</string>
     <string name="notification_history_search_hint">Search Notifications</string>
     <string name="notification_history_hide_app">Hide notifications from %1$s</string>
+    <string name="notification_history_clear_all_title">Clear All Notifications?</string>
+    <string name="notification_history_clear_all_message">Are you sure you want to clear all notification history? This action cannot be undone.</string>
     <string name="settings_shortcut_notifications">Notifications</string>
     <string name="settings_shortcut_overlay_permission">Display Over Other Apps</string>
     <string name="settings_shortcut_privacy">Privacy</string>

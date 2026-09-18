@@ -641,6 +641,8 @@
     <string name="notification_history_app_filter_title">వీటి నుండి నోటిఫికేషన్‌లను చూపు</string>
     <string name="notification_history_search_hint">నోటిఫికేషన్‌లను శోధించండి</string>
     <string name="notification_history_hide_app">%1$s నుండి నోటిఫికేషన్‌లను దాచు</string>
+    <string name="notification_history_clear_all_title">అన్ని నోటిఫికేషన్‌లను క్లియర్ చేయాలా?</string>
+    <string name="notification_history_clear_all_message">మీరు మొత్తం నోటిఫికేషన్ చరిత్రను క్లియర్ చేయాలనుకుంటున్నారా? ఈ చర్యను రద్దు చేయలేరు.</string>
     <string name="settings_shortcut_notifications">నోటిఫికేషన్‌లు</string>
     <string name="settings_shortcut_overlay_permission">ఇతర యాప్‌ల పైన ప్రదర్శించు</string>
     <string name="settings_shortcut_privacy">గోప్యత</string>

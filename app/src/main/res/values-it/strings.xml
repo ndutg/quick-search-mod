@@ -640,6 +640,8 @@
     <string name="notification_history_app_filter_title">Mostra notifiche da</string>
     <string name="notification_history_search_hint">Cerca notifiche</string>
     <string name="notification_history_hide_app">Nascondi notifiche da %1$s</string>
+    <string name="notification_history_clear_all_title">Cancellare tutte le notifiche?</string>
+    <string name="notification_history_clear_all_message">Vuoi davvero cancellare tutta la cronologia delle notifiche? Questa azione non può essere annullata.</string>
     <string name="settings_shortcut_notifications">Notifiche</string>
     <string name="settings_shortcut_overlay_permission">Mostra sopra altre app</string>
     <string name="settings_shortcut_privacy">Privacy</string>

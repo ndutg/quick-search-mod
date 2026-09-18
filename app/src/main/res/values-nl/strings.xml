@@ -671,6 +671,8 @@ Beschikbare snelkoppelingen: %1$s</string>
     <string name="notification_history_app_filter_title">Meldingen tonen van</string>
     <string name="notification_history_search_hint">Meldingen zoeken</string>
     <string name="notification_history_hide_app">Meldingen van %1$s verbergen</string>
+    <string name="notification_history_clear_all_title">Alle meldingen wissen?</string>
+    <string name="notification_history_clear_all_message">Weet je zeker dat je de volledige meldingsgeschiedenis wilt wissen? Dit kan niet ongedaan worden gemaakt.</string>
     <string name="settings_shortcut_notifications">Meldingen</string>
     <string name="settings_shortcut_overlay_permission">Weergeven over andere apps</string>
     <string name="settings_shortcut_privacy">Privacy</string>

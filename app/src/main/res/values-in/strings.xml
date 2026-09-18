@@ -648,6 +648,8 @@
     <string name="notification_history_app_filter_title">Tampilkan notifikasi dari</string>
     <string name="notification_history_search_hint">Cari notifikasi</string>
     <string name="notification_history_hide_app">Sembunyikan notifikasi dari %1$s</string>
+    <string name="notification_history_clear_all_title">Hapus semua notifikasi?</string>
+    <string name="notification_history_clear_all_message">Yakin ingin menghapus semua riwayat notifikasi? Tindakan ini tidak dapat diurungkan.</string>
     <string name="settings_shortcut_notifications">Notifikasi</string>
     <string name="settings_shortcut_overlay_permission">Tampilkan di Atas Aplikasi Lain</string>
     <string name="settings_shortcut_privacy">Privasi</string>

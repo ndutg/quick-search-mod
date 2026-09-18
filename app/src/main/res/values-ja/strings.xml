@@ -650,6 +650,8 @@
     <string name="notification_history_app_filter_title">通知を表示するアプリ</string>
     <string name="notification_history_search_hint">通知を検索</string>
     <string name="notification_history_hide_app">%1$s の通知を非表示</string>
+    <string name="notification_history_clear_all_title">すべての通知を消去しますか？</string>
+    <string name="notification_history_clear_all_message">通知履歴をすべて消去してもよろしいですか？この操作は元に戻せません。</string>
     <string name="settings_shortcut_notifications">通知</string>
     <string name="settings_shortcut_overlay_permission">他のアプリの上に重ねて表示</string>
     <string name="settings_shortcut_privacy">プライバシー</string>

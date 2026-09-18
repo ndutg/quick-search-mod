@@ -642,6 +642,8 @@
     <string name="notification_history_app_filter_title">عرض الإشعارات من</string>
     <string name="notification_history_search_hint">البحث في الإشعارات</string>
     <string name="notification_history_hide_app">إخفاء الإشعارات من %1$s</string>
+    <string name="notification_history_clear_all_title">مسح كل الإشعارات؟</string>
+    <string name="notification_history_clear_all_message">هل تريد بالتأكيد مسح سجل الإشعارات بالكامل؟ لا يمكن التراجع عن هذا الإجراء.</string>
     <string name="settings_shortcut_notifications">الإشعارات</string>
     <string name="settings_shortcut_overlay_permission">الظهور فوق التطبيقات الأخرى</string>
     <string name="settings_shortcut_privacy">الخصوصية</string>

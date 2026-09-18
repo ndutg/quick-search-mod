@@ -641,6 +641,8 @@
     <string name="notification_history_app_filter_title">इनसे सूचनाएं दिखाएं</string>
     <string name="notification_history_search_hint">सूचनाएं खोजें</string>
     <string name="notification_history_hide_app">%1$s से सूचनाएं छिपाएं</string>
+    <string name="notification_history_clear_all_title">सभी सूचनाएं साफ़ करें?</string>
+    <string name="notification_history_clear_all_message">क्या आप वाकई पूरा सूचना इतिहास साफ़ करना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।</string>
     <string name="settings_shortcut_notifications">अधिसूचनाएं</string>
     <string name="settings_shortcut_overlay_permission">अन्य ऐप्स के ऊपर दिखाएं</string>
     <string name="settings_shortcut_privacy">गोपनीयता</string>

@@ -641,6 +641,8 @@
     <string name="notification_history_app_filter_title">Εμφάνιση ειδοποιήσεων από</string>
     <string name="notification_history_search_hint">Αναζήτηση ειδοποιήσεων</string>
     <string name="notification_history_hide_app">Απόκρυψη ειδοποιήσεων από %1$s</string>
+    <string name="notification_history_clear_all_title">Διαγραφή όλων των ειδοποιήσεων;</string>
+    <string name="notification_history_clear_all_message">Θέλετε σίγουρα να διαγράψετε όλο το ιστορικό ειδοποιήσεων; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</string>
     <string name="settings_shortcut_notifications">Ειδοποιήσεις</string>
     <string name="settings_shortcut_overlay_permission">Εμφάνιση πάνω από άλλες εφαρμογές</string>
     <string name="settings_shortcut_privacy">Απόρρητο</string>

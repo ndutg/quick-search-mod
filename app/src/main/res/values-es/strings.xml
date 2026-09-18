@@ -641,6 +641,8 @@
     <string name="notification_history_app_filter_title">Mostrar notificaciones de</string>
     <string name="notification_history_search_hint">Buscar notificaciones</string>
     <string name="notification_history_hide_app">Ocultar notificaciones de %1$s</string>
+    <string name="notification_history_clear_all_title">¿Borrar todas las notificaciones?</string>
+    <string name="notification_history_clear_all_message">¿Seguro que quieres borrar todo el historial de notificaciones? Esta acción no se puede deshacer.</string>
     <string name="settings_shortcut_notifications">Notificaciones</string>
     <string name="settings_shortcut_overlay_permission">Mostrar sobre otras apps</string>
     <string name="settings_shortcut_privacy">Privacidad</string>

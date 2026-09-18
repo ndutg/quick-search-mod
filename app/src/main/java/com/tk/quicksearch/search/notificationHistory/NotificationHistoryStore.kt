@@ -144,6 +144,16 @@ object NotificationHistoryStore {
         append(seeded)
     }
 
+    /** Deletes a single history row. */
+    fun remove(
+        context: Context,
+        entry: NotificationHistoryEntry,
+    ) {
+        ensureLoaded(context)
+        synchronized(contentIntents) { contentIntents.remove(entry.contentIntentKey()) }
+        onDatabaseThread { delete(entry.key, entry.title, entry.text) }
+    }
+
     fun clear(context: Context) {
         ensureLoaded(context)
         synchronized(contentIntents) { contentIntents.clear() }

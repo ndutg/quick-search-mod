@@ -661,6 +661,8 @@
     <string name="notification_history_app_filter_title">Показывать уведомления от</string>
     <string name="notification_history_search_hint">Поиск уведомлений</string>
     <string name="notification_history_hide_app">Скрыть уведомления от %1$s</string>
+    <string name="notification_history_clear_all_title">Очистить все уведомления?</string>
+    <string name="notification_history_clear_all_message">Вы уверены, что хотите очистить всю историю уведомлений? Это действие нельзя отменить.</string>
 <string name="settings_shortcut_notifications">Уведомления</string>
 <string name="settings_shortcut_overlay_permission">Отображение поверх других приложений</string>
 <string name="settings_shortcut_privacy">Конфиденциальность</string>

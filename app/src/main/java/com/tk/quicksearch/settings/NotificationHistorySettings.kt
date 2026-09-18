@@ -3,7 +3,9 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material3.Surface
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.mutableStateOf
@@ -150,8 +152,13 @@ fun NotificationHistorySettingsSection(
             packageNames = packageNames,
             appLabels = appLabels,
             hiddenPackages = hiddenPackages,
+            hasEntries = entries.isNotEmpty(),
             onToggle = { packageName, visible ->
                 NotificationHistoryStore.setPackageHidden(context, packageName, hidden = !visible)
+            },
+            onClearAll = {
+                NotificationHistoryStore.clear(context)
+                onDismissAppFilterDialog()
             },
             onDismiss = onDismissAppFilterDialog,
         )
@@ -222,6 +229,7 @@ fun NotificationHistorySettingsSection(
                                     ).show()
                                 }
                             },
+                            onRemove = { NotificationHistoryStore.remove(context, entry) },
                             onHideApp = {
                                 NotificationHistoryStore.setPackageHidden(
                                     context,
@@ -246,6 +254,7 @@ private fun NotificationHistoryRow(
     appLabel: String,
     timeLabel: String,
     onClick: () -> Unit,
+    onRemove: () -> Unit,
     onHideApp: () -> Unit,
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -321,6 +330,14 @@ private fun NotificationHistoryRow(
             containerColor = AppColors.DialogBackground,
         ) {
             DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.action_remove)) },
+                leadingIcon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                onClick = {
+                    showMenu = false
+                    onRemove()
+                },
+            )
+            DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.notification_history_hide_app, appLabel)) },
                 leadingIcon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
                 onClick = {
@@ -359,7 +376,9 @@ private fun NotificationHistoryAppFilterDialog(
     packageNames: Set<String>,
     appLabels: Map<String, String>,
     hiddenPackages: Set<String>,
+    hasEntries: Boolean,
     onToggle: (packageName: String, visible: Boolean) -> Unit,
+    onClearAll: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val locale = Locale.getDefault()
@@ -367,17 +386,76 @@ private fun NotificationHistoryAppFilterDialog(
         remember(packageNames, appLabels, locale) {
             packageNames.sortedBy { (appLabels[it] ?: it).lowercase(locale) }
         }
+    var showClearAllConfirmation by remember { mutableStateOf(false) }
+
+    if (showClearAllConfirmation) {
+        AppAlertDialog(
+            onDismissRequest = { showClearAllConfirmation = false },
+            title = { Text(text = stringResource(R.string.notification_history_clear_all_title)) },
+            text = {
+                Text(
+                    text = stringResource(R.string.notification_history_clear_all_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showClearAllConfirmation = false
+                        onClearAll()
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_action_clear_all),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearAllConfirmation = false }) {
+                    Text(text = stringResource(R.string.dialog_cancel))
+                }
+            },
+        )
+    }
 
     AppAlertDialog(
         modifier = Modifier.fillMaxWidth(0.94f),
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismiss,
         title = {
-            Text(
-                text = stringResource(R.string.notification_history_app_filter_title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.notification_history_app_filter_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                if (hasEntries) {
+                    Surface(
+                        onClick = { showClearAllConfirmation = true },
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
+                        contentColor = MaterialTheme.colorScheme.error,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Delete,
+                            contentDescription = stringResource(R.string.settings_action_clear_all),
+                            modifier =
+                                Modifier
+                                    .padding(
+                                        horizontal = DesignTokens.SpacingMedium,
+                                        vertical = DesignTokens.SpacingXSmall,
+                                    ).size(20.dp),
+                        )
+                    }
+                }
+            }
         },
         text = {
             if (sortedPackages.isEmpty()) {

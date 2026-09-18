@@ -33,6 +33,16 @@ interface NotificationHistoryDao {
     )
     fun trimTo(maxEntries: Int)
 
+    @Query(
+        "DELETE FROM notification_history " +
+            "WHERE notificationKey = :notificationKey AND title = :title AND text = :text",
+    )
+    fun delete(
+        notificationKey: String,
+        title: String,
+        text: String,
+    )
+
     @Query("DELETE FROM notification_history WHERE packageName = :packageName")
     fun deleteByPackage(packageName: String)
 

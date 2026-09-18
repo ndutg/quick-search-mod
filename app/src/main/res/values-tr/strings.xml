@@ -640,6 +640,8 @@
     <string name="notification_history_app_filter_title">Şu uygulamaların bildirimlerini göster</string>
     <string name="notification_history_search_hint">Bildirimlerde ara</string>
     <string name="notification_history_hide_app">%1$s bildirimlerini gizle</string>
+    <string name="notification_history_clear_all_title">Tüm bildirimler temizlensin mi?</string>
+    <string name="notification_history_clear_all_message">Tüm bildirim geçmişini temizlemek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
 <string name="settings_shortcut_notifications">Bildirimler</string>
 <string name="settings_shortcut_overlay_permission">Diğer uygulamaların üzerinde göster</string>
 <string name="settings_shortcut_privacy">Gizlilik</string>
