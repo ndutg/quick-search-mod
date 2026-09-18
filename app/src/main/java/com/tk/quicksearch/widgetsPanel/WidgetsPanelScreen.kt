@@ -121,7 +121,7 @@ internal val WidgetPanelGridGap = 8.dp
 private val WidgetResizeEdgeHitLong = 64.dp
 private val WidgetResizeEdgeHitShort = 32.dp
 private val WidgetResizeVisualLong = 32.dp
-private val WidgetResizeVisualShort = 8.dp
+internal val WidgetResizeVisualShort = 8.dp
 private val WidgetActionButtonSize = 30.dp
 private val WidgetEditRingWidth = 2.dp
 

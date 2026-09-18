@@ -193,6 +193,7 @@ private class WidgetPanelHostView(
     private var longPressArmed = false
     private var dragHandled = false
     private var focusClearTouch = false
+    private var cancellingChildren = false
     private val longPressRunnable =
         Runnable {
             if (!longPressArmed || longPressFired) return@Runnable
@@ -254,12 +255,19 @@ private class WidgetPanelHostView(
             }
         }
         if (focusClearTouch) return true
-        return super.dispatchTouchEvent(ev)
+        val handled = super.dispatchTouchEvent(ev)
+        // Claim the gesture on down while a long-press can still fire. Otherwise a press on a
+        // non-clickable part of the widget is declined, the host (e.g. Compose interop) stops
+        // delivering the rest of the gesture, and the drag after the long-press never arrives.
+        return handled || (ev.actionMasked == MotionEvent.ACTION_DOWN && longPressArmed)
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean = longPressFired
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        // The synthetic cancel sent to the widget's children must not end the drag that the
+        // long-press just started.
+        if (cancellingChildren) return true
         if (!dragHandled) return super.onTouchEvent(event)
         when (event.actionMasked) {
             MotionEvent.ACTION_MOVE -> {
@@ -285,7 +293,14 @@ private class WidgetPanelHostView(
         val now = SystemClock.uptimeMillis()
         val cancel =
             MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
-        super.dispatchTouchEvent(cancel)
-        cancel.recycle()
+        // With no child touch target (the press landed on a non-clickable part of the widget),
+        // ViewGroup delivers this cancel to our own onTouchEvent.
+        cancellingChildren = true
+        try {
+            super.dispatchTouchEvent(cancel)
+        } finally {
+            cancellingChildren = false
+            cancel.recycle()
+        }
     }
 }
