@@ -1,10 +1,15 @@
 package com.tk.quicksearch.app
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 
 /**
@@ -35,6 +40,32 @@ class HomeActivity : MainActivity() {
             window.decorView.setBackgroundColor(Color.TRANSPARENT)
         }
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        // A Home gesture while Home is already on screen arrives here with the activity only
+        // paused (not stopped). Treat it as "dismiss the keyboard" instead of a no-op. Returning
+        // Home from another app finds the activity stopped and keeps its normal keyboard behavior.
+        val isHomeGestureWhileVisible =
+            intent.action == Intent.ACTION_MAIN &&
+                intent.hasCategory(Intent.CATEGORY_HOME) &&
+                lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+        val isKeyboardVisible =
+            ViewCompat.getRootWindowInsets(window.decorView)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) == true
+        super.onNewIntent(intent)
+        if (isHomeGestureWhileVisible && isKeyboardVisible) {
+            dismissKeyboard()
+            // The search field may re-request focus on ON_RESUME; hide again once resume settles.
+            window.decorView.post { dismissKeyboard() }
+        }
+    }
+
+    private fun dismissKeyboard() {
+        // The window is stateAlwaysVisible, so the field must lose focus or the IME comes back.
+        currentFocus?.clearFocus()
+        WindowCompat.getInsetsController(window, window.decorView)
+            .hide(WindowInsetsCompat.Type.ime())
     }
 
     /** Back at the launcher root must not reveal the previously used app. */

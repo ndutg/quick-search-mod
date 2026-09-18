@@ -34,6 +34,7 @@ fun SettingsCheckboxRow(
     iconResId: Int? = null,
     iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     isLastItem: Boolean = false,
+    enabled: Boolean = true,
 ) {
     Row(
         modifier =
@@ -41,6 +42,7 @@ fun SettingsCheckboxRow(
                 .fillMaxWidth()
                 .toggleable(
                     value = checked,
+                    enabled = enabled,
                     role = Role.Checkbox,
                     onValueChange = onCheckedChange,
                 )
@@ -89,6 +91,7 @@ fun SettingsCheckboxRow(
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange,
+            enabled = enabled,
         )
     }
 

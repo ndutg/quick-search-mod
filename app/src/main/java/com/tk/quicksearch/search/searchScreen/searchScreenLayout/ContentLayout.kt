@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,10 +24,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,6 +48,9 @@ import com.tk.quicksearch.search.searchHistory.SearchHistorySection
 import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.searchEngines.compact.NoResultsSearchEngineCards
 import com.tk.quicksearch.search.webSuggestions.WebSuggestionsSection
+import com.tk.quicksearch.settings.settingsDetailScreen.PriorityReorderDialog
+import com.tk.quicksearch.settings.settingsDetailScreen.withHiddenPinnedSectionsRestored
+import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.tools.aiSearch.CurrencyConverterResult
@@ -121,11 +127,13 @@ fun ContentLayout(
     onDeleteRecentItem: (RecentSearchEntry) -> Unit = {},
     onClearRecentItems: () -> Unit = {},
     onGeminiModelInfoClick: () -> Unit = {},
+    isSearchHistoryExpanded: Boolean = false,
     onSearchHistoryExpandedChange: (Boolean) -> Unit = {},
     searchHistoryCollapseRequestKey: Int = 0,
     searchHistorySelectedTab: SearchHistoryTab = SearchHistoryTab.SEARCHES,
     onSearchHistorySelectedTabChange: (SearchHistoryTab) -> Unit = {},
     onOpenPermissionsSettings: () -> Unit = {},
+    onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit = {},
     selectedTopMatchIndex: Int? = null,
 ) {
     val context = LocalContext.current
@@ -211,7 +219,7 @@ fun ContentLayout(
     // reverseScrolling anchors content to the bottom but does not reverse child placement.
     val finalLayoutOrder =
         if (!hasQuery) {
-            homeLayoutOrder(baseLayoutOrder, isReversed)
+            homeLayoutOrder(baseLayoutOrder, isReversed, state.homePinnedSectionOrder)
         } else if (isReversed) {
             baseLayoutOrder.reversed()
         } else {
@@ -301,12 +309,16 @@ fun ContentLayout(
             // results alone must not create an empty Search History section.
             state.recentItems.any { it is RecentSearchItem.Query }
 
-    var searchHistoryExpanded by remember { mutableStateOf(false) }
+    // Hoisted to the screen so the screen-level layout (bottom alignment, one-handed mode) flips
+    // in the same frame as this content. Mirroring a local flag upward through an effect lagged
+    // by a frame, which flashed the app grid at the top on collapse before it dropped down.
+    val searchHistoryExpanded = isSearchHistoryExpanded
+    val currentOnSearchHistoryExpandedChange by rememberUpdatedState(onSearchHistoryExpandedChange)
     LaunchedEffect(showRecentItems) {
-        if (!showRecentItems) searchHistoryExpanded = false
+        if (!showRecentItems) currentOnSearchHistoryExpandedChange(false)
     }
-    LaunchedEffect(searchHistoryExpanded) {
-        onSearchHistoryExpandedChange(searchHistoryExpanded)
+    DisposableEffect(Unit) {
+        onDispose { currentOnSearchHistoryExpandedChange(false) }
     }
 
     val hidePinnedAndAppsWhenSearchHistoryExpanded = showRecentItems && searchHistoryExpanded
@@ -397,6 +409,11 @@ fun ContentLayout(
             !isExpanded &&
             !isSectionAliasMode
     val showTopMatches = canShowTopMatches && displayedTopMatches.isNotEmpty()
+    // Until a fresh query's top matches settle, the regular sections would render alone and then
+    // get shoved aside (and the app grid swapped for the top matches grid) a few frames later.
+    // Holding them back for that short window makes the whole result set appear at once.
+    val holdRegularSectionsForTopMatches =
+        canShowTopMatches && !settledTopMatches.isReady && displayedTopMatches.isEmpty()
     val showTopMatchesSection =
         canShowTopMatches && (showTopMatches || isLocalSearchRefreshing)
     val hasMoreResults =
@@ -477,6 +494,8 @@ fun ContentLayout(
             !isSectionAliasMode &&
             !hideHomeSectionTitleRows
 
+    var showPinnedSectionOrderDialog by rememberSaveable { mutableStateOf(false) }
+
     @Composable
     fun renderHomePinnedSection(
         section: SearchSection,
@@ -487,27 +506,27 @@ fun ContentLayout(
             return
         }
 
-        var isExpanded by rememberSaveable(section.name) { mutableStateOf(true) }
-        LaunchedEffect(section) {
-            isExpanded = userPreferences.isHomePinnedSectionExpanded(section)
+        var isExpanded by rememberSaveable(section.name) {
+            mutableStateOf(userPreferences.isHomePinnedSectionExpanded(section))
         }
         val interactionSource = remember { MutableInteractionSource() }
         val metadata = SearchSectionUiMetadataRegistry.metadataFor(section)
         val sectionIcon = metadata.settingsIcon
-        val toggleExpanded = {
-            val newExpanded = !isExpanded
-            isExpanded = newExpanded
-            userPreferences.setHomePinnedSectionExpanded(section, newExpanded)
-        }
+        val headerGestures =
+            Modifier.combinedClickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {
+                    val newExpanded = !isExpanded
+                    isExpanded = newExpanded
+                    userPreferences.setHomePinnedSectionExpanded(section, newExpanded)
+                },
+                onLongClick = { showPinnedSectionOrderDialog = true },
+            )
         val headerContent: @Composable (Modifier) -> Unit = { modifier ->
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = toggleExpanded,
-                    )
                     .padding(
                         horizontal = DesignTokens.SpacingLarge,
                         vertical = DesignTokens.SpacingXXSmall,
@@ -548,7 +567,7 @@ fun ContentLayout(
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
         ) {
             if (isExpanded) {
-                headerContent(Modifier)
+                headerContent(headerGestures)
             } else {
                 SearchResultCard(
                     modifier = Modifier
@@ -559,7 +578,8 @@ fun ContentLayout(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(min = 60.dp),
+                            .heightIn(min = 60.dp)
+                            .then(headerGestures),
                         contentAlignment = Alignment.Center,
                     ) {
                         headerContent(
@@ -576,6 +596,25 @@ fun ContentLayout(
                 content()
             }
         }
+    }
+
+    if (showPinnedSectionOrderDialog) {
+        val pinnedSectionOrderItems =
+            state.homePinnedSectionOrder.filter { section ->
+                FeatureFlags.isSearchSectionEnabled(section) &&
+                    !(state.pinnedAppShortcutsInAppGrid && section == SearchSection.APP_SHORTCUTS)
+            }
+        PriorityReorderDialog(
+            items = pinnedSectionOrderItems,
+            onItemsChange = { order ->
+                onHomePinnedSectionOrderChange(
+                    withHiddenPinnedSectionsRestored(order, state.homePinnedSectionOrder),
+                )
+            },
+            onDismiss = { showPinnedSectionOrderDialog = false },
+            titleRes = R.string.settings_pinned_sections_order_title,
+            infoRes = R.string.settings_pinned_sections_order_dialog_info,
+        )
     }
 
     fun homePinnedSectionHasItems(
@@ -682,7 +721,7 @@ fun ContentLayout(
                     isExpanded = searchHistoryExpanded,
                     collapsedItemCount = state.recentQueriesDisplayCount,
                     reverseCollapsedItems = state.oneHandedMode,
-                    onExpandedChange = { searchHistoryExpanded = it },
+                    onExpandedChange = onSearchHistoryExpandedChange,
                     collapseRequestKey = searchHistoryCollapseRequestKey,
                     expandedCardMaxHeight = expandedCardMaxHeight,
                     showWallpaperBackground =
@@ -773,6 +812,7 @@ fun ContentLayout(
                 if (isHomeCalendarExpanded && section != SearchSection.CALENDAR) return@forEach
                 if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
                 if (!shouldRenderSection(section)) return@forEach
+                if (holdRegularSectionsForTopMatches) return@forEach
                 if (section == SearchSection.APPS && isUrlQuery) return@forEach
                 if (hideOtherContent && section != SearchSection.APPS) return@forEach
                 if (
@@ -1243,9 +1283,8 @@ private fun UnifiedPinnedItemsBlock(
     showWallpaperBackground: Boolean,
     content: @Composable () -> Unit,
 ) {
-    var isExpanded by rememberSaveable { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
-        isExpanded = userPreferences.isUnifiedPinnedItemsExpanded()
+    var isExpanded by rememberSaveable {
+        mutableStateOf(userPreferences.isUnifiedPinnedItemsExpanded())
     }
     val interactionSource = remember { MutableInteractionSource() }
     val toggleExpanded = {

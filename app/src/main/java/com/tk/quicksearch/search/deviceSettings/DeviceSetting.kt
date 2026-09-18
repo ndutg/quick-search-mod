@@ -5,6 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 
+/** Id of the device setting that opens Quick Search's own Notification History screen. */
+const val NOTIFICATION_HISTORY_SETTING_ID = "notification_history"
+
 /**
  * Represents a navigable Android Settings destination that can be surfaced in search.
  */
@@ -19,6 +22,8 @@ data class DeviceSetting(
     val extras: Map<String, Any> = emptyMap(),
     val minSdk: Int = Build.VERSION_CODES.BASE,
     val maxSdk: Int = Int.MAX_VALUE,
+    /** Shows a trailing chevron in results for destinations that open a Quick Search screen. */
+    val showsNavigationChevron: Boolean = false,
 ) {
     /**
      * Checks whether this shortcut is supported on the current device SDK.

@@ -12,6 +12,8 @@ import com.tk.quicksearch.tools.tasker.TaskerIntegration
 
 private val WHITESPACE_REGEX = "\\s+".toRegex()
 
+internal const val PINNED_SECTIONS_ORDER_SETTING_ID = "app_settings_pinned_sections_order"
+
 class AppSettingsRepository(
     private val context: Context,
 ) {
@@ -89,6 +91,13 @@ class AppSettingsRepository(
                     keywords = listOf("tasker", "broadcast", "intent", "automation", "action", "alias"),
                 )
             }
+            addNavigation(
+                id = "app_settings_backup_restore",
+                titleRes = R.string.settings_backup_restore_title,
+                descriptionRes = R.string.settings_backup_restore_desc,
+                destination = AppSettingsDestination.BACKUP_RESTORE,
+                keywords = listOf("Backup", "Import", "Export"),
+            )
             addNavigation(
                 id = "app_settings_launch_options",
                 titleRes = R.string.settings_launch_options_title,
@@ -344,6 +353,20 @@ class AppSettingsRepository(
                 descriptionRes = R.string.settings_unified_pinned_items_desc,
                 toggleKey = AppSettingsToggleKey.UNIFIED_PINNED_ITEMS,
                 keywords = listOf("pinned", "home", "sections", "list"),
+            )
+            addNavigation(
+                id = PINNED_SECTIONS_ORDER_SETTING_ID,
+                titleRes = R.string.settings_pinned_sections_order_title,
+                descriptionRes = R.string.settings_pinned_sections_order_desc,
+                destination = AppSettingsDestination.APPEARANCE,
+                keywords = listOf("pinned", "sections", "order", "reorder", "home"),
+            )
+            addToggle(
+                id = "app_toggle_pinned_app_shortcuts_in_app_grid",
+                titleRes = R.string.settings_pinned_app_shortcuts_in_app_grid_title,
+                descriptionRes = R.string.settings_pinned_app_shortcuts_in_app_grid_desc,
+                toggleKey = AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID,
+                keywords = listOf("pinned", "shortcuts", "apps", "grid"),
             )
             addToggle(
                 id = "app_toggle_search_hints",

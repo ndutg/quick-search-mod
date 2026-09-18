@@ -36,6 +36,7 @@ fun SettingsManagementSearchBar(
     fillMaxWidth: Boolean = true,
     onFocusChange: ((FocusState) -> Unit)? = null,
     focusRequester: FocusRequester? = null,
+    placeholder: String? = null,
 ) {
     TextField(
         value = query,
@@ -79,7 +80,7 @@ fun SettingsManagementSearchBar(
                 null
             },
         placeholder = {
-            Text(text = stringResource(R.string.common_search))
+            Text(text = placeholder ?: stringResource(R.string.common_search))
         },
         colors =
             TextFieldDefaults.colors(

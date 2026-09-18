@@ -70,6 +70,11 @@ open class MainActivity : FragmentActivity() {
         const val ACTION_VOICE_SEARCH_SHORTCUT = "com.tk.quicksearch.action.VOICE_SEARCH_SHORTCUT"
         /** Public intent action that opens the hosted Widgets panel. */
         const val ACTION_OPEN_WIDGETS_PANEL = "com.tk.quicksearch.action.OPEN_WIDGETS_PANEL"
+        /** Public intent action that opens the Notification History screen. */
+        const val ACTION_OPEN_NOTIFICATION_HISTORY =
+            "com.tk.quicksearch.action.OPEN_NOTIFICATION_HISTORY"
+        /** Public intent action that opens the Manage Apps screen. */
+        const val ACTION_OPEN_MANAGE_APPS = "com.tk.quicksearch.action.OPEN_MANAGE_APPS"
         const val ACTION_SEARCH_TARGET_SHORTCUT = "com.tk.quicksearch.action.SEARCH_TARGET_SHORTCUT"
         const val EXTRA_SHORTCUT_QUERY = "com.tk.quicksearch.extra.SHORTCUT_QUERY"
         const val EXTRA_SHORTCUT_TARGET_ENGINE = "com.tk.quicksearch.extra.SHORTCUT_TARGET_ENGINE"
@@ -243,6 +248,8 @@ open class MainActivity : FragmentActivity() {
             val isVoiceShortcutLaunch = intent?.action == ACTION_VOICE_SEARCH_SHORTCUT
             val isWidgetsPanelLaunch = intent?.action == ACTION_OPEN_WIDGETS_PANEL
             if (isWidgetsPanelLaunch) return false
+            if (intent?.action == ACTION_OPEN_NOTIFICATION_HISTORY) return false
+            if (intent?.action == ACTION_OPEN_MANAGE_APPS) return false
             val isAssistantLaunch = intent?.action == Intent.ACTION_ASSIST
             val startVoiceForAssistant =
                 isAssistantLaunch && userPreferences.isAssistantLaunchVoiceModeEnabled()
@@ -539,6 +546,20 @@ open class MainActivity : FragmentActivity() {
         }
         if (intent?.action == ACTION_OPEN_WIDGETS_PANEL) {
             navigationRequest.value = NavigationRequest(destination = RootDestination.WidgetsPanel)
+        }
+        if (intent?.action == ACTION_OPEN_NOTIFICATION_HISTORY) {
+            navigationRequest.value =
+                NavigationRequest(
+                    destination = RootDestination.Settings,
+                    settingsDetailType = SettingsDetailType.NOTIFICATION_HISTORY,
+                )
+        }
+        if (intent?.action == ACTION_OPEN_MANAGE_APPS) {
+            navigationRequest.value =
+                NavigationRequest(
+                    destination = RootDestination.Settings,
+                    settingsDetailType = SettingsDetailType.APP_MANAGEMENT,
+                )
         }
         if (
             intent?.action == Intent.ACTION_ASSIST &&

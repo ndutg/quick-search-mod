@@ -80,7 +80,9 @@ internal fun rememberDerivedState(state: SearchUiState): DerivedState {
     val hasPinnedCalendarEvents = state.pinnedCalendarEvents.isNotEmpty() && state.hasCalendarPermission
     val notesEnabled = FeatureFlags.isSearchSectionEnabled(SearchSection.NOTES)
     val hasPinnedNotes = notesEnabled && state.pinnedNotes.isNotEmpty()
-    val hasPinnedAppShortcuts = state.pinnedAppShortcuts.isNotEmpty()
+    // Pinned shortcuts shown in the app grid do not also render as a pinned section.
+    val hasPinnedAppShortcuts =
+        state.pinnedAppShortcuts.isNotEmpty() && !state.pinnedAppShortcutsInAppGrid
     val columns = getAppGridColumns(state.phoneAppGridColumns)
     val visibleRowCount =
         if (isSearching) {

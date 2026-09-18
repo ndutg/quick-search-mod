@@ -635,6 +635,14 @@
     <string name="settings_shortcut_network">Netzwerk &amp; Internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Benachrichtigungszugriff</string>
+    <string name="settings_shortcut_notification_history">Benachrichtigungsverlauf</string>
+    <string name="notification_history_permission_desc">Erlaube den Zugriff auf Benachrichtigungen, um sie hier zu sammeln. Nur Benachrichtigungen, die nach der Freigabe eingehen, erscheinen in dieser Liste.</string>
+    <string name="notification_history_empty">Noch keine Benachrichtigungen.</string>
+    <string name="notification_history_app_filter_title">Benachrichtigungen anzeigen von</string>
+    <string name="notification_history_search_hint">Benachrichtigungen durchsuchen</string>
+    <string name="notification_history_hide_app">Benachrichtigungen von %1$s ausblenden</string>
+    <string name="notification_history_clear_all_title">Alle Benachrichtigungen löschen?</string>
+    <string name="notification_history_clear_all_message">Möchtest du den gesamten Benachrichtigungsverlauf wirklich löschen? Dies kann nicht rückgängig gemacht werden.</string>
     <string name="settings_shortcut_notifications">Benachrichtigungen</string>
     <string name="settings_shortcut_overlay_permission">Über anderen Apps anzeigen</string>
     <string name="settings_shortcut_privacy">Datenschutz</string>
@@ -728,6 +736,11 @@
     <string name="settings_layout_option_bottom_title">Einhand-Modus</string>
     <string name="settings_unified_pinned_items_title">Vereinheitlichte angeheftete Elemente</string>
     <string name="settings_unified_pinned_items_desc">Angeheftete Elemente als eine vereinheitlichte Liste auf dem Startbildschirm anzeigen.</string>
+    <string name="settings_pinned_sections_order_title">Reihenfolge angehefteter Bereiche</string>
+    <string name="settings_pinned_sections_order_desc">Angeheftete Bereiche auf dem Startbildschirm neu anordnen</string>
+    <string name="settings_pinned_sections_order_dialog_info">Gedrückt halten und ziehen, um die Reihenfolge der angehefteten Bereiche auf dem Startbildschirm zu ändern.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Angeheftete App-Verknüpfungen im App-Raster</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Angeheftete App-Verknüpfungen zusammen mit Apps im App-Raster anzeigen.</string>
     <string name="settings_more_options_desc">Verschiedene Anpassungsoptionen</string>
     <string name="settings_more_options_title">Weitere Optionen</string>
     <string name="settings_overlay_assistant_setup_now">Jetzt einrichten</string>
@@ -852,10 +865,11 @@
     <string name="action_update">Aktualisieren</string>
     <string name="release_notes_title">Quick Search v%1$s – Versionshinweise</string>
     <string name="release_notes_title_no_version">Quick Search – Versionshinweise</string>
-    <string name="settings_backup_export_api_key_warning_message">Fortfahren auf eigene Gefahr. Der exportierte API-Schlüssel ist nicht verschlüsselt und kann von jedem eingesehen werden, der Zugriff auf die Sicherungsdatei hat.</string>
+    <string name="settings_backup_export_api_key_warning_message">Fortfahren auf eigene Gefahr. Die exportierten API-Schlüssel sind nicht verschlüsselt und können von jedem eingesehen werden, der Zugriff auf die Sicherungsdatei hat.</string>
     <string name="settings_backup_export_button">Exportieren</string>
     <string name="settings_backup_export_failed">Einstellungen konnten nicht exportiert werden.</string>
     <string name="settings_backup_export_option_pinned_items_title">Angeheftete Elemente</string>
+    <string name="settings_backup_export_option_api_keys">API-Schlüssel</string>
     <string name="settings_backup_export_selection_title">Daten exportieren</string>
     <string name="settings_backup_export_success">Einstellungen erfolgreich exportiert.</string>
     <string name="settings_backup_import_button">Importieren</string>
@@ -1005,7 +1019,7 @@
     <string name="permissions_calling_desc">Erforderlich, um Kontakte direkt anzurufen, ohne die Telefon-App zu öffnen.</string>
     <string name="settings_notifications_permission_title">Benachrichtigungen senden</string>
     <string name="permissions_notifications_desc">Erforderlich, um Suchergebnisse im Benachrichtigungsfeld anzuheften</string>
-    <string name="permissions_notification_access_desc">Erforderlich, um Benachrichtigungspunkte auf Apps mit Benachrichtigungen anzuzeigen.</string>
+    <string name="permissions_notification_access_desc">Erforderlich für Benachrichtigungspunkte und den Benachrichtigungsverlauf</string>
     <string name="permissions_accessibility_lock_screen_title">Bedienungshilfen</string>
     <string name="permissions_accessibility_lock_screen_desc">Ermöglicht es, das Gerät mit der Doppeltipp-Geste zu sperren.</string>
     <string name="permissions_contacts_desc">Erforderlich, um Kontakte zu durchsuchen.</string>
@@ -1153,4 +1167,9 @@
     <string name="speed_bump_overlay_title">Atme tief durch</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Anstehender Wecker</string>
+    <string name="settings_tavily_title">Tavily für die Websuche</string>
+    <string name="settings_tavily_desc">Füge einen Tavily-API-Schlüssel hinzu, um Modellen ohne Websuche eine Websuche zu ermöglichen.</string>
+    <string name="settings_tavily_mode_always">Immer Tavily für die Websuche verwenden</string>
+    <string name="settings_tavily_mode_when_unsupported">Nur verwenden, wenn das Modell keine Websuche unterstützt</string>
+    <string name="tavily_search_failed_toast">Tavily-Websuche fehlgeschlagen. Antwort ohne Webergebnisse.</string>
 </resources>

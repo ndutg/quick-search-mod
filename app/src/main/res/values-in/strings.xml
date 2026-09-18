@@ -642,6 +642,14 @@
     <string name="settings_shortcut_network">Jaringan &amp; Internet</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">Akses Notifikasi</string>
+    <string name="settings_shortcut_notification_history">Riwayat Notifikasi</string>
+    <string name="notification_history_permission_desc">Izinkan akses notifikasi untuk mengumpulkan notifikasi di sini. Hanya notifikasi yang diterima setelah akses diberikan yang muncul di daftar ini.</string>
+    <string name="notification_history_empty">Belum ada notifikasi.</string>
+    <string name="notification_history_app_filter_title">Tampilkan notifikasi dari</string>
+    <string name="notification_history_search_hint">Cari notifikasi</string>
+    <string name="notification_history_hide_app">Sembunyikan notifikasi dari %1$s</string>
+    <string name="notification_history_clear_all_title">Hapus semua notifikasi?</string>
+    <string name="notification_history_clear_all_message">Yakin ingin menghapus semua riwayat notifikasi? Tindakan ini tidak dapat diurungkan.</string>
     <string name="settings_shortcut_notifications">Notifikasi</string>
     <string name="settings_shortcut_overlay_permission">Tampilkan di Atas Aplikasi Lain</string>
     <string name="settings_shortcut_privacy">Privasi</string>
@@ -736,6 +744,11 @@
     <string name="settings_layout_option_bottom_title">Mode Satu Tangan</string>
     <string name="settings_unified_pinned_items_title">Item Sematan Terpadu</string>
     <string name="settings_unified_pinned_items_desc">Tampilkan item yang disematkan sebagai satu daftar terpadu di layar utama.</string>
+    <string name="settings_pinned_sections_order_title">Urutan Bagian yang Disematkan</string>
+    <string name="settings_pinned_sections_order_desc">Atur ulang bagian yang disematkan di beranda</string>
+    <string name="settings_pinned_sections_order_dialog_info">Tahan dan seret untuk mengubah urutan bagian yang disematkan di beranda.</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">Pintasan Aplikasi Tersemat di Kisi Aplikasi</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">Tampilkan pintasan aplikasi yang disematkan di kisi aplikasi bersama aplikasi.</string>
     <string name="settings_more_options_desc">Opsi penyesuaian lainnya</string>
     <string name="settings_more_options_title">Opsi Lainnya</string>
     <string name="settings_overlay_assistant_setup_now">Siapkan Sekarang</string>
@@ -860,10 +873,11 @@
     <string name="action_update">Perbarui</string>
     <string name="release_notes_title">Catatan Rilis Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Catatan Rilis Quick Search</string>
-    <string name="settings_backup_export_api_key_warning_message">Lanjutkan dengan risiko Anda sendiri. Kunci API yang diekspor tidak dienkripsi dan dapat diakses oleh siapa saja yang memiliki akses ke file cadangan Anda.</string>
+    <string name="settings_backup_export_api_key_warning_message">Lanjutkan dengan risiko Anda sendiri. Kunci-kunci API yang diekspor tidak dienkripsi dan dapat diakses oleh siapa saja yang memiliki akses ke file cadangan Anda.</string>
     <string name="settings_backup_export_button">Ekspor</string>
     <string name="settings_backup_export_failed">Tidak dapat mengekspor pengaturan.</string>
     <string name="settings_backup_export_option_pinned_items_title">Item yang disematkan</string>
+    <string name="settings_backup_export_option_api_keys">Kunci API</string>
     <string name="settings_backup_export_selection_title">Ekspor Data</string>
     <string name="settings_backup_export_success">Pengaturan berhasil diekspor.</string>
     <string name="settings_backup_import_button">Impor</string>
@@ -1015,7 +1029,7 @@
     <string name="permissions_calling_desc">Diperlukan untuk menelepon kontak secara langsung tanpa membuka dialer.</string>
     <string name="settings_notifications_permission_title">Kirim Notifikasi</string>
     <string name="permissions_notifications_desc">Diperlukan untuk menyematkan hasil pencarian ke panel notifikasi</string>
-    <string name="permissions_notification_access_desc">Diperlukan untuk menampilkan titik notifikasi pada aplikasi yang memiliki notifikasi.</string>
+    <string name="permissions_notification_access_desc">Diperlukan untuk mengaktifkan titik notifikasi dan fitur riwayat notifikasi</string>
     <string name="permissions_accessibility_lock_screen_title">Aksesibilitas</string>
     <string name="permissions_accessibility_lock_screen_desc">Mengizinkan gestur ketuk dua kali untuk mengunci perangkat Anda.</string>
     <string name="permissions_contacts_desc">Diperlukan untuk mencari kontak Anda.</string>
@@ -1155,4 +1169,9 @@
     <string name="speed_bump_overlay_title">Tarik napas dalam-dalam</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Alarm mendatang</string>
+    <string name="settings_tavily_title">Tavily untuk Penelusuran Web</string>
+    <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>
+    <string name="settings_tavily_mode_always">Selalu gunakan Tavily untuk penelusuran web</string>
+    <string name="settings_tavily_mode_when_unsupported">Gunakan hanya jika model tidak mendukung penelusuran web</string>
+    <string name="tavily_search_failed_toast">Penelusuran web Tavily gagal. Menjawab tanpa hasil web.</string>
 </resources>

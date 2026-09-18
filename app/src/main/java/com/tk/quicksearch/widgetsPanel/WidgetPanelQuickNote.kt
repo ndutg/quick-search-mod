@@ -129,7 +129,7 @@ internal fun CompactQuickNoteWidget(
 
     Surface(
         modifier = surfaceModifier,
-        shape = DesignTokens.ExtraLargeCardShape,
+        shape = DesignTokens.WidgetPanelCardShape,
         color =
             AppColors.getSettingsCardContainerColor().let { containerColor ->
                 containerColor.copy(alpha = max(containerColor.alpha, QUICK_NOTE_MINIMUM_CONTAINER_ALPHA))

@@ -1,5 +1,7 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import androidx.compose.runtime.collectAsState
+import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +45,7 @@ import com.tk.quicksearch.search.data.CustomCalendarEventRepository
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.deviceSettings.NOTIFICATION_HISTORY_SETTING_ID
 import com.tk.quicksearch.settings.settingsDetailScreen.GesturesSettingsSection
 import com.tk.quicksearch.searchEngines.AliasHandler
 import com.tk.quicksearch.settings.tasker.TaskerIntegrationScreen
@@ -104,6 +108,10 @@ internal fun SettingsDetailLevel2Screen(
     var calendarEventsRefreshSignal by remember { mutableIntStateOf(0) }
     var showCreateCalendarEventDialog by remember { mutableStateOf(false) }
     var notesSearchQuery by remember { mutableStateOf("") }
+    var notificationHistorySearchQuery by remember { mutableStateOf("") }
+    var showNotificationHistoryAppFilter by remember { mutableStateOf(false) }
+    // The filter menu and search bar only make sense once there is history to act on.
+    val notificationHistoryAccessGranted by NotificationHistoryAccess.granted.collectAsState()
     var notesMultiSelectActive by remember { mutableStateOf(false) }
     var notesSelectedIds by remember { mutableStateOf(setOf<Long>()) }
     var notesRefreshSignal by remember { mutableIntStateOf(0) }
@@ -224,6 +232,20 @@ internal fun SettingsDetailLevel2Screen(
                                         imageVector = Icons.Rounded.Delete,
                                         contentDescription =
                                             stringResource(R.string.notes_delete_note_desc),
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                }
+                            }
+                        } else if (
+                            detailType == SettingsDetailType.NOTIFICATION_HISTORY &&
+                                notificationHistoryAccessGranted == true
+                        ) {
+                            {
+                                IconButton(onClick = { showNotificationHistoryAppFilter = true }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.MoreVert,
+                                        contentDescription =
+                                            stringResource(R.string.notification_history_app_filter_title),
                                         tint = MaterialTheme.colorScheme.onSurface,
                                     )
                                 }
@@ -608,6 +630,22 @@ internal fun SettingsDetailLevel2Screen(
                                 bottom = 96.dp,
                             ),
                 )
+            } else if (detailType == SettingsDetailType.NOTIFICATION_HISTORY) {
+                NotificationHistorySettingsSection(
+                    searchQuery = notificationHistorySearchQuery,
+                    showAppFilterDialog = showNotificationHistoryAppFilter,
+                    onDismissAppFilterDialog = { showNotificationHistoryAppFilter = false },
+                    modifier =
+                        Modifier
+                            .settingsContentWidth()
+                            .fillMaxHeight()
+                            .align(androidx.compose.ui.Alignment.CenterHorizontally)
+                            .padding(
+                                start = DesignTokens.ContentHorizontalPadding,
+                                end = DesignTokens.ContentHorizontalPadding,
+                                bottom = 96.dp,
+                            ),
+                )
             } else if (detailType == SettingsDetailType.NOTES) {
                 NotesSettingsSection(
                     searchQuery = notesSearchQuery,
@@ -710,7 +748,15 @@ internal fun SettingsDetailLevel2Screen(
                         SettingsDetailType.DEVICE_SETTINGS -> {
                             DeviceSettingsSettingsSection(
                                 settings = state.allDeviceSettings,
-                                onSettingClick = callbacks.onLaunchDeviceSetting,
+                                onSettingClick = { setting ->
+                                    if (setting.id == NOTIFICATION_HISTORY_SETTING_ID) {
+                                        onNavigateToDetail(
+                                            SettingsDetailType.NOTIFICATION_HISTORY,
+                                        )
+                                    } else {
+                                        callbacks.onLaunchDeviceSetting(setting)
+                                    }
+                                },
                             )
                         }
 
@@ -937,6 +983,17 @@ internal fun SettingsDetailLevel2Screen(
                         else -> Unit
                     }
                 },
+                modifier = Modifier.align(Alignment.BottomEnd),
+            )
+        } else if (
+            detailType == SettingsDetailType.NOTIFICATION_HISTORY &&
+                notificationHistoryAccessGranted == true
+        ) {
+            SettingsManagementSearchBar(
+                query = notificationHistorySearchQuery,
+                onQueryChange = { notificationHistorySearchQuery = it },
+                onClear = { notificationHistorySearchQuery = "" },
+                placeholder = stringResource(R.string.notification_history_search_hint),
                 modifier = Modifier.align(Alignment.BottomEnd),
             )
         } else if (detailType == SettingsDetailType.CALENDAR_EVENTS) {

@@ -248,6 +248,49 @@ class UiPreferences(
                 .apply()
     }
 
+    fun getHomePinnedSectionOrder(): List<SearchSection> {
+        val defaultOrder = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER
+        val savedOrder =
+                prefs.getString(UiPreferences.KEY_HOME_PINNED_SECTION_ORDER, null)
+                        ?.split(UiPreferences.TOP_MATCHES_SECTION_ORDER_SEPARATOR)
+                        ?.mapNotNull { name ->
+                            runCatching { SearchSection.valueOf(name) }.getOrNull()
+                        }
+                        .orEmpty()
+        return (savedOrder + defaultOrder)
+                .distinct()
+                .filter { section -> section in defaultOrder }
+    }
+
+    fun isPinnedAppShortcutsInAppGridEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID, false)
+
+    fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID, enabled)
+    }
+
+    /** Combined drag order of pinned apps and pinned shortcuts shown in the app grid. */
+    fun getPinnedAppGridOrder(): List<String> =
+            getStringListPref(UiPreferences.KEY_PINNED_APP_GRID_ORDER)
+
+    fun setPinnedAppGridOrder(order: List<String>) {
+        setStringListPref(UiPreferences.KEY_PINNED_APP_GRID_ORDER, order.distinct())
+    }
+
+    fun setHomePinnedSectionOrder(order: List<SearchSection>) {
+        val defaultOrder = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER
+        val normalized =
+                (order + defaultOrder)
+                        .distinct()
+                        .filter { section -> section in defaultOrder }
+        prefs.edit()
+                .putString(
+                        UiPreferences.KEY_HOME_PINNED_SECTION_ORDER,
+                        normalized.joinToString(UiPreferences.TOP_MATCHES_SECTION_ORDER_SEPARATOR) { it.name },
+                )
+                .apply()
+    }
+
     fun getDisabledTopMatchesSections(): Set<SearchSection> =
             getStringSet(UiPreferences.KEY_DISABLED_TOP_MATCHES_SECTIONS)
                     .mapNotNull { name -> runCatching { SearchSection.valueOf(name) }.getOrNull() }
@@ -1287,6 +1330,9 @@ class UiPreferences(
         const val KEY_TOP_MATCHES_LIMIT = "top_matches_limit"
         const val KEY_TOP_MATCHES_SECTION_ORDER = "top_matches_section_order"
         const val KEY_DISABLED_TOP_MATCHES_SECTIONS = "disabled_top_matches_sections"
+        const val KEY_HOME_PINNED_SECTION_ORDER = "home_pinned_section_order"
+        const val KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID = "pinned_app_shortcuts_in_app_grid"
+        const val KEY_PINNED_APP_GRID_ORDER = "pinned_app_grid_order"
         const val KEY_CLEAR_QUERY_ON_LAUNCH = "clear_query_on_launch"
         const val KEY_AUTO_CLOSE_OVERLAY = "auto_close_overlay"
         const val KEY_OVERLAY_MODE_ENABLED = "overlay_mode_enabled"
@@ -1348,6 +1394,13 @@ class UiPreferences(
         val DEFAULT_TOP_MATCHES_SECTION_ORDER: List<SearchSection>
             get() = SearchSectionRegistry.orderedSections
         const val TOP_MATCHES_SECTION_ORDER_SEPARATOR = ","
+
+        /** Sections that render as separate pinned blocks on home when unified pinned items is off. */
+        val DEFAULT_HOME_PINNED_SECTION_ORDER: List<SearchSection>
+            get() =
+                SearchSectionRegistry.orderedSections.filter { section ->
+                    section != SearchSection.APPS && section != SearchSection.APP_SETTINGS
+                }
         const val KEY_LAST_SEEN_VERSION = "last_seen_version"
         const val KEY_LAST_SEEN_VERSION_CODE = "last_seen_version_code"
         const val KEY_ACCESSIBILITY_PERMISSION_DISCLAIMER_PENDING =

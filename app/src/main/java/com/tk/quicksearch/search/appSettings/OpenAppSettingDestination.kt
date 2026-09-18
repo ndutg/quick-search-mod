@@ -7,3 +7,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
  * Null where no settings navigation is available, so callers can hide the option.
  */
 val LocalOpenAppSettingDestination = staticCompositionLocalOf<((AppSettingsDestination) -> Unit)?> { null }
+
+/** Refreshes app state after settings are imported from inside the search UI. */
+val LocalOnSettingsImported = staticCompositionLocalOf<() -> Unit> { {} }

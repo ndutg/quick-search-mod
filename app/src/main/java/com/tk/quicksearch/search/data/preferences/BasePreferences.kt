@@ -602,6 +602,10 @@ abstract class BasePreferences(
         const val KEY_META_THINKING_ENABLED = "meta_thinking_enabled"
         const val KEY_CUSTOM_LLM_PROVIDERS = "custom_llm_providers"
 
+        // Tavily web search preferences keys
+        const val KEY_TAVILY_API_KEY = "tavily_api_key"
+        const val KEY_TAVILY_WEB_SEARCH_MODE = "tavily_web_search_mode"
+
         // Usage permission banner preferences keys
         const val KEY_USAGE_PERMISSION_BANNER_DISMISS_COUNT =
             "usage_permission_banner_dismiss_count"

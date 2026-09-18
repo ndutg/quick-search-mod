@@ -12,12 +12,30 @@
             android:targetClass="com.tk.quicksearch.app.MainActivity" />
     </shortcut>
     <shortcut
+        android:shortcutId="manage_apps"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_manage_apps"
+        android:shortcutShortLabel="@string/settings_manage_apps_title">
+        <intent
+            android:action="com.tk.quicksearch.action.OPEN_MANAGE_APPS"
+            android:targetClass="com.tk.quicksearch.app.MainActivity" />
+    </shortcut>
+    <shortcut
         android:shortcutId="widgets"
         android:enabled="true"
         android:icon="@drawable/ic_shortcut_widgets"
         android:shortcutShortLabel="@string/widgets_panel_title">
         <intent
             android:action="com.tk.quicksearch.action.OPEN_WIDGETS_PANEL"
+            android:targetClass="com.tk.quicksearch.app.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="notification_history"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_notification_history"
+        android:shortcutShortLabel="@string/settings_shortcut_notification_history">
+        <intent
+            android:action="com.tk.quicksearch.action.OPEN_NOTIFICATION_HISTORY"
             android:targetClass="com.tk.quicksearch.app.MainActivity" />
     </shortcut>
 </shortcuts>

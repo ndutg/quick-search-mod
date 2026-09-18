@@ -625,6 +625,14 @@
     <string name="settings_shortcut_network">网络和互联网</string>
     <string name="settings_shortcut_nfc">NFC</string>
     <string name="settings_shortcut_notification_listener">通知访问权限</string>
+    <string name="settings_shortcut_notification_history">通知历史</string>
+    <string name="notification_history_permission_desc">允许通知访问权限以在此收集通知。此列表中仅显示授予访问权限后收到的通知。</string>
+    <string name="notification_history_empty">暂无通知。</string>
+    <string name="notification_history_app_filter_title">显示以下应用的通知</string>
+    <string name="notification_history_search_hint">搜索通知</string>
+    <string name="notification_history_hide_app">隐藏来自 %1$s 的通知</string>
+    <string name="notification_history_clear_all_title">清除所有通知？</string>
+    <string name="notification_history_clear_all_message">确定要清除全部通知历史记录吗？此操作无法撤消。</string>
     <string name="settings_shortcut_notifications">通知</string>
     <string name="settings_shortcut_overlay_permission">显示在其他应用上层</string>
     <string name="settings_shortcut_privacy">隐私</string>
@@ -718,6 +726,11 @@
     <string name="settings_layout_option_bottom_title">单手模式</string>
     <string name="settings_unified_pinned_items_title">统一固定项目</string>
     <string name="settings_unified_pinned_items_desc">在主屏幕上将固定项目显示为一个统一列表。</string>
+    <string name="settings_pinned_sections_order_title">固定分区顺序</string>
+    <string name="settings_pinned_sections_order_desc">重新排列主页上的固定分区</string>
+    <string name="settings_pinned_sections_order_dialog_info">长按并拖动以更改主页上固定分区的顺序。</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_title">在应用网格中显示固定的应用快捷方式</string>
+    <string name="settings_pinned_app_shortcuts_in_app_grid_desc">在应用网格中与应用一起显示固定的应用快捷方式。</string>
     <string name="settings_more_options_desc">其他杂项自定义选项</string>
     <string name="settings_more_options_title">更多选项</string>
     <string name="settings_overlay_assistant_setup_now">立即设置</string>
@@ -842,10 +855,11 @@
     <string name="action_update">更新</string>
     <string name="release_notes_title">Quick Search v%1$s 版本更新日志</string>
     <string name="release_notes_title_no_version">Quick Search 版本更新日志</string>
-    <string name="settings_backup_export_api_key_warning_message">继续操作需自行承担风险。导出的 API 密钥未经加密，任何能够访问您备份文件的人均可获取该密钥。</string>
+    <string name="settings_backup_export_api_key_warning_message">继续操作需自行承担风险。导出的 API 密钥未经加密，任何能够访问您备份文件的人均可获取这些密钥。</string>
     <string name="settings_backup_export_button">导出</string>
     <string name="settings_backup_export_failed">无法导出设置。</string>
     <string name="settings_backup_export_option_pinned_items_title">固定的项目</string>
+    <string name="settings_backup_export_option_api_keys">API 密钥</string>
     <string name="settings_backup_export_selection_title">导出数据</string>
     <string name="settings_backup_export_success">配置设置导出成功。</string>
     <string name="settings_backup_import_button">导入</string>
@@ -995,7 +1009,7 @@
     <string name="permissions_calling_desc">允许直接呼叫您的联系人，省去跳转并开启系统拨号盘的步骤。</string>
     <string name="settings_notifications_permission_title">发送通知</string>
     <string name="permissions_notifications_desc">用于将搜索结果固定到通知面板</string>
-    <string name="permissions_notification_access_desc">用于在有通知的应用上显示通知圆点。</string>
+    <string name="permissions_notification_access_desc">启用通知圆点和通知历史记录功能所需</string>
     <string name="permissions_accessibility_lock_screen_title">无障碍</string>
     <string name="permissions_accessibility_lock_screen_desc">允许使用双击手势锁定设备。</string>
     <string name="permissions_contacts_desc">允许检索、匹配并展示您设备通讯录中的联系人信息。</string>
@@ -1143,4 +1157,9 @@
     <string name="speed_bump_overlay_title">深呼吸一下</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">即将响铃的闹钟</string>
+    <string name="settings_tavily_title">用于网页搜索的 Tavily</string>
+    <string name="settings_tavily_desc">添加 Tavily API 密钥，为不支持网页搜索的模型添加网页搜索功能。</string>
+    <string name="settings_tavily_mode_always">始终使用 Tavily 进行网页搜索</string>
+    <string name="settings_tavily_mode_when_unsupported">仅在模型不支持网页搜索时使用</string>
+    <string name="tavily_search_failed_toast">Tavily 网页搜索失败，将在没有网页结果的情况下回答。</string>
 </resources>
