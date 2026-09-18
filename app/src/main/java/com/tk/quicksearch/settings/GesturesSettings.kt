@@ -114,7 +114,7 @@ fun GesturesSettingsSection(
     var homeActions by remember {
         mutableStateOf(
             HomeGesture.entries.associateWith { gesture ->
-                preferences.homeActionFor(gesture, isDefaultLauncher)
+                preferences.homeActionFor(gesture, isDefaultLauncher, LockScreenAccessibilityService.isEnabled(context))
             },
         )
     }
@@ -131,6 +131,11 @@ fun GesturesSettingsSection(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 isLockScreenAccessibilityEnabled = LockScreenAccessibilityService.isEnabled(context)
+                homeActions =
+                    homeActions + (
+                        HomeGesture.DOUBLE_TAP to
+                            preferences.getHomeDoubleTapAction(isLockScreenAccessibilityEnabled)
+                    )
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -942,11 +947,12 @@ private fun UserAppPreferences.setAliasTargetFor(direction: SwipeDirection, targ
 private fun UserAppPreferences.homeActionFor(
     gesture: HomeGesture,
     isDefaultLauncher: Boolean,
+    isLockScreenAvailable: Boolean,
 ): HomeSwipeGestureAction =
     when (gesture) {
         HomeGesture.SWIPE_UP -> getHomeSwipeUpAction()
         HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAction(isDefaultLauncher)
-        HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAction()
+        HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAction(isLockScreenAvailable)
     }
 
 private fun UserAppPreferences.setHomeActionFor(gesture: HomeGesture, action: HomeSwipeGestureAction) {

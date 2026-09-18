@@ -725,7 +725,7 @@ fun SearchRoute(
         mutableStateOf(gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher))
     }
     var homeDoubleTapAction by remember {
-        mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
+        mutableStateOf(gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context)))
     }
     var homeCustomSwipeActions by remember {
         mutableStateOf(
@@ -762,7 +762,7 @@ fun SearchRoute(
             swipeAliasTargets = listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
             homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
-            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
+            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context))
             homeCustomSwipeActions =
                 listOf(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
@@ -780,13 +780,14 @@ fun SearchRoute(
             if (event == Lifecycle.Event.ON_RESUME) {
                 isDefaultLauncher = context.isDefaultHomeApp()
                 homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
+                val isLockScreenAvailable = LockScreenAccessibilityService.isEnabled(context)
                 if (
-                    gesturePreferences.getHomeDoubleTapAction() == HomeSwipeGestureAction.LOCK_SCREEN &&
-                    !LockScreenAccessibilityService.isEnabled(context)
+                    !isLockScreenAvailable &&
+                    gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable) == HomeSwipeGestureAction.LOCK_SCREEN
                 ) {
                     gesturePreferences.setHomeDoubleTapAction(HomeSwipeGestureAction.NONE)
-                    homeDoubleTapAction = HomeSwipeGestureAction.NONE
                 }
+                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable)
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
