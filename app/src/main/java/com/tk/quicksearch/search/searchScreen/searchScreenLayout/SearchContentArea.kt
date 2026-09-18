@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Swipe
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
@@ -146,6 +147,7 @@ fun SearchContentArea(
     isOverlayPresentation: Boolean = false,
     onOpenPermissionsSettings: () -> Unit = {},
     onChangeWallpaperClick: () -> Unit = {},
+    onOpenGesturesSettingsClick: () -> Unit = {},
     onOpenSettingsClick: () -> Unit = {},
     showOpenSettingsOption: Boolean = true,
     onBottomOneHandedOverscrollUp: () -> Unit = {},
@@ -664,6 +666,20 @@ fun SearchContentArea(
                         onClick = {
                             showBackgroundMenu = false
                             onChangeWallpaperClick()
+                        },
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.settings_gestures_title)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Swipe,
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            showBackgroundMenu = false
+                            onOpenGesturesSettingsClick()
                         },
                     )
                     if (showOpenSettingsOption) {

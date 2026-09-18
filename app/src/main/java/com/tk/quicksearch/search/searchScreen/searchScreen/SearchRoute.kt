@@ -1188,6 +1188,9 @@ fun SearchRoute(
             onChangeWallpaperClick = {
                 launchSystemWallpaperPicker(context)
             },
+            onOpenGesturesSettingsClick = {
+                onOpenAppSettingDestination(AppSettingsDestination.GESTURES)
+            },
             swipeUpAction = swipeActions[2],
             swipeDownAction = swipeActions[3],
             swipeUpCustomActionJson = customSwipeActions[2],
