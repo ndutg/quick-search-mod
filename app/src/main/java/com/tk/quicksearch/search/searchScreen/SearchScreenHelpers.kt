@@ -921,7 +921,12 @@ internal fun buildSectionParams(
             isSearching = derivedState.isSearching,
             hasUsagePermission = state.hasUsagePermission,
             selectedSuggestionTab = state.selectedAppSuggestionTab,
-            enabledSuggestionTabs = state.enabledAppSuggestionTabs,
+            enabledSuggestionTabs =
+                if (state.appSuggestionsEnabled) {
+                    state.enabledAppSuggestionTabs
+                } else {
+                    setOf(AppSuggestionTabType.PINNED)
+                },
             onSuggestionTabSelected = onSuggestionTabSelected,
             hasAppResults = derivedState.hasAppResults,
             showAllAppsButton = state.showAllAppsButton,
