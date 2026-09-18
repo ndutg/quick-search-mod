@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -110,6 +111,12 @@ fun DeviceSettingsSettingsSection(
                             )
                         }
                     }
+
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = stringResource(R.string.desc_navigate_forward),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
 
                 if (index != displayedSettings.lastIndex) {
