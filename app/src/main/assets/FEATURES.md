@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.4 (Updated September 13 2026)
+**Version**: 4.5 (Updated September 18 2026)
 
 ### Search
 
@@ -12,6 +12,7 @@ This document highlights all the available features. It also includes details ab
 - **File Search** - Search through device files & folders
 - **Calendar Events Search** - Search through your calendar events
 - **Notes Search** - Write notes and search them quickly from the search bar. Swipe left from home for a quick note.
+- **Notification History** - Search your notification history and open the Notification History screen. Requires notification access; only notifications received after access is granted are saved.
 - **Device Settings Search** - Find specific device settings
 - **App Settings Search** - Find and access Quick Search app settings directly by searching
 - **App Suggestions** - Shows suggested apps when no search query is entered. Swipe left or right on the suggestions row to switch between **New & Updated**, **Pinned**, and **Most Used** apps. You can also choose to hide app suggestions completely. This feature requires usage access permission. If permission is not granted, the app shows suggestions based on apps you recently opened from within the app.
@@ -130,6 +131,8 @@ Long-press on most results to open a context menu with quick actions.
   - **Compact Mode**: Search engines stay fixed at the bottom of the screen above the keyboard for quick access, with support for one or two rows of engines.
 - **One-Handed Mode** - Most relevant items appear at the bottom of your screen for easy access.
 - **Bottom Searchbar** - You can choose to move the search bar to the bottom.
+- **Pinned Sections Order** - Reorder pinned sections on Home.
+- **Pinned App Shortcuts in App Grid** - Show pinned app shortcuts in the app grid alongside apps.
 - **Apps Per Row** - Choose no. of apps displayed per row in results and suggestions.
 - **App Result Rows** - Choose whether search results show one or two rows of apps.
 - **App Icon Size** - Adjust the size of app icons displayed in results and suggestions.
@@ -153,6 +156,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Excluded Items** - When you exclude any item on the search results page, you can find them here and clear them if you want to.
 - **Refresh Data** - The app automatically refreshes your data from time to time, but if you want to manually refresh the data, you can do it here.
 - **Calendar Options** - Create custom calendar entries, choose which calendar app opens your events, and choose to ignore past events in results. Timed events appear on the home screen 30 minutes before they start, and tap **More Events** to view all of today's events.
+- **Upcoming Alarms** - Your next alarm appears on Home when it is within 45 minutes of going off.
 
 ---
 
@@ -165,6 +169,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Custom Search Engines** - Add your own search engines by specifying a URL template with the {{query}} placeholder. The app automatically fetches the name and icon for the website, but you can choose to edit them if needed. Tapping on {{query}} in the error hint will add this string to your URL so that you don't have to type it. You can choose any installed browser to open custom search engine queries.
 - **AI Search** - Connect a Gemini API key to enable AI answers directly in Quick Search, view if a key is configured, and open the dedicated AI Search configuration screen. Gemini Flash Latest is the model which is chosen by default.
 - **AI Providers** - Configure API keys for multiple AI providers - Gemini, OpenAI, Claude, Groq, Meta AI - at the same time and switch models as needed.
+- **Tavily for Web Search** - Add a Tavily API key to give AI models that do not natively support web search access to web results. You can use Tavily only when needed or for every web search.
 - **Custom AI Providers** - Add your own AI providers using any OpenAI-compatible API. Specify the base URL, API key, and model details to plug in self-hosted or third-party endpoints. Advanced users can also provide a custom JSON payload for full control over request parameters.
 
 ---
@@ -184,6 +189,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Contacts Permission** - View and request contacts access, required for searching contacts and calls/texts.
 - **Files / Storage Permission** - View and request file access to enable file search.
 - **Phone Permission** - View and request phone calling permission, required for direct dial and some calling integrations.
+- **Notification Access** - View and request notification access, required for notification dots and notification history.
 
 ---
 
@@ -233,6 +239,12 @@ Long-press on most results to open a context menu with quick actions.
 
 ---
 
+### App Icon Shortcuts
+
+- Long-press the Quick Search app icon to quickly open **Manage Apps**, **Widgets**, or **Notification History**.
+
+---
+
 ### More Options
 
 - **Top Result Indicator Toggle** - Option to hide the top result indicator for top results that can be opened with the keyboard.
@@ -242,7 +254,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Clear Query** - The app clears your query by default when you reopen the app; you can choose to keep the query by disabling this toggle.
 - **Auto-Close App** - Option to toggle auto-close app after any action
 - **Close with Gestures** - Option to close Quick Search with gestures.
-- **Language** - In-app language switcher to change the app language without changing your device language.
+- **Language** - In-app language switcher to change the app language without changing your device language. Supported languages: Arabic, Chinese (Simplified), Dutch, English, French, German, Greek, Hindi, Indonesian, Italian, Japanese, Polish, Portuguese (Brazil), Russian, Spanish, Telugu, and Turkish.
 - **Search Hints** - Option to show or hide the rotating search hints displayed in the search bar.
 - **Settings Icon** - Option to show or hide the settings icon in the search bar.
 - **Quick Note** - Option to disable the quick note feature (swipe left from home) if you don't use it.

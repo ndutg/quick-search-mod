@@ -1,9 +1,7 @@
-- Option to Lock apps with biometrics when Quick Search is set as your launcher.
-- New search engines: Muse and Kagi assistant (app should be installed).
-- App icon swipe gestures: Swipe up or down on an app icon to trigger any item you choose.
-- Choose which calendar app opens your events.
-- Notification dots support for apps.
-- Close Quick Search with gestures.
-- New tool: Visualize color hex and RGB codes right from search.
-- Copy Content button in the long-press menu for notes.
-- UI updates, performance improvements, and bug fixes.
+- Support for Polish, Dutch, Japanese, and Indonesian languages
+- Search and access your notification history (requires permission)
+- Upcoming alarms will show up in home.
+- Tavily API key support to enable web search for AI models that don't support it.
+- Reorder pinned sections
+- Option to make pinned app shortcuts appear within app grid.
+- Added shortcuts to quickly access Manage Apps, Widgets and Notification History screens.
