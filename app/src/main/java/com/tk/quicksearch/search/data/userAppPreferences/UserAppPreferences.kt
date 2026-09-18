@@ -821,7 +821,7 @@ class UserAppPreferences(
      */
     fun getLlmApiKey(providerId: AiSearchLlmProviderId): String? =
         if (providerId.isCustom) {
-            customLlmProviderPreferences.getProvider(providerId)?.apiKey
+            customLlmProviderPreferences.getProvider(providerId)?.apiKey?.takeIf { it.isNotBlank() }
         } else {
             when (providerId) {
                 AiSearchLlmProviderId.GEMINI -> geminiPreferences.getGeminiApiKey()
@@ -837,8 +837,10 @@ class UserAppPreferences(
         if (providerId.isCustom) {
             if (key.isNullOrBlank()) {
                 customLlmProviderPreferences.removeProvider(providerId)
-                refreshConfiguredAiProviderHint()
+            } else {
+                customLlmProviderPreferences.setProviderApiKey(providerId, key)
             }
+            refreshConfiguredAiProviderHint()
             return
         }
         when (providerId) {

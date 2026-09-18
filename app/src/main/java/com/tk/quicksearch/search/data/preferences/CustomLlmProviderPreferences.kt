@@ -29,7 +29,8 @@ class CustomLlmProviderPreferences(
                     val item = array.optJSONObject(index) ?: continue
                     val id = item.optString(FIELD_ID).takeIf { it.isNotBlank() } ?: continue
                     val baseUrl = item.optString(FIELD_BASE_URL).takeIf { it.isNotBlank() } ?: continue
-                    val apiKey = item.optString(FIELD_API_KEY).takeIf { it.isNotBlank() } ?: continue
+                    // Blank when restored from a backup exported without API keys.
+                    val apiKey = item.optString(FIELD_API_KEY).orEmpty()
                     val modelId = item.optString(FIELD_MODEL_ID).takeIf { it.isNotBlank() } ?: continue
                     val advancedPayload = item.optString(FIELD_ADVANCED_PAYLOAD).takeIf { it.isNotBlank() }
                     val advancedPayloadEnabled = item.optBoolean(FIELD_ADVANCED_PAYLOAD_ENABLED, false)
@@ -96,6 +97,45 @@ class CustomLlmProviderPreferences(
         } else {
             securePrefs.edit().putString(BasePreferences.KEY_CUSTOM_LLM_PROVIDERS, encode(updated)).apply()
         }
+    }
+
+    fun setProviderApiKey(
+        providerId: AiSearchLlmProviderId,
+        apiKey: String,
+    ) {
+        val securePrefs =
+            encryptedPrefs ?: run {
+                Log.e(TAG, "EncryptedSharedPreferences unavailable; custom LLM provider key not persisted")
+                return
+            }
+        val customId = providerId.customId ?: return
+        val normalizedApiKey = apiKey.trim().takeIf { it.isNotBlank() } ?: return
+        val updated =
+            getProviders().map { provider ->
+                if (provider.id == customId) provider.copy(apiKey = normalizedApiKey) else provider
+            }
+        securePrefs.edit().putString(BasePreferences.KEY_CUSTOM_LLM_PROVIDERS, encode(updated)).apply()
+    }
+
+    /**
+     * Merges providers restored from a backup by id. A restored provider without an API key keeps
+     * the key already stored for the same provider on this device, if any.
+     */
+    fun importProviders(imported: List<CustomLlmProviderConfig>) {
+        val securePrefs =
+            encryptedPrefs ?: run {
+                Log.e(TAG, "EncryptedSharedPreferences unavailable; custom LLM providers not imported")
+                return
+            }
+        if (imported.isEmpty()) return
+        val existingById = getProviders().associateBy { it.id }
+        val importedById =
+            imported.associate { provider ->
+                val apiKey = provider.apiKey.ifBlank { existingById[provider.id]?.apiKey.orEmpty() }
+                provider.id to provider.copy(apiKey = apiKey)
+            }
+        val updated = existingById.values.filterNot { it.id in importedById } + importedById.values
+        securePrefs.edit().putString(BasePreferences.KEY_CUSTOM_LLM_PROVIDERS, encode(updated)).apply()
     }
 
     fun setProviderModel(

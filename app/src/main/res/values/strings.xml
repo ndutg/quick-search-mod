@@ -859,10 +859,11 @@
     <string name="action_update">Update</string>
     <string name="release_notes_title">Quick Search v%1$s Release Notes</string>
     <string name="release_notes_title_no_version">Quick Search Release Notes</string>
-    <string name="settings_backup_export_api_key_warning_message">Proceed at your own risk. Exported API key is not encrypted and can be accessed by anyone who has access to your backup file.</string>
+    <string name="settings_backup_export_api_key_warning_message">Proceed at your own risk. Exported API keys are not encrypted and can be accessed by anyone who has access to your backup file.</string>
     <string name="settings_backup_export_button">Export</string>
     <string name="settings_backup_export_failed">Unable to export settings.</string>
     <string name="settings_backup_export_option_pinned_items_title">Pinned items</string>
+    <string name="settings_backup_export_option_api_keys">API Keys</string>
     <string name="settings_backup_export_selection_title">Export Data</string>
     <string name="settings_backup_export_success">Settings exported successfully.</string>
     <string name="settings_backup_import_button">Import</string>

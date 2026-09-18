@@ -861,10 +861,11 @@
     <string name="action_update">تحديث</string>
     <string name="release_notes_title">ملاحظات إصدار Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">ملاحظات إصدار Quick Search</string>
-    <string name="settings_backup_export_api_key_warning_message">المضي قدماً على مسؤوليتك الخاصة. مفتاح API المصدر لن يكون مشفراً ويمكن لأي شخص لديه وصول لملف النسخ الاحتياطي رؤيته.</string>
+    <string name="settings_backup_export_api_key_warning_message">المضي قدماً على مسؤوليتك الخاصة. مفاتيح API المصدرة لن تكون مشفرة ويمكن لأي شخص لديه وصول لملف النسخ الاحتياطي رؤيتها.</string>
     <string name="settings_backup_export_button">تصدير</string>
     <string name="settings_backup_export_failed">تعذر تصدير الإعدادات.</string>
     <string name="settings_backup_export_option_pinned_items_title">العناصر المثبتة</string>
+    <string name="settings_backup_export_option_api_keys">مفاتيح API</string>
     <string name="settings_backup_export_selection_title">تصدير البيانات</string>
     <string name="settings_backup_export_success">تم تصدير الإعدادات بنجاح.</string>
     <string name="settings_backup_import_button">استيراد</string>

@@ -113,7 +113,8 @@ fun ApiKeySetupScreen(
             )
         }
 
-        apiKeyLast4ByProvider.keys.filter { it.isCustom }.forEach { providerId ->
+        // Includes custom providers restored from a backup without their API key.
+        customProviderBaseUrlByProvider.keys.forEach { providerId ->
             ProviderApiKeyCard(
                 providerId = providerId,
                 apiKeyLast4 = apiKeyLast4ByProvider[providerId],
@@ -325,22 +326,22 @@ private fun ProviderApiKeyCard(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
                     horizontalAlignment =
-                        if (hasSavedKey) Alignment.Start else Alignment.CenterHorizontally,
+                        if (hasSavedKey || providerId.isCustom) Alignment.Start else Alignment.CenterHorizontally,
                 ) {
                     ProviderLogo(
                         providerId = providerId,
                         contentColor = MaterialTheme.colorScheme.onSurface,
                     )
+                    configuredBaseUrl?.takeIf { providerId.isCustom }?.let { baseUrl ->
+                        Text(
+                            text = baseUrl,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                     if (hasSavedKey) {
-                        configuredBaseUrl?.takeIf { providerId.isCustom }?.let { baseUrl ->
-                            Text(
-                                text = baseUrl,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
                         Text(
                             text = stringResource(R.string.settings_api_key_saved_last4, apiKeyLast4.orEmpty()),
                             style = MaterialTheme.typography.bodySmall,
@@ -349,7 +350,7 @@ private fun ProviderApiKeyCard(
                     }
                 }
 
-                if (hasSavedKey) {
+                if (hasSavedKey || providerId.isCustom) {
                     IconButton(
                         enabled = !isSavingApiKey,
                         onClick = {

@@ -850,10 +850,11 @@
     <string name="action_update">更新</string>
     <string name="release_notes_title">Quick Search v%1$s 版本更新日志</string>
     <string name="release_notes_title_no_version">Quick Search 版本更新日志</string>
-    <string name="settings_backup_export_api_key_warning_message">继续操作需自行承担风险。导出的 API 密钥未经加密，任何能够访问您备份文件的人均可获取该密钥。</string>
+    <string name="settings_backup_export_api_key_warning_message">继续操作需自行承担风险。导出的 API 密钥未经加密，任何能够访问您备份文件的人均可获取这些密钥。</string>
     <string name="settings_backup_export_button">导出</string>
     <string name="settings_backup_export_failed">无法导出设置。</string>
     <string name="settings_backup_export_option_pinned_items_title">固定的项目</string>
+    <string name="settings_backup_export_option_api_keys">API 密钥</string>
     <string name="settings_backup_export_selection_title">导出数据</string>
     <string name="settings_backup_export_success">配置设置导出成功。</string>
     <string name="settings_backup_import_button">导入</string>

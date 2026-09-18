@@ -868,10 +868,11 @@
     <string name="action_update">Perbarui</string>
     <string name="release_notes_title">Catatan Rilis Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Catatan Rilis Quick Search</string>
-    <string name="settings_backup_export_api_key_warning_message">Lanjutkan dengan risiko Anda sendiri. Kunci API yang diekspor tidak dienkripsi dan dapat diakses oleh siapa saja yang memiliki akses ke file cadangan Anda.</string>
+    <string name="settings_backup_export_api_key_warning_message">Lanjutkan dengan risiko Anda sendiri. Kunci-kunci API yang diekspor tidak dienkripsi dan dapat diakses oleh siapa saja yang memiliki akses ke file cadangan Anda.</string>
     <string name="settings_backup_export_button">Ekspor</string>
     <string name="settings_backup_export_failed">Tidak dapat mengekspor pengaturan.</string>
     <string name="settings_backup_export_option_pinned_items_title">Item yang disematkan</string>
+    <string name="settings_backup_export_option_api_keys">Kunci API</string>
     <string name="settings_backup_export_selection_title">Ekspor Data</string>
     <string name="settings_backup_export_success">Pengaturan berhasil diekspor.</string>
     <string name="settings_backup_import_button">Impor</string>

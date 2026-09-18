@@ -82,6 +82,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.searchScreen.dialogs.ReleaseNotesDrawer
 import com.tk.quicksearch.search.data.preferences.BasePreferences
+import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.shared.featureFlags.FeatureFlag
@@ -160,10 +161,6 @@ fun SettingsScreen(
     val userPrefs =
         remember(context) {
             context.getSharedPreferences(BasePreferences.PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        }
-    val isSearchHistoryEnabledForExport =
-        remember(userPrefs) {
-            userPrefs.getBoolean(BasePreferences.KEY_RECENT_QUERIES_ENABLED, true)
         }
     val hasPinnedItemsForExport =
         remember(userPrefs) {
@@ -522,22 +519,26 @@ fun SettingsScreen(
                             showImportWarningDialog = true
                         },
                         onExportClick = {
-                            exportSelectionState =
-                                ExportSelectionState(
-                                    includeSettings = true,
-                                    includeSearchHistory = isSearchHistoryEnabledForExport,
-                                    includePinnedItems = hasPinnedItemsForExport,
-                                    includeShortcuts = true,
-                                    includeNotes = hasNotesForExport,
-                                    includeCalendarEvents = hasCustomCalendarEventsForExport,
-                                    includeSearchEngines = true,
-                                    includeGeminiApi = false,
-                                    showSearchHistoryOption = isSearchHistoryEnabledForExport,
-                                    showPinnedItemsOption = hasPinnedItemsForExport,
-                                    showNotesOption = hasNotesForExport,
-                                    showCalendarEventsOption = hasCustomCalendarEventsForExport,
-                                )
-                            showExportSelectionDialog = true
+                            coroutineScope.launch {
+                                // API keys live in encrypted storage; keep keystore work off the main thread.
+                                val hasApiKeysForExport =
+                                    withContext(Dispatchers.IO) {
+                                        UserAppPreferences(context).hasAnyLlmApiKey()
+                                    }
+                                exportSelectionState =
+                                    ExportSelectionState(
+                                        includePinnedItems = hasPinnedItemsForExport,
+                                        includeShortcuts = true,
+                                        includeNotes = hasNotesForExport,
+                                        includeCalendarEvents = hasCustomCalendarEventsForExport,
+                                        includeApiKeys = false,
+                                        showPinnedItemsOption = hasPinnedItemsForExport,
+                                        showNotesOption = hasNotesForExport,
+                                        showCalendarEventsOption = hasCustomCalendarEventsForExport,
+                                        showApiKeysOption = hasApiKeysForExport,
+                                    )
+                                showExportSelectionDialog = true
+                            }
                         },
                     )
                 }

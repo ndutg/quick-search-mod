@@ -860,10 +860,11 @@
 <string name="action_update">Mettre à jour</string>
 <string name="release_notes_title">Notes de version de Quick Search v%1$s</string>
 <string name="release_notes_title_no_version">Notes de version de Quick Search</string>
-<string name="settings_backup_export_api_key_warning_message">À utiliser à vos risques et périls. La clé API exportée n\'est pas chiffrée et peut être consultée par toute personne ayant accès à votre fichier de sauvegarde.</string>
+<string name="settings_backup_export_api_key_warning_message">À utiliser à vos risques et périls. Les clés API exportées ne sont pas chiffrées et peuvent être consultées par toute personne ayant accès à votre fichier de sauvegarde.</string>
 <string name="settings_backup_export_button">Exporter</string>
 <string name="settings_backup_export_failed">Impossible d\'exporter les paramètres.</string>
 <string name="settings_backup_export_option_pinned_items_title">Éléments épinglés</string>
+<string name="settings_backup_export_option_api_keys">Clés API</string>
 <string name="settings_backup_export_selection_title">Exporter les données</string>
 <string name="settings_backup_export_success">Paramètres exportés avec succès.</string>
 <string name="settings_backup_import_button">Importer</string>

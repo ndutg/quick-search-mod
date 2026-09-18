@@ -859,10 +859,11 @@
 <string name="action_update">Güncelle</string>
 <string name="release_notes_title">Quick Search v%1$s sürüm notları</string>
 <string name="release_notes_title_no_version">Quick Search sürüm notları</string>
-<string name="settings_backup_export_api_key_warning_message">Sorumluluk sana aittir. Dışa aktarılan API anahtarı şifrelenmez ve yedek dosyana erişimi olan herkes tarafından görüntülenebilir.</string>
+<string name="settings_backup_export_api_key_warning_message">Sorumluluk sana aittir. Dışa aktarılan API anahtarları şifrelenmez ve yedek dosyana erişimi olan herkes tarafından görüntülenebilir.</string>
 <string name="settings_backup_export_button">Dışa aktar</string>
 <string name="settings_backup_export_failed">Ayarlar dışa aktarılamadı.</string>
 <string name="settings_backup_export_option_pinned_items_title">Sabitlenen öğeler</string>
+<string name="settings_backup_export_option_api_keys">API anahtarları</string>
 <string name="settings_backup_export_selection_title">Verileri dışa aktar</string>
 <string name="settings_backup_export_success">Ayarlar başarıyla dışa aktarıldı.</string>
 <string name="settings_backup_import_button">İçe aktar</string>

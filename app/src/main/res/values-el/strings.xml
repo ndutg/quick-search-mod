@@ -860,10 +860,11 @@
     <string name="action_update">Ενημέρωση</string>
     <string name="release_notes_title">Σημειώσεις έκδοσης Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Σημειώσεις έκδοσης Quick Search</string>
-    <string name="settings_backup_export_api_key_warning_message">Προχωρήστε με δική σας ευθύνη. Το εξαγόμενο κλειδί API δεν είναι κρυπτογραφημένο και μπορεί να προσπελαστεί από οποιονδήποτε έχει πρόσβαση στο αρχείο αντιγράφου ασφαλείας.</string>
+    <string name="settings_backup_export_api_key_warning_message">Προχωρήστε με δική σας ευθύνη. Τα εξαγόμενα κλειδιά API δεν είναι κρυπτογραφημένα και μπορούν να προσπελαστούν από οποιονδήποτε έχει πρόσβαση στο αρχείο αντιγράφου ασφαλείας.</string>
     <string name="settings_backup_export_button">Εξαγωγή</string>
     <string name="settings_backup_export_failed">Αδυναμία εξαγωγής ρυθμίσεων.</string>
     <string name="settings_backup_export_option_pinned_items_title">Καρφιτσωμένα στοιχεία</string>
+    <string name="settings_backup_export_option_api_keys">Κλειδιά API</string>
     <string name="settings_backup_export_selection_title">Εξαγωγή δεδομένων</string>
     <string name="settings_backup_export_success">Οι ρυθμίσεις εξήχθησαν επιτυχώς.</string>
     <string name="settings_backup_import_button">Εισαγωγή</string>

@@ -860,10 +860,11 @@
     <string name="action_update">अपडेट करें</string>
     <string name="release_notes_title">Quick Search v%1$s रिलीज़ नोट्स</string>
     <string name="release_notes_title_no_version">Quick Search रिलीज़ नोट्स</string>
-    <string name="settings_backup_export_api_key_warning_message">अपने जोखिम पर आगे बढ़ें। एक्सपोर्ट की गई API key एन्क्रिप्टेड नहीं होती और आपकी बैकअप फाइल तक पहुंच रखने वाला कोई भी इसे देख सकता है।</string>
+    <string name="settings_backup_export_api_key_warning_message">अपने जोखिम पर आगे बढ़ें। एक्सपोर्ट की गई API keys एन्क्रिप्टेड नहीं होतीं और आपकी बैकअप फाइल तक पहुंच रखने वाला कोई भी इन्हें देख सकता है।</string>
     <string name="settings_backup_export_button">एक्सपोर्ट</string>
     <string name="settings_backup_export_failed">सेटिंग्स एक्सपोर्ट नहीं हो सकीं।</string>
     <string name="settings_backup_export_option_pinned_items_title">पिन किए गए आइटम</string>
+    <string name="settings_backup_export_option_api_keys">API keys</string>
     <string name="settings_backup_export_selection_title">डेटा एक्सपोर्ट करें</string>
     <string name="settings_backup_export_success">सेटिंग्स सफलतापूर्वक एक्सपोर्ट हो गईं।</string>
     <string name="settings_backup_import_button">इम्पोर्ट</string>

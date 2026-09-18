@@ -877,6 +877,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_backup_export_button">エクスポート</string>
     <string name="settings_backup_export_failed">設定をエクスポートできません。</string>
     <string name="settings_backup_export_option_pinned_items_title">固定アイテム</string>
+    <string name="settings_backup_export_option_api_keys">APIキー</string>
     <string name="settings_backup_export_selection_title">データをエクスポート</string>
     <string name="settings_backup_export_success">設定を正常にエクスポートしました。</string>
     <string name="settings_backup_import_button">インポート</string>
