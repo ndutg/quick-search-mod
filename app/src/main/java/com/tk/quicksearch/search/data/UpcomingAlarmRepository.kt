@@ -4,6 +4,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.provider.AlarmClock
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
 
@@ -14,12 +16,40 @@ class UpcomingAlarmRepository(private val context: Context) {
 
     fun nextWithinFortyFiveMinutes(nowMillis: Long = System.currentTimeMillis()): AlarmManager.AlarmClockInfo? {
         val alarm = alarmManager?.nextAlarmClock ?: return null
+        if (!isFromClockApp(alarm)) return null
         val timeUntilAlarm = alarm.triggerTime - nowMillis
         return alarm.takeIf {
             timeUntilAlarm in 1..FORTY_FIVE_MINUTES_MILLIS &&
                 !preferences.isDismissed(it.triggerTime)
         }
     }
+
+    /**
+     * Any app can schedule an alarm clock (e.g. reminder or sleep-tracking apps), so only surface
+     * alarms created by apps that handle the standard clock-app intents.
+     */
+    private fun isFromClockApp(alarm: AlarmManager.AlarmClockInfo): Boolean {
+        val creatorPackage = alarm.showIntent?.creatorPackage ?: return false
+        return CLOCK_APP_ACTIONS.any { action ->
+            queryActivityPackages(Intent(action).setPackage(creatorPackage)).isNotEmpty()
+        }
+    }
+
+    private fun queryActivityPackages(intent: Intent): Set<String> =
+        runCatching {
+            val packageManager = context.packageManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageManager.queryIntentActivities(
+                    intent,
+                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong()),
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)
+            }
+        }.getOrDefault(emptyList())
+            .mapNotNull { it.activityInfo?.packageName }
+            .toSet()
 
     fun dismiss(alarm: AlarmManager.AlarmClockInfo) {
         preferences.dismiss(alarm.triggerTime)
@@ -55,6 +85,8 @@ class UpcomingAlarmRepository(private val context: Context) {
     }
 
     companion object {
+        private val CLOCK_APP_ACTIONS =
+            listOf(AlarmClock.ACTION_SHOW_ALARMS, AlarmClock.ACTION_SET_ALARM)
         private const val FORTY_FIVE_MINUTES_MILLIS = 45 * 60 * 1000L
     }
 }
