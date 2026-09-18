@@ -62,7 +62,7 @@ data class AppGridShortcutActions(
         val getTrigger: (String) -> ResultTrigger?,
 )
 
-/** A pinned app shortcut tile in the app grid: its app's icon, badged with the shortcut icon. */
+/** A pinned app shortcut tile in the app grid: the shortcut icon, badged with its app's icon. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun AppShortcutGridItem(
@@ -185,7 +185,7 @@ internal fun AppShortcutGridItem(
                     contentAlignment = Alignment.Center,
             ) {
                 Box(modifier = Modifier.size(iconSize), contentAlignment = Alignment.Center) {
-                    val mainIcon = appIcon ?: shortcutIcon
+                    val mainIcon = shortcutIcon ?: appIcon
                     if (mainIcon != null) {
                         Image(
                                 bitmap = mainIcon,
@@ -204,7 +204,7 @@ internal fun AppShortcutGridItem(
                     }
                     if (shortcutIcon != null && appIcon != null) {
                         Image(
-                                bitmap = shortcutIcon,
+                                bitmap = appIcon,
                                 contentDescription = null,
                                 modifier =
                                         Modifier.align(Alignment.BottomEnd)
