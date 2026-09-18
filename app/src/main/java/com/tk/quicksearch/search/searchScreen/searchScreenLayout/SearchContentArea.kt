@@ -1,6 +1,10 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
@@ -381,6 +385,36 @@ fun SearchContentArea(
                         onTabSelected = { searchHistorySelectedTab = it },
                     ),
         ) {
+            // Expanding or collapsing a section or search history rebuilds the whole layout in
+            // one frame (other sections drop out, bottom alignment and scroll direction flip), so
+            // no per-card size animation can bridge it. Fade and lift the new layout in instead.
+            // The phase flips on every expansion change and is read during composition, so the
+            // first frame of the new layout is already hidden.
+            val expansionPhase =
+                remember { ExpansionPhaseTracker() }
+                    .phaseFor(renderingState.expandedSection to isSearchHistoryExpanded)
+            val expansionTransition = updateTransition(expansionPhase, label = "resultsExpansion")
+            val expansionPhaseProgress by
+                expansionTransition.animateFloat(
+                    transitionSpec = {
+                        tween(durationMillis = ExpansionTransitionDurationMillis, easing = LinearOutSlowInEasing)
+                    },
+                    label = "resultsExpansionProgress",
+                ) { phase -> if (phase) 1f else 0f }
+            val expansionTransitionOffsetPx =
+                with(LocalDensity.current) { ExpansionTransitionOffset.toPx() }
+            val expansionTransitionModifier =
+                Modifier.graphicsLayer {
+                    val enterProgress =
+                        if (expansionPhase) {
+                            expansionPhaseProgress
+                        } else {
+                            1f - expansionPhaseProgress
+                        }
+                    alpha = enterProgress
+                    translationY = (1f - enterProgress) * expansionTransitionOffsetPx
+                }
+
             // Use bottom alignment when one-handed mode is enabled and no special states are
             // showing
             val verticalArrangement =
@@ -516,6 +550,7 @@ fun SearchContentArea(
                     modifier =
                         Modifier
                             .fillMaxWidth()
+                            .then(expansionTransitionModifier)
                             .then(heightModifier)
                             .clip(TopRoundedShape)
                             .then(edgeFadeModifier)
@@ -637,6 +672,7 @@ fun SearchContentArea(
                                 onDeleteRecentItem = onDeleteRecentItem,
                                 onClearRecentItems = onClearRecentItems,
                                 onGeminiModelInfoClick = onGeminiModelInfoClick,
+                                isSearchHistoryExpanded = isSearchHistoryExpanded,
                                 onSearchHistoryExpandedChange = onSearchHistoryExpandedChange,
                                 searchHistoryCollapseRequestKey = searchHistoryCollapseRequestKey,
                                 searchHistorySelectedTab = searchHistorySelectedTab,
@@ -814,5 +850,20 @@ private fun Modifier.searchHistoryExpandedTabSwipe(
             },
             onDragCancel = { totalHorizontalDrag = 0f },
         )
+    }
+}
+
+private const val ExpansionTransitionDurationMillis = 220
+private val ExpansionTransitionOffset = 16.dp
+
+/** Flips its phase whenever the expansion key changes, so each change restarts the transition. */
+private class ExpansionPhaseTracker {
+    private var lastKey: Any? = null
+    private var phase = true
+
+    fun phaseFor(key: Any): Boolean {
+        if (lastKey != null && key != lastKey) phase = !phase
+        lastKey = key
+        return phase
     }
 }

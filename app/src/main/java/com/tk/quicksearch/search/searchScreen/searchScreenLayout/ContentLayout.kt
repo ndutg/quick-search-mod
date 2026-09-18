@@ -23,10 +23,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -121,6 +123,7 @@ fun ContentLayout(
     onDeleteRecentItem: (RecentSearchEntry) -> Unit = {},
     onClearRecentItems: () -> Unit = {},
     onGeminiModelInfoClick: () -> Unit = {},
+    isSearchHistoryExpanded: Boolean = false,
     onSearchHistoryExpandedChange: (Boolean) -> Unit = {},
     searchHistoryCollapseRequestKey: Int = 0,
     searchHistorySelectedTab: SearchHistoryTab = SearchHistoryTab.SEARCHES,
@@ -301,12 +304,16 @@ fun ContentLayout(
             // results alone must not create an empty Search History section.
             state.recentItems.any { it is RecentSearchItem.Query }
 
-    var searchHistoryExpanded by remember { mutableStateOf(false) }
+    // Hoisted to the screen so the screen-level layout (bottom alignment, one-handed mode) flips
+    // in the same frame as this content. Mirroring a local flag upward through an effect lagged
+    // by a frame, which flashed the app grid at the top on collapse before it dropped down.
+    val searchHistoryExpanded = isSearchHistoryExpanded
+    val currentOnSearchHistoryExpandedChange by rememberUpdatedState(onSearchHistoryExpandedChange)
     LaunchedEffect(showRecentItems) {
-        if (!showRecentItems) searchHistoryExpanded = false
+        if (!showRecentItems) currentOnSearchHistoryExpandedChange(false)
     }
-    LaunchedEffect(searchHistoryExpanded) {
-        onSearchHistoryExpandedChange(searchHistoryExpanded)
+    DisposableEffect(Unit) {
+        onDispose { currentOnSearchHistoryExpandedChange(false) }
     }
 
     val hidePinnedAndAppsWhenSearchHistoryExpanded = showRecentItems && searchHistoryExpanded
@@ -682,7 +689,7 @@ fun ContentLayout(
                     isExpanded = searchHistoryExpanded,
                     collapsedItemCount = state.recentQueriesDisplayCount,
                     reverseCollapsedItems = state.oneHandedMode,
-                    onExpandedChange = { searchHistoryExpanded = it },
+                    onExpandedChange = onSearchHistoryExpandedChange,
                     collapseRequestKey = searchHistoryCollapseRequestKey,
                     expandedCardMaxHeight = expandedCardMaxHeight,
                     showWallpaperBackground =
