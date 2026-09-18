@@ -137,16 +137,13 @@ object SettingsBackupManager {
                     JSONArray(options.selectedItems.map { it.name }.sorted()),
                 )
                 .put(FIELD_LLM_PERSONAL_CONTEXTS, serializePersonalContexts(userPreferences))
-                .put(
-                    FIELD_CUSTOM_LLM_PROVIDERS,
-                    serializeCustomLlmProviders(
-                        CustomLlmProviderPreferences(context).getProviders(),
-                        includeApiKeys = includeApiKeys,
-                    ),
-                )
                 .apply {
                     if (includeApiKeys) {
                         put(FIELD_LLM_API_KEYS, serializeApiKeys(userPreferences))
+                        put(
+                            FIELD_CUSTOM_LLM_PROVIDERS,
+                            serializeCustomLlmProviders(CustomLlmProviderPreferences(context).getProviders()),
+                        )
                     }
                     if (options.includes(ExportItem.NOTES)) {
                         put(FIELD_NOTES, serializeNotes(NotesRepository(context).getAllNotes()))
@@ -240,7 +237,12 @@ object SettingsBackupManager {
             }
         }
 
-        importAiProviders(context, root)
+        importAiProviders(
+            context = context,
+            root = root,
+            includeCustomProviders =
+                selectedExportItems == null || ExportItem.API_KEYS in selectedExportItems,
+        )
 
         if (selectedExportItems == null || ExportItem.NOTES in selectedExportItems) {
             val notesStore = NotesRoomStore(context)
@@ -476,6 +478,7 @@ object SettingsBackupManager {
     private fun importAiProviders(
         context: Context,
         root: JSONObject,
+        includeCustomProviders: Boolean,
     ) {
         val userPreferences = UserAppPreferences(context)
 
@@ -499,8 +502,11 @@ object SettingsBackupManager {
                 }
             }
         }
-        root.optJSONArray(FIELD_CUSTOM_LLM_PROVIDERS)?.let { array ->
-            CustomLlmProviderPreferences(context).importProviders(parseCustomLlmProviders(array))
+        // Custom providers travel with API keys: skipped when the backup excluded keys.
+        if (includeCustomProviders) {
+            root.optJSONArray(FIELD_CUSTOM_LLM_PROVIDERS)?.let { array ->
+                CustomLlmProviderPreferences(context).importProviders(parseCustomLlmProviders(array))
+            }
         }
 
         userPreferences.refreshConfiguredAiProviderHint()
@@ -527,10 +533,7 @@ object SettingsBackupManager {
             }
         }
 
-    private fun serializeCustomLlmProviders(
-        providers: List<CustomLlmProviderConfig>,
-        includeApiKeys: Boolean,
-    ): JSONArray =
+    private fun serializeCustomLlmProviders(providers: List<CustomLlmProviderConfig>): JSONArray =
         JSONArray().apply {
             providers.forEach { provider ->
                 put(
@@ -541,7 +544,7 @@ object SettingsBackupManager {
                         .put("advancedPayload", provider.advancedPayload.orEmpty())
                         .put("advancedPayloadEnabled", provider.advancedPayloadEnabled)
                         .apply {
-                            if (includeApiKeys && provider.apiKey.isNotBlank()) put("apiKey", provider.apiKey)
+                            if (provider.apiKey.isNotBlank()) put("apiKey", provider.apiKey)
                         },
                 )
             }
