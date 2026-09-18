@@ -814,7 +814,7 @@
 <string name="settings_api_key_setup_desc">Configurez les clés API pour accéder aux modèles du fournisseur AI respectif.</string>
 <string name="settings_api_key_setup_nav_desc">Ajouter ou supprimer des clés API de fournisseur</string>
 <string name="settings_configure_api_key_title">Configurez la clé API</string>
-<string name="settings_custom_provider_base_url_hint">Exemple : https://api.openai.com/v1\nExemple : https://openrouter.ai/api/v1</string>
+<string name="settings_custom_provider_base_url_hint">Exemple : https://openrouter.ai/api/v1</string>
 <string name="settings_custom_provider_base_url_input_label">URL de base</string>
 <string name="settings_custom_provider_advanced_payload_desc">Fusionné dans chaque requête envoyée via ce fournisseur.</string>
 <string name="settings_custom_provider_advanced_payload_error">Saisissez un objet JSON valide.</string>

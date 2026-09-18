@@ -815,7 +815,7 @@
     <string name="settings_api_key_setup_desc">إعداد مفاتيح API للوصول إلى النماذج من مزود AI المعني.</string>
     <string name="settings_api_key_setup_nav_desc">إضافة أو إزالة مفاتيح API للمزودين</string>
     <string name="settings_configure_api_key_title">إعداد مفتاح API</string>
-    <string name="settings_custom_provider_base_url_hint">مثال: https://api.openai.com/v1\nمثال: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_hint">مثال: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">الرابط الأساسي (Base URL)</string>
     <string name="settings_custom_provider_advanced_payload_desc">يتم دمجها في كل طلب يتم إرساله عبر هذا الموفر.</string>
     <string name="settings_custom_provider_advanced_payload_error">أدخل كائن JSON صالحًا.</string>

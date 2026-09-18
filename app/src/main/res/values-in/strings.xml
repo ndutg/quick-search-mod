@@ -822,7 +822,7 @@
     <string name="settings_api_key_setup_desc">Konfigurasikan kunci API untuk mengakses model dari penyedia AI masing-masing.</string>
     <string name="settings_api_key_setup_nav_desc">Tambah atau hapus kunci API penyedia</string>
     <string name="settings_configure_api_key_title">Konfigurasi Kunci API</string>
-    <string name="settings_custom_provider_base_url_hint">Contoh: https://api.openai.com/v1\nContoh: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_hint">Contoh: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">URL Dasar</string>
     <string name="settings_custom_provider_advanced_payload_desc">Digabungkan ke dalam setiap permintaan yang dikirim melalui penyedia ini.</string>
     <string name="settings_custom_provider_advanced_payload_error">Masukkan objek JSON yang valid.</string>

@@ -813,7 +813,7 @@
 <string name="settings_api_key_setup_desc">İlgili AI sağlayıcısındaki modellere erişmek için API anahtarlarını yapılandır.</string>
 <string name="settings_api_key_setup_nav_desc">Sağlayıcı API anahtarlarını ekle veya kaldır</string>
 <string name="settings_configure_api_key_title">API anahtarını yapılandır</string>
-<string name="settings_custom_provider_base_url_hint">Örnek: https://api.openai.com/v1\nÖrnek: https://openrouter.ai/api/v1</string>
+<string name="settings_custom_provider_base_url_hint">Örnek: https://openrouter.ai/api/v1</string>
 <string name="settings_custom_provider_base_url_input_label">Temel URL</string>
 <string name="settings_custom_provider_advanced_payload_desc">Bu sağlayıcı aracılığıyla gönderilen her isteğe birleştirilir.</string>
 <string name="settings_custom_provider_advanced_payload_error">Geçerli bir JSON nesnesi girin.</string>

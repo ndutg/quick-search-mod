@@ -834,7 +834,7 @@
 <string name="settings_api_key_setup_desc">Настройте API-ключи для доступа к моделям соответствующего AI-провайдера.</string>
 <string name="settings_api_key_setup_nav_desc">Добавление или удаление API-ключей провайдеров</string>
 <string name="settings_configure_api_key_title">Настроить API-ключ</string>
-    <string name="settings_custom_provider_base_url_hint">Пример: https://api.openai.com/v1\nПример: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_hint">Пример: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Базовый URL</string>
     <string name="settings_custom_provider_advanced_payload_desc">Объединяется с каждым запросом, отправленным через этого провайдера.</string>
     <string name="settings_custom_provider_advanced_payload_error">Введите допустимый объект JSON.</string>

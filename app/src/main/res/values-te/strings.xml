@@ -814,7 +814,7 @@
     <string name="settings_api_key_setup_desc">సంబంధిత AI ప్రొవైడర్ నుండి మోడల్‌లను యాక్సెస్ చేయడానికి API కీలను కాన్ఫిగర్ చేయండి.</string>
     <string name="settings_api_key_setup_nav_desc">ప్రొవైడర్ API కీలను జోడించండి లేదా తీసివేయండి</string>
     <string name="settings_configure_api_key_title">API కీని కాన్ఫిగర్ చేయండి</string>
-    <string name="settings_custom_provider_base_url_hint">ఉదాహరణ: https://api.openai.com/v1\nఉదాహరణ: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_hint">ఉదాహరణ: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">బేస్ URL (Base URL)</string>
     <string name="settings_custom_provider_advanced_payload_desc">ఈ ప్రొవైడర్ ద్వారా పంపబడే ప్రతి అభ్యర్థనలో విలీనం చేయబడుతుంది.</string>
     <string name="settings_custom_provider_advanced_payload_error">దయచేసి చెల్లుబాటు అయ్యే JSON ఆబ్జెక్ట్‌ను నమోదు చేయండి.</string>

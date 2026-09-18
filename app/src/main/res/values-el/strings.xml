@@ -814,7 +814,7 @@
     <string name="settings_api_key_setup_desc">Διαμορφώστε τα κλειδιά API για πρόσβαση στα μοντέλα από τον αντίστοιχο πάροχο AI.</string>
     <string name="settings_api_key_setup_nav_desc">Προσθήκη ή κατάργηση κλειδιών API παρόχου</string>
     <string name="settings_configure_api_key_title">Διαμόρφωση κλειδιού API</string>
-    <string name="settings_custom_provider_base_url_hint">Παράδειγμα: https://api.openai.com/v1\nΠαράδειγμα: https://openrouter.ai/api/v1</string>
+    <string name="settings_custom_provider_base_url_hint">Παράδειγμα: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Βασικό URL</string>
     <string name="settings_custom_provider_advanced_payload_desc">Συγχωνεύεται σε κάθε αίτημα που αποστέλλεται μέσω αυτού του παρόχου.</string>
     <string name="settings_custom_provider_advanced_payload_error">Εισαγάγετε ένα έγκυρο αντικείμενο JSON.</string>
