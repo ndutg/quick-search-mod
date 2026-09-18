@@ -243,36 +243,6 @@ fun AppearanceSettingsSection(
                         extraVerticalPadding = 8.dp,
                 )
                 SettingsToggleRow(
-                        title = stringResource(R.string.settings_unified_pinned_items_title),
-                        subtitle = stringResource(R.string.settings_unified_pinned_items_desc),
-                        checked = unifiedPinnedItemsEnabled,
-                        onCheckedChange = onToggleUnifiedPinnedItems,
-                        extraVerticalPadding = 8.dp,
-                )
-                if (!unifiedPinnedItemsEnabled) {
-                    SettingsNavigationRow(
-                            item =
-                                    SettingsCardItem(
-                                            title = stringResource(R.string.settings_pinned_sections_order_title),
-                                            description = stringResource(R.string.settings_pinned_sections_order_desc),
-                                            actionOnPress = { showPinnedSectionOrderDialog = true },
-                                    ),
-                            contentPadding =
-                                    PaddingValues(
-                                            horizontal = DesignTokens.SpacingXXLarge,
-                                            vertical = DesignTokens.CardVerticalPadding + 8.dp,
-                                    ),
-                    )
-                    HorizontalDivider(color = AppColors.SettingsDivider)
-                }
-                SettingsToggleRow(
-                        title = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_title),
-                        subtitle = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_desc),
-                        checked = pinnedAppShortcutsInAppGrid,
-                        onCheckedChange = onTogglePinnedAppShortcutsInAppGrid,
-                        extraVerticalPadding = 8.dp,
-                )
-                SettingsToggleRow(
                         title = stringResource(R.string.settings_bottom_searchbar_title),
                         subtitle = stringResource(R.string.settings_bottom_searchbar_desc),
                         checked = bottomSearchBarEnabled,
@@ -299,6 +269,46 @@ fun AppearanceSettingsSection(
                         checked = settingsIconEnabled,
                         onCheckedChange = onToggleSettingsIcon,
                         enabled = !settingsIconRequired,
+                        extraVerticalPadding = 8.dp,
+                        showDivider = false,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Pinned Items Card
+        SettingsCard(modifier = Modifier.fillMaxWidth()) {
+            Column {
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_unified_pinned_items_title),
+                        subtitle = stringResource(R.string.settings_unified_pinned_items_desc),
+                        checked = unifiedPinnedItemsEnabled,
+                        onCheckedChange = onToggleUnifiedPinnedItems,
+                        isFirstItem = true,
+                        extraVerticalPadding = 8.dp,
+                )
+                if (!unifiedPinnedItemsEnabled) {
+                    SettingsNavigationRow(
+                            item =
+                                    SettingsCardItem(
+                                            title = stringResource(R.string.settings_pinned_sections_order_title),
+                                            description = stringResource(R.string.settings_pinned_sections_order_desc),
+                                            actionOnPress = { showPinnedSectionOrderDialog = true },
+                                    ),
+                            contentPadding =
+                                    PaddingValues(
+                                            horizontal = DesignTokens.SpacingXXLarge,
+                                            vertical = DesignTokens.CardVerticalPadding + 8.dp,
+                                    ),
+                    )
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                }
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_title),
+                        subtitle = stringResource(R.string.settings_pinned_app_shortcuts_in_app_grid_desc),
+                        checked = pinnedAppShortcutsInAppGrid,
+                        onCheckedChange = onTogglePinnedAppShortcutsInAppGrid,
                         extraVerticalPadding = 8.dp,
                         showDivider = false,
                 )
