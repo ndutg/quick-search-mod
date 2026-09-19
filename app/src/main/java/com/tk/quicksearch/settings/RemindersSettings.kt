@@ -41,9 +41,9 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.reminders.ReminderEditorRequests
 import com.tk.quicksearch.reminders.ReminderPermissions
 import com.tk.quicksearch.reminders.rememberMissingReminderPermissionRequester
-import com.tk.quicksearch.search.calendar.calendarRelativeDateLabel
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.models.ReminderInfo
+import com.tk.quicksearch.search.reminders.ReminderRelativeDateText
 import com.tk.quicksearch.search.reminders.reminderScheduleLabel
 import com.tk.quicksearch.settings.AppShortcutsSettings.shortcutMatchPriority
 import com.tk.quicksearch.settings.shared.SettingsCard
@@ -197,13 +197,7 @@ private fun ReminderManagementRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                text = calendarRelativeDateLabel(reminder.dayStartMillis),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            ReminderRelativeDateText(reminder)
         }
     }
 }

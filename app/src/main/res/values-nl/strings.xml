@@ -1242,7 +1242,10 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="reminder_name_hint">Herinnering</string>
     <string name="reminder_delete">Herinnering verwijderen</string>
     <string name="reminder_status_done">Klaar</string>
-    <string name="action_mark_not_done">Markeren als niet klaar</string>
+    <string name="reminder_status_overdue">Achterstallig</string>
+    <string name="reminder_notification_due_at">Gepland om %1$s</string>
+    <string name="reminder_notification_due_on">Gepland op %1$s</string>
+    <string name="action_mark_as_done">Markeren als klaar</string>
     <string name="action_expand_more_reminders">Meer herinneringen</string>
     <string name="reminders_empty">Nog geen herinneringen</string>
     <string name="settings_reminders_view_all_desc">Alle herinneringen bekijken</string>

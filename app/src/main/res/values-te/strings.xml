@@ -1185,7 +1185,10 @@
     <string name="reminder_name_hint">రిమైండర్</string>
     <string name="reminder_delete">రిమైండర్‌ను తొలగించండి</string>
     <string name="reminder_status_done">పూర్తయింది</string>
-    <string name="action_mark_not_done">పూర్తి కాలేదని గుర్తించండి</string>
+    <string name="reminder_status_overdue">గడువు దాటింది</string>
+    <string name="reminder_notification_due_at">%1$sకి గడువు</string>
+    <string name="reminder_notification_due_on">%1$sన గడువు</string>
+    <string name="action_mark_as_done">పూర్తయినట్లు గుర్తించండి</string>
     <string name="action_expand_more_reminders">మరిన్ని రిమైండర్‌లు</string>
     <string name="reminders_empty">ఇంకా రిమైండర్‌లు లేవు</string>
     <string name="settings_reminders_view_all_desc">అన్ని రిమైండర్‌లను చూడండి</string>

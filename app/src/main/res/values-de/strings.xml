@@ -1185,7 +1185,10 @@
     <string name="reminder_name_hint">Erinnerung</string>
     <string name="reminder_delete">Erinnerung löschen</string>
     <string name="reminder_status_done">Erledigt</string>
-    <string name="action_mark_not_done">Als nicht erledigt markieren</string>
+    <string name="reminder_status_overdue">Überfällig</string>
+    <string name="reminder_notification_due_at">Fällig um %1$s</string>
+    <string name="reminder_notification_due_on">Fällig am %1$s</string>
+    <string name="action_mark_as_done">Als erledigt markieren</string>
     <string name="action_expand_more_reminders">Weitere Erinnerungen</string>
     <string name="reminders_empty">Noch keine Erinnerungen</string>
     <string name="settings_reminders_view_all_desc">Alle Erinnerungen anzeigen</string>

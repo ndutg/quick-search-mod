@@ -1179,7 +1179,10 @@
     <string name="reminder_name_hint">Reminder</string>
     <string name="reminder_delete">Delete reminder</string>
     <string name="reminder_status_done">Done</string>
-    <string name="action_mark_not_done">Mark as not done</string>
+    <string name="reminder_status_overdue">Overdue</string>
+    <string name="reminder_notification_due_at">Due at %1$s</string>
+    <string name="reminder_notification_due_on">Due on %1$s</string>
+    <string name="action_mark_as_done">Mark as Done</string>
     <string name="action_expand_more_reminders">More Reminders</string>
     <string name="reminders_empty">No reminders yet</string>
     <string name="settings_reminders_view_all_desc">View all reminders</string>

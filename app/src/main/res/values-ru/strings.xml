@@ -1205,7 +1205,10 @@
     <string name="reminder_name_hint">Напоминание</string>
     <string name="reminder_delete">Удалить напоминание</string>
     <string name="reminder_status_done">Выполнено</string>
-    <string name="action_mark_not_done">Отметить как невыполненное</string>
+    <string name="reminder_status_overdue">Просрочено</string>
+    <string name="reminder_notification_due_at">Срок: %1$s</string>
+    <string name="reminder_notification_due_on">Срок: %1$s</string>
+    <string name="action_mark_as_done">Отметить как выполненное</string>
     <string name="action_expand_more_reminders">Ещё напоминания</string>
     <string name="reminders_empty">Напоминаний пока нет</string>
     <string name="settings_reminders_view_all_desc">Посмотреть все напоминания</string>

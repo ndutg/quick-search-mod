@@ -1,21 +1,25 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import android.text.format.DateFormat
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -32,8 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -42,8 +50,10 @@ import com.tk.quicksearch.reminders.ReminderEditorRequests
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.models.ReminderInfo
+import com.tk.quicksearch.search.reminders.reminderOverdueColor
 import com.tk.quicksearch.search.reminders.reminderScheduleLabel
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Date
 import kotlinx.coroutines.Dispatchers
@@ -113,6 +123,7 @@ internal fun UpcomingReminderSection(showWallpaperBackground: Boolean) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun UpcomingReminderRow(
     reminder: ReminderInfo,
@@ -122,15 +133,28 @@ private fun UpcomingReminderRow(
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
-    // Close to the due time a relative label reads best; long-overdue ones show their date instead.
+    var showMenu by remember { mutableStateOf(false) }
+    // Overdue reminders show their time (or date once a day late) with a red "Overdue" in place of
+    // the relative label; upcoming ones read best relative to now.
+    val isOverdue = reminder.isOverdue(nowMillis)
+    val time = remember(reminder.dueMillis, context) {
+        DateFormat.getTimeFormat(context).format(Date(reminder.dueMillis))
+    }
+    val scheduleText =
+        when {
+            !isOverdue -> "$time • ${calendarRelativeTimeLabel(reminder.dueMillis, nowMillis)}"
+            nowMillis - reminder.dueMillis < DAY_MILLIS -> time
+            else -> reminderScheduleLabel(reminder)
+        }
+    val overdueText = stringResource(R.string.reminder_status_overdue)
+    val overdueColor = reminderOverdueColor()
     val scheduleLabel =
-        if (kotlin.math.abs(reminder.dueMillis - nowMillis) < DAY_MILLIS) {
-            val time = remember(reminder.dueMillis, context) {
-                DateFormat.getTimeFormat(context).format(Date(reminder.dueMillis))
+        buildAnnotatedString {
+            append(scheduleText)
+            if (isOverdue) {
+                append(" • ")
+                withStyle(SpanStyle(color = overdueColor)) { append(overdueText) }
             }
-            "$time · ${calendarRelativeTimeLabel(reminder.dueMillis, nowMillis)}"
-        } else {
-            reminderScheduleLabel(reminder)
         }
 
     Row(
@@ -143,7 +167,10 @@ private fun UpcomingReminderRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier.weight(1f).clickable(onClick = onClick),
+            modifier = Modifier.weight(1f).combinedClickable(
+                onClick = onClick,
+                onLongClick = { showMenu = true },
+            ),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -163,15 +190,28 @@ private fun UpcomingReminderRow(
                 )
                 Text(
                     text = scheduleLabel,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-        }
-        TextButton(onClick = onDone) {
-            Text(text = stringResource(R.string.reminder_notification_action_done))
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false },
+                shape = RoundedCornerShape(24.dp),
+                properties = PopupProperties(focusable = false),
+                containerColor = AppColors.DialogBackground,
+            ) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.action_mark_as_done)) },
+                    leadingIcon = { Icon(imageVector = Icons.Rounded.Check, contentDescription = null) },
+                    onClick = {
+                        showMenu = false
+                        onDone()
+                    },
+                )
+            }
         }
         IconButton(
             onClick = onDismiss,

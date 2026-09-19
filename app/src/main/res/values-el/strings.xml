@@ -1185,7 +1185,10 @@
     <string name="reminder_name_hint">Υπενθύμιση</string>
     <string name="reminder_delete">Διαγραφή υπενθύμισης</string>
     <string name="reminder_status_done">Ολοκληρώθηκε</string>
-    <string name="action_mark_not_done">Σήμανση ως μη ολοκληρωμένη</string>
+    <string name="reminder_status_overdue">Εκπρόθεσμη</string>
+    <string name="reminder_notification_due_at">Λήγει στις %1$s</string>
+    <string name="reminder_notification_due_on">Λήγει στις %1$s</string>
+    <string name="action_mark_as_done">Σήμανση ως ολοκληρωμένη</string>
     <string name="action_expand_more_reminders">Περισσότερες υπενθυμίσεις</string>
     <string name="reminders_empty">Δεν υπάρχουν υπενθυμίσεις ακόμα</string>
     <string name="settings_reminders_view_all_desc">Προβολή όλων των υπενθυμίσεων</string>

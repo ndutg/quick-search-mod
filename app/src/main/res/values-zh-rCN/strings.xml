@@ -1175,7 +1175,10 @@
     <string name="reminder_name_hint">提醒</string>
     <string name="reminder_delete">删除提醒</string>
     <string name="reminder_status_done">已完成</string>
-    <string name="action_mark_not_done">标记为未完成</string>
+    <string name="reminder_status_overdue">已逾期</string>
+    <string name="reminder_notification_due_at">到期时间：%1$s</string>
+    <string name="reminder_notification_due_on">到期日期：%1$s</string>
+    <string name="action_mark_as_done">标记为已完成</string>
     <string name="action_expand_more_reminders">更多提醒</string>
     <string name="reminders_empty">暂无提醒</string>
     <string name="settings_reminders_view_all_desc">查看所有提醒</string>

@@ -1185,7 +1185,10 @@
     <string name="reminder_name_hint">रिमाइंडर</string>
     <string name="reminder_delete">रिमाइंडर हटाएं</string>
     <string name="reminder_status_done">हो गया</string>
-    <string name="action_mark_not_done">पूरा नहीं हुआ के रूप में चिह्नित करें</string>
+    <string name="reminder_status_overdue">समय बीत गया</string>
+    <string name="reminder_notification_due_at">%1$s पर देय</string>
+    <string name="reminder_notification_due_on">%1$s को देय</string>
+    <string name="action_mark_as_done">पूरा हुआ के रूप में चिह्नित करें</string>
     <string name="action_expand_more_reminders">और रिमाइंडर</string>
     <string name="reminders_empty">अभी तक कोई रिमाइंडर नहीं</string>
     <string name="settings_reminders_view_all_desc">सभी रिमाइंडर देखें</string>

@@ -1184,7 +1184,10 @@
     <string name="reminder_name_hint">Hatırlatıcı</string>
     <string name="reminder_delete">Hatırlatıcıyı sil</string>
     <string name="reminder_status_done">Tamamlandı</string>
-    <string name="action_mark_not_done">Tamamlanmadı olarak işaretle</string>
+    <string name="reminder_status_overdue">Gecikmiş</string>
+    <string name="reminder_notification_due_at">Saat %1$s</string>
+    <string name="reminder_notification_due_on">Tarih: %1$s</string>
+    <string name="action_mark_as_done">Tamamlandı olarak işaretle</string>
     <string name="action_expand_more_reminders">Daha fazla hatırlatıcı</string>
     <string name="reminders_empty">Henüz hatırlatıcı yok</string>
     <string name="settings_reminders_view_all_desc">Tüm hatırlatıcıları görüntüle</string>

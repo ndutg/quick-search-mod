@@ -234,7 +234,8 @@ internal fun PinnedNonAppItemsSection(
                             onClick = remindersParams?.onReminderClick ?: {},
                             onTogglePin = remindersParams?.onTogglePin ?: {},
                             onMovePinned = remindersParams?.onMovePinned ?: { _, _ -> },
-                            onMarkNotDone = remindersParams?.onMarkNotDone ?: {},
+                            onMarkDone = remindersParams?.onMarkDone ?: {},
+                            onDelete = remindersParams?.onDelete ?: {},
                             isPredicted = false,
                             showPinnedItemMenu = true,
                         )

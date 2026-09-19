@@ -1185,7 +1185,10 @@
     <string name="reminder_name_hint">Lembrete</string>
     <string name="reminder_delete">Excluir lembrete</string>
     <string name="reminder_status_done">Concluído</string>
-    <string name="action_mark_not_done">Marcar como não concluído</string>
+    <string name="reminder_status_overdue">Atrasado</string>
+    <string name="reminder_notification_due_at">Vence às %1$s</string>
+    <string name="reminder_notification_due_on">Vence em %1$s</string>
+    <string name="action_mark_as_done">Marcar como concluído</string>
     <string name="action_expand_more_reminders">Mais lembretes</string>
     <string name="reminders_empty">Nenhum lembrete ainda</string>
     <string name="settings_reminders_view_all_desc">Ver todos os lembretes</string>

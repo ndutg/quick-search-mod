@@ -796,7 +796,8 @@ private fun TopMatchRow(
                 isPinned = remindersParams.pinnedReminderIds.contains(item.reminder.reminderId),
                 onClick = remindersParams.onReminderClick,
                 onTogglePin = remindersParams.onTogglePin,
-                onMarkNotDone = remindersParams.onMarkNotDone,
+                onMarkDone = remindersParams.onMarkDone,
+                onDelete = remindersParams.onDelete,
                 isPredicted = isPredicted,
             )
         }

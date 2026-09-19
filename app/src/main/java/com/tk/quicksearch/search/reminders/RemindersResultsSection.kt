@@ -16,7 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -73,7 +75,8 @@ fun RemindersResultsSection(
     onReminderClick: (ReminderInfo) -> Unit,
     onTogglePin: (ReminderInfo) -> Unit,
     onMovePinned: (ReminderInfo, Boolean) -> Unit = { _, _ -> },
-    onMarkNotDone: (ReminderInfo) -> Unit,
+    onMarkDone: (ReminderInfo) -> Unit,
+    onDelete: (ReminderInfo) -> Unit,
     showAllResults: Boolean,
     showExpandControls: Boolean,
     onExpandClick: () -> Unit,
@@ -129,7 +132,8 @@ fun RemindersResultsSection(
                             onClick = onReminderClick,
                             onTogglePin = onTogglePin,
                             onMovePinned = onMovePinned,
-                            onMarkNotDone = onMarkNotDone,
+                            onMarkDone = onMarkDone,
+                            onDelete = onDelete,
                             isPredicted = false,
                             showPinnedItemMenu = showPinnedItemMenu,
                         )
@@ -168,7 +172,8 @@ internal fun ReminderRow(
     onClick: (ReminderInfo) -> Unit,
     onTogglePin: (ReminderInfo) -> Unit,
     onMovePinned: (ReminderInfo, Boolean) -> Unit = { _, _ -> },
-    onMarkNotDone: (ReminderInfo) -> Unit,
+    onMarkDone: (ReminderInfo) -> Unit,
+    onDelete: (ReminderInfo) -> Unit,
     isPredicted: Boolean,
     showPinnedItemMenu: Boolean = false,
 ) {
@@ -215,13 +220,7 @@ internal fun ReminderRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                text = calendarRelativeDateLabel(reminder.dayStartMillis),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            ReminderRelativeDateText(reminder)
         }
 
         DropdownMenu(
@@ -263,12 +262,16 @@ internal fun ReminderRow(
                             pinIcon,
                         ) { onTogglePin(reminder) }
                     }
-                    if (reminder.isDone) {
+                    if (!reminder.isDone) {
                         addItem(
-                            R.string.action_mark_not_done,
-                            { Icon(imageVector = Icons.Rounded.Restore, contentDescription = null) },
-                        ) { onMarkNotDone(reminder) }
+                            R.string.action_mark_as_done,
+                            { Icon(imageVector = Icons.Rounded.Check, contentDescription = null) },
+                        ) { onMarkDone(reminder) }
                     }
+                    addItem(
+                        R.string.dialog_delete,
+                        { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                    ) { onDelete(reminder) }
                 }
 
             menuItems.forEachIndexed { index, item ->
@@ -285,20 +288,60 @@ internal fun ReminderRow(
     }
 }
 
-/** "Fri, Sep 18 • 3:00 PM", with " · Done" appended once the reminder is done. */
+/**
+ * The relative line under a reminder's schedule: a subtle red "Overdue" once it is past due, and a
+ * leading tick once it is done.
+ */
+@Composable
+fun ReminderRelativeDateText(reminder: ReminderInfo) {
+    val isOverdue = reminder.isOverdue()
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (reminder.isDone) ReminderDoneIcon()
+        Text(
+            text =
+                if (isOverdue) stringResource(R.string.reminder_status_overdue) else reminderRelativeDateLabel(reminder),
+            style = MaterialTheme.typography.bodySmall,
+            color = if (isOverdue) reminderOverdueColor() else MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+fun reminderOverdueColor(): Color = MaterialTheme.colorScheme.error.copy(alpha = 0.85f)
+
+/** Matches calendar events: "In 2 hours" for timed reminders, "Tomorrow" for time-less ones. */
+@Composable
+fun reminderRelativeDateLabel(reminder: ReminderInfo): String =
+    if (reminder.hasTime) {
+        calendarRelativeDateLabel(reminder.dueMillis, isAllDay = false)
+    } else {
+        calendarRelativeDateLabel(reminder.dayStartMillis)
+    }
+
+/** "Fri, Sep 18 • 3:00 PM", or just the date for reminders without a time. */
 @Composable
 fun reminderScheduleLabel(reminder: ReminderInfo): String {
     val context = LocalContext.current
     val dateText = SimpleDateFormat("EEE, MMM d", Locale.getDefault()).format(Date(reminder.dayStartMillis))
-    val scheduleText =
-        if (reminder.hasTime) {
-            "$dateText • ${DateFormat.getTimeFormat(context).format(Date(reminder.dueMillis))}"
-        } else {
-            dateText
-        }
-    return if (reminder.isDone) {
-        "$scheduleText · ${stringResource(R.string.reminder_status_done)}"
+    return if (reminder.hasTime) {
+        "$dateText • ${DateFormat.getTimeFormat(context).format(Date(reminder.dueMillis))}"
     } else {
-        scheduleText
+        dateText
     }
+}
+
+/** Tick shown on done reminders, tinted like the row's secondary text. */
+@Composable
+fun ReminderDoneIcon(modifier: Modifier = Modifier) {
+    Icon(
+        imageVector = Icons.Rounded.Check,
+        contentDescription = stringResource(R.string.reminder_status_done),
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.size(14.dp),
+    )
 }

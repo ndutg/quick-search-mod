@@ -1185,7 +1185,10 @@
     <string name="reminder_name_hint">Rappel</string>
     <string name="reminder_delete">Supprimer le rappel</string>
     <string name="reminder_status_done">Terminé</string>
-    <string name="action_mark_not_done">Marquer comme non terminé</string>
+    <string name="reminder_status_overdue">En retard</string>
+    <string name="reminder_notification_due_at">Prévu à %1$s</string>
+    <string name="reminder_notification_due_on">Prévu le %1$s</string>
+    <string name="action_mark_as_done">Marquer comme terminé</string>
     <string name="action_expand_more_reminders">Plus de rappels</string>
     <string name="reminders_empty">Aucun rappel pour l\'instant</string>
     <string name="settings_reminders_view_all_desc">Afficher tous les rappels</string>

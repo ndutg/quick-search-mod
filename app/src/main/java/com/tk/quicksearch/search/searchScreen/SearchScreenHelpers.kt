@@ -450,7 +450,8 @@ data class ReminderSectionActions(
     val onPin: (ReminderInfo) -> Unit = {},
     val onUnpin: (ReminderInfo) -> Unit = {},
     val onMovePinned: (ReminderInfo, Boolean) -> Unit = { _, _ -> },
-    val onMarkNotDone: (ReminderInfo) -> Unit = {},
+    val onMarkDone: (ReminderInfo) -> Unit = {},
+    val onDelete: (ReminderInfo) -> Unit = {},
 )
 
 /** Data class for Reminders section parameters */
@@ -459,7 +460,8 @@ data class RemindersSectionParams(
     val onReminderClick: (ReminderInfo) -> Unit,
     val onTogglePin: (ReminderInfo) -> Unit,
     val onMovePinned: (ReminderInfo, Boolean) -> Unit = { _, _ -> },
-    val onMarkNotDone: (ReminderInfo) -> Unit,
+    val onMarkDone: (ReminderInfo) -> Unit,
+    val onDelete: (ReminderInfo) -> Unit = {},
     val showExpandControls: Boolean,
     val onExpandClick: () -> Unit,
     val showWallpaperBackground: Boolean,
@@ -1140,7 +1142,8 @@ internal fun buildSectionParams(
                 }
             },
             onMovePinned = reminderActions.onMovePinned,
-            onMarkNotDone = reminderActions.onMarkNotDone,
+            onMarkDone = reminderActions.onMarkDone,
+            onDelete = reminderActions.onDelete,
             showExpandControls = derivedState.isSearching,
             onExpandClick = {
                 onUpdateExpandedSection(

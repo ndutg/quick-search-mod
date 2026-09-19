@@ -376,7 +376,11 @@ fun SearchRoute(
                 onPin = viewModel::pinReminder,
                 onUnpin = viewModel::unpinReminder,
                 onMovePinned = viewModel::movePinnedReminder,
-                onMarkNotDone = { reminder -> reminderRepository.setDone(reminder.reminderId, false) },
+                onMarkDone = { reminder -> reminderRepository.setDone(reminder.reminderId, true) },
+                onDelete = { reminder ->
+                    viewModel.unpinReminder(reminder)
+                    reminderRepository.deleteReminder(reminder.reminderId)
+                },
             )
         }
     val onDeleteNoteWithUndo: (NoteInfo) -> Unit = noteDelete@{ note ->

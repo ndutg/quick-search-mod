@@ -94,9 +94,15 @@ object ReminderScheduler {
     private fun dueText(context: Context, reminder: ReminderInfo): String {
         val date = Date(reminder.dueMillis)
         return if (reminder.hasTime) {
-            DateFormat.getTimeInstance(DateFormat.SHORT).format(date)
+            context.getString(
+                R.string.reminder_notification_due_at,
+                DateFormat.getTimeInstance(DateFormat.SHORT).format(date),
+            )
         } else {
-            DateFormat.getDateInstance(DateFormat.MEDIUM).format(date)
+            context.getString(
+                R.string.reminder_notification_due_on,
+                DateFormat.getDateInstance(DateFormat.MEDIUM).format(date),
+            )
         }
     }
 

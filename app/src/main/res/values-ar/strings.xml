@@ -1187,7 +1187,10 @@
     <string name="reminder_name_hint">تذكير</string>
     <string name="reminder_delete">حذف التذكير</string>
     <string name="reminder_status_done">تم</string>
-    <string name="action_mark_not_done">وضع علامة كغير منجز</string>
+    <string name="reminder_status_overdue">متأخر</string>
+    <string name="reminder_notification_due_at">مستحق في %1$s</string>
+    <string name="reminder_notification_due_on">مستحق في %1$s</string>
+    <string name="action_mark_as_done">وضع علامة كمنجز</string>
     <string name="action_expand_more_reminders">المزيد من التذكيرات</string>
     <string name="reminders_empty">لا توجد تذكيرات بعد</string>
     <string name="settings_reminders_view_all_desc">عرض كل التذكيرات</string>

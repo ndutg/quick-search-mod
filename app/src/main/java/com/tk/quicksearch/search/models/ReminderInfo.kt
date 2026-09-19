@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.models
 
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -28,6 +29,15 @@ data class ReminderInfo(
     /** Start of the reminder's day, used to show time-less reminders as all-day items. */
     val dayStartMillis: Long
         get() = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+    /** Undone and past due; a reminder without a time is only overdue once its day has passed. */
+    fun isOverdue(nowMillis: Long = System.currentTimeMillis()): Boolean =
+        !isDone &&
+            if (hasTime) {
+                dueMillis < nowMillis
+            } else {
+                date.isBefore(Instant.ofEpochMilli(nowMillis).atZone(ZoneId.systemDefault()).toLocalDate())
+            }
 
     private val effectiveTime: LocalTime
         get() = LocalTime.ofSecondOfDay((timeMinutes ?: DEFAULT_TIME_MINUTES) * 60L)

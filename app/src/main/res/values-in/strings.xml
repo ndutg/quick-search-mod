@@ -1187,7 +1187,10 @@
     <string name="reminder_name_hint">Pengingat</string>
     <string name="reminder_delete">Hapus pengingat</string>
     <string name="reminder_status_done">Selesai</string>
-    <string name="action_mark_not_done">Tandai belum selesai</string>
+    <string name="reminder_status_overdue">Terlambat</string>
+    <string name="reminder_notification_due_at">Jatuh tempo pukul %1$s</string>
+    <string name="reminder_notification_due_on">Jatuh tempo pada %1$s</string>
+    <string name="action_mark_as_done">Tandai selesai</string>
     <string name="action_expand_more_reminders">Pengingat Lainnya</string>
     <string name="reminders_empty">Belum ada pengingat</string>
     <string name="settings_reminders_view_all_desc">Lihat semua pengingat</string>
