@@ -85,13 +85,11 @@ fun CalculatorResult(
                 null
             }
 
-    val isDualTimeResult = timeResultLabel != null && timeResultLabel2 != null
-
     Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
-        val cardMinHeight = if (isDualTimeResult) 280.dp else 175.dp
+        val cardMinHeight = 175.dp
         androidx.compose.foundation.layout.Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
@@ -119,7 +117,6 @@ fun CalculatorResult(
                         isTimeAbsoluteResult = isTimeAbsoluteResult,
                         dayOfWeek = dayOfWeek,
                         showInvalidExpression = showInvalidExpression,
-                        isDualTimeResult = isDualTimeResult,
                 )
             }
         }
@@ -145,11 +142,10 @@ private fun CalculatorResultContent(
         isTimeAbsoluteResult: Boolean,
         dayOfWeek: String?,
         showInvalidExpression: Boolean,
-        isDualTimeResult: Boolean,
 ) {
     Column(
             modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(DesignTokens.SpacingLarge),
-            verticalArrangement = if (isDualTimeResult) Arrangement.spacedBy(0.dp) else Arrangement.Center,
+            verticalArrangement = Arrangement.Center,
     ) {
         when {
             timeResultLabel != null && timeResultLabel2 != null -> {
