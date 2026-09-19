@@ -905,6 +905,8 @@
     <string name="currency_converter_toggle_title">Döviz dönüştürücü</string>
     <string name="set_alarm_action_label">Alarm Kur</string>
     <string name="set_alarm_no_clock_app">Saat uygulaması bulunamadı</string>
+    <string name="start_timer_action_label">Zamanlayıcı başlat</string>
+    <string name="start_timer_started">Zamanlayıcı başlatıldı</string>
     <string name="color_visualizer_toggle_title">Renk Görselleştirici</string>
     <string name="color_visualizer_toggle_desc">Örnekler: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Bir hex veya RGB rengi girin</string>

@@ -906,6 +906,8 @@
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>
     <string name="set_alarm_action_label">Ορισμός ξυπνητηριού</string>
     <string name="set_alarm_no_clock_app">Δεν βρέθηκε εφαρμογή ρολογιού</string>
+    <string name="start_timer_action_label">Έναρξη χρονομέτρου</string>
+    <string name="start_timer_started">Ο χρονομέτρης ξεκίνησε</string>
     <string name="color_visualizer_toggle_title">Οπτικοποίηση χρώματος</string>
     <string name="color_visualizer_toggle_desc">Παραδείγματα: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Εισαγάγετε ένα χρώμα hex ή RGB</string>

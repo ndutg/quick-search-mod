@@ -906,6 +906,8 @@
     <string name="currency_converter_toggle_title">Convertisseur de devises</string>
     <string name="set_alarm_action_label">Régler l\'alarme</string>
     <string name="set_alarm_no_clock_app">Aucune application d\'horloge trouvée</string>
+    <string name="start_timer_action_label">Démarrer le minuteur</string>
+    <string name="start_timer_started">Minuteur démarré</string>
     <string name="color_visualizer_toggle_title">Visualiseur de couleurs</string>
     <string name="color_visualizer_toggle_desc">Exemples : #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Saisissez une couleur hexadécimale ou RVB</string>

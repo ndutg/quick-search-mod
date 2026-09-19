@@ -906,6 +906,8 @@
     <string name="currency_converter_toggle_title">Währungsrechner</string>
     <string name="set_alarm_action_label">Wecker stellen</string>
     <string name="set_alarm_no_clock_app">Keine Uhren-App gefunden</string>
+    <string name="start_timer_action_label">Timer starten</string>
+    <string name="start_timer_started">Timer gestartet</string>
     <string name="color_visualizer_toggle_title">Farbvisualisierung</string>
     <string name="color_visualizer_toggle_desc">Beispiele: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Gib eine Hex- oder RGB-Farbe ein</string>

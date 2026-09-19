@@ -22,6 +22,7 @@ import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -164,6 +166,30 @@ internal fun PhoneCallPill(
 internal fun SetAlarmPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+) = ClockActionPill(
+    icon = Icons.Rounded.Alarm,
+    label = stringResource(R.string.set_alarm_action_label),
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+internal fun StartTimerPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = ClockActionPill(
+    icon = Icons.Rounded.Timer,
+    label = stringResource(R.string.start_timer_action_label),
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+private fun ClockActionPill(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val isDarkTheme = LocalAppIsDarkTheme.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -195,14 +221,14 @@ internal fun SetAlarmPill(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = Icons.Rounded.Alarm,
+                imageVector = icon,
                 contentDescription = null,
                 tint = AppColors.Accent,
                 modifier = Modifier.size(PhoneCallPillIconSize),
             )
             Spacer(modifier = Modifier.size(DesignTokens.SpacingXSmall))
             Text(
-                text = stringResource(R.string.set_alarm_action_label),
+                text = label,
                 style = MaterialTheme.typography.labelSmall,
                 color = if (isDarkTheme) Color.White else Color.Black,
                 fontWeight = FontWeight.Medium,

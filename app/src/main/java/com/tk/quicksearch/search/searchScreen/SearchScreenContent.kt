@@ -100,6 +100,7 @@ import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.setAlarm.SetAlarmHandler
+import com.tk.quicksearch.tools.setAlarm.StartTimerHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
@@ -608,8 +609,7 @@ internal fun SearchScreenContent(
                 null
             } else if (manuallySwitchedToNumberKeyboard) {
                 stringResource(R.string.keyboard_switch_back)
-            } else if (state.query.isNotEmpty() &&
-                            state.query.none { it.isLetter() } &&
+            } else if (state.query.isCalculatorStyleQuery() &&
                             state.detectedShortcutTarget == null &&
                             state.detectedAliasSearchSection == null &&
                             !isCurrencyConverterAliasMode &&
@@ -630,6 +630,14 @@ internal fun SearchScreenContent(
                     null
                 } else {
                     SetAlarmHandler.detectAlarmTime(state.query)
+                }
+            }
+    val detectedTimerSeconds =
+            remember(state.query, isToolAliasMode) {
+                if (isToolAliasMode) {
+                    null
+                } else {
+                    StartTimerHandler.detectTimerSeconds(state.query)
                 }
             }
     val shouldShowPredictedHighlight = isImeVisible
@@ -1527,7 +1535,8 @@ internal fun SearchScreenContent(
                     visible =
                             keyboardSwitchText != null ||
                                     shouldShowPhoneCallAction ||
-                                    detectedAlarmTime != null,
+                                    detectedAlarmTime != null ||
+                                    detectedTimerSeconds != null,
                     enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
                     exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
             ) {
@@ -1573,6 +1582,35 @@ internal fun SearchScreenContent(
                                                 )
                                                 .show()
                                     }
+                                },
+                        )
+                    }
+                    if (detectedTimerSeconds != null) {
+                        if (keyboardSwitchText != null ||
+                                        shouldShowPhoneCallAction ||
+                                        detectedAlarmTime != null
+                        ) {
+                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        }
+                        StartTimerPill(
+                                onClick = {
+                                    val started =
+                                            StartTimerHandler.launchStartTimer(
+                                                    context,
+                                                    detectedTimerSeconds,
+                                            )
+                                    android.widget.Toast.makeText(
+                                                    context,
+                                                    context.getString(
+                                                            if (started) {
+                                                                R.string.start_timer_started
+                                                            } else {
+                                                                R.string.set_alarm_no_clock_app
+                                                            }
+                                                    ),
+                                                    android.widget.Toast.LENGTH_SHORT,
+                                            )
+                                            .show()
                                 },
                         )
                     }
@@ -1882,6 +1920,17 @@ internal fun SearchScreenContent(
     }
     } 
 }
+
+/**
+ * True when every character could belong to a calculator expression: digits, whitespace, or one of
+ * the operators the number keyboard offers. Deliberately stricter than "contains no letters" so
+ * punctuation that only shows up in non-arithmetic queries (a time's colon, a URL's slash-slash)
+ * does not offer the number keyboard.
+ */
+private fun String.isCalculatorStyleQuery(): Boolean =
+        isNotEmpty() && all { it.isDigit() || it.isWhitespace() || it in CALCULATOR_QUERY_CHARS }
+
+private const val CALCULATOR_QUERY_CHARS = "+-*/×÷()[].,%^"
 
 private fun String.isPhoneNumberQuery(): Boolean {
     val digits = if (startsWith('+')) drop(1) else this

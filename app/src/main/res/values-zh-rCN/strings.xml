@@ -896,6 +896,8 @@
     <string name="currency_converter_toggle_title">货币转换器</string>
     <string name="set_alarm_action_label">设置闹钟</string>
     <string name="set_alarm_no_clock_app">未找到时钟应用</string>
+    <string name="start_timer_action_label">启动计时器</string>
+    <string name="start_timer_started">计时器已启动</string>
     <string name="color_visualizer_toggle_title">颜色可视化工具</string>
     <string name="color_visualizer_toggle_desc">示例：#FF0000、rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">请输入十六进制或 RGB 颜色</string>

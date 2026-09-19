@@ -906,6 +906,8 @@
     <string name="currency_converter_toggle_title">కరెన్సీ కన్వర్టర్</string>
     <string name="set_alarm_action_label">అలారం సెట్ చేయండి</string>
     <string name="set_alarm_no_clock_app">గడియారం యాప్ కనుగొనబడలేదు</string>
+    <string name="start_timer_action_label">టైమర్ ప్రారంభించు</string>
+    <string name="start_timer_started">టైమర్ ప్రారంభమైంది</string>
     <string name="color_visualizer_toggle_title">రంగు విజువలైజర్</string>
     <string name="color_visualizer_toggle_desc">ఉదాహరణలు: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">హెక్స్ లేదా RGB రంగును నమోదు చేయండి</string>

@@ -906,6 +906,8 @@
     <string name="currency_converter_toggle_title">मुद्रा परिवर्तक</string>
     <string name="set_alarm_action_label">अलार्म सेट करें</string>
     <string name="set_alarm_no_clock_app">कोई घड़ी ऐप नहीं मिला</string>
+    <string name="start_timer_action_label">टाइमर शुरू करें</string>
+    <string name="start_timer_started">टाइमर शुरू हुआ</string>
     <string name="color_visualizer_toggle_title">रंग विज़ुअलाइज़र</string>
     <string name="color_visualizer_toggle_desc">उदाहरण: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">हेक्स या RGB रंग दर्ज करें</string>

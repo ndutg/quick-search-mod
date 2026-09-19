@@ -910,6 +910,8 @@
     <string name="currency_converter_toggle_title">Currency Converter</string>
     <string name="set_alarm_action_label">Set Alarm</string>
     <string name="set_alarm_no_clock_app">No clock app found</string>
+    <string name="start_timer_action_label">Start Timer</string>
+    <string name="start_timer_started">Timer started</string>
     <string name="color_visualizer_toggle_title">Color Visualizer</string>
     <string name="color_visualizer_toggle_desc">Examples: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Enter a hex or RGB color</string>
