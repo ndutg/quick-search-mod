@@ -912,6 +912,8 @@
     <string name="currency_converter_requires_gemini_key">Memerlukan kunci API penyedia AI</string>
     <string name="currency_converter_toggle_desc">Contoh: 100 USD ke INR</string>
     <string name="currency_converter_toggle_title">Konverter Mata Uang</string>
+    <string name="set_alarm_action_label">Setel Alarm</string>
+    <string name="set_alarm_no_clock_app">Aplikasi jam tidak ditemukan</string>
     <string name="color_visualizer_toggle_title">Visualisasi Warna</string>
     <string name="color_visualizer_toggle_desc">Contoh: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Masukkan warna heksadesimal atau RGB</string>

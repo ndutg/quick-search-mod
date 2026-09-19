@@ -99,6 +99,7 @@ import com.tk.quicksearch.shared.ui.theme.LocalSearchColorTheme
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
+import com.tk.quicksearch.tools.setAlarm.SetAlarmHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
@@ -623,6 +624,14 @@ internal fun SearchScreenContent(
             }
     val shouldShowPhoneCallAction =
             keyboardSwitchText != null && state.query.isPhoneNumberQuery()
+    val detectedAlarmTime =
+            remember(state.query, isToolAliasMode) {
+                if (isToolAliasMode) {
+                    null
+                } else {
+                    SetAlarmHandler.detectAlarmTime(state.query)
+                }
+            }
     val shouldShowPredictedHighlight = isImeVisible
     val isNonSubmittableSuggestionsTab = appsParams.isNonSubmittableSuggestionsTab()
     val firstSubmittableGridApp =
@@ -1515,7 +1524,10 @@ internal fun SearchScreenContent(
         // Hide when files or contacts are expanded
         if (expandedSection == ExpandedSection.NONE) {
             AnimatedVisibility(
-                    visible = keyboardSwitchText != null || shouldShowPhoneCallAction,
+                    visible =
+                            keyboardSwitchText != null ||
+                                    shouldShowPhoneCallAction ||
+                                    detectedAlarmTime != null,
                     enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
                     exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
             ) {
@@ -1544,6 +1556,23 @@ internal fun SearchScreenContent(
                                                 data = Uri.parse("tel:${Uri.encode(state.query)}")
                                             },
                                     )
+                                },
+                        )
+                    }
+                    if (detectedAlarmTime != null) {
+                        if (keyboardSwitchText != null || shouldShowPhoneCallAction) {
+                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        }
+                        SetAlarmPill(
+                                onClick = {
+                                    if (!SetAlarmHandler.launchSetAlarm(context, detectedAlarmTime)) {
+                                        android.widget.Toast.makeText(
+                                                        context,
+                                                        context.getString(R.string.set_alarm_no_clock_app),
+                                                        android.widget.Toast.LENGTH_SHORT,
+                                                )
+                                                .show()
+                                    }
                                 },
                         )
                     }

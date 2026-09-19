@@ -924,6 +924,8 @@
 <string name="currency_converter_requires_gemini_key">Требуется API-ключ AI-провайдера</string>
 <string name="currency_converter_toggle_desc">Пример: 100 USD в INR</string>
     <string name="currency_converter_toggle_title">Конвертер валют</string>
+    <string name="set_alarm_action_label">Установить будильник</string>
+    <string name="set_alarm_no_clock_app">Приложение часов не найдено</string>
     <string name="color_visualizer_toggle_title">Визуализатор цветов</string>
     <string name="color_visualizer_toggle_desc">Примеры: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Введите шестнадцатеричный цвет или RGB</string>

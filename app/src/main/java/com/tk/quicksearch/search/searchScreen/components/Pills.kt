@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Keyboard
@@ -151,6 +152,57 @@ internal fun PhoneCallPill(
             Spacer(modifier = Modifier.size(DesignTokens.SpacingXSmall))
             Text(
                 text = stringResource(R.string.contact_method_call_label),
+                style = MaterialTheme.typography.labelSmall,
+                color = if (isDarkTheme) Color.White else Color.Black,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+    }
+}
+
+@Composable
+internal fun SetAlarmPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isDarkTheme = LocalAppIsDarkTheme.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val borderColor =
+        if (isDarkTheme) {
+            AppColors.Accent.copy(alpha = 0.22f)
+        } else {
+            Color.Black.copy(alpha = 0.1f)
+        }
+
+    Surface(
+        modifier = modifier,
+        onClick = onClick,
+        interactionSource = interactionSource,
+        shape = DesignTokens.ShapeFull,
+        color = if (isDarkTheme) Color.Black else Color.White,
+        border = BorderStroke(DesignTokens.KeyboardPillBorderStrokeWidth, borderColor),
+        tonalElevation = DesignTokens.ElevationLevel0,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .padding(
+                        horizontal = DesignTokens.SpacingMedium,
+                        vertical = DesignTokens.SpacingXSmall,
+                    )
+                    .height(DesignTokens.IconSize),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Alarm,
+                contentDescription = null,
+                tint = AppColors.Accent,
+                modifier = Modifier.size(PhoneCallPillIconSize),
+            )
+            Spacer(modifier = Modifier.size(DesignTokens.SpacingXSmall))
+            Text(
+                text = stringResource(R.string.set_alarm_action_label),
                 style = MaterialTheme.typography.labelSmall,
                 color = if (isDarkTheme) Color.White else Color.Black,
                 fontWeight = FontWeight.Medium,

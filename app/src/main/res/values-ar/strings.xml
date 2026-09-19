@@ -905,6 +905,8 @@
     <string name="currency_converter_requires_gemini_key">يتطلب مفتاح API لمزود AI</string>
     <string name="currency_converter_toggle_desc">مثال: 100 USD إلى INR</string>
     <string name="currency_converter_toggle_title">محول العملات</string>
+    <string name="set_alarm_action_label">ضبط المنبه</string>
+    <string name="set_alarm_no_clock_app">لم يتم العثور على تطبيق ساعة</string>
     <string name="color_visualizer_toggle_title">عارض الألوان</string>
     <string name="color_visualizer_toggle_desc">أمثلة: #FF0000، rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">أدخل لونًا سداسيًا أو RGB</string>
