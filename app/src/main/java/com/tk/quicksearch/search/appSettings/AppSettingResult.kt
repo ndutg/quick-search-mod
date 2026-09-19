@@ -18,6 +18,7 @@ enum class AppSettingsDestination {
     TOOLS,
     TASKER_INTEGRATION,
     LAUNCH_OPTIONS,
+    EDGE_GESTURE,
     MORE_OPTIONS,
     PERMISSIONS,
     APP_MANAGEMENT,

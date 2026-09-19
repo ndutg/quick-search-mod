@@ -38,6 +38,7 @@ fun LaunchOptionsSettings(
     onToggleAssistantLaunchVoiceMode: (Boolean) -> Unit,
     onAddHomeScreenWidget: () -> Unit,
     onAddQuickSettingsTile: () -> Unit,
+    onOpenEdgeGesture: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showWidgetConfirmDialog by remember { mutableStateOf(false) }
@@ -134,6 +135,18 @@ fun LaunchOptionsSettings(
                             title = stringResource(R.string.settings_quick_settings_tile_title),
                             description = stringResource(R.string.settings_quick_settings_tile_desc),
                             actionOnPress = onAddQuickSettingsTile,
+                        ),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                )
+
+                HorizontalDivider(color = AppColors.SettingsDivider)
+
+                SettingsNavigationRow(
+                    item =
+                        SettingsCardItem(
+                            title = stringResource(R.string.settings_edge_gesture_title),
+                            description = stringResource(R.string.settings_edge_gesture_desc),
+                            actionOnPress = onOpenEdgeGesture,
                         ),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                 )

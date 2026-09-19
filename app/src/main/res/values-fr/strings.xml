@@ -121,7 +121,7 @@
 <string name="settings_gesture_close_keyboard">Fermer le clavier</string>
 <string name="settings_gesture_notification_panel">Panneau de notifications</string>
 <string name="accessibility_permission_disclaimer_title">Avis relatif à l’autorisation d’accessibilité</string>
-<string name="accessibility_lock_screen_disclosure_message">Quick Search utilise l’API AccessibilityService d’Android uniquement pour verrouiller votre appareil lorsque vous appuyez deux fois sur l’écran d’accueil. Par l’intermédiaire de ce service, Quick Search ne lit, ne collecte, ne stocke et ne partage ni le contenu de votre écran ni aucune autre donnée personnelle.</string>
+<string name="accessibility_lock_screen_disclosure_message">Quick Search utilise l’API AccessibilityService d’Android uniquement pour verrouiller votre appareil lorsque vous appuyez deux fois sur l’écran d’accueil et pour afficher une poignée invisible sur le bord de l’écran qui ouvre Quick Search lorsque vous la balayez. Par l’intermédiaire de ce service, Quick Search ne lit, ne collecte, ne stocke et ne partage ni le contenu de votre écran ni aucune autre donnée personnelle.</string>
 <string name="settings_gesture_none">Aucun</string>
 <string name="settings_gesture_custom">Personnalisé (Applications, fichiers, etc.)</string>
 <string name="settings_keyboard_gestures_title">Gestes du clavier (Accueil)</string>
@@ -726,6 +726,19 @@
 <string name="settings_icon_title">Icône des paramètres</string>
 <string name="settings_launch_options_desc">Différentes manières de lancer cette application</string>
 <string name="settings_launch_options_title">Options de lancement</string>
+<string name="settings_edge_gesture_title">Geste de balayage depuis le bord</string>
+<string name="settings_edge_gesture_desc">Appuyez de manière prolongée sur le bord de l’écran pour ouvrir Quick Search depuis n’importe quelle application</string>
+<string name="settings_edge_gesture_side">Côté</string>
+<string name="settings_edge_gesture_side_left">Gauche</string>
+<string name="settings_edge_gesture_side_right">Droite</string>
+<string name="settings_edge_gesture_position">Position</string>
+<string name="settings_edge_gesture_size">Taille</string>
+<string name="settings_edge_gesture_width">Largeur</string>
+<string name="settings_edge_gesture_offset">Distance du bord</string>
+<string name="settings_edge_gesture_offset_desc">Le système réserve une bande le long du bord de l’écran pour son geste Retour. Gardez cette valeur au-dessus de 0 pour que la poignée reste en dehors.</string>
+<string name="settings_edge_gesture_visibility">Visibilité</string>
+<string name="settings_edge_gesture_visibility_desc">Laissez à 0% pour une poignée invisible</string>
+<string name="settings_edge_gesture_hint">La poignée est mise en évidence tant que cette page est ouverte. Appuyez dessus de manière prolongée pour ouvrir Quick Search. Les balayages ne sont pas utilisés : le geste Retour du système réagit à tout mouvement partant d’un bord latéral, et seul un appui maintenu le laisse tranquille.</string>
 <string name="settings_app_language_title">Langue de l\'application</string>
 <string name="settings_app_language_desc">Actuel : %1$s</string>
 <string name="settings_app_language_picker_title">Choisir la langue de l\'application</string>
@@ -1021,7 +1034,7 @@
 <string name="permissions_notifications_desc">Requis pour épingler les résultats de recherche dans le panneau de notifications</string>
     <string name="permissions_notification_access_desc">Requis pour activer les pastilles de notification et l\'historique des notifications</string>
 <string name="permissions_accessibility_lock_screen_title">Accessibilité</string>
-<string name="permissions_accessibility_lock_screen_desc">Permet au geste de double appui de verrouiller votre appareil.</string>
+<string name="permissions_accessibility_lock_screen_desc">Permet au geste de double appui de verrouiller votre appareil et au geste de balayage depuis le bord d’ouvrir Quick Search.</string>
 <string name="permissions_contacts_desc">Requis pour rechercher vos contacts.</string>
 <string name="permissions_files_desc">Requis pour rechercher parmi vos documents et autres fichiers.</string>
 <string name="permissions_files_title">Accès aux fichiers</string>

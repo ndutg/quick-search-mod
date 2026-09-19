@@ -105,6 +105,13 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.LAUNCH_OPTIONS,
             )
             addNavigation(
+                id = "app_settings_edge_gesture",
+                titleRes = R.string.settings_edge_gesture_title,
+                descriptionRes = R.string.settings_edge_gesture_desc,
+                destination = AppSettingsDestination.EDGE_GESTURE,
+                keywords = listOf("edge", "swipe", "side", "handle", "gesture"),
+            )
+            addNavigation(
                 id = "app_settings_default_assistant",
                 titleRes = R.string.settings_default_assistant_title,
                 descriptionRes = R.string.settings_default_assistant_desc,

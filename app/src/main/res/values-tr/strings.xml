@@ -120,7 +120,7 @@
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
 <string name="accessibility_permission_disclaimer_title">Erişilebilirlik İzni Bildirimi</string>
-<string name="accessibility_lock_screen_disclosure_message">Quick Search, Android AccessibilityService API’sini yalnızca Ana ekrana iki kez dokunduğunuzda cihazınızı kilitlemek için kullanır. Quick Search bu hizmet aracılığıyla ekran içeriğinizi veya diğer kişisel verilerinizi okumaz, toplamaz, saklamaz ya da paylaşmaz.</string>
+<string name="accessibility_lock_screen_disclosure_message">Quick Search, Android AccessibilityService API’sini yalnızca Ana ekrana iki kez dokunduğunuzda cihazınızı kilitlemek ve üzerinde kaydırdığınızda Quick Search’ü açan görünmez bir tutamacı ekran kenarında göstermek için kullanır. Quick Search bu hizmet aracılığıyla ekran içeriğinizi veya diğer kişisel verilerinizi okumaz, toplamaz, saklamaz ya da paylaşmaz.</string>
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
 <string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
@@ -725,6 +725,19 @@
 <string name="settings_icon_title">Ayarlar simgesi</string>
 <string name="settings_launch_options_desc">Bu uygulamayı başlatmanın farklı yolları</string>
 <string name="settings_launch_options_title">Başlatma seçenekleri</string>
+<string name="settings_edge_gesture_title">Kenardan Kaydırma Hareketi</string>
+<string name="settings_edge_gesture_desc">Herhangi bir uygulamada Quick Search’ü açmak için ekran kenarına dokunup basılı tutun</string>
+<string name="settings_edge_gesture_side">Taraf</string>
+<string name="settings_edge_gesture_side_left">Sol</string>
+<string name="settings_edge_gesture_side_right">Sağ</string>
+<string name="settings_edge_gesture_position">Konum</string>
+<string name="settings_edge_gesture_size">Boyut</string>
+<string name="settings_edge_gesture_width">Genişlik</string>
+<string name="settings_edge_gesture_offset">Kenardan uzaklık</string>
+<string name="settings_edge_gesture_offset_desc">Sistem, Geri hareketi için ekran kenarı boyunca bir şerit kullanır. Tutamacın bunun dışında kalması için bu değeri 0’ın üzerinde tutun.</string>
+<string name="settings_edge_gesture_visibility">Görünürlük</string>
+<string name="settings_edge_gesture_visibility_desc">Tutamacın görünmez olması için 0% değerinde bırakın</string>
+<string name="settings_edge_gesture_hint">Bu sayfa açıkken tutamaç vurgulanır. Quick Search’ü açmak için tutamaca dokunup bir an basılı tutun. Kaydırmalar kullanılmaz: sistemin Geri hareketi, yan kenardan başlayan her harekete tepki verir; yalnızca basılı tutma bundan etkilenmez.</string>
 <string name="settings_app_language_title">Uygulama dili</string>
 <string name="settings_app_language_desc">Mevcut: %1$s</string>
 <string name="settings_app_language_picker_title">Uygulama dilini seçin</string>
@@ -1020,7 +1033,7 @@
 <string name="permissions_notifications_desc">Arama sonuçlarını bildirim paneline sabitlemek için gereklidir</string>
     <string name="permissions_notification_access_desc">Bildirim noktaları ve bildirim geçmişi özelliklerini etkinleştirmek için gereklidir</string>
 <string name="permissions_accessibility_lock_screen_title">Erişilebilirlik</string>
-<string name="permissions_accessibility_lock_screen_desc">Çift dokunma hareketinin cihazınızı kilitlemesini sağlar.</string>
+<string name="permissions_accessibility_lock_screen_desc">Çift dokunma hareketinin cihazınızı kilitlemesini ve kenardan kaydırma hareketinin Quick Search’ü açmasını sağlar.</string>
 <string name="permissions_contacts_desc">Kişilerinde arama yapmak için gereklidir.</string>
 <string name="permissions_files_desc">Belgelerin ve diğer dosyaların arasında arama yapmak için gereklidir.</string>
 <string name="permissions_files_title">Dosya erişimi</string>

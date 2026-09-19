@@ -490,6 +490,9 @@ internal fun SettingsDetailLevel1Screen(
                                 callbacks.onToggleAssistantLaunchVoiceMode,
                             onAddHomeScreenWidget = callbacks.onAddHomeScreenWidget,
                             onAddQuickSettingsTile = callbacks.onAddQuickSettingsTile,
+                            onOpenEdgeGesture = {
+                                onNavigateToDetail(SettingsDetailType.EDGE_GESTURE)
+                            },
                             modifier = Modifier,
                         )
                     }
@@ -556,6 +559,7 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.TRIGGERS,
                     SettingsDetailType.GESTURES,
                     SettingsDetailType.NOTIFICATION_HISTORY,
+                    SettingsDetailType.EDGE_GESTURE,
                     -> Unit
                 }
             }

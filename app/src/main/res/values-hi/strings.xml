@@ -121,7 +121,7 @@
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
     <string name="settings_gesture_notification_panel">नोटिफिकेशन पैनल</string>
 <string name="accessibility_permission_disclaimer_title">सुलभता अनुमति अस्वीकरण</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search Android की AccessibilityService API का उपयोग केवल तब आपके डिवाइस को लॉक करने के लिए करता है, जब आप होम स्क्रीन पर दो बार टैप करते हैं। इस सेवा के माध्यम से Quick Search आपकी स्क्रीन की सामग्री या अन्य निजी डेटा को पढ़ता, एकत्र करता, संग्रहीत या साझा नहीं करता है।</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search Android की AccessibilityService API का उपयोग केवल होम स्क्रीन पर दो बार टैप करने पर आपके डिवाइस को लॉक करने और स्क्रीन के किनारे पर एक अदृश्य हैंडल दिखाने के लिए करता है, जिस पर स्वाइप करने से Quick Search खुलता है। इस सेवा के माध्यम से Quick Search आपकी स्क्रीन की सामग्री या अन्य निजी डेटा को पढ़ता, एकत्र करता, संग्रहीत या साझा नहीं करता है।</string>
     <string name="settings_gesture_none">कोई नहीं</string>
     <string name="settings_gesture_custom">कस्टम (ऐप्स, फ़ाइलें आदि)</string>
     <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर (होम)</string>
@@ -726,6 +726,19 @@
     <string name="settings_icon_title">सेटिंग्स आइकन</string>
     <string name="settings_launch_options_desc">इस ऐप को लॉन्च करने के अलग-अलग तरीके</string>
     <string name="settings_launch_options_title">लॉन्च विकल्प</string>
+    <string name="settings_edge_gesture_title">एज स्वाइप जेस्चर</string>
+    <string name="settings_edge_gesture_desc">किसी भी ऐप से Quick Search खोलने के लिए स्क्रीन के किनारे को दबाकर रखें</string>
+    <string name="settings_edge_gesture_side">साइड</string>
+    <string name="settings_edge_gesture_side_left">बाएं</string>
+    <string name="settings_edge_gesture_side_right">दाएं</string>
+    <string name="settings_edge_gesture_position">स्थिति</string>
+    <string name="settings_edge_gesture_size">आकार</string>
+    <string name="settings_edge_gesture_width">चौड़ाई</string>
+    <string name="settings_edge_gesture_offset">किनारे से दूरी</string>
+    <string name="settings_edge_gesture_offset_desc">सिस्टम अपने “वापस” जेस्चर के लिए स्क्रीन के किनारे एक पट्टी रखता है। इसे 0 से ऊपर रखें ताकि हैंडल उससे बाहर रहे।</string>
+    <string name="settings_edge_gesture_visibility">दृश्यता</string>
+    <string name="settings_edge_gesture_visibility_desc">हैंडल को अदृश्य रखने के लिए इसे 0% पर रखें</string>
+    <string name="settings_edge_gesture_hint">यह पेज खुला रहने तक हैंडल हाइलाइट रहता है। Quick Search खोलने के लिए उसे कुछ पल दबाकर रखें। स्वाइप का उपयोग नहीं होता: सिस्टम का “वापस” जेस्चर किनारे से शुरू होने वाली किसी भी गति पर प्रतिक्रिया देता है, और दबाकर रखना ही एकमात्र ऐसा जेस्चर है जिसे वह छोड़ देता है।</string>
     <string name="settings_app_language_title">ऐप की भाषा</string>
     <string name="settings_app_language_desc">वर्तमान: %1$s</string>
     <string name="settings_app_language_picker_title">ऐप की भाषा चुनें</string>
@@ -1021,7 +1034,7 @@
     <string name="permissions_notifications_desc">खोज परिणामों को सूचना पैनल में पिन करने के लिए आवश्यक</string>
     <string name="permissions_notification_access_desc">सूचना बिंदु और सूचना इतिहास सुविधाएं चालू करने के लिए आवश्यक</string>
     <string name="permissions_accessibility_lock_screen_title">सुलभता</string>
-    <string name="permissions_accessibility_lock_screen_desc">डबल-टैप जेस्चर से आपका डिवाइस लॉक किया जा सकता है।</string>
+    <string name="permissions_accessibility_lock_screen_desc">डबल-टैप जेस्चर से आपका डिवाइस लॉक किया जा सकता है और एज स्वाइप जेस्चर से Quick Search खोला जा सकता है।</string>
     <string name="permissions_contacts_desc">आपके कॉन्टैक्ट्स खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_desc">आपके दस्तावेज़ों और अन्य फाइलों में खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_title">फाइल पहुंच</string>

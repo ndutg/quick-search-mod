@@ -122,7 +122,7 @@
     <string name="settings_gesture_close_keyboard">إغلاق لوحة المفاتيح</string>
     <string name="settings_gesture_notification_panel">لوحة الإشعارات</string>
     <string name="accessibility_permission_disclaimer_title">إخلاء مسؤولية إذن إمكانية الوصول</string>
-    <string name="accessibility_lock_screen_disclosure_message">يستخدم Quick Search واجهة AccessibilityService في Android فقط لقفل جهازك عند النقر المزدوج على الشاشة الرئيسية. ومن خلال هذه الخدمة، لا يقرأ Quick Search محتوى شاشتك أو بياناتك الشخصية الأخرى ولا يجمعها أو يخزنها أو يشاركها.</string>
+    <string name="accessibility_lock_screen_disclosure_message">يستخدم Quick Search واجهة AccessibilityService في Android فقط لقفل جهازك عند النقر المزدوج على الشاشة الرئيسية ولعرض مقبض غير مرئي على حافة الشاشة يفتح Quick Search عند السحب عليه. ومن خلال هذه الخدمة، لا يقرأ Quick Search محتوى شاشتك أو بياناتك الشخصية الأخرى ولا يجمعها أو يخزنها أو يشاركها.</string>
     <string name="settings_gesture_none">بلا</string>
     <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
     <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح (الرئيسية)</string>
@@ -727,6 +727,19 @@
     <string name="settings_icon_title">أيقونة الإعدادات</string>
     <string name="settings_launch_options_desc">طرق تشغيل التطبيق المختلفة</string>
     <string name="settings_launch_options_title">خيارات التشغيل</string>
+    <string name="settings_edge_gesture_title">إيماءة السحب من الحافة</string>
+    <string name="settings_edge_gesture_desc">المس حافة الشاشة مع الاستمرار لفتح Quick Search من أي تطبيق</string>
+    <string name="settings_edge_gesture_side">الجانب</string>
+    <string name="settings_edge_gesture_side_left">يسار</string>
+    <string name="settings_edge_gesture_side_right">يمين</string>
+    <string name="settings_edge_gesture_position">الموضع</string>
+    <string name="settings_edge_gesture_size">الحجم</string>
+    <string name="settings_edge_gesture_width">العرض</string>
+    <string name="settings_edge_gesture_offset">المسافة عن الحافة</string>
+    <string name="settings_edge_gesture_offset_desc">يحتفظ النظام بشريط على طول حافة الشاشة لإيماءة الرجوع. اجعل هذه القيمة أكبر من 0 ليبقى المقبض بعيدًا عنه.</string>
+    <string name="settings_edge_gesture_visibility">الظهور</string>
+    <string name="settings_edge_gesture_visibility_desc">اتركه على 0% ليكون المقبض غير مرئي</string>
+    <string name="settings_edge_gesture_hint">يتم تمييز المقبض أثناء فتح هذه الصفحة. المسه مع الاستمرار لحظة لفتح Quick Search. لا يتم استخدام السحب: إيماءة الرجوع في النظام تستجيب لأي حركة تبدأ من حافة جانبية، والضغط المطوّل هو الإيماءة الوحيدة التي تتركها.</string>
     <string name="settings_app_language_title">لغة التطبيق</string>
     <string name="settings_app_language_desc">الحالي: %1$s</string>
     <string name="settings_app_language_picker_title">اختيار لغة التطبيق</string>
@@ -1022,7 +1035,7 @@
     <string name="permissions_notifications_desc">مطلوب لتثبيت نتائج البحث في لوحة الإشعارات</string>
     <string name="permissions_notification_access_desc">مطلوب لتفعيل نقاط الإشعارات وميزة سجل الإشعارات</string>
     <string name="permissions_accessibility_lock_screen_title">إمكانية الوصول</string>
-    <string name="permissions_accessibility_lock_screen_desc">يسمح لإيماءة النقر المزدوج بقفل جهازك.</string>
+    <string name="permissions_accessibility_lock_screen_desc">يسمح لإيماءة النقر المزدوج بقفل جهازك ولإيماءة السحب من الحافة بفتح Quick Search.</string>
     <string name="permissions_contacts_desc">مطلوب للبحث في جهات الاتصال الخاصة بك.</string>
     <string name="permissions_files_desc">مطلوب للبحث في ملفاتك ومستنداتك المختلفة.</string>
     <string name="permissions_files_title">إذن الوصول إلى الملفات</string>

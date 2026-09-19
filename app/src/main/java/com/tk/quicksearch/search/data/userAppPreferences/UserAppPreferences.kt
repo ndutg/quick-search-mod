@@ -45,6 +45,7 @@ class UserAppPreferences(
     private val calendarPreferences by lazy { CalendarPreferences(context) }
     private val notesPreferences by lazy { NotesPreferences(context) }
     private val gesturesPreferences by lazy { GesturesPreferences(context) }
+    private val edgeGesturePreferences by lazy { EdgeGesturePreferences(context) }
     private val appShortcutPreferences by lazy { AppShortcutPreferences(context) }
     private val nicknamePreferences by lazy { NicknamePreferences(context) }
     private val triggerPreferences by lazy { TriggerPreferences(context) }
@@ -404,6 +405,26 @@ class UserAppPreferences(
     fun isQuickNoteEnabled(): Boolean = notesPreferences.isQuickNoteEnabled()
 
     fun setQuickNoteEnabled(enabled: Boolean) = notesPreferences.setQuickNoteEnabled(enabled)
+
+    // ============================================================================
+    // Edge Gesture Preferences
+    // ============================================================================
+
+    fun getEdgeGestureConfig(): EdgeGestureConfig = edgeGesturePreferences.getConfig()
+
+    fun setEdgeGestureEnabled(enabled: Boolean) = edgeGesturePreferences.setEnabled(enabled)
+
+    fun setEdgeGestureSide(side: EdgeGestureSide) = edgeGesturePreferences.setSide(side)
+
+    fun setEdgeGesturePosition(position: Float) = edgeGesturePreferences.setPosition(position)
+
+    fun setEdgeGestureSize(size: Float) = edgeGesturePreferences.setSize(size)
+
+    fun setEdgeGestureWidthDp(widthDp: Int) = edgeGesturePreferences.setWidthDp(widthDp)
+
+    fun setEdgeGestureOpacity(opacity: Float) = edgeGesturePreferences.setOpacity(opacity)
+
+    fun setEdgeGestureOffsetDp(offsetDp: Int) = edgeGesturePreferences.setOffsetDp(offsetDp)
 
     // ============================================================================
     // Gesture Preferences

@@ -121,7 +121,7 @@
     <string name="settings_gesture_close_keyboard">Fechar teclado</string>
     <string name="settings_gesture_notification_panel">Painel de notificações</string>
     <string name="accessibility_permission_disclaimer_title">Aviso sobre a permissão de acessibilidade</string>
-    <string name="accessibility_lock_screen_disclosure_message">O Quick Search usa a API AccessibilityService do Android somente para bloquear seu dispositivo quando você toca duas vezes na tela inicial. Por meio desse serviço, o Quick Search não lê, coleta, armazena nem compartilha o conteúdo da tela ou outros dados pessoais.</string>
+    <string name="accessibility_lock_screen_disclosure_message">O Quick Search usa a API AccessibilityService do Android somente para bloquear seu dispositivo quando você toca duas vezes na tela inicial e para mostrar uma alça invisível na borda da tela que abre o Quick Search quando você desliza sobre ela. Por meio desse serviço, o Quick Search não lê, coleta, armazena nem compartilha o conteúdo da tela ou outros dados pessoais.</string>
     <string name="settings_gesture_none">Nenhum</string>
     <string name="settings_gesture_custom">Personalizado (Apps, arquivos etc.)</string>
     <string name="settings_keyboard_gestures_title">Gestos do teclado (Início)</string>
@@ -726,6 +726,19 @@
     <string name="settings_icon_title">Ícone de configurações</string>
     <string name="settings_launch_options_desc">Diferentes maneiras de iniciar este app</string>
     <string name="settings_launch_options_title">Opções de inicialização</string>
+    <string name="settings_edge_gesture_title">Gesto de deslizar da borda</string>
+    <string name="settings_edge_gesture_desc">Toque e mantenha pressionada a borda da tela para abrir o Quick Search em qualquer app</string>
+    <string name="settings_edge_gesture_side">Lado</string>
+    <string name="settings_edge_gesture_side_left">Esquerda</string>
+    <string name="settings_edge_gesture_side_right">Direita</string>
+    <string name="settings_edge_gesture_position">Posição</string>
+    <string name="settings_edge_gesture_size">Tamanho</string>
+    <string name="settings_edge_gesture_width">Largura</string>
+    <string name="settings_edge_gesture_offset">Distância da borda</string>
+    <string name="settings_edge_gesture_offset_desc">O sistema reserva uma faixa ao longo da borda da tela para o gesto Voltar. Mantenha este valor acima de 0 para a alça ficar fora dela.</string>
+    <string name="settings_edge_gesture_visibility">Visibilidade</string>
+    <string name="settings_edge_gesture_visibility_desc">Mantenha em 0% para uma alça invisível</string>
+    <string name="settings_edge_gesture_hint">A alça fica destacada enquanto esta página está aberta. Toque e mantenha pressionado por um instante para abrir o Quick Search. Deslizes não são usados: o gesto Voltar do sistema reage a qualquer movimento que comece em uma borda lateral, e só um toque longo passa despercebido.</string>
     <string name="settings_app_language_title">Idioma do app</string>
     <string name="settings_app_language_desc">Atual: %1$s</string>
     <string name="settings_app_language_picker_title">Escolher idioma do app</string>
@@ -1021,7 +1034,7 @@
     <string name="permissions_notifications_desc">Necessário para fixar resultados da pesquisa no painel de notificações</string>
     <string name="permissions_notification_access_desc">Necessário para ativar os pontos de notificação e o histórico de notificações</string>
     <string name="permissions_accessibility_lock_screen_title">Acessibilidade</string>
-    <string name="permissions_accessibility_lock_screen_desc">Permite que o gesto de toque duplo bloqueie seu dispositivo.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Permite que o gesto de toque duplo bloqueie seu dispositivo e que o gesto de deslizar da borda abra o Quick Search.</string>
     <string name="permissions_contacts_desc">Necessário para pesquisar seus contatos.</string>
     <string name="permissions_files_desc">Necessário para pesquisar em seus documentos e outros arquivos.</string>
     <string name="permissions_files_title">Acesso aos arquivos</string>

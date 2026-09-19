@@ -121,7 +121,7 @@
     <string name="settings_gesture_close_keyboard">关闭键盘</string>
     <string name="settings_gesture_notification_panel">通知面板</string>
 <string name="accessibility_permission_disclaimer_title">无障碍权限免责声明</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search 仅在您双击主屏幕时使用 Android AccessibilityService API 锁定设备。Quick Search 不会通过此服务读取、收集、存储或分享您的屏幕内容或其他个人数据。</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search 仅在您双击主屏幕时使用 Android AccessibilityService API 锁定设备，并在屏幕边缘显示一个不可见的手势区域，在其上滑动即可打开 Quick Search。Quick Search 不会通过此服务读取、收集、存储或分享您的屏幕内容或其他个人数据。</string>
     <string name="settings_gesture_none">无</string>
     <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
     <string name="settings_keyboard_gestures_title">键盘手势 (主屏幕)</string>
@@ -716,6 +716,19 @@
     <string name="settings_icon_title">设置图标</string>
     <string name="settings_launch_options_desc">启动此应用的不同方式</string>
     <string name="settings_launch_options_title">启动选项</string>
+    <string name="settings_edge_gesture_title">边缘滑动手势</string>
+    <string name="settings_edge_gesture_desc">长按屏幕边缘，即可在任意应用中打开 Quick Search</string>
+    <string name="settings_edge_gesture_side">侧边</string>
+    <string name="settings_edge_gesture_side_left">左侧</string>
+    <string name="settings_edge_gesture_side_right">右侧</string>
+    <string name="settings_edge_gesture_position">位置</string>
+    <string name="settings_edge_gesture_size">大小</string>
+    <string name="settings_edge_gesture_width">宽度</string>
+    <string name="settings_edge_gesture_offset">距边缘的距离</string>
+    <string name="settings_edge_gesture_offset_desc">系统会占用屏幕边缘的一条区域用于返回手势。请将此值保持大于 0，让手势区域避开它。</string>
+    <string name="settings_edge_gesture_visibility">可见度</string>
+    <string name="settings_edge_gesture_visibility_desc">保持 0% 可让手势区域不可见</string>
+    <string name="settings_edge_gesture_hint">此页面打开时，手势区域会高亮显示。长按该区域片刻即可打开 Quick Search。不使用滑动：从侧边缘开始的任何移动都会触发系统返回手势，只有长按不受影响。</string>
     <string name="settings_app_language_title">应用语言</string>
     <string name="settings_app_language_desc">当前: %1$s</string>
     <string name="settings_app_language_picker_title">选择应用语言</string>
@@ -1011,7 +1024,7 @@
     <string name="permissions_notifications_desc">用于将搜索结果固定到通知面板</string>
     <string name="permissions_notification_access_desc">启用通知圆点和通知历史记录功能所需</string>
     <string name="permissions_accessibility_lock_screen_title">无障碍</string>
-    <string name="permissions_accessibility_lock_screen_desc">允许使用双击手势锁定设备。</string>
+    <string name="permissions_accessibility_lock_screen_desc">允许使用双击手势锁定设备，并使用边缘滑动手势打开 Quick Search。</string>
     <string name="permissions_contacts_desc">允许检索、匹配并展示您设备通讯录中的联系人信息。</string>
     <string name="permissions_files_desc">用于在您的个人文档、下载内容和其他本地文件中开展精确检索。</string>
     <string name="permissions_files_title">文件读写权限</string>
