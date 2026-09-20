@@ -112,10 +112,17 @@ fun ModelFeatureSettingsCard(
     val webSearchAvailable = supportsGrounding || hasTavilyKey
 
     // Waiting for the key read matters: clearing on TavilyKeyState.Unknown would wipe a saved
-    // toggle before we know whether Tavily can back it.
-    LaunchedEffect(tavilyKeyState, webSearchAvailable, groundingEnabled) {
-        if (tavilyKeyState != TavilyKeyState.Unknown && !webSearchAvailable && groundingEnabled) {
-            onGroundingChange(false)
+    // toggle before we know whether Tavily can back it. Conversely, a newly available Tavily
+    // key should opt unsupported models into web search, matching Weather's always-on behavior.
+    // Do not key this effect on groundingEnabled so the user can still turn Web Search off.
+    LaunchedEffect(tavilyKeyState, supportsGrounding) {
+        when {
+            tavilyKeyState == TavilyKeyState.Present && !supportsGrounding && !groundingEnabled -> {
+                onGroundingChange(true)
+            }
+            tavilyKeyState != TavilyKeyState.Unknown && !webSearchAvailable && groundingEnabled -> {
+                onGroundingChange(false)
+            }
         }
     }
 
