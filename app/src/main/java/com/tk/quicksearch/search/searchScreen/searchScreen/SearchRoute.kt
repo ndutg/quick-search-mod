@@ -256,13 +256,18 @@ fun SearchRoute(
         }
     val undoLabel = stringResource(R.string.action_undo)
 
+    // A new undo snackbar replaces the visible one right away instead of queueing behind it.
+    val undoSnackbarJob = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+
     val showUndoSnackbarVisuals: (UndoSnackbarVisuals, () -> Unit) -> Unit = { visuals, onUndo ->
-        snackbarScope.launch {
-            val result = effectiveSnackbarHostState.showSnackbar(visuals)
-            if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
-                onUndo()
+        undoSnackbarJob.value?.cancel()
+        undoSnackbarJob.value =
+            snackbarScope.launch {
+                val result = effectiveSnackbarHostState.showSnackbar(visuals)
+                if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                    onUndo()
+                }
             }
-        }
     }
 
     val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo ->

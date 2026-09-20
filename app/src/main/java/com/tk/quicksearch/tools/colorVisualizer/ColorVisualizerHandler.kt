@@ -27,7 +27,7 @@ class ColorVisualizerHandler(
             }
         }
 
-        val color = ColorVisualizerParser.parse(trimmedQuery)
+        val color = ColorVisualizerParser.parse(trimmedQuery, allowBareHex = forceColorVisualizerMode)
         if (color != null) {
             return CalculatorState(
                 result = color.hex,
@@ -64,11 +64,16 @@ object ColorVisualizerParser {
     private val rgbPattern =
         Regex("^rgb\\s*\\(\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*,\\s*(\\d{1,3})\\s*\\)$", RegexOption.IGNORE_CASE)
 
-    fun parse(query: String): VisualizedColor? {
+    /**
+     * [allowBareHex] permits a hex code without the leading `#`. Ordinary searches require the `#`
+     * so that plain six-digit numbers are not mistaken for colors.
+     */
+    fun parse(query: String, allowBareHex: Boolean = false): VisualizedColor? {
         if (query.length !in 6..32) return null
         val first = query.firstOrNull() ?: return null
         return when {
-            first == '#' || first.isDigit() || first.lowercaseChar() in 'a'..'f' -> parseHex(query)
+            first == '#' -> parseHex(query)
+            allowBareHex && (first.isDigit() || first.lowercaseChar() in 'a'..'f') -> parseHex(query)
             query.length >= 4 && query.regionMatches(0, "rgb", 0, 3, ignoreCase = true) -> parseRgb(query)
             else -> null
         }

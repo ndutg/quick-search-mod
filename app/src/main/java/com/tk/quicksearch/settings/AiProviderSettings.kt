@@ -53,7 +53,6 @@ fun AiProviderSettingsSection(
         onSetGeminiThinkingEnabled: (Boolean) -> Unit,
         onRefreshAvailableGeminiModels: () -> Unit,
         onRequestScrollToBottom: (() -> Unit)? = null,
-        showGroundingCheckbox: Boolean = true,
         showThinkingCheckbox: Boolean = true,
         modifier: Modifier = Modifier,
 ) {
@@ -118,7 +117,6 @@ fun AiProviderSettingsSection(
                                 onSetGeminiGroundingEnabled(checked)
                         },
                         showThinkingCheckbox = showThinkingCheckbox,
-                        showGroundingCheckbox = showGroundingCheckbox,
                 )
 
                 Box(

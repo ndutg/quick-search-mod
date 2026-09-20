@@ -123,7 +123,6 @@
     <string name="settings_gesture_notification_panel">Panel Notifikasi</string>
     <string name="settings_gesture_lock_screen">Kunci Layar</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
-    <string name="accessibility_lock_screen_service_label">Kunci Layar Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Mengizinkan Quick Search mengunci layar dari gestur ketuk dua kali di Layar Utama. Fitur ini tidak membaca konten layar.</string>
     <string name="accessibility_permission_disclaimer_title">Pernyataan Izin Aksesibilitas</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search menggunakan API AccessibilityService Android hanya untuk mengunci perangkat saat Anda mengetuk dua kali di Layar Utama. Melalui layanan ini, Quick Search tidak membaca, mengumpulkan, menyimpan, atau membagikan konten layar atau data pribadi lainnya.</string>
@@ -912,6 +911,10 @@
     <string name="currency_converter_requires_gemini_key">Memerlukan kunci API penyedia AI</string>
     <string name="currency_converter_toggle_desc">Contoh: 100 USD ke INR</string>
     <string name="currency_converter_toggle_title">Konverter Mata Uang</string>
+    <string name="set_alarm_action_label">Setel Alarm</string>
+    <string name="set_alarm_no_clock_app">Aplikasi jam tidak ditemukan</string>
+    <string name="start_timer_action_label">Mulai Timer</string>
+    <string name="start_timer_started">Timer dimulai</string>
     <string name="color_visualizer_toggle_title">Visualisasi Warna</string>
     <string name="color_visualizer_toggle_desc">Contoh: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Masukkan warna heksadesimal atau RGB</string>
@@ -1173,5 +1176,6 @@
     <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>
     <string name="settings_tavily_mode_always">Selalu gunakan Tavily untuk penelusuran web</string>
     <string name="settings_tavily_mode_when_unsupported">Gunakan hanya jika model tidak mendukung penelusuran web</string>
+    <string name="settings_weather_no_web_search_warning">Cuaca memerlukan hasil web. Pilih model yang mendukung penelusuran web, atau tambahkan kunci API Tavily di Penyiapan Kunci API.</string>
     <string name="tavily_search_failed_toast">Penelusuran web Tavily gagal. Menjawab tanpa hasil web.</string>
 </resources>

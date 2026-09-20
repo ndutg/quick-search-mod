@@ -114,7 +114,6 @@
     <string name="settings_gesture_notification_panel">Notification Panel</string>
     <string name="settings_gesture_lock_screen">Lock Screen</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
-    <string name="accessibility_lock_screen_service_label">Quick Search Lock Screen</string>
     <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture. It does not read screen content.</string>
     <string name="accessibility_permission_disclaimer_title">Accessibility Permission Disclaimer</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Android’s AccessibilityService API only to lock your device when you double-tap the Home screen. Through this service, Quick Search does not read, collect, store, or share your screen content or other personal data.</string>
@@ -838,6 +837,7 @@
     <string name="settings_tavily_desc">Add Tavily API key to add web search support for models that don\u2019t support it.</string>
     <string name="settings_tavily_mode_always">Always use Tavily for web search</string>
     <string name="settings_tavily_mode_when_unsupported">Use only when the model does not support web search</string>
+    <string name="settings_weather_no_web_search_warning">Weather needs web results. Pick a model that supports web search, or add a Tavily API key under API Key Setup.</string>
     <string name="tavily_search_failed_toast">Tavily web search failed. Answering without web results.</string>
     <string name="settings_gemini_api_key_reset">Reset Key</string>
     <string name="settings_gemini_api_key_saving">Saving...</string>
@@ -908,6 +908,10 @@
     <string name="currency_converter_requires_gemini_key">Requires an AI provider API key</string>
     <string name="currency_converter_toggle_desc">Example: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Currency Converter</string>
+    <string name="set_alarm_action_label">Set Alarm</string>
+    <string name="set_alarm_no_clock_app">No clock app found</string>
+    <string name="start_timer_action_label">Start Timer</string>
+    <string name="start_timer_started">Timer started</string>
     <string name="color_visualizer_toggle_title">Color Visualizer</string>
     <string name="color_visualizer_toggle_desc">Examples: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Enter a hex or RGB color</string>

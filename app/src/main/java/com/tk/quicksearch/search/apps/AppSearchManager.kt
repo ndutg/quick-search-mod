@@ -37,8 +37,19 @@ class AppSearchManager(
     private val currentPackageName = repository.getCurrentPackageName()
     private val defaultLauncherPackageName by lazy { repository.getDefaultLauncherPackageName() }
 
-    var cachedApps: List<AppInfo> = emptyList()
+    /**
+     * Incremented whenever the catalog is replaced. Derived snapshots built from [cachedApps]
+     * compare against it so they cannot keep serving apps the catalog has already dropped.
+     */
+    @Volatile
+    var catalogVersion: Long = 0L
         private set
+
+    var cachedApps: List<AppInfo> = emptyList()
+        private set(value) {
+            field = value
+            catalogVersion++
+        }
 
     private var noMatchPrefix: String? = null
     private val searchTextCache = SearchTextCache()

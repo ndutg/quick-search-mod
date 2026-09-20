@@ -37,7 +37,8 @@ data class WebSearchPlan(
  * Resolves native search vs Tavily for one request.
  *
  * @param nativeSearchSupported whether the provider/model can search on its own.
- * @param nativeSearchRequested whether the user turned on the model's own web search toggle.
+ * @param nativeSearchRequested whether the user turned the web search toggle on. It gates Tavily
+ *   too, so an unchecked toggle means no web search at all outside [TavilyWebSearchMode.ALWAYS].
  */
 fun resolveWebSearchPlan(
     mode: TavilyWebSearchMode,
@@ -53,7 +54,7 @@ fun resolveWebSearchPlan(
             if (nativeSearchSupported) {
                 WebSearchPlan(useNativeSearch = native, useTavily = false)
             } else {
-                WebSearchPlan(useNativeSearch = false, useTavily = true)
+                WebSearchPlan(useNativeSearch = false, useTavily = nativeSearchRequested)
             }
     }
 }
