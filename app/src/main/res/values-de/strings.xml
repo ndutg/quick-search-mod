@@ -662,6 +662,9 @@
     <string name="settings_all_quick_search_features_desc">Die vollständige Liste der Funktionen und Möglichkeiten anzeigen</string>
     <string name="settings_app_settings_desc">Quick Search-Einstellungen durchsuchen</string>
     <string name="settings_features_load_failed">Funktionsdokumentation konnte nicht geladen werden.</string>
+    <string name="settings_features_export">Funktionen herunterladen und teilen</string>
+    <string name="settings_features_export_failed">Funktionsdokumentation konnte nicht gespeichert werden.</string>
+    <string name="settings_features_saved_to_downloads">In Downloads gespeichert</string>
     <string name="settings_features_sections_title">Inhalt</string>
     <string name="settings_search_description_change_app_theme">App-Design ändern</string>
     <string name="settings_search_description_change_font_size">App-Schriftgröße ändern</string>
@@ -884,7 +887,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Quellcode dieses Projekts auf GitHub anzeigen</string>
     <string name="settings_feedback_github_title">Entwicklung</string>
-    <string name="settings_feedback_rate_desc">Hinterlasse eine 5-Sterne-Bewertung, wenn du die App nützlich findest</string>
+    <string name="settings_feedback_rate_desc">Hinterlasse eine 5-Sterne-Bewertung, wenn du die App nützlich findest 🙏</string>
     <string name="settings_feedback_rate_title">Quick Search bewerten</string>
     <string name="settings_feedback_send_desc">Fehler melden oder neue Funktionen vorschlagen</string>
     <string name="settings_feedback_send_title">Feedback senden</string>

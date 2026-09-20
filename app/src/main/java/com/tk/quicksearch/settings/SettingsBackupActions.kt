@@ -1,7 +1,13 @@
 package com.tk.quicksearch.settings.settingsScreen
 
+import android.content.ClipData
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +32,8 @@ import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import androidx.core.content.FileProvider
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -62,7 +70,6 @@ internal fun loadExportSelectionState(context: Context): ExportSelectionState {
     val hasApiKeys = UserAppPreferences(context).hasAnyLlmApiKey()
     return ExportSelectionState(
         includePinnedItems = hasPinnedItems,
-        includeShortcuts = true,
         includeNotes = hasNotes,
         includeCalendarEvents = hasCustomCalendarEvents,
         includeApiKeys = false,
@@ -78,32 +85,87 @@ internal fun defaultBackupFileName(): String {
     return "quick-search-settings-$timestamp.quicksearch"
 }
 
-internal fun exportSettingsToUri(
+internal fun exportSettingsToDownloads(
     context: Context,
-    uri: Uri,
     selectionState: ExportSelectionState,
     coroutineScope: CoroutineScope,
 ) {
     coroutineScope.launch(Dispatchers.IO) {
-        val isSuccess =
+        val fileName = defaultBackupFileName()
+        val result =
             runCatching {
-                SettingsBackupManager.exportToUri(
-                    context = context,
-                    outputUri = uri,
-                    options = selectionState.toExportOptions(),
+                saveSettingsToDownloads(
+                    context,
+                    fileName,
+                    selectionState.toExportOptions(),
                 )
-            }.isSuccess
+            }
         withContext(Dispatchers.Main) {
-            val messageResId =
-                if (isSuccess) {
-                    R.string.settings_backup_export_success
-                } else {
-                    R.string.settings_backup_export_failed
+            val uri = result.getOrNull()
+            if (uri == null) {
+                Toast.makeText(context, R.string.settings_backup_export_failed, Toast.LENGTH_SHORT).show()
+                return@withContext
+            }
+            Toast.makeText(context, R.string.settings_features_saved_to_downloads, Toast.LENGTH_SHORT).show()
+            val shareIntent =
+                Intent(Intent.ACTION_SEND).apply {
+                    type = "application/octet-stream"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    clipData = ClipData.newRawUri(fileName, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-            Toast.makeText(context, context.getString(messageResId), Toast.LENGTH_SHORT).show()
+            context.startActivity(
+                Intent.createChooser(shareIntent, context.getString(R.string.action_share)),
+            )
         }
     }
 }
+
+private fun saveSettingsToDownloads(
+    context: Context,
+    fileName: String,
+    options: SettingsBackupManager.ExportOptions,
+): Uri =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val resolver = context.contentResolver
+        val values =
+            ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream")
+                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                put(MediaStore.Downloads.IS_PENDING, 1)
+            }
+        val uri =
+            checkNotNull(resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)) {
+                "Unable to create the settings backup in Downloads"
+            }
+        try {
+            SettingsBackupManager.exportToUri(context, uri, options)
+            resolver.update(
+                uri,
+                ContentValues().apply { put(MediaStore.Downloads.IS_PENDING, 0) },
+                null,
+                null,
+            )
+            uri
+        } catch (error: Throwable) {
+            resolver.delete(uri, null, null)
+            throw error
+        }
+    } else {
+        val downloadsDirectory =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        check(downloadsDirectory.exists() || downloadsDirectory.mkdirs()) {
+            "Unable to access Downloads"
+        }
+        val file = File(downloadsDirectory, fileName)
+        SettingsBackupManager.exportToUri(
+            context,
+            FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file),
+            options,
+        )
+        FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+    }
 
 internal fun importSettingsFromUri(
     context: Context,
@@ -150,14 +212,6 @@ fun SettingsBackupButtons(
     var showImportWarningDialog by remember { mutableStateOf(false) }
     var showExportSelectionDialog by remember { mutableStateOf(false) }
     var exportSelectionState by remember { mutableStateOf(ExportSelectionState()) }
-
-    val exportLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.CreateDocument("application/octet-stream"),
-        ) { uri ->
-            if (uri == null) return@rememberLauncherForActivityResult
-            exportSettingsToUri(context, uri, exportSelectionState, coroutineScope)
-        }
 
     val importLauncher =
         rememberLauncherForActivityResult(
@@ -226,7 +280,7 @@ fun SettingsBackupButtons(
             onDismiss = { showExportSelectionDialog = false },
             onExport = {
                 showExportSelectionDialog = false
-                exportLauncher.launch(defaultBackupFileName())
+                exportSettingsToDownloads(context, exportSelectionState, coroutineScope)
             },
         )
     }

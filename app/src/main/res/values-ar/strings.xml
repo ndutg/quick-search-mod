@@ -663,6 +663,9 @@
     <string name="settings_all_quick_search_features_desc">عرض القائمة الكاملة للميزات والإمكانيات</string>
     <string name="settings_app_settings_desc">ابحث عن إعدادات Quick Search</string>
     <string name="settings_features_load_failed">تعذر تحميل مستندات الميزات.</string>
+    <string name="settings_features_export">تنزيل الميزات ومشاركتها</string>
+    <string name="settings_features_export_failed">تعذر حفظ مستند الميزات.</string>
+    <string name="settings_features_saved_to_downloads">تم الحفظ في التنزيلات</string>
     <string name="settings_features_sections_title">المحتويات</string>
     <string name="settings_search_description_change_app_theme">تغيير سمة التطبيق</string>
     <string name="settings_search_description_change_font_size">تغيير حجم الخط في التطبيق</string>
@@ -885,7 +888,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">عرض الكود المصدري للمشروع على GitHub</string>
     <string name="settings_feedback_github_title">المساهمة والتطوير</string>
-    <string name="settings_feedback_rate_desc">اترك تقييم 5 نجوم إذا وجدت هذا التطبيق مفيداً</string>
+    <string name="settings_feedback_rate_desc">اترك تقييم 5 نجوم إذا وجدت هذا التطبيق مفيداً 🙏</string>
     <string name="settings_feedback_rate_title">تقييم تطبيق Quick Search</string>
     <string name="settings_feedback_send_desc">الإبلاغ عن الأخطاء أو طلب ميزات جديدة</string>
     <string name="settings_feedback_send_title">إرسال الملاحظات</string>

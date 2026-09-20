@@ -661,6 +661,9 @@
 <string name="settings_all_quick_search_features_desc">Tüm özelliklerin ve yeteneklerin tam listesini görüntüle</string>
 <string name="settings_app_settings_desc">Quick Search ayarlarında ara</string>
 <string name="settings_features_load_failed">Özellik dokümantasyonu yüklenemedi.</string>
+<string name="settings_features_export">Özellikleri indir ve paylaş</string>
+<string name="settings_features_export_failed">Özellik dokümantasyonu kaydedilemedi.</string>
+<string name="settings_features_saved_to_downloads">İndirilenler\'e kaydedildi</string>
 <string name="settings_features_sections_title">İçindekiler</string>
 <string name="settings_search_description_change_app_theme">Uygulama temasını değiştir</string>
 <string name="settings_search_description_change_font_size">Uygulama yazı tipi boyutunu değiştir</string>
@@ -883,7 +886,7 @@
 <string name="settings_feedback_developer_title">%1$s v%2$s</string>
 <string name="settings_feedback_github_desc">Bu projenin kaynak kodunu GitHub\'da görüntüle</string>
 <string name="settings_feedback_github_title">Geliştirme</string>
-<string name="settings_feedback_rate_desc">Uygulamayı faydalı buluyorsan 5 yıldız ver</string>
+<string name="settings_feedback_rate_desc">Uygulamayı faydalı buluyorsan 5 yıldız ver 🙏</string>
 <string name="settings_feedback_rate_title">Quick Search\'ü değerlendir</string>
 <string name="settings_feedback_send_desc">Hataları bildir veya özellik iste</string>
 <string name="settings_feedback_send_title">Geri bildirim gönder</string>

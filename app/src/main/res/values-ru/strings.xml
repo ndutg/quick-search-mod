@@ -682,6 +682,9 @@
 <string name="settings_all_quick_search_features_desc">Просмотреть полный список возможностей и функций</string>
 <string name="settings_app_settings_desc">Поиск по настройкам Quick Search</string>
 <string name="settings_features_load_failed">Не удалось загрузить документацию функций.</string>
+<string name="settings_features_export">Скачать и поделиться списком функций</string>
+<string name="settings_features_export_failed">Не удалось сохранить документацию функций.</string>
+<string name="settings_features_saved_to_downloads">Сохранено в папку «Загрузки»</string>
 <string name="settings_features_sections_title">Содержание</string>
 <string name="settings_search_description_change_app_theme">Изменить тему приложения</string>
 <string name="settings_search_description_change_font_size">Изменить размер шрифта приложения</string>
@@ -904,7 +907,7 @@
 <string name="settings_feedback_developer_title">%1$s v%2$s</string>
 <string name="settings_feedback_github_desc">Посмотреть исходный код проекта на GitHub</string>
 <string name="settings_feedback_github_title">Разработка</string>
-<string name="settings_feedback_rate_desc">Поставьте нам 5 звезд, если приложение вам нравится</string>
+<string name="settings_feedback_rate_desc">Поставьте нам 5 звезд, если приложение вам нравится 🙏</string>
 <string name="settings_feedback_rate_title">Оценить Quick Search</string>
 <string name="settings_feedback_send_desc">Сообщить об ошибке или предложить функцию</string>
 <string name="settings_feedback_send_title">Отправить отзыв</string>

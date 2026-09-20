@@ -93,7 +93,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 private val ShortcutGridIconSize = 24.dp
-private const val AppUnlockCredentialHoldMillis = 6_000L
+private const val AppUnlockCredentialHoldMillis = 4_000L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

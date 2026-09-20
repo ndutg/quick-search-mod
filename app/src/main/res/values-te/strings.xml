@@ -662,6 +662,9 @@
     <string name="settings_all_quick_search_features_desc">ఫీచర్లు మరియు వాటి సామర్థ్యాల పూర్తి జాబితాను చూడండి</string>
     <string name="settings_app_settings_desc">Quick Search సెట్టింగ్‌ల కోసం శోధించండి</string>
     <string name="settings_features_load_failed">ఫీచర్ డాక్యుమెంటేషన్‌ను లోడ్ చేయడం సాధ్యపడలేదు.</string>
+    <string name="settings_features_export">ఫీచర్‌లను డౌన్‌లోడ్ చేసి షేర్ చేయండి</string>
+    <string name="settings_features_export_failed">ఫీచర్ డాక్యుమెంటేషన్‌ను సేవ్ చేయడం సాధ్యపడలేదు.</string>
+    <string name="settings_features_saved_to_downloads">డౌన్‌లోడ్‌లలో సేవ్ చేయబడింది</string>
     <string name="settings_features_sections_title">విషయాలు</string>
     <string name="settings_search_description_change_app_theme">యాప్ థీమ్‌ను మార్చండి</string>
     <string name="settings_search_description_change_font_size">యాప్ ఫాంట్ పరిమాణాన్ని మార్చండి</string>
@@ -884,7 +887,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">GitHub లో ఈ ప్రాజెక్ట్ యొక్క సోర్స్ కోడ్‌ను వీక్షించండి</string>
     <string name="settings_feedback_github_title">డెవలప్‌మెంట్</string>
-    <string name="settings_feedback_rate_desc">ఈ యాప్ మీకు ఉపయోగకరంగా అనిపిస్తే 5 స్టార్ రేటింగ్ ఇవ్వండి</string>
+    <string name="settings_feedback_rate_desc">ఈ యాప్ మీకు ఉపయోగకరంగా అనిపిస్తే 5 స్టార్ రేటింగ్ ఇవ్వండి 🙏</string>
     <string name="settings_feedback_rate_title">Quick Search కి రేటింగ్ ఇవ్వండి</string>
     <string name="settings_feedback_send_desc">లోపాలను నివేదించండి లేదా ఫీచర్లను అభ్యర్థించండి</string>
     <string name="settings_feedback_send_title">ఫీడ్‌బ్యాక్ పంపండి</string>

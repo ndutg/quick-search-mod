@@ -662,6 +662,9 @@
     <string name="settings_all_quick_search_features_desc">Δείτε την πλήρη λίστα με τις δυνατότητες και τις λειτουργίες</string>
     <string name="settings_app_settings_desc">Αναζήτηση στις ρυθμίσεις του Quick Search</string>
     <string name="settings_features_load_failed">Αδυναμία φόρτωσης τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_export">Λήψη και κοινοποίηση δυνατοτήτων</string>
+    <string name="settings_features_export_failed">Δεν ήταν δυνατή η αποθήκευση της τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_saved_to_downloads">Αποθηκεύτηκε στις Λήψεις</string>
     <string name="settings_features_sections_title">Περιεχόμενα</string>
     <string name="settings_search_description_change_app_theme">Αλλαγή θέματος εφαρμογής</string>
     <string name="settings_search_description_change_font_size">Αλλαγή μεγέθους γραμματοσειράς εφαρμογής</string>
@@ -884,7 +887,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Δείτε τον πηγαίο κώδικα αυτού του έργου στο GitHub</string>
     <string name="settings_feedback_github_title">Ανάπτυξη</string>
-    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη</string>
+    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη 🙏</string>
     <string name="settings_feedback_rate_title">Αξιολογήστε το Quick Search</string>
     <string name="settings_feedback_send_desc">Αναφέρετε σφάλματα ή ζητήστε νέες δυνατότητες</string>
     <string name="settings_feedback_send_title">Αποστολή σχολίων</string>

@@ -662,6 +662,9 @@
 <string name="settings_all_quick_search_features_desc">Voir la liste complète des fonctionnalités et capacités</string>
 <string name="settings_app_settings_desc">Rechercher dans les paramètres de Quick Search</string>
 <string name="settings_features_load_failed">Impossible de charger la documentation des fonctionnalités.</string>
+<string name="settings_features_export">Télécharger et partager les fonctionnalités</string>
+<string name="settings_features_export_failed">Impossible d’enregistrer la documentation des fonctionnalités.</string>
+<string name="settings_features_saved_to_downloads">Enregistré dans Téléchargements</string>
 <string name="settings_features_sections_title">Sommaire</string>
 <string name="settings_search_description_change_app_theme">Changer le thème de l\'application</string>
 <string name="settings_search_description_change_font_size">Changer la taille de la police de l\'application</string>
@@ -884,7 +887,7 @@
 <string name="settings_feedback_developer_title">%1$s v%2$s</string>
 <string name="settings_feedback_github_desc">Voir le code source de ce projet sur GitHub</string>
 <string name="settings_feedback_github_title">Développement</string>
-<string name="settings_feedback_rate_desc">Laissez une note de 5 étoiles si vous trouvez cette application utile</string>
+<string name="settings_feedback_rate_desc">Laissez une note de 5 étoiles si vous trouvez cette application utile 🙏</string>
 <string name="settings_feedback_rate_title">Noter Quick Search</string>
 <string name="settings_feedback_send_desc">Signaler des bugs ou demander des fonctionnalités</string>
 <string name="settings_feedback_send_title">Envoyer des commentaires</string>

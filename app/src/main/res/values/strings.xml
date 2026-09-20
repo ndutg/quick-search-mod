@@ -660,6 +660,9 @@
     <string name="settings_more_apps_from_developer_title">More Apps from the Developer</string>
     <string name="settings_app_settings_desc">Search for Quick Search settings</string>
     <string name="settings_features_load_failed">Unable to load feature documentation.</string>
+    <string name="settings_features_export">Download and share features</string>
+    <string name="settings_features_export_failed">Unable to save feature documentation.</string>
+    <string name="settings_features_saved_to_downloads">Saved to downloads</string>
     <string name="settings_features_sections_title">Contents</string>
     <string name="settings_search_description_change_app_theme">Change app theme</string>
     <string name="settings_search_description_change_font_size">Change app font size</string>
@@ -888,7 +891,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">View this project\'s source code on GitHub</string>
     <string name="settings_feedback_github_title">Development</string>
-    <string name="settings_feedback_rate_desc">Leave a 5 star rating if you find this app useful</string>
+    <string name="settings_feedback_rate_desc">Leave a 5 star rating if you find this app useful 🙏</string>
     <string name="settings_feedback_rate_title">Rate Quick Search</string>
     <string name="settings_feedback_send_desc">Report bugs or request features</string>
     <string name="settings_feedback_send_title">Send Feedback</string>
@@ -1122,7 +1125,7 @@
     <string name="settings_custom_tool_delete_button">Delete Tool</string>
     <string name="settings_custom_tool_editor_title">Custom Tool</string>
     <string name="settings_custom_tool_name_label">Tool Name</string>
-    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.\n\n Use {time} to include current date and time in the prompt.</string>
+    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.\n\nUse {time} to include current date and time in the prompt.</string>
     <string name="settings_custom_tool_prompt_label">System Prompt</string>
     <string name="settings_excluded_items_clear_all">Unhide all items</string>
     <string name="settings_excluded_items_clear_all_confirmation">Are you sure you want to clear all hidden items? This action cannot be undone.</string>

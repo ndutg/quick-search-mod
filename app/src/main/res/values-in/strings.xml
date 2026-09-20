@@ -669,6 +669,9 @@
     <string name="settings_more_apps_from_developer_title">Aplikasi Lainnya dari Pengembang</string>
     <string name="settings_app_settings_desc">Cari pengaturan Quick Search</string>
     <string name="settings_features_load_failed">Tidak dapat memuat dokumentasi fitur.</string>
+    <string name="settings_features_export">Unduh dan bagikan fitur</string>
+    <string name="settings_features_export_failed">Tidak dapat menyimpan dokumentasi fitur.</string>
+    <string name="settings_features_saved_to_downloads">Disimpan ke Unduhan</string>
     <string name="settings_features_sections_title">Daftar Isi</string>
     <string name="settings_search_description_change_app_theme">Ubah tema aplikasi</string>
     <string name="settings_search_description_change_font_size">Ubah ukuran font aplikasi</string>
@@ -891,7 +894,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Lihat kode sumber proyek ini di GitHub</string>
     <string name="settings_feedback_github_title">Pengembangan</string>
-    <string name="settings_feedback_rate_desc">Beri rating bintang 5 jika Anda merasa aplikasi ini bermanfaat</string>
+    <string name="settings_feedback_rate_desc">Beri rating bintang 5 jika Anda merasa aplikasi ini bermanfaat 🙏</string>
     <string name="settings_feedback_rate_title">Beri Nilai Quick Search</string>
     <string name="settings_feedback_send_desc">Laporkan bug atau minta fitur baru</string>
     <string name="settings_feedback_send_title">Kirim Masukan</string>
