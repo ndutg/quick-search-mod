@@ -59,6 +59,7 @@ This document highlights all the available features. It also includes details ab
   - **Time ranges** — e.g. 9am to 5pm, 14:00 to 17:30, 8:30am to 12:00pm
   - **Absolute time** — e.g. 5pm, 14:30, 9am
   - **Time offset from a time** — e.g. 3 hours after 5pm, 30 minutes before 9am, 1 hour after 14:00
+- **Alarms & Timers** - Set alarms and start timers directly from search. For example, search `2:45pm` to set an alarm or `15 min` to start a timer.
 - **Dictionary** - Example usage: "define serendipity" or "serendipity meaning", to see search dictionary card, tapping on which will show dictionary result. This requires Gemini API key configuration.
 - **World Clock** - Check the current time across different time zones. Search for city names to see their current time instantly.
 - **Currency Converter** - Convert between currencies directly from the search bar without an API key. Example: "100 USD to EUR" to see the converted amount with the current exchange rate.
@@ -103,7 +104,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Triggers** - Long-press a result to add a trigger phrase. When you type that trigger and press space, Quick Search opens that result automatically.
 - **Pin / Unpin** - Pin or unpin apps, app shortcuts, contacts, files, and device settings so that they stay on your home screen when you open the app. Hold and drag any pinned item to reorder it. You can also long-press a pinned item and tap **Move Up** or **Move Down** to reorder it. On the home screen, tap a pinned section header to expand or collapse its items.
 - **Pin to Notification Panel** - Long-press a search result to pin it to the notification panel for quick access. Choose whether to pin it with other items or in its own notification.
-- **Add / Edit Nickname** - Add or edit nicknames for apps, app shortcuts, contacts, files, and device settings so you can search them using custom names.
+- **Add / Edit Nickname** - Add or edit multiple nicknames for apps, app shortcuts, contacts, files, and device settings so you can search them using custom names.
 - **Exclude / Include** - Exclude individual contacts, app shortcuts, files, and device settings from results. You can include them again later by clearing them from Excluded Items list in Search Results settings.
 - **Add to Home Screen** - Add apps, app shortcuts, contacts, files, and device settings directly to your home screen as shortcuts for one-tap access.
 - **Edit Icons for App Shortcuts** - Option to add custom icons for app shortcuts.
