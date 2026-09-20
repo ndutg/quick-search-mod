@@ -905,6 +905,10 @@
     <string name="currency_converter_requires_gemini_key">يتطلب مفتاح API لمزود AI</string>
     <string name="currency_converter_toggle_desc">مثال: 100 USD إلى INR</string>
     <string name="currency_converter_toggle_title">محول العملات</string>
+    <string name="set_alarm_action_label">ضبط المنبه</string>
+    <string name="set_alarm_no_clock_app">لم يتم العثور على تطبيق ساعة</string>
+    <string name="start_timer_action_label">بدء المؤقت</string>
+    <string name="start_timer_started">بدأ المؤقت</string>
     <string name="color_visualizer_toggle_title">عارض الألوان</string>
     <string name="color_visualizer_toggle_desc">أمثلة: #FF0000، rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">أدخل لونًا سداسيًا أو RGB</string>
@@ -1173,5 +1177,6 @@
     <string name="settings_tavily_desc">أضف مفتاح Tavily API لإضافة دعم البحث على الويب للنماذج التي لا تدعمه.</string>
     <string name="settings_tavily_mode_always">استخدم Tavily دائمًا للبحث على الويب</string>
     <string name="settings_tavily_mode_when_unsupported">استخدمه فقط عندما لا يدعم النموذج البحث على الويب</string>
+    <string name="settings_weather_no_web_search_warning">يحتاج الطقس إلى نتائج من الويب. اختر نموذجًا يدعم البحث على الويب، أو أضف مفتاح Tavily API في إعداد مفتاح API.</string>
     <string name="tavily_search_failed_toast">فشل البحث على الويب عبر Tavily. تتم الإجابة بدون نتائج الويب.</string>
 </resources>

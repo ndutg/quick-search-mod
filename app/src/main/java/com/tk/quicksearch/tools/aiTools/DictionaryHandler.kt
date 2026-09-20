@@ -6,6 +6,9 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.LlmRequest
 import com.tk.quicksearch.tools.aiSearch.LlmResponseText
+import com.tk.quicksearch.tools.aiSearch.modelSupportsGrounding
+import com.tk.quicksearch.tools.aiSearch.prepareWebSearch
+import com.tk.quicksearch.tools.aiSearch.providerSupportsNativeSearch
 import org.json.JSONObject
 
 class DictionaryNotRecognizedException : Exception()
@@ -72,16 +75,26 @@ class DictionaryHandler(
         val userMessage =
                 "Provide a dictionary entry for: ${confirmed.term}. " +
                         "Original user query: ${confirmed.originalQuery}"
+        val webSearch =
+                prepareWebSearch(
+                        userPreferences = userPreferences,
+                        searchQuery = confirmed.term,
+                        prompt = userMessage,
+                        nativeSearchSupported =
+                                providerSupportsNativeSearch(providerId) &&
+                                        modelSupportsGrounding(modelId, provider.fallbackTextModels),
+                        nativeSearchRequested = groundingEnabled,
+                )
         val result =
                 provider.fetchAnswer(
                         apiKey = apiKey,
                         context = context,
                         request =
                                 LlmRequest(
-                                        query = userMessage,
+                                        query = webSearch.prompt,
                                         personalContext = null,
                                         modelId = modelId,
-                                        useGroundingWithGoogleSearch = groundingEnabled,
+                                        useGroundingWithGoogleSearch = webSearch.useNativeSearch,
                                         thinkingEnabled = thinkingEnabled,
                                         useSystemInstruction = true,
                                         systemInstruction = DICTIONARY_SYSTEM_INSTRUCTION,

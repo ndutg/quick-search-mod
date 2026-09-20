@@ -904,6 +904,10 @@
     <string name="currency_converter_requires_gemini_key">Απαιτείται ένα κλειδί API παρόχου AI</string>
     <string name="currency_converter_toggle_desc">Παράδειγμα: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>
+    <string name="set_alarm_action_label">Ορισμός ξυπνητηριού</string>
+    <string name="set_alarm_no_clock_app">Δεν βρέθηκε εφαρμογή ρολογιού</string>
+    <string name="start_timer_action_label">Έναρξη χρονομέτρου</string>
+    <string name="start_timer_started">Ο χρονομέτρης ξεκίνησε</string>
     <string name="color_visualizer_toggle_title">Οπτικοποίηση χρώματος</string>
     <string name="color_visualizer_toggle_desc">Παραδείγματα: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Εισαγάγετε ένα χρώμα hex ή RGB</string>
@@ -1171,5 +1175,6 @@
     <string name="settings_tavily_desc">Προσθέστε κλειδί API του Tavily για υποστήριξη αναζήτησης ιστού σε μοντέλα που δεν την υποστηρίζουν.</string>
     <string name="settings_tavily_mode_always">Να χρησιμοποιείται πάντα το Tavily για αναζήτηση ιστού</string>
     <string name="settings_tavily_mode_when_unsupported">Χρήση μόνο όταν το μοντέλο δεν υποστηρίζει αναζήτηση ιστού</string>
+    <string name="settings_weather_no_web_search_warning">Ο Καιρός χρειάζεται αποτελέσματα ιστού. Επίλεξε μοντέλο που υποστηρίζει αναζήτηση ιστού ή πρόσθεσε κλειδί API Tavily στη Ρύθμιση κλειδιού API.</string>
     <string name="tavily_search_failed_toast">Η αναζήτηση ιστού Tavily απέτυχε. Απάντηση χωρίς αποτελέσματα ιστού.</string>
 </resources>

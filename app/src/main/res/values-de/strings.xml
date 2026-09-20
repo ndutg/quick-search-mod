@@ -904,6 +904,10 @@
     <string name="currency_converter_requires_gemini_key">Erfordert einen AI-Anbieter-API-Schlüssel</string>
     <string name="currency_converter_toggle_desc">Beispiel: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Währungsrechner</string>
+    <string name="set_alarm_action_label">Wecker stellen</string>
+    <string name="set_alarm_no_clock_app">Keine Uhren-App gefunden</string>
+    <string name="start_timer_action_label">Timer starten</string>
+    <string name="start_timer_started">Timer gestartet</string>
     <string name="color_visualizer_toggle_title">Farbvisualisierung</string>
     <string name="color_visualizer_toggle_desc">Beispiele: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Gib eine Hex- oder RGB-Farbe ein</string>
@@ -1171,5 +1175,6 @@
     <string name="settings_tavily_desc">Füge einen Tavily-API-Schlüssel hinzu, um Modellen ohne Websuche eine Websuche zu ermöglichen.</string>
     <string name="settings_tavily_mode_always">Immer Tavily für die Websuche verwenden</string>
     <string name="settings_tavily_mode_when_unsupported">Nur verwenden, wenn das Modell keine Websuche unterstützt</string>
+    <string name="settings_weather_no_web_search_warning">Wetter benötigt Webergebnisse. Wähle ein Modell, das Websuche unterstützt, oder füge unter „API-Schlüssel einrichten“ einen Tavily-API-Schlüssel hinzu.</string>
     <string name="tavily_search_failed_toast">Tavily-Websuche fehlgeschlagen. Antwort ohne Webergebnisse.</string>
 </resources>

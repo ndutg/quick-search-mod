@@ -1089,7 +1089,7 @@ class UiPreferences(
     }
 
     fun isWorldClockGroundingEnabled(): Boolean =
-        getBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, true)
+        getBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, false)
 
     fun setWorldClockGroundingEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, enabled)

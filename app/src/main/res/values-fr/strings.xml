@@ -904,6 +904,10 @@
 <string name="currency_converter_requires_gemini_key">Nécessite une clé API d\'un fournisseur AI</string>
 <string name="currency_converter_toggle_desc">Exemple : 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Convertisseur de devises</string>
+    <string name="set_alarm_action_label">Régler l\'alarme</string>
+    <string name="set_alarm_no_clock_app">Aucune application d\'horloge trouvée</string>
+    <string name="start_timer_action_label">Démarrer le minuteur</string>
+    <string name="start_timer_started">Minuteur démarré</string>
     <string name="color_visualizer_toggle_title">Visualiseur de couleurs</string>
     <string name="color_visualizer_toggle_desc">Exemples : #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Saisissez une couleur hexadécimale ou RVB</string>
@@ -1171,5 +1175,6 @@
     <string name="settings_tavily_desc">Ajoutez une clé API Tavily pour activer la recherche web sur les modèles qui ne la prennent pas en charge.</string>
     <string name="settings_tavily_mode_always">Toujours utiliser Tavily pour la recherche web</string>
     <string name="settings_tavily_mode_when_unsupported">Utiliser uniquement si le modèle ne prend pas en charge la recherche web</string>
+    <string name="settings_weather_no_web_search_warning">La météo a besoin de résultats web. Choisissez un modèle qui prend en charge la recherche web, ou ajoutez une clé API Tavily dans Configuration de la clé API.</string>
     <string name="tavily_search_failed_toast">La recherche web Tavily a échoué. Réponse sans résultats web.</string>
 </resources>

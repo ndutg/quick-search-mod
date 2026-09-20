@@ -903,6 +903,10 @@
 <string name="currency_converter_requires_gemini_key">Bir AI sağlayıcı API anahtarı gerektirir</string>
 <string name="currency_converter_toggle_desc">Örnek: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Döviz dönüştürücü</string>
+    <string name="set_alarm_action_label">Alarm Kur</string>
+    <string name="set_alarm_no_clock_app">Saat uygulaması bulunamadı</string>
+    <string name="start_timer_action_label">Zamanlayıcı başlat</string>
+    <string name="start_timer_started">Zamanlayıcı başlatıldı</string>
     <string name="color_visualizer_toggle_title">Renk Görselleştirici</string>
     <string name="color_visualizer_toggle_desc">Örnekler: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Bir hex veya RGB rengi girin</string>
@@ -1170,5 +1174,6 @@
     <string name="settings_tavily_desc">Web aramasını desteklemeyen modellere web araması eklemek için Tavily API anahtarı ekleyin.</string>
     <string name="settings_tavily_mode_always">Web araması için her zaman Tavily kullan</string>
     <string name="settings_tavily_mode_when_unsupported">Yalnızca model web aramasını desteklemediğinde kullan</string>
+    <string name="settings_weather_no_web_search_warning">Hava Durumu web sonuçlarına ihtiyaç duyar. Web aramasını destekleyen bir model seçin veya API Anahtarı Kurulumu bölümünden Tavily API anahtarı ekleyin.</string>
     <string name="tavily_search_failed_toast">Tavily web araması başarısız oldu. Web sonuçları olmadan yanıtlanıyor.</string>
 </resources>

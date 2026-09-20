@@ -5,6 +5,9 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.LlmRequest
+import com.tk.quicksearch.tools.aiSearch.modelSupportsGrounding
+import com.tk.quicksearch.tools.aiSearch.prepareWebSearch
+import com.tk.quicksearch.tools.aiSearch.providerSupportsNativeSearch
 
 class WeatherHandler(
     private val context: Context,
@@ -32,14 +35,27 @@ class WeatherHandler(
         }
         val modelId = userPreferences.getWeatherModel().trim().ifBlank { provider.defaultModelId }
         val advancedPayload = userPreferences.getWeatherAdvancedPayload()
+        val weatherQuery =
+            buildWeatherRequestQuery(location, temperatureUnit.promptValue, windSpeedUnit.promptValue)
+        // Weather always wants fresh web data, so native search is requested unconditionally.
+        val webSearch =
+            prepareWebSearch(
+                userPreferences = userPreferences,
+                searchQuery = "current weather forecast $location",
+                prompt = weatherQuery,
+                nativeSearchSupported =
+                    providerSupportsNativeSearch(providerId) &&
+                        modelSupportsGrounding(modelId, provider.fallbackTextModels),
+                nativeSearchRequested = true,
+            )
         return provider.fetchAnswer(
             apiKey = apiKey,
             context = context,
             request =
                 LlmRequest(
-                    query = buildWeatherRequestQuery(location, temperatureUnit.promptValue, windSpeedUnit.promptValue),
+                    query = webSearch.prompt,
                     modelId = modelId,
-                    useGroundingWithGoogleSearch = true,
+                    useGroundingWithGoogleSearch = webSearch.useNativeSearch,
                     thinkingEnabled = userPreferences.isWeatherThinkingEnabled(),
                     useSystemInstruction = true,
                     systemInstruction = userPreferences.getWeatherSystemPrompt(),
