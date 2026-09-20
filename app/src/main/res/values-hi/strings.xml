@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">अपने देश के लिए Amazon डोमेन अपडेट करें।</string>
     <string name="dialog_edit_amazon_domain_title">Amazon डोमेन संपादित करें</string>
     <string name="dialog_gemini_model_picker_title">मॉडल चुनें</string>
-    <string name="dialog_nickname_message">\"%1$s\" के लिए एक निकनेम दर्ज करें। आप इस निकनेम से इसे खोज सकेंगे।</string>
+    <string name="dialog_nickname_message">\"%1$s\" के लिए एक या अधिक निकनेम दर्ज करें, उन्हें कॉमा से अलग करें। आप इनमें से किसी भी निकनेम से इसे खोज सकेंगे।</string>
     <string name="dialog_ok">जारी रखें</string>
     <string name="dialog_okay">ठीक है</string>
     <string name="dialog_remember_choice">इस विकल्प को याद रखें</string>

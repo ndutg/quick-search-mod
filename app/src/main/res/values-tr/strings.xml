@@ -201,7 +201,7 @@
 <string name="dialog_edit_amazon_domain_message">Ülkeniz için Amazon alan adını güncelleyin.</string>
 <string name="dialog_edit_amazon_domain_title">Amazon alan adını düzenle</string>
 <string name="dialog_gemini_model_picker_title">Model seçin</string>
-<string name="dialog_nickname_message">"%1$s" için bir takma ad girin. Bu takma adı kullanarak arama yapabilirsiniz.</string>
+<string name="dialog_nickname_message">"%1$s" için virgülle ayırarak bir veya daha fazla takma ad girin. Bunlardan herhangi birini kullanarak arama yapabilirsiniz.</string>
 <string name="dialog_ok">Devam et</string>
 <string name="dialog_okay">Tamam</string>
 <string name="dialog_remember_choice">Seçimimi hatırla</string>

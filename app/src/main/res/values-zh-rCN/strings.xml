@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">更新适用于您所在国家的 Amazon 域名。</string>
     <string name="dialog_edit_amazon_domain_title">编辑 Amazon 域名</string>
     <string name="dialog_gemini_model_picker_title">选择模型</string>
-    <string name="dialog_nickname_message">为“%1$s”输入一个昵称。此后您可以使用该昵称来搜索它。</string>
+    <string name="dialog_nickname_message">为“%1$s”输入一个或多个昵称，用逗号分隔。此后您可以使用其中任意一个昵称来搜索它。</string>
     <string name="dialog_ok">继续</string>
     <string name="dialog_okay">好的</string>
     <string name="dialog_remember_choice">记住此选择</string>

@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">మీ దేశం కోసం Amazon డొమైన్‌ను నవీకరించండి.</string>
     <string name="dialog_edit_amazon_domain_title">Amazon డొమైన్‌ను సవరించండి</string>
     <string name="dialog_gemini_model_picker_title">మోడల్‌ను ఎంచుకోండి</string>
-    <string name="dialog_nickname_message">\"%1$s\" కోసం ఒక మారుపేరును నమోదు చేయండి. మీరు ఈ మారుపేరుతో కూడా శోధించవచ్చు.</string>
+    <string name="dialog_nickname_message">\"%1$s\" కోసం ఒకటి లేదా అంతకంటే ఎక్కువ మారుపేర్లను కామాలతో వేరు చేసి నమోదు చేయండి. వాటిలో దేనితోనైనా మీరు శోధించవచ్చు.</string>
     <string name="dialog_ok">కొనసాగించు</string>
     <string name="dialog_okay">సరే</string>
     <string name="dialog_remember_choice">ఈ ఎంపికను గుర్తుంచుకో</string>

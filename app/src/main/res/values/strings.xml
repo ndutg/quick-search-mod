@@ -197,7 +197,7 @@
     <string name="dialog_edit_amazon_domain_message">Update Amazon domain for your country.</string>
     <string name="dialog_edit_amazon_domain_title">Edit Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Select Model</string>
-    <string name="dialog_nickname_message">Enter a nickname for "%1$s". You can search for it using this nickname.</string>
+    <string name="dialog_nickname_message">Enter one or more nicknames for "%1$s", separated by commas. You can search for it using any of them.</string>
     <string name="dialog_ok">Continue</string>
     <string name="dialog_okay">Okay</string>
     <string name="dialog_remember_choice">Remember this choice</string>

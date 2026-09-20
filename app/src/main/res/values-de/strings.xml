@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">Aktualisiere die Amazon-Domain für dein Land.</string>
     <string name="dialog_edit_amazon_domain_title">Amazon-Domain bearbeiten</string>
     <string name="dialog_gemini_model_picker_title">Modell auswählen</string>
-    <string name="dialog_nickname_message">Gib einen Spitznamen für „%1$s“ ein. Du kannst danach mit diesem Spitznamen suchen.</string>
+    <string name="dialog_nickname_message">Gib einen oder mehrere Spitznamen für „%1$s“ ein, getrennt durch Kommas. Du kannst dann mit jedem davon suchen.</string>
     <string name="dialog_ok">Weiter</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Diese Wahl merken</string>

@@ -206,7 +206,7 @@
     <string name="dialog_edit_amazon_domain_message">Perbarui domain Amazon untuk negara Anda.</string>
     <string name="dialog_edit_amazon_domain_title">Edit Domain Amazon</string>
     <string name="dialog_gemini_model_picker_title">Pilih Model</string>
-    <string name="dialog_nickname_message">Masukkan nama panggilan untuk "%1$s". Anda dapat mencarinya menggunakan nama panggilan ini.</string>
+    <string name="dialog_nickname_message">Masukkan satu atau beberapa nama panggilan untuk "%1$s", dipisahkan dengan koma. Anda dapat mencarinya menggunakan salah satu di antaranya.</string>
     <string name="dialog_ok">Lanjutkan</string>
     <string name="dialog_okay">Oke</string>
     <string name="dialog_remember_choice">Ingat pilihan ini</string>

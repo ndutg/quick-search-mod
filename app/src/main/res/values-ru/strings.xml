@@ -202,7 +202,7 @@
 <string name="dialog_edit_amazon_domain_message">Обновите домен Amazon для вашей страны.</string>
 <string name="dialog_edit_amazon_domain_title">Изменить домен Amazon</string>
 <string name="dialog_gemini_model_picker_title">Выберите модель</string>
-    <string name="dialog_nickname_message">Введите псевдоним для «%1$s». Вы сможете искать его по этому псевдониму.</string>
+    <string name="dialog_nickname_message">Введите один или несколько псевдонимов для «%1$s», разделяя их запятыми. Вы сможете искать его по любому из них.</string>
 <string name="dialog_ok">Продолжить</string>
 <string name="dialog_okay">Окей</string>
 <string name="dialog_remember_choice">Запомнить выбор</string>

@@ -206,7 +206,7 @@
     <string name="dialog_edit_amazon_domain_message">Zaktualizuj domenę Amazon dla swojego kraju.</string>
     <string name="dialog_edit_amazon_domain_title">Edytuj domenę Amazon</string>
     <string name="dialog_gemini_model_picker_title">Wybierz model</string>
-    <string name="dialog_nickname_message">Wpisz pseudonim dla "%1$s". Będzie można wyszukiwać tę pozycję za pomocą tego pseudonimu.</string>
+    <string name="dialog_nickname_message">Wpisz jeden lub więcej pseudonimów dla "%1$s", oddzielając je przecinkami. Będzie można wyszukiwać tę pozycję za pomocą dowolnego z nich.</string>
     <string name="dialog_ok">Dalej</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Zapamiętaj ten wybór</string>

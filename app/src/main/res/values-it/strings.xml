@@ -201,7 +201,7 @@
     <string name="dialog_edit_amazon_domain_message">Aggiorna il dominio Amazon per il tuo Paese.</string>
     <string name="dialog_edit_amazon_domain_title">Modifica dominio Amazon</string>
     <string name="dialog_gemini_model_picker_title">Seleziona modello</string>
-    <string name="dialog_nickname_message">Inserisci un soprannome per "%1$s". Potrai cercarlo usando questo soprannome.</string>
+    <string name="dialog_nickname_message">Inserisci uno o più soprannomi per "%1$s", separati da virgole. Potrai cercarlo usando uno qualsiasi di essi.</string>
     <string name="dialog_ok">Continua</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Ricorda questa scelta</string>

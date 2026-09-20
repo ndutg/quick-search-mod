@@ -206,7 +206,7 @@
     <string name="dialog_edit_amazon_domain_message">お住まいの地域のAmazonドメインを更新します。</string>
     <string name="dialog_edit_amazon_domain_title">Amazonドメインを編集</string>
     <string name="dialog_gemini_model_picker_title">モデルを選択</string>
-    <string name="dialog_nickname_message">「%1$s」のニックネームを入力してください。このニックネームで検索できるようになります。</string>
+    <string name="dialog_nickname_message">「%1$s」のニックネームを入力してください。カンマで区切ると複数登録でき、そのいずれでも検索できます。</string>
     <string name="dialog_ok">続行</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">この選択を記憶する</string>

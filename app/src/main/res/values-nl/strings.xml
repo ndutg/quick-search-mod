@@ -209,7 +209,7 @@
     <string name="dialog_edit_amazon_domain_message">Amazon-domein bijwerken voor jouw land.</string>
     <string name="dialog_edit_amazon_domain_title">Amazon-domein bewerken</string>
     <string name="dialog_gemini_model_picker_title">Model selecteren</string>
-    <string name="dialog_nickname_message">Voer een bijnaam in voor \"%1$s\". Je kunt ernaar zoeken met deze bijnaam.</string>
+    <string name="dialog_nickname_message">Voer een of meer bijnamen in voor \"%1$s\", gescheiden door komma\'s. Je kunt ernaar zoeken met elk van deze bijnamen.</string>
     <string name="dialog_ok">Doorgaan</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Deze keuze onthouden</string>

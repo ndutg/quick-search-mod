@@ -202,7 +202,7 @@
 <string name="dialog_edit_amazon_domain_message">Mettez à jour le domaine Amazon pour votre pays.</string>
 <string name="dialog_edit_amazon_domain_title">Modifier le domaine Amazon</string>
 <string name="dialog_gemini_model_picker_title">Sélectionner le modèle</string>
-<string name="dialog_nickname_message">Saisissez un surnom pour « %1$s ». Vous pourrez le rechercher en utilisant ce surnom.</string>
+<string name="dialog_nickname_message">Saisissez un ou plusieurs surnoms pour « %1$s », séparés par des virgules. Vous pourrez le rechercher en utilisant n\'importe lequel d\'entre eux.</string>
 <string name="dialog_ok">Continuer</string>
 <string name="dialog_okay">D\'accord</string>
 <string name="dialog_remember_choice">Se souvenir de ce choix</string>

@@ -203,7 +203,7 @@
     <string name="dialog_edit_amazon_domain_message">قم بتحديث نطاق Amazon لبلدك.</string>
     <string name="dialog_edit_amazon_domain_title">تعديل نطاق Amazon</string>
     <string name="dialog_gemini_model_picker_title">اختر النموذج</string>
-    <string name="dialog_nickname_message">أدخل لقباً لـ "%1$s". ستتمكن من البحث عنه باستخدام هذا اللقب.</string>
+    <string name="dialog_nickname_message">أدخل لقباً واحداً أو أكثر لـ "%1$s"، مفصولة بفواصل. ستتمكن من البحث عنه باستخدام أي منها.</string>
     <string name="dialog_ok">متابعة</string>
     <string name="dialog_okay">موافق</string>
     <string name="dialog_remember_choice">تذكر هذا الخيار</string>

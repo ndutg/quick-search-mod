@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">Ενημερώστε το domain της Amazon για τη χώρα σας.</string>
     <string name="dialog_edit_amazon_domain_title">Επεξεργασία Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Επιλογή μοντέλου</string>
-    <string name="dialog_nickname_message">Εισαγάγετε ένα ψευδώνυμο για το "%1$s". Μπορείτε να το αναζητήσετε χρησιμοποιώντας αυτό το ψευδώνυμο.</string>
+    <string name="dialog_nickname_message">Εισαγάγετε ένα ή περισσότερα ψευδώνυμα για το "%1$s", χωρισμένα με κόμματα. Μπορείτε να το αναζητήσετε χρησιμοποιώντας οποιοδήποτε από αυτά.</string>
     <string name="dialog_ok">Συνέχεια</string>
     <string name="dialog_okay">Εντάξει</string>
     <string name="dialog_remember_choice">Απομνημόνευση επιλογής</string>

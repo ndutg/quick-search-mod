@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">Actualiza el dominio de Amazon para tu país.</string>
     <string name="dialog_edit_amazon_domain_title">Editar dominio de Amazon</string>
     <string name="dialog_gemini_model_picker_title">Seleccionar modelo</string>
-    <string name="dialog_nickname_message">Introduce un apodo para "%1$s". Podrás buscarlo usando este apodo.</string>
+    <string name="dialog_nickname_message">Introduce uno o varios apodos para "%1$s", separados por comas. Podrás buscarlo usando cualquiera de ellos.</string>
     <string name="dialog_ok">Continuar</string>
     <string name="dialog_okay">De acuerdo</string>
     <string name="dialog_remember_choice">Recordar esta opción</string>
