@@ -63,6 +63,7 @@ import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE
 import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_PACKAGE
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
 import com.tk.quicksearch.shared.util.hapticConfirm
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -814,6 +815,8 @@ private fun ContactActionLongPressMenu(
     showTriggerAction: Boolean,
     onContactActionTriggerClick: (ContactInfo, ContactCardAction, String) -> Unit,
 ) {
+    val context = LocalContext.current
+    val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
@@ -822,20 +825,24 @@ private fun ContactActionLongPressMenu(
         properties = PopupProperties(focusable = false),
         containerColor = if (LocalAppIsDarkTheme.current) Color.Black else Color.White,
     ) {
-        DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.action_add_to_home)) },
-            leadingIcon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
-            onClick = {
-                onDismissRequest()
-                addToHomeHandler.addContactActionToHome(
-                    contact = contact,
-                    contactAction = action,
-                    actionDisplayName = actionDisplayName,
-                )
-            },
-        )
+        if (!isDefaultLauncher) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.action_add_to_home)) },
+                leadingIcon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                onClick = {
+                    onDismissRequest()
+                    addToHomeHandler.addContactActionToHome(
+                        contact = contact,
+                        contactAction = action,
+                        actionDisplayName = actionDisplayName,
+                    )
+                },
+            )
+        }
         if (showTriggerAction) {
-            HorizontalDivider()
+            if (!isDefaultLauncher) {
+                HorizontalDivider()
+            }
             DropdownMenuItem(
                 text = {
                     Text(

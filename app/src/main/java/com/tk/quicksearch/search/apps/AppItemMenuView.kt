@@ -323,7 +323,7 @@ fun AppItemDropdownMenu(
     }
 
     val launchRows = buildList {
-        if (isLaunchableApp) {
+        if (isLaunchableApp && !isDefaultLauncher) {
             add(ItemMenuRow(
                 label = stringResource(R.string.action_add_to_home),
                 icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
