@@ -1919,7 +1919,10 @@ internal fun SearchScreenContent(
                         text = openKeyboardText,
                         onVoiceClick = onVoiceClick,
                         showWallpaperBackground = state.showWallpaperBackground,
-                        modifier = Modifier.fillMaxWidth(),
+                        // Keep the Open Keyboard surface in the same vertical-swipe path as
+                        // the fixed search field and engine strip. This routes configured
+                        // keyboard gestures first, then the regular Home swipe actions.
+                        modifier = Modifier.fillMaxWidth().then(bottomBarSwipeModifier),
                         onClick = {
                             hideOpenKeyboardActionInstantly = true
                             delayedOpenKeyboardActionVisible = false
