@@ -1174,5 +1174,6 @@
     <string name="settings_tavily_desc">Aggiungi una chiave API Tavily per abilitare la ricerca web nei modelli che non la supportano.</string>
     <string name="settings_tavily_mode_always">Usa sempre Tavily per la ricerca web</string>
     <string name="settings_tavily_mode_when_unsupported">Usa solo quando il modello non supporta la ricerca web</string>
+    <string name="settings_weather_no_web_search_warning">Meteo richiede risultati web. Scegli un modello che supporta la ricerca web o aggiungi una chiave API Tavily in Configurazione chiave API.</string>
     <string name="tavily_search_failed_toast">Ricerca web Tavily non riuscita. Risposta senza risultati web.</string>
 </resources>

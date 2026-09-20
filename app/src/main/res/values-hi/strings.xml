@@ -1175,5 +1175,6 @@
     <string name="settings_tavily_desc">जो मॉडल वेब सर्च सपोर्ट नहीं करते, उनमें वेब सर्च जोड़ने के लिए Tavily API कुंजी जोड़ें।</string>
     <string name="settings_tavily_mode_always">वेब सर्च के लिए हमेशा Tavily का उपयोग करें</string>
     <string name="settings_tavily_mode_when_unsupported">केवल तब उपयोग करें जब मॉडल वेब सर्च सपोर्ट न करे</string>
+    <string name="settings_weather_no_web_search_warning">मौसम के लिए वेब परिणाम ज़रूरी हैं। वेब सर्च सपोर्ट करने वाला मॉडल चुनें, या API Key Setup में Tavily API की जोड़ें।</string>
     <string name="tavily_search_failed_toast">Tavily वेब सर्च विफल रहा। वेब परिणामों के बिना उत्तर दिया जा रहा है।</string>
 </resources>

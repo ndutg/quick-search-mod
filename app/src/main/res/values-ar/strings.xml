@@ -1177,5 +1177,6 @@
     <string name="settings_tavily_desc">أضف مفتاح Tavily API لإضافة دعم البحث على الويب للنماذج التي لا تدعمه.</string>
     <string name="settings_tavily_mode_always">استخدم Tavily دائمًا للبحث على الويب</string>
     <string name="settings_tavily_mode_when_unsupported">استخدمه فقط عندما لا يدعم النموذج البحث على الويب</string>
+    <string name="settings_weather_no_web_search_warning">يحتاج الطقس إلى نتائج من الويب. اختر نموذجًا يدعم البحث على الويب، أو أضف مفتاح Tavily API في إعداد مفتاح API.</string>
     <string name="tavily_search_failed_toast">فشل البحث على الويب عبر Tavily. تتم الإجابة بدون نتائج الويب.</string>
 </resources>

@@ -1195,5 +1195,6 @@
     <string name="settings_tavily_desc">Добавьте API-ключ Tavily, чтобы добавить веб-поиск моделям, которые его не поддерживают.</string>
     <string name="settings_tavily_mode_always">Всегда использовать Tavily для веб-поиска</string>
     <string name="settings_tavily_mode_when_unsupported">Использовать, только если модель не поддерживает веб-поиск</string>
+    <string name="settings_weather_no_web_search_warning">Погоде нужны результаты из интернета. Выберите модель с поддержкой веб-поиска или добавьте API-ключ Tavily в разделе «Настройка API-ключа».</string>
     <string name="tavily_search_failed_toast">Веб-поиск Tavily не удался. Ответ без результатов из интернета.</string>
 </resources>

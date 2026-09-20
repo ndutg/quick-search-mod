@@ -1165,5 +1165,6 @@
     <string name="settings_tavily_desc">添加 Tavily API 密钥，为不支持网页搜索的模型添加网页搜索功能。</string>
     <string name="settings_tavily_mode_always">始终使用 Tavily 进行网页搜索</string>
     <string name="settings_tavily_mode_when_unsupported">仅在模型不支持网页搜索时使用</string>
+    <string name="settings_weather_no_web_search_warning">天气需要网页结果。请选择支持网页搜索的模型，或在“API 密钥设置”中添加 Tavily API 密钥。</string>
     <string name="tavily_search_failed_toast">Tavily 网页搜索失败，将在没有网页结果的情况下回答。</string>
 </resources>

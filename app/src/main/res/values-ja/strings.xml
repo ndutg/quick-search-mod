@@ -1184,5 +1184,6 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_tavily_desc">Tavily API キーを追加すると、ウェブ検索に対応していないモデルでもウェブ検索を利用できます。</string>
     <string name="settings_tavily_mode_always">ウェブ検索には常に Tavily を使用</string>
     <string name="settings_tavily_mode_when_unsupported">モデルがウェブ検索に対応していない場合のみ使用</string>
+    <string name="settings_weather_no_web_search_warning">天気にはウェブの検索結果が必要です。ウェブ検索に対応したモデルを選ぶか、APIキーの設定でTavily APIキーを追加してください。</string>
     <string name="tavily_search_failed_toast">Tavily のウェブ検索に失敗しました。ウェブ結果なしで回答します。</string>
 </resources>

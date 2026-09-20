@@ -1175,5 +1175,6 @@
     <string name="settings_tavily_desc">వెబ్ సెర్చ్‌కు మద్దతు లేని మోడల్‌లకు వెబ్ సెర్చ్ జోడించడానికి Tavily API కీని జోడించండి.</string>
     <string name="settings_tavily_mode_always">వెబ్ సెర్చ్ కోసం ఎల్లప్పుడూ Tavily ఉపయోగించండి</string>
     <string name="settings_tavily_mode_when_unsupported">మోడల్ వెబ్ సెర్చ్‌కు మద్దతు ఇవ్వనప్పుడు మాత్రమే ఉపయోగించండి</string>
+    <string name="settings_weather_no_web_search_warning">వాతావరణానికి వెబ్ ఫలితాలు అవసరం. వెబ్ సెర్చ్‌కు మద్దతు ఇచ్చే మోడల్‌ను ఎంచుకోండి, లేదా API కీ సెటప్‌లో Tavily API కీని జోడించండి.</string>
     <string name="tavily_search_failed_toast">Tavily వెబ్ సెర్చ్ విఫలమైంది. వెబ్ ఫలితాలు లేకుండా సమాధానం ఇస్తోంది.</string>
 </resources>

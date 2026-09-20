@@ -7,14 +7,12 @@ import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.data.UserAppPreferences
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 internal data class AiConversationTurn(
     val question: String,
@@ -361,6 +359,7 @@ class AiSearchHandler(
                 val selectedModel = availableGeminiModels.find { it.id == selectedModelId }
                 val webSearch =
                     prepareWebSearch(
+                        userPreferences = userPreferences,
                         searchQuery = trimmedQuery,
                         prompt =
                             if (isFollowUp) {
@@ -372,6 +371,7 @@ class AiSearchHandler(
                             providerSupportsNativeSearch(activeProviderId) &&
                                 selectedModel?.supportsGrounding != false,
                         nativeSearchRequested = groundingEnabled,
+                        onTavilyFailure = { showToastCallback(R.string.tavily_search_failed_toast) },
                     )
                 val result =
                     activeProvider.fetchAnswer(
@@ -505,15 +505,15 @@ class AiSearchHandler(
                 val useSystemInstruction =
                     providerModels.firstOrNull { it.id == modelId }?.supportsSystemInstructions
                         ?: !modelId.lowercase().startsWith("gemma-")
-                val supportsGrounding =
-                    providerModels.firstOrNull { it.id == modelId }?.supportsGrounding
-                        ?: !modelId.lowercase().startsWith("gemma-")
+                val supportsGrounding = modelSupportsGrounding(modelId, providerModels)
                 val webSearch =
                     prepareWebSearch(
+                        userPreferences = userPreferences,
                         searchQuery = trimmedQuery,
                         prompt = trimmedQuery,
                         nativeSearchSupported = providerSupportsNativeSearch(providerId) && supportsGrounding,
                         nativeSearchRequested = groundingEnabled,
+                        onTavilyFailure = { showToastCallback(R.string.tavily_search_failed_toast) },
                     )
                 val result =
                     provider.fetchAnswer(
@@ -591,60 +591,6 @@ class AiSearchHandler(
             }
     }
 
-    private fun providerSupportsNativeSearch(providerId: AiSearchLlmProviderId): Boolean =
-        providerId != AiSearchLlmProviderId.OPENAI &&
-            providerId != AiSearchLlmProviderId.GROQ &&
-            !providerId.isCustom
-
-    private data class PreparedWebSearch(
-        val prompt: String,
-        val useNativeSearch: Boolean,
-    )
-
-    /**
-     * Applies the Tavily web search setting to one request. If Tavily fails, the prompt is sent
-     * unchanged and the model's own web search is used when it is available and turned on.
-     */
-    private suspend fun prepareWebSearch(
-        searchQuery: String,
-        prompt: String,
-        nativeSearchSupported: Boolean,
-        nativeSearchRequested: Boolean,
-    ): PreparedWebSearch {
-        val (mode, tavilyApiKey) =
-            withContext(Dispatchers.IO) {
-                userPreferences.getTavilyWebSearchMode() to userPreferences.getTavilyApiKey()
-            }
-        val plan =
-            resolveWebSearchPlan(
-                mode = mode,
-                hasTavilyKey = !tavilyApiKey.isNullOrBlank(),
-                nativeSearchSupported = nativeSearchSupported,
-                nativeSearchRequested = nativeSearchRequested,
-            )
-        if (!plan.useTavily || tavilyApiKey == null) {
-            return PreparedWebSearch(prompt = prompt, useNativeSearch = plan.useNativeSearch)
-        }
-        return TavilyClient(tavilyApiKey)
-            .search(searchQuery)
-            .fold(
-                onSuccess = { results ->
-                    PreparedWebSearch(
-                        prompt = TavilyClient.buildPromptWithResults(prompt, results),
-                        useNativeSearch = false,
-                    )
-                },
-                onFailure = { error ->
-                    if (error is CancellationException) throw error
-                    showToastCallback(R.string.tavily_search_failed_toast)
-                    PreparedWebSearch(
-                        prompt = prompt,
-                        useNativeSearch = nativeSearchSupported && nativeSearchRequested,
-                    )
-                },
-            )
-    }
-
     fun clearAiSearchState() {
         aiSearchJob?.cancel()
         aiSearchJob = null
@@ -673,10 +619,5 @@ class AiSearchHandler(
     private fun modelSupportsSystemInstructions(modelId: String): Boolean {
         val model = availableGeminiModels.find { it.id == modelId }
         return model?.supportsSystemInstructions ?: !modelId.lowercase().startsWith("gemma-")
-    }
-
-    private fun modelSupportsGrounding(modelId: String): Boolean {
-        val model = availableGeminiModels.find { it.id == modelId }
-        return model?.supportsGrounding ?: !modelId.lowercase().startsWith("gemma-")
     }
 }

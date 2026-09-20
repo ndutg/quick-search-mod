@@ -860,10 +860,6 @@ internal fun SettingsDetailLevel2Screen(
                                     onSetGeminiGroundingEnabled = callbacks.onSetGeminiGroundingEnabled,
                                     onSetGeminiThinkingEnabled = callbacks.onSetGeminiThinkingEnabled,
                                     onRefreshAvailableGeminiModels = callbacks.onRefreshAvailableGeminiModels,
-                                    showGroundingCheckbox =
-                                        state.aiSearchLlmProviderId != AiSearchLlmProviderId.OPENAI &&
-                                            !state.aiSearchLlmProviderId.isCustom &&
-                                            state.aiSearchLlmProviderId != AiSearchLlmProviderId.GROQ,
                                     showThinkingCheckbox =
                                         state.aiSearchLlmProviderId != AiSearchLlmProviderId.OPENAI &&
                                             !state.aiSearchLlmProviderId.isCustom,

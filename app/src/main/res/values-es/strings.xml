@@ -1175,5 +1175,6 @@
     <string name="settings_tavily_desc">Añade una clave de API de Tavily para dar búsqueda web a los modelos que no la admiten.</string>
     <string name="settings_tavily_mode_always">Usar siempre Tavily para la búsqueda web</string>
     <string name="settings_tavily_mode_when_unsupported">Usar solo cuando el modelo no admita búsqueda web</string>
+    <string name="settings_weather_no_web_search_warning">El clima necesita resultados web. Elige un modelo que admita búsqueda web o añade una clave API de Tavily en Configuración de clave API.</string>
     <string name="tavily_search_failed_toast">La búsqueda web de Tavily falló. Respondiendo sin resultados web.</string>
 </resources>

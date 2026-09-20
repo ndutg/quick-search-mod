@@ -1204,5 +1204,6 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_tavily_desc">Dodaj klucz API Tavily, aby dodać wyszukiwanie w sieci do modeli, które go nie obsługują.</string>
     <string name="settings_tavily_mode_always">Zawsze używaj Tavily do wyszukiwania w sieci</string>
     <string name="settings_tavily_mode_when_unsupported">Używaj tylko, gdy model nie obsługuje wyszukiwania w sieci</string>
+    <string name="settings_weather_no_web_search_warning">Pogoda wymaga wyników z sieci. Wybierz model obsługujący wyszukiwanie w sieci lub dodaj klucz API Tavily w Konfiguracji klucza API.</string>
     <string name="tavily_search_failed_toast">Wyszukiwanie Tavily nie powiodło się. Odpowiedź bez wyników z sieci.</string>
 </resources>
