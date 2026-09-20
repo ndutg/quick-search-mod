@@ -16,6 +16,7 @@ import com.tk.quicksearch.shared.permissions.permissionsScreenSubtitle
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.isDefaultDigitalAssistant
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 
 /**
@@ -30,7 +31,9 @@ fun PermissionsSettings(
     onRequestCallPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isDefaultLauncher = LocalContext.current.isDefaultHomeApp()
+    val context = LocalContext.current
+    val showBackgroundUsage =
+        !context.isDefaultHomeApp() && !context.isDefaultDigitalAssistant()
 
     Column(modifier = modifier) {
         Text(
@@ -66,7 +69,7 @@ fun PermissionsSettings(
             showCalendarPermission = true,
             showCallingPermission = true,
             showNotificationsPermission = true,
-            showBackgroundUsage = isDefaultLauncher,
+            showBackgroundUsage = showBackgroundUsage,
             onRequestUsagePermission = onRequestUsagePermission,
             onRequestContactPermission = onRequestContactPermission,
             onRequestFilePermission = onRequestFilePermission,
