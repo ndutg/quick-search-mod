@@ -201,7 +201,7 @@
     <string name="dialog_edit_amazon_domain_message">Aggiorna il dominio Amazon per il tuo Paese.</string>
     <string name="dialog_edit_amazon_domain_title">Modifica dominio Amazon</string>
     <string name="dialog_gemini_model_picker_title">Seleziona modello</string>
-    <string name="dialog_nickname_message">Inserisci un soprannome per "%1$s". Potrai cercarlo usando questo soprannome.</string>
+    <string name="dialog_nickname_message">Inserisci uno o più soprannomi per "%1$s", separati da virgole. Potrai cercarlo usando uno qualsiasi di essi.</string>
     <string name="dialog_ok">Continua</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Ricorda questa scelta</string>
@@ -316,7 +316,7 @@
     <string name="action_disable_app_shortcut">Disattiva</string>
     <string name="action_disable_all_app_shortcuts_named">Disattiva tutte le scorciatoie di %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Scorciatoia disattivata</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Puoi riattivarla più tardi nelle impostazioni delle scorciatoie app.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Puoi riattivarla più tardi nelle impostazioni.</string>
     <string name="apps_refreshed_successfully">App aggiornate con successo</string>
     <string name="error_loading_user_apps">Impossibile caricare le tue app. Riprova tra un momento.</string>
     <string name="error_uninstall_app">Impossibile disinstallare %1$s</string>
@@ -661,6 +661,9 @@
     <string name="settings_all_quick_search_features_desc">Visualizza l\u2019elenco completo delle funzionalità e capacità</string>
     <string name="settings_app_settings_desc">Cerca nelle impostazioni di Quick Search</string>
     <string name="settings_features_load_failed">Impossibile caricare la documentazione delle funzionalità.</string>
+    <string name="settings_features_export">Scarica e condividi le funzionalità</string>
+    <string name="settings_features_export_failed">Impossibile salvare la documentazione delle funzionalità.</string>
+    <string name="settings_features_saved_to_downloads">Salvato in Download</string>
     <string name="settings_features_sections_title">Indice</string>
     <string name="settings_search_description_change_app_theme">Cambia il tema dell\u2019app</string>
     <string name="settings_search_description_change_font_size">Cambia la dimensione del carattere dell\u2019app</string>
@@ -883,7 +886,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Visualizza il codice sorgente di questo progetto su GitHub</string>
     <string name="settings_feedback_github_title">Sviluppo</string>
-    <string name="settings_feedback_rate_desc">Lascia una valutazione a 5 stelle se trovi utile questa app</string>
+    <string name="settings_feedback_rate_desc">Lascia una valutazione a 5 stelle se trovi utile questa app 🙏</string>
     <string name="settings_feedback_rate_title">Valuta Quick Search</string>
     <string name="settings_feedback_send_desc">Segnala bug o richiedi funzionalità</string>
     <string name="settings_feedback_send_title">Invia feedback</string>

@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">మీ దేశం కోసం Amazon డొమైన్‌ను నవీకరించండి.</string>
     <string name="dialog_edit_amazon_domain_title">Amazon డొమైన్‌ను సవరించండి</string>
     <string name="dialog_gemini_model_picker_title">మోడల్‌ను ఎంచుకోండి</string>
-    <string name="dialog_nickname_message">\"%1$s\" కోసం ఒక మారుపేరును నమోదు చేయండి. మీరు ఈ మారుపేరుతో కూడా శోధించవచ్చు.</string>
+    <string name="dialog_nickname_message">\"%1$s\" కోసం ఒకటి లేదా అంతకంటే ఎక్కువ మారుపేర్లను కామాలతో వేరు చేసి నమోదు చేయండి. వాటిలో దేనితోనైనా మీరు శోధించవచ్చు.</string>
     <string name="dialog_ok">కొనసాగించు</string>
     <string name="dialog_okay">సరే</string>
     <string name="dialog_remember_choice">ఈ ఎంపికను గుర్తుంచుకో</string>
@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">నిలిపివేయి</string>
     <string name="action_disable_all_app_shortcuts_named">%1$s యొక్క అన్ని షార్ట్‌కట్‌లను నిలిపివేయండి</string>
     <string name="snackbar_app_shortcut_disabled_title">యాప్ షార్ట్‌కట్ నిలిపివేయబడింది</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">మీరు దీన్ని తర్వాత యాప్ షార్ట్‌కట్ సెట్టింగ్‌లలో ప్రారంభించవచ్చు.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">మీరు దీన్ని తర్వాత సెట్టింగ్‌లలో ప్రారంభించవచ్చు.</string>
     <string name="apps_refreshed_successfully">యాప్‌లు విజయవంతంగా రీఫ్రెష్ చేయబడ్డాయి</string>
     <string name="error_loading_user_apps">మేము మీ యాప్‌లను లోడ్ చేయలేకపోయాము. కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.</string>
     <string name="error_uninstall_app">%1$sను అన్‌ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</string>
@@ -662,6 +662,9 @@
     <string name="settings_all_quick_search_features_desc">ఫీచర్లు మరియు వాటి సామర్థ్యాల పూర్తి జాబితాను చూడండి</string>
     <string name="settings_app_settings_desc">Quick Search సెట్టింగ్‌ల కోసం శోధించండి</string>
     <string name="settings_features_load_failed">ఫీచర్ డాక్యుమెంటేషన్‌ను లోడ్ చేయడం సాధ్యపడలేదు.</string>
+    <string name="settings_features_export">ఫీచర్‌లను డౌన్‌లోడ్ చేసి షేర్ చేయండి</string>
+    <string name="settings_features_export_failed">ఫీచర్ డాక్యుమెంటేషన్‌ను సేవ్ చేయడం సాధ్యపడలేదు.</string>
+    <string name="settings_features_saved_to_downloads">డౌన్‌లోడ్‌లలో సేవ్ చేయబడింది</string>
     <string name="settings_features_sections_title">విషయాలు</string>
     <string name="settings_search_description_change_app_theme">యాప్ థీమ్‌ను మార్చండి</string>
     <string name="settings_search_description_change_font_size">యాప్ ఫాంట్ పరిమాణాన్ని మార్చండి</string>
@@ -884,7 +887,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">GitHub లో ఈ ప్రాజెక్ట్ యొక్క సోర్స్ కోడ్‌ను వీక్షించండి</string>
     <string name="settings_feedback_github_title">డెవలప్‌మెంట్</string>
-    <string name="settings_feedback_rate_desc">ఈ యాప్ మీకు ఉపయోగకరంగా అనిపిస్తే 5 స్టార్ రేటింగ్ ఇవ్వండి</string>
+    <string name="settings_feedback_rate_desc">ఈ యాప్ మీకు ఉపయోగకరంగా అనిపిస్తే 5 స్టార్ రేటింగ్ ఇవ్వండి 🙏</string>
     <string name="settings_feedback_rate_title">Quick Search కి రేటింగ్ ఇవ్వండి</string>
     <string name="settings_feedback_send_desc">లోపాలను నివేదించండి లేదా ఫీచర్లను అభ్యర్థించండి</string>
     <string name="settings_feedback_send_title">ఫీడ్‌బ్యాక్ పంపండి</string>

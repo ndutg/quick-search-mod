@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Button
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,8 +50,21 @@ fun SettingsExportDialog(
                     checked = true,
                     onCheckedChange = {},
                     icon = Icons.Rounded.Tune,
-                    isLastItem = false,
+                    isLastItem =
+                        !selectionState.showPinnedItemsOption &&
+                            !selectionState.showNotesOption &&
+                            !selectionState.showCalendarEventsOption &&
+                            !selectionState.showApiKeysOption,
                     enabled = false,
+                    checkboxColors =
+                        CheckboxDefaults.colors(
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            MaterialTheme.colorScheme.surface,
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
                 )
                 if (selectionState.showPinnedItemsOption) {
                     SettingsCheckboxRow(
@@ -62,19 +75,12 @@ fun SettingsExportDialog(
                             onSelectionStateChange(selectionState.copy(includePinnedItems = it))
                         },
                         icon = Icons.Rounded.PushPin,
-                        isLastItem = false,
+                        isLastItem =
+                            !selectionState.showNotesOption &&
+                                !selectionState.showCalendarEventsOption &&
+                                !selectionState.showApiKeysOption,
                     )
                 }
-                SettingsCheckboxRow(
-                    title = stringResource(R.string.section_app_shortcuts),
-                    description = "",
-                    checked = selectionState.includeShortcuts,
-                    onCheckedChange = {
-                        onSelectionStateChange(selectionState.copy(includeShortcuts = it))
-                    },
-                    icon = Icons.Rounded.Apps,
-                    isLastItem = !selectionState.showNotesOption && !selectionState.showCalendarEventsOption && !selectionState.showApiKeysOption,
-                )
                 if (selectionState.showNotesOption) {
                     SettingsCheckboxRow(
                         title = stringResource(R.string.section_notes),
@@ -136,7 +142,6 @@ fun SettingsExportDialog(
 
 data class ExportSelectionState(
     val includePinnedItems: Boolean = true,
-    val includeShortcuts: Boolean = true,
     val includeNotes: Boolean = true,
     val includeCalendarEvents: Boolean = true,
     val includeApiKeys: Boolean = false,
@@ -151,7 +156,7 @@ data class ExportSelectionState(
             add(SettingsBackupManager.ExportItem.SETTINGS)
             add(SettingsBackupManager.ExportItem.SEARCH_ENGINES)
             if (includePinnedItems) add(SettingsBackupManager.ExportItem.PINNED_ITEMS)
-            if (includeShortcuts) add(SettingsBackupManager.ExportItem.SHORTCUTS)
+            add(SettingsBackupManager.ExportItem.SHORTCUTS)
             if (includeNotes) add(SettingsBackupManager.ExportItem.NOTES)
             if (includeCalendarEvents) add(SettingsBackupManager.ExportItem.CALENDAR_EVENTS)
             if (includeApiKeys && showApiKeysOption) add(SettingsBackupManager.ExportItem.API_KEYS)

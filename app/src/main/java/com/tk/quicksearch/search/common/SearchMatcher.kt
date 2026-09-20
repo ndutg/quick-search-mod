@@ -81,12 +81,27 @@ class CachedSearchMatcher(
         primaryText: String,
         query: SearchQueryContext,
         nickname: String?,
-    ): Int =
-        SearchRankingUtils.calculateMatchPriorityWithNickname(
-            primaryText = textCache.prepare(primaryText),
-            nickname = nickname?.let(textCache::prepare),
-            query = query,
-        )
+    ): Int {
+        val prepared = textCache.prepare(primaryText)
+        // A nickname may hold several comma-separated aliases; score each and keep the best.
+        if (nickname == null || !NicknameUtils.hasMultiple(nickname)) {
+            return SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = prepared,
+                nickname = nickname?.let(textCache::prepare),
+                query = query,
+            )
+        }
+        return NicknameUtils
+            .split(nickname)
+            .minOfOrNull { alias ->
+                SearchRankingUtils.calculateMatchPriorityWithNickname(
+                    primaryText = prepared,
+                    nickname = textCache.prepare(alias),
+                    query = query,
+                )
+            }
+            ?: SearchRankingUtils.calculateMatchPriority(prepared, query)
+    }
 
     override fun matchAny(
         query: SearchQueryContext,

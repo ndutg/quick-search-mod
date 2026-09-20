@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -36,13 +37,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 
 /** Snackbar content with an optional icon and a smaller line of supporting text under the message. */
 internal data class UndoSnackbarVisuals(
     override val message: String,
     override val actionLabel: String?,
     val supportingText: String? = null,
-    val icon: ImageVector = Icons.Rounded.VisibilityOff,
+    val icon: ImageVector? = Icons.Rounded.VisibilityOff,
     override val duration: SnackbarDuration = SnackbarDuration.Short,
     override val withDismissAction: Boolean = false,
 ) : SnackbarVisuals
@@ -60,7 +62,7 @@ internal fun ExcludeUndoSnackbarHost(
             UndoSnackbar(
                 message = rememberHighlightedExcludeMessage(visuals.message),
                 supportingText = undoVisuals?.supportingText,
-                icon = undoVisuals?.icon ?: Icons.Rounded.VisibilityOff,
+                icon = if (undoVisuals != null) undoVisuals.icon else Icons.Rounded.VisibilityOff,
                 actionLabel = visuals.actionLabel,
                 onAction = { data.performAction() },
             )
@@ -73,17 +75,19 @@ internal fun ExcludeUndoSnackbarHost(
 private fun UndoSnackbar(
     message: AnnotatedString,
     supportingText: String?,
-    icon: ImageVector,
+    icon: ImageVector?,
     actionLabel: String?,
     onAction: () -> Unit,
 ) {
-    // Accent-tinted so the snackbar follows the selected theme.
     val colors = MaterialTheme.colorScheme
+    val isDarkTheme = LocalAppIsDarkTheme.current
+    val backgroundColor = if (isDarkTheme) Color.Black else Color.White
+    val contentColor = if (isDarkTheme) Color.White else Color.Black
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = DesignTokens.ShapeLarge,
-        color = colors.primaryContainer,
-        contentColor = colors.onPrimaryContainer,
+        color = backgroundColor,
+        contentColor = contentColor,
         shadowElevation = 6.dp,
     ) {
         Row(
@@ -93,18 +97,20 @@ private fun UndoSnackbar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(colors.onPrimaryContainer.copy(alpha = 0.12f), CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = colors.onPrimaryContainer,
-                    modifier = Modifier.size(20.dp),
-                )
+            icon?.let { imageVector ->
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(contentColor.copy(alpha = 0.12f), CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = imageVector,
+                        contentDescription = null,
+                        tint = contentColor,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
             }
             Column(
                 modifier = Modifier.weight(1f),
@@ -114,13 +120,13 @@ private fun UndoSnackbar(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = if (supportingText != null) FontWeight.SemiBold else null,
-                    color = colors.onPrimaryContainer,
+                    color = contentColor,
                 )
                 supportingText?.let { text ->
                     Text(
                         text = text,
                         style = MaterialTheme.typography.bodySmall,
-                        color = colors.onPrimaryContainer.copy(alpha = 0.8f),
+                        color = contentColor.copy(alpha = 0.8f),
                     )
                 }
             }

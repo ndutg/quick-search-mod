@@ -206,7 +206,7 @@
     <string name="dialog_edit_amazon_domain_message">Zaktualizuj domenę Amazon dla swojego kraju.</string>
     <string name="dialog_edit_amazon_domain_title">Edytuj domenę Amazon</string>
     <string name="dialog_gemini_model_picker_title">Wybierz model</string>
-    <string name="dialog_nickname_message">Wpisz pseudonim dla "%1$s". Będzie można wyszukiwać tę pozycję za pomocą tego pseudonimu.</string>
+    <string name="dialog_nickname_message">Wpisz jeden lub więcej pseudonimów dla "%1$s", oddzielając je przecinkami. Będzie można wyszukiwać tę pozycję za pomocą dowolnego z nich.</string>
     <string name="dialog_ok">Dalej</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Zapamiętaj ten wybór</string>
@@ -321,7 +321,7 @@
     <string name="action_disable_app_shortcut">Wyłącz</string>
     <string name="action_disable_all_app_shortcuts_named">Wyłącz wszystkie skróty %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Skrót aplikacji wyłączony</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Możesz włączyć ten skrót później w Ustawieniach skrótów aplikacji.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Możesz włączyć go później w Ustawieniach.</string>
     <string name="apps_refreshed_successfully">Pomyślnie odświeżono aplikacje</string>
     <string name="error_loading_user_apps">Nie udało się załadować aplikacji. Spróbuj ponownie za chwilę.</string>
     <string name="error_uninstall_app">Nie można odinstalować %1$s</string>
@@ -691,6 +691,9 @@ Dostępne skróty: %1$s</string>
     <string name="settings_more_apps_from_developer_title">Więcej aplikacji od dewelopera</string>
     <string name="settings_app_settings_desc">Szukaj w ustawieniach Quick Search</string>
     <string name="settings_features_load_failed">Nie udało się załadować dokumentacji funkcji.</string>
+    <string name="settings_features_export">Pobierz i udostępnij funkcje</string>
+    <string name="settings_features_export_failed">Nie udało się zapisać dokumentacji funkcji.</string>
+    <string name="settings_features_saved_to_downloads">Zapisano w Pobranych</string>
     <string name="settings_features_sections_title">Spis treści</string>
     <string name="settings_search_description_change_app_theme">Zmień motyw aplikacji</string>
     <string name="settings_search_description_change_font_size">Zmień rozmiar czcionki aplikacji</string>
@@ -916,7 +919,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Zobacz kod źródłowy projektu na GitHubie</string>
     <string name="settings_feedback_github_title">Rozwój projektu</string>
-    <string name="settings_feedback_rate_desc">Wystaw ocenę 5 gwiazdek, jeśli ta aplikacja jest dla Ciebie przydatna</string>
+    <string name="settings_feedback_rate_desc">Wystaw ocenę 5 gwiazdek, jeśli ta aplikacja jest dla Ciebie przydatna 🙏</string>
     <string name="settings_feedback_rate_title">Oceń Quick Search</string>
     <string name="settings_feedback_send_desc">Zgłaszaj błędy lub proponuj nowe funkcje</string>
     <string name="settings_feedback_send_title">Prześlij opinię</string>

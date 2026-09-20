@@ -87,7 +87,9 @@ class WidgetsPanelPreferences(
             column = prefs.getInt(KEY_QUICK_NOTE_COLUMN, 0).coerceAtLeast(0),
             row = prefs.getInt(KEY_QUICK_NOTE_ROW, 0).coerceAtLeast(0),
             columnSpan = WIDGET_PANEL_GRID_COLUMNS,
-            rowSpan = WIDGET_PANEL_DEFAULT_ROW_SPAN,
+            rowSpan =
+                prefs.getInt(KEY_QUICK_NOTE_ROW_SPAN, WIDGET_PANEL_DEFAULT_ROW_SPAN)
+                    .coerceIn(1, WIDGET_PANEL_MAX_ROW_SPAN),
         )
 
     fun setQuickNoteWidget(widget: PanelWidgetInfo) {
@@ -95,6 +97,7 @@ class WidgetsPanelPreferences(
         prefs.edit()
             .putInt(KEY_QUICK_NOTE_COLUMN, widget.column ?: 0)
             .putInt(KEY_QUICK_NOTE_ROW, widget.row ?: 0)
+            .putInt(KEY_QUICK_NOTE_ROW_SPAN, widget.rowSpan ?: WIDGET_PANEL_DEFAULT_ROW_SPAN)
             .apply()
     }
 
@@ -134,6 +137,7 @@ class WidgetsPanelPreferences(
         const val FIELD_ROW_SPAN = "rowSpan"
         const val KEY_QUICK_NOTE_COLUMN = "quick_note_widget_column"
         const val KEY_QUICK_NOTE_ROW = "quick_note_widget_row"
+        const val KEY_QUICK_NOTE_ROW_SPAN = "quick_note_widget_row_span"
     }
 }
 

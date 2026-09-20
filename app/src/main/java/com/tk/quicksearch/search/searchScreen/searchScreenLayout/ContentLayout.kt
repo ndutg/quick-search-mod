@@ -2,8 +2,8 @@ package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -34,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -182,12 +183,8 @@ fun ContentLayout(
             isAppSearchRefreshing = state.isAppSearchInProgress,
             secondarySectionsRefreshing = state.secondarySearchSectionsInProgress,
         )
-    // The overlay already animates its full surface on entry. In one-handed mode, layering every
-    // async Home section height animation on top of that bottom-anchored surface makes early
-    // content briefly reflow in the opposite direction. App suggestions are the exception: they
-    // arrive after the agenda is visible, so their height must expand instead of being inserted in
-    // one frame and jumping the agenda to its final position.
-    val animateHomeLoadingContent = !(isOverlayPresentation && state.oneHandedMode)
+    // Home sections reserve their full height as soon as their data arrives and only fade in, so
+    // nothing above them reflows while the rest of the agenda is still loading.
     var suggestionsAppGridHasAppeared by remember { mutableStateOf(false) }
     val appearedHomeContentKeys = remember { mutableSetOf<String>() }
     val effectiveAppsParams = appsParams.copy(
@@ -647,7 +644,7 @@ fun ContentLayout(
         LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.SearchHistoryRendered") }
         HomeLoadingAnimatedContent(
             animationKey = "home-search-history",
-            enabled = !hasQuery && animateHomeLoadingContent,
+            enabled = !hasQuery,
             appearedKeys = appearedHomeContentKeys,
         ) {
             Column(
@@ -927,11 +924,7 @@ fun ContentLayout(
                 if (homeSectionContentReady) {
                     HomeLoadingAnimatedContent(
                         animationKey = "home-section-${section.name}",
-                        enabled =
-                            !hasQuery &&
-                                !isHomeCalendarExpanded &&
-                                (animateHomeLoadingContent || section == SearchSection.APPS),
-                        fadeContent = section != SearchSection.APPS,
+                        enabled = !hasQuery && !isHomeCalendarExpanded,
                         appearedKeys = appearedHomeContentKeys,
                     ) {
                         renderHomePinnedSection(section) {
@@ -954,7 +947,7 @@ fun ContentLayout(
                             }
                             HomeLoadingAnimatedContent(
                                 animationKey = "home-today-calendar",
-                                enabled = animateHomeLoadingContent,
+                                enabled = true,
                                 appearedKeys = appearedHomeContentKeys,
                             ) {
                                 renderSection(
@@ -972,7 +965,7 @@ fun ContentLayout(
                         if (!isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
                             HomeLoadingAnimatedContent(
                                 animationKey = "home-today-calendar",
-                                enabled = animateHomeLoadingContent,
+                                enabled = true,
                                 appearedKeys = appearedHomeContentKeys,
                             ) {
                                 renderSection(
@@ -1198,15 +1191,14 @@ fun ContentLayout(
 }
 
 /**
- * Animates home sections from zero height when their asynchronously loaded data first arrives.
- * Expanding the section height also moves every section below it, so late app suggestions push
- * an already-visible agenda down instead of making it jump to its final position.
+ * Fades home sections in when their asynchronously loaded data first arrives. The section is laid
+ * out at its final height from the first frame, so neighbouring sections never slide as late
+ * content appears; only its opacity animates.
  */
 @Composable
 private fun HomeLoadingAnimatedContent(
     animationKey: String,
     enabled: Boolean,
-    fadeContent: Boolean = true,
     appearedKeys: MutableSet<String>,
     content: @Composable () -> Unit,
 ) {
@@ -1225,31 +1217,22 @@ private fun HomeLoadingAnimatedContent(
     LaunchedEffect(animationKey) {
         visible = true
     }
-    AnimatedVisibility(
-        visible = visible,
-        modifier = Modifier.fillMaxWidth(),
-        enter =
-            expandVertically(
-                expandFrom = Alignment.Top,
-                animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis),
-            ) +
-                if (fadeContent) {
-                    fadeIn(animationSpec = tween(durationMillis = HomeSectionFadeDurationMillis))
-                } else {
-                    androidx.compose.animation.EnterTransition.None
-                },
+    val contentAlpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(durationMillis = HomeSectionFadeDurationMillis),
+        label = "homeSectionFade",
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer { alpha = contentAlpha },
+        verticalArrangement = Arrangement.spacedBy(HomeSectionContentSpacing),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(HomeSectionContentSpacing),
-        ) {
-            content()
-        }
+        content()
     }
 }
 
 private const val HomeSectionFadeDurationMillis = 180
-private const val HomeSectionExpandDurationMillis = 220
 private val HomeSectionContentSpacing = 14.dp
 
 private fun hasMoreResults(
