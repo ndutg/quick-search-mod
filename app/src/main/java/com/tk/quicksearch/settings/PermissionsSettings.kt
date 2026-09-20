@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.permissions.PermissionCardTexts
@@ -15,6 +16,7 @@ import com.tk.quicksearch.shared.permissions.permissionsScreenSubtitle
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.isDefaultHomeApp
 
 /**
  * Permissions settings screen with permission status and request options.
@@ -28,6 +30,8 @@ fun PermissionsSettings(
     onRequestCallPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isDefaultLauncher = LocalContext.current.isDefaultHomeApp()
+
     Column(modifier = modifier) {
         Text(
             text = permissionsScreenSubtitle(),
@@ -62,7 +66,7 @@ fun PermissionsSettings(
             showCalendarPermission = true,
             showCallingPermission = true,
             showNotificationsPermission = true,
-            showBackgroundUsage = true,
+            showBackgroundUsage = isDefaultLauncher,
             onRequestUsagePermission = onRequestUsagePermission,
             onRequestContactPermission = onRequestContactPermission,
             onRequestFilePermission = onRequestFilePermission,
