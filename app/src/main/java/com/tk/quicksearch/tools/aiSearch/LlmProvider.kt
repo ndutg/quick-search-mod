@@ -10,6 +10,15 @@ data class LlmTextModel(
     val supportsGrounding: Boolean = true,
 )
 
+/** Keeps a selection only when it is present in a successfully loaded live catalog. */
+fun resolveModelSelection(
+    selectedModelId: String,
+    availableModels: List<LlmTextModel>,
+): String =
+    selectedModelId.trim().takeIf { selected ->
+        selected.isNotEmpty() && availableModels.any { it.id == selected }
+    }.orEmpty()
+
 /** Shared request contract so callers don't depend on provider-specific payload formats. */
 data class LlmRequest(
     val query: String,

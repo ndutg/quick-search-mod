@@ -818,6 +818,9 @@
     <string name="settings_direct_search_grounding_label">联网搜索</string>
     <string name="settings_direct_search_how_to">获取免费 API 密钥</string>
     <string name="settings_direct_search_model_label">模型</string>
+    <string name="settings_select_model">选择模型</string>
+    <string name="ai_error_selected_model_unavailable">所选模型不可用。请在设置中选择其他模型。</string>
+    <string name="settings_loading_models">正在加载模型…</string>
     <string name="settings_direct_search_personal_context">个人背景信息</string>
     <string name="settings_direct_search_personal_context_hint">添加您希望 AI 在生成回答时参考的背景信息。</string>
     <string name="settings_direct_search_personal_context_unsupported">该模型不支持个人背景信息功能。</string>

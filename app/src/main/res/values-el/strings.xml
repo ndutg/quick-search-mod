@@ -828,6 +828,9 @@
     <string name="settings_direct_search_grounding_label">Αναζήτηση στον ιστό</string>
     <string name="settings_direct_search_how_to">Λάβετε δωρεάν κλειδί API</string>
     <string name="settings_direct_search_model_label">Μοντέλο</string>
+    <string name="settings_select_model">Επιλογή μοντέλου</string>
+    <string name="ai_error_selected_model_unavailable">Το επιλεγμένο μοντέλο δεν είναι διαθέσιμο. Επιλέξτε άλλο μοντέλο στις ρυθμίσεις.</string>
+    <string name="settings_loading_models">Φόρτωση μοντέλων…</string>
     <string name="settings_direct_search_personal_context">Προσωπικό πλαίσιο</string>
     <string name="settings_direct_search_personal_context_hint">Προσθέστε οποιοδήποτε πλαίσιο θέλετε να χρησιμοποιεί η AI κατά τη δημιουργία απαντήσεων.</string>
     <string name="settings_direct_search_personal_context_unsupported">Το προσωπικό πλαίσιο δεν είναι διαθέσιμο για αυτό το μοντέλο.</string>

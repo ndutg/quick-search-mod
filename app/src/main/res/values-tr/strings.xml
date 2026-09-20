@@ -827,6 +827,9 @@
 <string name="settings_direct_search_grounding_label">Web araması</string>
 <string name="settings_direct_search_how_to">Ücretsiz API anahtarı al</string>
 <string name="settings_direct_search_model_label">Model</string>
+<string name="settings_select_model">Model seç</string>
+<string name="ai_error_selected_model_unavailable">Seçilen model kullanılamıyor. Lütfen ayarlardan başka bir model seçin.</string>
+<string name="settings_loading_models">Modeller yükleniyor…</string>
 <string name="settings_direct_search_personal_context">Kişisel bağlam</string>
 <string name="settings_direct_search_personal_context_hint">Cevaplar oluşturulurken AI\'ın kullanmasını istediğin bilgileri ek.</string>
 <string name="settings_direct_search_personal_context_unsupported">Kişisel bağlam bu model için desteklenmiyor.</string>

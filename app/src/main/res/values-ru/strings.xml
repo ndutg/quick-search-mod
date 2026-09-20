@@ -848,6 +848,9 @@
 <string name="settings_direct_search_grounding_label">Поиск в Интернете</string>
 <string name="settings_direct_search_how_to">Получить бесплатный API-ключ</string>
 <string name="settings_direct_search_model_label">Модель</string>
+<string name="settings_select_model">Выберите модель</string>
+<string name="ai_error_selected_model_unavailable">Выбранная модель недоступна. Выберите другую модель в настройках.</string>
+<string name="settings_loading_models">Загрузка моделей…</string>
 <string name="settings_direct_search_personal_context">Персональный контекст</string>
 <string name="settings_direct_search_personal_context_hint">Добавьте любой контекст, который ИИ должен учитывать при создании ответов.</string>
 <string name="settings_direct_search_personal_context_unsupported">Персональный контекст не поддерживается для этой модели.</string>

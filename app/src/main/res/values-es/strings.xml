@@ -828,6 +828,9 @@
     <string name="settings_direct_search_grounding_label">Búsqueda web</string>
     <string name="settings_direct_search_how_to">Obtener clave API gratuita</string>
     <string name="settings_direct_search_model_label">Modelo</string>
+    <string name="settings_select_model">Seleccionar modelo</string>
+    <string name="ai_error_selected_model_unavailable">El modelo seleccionado no está disponible. Elige otro modelo en los ajustes.</string>
+    <string name="settings_loading_models">Cargando modelos…</string>
     <string name="settings_direct_search_personal_context">Contexto personal</string>
     <string name="settings_direct_search_personal_context_hint">Añade cualquier contexto que quieras que la AI utilice al generar respuestas.</string>
     <string name="settings_direct_search_personal_context_unsupported">El contexto personal no está disponible para este modelo.</string>

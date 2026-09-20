@@ -48,7 +48,7 @@ class AnthropicPreferences(
 
     fun getModel(): String {
         val model = prefs.getString(BasePreferences.KEY_ANTHROPIC_MODEL, null)?.trim()
-        return model.takeUnless { it.isNullOrEmpty() } ?: AnthropicModelCatalog.DEFAULT_MODEL_ID
+        return model.orEmpty()
     }
 
     fun setModel(modelId: String?) {

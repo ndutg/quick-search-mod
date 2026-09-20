@@ -46,8 +46,7 @@ class MetaPreferences(
     }
 
     fun getModel(): String =
-        prefs.getString(BasePreferences.KEY_META_MODEL, null)?.trim().takeUnless { it.isNullOrEmpty() }
-            ?: MetaModelCatalog.DEFAULT_MODEL_ID
+        prefs.getString(BasePreferences.KEY_META_MODEL, null)?.trim().orEmpty()
 
     fun setModel(modelId: String?) {
         val normalized = modelId?.trim()

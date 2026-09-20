@@ -828,6 +828,9 @@
     <string name="settings_direct_search_grounding_label">వెబ్ శోధన</string>
     <string name="settings_direct_search_how_to">ఉచిత API కీని పొందండి</string>
     <string name="settings_direct_search_model_label">మోడల్</string>
+    <string name="settings_select_model">మోడల్‌ను ఎంచుకోండి</string>
+    <string name="ai_error_selected_model_unavailable">ఎంచుకున్న మోడల్ అందుబాటులో లేదు. సెట్టింగ్‌లలో మరొక మోడల్‌ను ఎంచుకోండి.</string>
+    <string name="settings_loading_models">మోడల్‌లు లోడ్ అవుతున్నాయి…</string>
     <string name="settings_direct_search_personal_context">వ్యక్తిగత సందర్భం (Personal Context)</string>
     <string name="settings_direct_search_personal_context_hint">సమాధానాలను రూపొందించేటప్పుడు AI ఉపయోగించాలనుకునే ఏదైనా సందర్భాన్ని జోడించండి.</string>
     <string name="settings_direct_search_personal_context_unsupported">ఈ మోడల్‌కు వ్యక్తిగత సందర్భం (Personal Context) అందుబాటులో లేదు.</string>

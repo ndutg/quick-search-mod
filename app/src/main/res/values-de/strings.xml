@@ -828,6 +828,9 @@
     <string name="settings_direct_search_grounding_label">Web-Suche</string>
     <string name="settings_direct_search_how_to">Kostenlosen API-Schlüssel erhalten</string>
     <string name="settings_direct_search_model_label">Modell</string>
+    <string name="settings_select_model">Modell auswählen</string>
+    <string name="ai_error_selected_model_unavailable">Das ausgewählte Modell ist nicht verfügbar. Bitte wähle in den Einstellungen ein anderes Modell aus.</string>
+    <string name="settings_loading_models">Modelle werden geladen…</string>
     <string name="settings_direct_search_personal_context">Persönlicher Kontext</string>
     <string name="settings_direct_search_personal_context_hint">Füge hier Kontext hinzu, den die KI beim Generieren von Antworten berücksichtigen soll.</string>
     <string name="settings_direct_search_personal_context_unsupported">Persönlicher Kontext ist für dieses Modell nicht verfügbar.</string>
