@@ -1,5 +1,6 @@
 package com.tk.quicksearch.tools.setAlarm
 
+import java.time.LocalTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -40,5 +41,23 @@ class StartTimerHandlerTest {
         assertNull(StartTimerHandler.detectTimerSeconds("10:30"))
         assertNull(SetAlarmHandler.detectAlarmTime("10 min"))
         assertNull(SetAlarmHandler.detectAlarmTime("10h"))
+    }
+
+    @Test
+    fun `offers the alarm time the timer would fire at`() {
+        assertEquals(
+            LocalTime.of(10, 10),
+            StartTimerHandler.alarmTimeFor(600, LocalTime.of(10, 0)),
+        )
+        // Sub-minute drift is left in place; the alarm intent drops it when it reads hour/minute.
+        assertEquals(
+            LocalTime.of(10, 10, 45),
+            StartTimerHandler.alarmTimeFor(600, LocalTime.of(10, 0, 45)),
+        )
+        // Wraps past midnight, matching how the clock app reads a time in the past.
+        assertEquals(
+            LocalTime.of(0, 30),
+            StartTimerHandler.alarmTimeFor(3600, LocalTime.of(23, 30)),
+        )
     }
 }

@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.provider.AlarmClock
+import java.time.LocalTime
 import java.util.Locale
 
 /**
@@ -33,6 +34,14 @@ object StartTimerHandler {
         if (seconds > MAX_TIMER_SECONDS) return null
         return seconds.toInt()
     }
+
+    /**
+     * Returns the wall-clock time [seconds] from [now], so a duration query can also offer an alarm
+     * for the moment the timer would fire. The alarm intent only carries an hour and a minute, so
+     * the result lands up to a minute early.
+     */
+    fun alarmTimeFor(seconds: Int, now: LocalTime = LocalTime.now()): LocalTime =
+        now.plusSeconds(seconds.toLong())
 
     /**
      * Starts a timer of [seconds] in the system clock app without showing its UI, so the pill acts

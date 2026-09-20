@@ -1613,6 +1613,21 @@ internal fun SearchScreenContent(
                                             .show()
                                 },
                         )
+                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        SetAlarmPill(
+                                onClick = {
+                                    val alarmTime =
+                                            StartTimerHandler.alarmTimeFor(detectedTimerSeconds)
+                                    if (!SetAlarmHandler.launchSetAlarm(context, alarmTime)) {
+                                        android.widget.Toast.makeText(
+                                                        context,
+                                                        context.getString(R.string.set_alarm_no_clock_app),
+                                                        android.widget.Toast.LENGTH_SHORT,
+                                                )
+                                                .show()
+                                    }
+                                },
+                        )
                     }
                 }
             }
