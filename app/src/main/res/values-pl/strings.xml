@@ -123,7 +123,6 @@
     <string name="settings_gesture_notification_panel">Panel powiadomień</string>
     <string name="settings_gesture_lock_screen">Zablokuj ekran</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Wymaga uprawnienia ułatwień dostępu</string>
-    <string name="accessibility_lock_screen_service_label">Blokada ekranu Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Umożliwia aplikacji Quick Search blokowanie ekranu za pomocą gestu dwukrotnego dotknięcia na ekranie głównym. Nie odczytuje zawartości ekranu.</string>
     <string name="accessibility_permission_disclaimer_title">Informacja o uprawnieniu ułatwień dostępu</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search korzysta z interfejsu AccessibilityService API wyłącznie do blokowania urządzenia po dwukrotnym dotknięciu ekranu głównego. Za pośrednictwem tej usługi Quick Search nie odczytuje, nie gromadzi, nie przechowuje ani nie udostępnia zawartości ekranu ani innych danych osobowych.</string>

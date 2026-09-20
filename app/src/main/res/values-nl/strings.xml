@@ -126,7 +126,6 @@
     <string name="settings_gesture_notification_panel">Meldingenpaneel</string>
     <string name="settings_gesture_lock_screen">Scherm vergrendelen</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Vereist toegankelijkheidsmachtiging</string>
-    <string name="accessibility_lock_screen_service_label">Quick Search Schermvergrendeling</string>
     <string name="accessibility_lock_screen_service_description">Hiermee kan Quick Search het scherm vergrendelen via het dubbeltik-gebaar op het startscherm. Het leest geen scherminhoud.</string>
     <string name="accessibility_permission_disclaimer_title">Disclaimer toegankelijkheidsmachtiging</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search gebruikt de AccessibilityService-API van Android alleen om je apparaat te vergrendelen wanneer je dubbeltikt op het startscherm. Via deze service leest, verzamelt, bewaart of deelt Quick Search je scherminhoud of andere persoonlijke gegevens niet.</string>

@@ -123,7 +123,6 @@
     <string name="settings_gesture_notification_panel">Panel Notifikasi</string>
     <string name="settings_gesture_lock_screen">Kunci Layar</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
-    <string name="accessibility_lock_screen_service_label">Kunci Layar Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Mengizinkan Quick Search mengunci layar dari gestur ketuk dua kali di Layar Utama. Fitur ini tidak membaca konten layar.</string>
     <string name="accessibility_permission_disclaimer_title">Pernyataan Izin Aksesibilitas</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search menggunakan API AccessibilityService Android hanya untuk mengunci perangkat saat Anda mengetuk dua kali di Layar Utama. Melalui layanan ini, Quick Search tidak membaca, mengumpulkan, menyimpan, atau membagikan konten layar atau data pribadi lainnya.</string>
