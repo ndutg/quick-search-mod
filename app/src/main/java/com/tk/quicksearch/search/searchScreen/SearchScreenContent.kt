@@ -980,25 +980,31 @@ internal fun SearchScreenContent(
     }
 
     fun openMatchingTrigger(query: String): Boolean {
-        state.allApps.firstOrNull { app ->
-            appsParams.getAppTrigger(app.packageName)?.let { trigger ->
-                matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
-            } == true
-        }?.let { app ->
-            onAppClick(app)
-            return true
-        }
+        // App catalogs also load asynchronously. Search results can be ready first, so use both
+        // sources and retry when either one changes.
+        (state.allApps + renderingState.displayApps)
+            .distinctBy { it.launchCountKey() }
+            .firstOrNull { app ->
+                appsParams.getAppTrigger(app.packageName)?.let { trigger ->
+                    matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
+                } == true
+            }?.let { app ->
+                onAppClick(app)
+                return true
+            }
 
-        state.allAppShortcuts.firstOrNull { shortcut ->
-            appShortcutsParams.getShortcutTrigger(
-                com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey(shortcut),
-            )?.let { trigger ->
-                matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
-            } == true
-        }?.let { shortcut ->
-            appShortcutsParams.onShortcutClick(shortcut)
-            return true
-        }
+        (state.allAppShortcuts + renderingState.appShortcutResults)
+            .distinctBy { com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey(it) }
+            .firstOrNull { shortcut ->
+                appShortcutsParams.getShortcutTrigger(
+                    com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey(shortcut),
+                )?.let { trigger ->
+                    matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
+                } == true
+            }?.let { shortcut ->
+                appShortcutsParams.onShortcutClick(shortcut)
+                return true
+            }
 
         (renderingState.contactResults + state.pinnedContacts)
             .distinctBy { it.contactId }
@@ -1037,14 +1043,19 @@ internal fun SearchScreenContent(
                 return true
             }
 
-        state.allDeviceSettings.firstOrNull { setting ->
-            settingsParams.getSettingTrigger(setting.id)?.let { trigger ->
-                matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
-            } == true
-        }?.let { setting ->
-            settingsParams.onSettingClick(setting)
-            return true
-        }
+        // Settings shortcuts load asynchronously. A trigger can already have surfaced its
+        // matching result before the full catalog reaches allDeviceSettings, so include that
+        // rendered result as a launch candidate as well.
+        (state.allDeviceSettings + renderingState.settingResults)
+            .distinctBy { it.id }
+            .firstOrNull { setting ->
+                settingsParams.getSettingTrigger(setting.id)?.let { trigger ->
+                    matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
+                } == true
+            }?.let { setting ->
+                settingsParams.onSettingClick(setting)
+                return true
+            }
 
         (renderingState.noteResults + state.pinnedNotes)
             .distinctBy { it.noteId }
@@ -1063,9 +1074,14 @@ internal fun SearchScreenContent(
     var lastTriggeredQuery by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(
         state.query,
+        state.allApps,
+        renderingState.displayApps,
+        state.allAppShortcuts,
+        renderingState.appShortcutResults,
         renderingState.contactResults,
         renderingState.fileResults,
         renderingState.settingResults,
+        state.allDeviceSettings,
         renderingState.calendarEvents,
         renderingState.noteResults,
     ) {
