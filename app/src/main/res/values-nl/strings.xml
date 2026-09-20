@@ -209,7 +209,7 @@
     <string name="dialog_edit_amazon_domain_message">Amazon-domein bijwerken voor jouw land.</string>
     <string name="dialog_edit_amazon_domain_title">Amazon-domein bewerken</string>
     <string name="dialog_gemini_model_picker_title">Model selecteren</string>
-    <string name="dialog_nickname_message">Voer een bijnaam in voor \"%1$s\". Je kunt ernaar zoeken met deze bijnaam.</string>
+    <string name="dialog_nickname_message">Voer een of meer bijnamen in voor \"%1$s\", gescheiden door komma\'s. Je kunt ernaar zoeken met elk van deze bijnamen.</string>
     <string name="dialog_ok">Doorgaan</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Deze keuze onthouden</string>
@@ -330,7 +330,7 @@
     <string name="action_disable_app_shortcut">Uitschakelen</string>
     <string name="action_disable_all_app_shortcuts_named">Alle %1$s-snelkoppelingen uitschakelen</string>
     <string name="snackbar_app_shortcut_disabled_title">App-snelkoppeling uitgeschakeld</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Je kunt deze snelkoppeling later weer inschakelen in de instellingen voor app-snelkoppelingen.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Je kunt deze later weer inschakelen in de instellingen.</string>
     <string name="apps_refreshed_successfully">Apps succesvol vernieuwd</string>
     <string name="error_loading_user_apps">We konden je apps niet laden. Probeer het over een ogenblik opnieuw.</string>
     <string name="error_uninstall_app">Kan %1$s niet verwijderen</string>
@@ -694,6 +694,9 @@ Beschikbare snelkoppelingen: %1$s</string>
     <string name="settings_more_apps_from_developer_title">Meer apps van de ontwikkelaar</string>
     <string name="settings_app_settings_desc">Zoek naar Quick Search-instellingen</string>
     <string name="settings_features_load_failed">Kan functiedocumentatie niet laden.</string>
+    <string name="settings_features_export">Functies downloaden en delen</string>
+    <string name="settings_features_export_failed">Kan functiedocumentatie niet opslaan.</string>
+    <string name="settings_features_saved_to_downloads">Opgeslagen in Downloads</string>
     <string name="settings_features_sections_title">Inhoud</string>
     <string name="settings_search_description_change_app_theme">App-thema wijzigen</string>
     <string name="settings_search_description_change_font_size">App-lettergrootte wijzigen</string>
@@ -925,7 +928,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Bekijk de broncode van dit project op GitHub</string>
     <string name="settings_feedback_github_title">Ontwikkeling</string>
-    <string name="settings_feedback_rate_desc">Laat een 5-sterrenbeoordeling achter als je deze app nuttig vindt</string>
+    <string name="settings_feedback_rate_desc">Laat een 5-sterrenbeoordeling achter als je deze app nuttig vindt 🙏</string>
     <string name="settings_feedback_rate_title">Quick Search beoordelen</string>
     <string name="settings_feedback_send_desc">Meld bugs of vraag nieuwe functies aan</string>
     <string name="settings_feedback_send_title">Feedback verzenden</string>

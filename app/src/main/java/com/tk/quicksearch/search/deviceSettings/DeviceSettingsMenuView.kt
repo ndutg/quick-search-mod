@@ -23,6 +23,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.SettingExtra
 import com.tk.quicksearch.widgets.customButtonsWidget.SettingExtraType
@@ -53,6 +54,7 @@ fun DeviceSettingsDropdownMenu(
         showPinnedItemMenu: Boolean = false,
 ) {
     val context = LocalContext.current
+    val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
     val notificationAction = CustomWidgetButtonAction.Setting(
             id = setting.id, title = setting.title, description = setting.description,
             keywords = setting.keywords, action = setting.action, data = setting.data,
@@ -162,18 +164,20 @@ fun DeviceSettingsDropdownMenu(
                             onClick = { onDismissRequest(); PinnedNotifications.toggle(context, notificationAction) },
                     ),
             )
-            add(
-                    DeviceSettingsMenuItem(
-                            textResId = R.string.action_add_to_home,
-                            icon = {
-                                Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onAddToHome()
-                            },
-                    ),
-            )
+            if (!isDefaultLauncher) {
+                add(
+                        DeviceSettingsMenuItem(
+                                textResId = R.string.action_add_to_home,
+                                icon = {
+                                    Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
+                                },
+                                onClick = {
+                                    onDismissRequest()
+                                    onAddToHome()
+                                },
+                        ),
+                )
+            }
             add(
                     DeviceSettingsMenuItem(
                             textResId =

@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +40,7 @@ import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.components.itemMenuRemoveOption
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 
 /** Menu item data class for contact dropdown menu. */
 private data class ContactMenuItem(
@@ -73,6 +75,8 @@ fun ContactDropdownMenu(
         isPinnedToNotifications: Boolean,
         showPinnedItemMenu: Boolean = false,
 ) {
+        val context = LocalContext.current
+        val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
         val openAppSettingDestination = LocalOpenAppSettingDestination.current
         // Removing keeps the menu open, so the menu tracks it until it's next opened.
         var triggerRemoved by remember(expanded) { mutableStateOf(false) }
@@ -202,18 +206,20 @@ fun ContactDropdownMenu(
                             onClick = { onDismissRequest(); onPinToNotifications() },
                     ),
             )
-            add(
-                    ContactMenuItem(
-                            textResId = R.string.action_add_to_home,
-                            icon = {
-                                Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
-                            },
-                            onClick = {
-                                onDismissRequest()
-                                onAddToHome()
-                            },
-                    ),
-            )
+            if (!isDefaultLauncher) {
+                add(
+                        ContactMenuItem(
+                                textResId = R.string.action_add_to_home,
+                                icon = {
+                                    Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
+                                },
+                                onClick = {
+                                    onDismissRequest()
+                                    onAddToHome()
+                                },
+                        ),
+                )
+            }
             openAppSettingDestination?.let { openDestination ->
                 add(
                         ContactMenuItem(

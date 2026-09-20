@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +37,7 @@ fun SettingsCheckboxRow(
     iconTint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     isLastItem: Boolean = false,
     enabled: Boolean = true,
+    checkboxColors: CheckboxColors = CheckboxDefaults.colors(),
 ) {
     Row(
         modifier =
@@ -92,6 +95,7 @@ fun SettingsCheckboxRow(
             checked = checked,
             onCheckedChange = onCheckedChange,
             enabled = enabled,
+            colors = checkboxColors,
         )
     }
 

@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">Aktualisiere die Amazon-Domain für dein Land.</string>
     <string name="dialog_edit_amazon_domain_title">Amazon-Domain bearbeiten</string>
     <string name="dialog_gemini_model_picker_title">Modell auswählen</string>
-    <string name="dialog_nickname_message">Gib einen Spitznamen für „%1$s“ ein. Du kannst danach mit diesem Spitznamen suchen.</string>
+    <string name="dialog_nickname_message">Gib einen oder mehrere Spitznamen für „%1$s“ ein, getrennt durch Kommas. Du kannst dann mit jedem davon suchen.</string>
     <string name="dialog_ok">Weiter</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Diese Wahl merken</string>
@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">Deaktivieren</string>
     <string name="action_disable_all_app_shortcuts_named">Alle %1$s-Verknüpfungen deaktivieren</string>
     <string name="snackbar_app_shortcut_disabled_title">App-Verknüpfung deaktiviert</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Du kannst sie später in den Einstellungen für App-Verknüpfungen wieder aktivieren.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Du kannst sie später in den Einstellungen aktivieren.</string>
     <string name="apps_refreshed_successfully">Apps erfolgreich aktualisiert</string>
     <string name="error_loading_user_apps">Deine Apps konnten nicht geladen werden. Bitte versuche es gleich noch einmal.</string>
     <string name="error_uninstall_app">%1$s konnte nicht deinstalliert werden</string>
@@ -662,6 +662,9 @@
     <string name="settings_all_quick_search_features_desc">Die vollständige Liste der Funktionen und Möglichkeiten anzeigen</string>
     <string name="settings_app_settings_desc">Quick Search-Einstellungen durchsuchen</string>
     <string name="settings_features_load_failed">Funktionsdokumentation konnte nicht geladen werden.</string>
+    <string name="settings_features_export">Funktionen herunterladen und teilen</string>
+    <string name="settings_features_export_failed">Funktionsdokumentation konnte nicht gespeichert werden.</string>
+    <string name="settings_features_saved_to_downloads">In Downloads gespeichert</string>
     <string name="settings_features_sections_title">Inhalt</string>
     <string name="settings_search_description_change_app_theme">App-Design ändern</string>
     <string name="settings_search_description_change_font_size">App-Schriftgröße ändern</string>
@@ -884,7 +887,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Quellcode dieses Projekts auf GitHub anzeigen</string>
     <string name="settings_feedback_github_title">Entwicklung</string>
-    <string name="settings_feedback_rate_desc">Hinterlasse eine 5-Sterne-Bewertung, wenn du die App nützlich findest</string>
+    <string name="settings_feedback_rate_desc">Hinterlasse eine 5-Sterne-Bewertung, wenn du die App nützlich findest 🙏</string>
     <string name="settings_feedback_rate_title">Quick Search bewerten</string>
     <string name="settings_feedback_send_desc">Fehler melden oder neue Funktionen vorschlagen</string>
     <string name="settings_feedback_send_title">Feedback senden</string>

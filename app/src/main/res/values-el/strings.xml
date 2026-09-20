@@ -202,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">Ενημερώστε το domain της Amazon για τη χώρα σας.</string>
     <string name="dialog_edit_amazon_domain_title">Επεξεργασία Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Επιλογή μοντέλου</string>
-    <string name="dialog_nickname_message">Εισαγάγετε ένα ψευδώνυμο για το "%1$s". Μπορείτε να το αναζητήσετε χρησιμοποιώντας αυτό το ψευδώνυμο.</string>
+    <string name="dialog_nickname_message">Εισαγάγετε ένα ή περισσότερα ψευδώνυμα για το "%1$s", χωρισμένα με κόμματα. Μπορείτε να το αναζητήσετε χρησιμοποιώντας οποιοδήποτε από αυτά.</string>
     <string name="dialog_ok">Συνέχεια</string>
     <string name="dialog_okay">Εντάξει</string>
     <string name="dialog_remember_choice">Απομνημόνευση επιλογής</string>
@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">Απενεργοποίηση</string>
     <string name="action_disable_all_app_shortcuts_named">Απενεργοποίηση όλων των συντομεύσεων %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Η συντόμευση απενεργοποιήθηκε</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις συντομεύσεων εφαρμογών.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις.</string>
     <string name="apps_refreshed_successfully">Επιτυχής ανανέωση εφαρμογών</string>
     <string name="error_loading_user_apps">Δεν ήταν δυνατή η φόρτωση των εφαρμογών σας. Δοκιμάστε ξανά σε λίγο.</string>
     <string name="error_uninstall_app">Αδυναμία απεγκατάστασης του %1$s</string>
@@ -662,6 +662,9 @@
     <string name="settings_all_quick_search_features_desc">Δείτε την πλήρη λίστα με τις δυνατότητες και τις λειτουργίες</string>
     <string name="settings_app_settings_desc">Αναζήτηση στις ρυθμίσεις του Quick Search</string>
     <string name="settings_features_load_failed">Αδυναμία φόρτωσης τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_export">Λήψη και κοινοποίηση δυνατοτήτων</string>
+    <string name="settings_features_export_failed">Δεν ήταν δυνατή η αποθήκευση της τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_saved_to_downloads">Αποθηκεύτηκε στις Λήψεις</string>
     <string name="settings_features_sections_title">Περιεχόμενα</string>
     <string name="settings_search_description_change_app_theme">Αλλαγή θέματος εφαρμογής</string>
     <string name="settings_search_description_change_font_size">Αλλαγή μεγέθους γραμματοσειράς εφαρμογής</string>
@@ -884,7 +887,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Δείτε τον πηγαίο κώδικα αυτού του έργου στο GitHub</string>
     <string name="settings_feedback_github_title">Ανάπτυξη</string>
-    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη</string>
+    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη 🙏</string>
     <string name="settings_feedback_rate_title">Αξιολογήστε το Quick Search</string>
     <string name="settings_feedback_send_desc">Αναφέρετε σφάλματα ή ζητήστε νέες δυνατότητες</string>
     <string name="settings_feedback_send_title">Αποστολή σχολίων</string>

@@ -202,7 +202,7 @@
 <string name="dialog_edit_amazon_domain_message">Обновите домен Amazon для вашей страны.</string>
 <string name="dialog_edit_amazon_domain_title">Изменить домен Amazon</string>
 <string name="dialog_gemini_model_picker_title">Выберите модель</string>
-    <string name="dialog_nickname_message">Введите псевдоним для «%1$s». Вы сможете искать его по этому псевдониму.</string>
+    <string name="dialog_nickname_message">Введите один или несколько псевдонимов для «%1$s», разделяя их запятыми. Вы сможете искать его по любому из них.</string>
 <string name="dialog_ok">Продолжить</string>
 <string name="dialog_okay">Окей</string>
 <string name="dialog_remember_choice">Запомнить выбор</string>
@@ -317,7 +317,7 @@
 <string name="action_disable_app_shortcut">Отключить</string>
 <string name="action_disable_all_app_shortcuts_named">Отключить все ярлыки %1$s</string>
 <string name="snackbar_app_shortcut_disabled_title">Ярлык приложения отключён</string>
-<string name="snackbar_app_shortcut_disabled_supporting">Вы можете включить его позже в настройках ярлыков приложений.</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Вы можете включить его позже в настройках.</string>
 <string name="apps_refreshed_successfully">Список приложений успешно обновлен</string>
 <string name="error_loading_user_apps">Не удалось загрузить ваши приложения. Повторите попытку позже.</string>
 <string name="error_uninstall_app">Не удалось удалить %1$s</string>
@@ -682,6 +682,9 @@
 <string name="settings_all_quick_search_features_desc">Просмотреть полный список возможностей и функций</string>
 <string name="settings_app_settings_desc">Поиск по настройкам Quick Search</string>
 <string name="settings_features_load_failed">Не удалось загрузить документацию функций.</string>
+<string name="settings_features_export">Скачать и поделиться списком функций</string>
+<string name="settings_features_export_failed">Не удалось сохранить документацию функций.</string>
+<string name="settings_features_saved_to_downloads">Сохранено в папку «Загрузки»</string>
 <string name="settings_features_sections_title">Содержание</string>
 <string name="settings_search_description_change_app_theme">Изменить тему приложения</string>
 <string name="settings_search_description_change_font_size">Изменить размер шрифта приложения</string>
@@ -904,7 +907,7 @@
 <string name="settings_feedback_developer_title">%1$s v%2$s</string>
 <string name="settings_feedback_github_desc">Посмотреть исходный код проекта на GitHub</string>
 <string name="settings_feedback_github_title">Разработка</string>
-<string name="settings_feedback_rate_desc">Поставьте нам 5 звезд, если приложение вам нравится</string>
+<string name="settings_feedback_rate_desc">Поставьте нам 5 звезд, если приложение вам нравится 🙏</string>
 <string name="settings_feedback_rate_title">Оценить Quick Search</string>
 <string name="settings_feedback_send_desc">Сообщить об ошибке или предложить функцию</string>
 <string name="settings_feedback_send_title">Отправить отзыв</string>

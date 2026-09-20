@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.appShortcuts
 
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
+import com.tk.quicksearch.search.utils.NicknameUtils
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextCache
@@ -35,7 +36,7 @@ object AppShortcutSearchPolicy {
         fuzzyMaxEditDistance: Int,
         textCache: SearchTextCache? = null,
     ): Boolean {
-        val supportingText = listOfNotNull(appLabel, nickname).joinToString(" ")
+        val supportingText = listOfNotNull(appLabel, NicknameUtils.searchText(nickname)).joinToString(" ")
         if (textCache != null) {
             return SearchTokenCoveragePolicy.areAllTokensCovered(
                 query = query,
@@ -58,11 +59,10 @@ object AppShortcutSearchPolicy {
         nickname: String?,
         appLabel: String,
     ): Array<String> {
-        val normalizedNickname = nickname?.trim().orEmpty()
-        if (normalizedNickname.isBlank()) return emptyArray()
-        return arrayOf(
-            "$normalizedNickname $appLabel",
-            "$appLabel $normalizedNickname",
-        )
+        val aliases = NicknameUtils.split(nickname)
+        if (aliases.isEmpty()) return emptyArray()
+        return aliases
+            .flatMap { alias -> listOf("$alias $appLabel", "$appLabel $alias") }
+            .toTypedArray()
     }
 }
