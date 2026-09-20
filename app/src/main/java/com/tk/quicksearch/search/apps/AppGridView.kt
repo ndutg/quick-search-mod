@@ -128,7 +128,6 @@ import java.util.Locale
 private const val ROW_COUNT = 2
 private const val TabSlideOffsetPx = 64
 private const val SuggestionsEnterDurationMillis = 320
-private const val SuggestionsEnterOffsetDp = 12f
 private const val SuggestionTabInactiveAlpha = 0.34f
 private const val SuggestionTabSwipeThresholdPx = 48f
 private val AppGridRowSpacing = DesignTokens.SpacingXSmall
@@ -448,13 +447,10 @@ fun AppGridView(
                         }
                         .groupBy { it.packageName }
             }
-    // Animate the suggestions grid (empty query) when it first appears. Search results should
-    // appear immediately without animation.
+    // Fade the suggestions grid (empty query) in when it first appears. It stays in its final
+    // position throughout so nothing slides. Search results appear immediately without animation.
     val initialSuggestionsAlpha = if (suppressSuggestionsEnterAnimation) 1f else 0f
-    val initialSuggestionsOffset = if (suppressSuggestionsEnterAnimation) 0f else SuggestionsEnterOffsetDp
     val suggestionsAlpha = remember { Animatable(initialSuggestionsAlpha) }
-    val suggestionsTranslationYDp = remember { Animatable(initialSuggestionsOffset) }
-    val density = LocalDensity.current
     val tabSwipeModifier =
             if (suggestionTabs.size > 1) {
                 Modifier.pointerInput(suggestionTabs, selectedSuggestionTabIndex, onHomeHorizontalSwipe) {
@@ -504,7 +500,6 @@ fun AppGridView(
             }
             if (isSearching || suppressSuggestionsEnterAnimation) {
                 suggestionsAlpha.snapTo(1f)
-                suggestionsTranslationYDp.snapTo(0f)
             } else if (suggestionsAlpha.value < 1f) {
                 suggestionsAlpha.animateTo(
                         targetValue = 1f,
@@ -516,20 +511,10 @@ fun AppGridView(
             }
             onGridAppeared?.invoke()
         }
-        LaunchedEffect(showAppGrid, isSearching) {
-            if (!showAppGrid || isSearching || suppressSuggestionsEnterAnimation) return@LaunchedEffect
-            if (suggestionsTranslationYDp.value != 0f) {
-                suggestionsTranslationYDp.animateTo(
-                        targetValue = 0f,
-                        animationSpec = tween(durationMillis = SuggestionsEnterDurationMillis),
-                )
-            }
-        }
 
         if (showAppGrid) {
             val suggestionsContentModifier = Modifier.graphicsLayer {
                 alpha = suggestionsAlpha.value
-                translationY = with(density) { suggestionsTranslationYDp.value.dp.toPx() }
             }
             Column(
                     modifier = suggestionsContentModifier,
