@@ -474,8 +474,7 @@ class UserAppPreferences(
     fun getHomeSwipeDownAliasTarget(): String? = gesturesPreferences.getHomeSwipeDownAliasTarget()
     fun setHomeSwipeDownAliasTarget(targetId: String?) = gesturesPreferences.setHomeSwipeDownAliasTarget(targetId)
 
-    fun getHomeDoubleTapAction(isLockScreenAvailable: Boolean = false): HomeSwipeGestureAction =
-        gesturesPreferences.getHomeDoubleTapAction(isLockScreenAvailable)
+    fun getHomeDoubleTapAction(): HomeSwipeGestureAction = gesturesPreferences.getHomeDoubleTapAction()
 
     fun setHomeDoubleTapAction(action: HomeSwipeGestureAction) = gesturesPreferences.setHomeDoubleTapAction(action)
 

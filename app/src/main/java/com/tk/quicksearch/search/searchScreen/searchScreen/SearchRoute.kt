@@ -730,7 +730,7 @@ fun SearchRoute(
         mutableStateOf(gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher))
     }
     var homeDoubleTapAction by remember {
-        mutableStateOf(gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context)))
+        mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
     }
     var homeCustomSwipeActions by remember {
         mutableStateOf(
@@ -767,7 +767,7 @@ fun SearchRoute(
             swipeAliasTargets = listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
             homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
-            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context))
+            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             homeCustomSwipeActions =
                 listOf(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
@@ -788,11 +788,11 @@ fun SearchRoute(
                 val isLockScreenAvailable = LockScreenAccessibilityService.isEnabled(context)
                 if (
                     !isLockScreenAvailable &&
-                    gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable) == HomeSwipeGestureAction.LOCK_SCREEN
+                    gesturePreferences.getHomeDoubleTapAction() == HomeSwipeGestureAction.LOCK_SCREEN
                 ) {
                     gesturePreferences.setHomeDoubleTapAction(HomeSwipeGestureAction.NONE)
                 }
-                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable)
+                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
