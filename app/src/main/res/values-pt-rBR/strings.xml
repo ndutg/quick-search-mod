@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">Desativar</string>
     <string name="action_disable_all_app_shortcuts_named">Desativar todos os atalhos de %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Atalho desativado</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Você pode ativá-lo depois nas configurações de atalhos de apps.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Você pode ativá-lo depois nas configurações.</string>
     <string name="apps_refreshed_successfully">Apps atualizados com sucesso</string>
     <string name="error_loading_user_apps">Não foi possível carregar seus apps. Tente novamente em alguns instantes.</string>
     <string name="error_uninstall_app">Não foi possível desinstalar %1$s</string>

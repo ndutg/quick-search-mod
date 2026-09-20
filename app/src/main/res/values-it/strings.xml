@@ -316,7 +316,7 @@
     <string name="action_disable_app_shortcut">Disattiva</string>
     <string name="action_disable_all_app_shortcuts_named">Disattiva tutte le scorciatoie di %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Scorciatoia disattivata</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Puoi riattivarla più tardi nelle impostazioni delle scorciatoie app.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Puoi riattivarla più tardi nelle impostazioni.</string>
     <string name="apps_refreshed_successfully">App aggiornate con successo</string>
     <string name="error_loading_user_apps">Impossibile caricare le tue app. Riprova tra un momento.</string>
     <string name="error_uninstall_app">Impossibile disinstallare %1$s</string>

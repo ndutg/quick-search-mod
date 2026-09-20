@@ -318,7 +318,7 @@
     <string name="action_disable_app_shortcut">تعطيل</string>
     <string name="action_disable_all_app_shortcuts_named">تعطيل جميع اختصارات %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">تم تعطيل اختصار التطبيق</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">يمكنك تفعيله لاحقًا من إعدادات اختصارات التطبيقات.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">يمكنك تفعيله لاحقًا في الإعدادات.</string>
     <string name="apps_refreshed_successfully">تم تحديث التطبيقات بنجاح</string>
     <string name="error_loading_user_apps">عذراً، تعذر تحميل تطبيقاتك. يرجى المحاولة مرة أخرى بعد قليل.</string>
     <string name="error_uninstall_app">تعذر إلغاء تثبيت %1$s</string>

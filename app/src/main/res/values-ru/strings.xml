@@ -317,7 +317,7 @@
 <string name="action_disable_app_shortcut">Отключить</string>
 <string name="action_disable_all_app_shortcuts_named">Отключить все ярлыки %1$s</string>
 <string name="snackbar_app_shortcut_disabled_title">Ярлык приложения отключён</string>
-<string name="snackbar_app_shortcut_disabled_supporting">Вы можете включить его позже в настройках ярлыков приложений.</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Вы можете включить его позже в настройках.</string>
 <string name="apps_refreshed_successfully">Список приложений успешно обновлен</string>
 <string name="error_loading_user_apps">Не удалось загрузить ваши приложения. Повторите попытку позже.</string>
 <string name="error_uninstall_app">Не удалось удалить %1$s</string>

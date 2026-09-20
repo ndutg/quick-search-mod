@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">停用</string>
     <string name="action_disable_all_app_shortcuts_named">停用所有%1$s快捷方式</string>
     <string name="snackbar_app_shortcut_disabled_title">应用快捷方式已停用</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">你可以稍后在应用快捷方式设置中重新启用。</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">您可稍后在设置中启用。</string>
     <string name="apps_refreshed_successfully">应用数据刷新成功</string>
     <string name="error_loading_user_apps">我们无法加载您的应用。请稍后重试。</string>
     <string name="error_uninstall_app">无法卸载 %1$s</string>

@@ -279,7 +279,7 @@ fun SearchRoute(
             UndoSnackbarVisuals(
                 message = context.getString(R.string.snackbar_app_shortcut_disabled_title),
                 supportingText = context.getString(R.string.snackbar_app_shortcut_disabled_supporting),
-                icon = androidx.compose.material.icons.Icons.Rounded.Block,
+                icon = null,
                 actionLabel = undoLabel,
             ),
             onUndo,

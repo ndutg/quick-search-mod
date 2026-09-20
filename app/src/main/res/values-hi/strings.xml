@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">अक्षम करें</string>
     <string name="action_disable_all_app_shortcuts_named">%1$s के सभी शॉर्टकट अक्षम करें</string>
     <string name="snackbar_app_shortcut_disabled_title">ऐप शॉर्टकट अक्षम किया गया</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">आप इसे बाद में ऐप शॉर्टकट सेटिंग्स में सक्षम कर सकते हैं।</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">आप इसे बाद में सेटिंग में सक्षम कर सकते हैं।</string>
     <string name="apps_refreshed_successfully">ऐप्स सफलतापूर्वक रिफ्रेश हो गए</string>
     <string name="error_loading_user_apps">आपके ऐप्स लोड नहीं हो सके। थोड़ी देर बाद फिर कोशिश करें।</string>
     <string name="error_uninstall_app">%1$s अनइंस्टॉल नहीं हो सका</string>

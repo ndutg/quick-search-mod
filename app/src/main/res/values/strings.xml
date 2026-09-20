@@ -312,7 +312,7 @@
     <string name="action_disable_app_shortcut">Disable</string>
     <string name="action_disable_all_app_shortcuts_named">Disable all %1$s shortcuts</string>
     <string name="snackbar_app_shortcut_disabled_title">App shortcut disabled</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">You can enable this shortcut later in App shortcut settings.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">You can enable later in settings.</string>
     <string name="apps_refreshed_successfully">Apps refreshed successfully</string>
     <string name="error_loading_user_apps">We could not load your apps. Try again in a moment.</string>
     <string name="error_uninstall_app">Unable to uninstall %1$s</string>

@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">నిలిపివేయి</string>
     <string name="action_disable_all_app_shortcuts_named">%1$s యొక్క అన్ని షార్ట్‌కట్‌లను నిలిపివేయండి</string>
     <string name="snackbar_app_shortcut_disabled_title">యాప్ షార్ట్‌కట్ నిలిపివేయబడింది</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">మీరు దీన్ని తర్వాత యాప్ షార్ట్‌కట్ సెట్టింగ్‌లలో ప్రారంభించవచ్చు.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">మీరు దీన్ని తర్వాత సెట్టింగ్‌లలో ప్రారంభించవచ్చు.</string>
     <string name="apps_refreshed_successfully">యాప్‌లు విజయవంతంగా రీఫ్రెష్ చేయబడ్డాయి</string>
     <string name="error_loading_user_apps">మేము మీ యాప్‌లను లోడ్ చేయలేకపోయాము. కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.</string>
     <string name="error_uninstall_app">%1$sను అన్‌ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</string>

@@ -316,7 +316,7 @@
 <string name="action_disable_app_shortcut">Devre dışı bırak</string>
 <string name="action_disable_all_app_shortcuts_named">Tüm %1$s kısayollarını devre dışı bırak</string>
 <string name="snackbar_app_shortcut_disabled_title">Uygulama kısayolu devre dışı bırakıldı</string>
-<string name="snackbar_app_shortcut_disabled_supporting">Daha sonra Uygulama kısayolu ayarlarından etkinleştirebilirsiniz.</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Daha sonra Ayarlar\'dan etkinleştirebilirsiniz.</string>
 <string name="apps_refreshed_successfully">Uygulamalar başarıyla yenilendi</string>
 <string name="error_loading_user_apps">Uygulamalarınız yüklenemedi. Birazdan tekrar deneyin.</string>
 <string name="error_uninstall_app">%1$s kaldırılamadı</string>

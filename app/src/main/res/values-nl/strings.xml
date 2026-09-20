@@ -330,7 +330,7 @@
     <string name="action_disable_app_shortcut">Uitschakelen</string>
     <string name="action_disable_all_app_shortcuts_named">Alle %1$s-snelkoppelingen uitschakelen</string>
     <string name="snackbar_app_shortcut_disabled_title">App-snelkoppeling uitgeschakeld</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Je kunt deze snelkoppeling later weer inschakelen in de instellingen voor app-snelkoppelingen.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Je kunt deze later weer inschakelen in de instellingen.</string>
     <string name="apps_refreshed_successfully">Apps succesvol vernieuwd</string>
     <string name="error_loading_user_apps">We konden je apps niet laden. Probeer het over een ogenblik opnieuw.</string>
     <string name="error_uninstall_app">Kan %1$s niet verwijderen</string>

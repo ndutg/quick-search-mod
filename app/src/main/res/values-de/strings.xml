@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">Deaktivieren</string>
     <string name="action_disable_all_app_shortcuts_named">Alle %1$s-Verknüpfungen deaktivieren</string>
     <string name="snackbar_app_shortcut_disabled_title">App-Verknüpfung deaktiviert</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Du kannst sie später in den Einstellungen für App-Verknüpfungen wieder aktivieren.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Du kannst sie später in den Einstellungen aktivieren.</string>
     <string name="apps_refreshed_successfully">Apps erfolgreich aktualisiert</string>
     <string name="error_loading_user_apps">Deine Apps konnten nicht geladen werden. Bitte versuche es gleich noch einmal.</string>
     <string name="error_uninstall_app">%1$s konnte nicht deinstalliert werden</string>

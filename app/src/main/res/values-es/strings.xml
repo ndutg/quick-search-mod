@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">Desactivar</string>
     <string name="action_disable_all_app_shortcuts_named">Desactivar todos los accesos directos de %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Acceso directo desactivado</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Puedes activarlo más tarde en los ajustes de accesos directos de apps.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Puedes activarlo más tarde en Ajustes.</string>
     <string name="apps_refreshed_successfully">Aplicaciones actualizadas con éxito</string>
     <string name="error_loading_user_apps">No pudimos cargar tus aplicaciones. Inténtalo de nuevo en un momento.</string>
     <string name="error_uninstall_app">No se pudo desinstalar %1$s</string>

@@ -321,7 +321,7 @@
     <string name="action_disable_app_shortcut">Wyłącz</string>
     <string name="action_disable_all_app_shortcuts_named">Wyłącz wszystkie skróty %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Skrót aplikacji wyłączony</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Możesz włączyć ten skrót później w Ustawieniach skrótów aplikacji.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Możesz włączyć go później w Ustawieniach.</string>
     <string name="apps_refreshed_successfully">Pomyślnie odświeżono aplikacje</string>
     <string name="error_loading_user_apps">Nie udało się załadować aplikacji. Spróbuj ponownie za chwilę.</string>
     <string name="error_uninstall_app">Nie można odinstalować %1$s</string>

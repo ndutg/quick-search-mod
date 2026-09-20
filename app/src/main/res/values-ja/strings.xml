@@ -321,7 +321,7 @@
     <string name="action_disable_app_shortcut">無効化</string>
     <string name="action_disable_all_app_shortcuts_named">「%1$s」のすべてのショートカットを無効化</string>
     <string name="snackbar_app_shortcut_disabled_title">アプリのショートカットを無効にしました</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">このショートカットは後でアプリのショートカット設定で再度有効にできます。</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">後で設定から有効にできます。</string>
     <string name="apps_refreshed_successfully">アプリを正常に更新しました</string>
     <string name="error_loading_user_apps">アプリを読み込めませんでした。しばらくしてからもう一度お試しください。</string>
     <string name="error_uninstall_app">%1$s をアンインストールできません</string>

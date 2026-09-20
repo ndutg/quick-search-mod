@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">Απενεργοποίηση</string>
     <string name="action_disable_all_app_shortcuts_named">Απενεργοποίηση όλων των συντομεύσεων %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Η συντόμευση απενεργοποιήθηκε</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις συντομεύσεων εφαρμογών.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις.</string>
     <string name="apps_refreshed_successfully">Επιτυχής ανανέωση εφαρμογών</string>
     <string name="error_loading_user_apps">Δεν ήταν δυνατή η φόρτωση των εφαρμογών σας. Δοκιμάστε ξανά σε λίγο.</string>
     <string name="error_uninstall_app">Αδυναμία απεγκατάστασης του %1$s</string>

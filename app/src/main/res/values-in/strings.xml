@@ -321,7 +321,7 @@
     <string name="action_disable_app_shortcut">Nonaktifkan</string>
     <string name="action_disable_all_app_shortcuts_named">Nonaktifkan semua pintasan %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Pintasan aplikasi dinonaktifkan</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Anda dapat mengaktifkan pintasan ini nanti di pengaturan Pintasan aplikasi.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Anda dapat mengaktifkannya nanti di Setelan.</string>
     <string name="apps_refreshed_successfully">Aplikasi berhasil diperbarui</string>
     <string name="error_loading_user_apps">Kami tidak dapat memuat aplikasi Anda. Coba lagi beberapa saat lagi.</string>
     <string name="error_uninstall_app">Tidak dapat mencopot pemasangan %1$s</string>

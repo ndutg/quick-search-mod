@@ -317,7 +317,7 @@
 <string name="action_disable_app_shortcut">Désactiver</string>
 <string name="action_disable_all_app_shortcuts_named">Désactiver tous les raccourcis %1$s</string>
 <string name="snackbar_app_shortcut_disabled_title">Raccourci désactivé</string>
-<string name="snackbar_app_shortcut_disabled_supporting">Vous pourrez le réactiver plus tard dans les paramètres des raccourcis d\'apps.</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Vous pourrez l’activer plus tard dans les paramètres.</string>
 <string name="apps_refreshed_successfully">Applications actualisées avec succès</string>
 <string name="error_loading_user_apps">Impossible de charger vos applications. Réessayez dans un instant.</string>
 <string name="error_uninstall_app">Impossible de désinstaller %1$s</string>
