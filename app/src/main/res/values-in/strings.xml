@@ -125,9 +125,9 @@
     <string name="settings_gesture_lock_screen">Kunci Layar</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
-    <string name="accessibility_lock_screen_service_description">Mengizinkan Quick Search mengunci layar dari gestur ketuk dua kali di Layar Utama dan terbuka dengan geser dari tepi di aplikasi apa pun. Fitur ini tidak membaca konten layar.</string>
+    <string name="accessibility_lock_screen_service_description">Mengizinkan Quick Search mengunci layar dari gestur ketuk dua kali di Layar Utama dan terbuka dengan geser dari tepi atau tombol mengambang di aplikasi apa pun. Fitur ini tidak membaca konten layar.</string>
     <string name="accessibility_permission_disclaimer_title">Pernyataan Izin Aksesibilitas</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search menggunakan API AccessibilityService Android hanya untuk mengunci perangkat saat Anda mengetuk dua kali di Layar Utama dan untuk menampilkan pegangan tak terlihat di tepi layar yang membuka Quick Search saat Anda menggesernya. Melalui layanan ini, Quick Search tidak membaca, mengumpulkan, menyimpan, atau membagikan konten layar atau data pribadi lainnya.</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search menggunakan API AccessibilityService Android hanya untuk mengunci perangkat saat Anda mengetuk dua kali di Layar Utama, untuk menampilkan pegangan tak terlihat di tepi layar yang membuka Quick Search saat Anda menggesernya, dan untuk menampilkan tombol pencarian mengambang yang membuka Quick Search saat Anda mengetuknya. Melalui layanan ini, Quick Search tidak membaca, mengumpulkan, menyimpan, atau membagikan konten layar atau data pribadi lainnya.</string>
     <string name="settings_gesture_none">Tidak ada</string>
     <string name="settings_gesture_custom">Kustom (Aplikasi, File, dll.)</string>
     <string name="settings_keyboard_gestures_title">Gestur Keyboard (Layar Utama)</string>
@@ -751,6 +751,10 @@
     <string name="settings_edge_gesture_size">Ukuran</string>
     <string name="settings_edge_gesture_width">Lebar</string>
     <string name="settings_edge_gesture_visibility">Visibilitas</string>
+    <string name="settings_floating_button_title">Tombol Mengambang</string>
+    <string name="settings_floating_button_desc">Ketuk tombol pencarian mengambang untuk membuka Quick Search dari aplikasi apa pun</string>
+    <string name="settings_floating_button_move_hint">Tekan lama tombol lalu seret untuk memindahkannya ke mana saja di layar.</string>
+    <string name="settings_floating_button_opacity">Opasitas</string>
     <string name="settings_app_language_title">Bahasa Aplikasi</string>
     <string name="settings_app_language_desc">Saat ini: %1$s</string>
     <string name="settings_app_language_picker_title">Pilih Bahasa Aplikasi</string>
@@ -1055,7 +1059,7 @@
     <string name="permissions_notifications_desc">Diperlukan untuk notifikasi pengingat dan untuk menyematkan hasil pencarian di panel notifikasi</string>
     <string name="permissions_notification_access_desc">Diperlukan untuk mengaktifkan titik notifikasi dan fitur riwayat notifikasi</string>
     <string name="permissions_accessibility_lock_screen_title">Aksesibilitas</string>
-    <string name="permissions_accessibility_lock_screen_desc">Mengizinkan gestur ketuk dua kali untuk mengunci perangkat Anda dan gestur geser tepi untuk membuka Quick Search.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Mengizinkan gestur ketuk dua kali untuk mengunci perangkat Anda, serta gestur geser tepi dan tombol mengambang untuk membuka Quick Search.</string>
     <string name="permissions_contacts_desc">Diperlukan untuk mencari kontak Anda.</string>
     <string name="permissions_files_desc">Diperlukan untuk mencari dokumen dan file lainnya.</string>
     <string name="permissions_files_title">Akses File</string>

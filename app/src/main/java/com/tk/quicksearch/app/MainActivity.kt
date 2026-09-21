@@ -43,6 +43,7 @@ import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.overlay.OverlayModeController
+import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
@@ -201,6 +202,16 @@ open class MainActivity : FragmentActivity() {
      */
     protected open fun handleSearchBackPressed() {
         moveTaskToBack(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LockScreenAccessibilityService.onAppSurfaceResumed()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LockScreenAccessibilityService.onAppSurfacePaused()
     }
 
     override fun onStop() {

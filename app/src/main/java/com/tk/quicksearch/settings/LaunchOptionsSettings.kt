@@ -2,9 +2,7 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
@@ -41,6 +39,7 @@ fun LaunchOptionsSettings(
     onAddHomeScreenWidget: () -> Unit,
     onAddQuickSettingsTile: () -> Unit,
     onOpenEdgeGesture: () -> Unit,
+    onOpenFloatingButton: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isDefaultLauncher = LocalContext.current.isDefaultHomeApp()
@@ -103,23 +102,17 @@ fun LaunchOptionsSettings(
 
                 HorizontalDivider(color = AppColors.SettingsDivider)
 
-                SettingsToggleRow(
-                    title = stringResource(R.string.settings_assistant_voice_mode_title),
-                    subtitle = stringResource(R.string.settings_assistant_voice_mode_desc),
-                    checked = assistantLaunchVoiceModeEnabled,
-                    onCheckedChange = onToggleAssistantLaunchVoiceMode,
-                    isLastItem = true,
-                    extraVerticalPadding = 8.dp,
-                )
-            }
-        }
+                if (isDefaultAssistant) {
+                    // Draws its own divider below.
+                    SettingsToggleRow(
+                        title = stringResource(R.string.settings_assistant_voice_mode_title),
+                        subtitle = stringResource(R.string.settings_assistant_voice_mode_desc),
+                        checked = assistantLaunchVoiceModeEnabled,
+                        onCheckedChange = onToggleAssistantLaunchVoiceMode,
+                        extraVerticalPadding = 8.dp,
+                    )
+                }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SettingsCard(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Column {
                 if (!isDefaultLauncher) {
                     SettingsNavigationRow(
                         item =
@@ -152,6 +145,18 @@ fun LaunchOptionsSettings(
                             title = stringResource(R.string.settings_edge_gesture_title),
                             description = stringResource(R.string.settings_edge_gesture_desc),
                             actionOnPress = onOpenEdgeGesture,
+                        ),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                )
+
+                HorizontalDivider(color = AppColors.SettingsDivider)
+
+                SettingsNavigationRow(
+                    item =
+                        SettingsCardItem(
+                            title = stringResource(R.string.settings_floating_button_title),
+                            description = stringResource(R.string.settings_floating_button_desc),
+                            actionOnPress = onOpenFloatingButton,
                         ),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                 )

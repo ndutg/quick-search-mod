@@ -117,9 +117,9 @@
     <string name="settings_gesture_lock_screen">Lock Screen</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
-    <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture and to open from an edge swipe in any app. It does not read screen content.</string>
+    <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture and to open from an edge swipe or a floating button in any app. It does not read screen content.</string>
     <string name="accessibility_permission_disclaimer_title">Accessibility Permission Disclaimer</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Android’s AccessibilityService API only to lock your device when you double-tap the Home screen and to show an invisible edge handle that opens Quick Search when you swipe on it. Through this service, Quick Search does not read, collect, store, or share your screen content or other personal data.</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Android’s AccessibilityService API only to lock your device when you double-tap the Home screen, to show an invisible edge handle that opens Quick Search when you swipe on it, and to show a floating search button that opens Quick Search when you tap it. Through this service, Quick Search does not read, collect, store, or share your screen content or other personal data.</string>
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
     <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>
@@ -745,6 +745,10 @@
     <string name="settings_edge_gesture_size">Size</string>
     <string name="settings_edge_gesture_width">Width</string>
     <string name="settings_edge_gesture_visibility">Visibility</string>
+    <string name="settings_floating_button_title">Floating Button</string>
+    <string name="settings_floating_button_desc">Tap a floating search button to open Quick Search from any app</string>
+    <string name="settings_floating_button_move_hint">Long press the button and drag it to move it anywhere on the screen.</string>
+    <string name="settings_floating_button_opacity">Opacity</string>
     <string name="settings_app_language_title">App Language</string>
     <string name="settings_app_language_desc">Current: %1$s</string>
     <string name="settings_app_language_picker_title">Choose App Language</string>
@@ -1055,7 +1059,7 @@
     <string name="permissions_notifications_desc">Required for reminder notifications and to pin search results to notification panel</string>
     <string name="permissions_notification_access_desc">Required to enable notification dots and notification history features</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibility</string>
-    <string name="permissions_accessibility_lock_screen_desc">Allows the double-tap gesture to lock your device and the edge swipe gesture to open Quick Search.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Allows the double-tap gesture to lock your device, and the edge swipe gesture and floating button to open Quick Search.</string>
     <string name="permissions_contacts_desc">Required to search your contacts.</string>
     <string name="permissions_files_desc">Required to search through your documents and other files.</string>
     <string name="permissions_files_title">Files Access</string>

@@ -121,7 +121,7 @@
     <string name="settings_gesture_close_keyboard">Chiudi tastiera</string>
     <string name="settings_gesture_notification_panel">Pannello delle notifiche</string>
     <string name="accessibility_permission_disclaimer_title">Informativa sull’autorizzazione di accessibilità</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search usa l’API AccessibilityService di Android esclusivamente per bloccare il dispositivo quando tocchi due volte la schermata Home e per mostrare una maniglia invisibile sul bordo dello schermo che apre Quick Search quando ci scorri sopra. Tramite questo servizio, Quick Search non legge, raccoglie, archivia o condivide il contenuto dello schermo o altri dati personali.</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search usa l’API AccessibilityService di Android esclusivamente per bloccare il dispositivo quando tocchi due volte la schermata Home, per mostrare una maniglia invisibile sul bordo dello schermo che apre Quick Search quando ci scorri sopra e per mostrare un pulsante di ricerca mobile che apre Quick Search quando lo tocchi. Tramite questo servizio, Quick Search non legge, raccoglie, archivia o condivide il contenuto dello schermo o altri dati personali.</string>
     <string name="settings_gesture_none">Nessuno</string>
     <string name="settings_gesture_custom">Personalizzato (App, file ecc.)</string>
     <string name="settings_keyboard_gestures_title">Gesti della tastiera (Home)</string>
@@ -742,6 +742,10 @@
     <string name="settings_edge_gesture_size">Dimensione</string>
     <string name="settings_edge_gesture_width">Larghezza</string>
     <string name="settings_edge_gesture_visibility">Visibilità</string>
+    <string name="settings_floating_button_title">Pulsante mobile</string>
+    <string name="settings_floating_button_desc">Tocca un pulsante di ricerca mobile per aprire Quick Search da qualsiasi app</string>
+    <string name="settings_floating_button_move_hint">Tieni premuto il pulsante e trascinalo per spostarlo in qualsiasi punto dello schermo.</string>
+    <string name="settings_floating_button_opacity">Opacità</string>
     <string name="settings_app_language_title">Lingua dell’app</string>
     <string name="settings_app_language_desc">In uso: %1$s</string>
     <string name="settings_app_language_picker_title">Scegli la lingua dell’app</string>
@@ -1044,7 +1048,7 @@
     <string name="permissions_notifications_desc">Necessario per le notifiche dei promemoria e per fissare i risultati di ricerca nel pannello delle notifiche</string>
     <string name="permissions_notification_access_desc">Necessario per attivare i punti di notifica e la cronologia delle notifiche</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibilità</string>
-    <string name="permissions_accessibility_lock_screen_desc">Consente al gesto del doppio tocco di bloccare il dispositivo e al gesto di scorrimento dal bordo di aprire Quick Search.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Consente al gesto del doppio tocco di bloccare il dispositivo e al gesto di scorrimento dal bordo e al pulsante mobile di aprire Quick Search.</string>
     <string name="permissions_contacts_desc">Richiesta per cercare tra i tuoi contatti.</string>
     <string name="permissions_files_desc">Richiesta per cercare tra i tuoi documenti e altri file.</string>
     <string name="permissions_files_title">Accesso ai file</string>

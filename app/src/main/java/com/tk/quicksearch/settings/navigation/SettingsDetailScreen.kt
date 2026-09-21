@@ -554,6 +554,9 @@ internal fun SettingsDetailLevel1Screen(
                             onOpenEdgeGesture = {
                                 onNavigateToDetail(SettingsDetailType.EDGE_GESTURE)
                             },
+                            onOpenFloatingButton = {
+                                onNavigateToDetail(SettingsDetailType.FLOATING_BUTTON)
+                            },
                             modifier = Modifier,
                         )
                     }
@@ -622,6 +625,7 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.GESTURES,
                     SettingsDetailType.NOTIFICATION_HISTORY,
                     SettingsDetailType.EDGE_GESTURE,
+                    SettingsDetailType.FLOATING_BUTTON,
                     -> Unit
                 }
             }

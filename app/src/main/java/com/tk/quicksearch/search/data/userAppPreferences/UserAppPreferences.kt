@@ -46,6 +46,7 @@ class UserAppPreferences(
     private val reminderPreferences by lazy { ReminderPreferences(context) }
     private val gesturesPreferences by lazy { GesturesPreferences(context) }
     private val edgeGesturePreferences by lazy { EdgeGesturePreferences(context) }
+    private val floatingButtonPreferences by lazy { FloatingButtonPreferences(context) }
     private val appShortcutPreferences by lazy { AppShortcutPreferences(context) }
     private val folderPreferences by lazy { FolderPreferences(context) }
     private val nicknamePreferences by lazy { NicknamePreferences(context) }
@@ -427,6 +428,18 @@ class UserAppPreferences(
 
     fun setEdgeGestureActivation(activation: EdgeGestureActivation) =
         edgeGesturePreferences.setActivation(activation)
+
+    // ============================================================================
+    // Floating Button Preferences
+    // ============================================================================
+
+    fun getFloatingButtonConfig(): FloatingButtonConfig = floatingButtonPreferences.getConfig()
+
+    fun setFloatingButtonEnabled(enabled: Boolean) = floatingButtonPreferences.setEnabled(enabled)
+
+    fun setFloatingButtonSizeDp(sizeDp: Int) = floatingButtonPreferences.setSizeDp(sizeDp)
+
+    fun setFloatingButtonOpacity(opacity: Float) = floatingButtonPreferences.setOpacity(opacity)
 
     // ============================================================================
     // Reminder Preferences
