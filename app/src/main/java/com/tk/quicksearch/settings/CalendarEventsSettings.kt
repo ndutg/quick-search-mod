@@ -64,6 +64,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.VisualTransformation
@@ -612,9 +613,11 @@ internal fun CustomEventFormDialog(
     val canSave = eventTitle.isNotBlank() && selectedDateMillis != null
 
     val titleFocusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    LaunchedEffect(autoFocusTitle) {
         if (autoFocusTitle) {
             titleFocusRequester.requestFocus()
+            keyboardController?.show()
         }
     }
 

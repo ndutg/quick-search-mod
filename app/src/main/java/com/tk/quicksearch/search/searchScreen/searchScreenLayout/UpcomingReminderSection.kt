@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -115,6 +116,10 @@ internal fun UpcomingReminderSection(showWallpaperBackground: Boolean) {
                         reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
                         scope.launch(Dispatchers.IO) { repository.dismissFromHome(reminder.reminderId) }
                     },
+                    onDelete = {
+                        reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
+                        scope.launch(Dispatchers.IO) { repository.deleteReminder(reminder.reminderId) }
+                    },
                 )
                 if (index < reminders.lastIndex) {
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
@@ -132,6 +137,7 @@ private fun UpcomingReminderRow(
     onClick: () -> Unit,
     onDone: () -> Unit,
     onDismiss: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     val context = LocalContext.current
     var showMenu by remember { mutableStateOf(false) }
@@ -231,6 +237,15 @@ private fun UpcomingReminderRow(
                     onClick = {
                         showMenu = false
                         onDismiss()
+                    },
+                )
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.dialog_delete)) },
+                    leadingIcon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                    onClick = {
+                        showMenu = false
+                        onDelete()
                     },
                 )
             }

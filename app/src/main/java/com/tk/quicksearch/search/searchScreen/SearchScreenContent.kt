@@ -1667,6 +1667,21 @@ internal fun SearchScreenContent(
                                     }
                                 },
                         )
+                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        CreateReminderPill(
+                                useShortLabel = true,
+                                onClick = {
+                                    ReminderEditorRequests.openNew(
+                                            initialDateTimeMillis =
+                                                    System.currentTimeMillis() +
+                                                            detectedTimerSeconds * 1000L,
+                                            initialAllDay = false,
+                                            // Duration-only queries have no reminder title, so open directly
+                                            // into the title field for immediate typing.
+                                            autoFocusTitle = true,
+                                    )
+                                },
+                        )
                     }
                     if (detectedReminderSchedule != null) {
                         if (keyboardSwitchText != null ||

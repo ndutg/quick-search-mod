@@ -16,7 +16,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.EventBusy
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -201,7 +201,7 @@ fun RemindersSettingsSection(
                     reminderPreferences.setIncludePastReminders(enabled)
                     ReminderRepository.notifyChanged()
                 },
-                leadingIcon = Icons.Rounded.EventBusy,
+                leadingIcon = Icons.Rounded.History,
                 isFirstItem = true,
                 isLastItem = true,
                 showDivider = false,

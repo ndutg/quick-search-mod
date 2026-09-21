@@ -192,9 +192,11 @@ internal fun StartTimerPill(
 @Composable
 internal fun CreateReminderPill(
     onClick: () -> Unit,
+    useShortLabel: Boolean = false,
     modifier: Modifier = Modifier,
 ) = com.tk.quicksearch.search.searchScreen.components.CreateReminderPill(
     onClick = onClick,
+    useShortLabel = useShortLabel,
     modifier = modifier,
 )
 

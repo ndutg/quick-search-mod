@@ -188,10 +188,11 @@ internal fun StartTimerPill(
 @Composable
 internal fun CreateReminderPill(
     onClick: () -> Unit,
+    useShortLabel: Boolean = false,
     modifier: Modifier = Modifier,
 ) = ClockActionPill(
     icon = Icons.Rounded.Notifications,
-    label = stringResource(R.string.app_setting_create_reminder),
+    label = stringResource(if (useShortLabel) R.string.reminder_name_hint else R.string.app_setting_create_reminder),
     onClick = onClick,
     modifier = modifier,
 )
