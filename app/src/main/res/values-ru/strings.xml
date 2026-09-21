@@ -109,6 +109,7 @@
 <string name="settings_gestures_desc">Настройка жестов смахивания</string>
 <string name="settings_gesture_swipe_right">Смахивание вправо</string>
 <string name="settings_gesture_widget_panel">Панель виджетов</string>
+<string name="widget_pinned_to_home">Добавлено на главный экран</string>
 <string name="settings_gesture_swipe_left">Смахивание влево</string>
 <string name="settings_gesture_swipe_up">Смахивание вверх</string>
 <string name="settings_gesture_swipe_down">Смахивание вниз</string>
@@ -140,6 +141,8 @@
 <string name="notification_pinned_item_type_file">Файл</string>
 <string name="notification_pinned_item_type_note">Заметка</string>
 <string name="action_remove">Удалить</string>
+<string name="folder_name_placeholder">Добавить название папки</string>
+<string name="folder_remove_from_folder">Убрать из папки</string>
 <string name="app_swipe_current_action">Текущее действие</string>
 <string name="app_swipe_up_picker_title">Выберите действие для свайпа вверх для %1$s</string>
 <string name="app_swipe_down_picker_title">Выберите действие для свайпа вниз для %1$s</string>
@@ -239,7 +242,6 @@
      ============================================================================ -->
 <string name="app_suggestions_tab_new_updated">Новые/Обновленные</string>
 <string name="app_suggestions_tab_pinned">Закрепленные</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Закрепленные приложения по-прежнему будут отображаться на вкладке «%1$s»</string>
 <string name="app_suggestions_tab_recent">Недавние</string>
 <string name="app_suggestions_tabs_dialog_message">Выберите, какие вкладки с подсказками приложений отображать на главном экране.</string>
 <string name="app_suggestions_tabs_dialog_title">Вкладки с подсказками приложений</string>

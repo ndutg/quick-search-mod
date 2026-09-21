@@ -109,6 +109,7 @@
     <string name="settings_gestures_desc">Personalizar acciones de deslizamiento</string>
     <string name="settings_gesture_swipe_right">Deslizar a la derecha</string>
     <string name="settings_gesture_widget_panel">Panel de widgets</string>
+    <string name="widget_pinned_to_home">Añadido a Inicio</string>
     <string name="settings_gesture_swipe_left">Deslizar a la izquierda</string>
     <string name="settings_gesture_swipe_up">Deslizar hacia arriba</string>
     <string name="settings_gesture_swipe_down">Deslizar hacia abajo</string>
@@ -140,6 +141,8 @@
     <string name="notification_pinned_item_type_file">Archivo</string>
     <string name="notification_pinned_item_type_note">Nota</string>
     <string name="action_remove">Eliminar</string>
+    <string name="folder_name_placeholder">Añadir nombre de carpeta</string>
+    <string name="folder_remove_from_folder">Quitar de la carpeta</string>
     <string name="app_swipe_current_action">Acción actual</string>
     <string name="app_swipe_up_picker_title">Seleccionar acción de deslizar hacia arriba para %1$s</string>
     <string name="app_swipe_down_picker_title">Seleccionar acción de deslizar hacia abajo para %1$s</string>
@@ -239,7 +242,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Nuevas/Actualizadas</string>
     <string name="app_suggestions_tab_pinned">Fijadas</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Las aplicaciones fijadas seguirán apareciendo en la pestaña %1$s</string>
     <string name="app_suggestions_tab_recent">Recientes</string>
     <string name="app_suggestions_tabs_dialog_message">Elige qué pestañas de sugerencias de apps aparecen en la pantalla de inicio.</string>
     <string name="app_suggestions_tabs_dialog_title">Pestañas de sugerencias de apps</string>

@@ -34,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import com.tk.quicksearch.search.appShortcuts.AppShortcutResultMenu
+import com.tk.quicksearch.search.folders.AppFolderMember
+import com.tk.quicksearch.search.folders.FolderPreviewIcon
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.rememberShortcutIcon
@@ -80,7 +82,12 @@ internal fun AppShortcutGridItem(
         onItemMeasured: (Int) -> Unit = {},
         onPinnedDragStart: (() -> Unit)? = null,
         onPinnedDrag: ((Float, Float) -> Unit)? = null,
-        onPinnedDragEnd: (() -> Unit)? = null,
+        onPinnedDragEnd: ((Boolean) -> Unit)? = null,
+        isMergeSource: Boolean = false,
+        fadeMergeSource: Boolean = false,
+        isMergeTarget: Boolean = false,
+        showWallpaperBackground: Boolean = false,
+        onHoldChange: ((Boolean) -> Unit)? = null,
 ) {
     val view = LocalView.current
     val displayName = shortcutDisplayName(shortcut)
@@ -111,12 +118,22 @@ internal fun AppShortcutGridItem(
     var isLocalDragging by remember { mutableStateOf(false) }
     val showDraggedPresentation = isDragging || isLocalDragging
     val dragScale by animateFloatAsState(
-            targetValue = if (showDraggedPresentation) DraggedPinnedAppScale else 1f,
+            targetValue =
+                    when {
+                        showDraggedPresentation && isMergeSource -> MergeSourcePinnedAppScale
+                        showDraggedPresentation -> DraggedPinnedAppScale
+                        else -> 1f
+                    },
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "pinnedShortcutDragScale",
     )
     val dragAlpha by animateFloatAsState(
-            targetValue = if (showDraggedPresentation) DraggedPinnedAppAlpha else 1f,
+            targetValue =
+                    when {
+                        showDraggedPresentation && fadeMergeSource -> 0.35f
+                        showDraggedPresentation -> DraggedPinnedAppAlpha
+                        else -> 1f
+                    },
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "pinnedShortcutDragAlpha",
     )
@@ -124,11 +141,12 @@ internal fun AppShortcutGridItem(
             rememberPinnedGridDragModifier(
                     key = shortcutKey(shortcut),
                     onClick = { onClick(shortcut) },
-                    onShowOptionsChange = { showOptions = it },
+                    onShowOptions = { showOptions = true },
                     onLocalDraggingChange = { isLocalDragging = it },
                     onPinnedDragStart = onPinnedDragStart,
                     onPinnedDrag = onPinnedDrag,
                     onPinnedDragEnd = onPinnedDragEnd,
+                    onHoldChange = onHoldChange,
             )
     val isDraggable = onPinnedDragStart != null && onPinnedDrag != null && onPinnedDragEnd != null
     val clickModifier =
@@ -184,7 +202,15 @@ internal fun AppShortcutGridItem(
                                     .then(clickModifier),
                     contentAlignment = Alignment.Center,
             ) {
-                Box(modifier = Modifier.size(iconSize), contentAlignment = Alignment.Center) {
+                if (isMergeTarget) {
+                    FolderPreviewIcon(
+                            members = listOf(AppFolderMember.Shortcut(shortcut)),
+                            iconSize = iconSize,
+                            iconPackPackage = iconPackPackage,
+                            appIconShape = appIconShape,
+                            showWallpaperBackground = showWallpaperBackground,
+                    )
+                } else Box(modifier = Modifier.size(iconSize), contentAlignment = Alignment.Center) {
                     val mainIcon = shortcutIcon ?: appIcon
                     if (mainIcon != null) {
                         Image(
