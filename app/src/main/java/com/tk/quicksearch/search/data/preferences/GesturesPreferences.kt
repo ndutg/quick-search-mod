@@ -118,10 +118,10 @@ class GesturesPreferences(
     fun getHomeSwipeDownAliasTarget(): String? = prefs.getString(KEY_HOME_SWIPE_DOWN_ALIAS_TARGET, null)
     fun setHomeSwipeDownAliasTarget(targetId: String?) = setCustomAction(KEY_HOME_SWIPE_DOWN_ALIAS_TARGET, targetId)
 
-    fun getHomeDoubleTapAction(isLockScreenAvailable: Boolean = false): HomeSwipeGestureAction =
+    fun getHomeDoubleTapAction(): HomeSwipeGestureAction =
         getHomeGestureAction(
             KEY_HOME_DOUBLE_TAP_ACTION,
-            if (isLockScreenAvailable) HomeSwipeGestureAction.LOCK_SCREEN else HomeSwipeGestureAction.NONE,
+            HomeSwipeGestureAction.NONE,
         )
 
     fun setHomeDoubleTapAction(action: HomeSwipeGestureAction) =

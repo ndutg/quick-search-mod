@@ -123,7 +123,6 @@
     <string name="settings_gesture_notification_panel">Panel Notifikasi</string>
     <string name="settings_gesture_lock_screen">Kunci Layar</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
-    <string name="accessibility_lock_screen_service_label">Kunci Layar Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Mengizinkan Quick Search mengunci layar dari gestur ketuk dua kali di Layar Utama. Fitur ini tidak membaca konten layar.</string>
     <string name="accessibility_permission_disclaimer_title">Pernyataan Izin Aksesibilitas</string>
     <string name="accessibility_lock_screen_disclosure_message">Quick Search menggunakan API AccessibilityService Android hanya untuk mengunci perangkat saat Anda mengetuk dua kali di Layar Utama. Melalui layanan ini, Quick Search tidak membaca, mengumpulkan, menyimpan, atau membagikan konten layar atau data pribadi lainnya.</string>
@@ -209,7 +208,7 @@
     <string name="dialog_edit_amazon_domain_message">Perbarui domain Amazon untuk negara Anda.</string>
     <string name="dialog_edit_amazon_domain_title">Edit Domain Amazon</string>
     <string name="dialog_gemini_model_picker_title">Pilih Model</string>
-    <string name="dialog_nickname_message">Masukkan nama panggilan untuk "%1$s". Anda dapat mencarinya menggunakan nama panggilan ini.</string>
+    <string name="dialog_nickname_message">Masukkan satu atau beberapa nama panggilan untuk "%1$s", dipisahkan dengan koma. Anda dapat mencarinya menggunakan salah satu di antaranya.</string>
     <string name="dialog_ok">Lanjutkan</string>
     <string name="dialog_okay">Oke</string>
     <string name="dialog_remember_choice">Ingat pilihan ini</string>
@@ -323,7 +322,7 @@
     <string name="action_disable_app_shortcut">Nonaktifkan</string>
     <string name="action_disable_all_app_shortcuts_named">Nonaktifkan semua pintasan %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Pintasan aplikasi dinonaktifkan</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Anda dapat mengaktifkan pintasan ini nanti di pengaturan Pintasan aplikasi.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Anda dapat mengaktifkannya nanti di Setelan.</string>
     <string name="apps_refreshed_successfully">Aplikasi berhasil diperbarui</string>
     <string name="error_loading_user_apps">Kami tidak dapat memuat aplikasi Anda. Coba lagi beberapa saat lagi.</string>
     <string name="error_uninstall_app">Tidak dapat mencopot pemasangan %1$s</string>
@@ -671,6 +670,9 @@
     <string name="settings_more_apps_from_developer_title">Aplikasi Lainnya dari Pengembang</string>
     <string name="settings_app_settings_desc">Cari pengaturan Quick Search</string>
     <string name="settings_features_load_failed">Tidak dapat memuat dokumentasi fitur.</string>
+    <string name="settings_features_export">Unduh dan bagikan fitur</string>
+    <string name="settings_features_export_failed">Tidak dapat menyimpan dokumentasi fitur.</string>
+    <string name="settings_features_saved_to_downloads">Disimpan ke Unduhan</string>
     <string name="settings_features_sections_title">Daftar Isi</string>
     <string name="settings_search_description_change_app_theme">Ubah tema aplikasi</string>
     <string name="settings_search_description_change_font_size">Ubah ukuran font aplikasi</string>
@@ -834,6 +836,9 @@
     <string name="settings_direct_search_grounding_label">Pencarian Web</string>
     <string name="settings_direct_search_how_to">Dapatkan Kunci API Gratis</string>
     <string name="settings_direct_search_model_label">Model</string>
+    <string name="settings_select_model">Pilih model</string>
+    <string name="ai_error_selected_model_unavailable">Model yang dipilih tidak tersedia. Pilih model lain di setelan.</string>
+    <string name="settings_loading_models">Memuat model…</string>
     <string name="settings_direct_search_personal_context">Konteks Pribadi</string>
     <string name="settings_direct_search_personal_context_hint">Tambahkan konteks apa pun yang ingin digunakan AI saat menghasilkan jawaban.</string>
     <string name="settings_direct_search_personal_context_unsupported">Konteks pribadi tidak tersedia untuk model ini.</string>
@@ -893,7 +898,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Lihat kode sumber proyek ini di GitHub</string>
     <string name="settings_feedback_github_title">Pengembangan</string>
-    <string name="settings_feedback_rate_desc">Beri rating bintang 5 jika Anda merasa aplikasi ini bermanfaat</string>
+    <string name="settings_feedback_rate_desc">Beri rating bintang 5 jika Anda merasa aplikasi ini bermanfaat 🙏</string>
     <string name="settings_feedback_rate_title">Beri Nilai Quick Search</string>
     <string name="settings_feedback_send_desc">Laporkan bug atau minta fitur baru</string>
     <string name="settings_feedback_send_title">Kirim Masukan</string>
@@ -913,6 +918,10 @@
     <string name="currency_converter_requires_gemini_key">Memerlukan kunci API penyedia AI</string>
     <string name="currency_converter_toggle_desc">Contoh: 100 USD ke INR</string>
     <string name="currency_converter_toggle_title">Konverter Mata Uang</string>
+    <string name="set_alarm_action_label">Setel Alarm</string>
+    <string name="set_alarm_no_clock_app">Aplikasi jam tidak ditemukan</string>
+    <string name="start_timer_action_label">Mulai Timer</string>
+    <string name="start_timer_started">Timer dimulai</string>
     <string name="color_visualizer_toggle_title">Visualisasi Warna</string>
     <string name="color_visualizer_toggle_desc">Contoh: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Masukkan warna heksadesimal atau RGB</string>
@@ -1174,5 +1183,6 @@
     <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>
     <string name="settings_tavily_mode_always">Selalu gunakan Tavily untuk penelusuran web</string>
     <string name="settings_tavily_mode_when_unsupported">Gunakan hanya jika model tidak mendukung penelusuran web</string>
+    <string name="settings_weather_no_web_search_warning">Cuaca memerlukan hasil web. Pilih model yang mendukung penelusuran web, atau tambahkan kunci API Tavily di Penyiapan Kunci API.</string>
     <string name="tavily_search_failed_toast">Penelusuran web Tavily gagal. Menjawab tanpa hasil web.</string>
 </resources>

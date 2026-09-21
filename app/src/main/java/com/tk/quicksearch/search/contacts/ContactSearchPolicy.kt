@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.contacts
 
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
+import com.tk.quicksearch.search.utils.NicknameUtils
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
@@ -39,7 +40,7 @@ object ContactSearchPolicy {
         return SearchTokenCoveragePolicy.areAllTokensCovered(
             query = query,
             primaryText = displayName,
-            supportingText = nickname,
+            supportingText = NicknameUtils.searchText(nickname),
             fuzzyMinScore = fuzzyMinScore,
             fuzzyMaxEditDistance = fuzzyMaxEditDistance,
         )

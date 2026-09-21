@@ -172,6 +172,24 @@ internal fun PhoneCallPill(
 )
 
 @Composable
+internal fun SetAlarmPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = com.tk.quicksearch.search.searchScreen.components.SetAlarmPill(
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+internal fun StartTimerPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = com.tk.quicksearch.search.searchScreen.components.StartTimerPill(
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
 internal fun OpenKeyboardAction(
     text: String,
     onClick: () -> Unit,

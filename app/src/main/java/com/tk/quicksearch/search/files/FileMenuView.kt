@@ -60,6 +60,7 @@ import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.components.itemMenuRemoveOption
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -185,6 +186,7 @@ fun FileDropdownMenu(
         showPinnedItemMenu: Boolean = false,
 ) {
     val context = LocalContext.current
+    val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
     val fileExtension = FileUtils.getFileExtension(deviceFile.displayName)
     val notificationAction = CustomWidgetButtonAction.File(
             uri = deviceFile.uri.toString(), displayName = deviceFile.displayName, mimeType = deviceFile.mimeType,
@@ -299,12 +301,14 @@ fun FileDropdownMenu(
                 },
                 group = FileMenuGroup.ROWS,
         ))
-        add(FileMenuItem(
-                textResId = R.string.action_add_to_home,
-                icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
-                onClick = { onDismissRequest(); onAddToHome() },
-                group = FileMenuGroup.ROWS,
-        ))
+        if (!isDefaultLauncher) {
+            add(FileMenuItem(
+                    textResId = R.string.action_add_to_home,
+                    icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                    onClick = { onDismissRequest(); onAddToHome() },
+                    group = FileMenuGroup.ROWS,
+            ))
+        }
         if (!deviceFile.isDirectory) {
             add(FileMenuItem(
                     textResId = R.string.action_file_info,

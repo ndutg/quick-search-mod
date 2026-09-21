@@ -1030,6 +1030,10 @@ class UiPreferences(
             .apply()
     }
 
+    fun clearCurrencyConverterModel() {
+        prefs.edit().remove(UiPreferences.KEY_CURRENCY_CONVERTER_MODEL).apply()
+    }
+
     fun getCurrencyConverterProviderId(): AiSearchLlmProviderId =
         AiSearchLlmProviderId.fromStorageValue(
             prefs.getString(UiPreferences.KEY_CURRENCY_CONVERTER_PROVIDER_ID, null),
@@ -1062,9 +1066,14 @@ class UiPreferences(
         setAdvancedPayload(UiPreferences.KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD, UiPreferences.KEY_CURRENCY_CONVERTER_ADVANCED_PAYLOAD_ENABLED, payload, enabled)
 
     fun getWorldClockModel(): String =
-        prefs.getString(UiPreferences.KEY_WORD_CLOCK_MODEL, null).orEmpty().ifBlank {
+        if (prefs.contains(UiPreferences.KEY_WORD_CLOCK_MODEL)) {
+            prefs.getString(UiPreferences.KEY_WORD_CLOCK_MODEL, "").orEmpty()
+        } else {
             getCurrencyConverterModel()
         }
+
+    fun hasWorldClockModelPreference(): Boolean =
+        prefs.contains(UiPreferences.KEY_WORD_CLOCK_MODEL)
 
     fun setWorldClockModel(modelId: String) {
         val normalized = modelId.trim()
@@ -1072,9 +1081,18 @@ class UiPreferences(
         prefs.edit().putString(UiPreferences.KEY_WORD_CLOCK_MODEL, normalized).apply()
     }
 
+    fun clearWorldClockModel() {
+        prefs.edit().putString(UiPreferences.KEY_WORD_CLOCK_MODEL, "").apply()
+    }
+
     fun getWorldClockProviderId(): AiSearchLlmProviderId =
         AiSearchLlmProviderId.fromStorageValue(
             prefs.getString(UiPreferences.KEY_WORD_CLOCK_PROVIDER_ID, null),
+        )
+
+    fun getWorldClockProviderIdOverride(): AiSearchLlmProviderId? =
+        prefs.getString(UiPreferences.KEY_WORD_CLOCK_PROVIDER_ID, null)?.let(
+            AiSearchLlmProviderId::fromStorageValue,
         )
 
     fun setWorldClockProviderId(providerId: AiSearchLlmProviderId) {
@@ -1082,7 +1100,7 @@ class UiPreferences(
     }
 
     fun isWorldClockGroundingEnabled(): Boolean =
-        getBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, true)
+        getBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, false)
 
     fun setWorldClockGroundingEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_WORD_CLOCK_GROUNDING_ENABLED, enabled)
@@ -1090,6 +1108,13 @@ class UiPreferences(
 
     fun isWorldClockThinkingEnabled(): Boolean =
         getBooleanPref(UiPreferences.KEY_WORD_CLOCK_THINKING_ENABLED, false)
+
+    fun getWorldClockThinkingOverride(): Boolean? =
+        if (prefs.contains(UiPreferences.KEY_WORD_CLOCK_THINKING_ENABLED)) {
+            isWorldClockThinkingEnabled()
+        } else {
+            null
+        }
 
     fun setWorldClockThinkingEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_WORD_CLOCK_THINKING_ENABLED, enabled)
@@ -1102,9 +1127,14 @@ class UiPreferences(
         setAdvancedPayload(UiPreferences.KEY_WORD_CLOCK_ADVANCED_PAYLOAD, UiPreferences.KEY_WORD_CLOCK_ADVANCED_PAYLOAD_ENABLED, payload, enabled)
 
     fun getDictionaryModel(): String =
-        prefs.getString(UiPreferences.KEY_DICTIONARY_MODEL, null).orEmpty().ifBlank {
+        if (prefs.contains(UiPreferences.KEY_DICTIONARY_MODEL)) {
+            prefs.getString(UiPreferences.KEY_DICTIONARY_MODEL, "").orEmpty()
+        } else {
             getCurrencyConverterModel()
         }
+
+    fun hasDictionaryModelPreference(): Boolean =
+        prefs.contains(UiPreferences.KEY_DICTIONARY_MODEL)
 
     fun setDictionaryModel(modelId: String) {
         val normalized = modelId.trim()
@@ -1112,9 +1142,18 @@ class UiPreferences(
         prefs.edit().putString(UiPreferences.KEY_DICTIONARY_MODEL, normalized).apply()
     }
 
+    fun clearDictionaryModel() {
+        prefs.edit().putString(UiPreferences.KEY_DICTIONARY_MODEL, "").apply()
+    }
+
     fun getDictionaryProviderId(): AiSearchLlmProviderId =
         AiSearchLlmProviderId.fromStorageValue(
             prefs.getString(UiPreferences.KEY_DICTIONARY_PROVIDER_ID, null),
+        )
+
+    fun getDictionaryProviderIdOverride(): AiSearchLlmProviderId? =
+        prefs.getString(UiPreferences.KEY_DICTIONARY_PROVIDER_ID, null)?.let(
+            AiSearchLlmProviderId::fromStorageValue,
         )
 
     fun setDictionaryProviderId(providerId: AiSearchLlmProviderId) {
@@ -1144,6 +1183,13 @@ class UiPreferences(
 
     fun isDictionaryThinkingEnabled(): Boolean =
         getBooleanPref(UiPreferences.KEY_DICTIONARY_THINKING_ENABLED, false)
+
+    fun getDictionaryThinkingOverride(): Boolean? =
+        if (prefs.contains(UiPreferences.KEY_DICTIONARY_THINKING_ENABLED)) {
+            isDictionaryThinkingEnabled()
+        } else {
+            null
+        }
 
     fun setDictionaryThinkingEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_DICTIONARY_THINKING_ENABLED, enabled)

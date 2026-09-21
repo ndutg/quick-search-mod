@@ -87,6 +87,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 
 private const val ROW_MIN_HEIGHT = 52
 private const val ICON_SIZE = 32
@@ -512,6 +513,7 @@ private fun AppShortcutDropdownMenu(
         showPinnedItemMenu: Boolean = false,
 ) {
         val context = LocalContext.current
+        val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
         val displayName = shortcutDisplayName(shortcut)
         val density = LocalDensity.current
         val iconSizePx = remember(density) { with(density) { 40.dp.roundToPx().coerceAtLeast(1) } }
@@ -623,12 +625,14 @@ private fun AppShortcutDropdownMenu(
                         group = ItemMenuGroup.APPEARANCE,
                 ))
 
-                add(AppShortcutMenuItem(
-                        textResId = R.string.action_add_to_home,
-                        icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
-                        onClick = { onDismissRequest(); onAddToHome() },
-                        group = ItemMenuGroup.BEHAVIOR,
-                ))
+                if (!isDefaultLauncher) {
+                        add(AppShortcutMenuItem(
+                                textResId = R.string.action_add_to_home,
+                                icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                                onClick = { onDismissRequest(); onAddToHome() },
+                                group = ItemMenuGroup.BEHAVIOR,
+                        ))
+                }
                 add(AppShortcutMenuItem(
                         textResId = R.string.action_app_info,
                         icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },

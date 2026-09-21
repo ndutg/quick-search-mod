@@ -256,13 +256,18 @@ fun SearchRoute(
         }
     val undoLabel = stringResource(R.string.action_undo)
 
+    // A new undo snackbar replaces the visible one right away instead of queueing behind it.
+    val undoSnackbarJob = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+
     val showUndoSnackbarVisuals: (UndoSnackbarVisuals, () -> Unit) -> Unit = { visuals, onUndo ->
-        snackbarScope.launch {
-            val result = effectiveSnackbarHostState.showSnackbar(visuals)
-            if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
-                onUndo()
+        undoSnackbarJob.value?.cancel()
+        undoSnackbarJob.value =
+            snackbarScope.launch {
+                val result = effectiveSnackbarHostState.showSnackbar(visuals)
+                if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                    onUndo()
+                }
             }
-        }
     }
 
     val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo ->
@@ -274,7 +279,7 @@ fun SearchRoute(
             UndoSnackbarVisuals(
                 message = context.getString(R.string.snackbar_app_shortcut_disabled_title),
                 supportingText = context.getString(R.string.snackbar_app_shortcut_disabled_supporting),
-                icon = androidx.compose.material.icons.Icons.Rounded.Block,
+                icon = null,
                 actionLabel = undoLabel,
             ),
             onUndo,
@@ -725,7 +730,7 @@ fun SearchRoute(
         mutableStateOf(gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher))
     }
     var homeDoubleTapAction by remember {
-        mutableStateOf(gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context)))
+        mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
     }
     var homeCustomSwipeActions by remember {
         mutableStateOf(
@@ -762,7 +767,7 @@ fun SearchRoute(
             swipeAliasTargets = listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
             homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
-            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context))
+            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             homeCustomSwipeActions =
                 listOf(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
@@ -783,11 +788,11 @@ fun SearchRoute(
                 val isLockScreenAvailable = LockScreenAccessibilityService.isEnabled(context)
                 if (
                     !isLockScreenAvailable &&
-                    gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable) == HomeSwipeGestureAction.LOCK_SCREEN
+                    gesturePreferences.getHomeDoubleTapAction() == HomeSwipeGestureAction.LOCK_SCREEN
                 ) {
                     gesturePreferences.setHomeDoubleTapAction(HomeSwipeGestureAction.NONE)
                 }
-                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable)
+                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

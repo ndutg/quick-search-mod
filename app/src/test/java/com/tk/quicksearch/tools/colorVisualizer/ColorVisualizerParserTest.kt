@@ -6,9 +6,15 @@ import org.junit.Test
 
 class ColorVisualizerParserTest {
     @Test
-    fun parsesSixDigitHexWithOrWithoutHash() {
+    fun parsesSixDigitHexWithHash() {
         assertEquals("#FF0000", ColorVisualizerParser.parse("#ff0000")?.hex)
-        assertEquals("#00FF00", ColorVisualizerParser.parse("00ff00")?.hex)
+    }
+
+    @Test
+    fun ignoresBareHexUnlessExplicitlyAllowed() {
+        assertNull(ColorVisualizerParser.parse("00ff00"))
+        assertNull(ColorVisualizerParser.parse("123456"))
+        assertEquals("#00FF00", ColorVisualizerParser.parse("00ff00", allowBareHex = true)?.hex)
     }
 
     @Test

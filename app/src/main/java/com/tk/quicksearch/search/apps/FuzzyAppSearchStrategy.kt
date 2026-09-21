@@ -9,6 +9,7 @@ import com.tk.quicksearch.search.fuzzy.FuzzySearchPolicyResolver
 import com.tk.quicksearch.search.fuzzy.FuzzySearchStrategy
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.utils.FuzzyMatcher
+import com.tk.quicksearch.search.utils.NicknameUtils
 import com.tk.quicksearch.search.utils.PreparedSearchText
 import com.tk.quicksearch.search.utils.SearchTextCache
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
@@ -185,8 +186,7 @@ class FuzzyAppSearchStrategy(
 
         val alternateNames =
             searchAliases.asSequence()
-                .plus(sequenceOf(nickname))
-                .filterNotNull()
+                .plus(NicknameUtils.split(nickname).asSequence())
                 .plus(initials.asSequence())
                 .filter { it.isNotBlank() }
                 .joinToString(separator = " ")
@@ -203,8 +203,7 @@ class FuzzyAppSearchStrategy(
         initials: List<String>,
     ): String? =
         searchAliases.asSequence()
-            .plus(sequenceOf(nickname))
-            .filterNotNull()
+            .plus(NicknameUtils.split(nickname).asSequence())
             .plus(initials.asSequence())
             .filter { it.isNotBlank() }
             .joinToString(separator = " ")

@@ -28,6 +28,14 @@ class TavilyWebSearchPlanTest {
     }
 
     @Test
+    fun alwaysModeIgnoresTheWebSearchToggle() {
+        assertEquals(
+            WebSearchPlan(useNativeSearch = false, useTavily = true),
+            resolveWebSearchPlan(TavilyWebSearchMode.ALWAYS, hasTavilyKey = true, nativeSearchSupported = false, nativeSearchRequested = false),
+        )
+    }
+
+    @Test
     fun whenUnsupportedModeOnlyUsesTavilyForModelsWithoutNativeSearch() {
         val mode = TavilyWebSearchMode.WHEN_MODEL_UNSUPPORTED
         assertEquals(
@@ -40,7 +48,21 @@ class TavilyWebSearchPlanTest {
         )
         assertEquals(
             WebSearchPlan(useNativeSearch = false, useTavily = true),
-            resolveWebSearchPlan(mode, hasTavilyKey = true, nativeSearchSupported = false, nativeSearchRequested = false),
+            resolveWebSearchPlan(mode, hasTavilyKey = true, nativeSearchSupported = false, nativeSearchRequested = true),
+        )
+    }
+
+    /** The web search toggle stays visible for unsupported models, so it has to gate Tavily. */
+    @Test
+    fun whenUnsupportedModeSkipsTavilyWhileTheToggleIsOff() {
+        assertEquals(
+            WebSearchPlan(useNativeSearch = false, useTavily = false),
+            resolveWebSearchPlan(
+                TavilyWebSearchMode.WHEN_MODEL_UNSUPPORTED,
+                hasTavilyKey = true,
+                nativeSearchSupported = false,
+                nativeSearchRequested = false,
+            ),
         )
     }
 

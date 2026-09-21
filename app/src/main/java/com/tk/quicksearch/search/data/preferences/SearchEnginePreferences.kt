@@ -147,7 +147,7 @@ class SearchEnginePreferences(
                             id = id,
                             name = name,
                             prompt = prompt,
-                            modelId = modelId.ifBlank { "gemini-flash-latest" },
+                            modelId = modelId,
                             providerId = providerId,
                             groundingEnabled = item.optBoolean("groundingEnabled", false),
                             thinkingEnabled = item.optBoolean("thinkingEnabled", false),

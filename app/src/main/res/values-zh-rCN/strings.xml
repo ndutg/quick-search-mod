@@ -204,7 +204,7 @@
     <string name="dialog_edit_amazon_domain_message">更新适用于您所在国家的 Amazon 域名。</string>
     <string name="dialog_edit_amazon_domain_title">编辑 Amazon 域名</string>
     <string name="dialog_gemini_model_picker_title">选择模型</string>
-    <string name="dialog_nickname_message">为“%1$s”输入一个昵称。此后您可以使用该昵称来搜索它。</string>
+    <string name="dialog_nickname_message">为“%1$s”输入一个或多个昵称，用逗号分隔。此后您可以使用其中任意一个昵称来搜索它。</string>
     <string name="dialog_ok">继续</string>
     <string name="dialog_okay">好的</string>
     <string name="dialog_remember_choice">记住此选择</string>
@@ -318,7 +318,7 @@
     <string name="action_disable_app_shortcut">停用</string>
     <string name="action_disable_all_app_shortcuts_named">停用所有%1$s快捷方式</string>
     <string name="snackbar_app_shortcut_disabled_title">应用快捷方式已停用</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">你可以稍后在应用快捷方式设置中重新启用。</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">您可稍后在设置中启用。</string>
     <string name="apps_refreshed_successfully">应用数据刷新成功</string>
     <string name="error_loading_user_apps">我们无法加载您的应用。请稍后重试。</string>
     <string name="error_uninstall_app">无法卸载 %1$s</string>
@@ -653,6 +653,9 @@
     <string name="settings_all_quick_search_features_desc">查看完整的功能与能力清单</string>
     <string name="settings_app_settings_desc">搜索 Quick Search 本身的设置选项</string>
     <string name="settings_features_load_failed">无法加载功能说明文档。</string>
+    <string name="settings_features_export">下载并分享功能列表</string>
+    <string name="settings_features_export_failed">无法保存功能说明文档。</string>
+    <string name="settings_features_saved_to_downloads">已保存到“下载”</string>
     <string name="settings_features_sections_title">目录内容</string>
     <string name="settings_search_description_change_app_theme">更改应用主题颜色</string>
     <string name="settings_search_description_change_font_size">更改应用字体大小</string>
@@ -816,6 +819,9 @@
     <string name="settings_direct_search_grounding_label">联网搜索</string>
     <string name="settings_direct_search_how_to">获取免费 API 密钥</string>
     <string name="settings_direct_search_model_label">模型</string>
+    <string name="settings_select_model">选择模型</string>
+    <string name="ai_error_selected_model_unavailable">所选模型不可用。请在设置中选择其他模型。</string>
+    <string name="settings_loading_models">正在加载模型…</string>
     <string name="settings_direct_search_personal_context">个人背景信息</string>
     <string name="settings_direct_search_personal_context_hint">添加您希望 AI 在生成回答时参考的背景信息。</string>
     <string name="settings_direct_search_personal_context_unsupported">该模型不支持个人背景信息功能。</string>
@@ -875,7 +881,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">在 GitHub 上查看此开源项目的源码</string>
     <string name="settings_feedback_github_title">开发进度</string>
-    <string name="settings_feedback_rate_desc">如果您觉得本应用对您有所帮助，请留下 5 星好评</string>
+    <string name="settings_feedback_rate_desc">如果您觉得本应用对您有所帮助，请留下 5 星好评 🙏</string>
     <string name="settings_feedback_rate_title">为 Quick Search 评分</string>
     <string name="settings_feedback_send_desc">反馈故障 Bug 或提交新功能需求</string>
     <string name="settings_feedback_send_title">发送反馈</string>
@@ -895,6 +901,10 @@
     <string name="currency_converter_requires_gemini_key">此功能需要配置 AI 提供商的 API 密钥</string>
     <string name="currency_converter_toggle_desc">例如：100 USD to INR</string>
     <string name="currency_converter_toggle_title">货币转换器</string>
+    <string name="set_alarm_action_label">设置闹钟</string>
+    <string name="set_alarm_no_clock_app">未找到时钟应用</string>
+    <string name="start_timer_action_label">启动计时器</string>
+    <string name="start_timer_started">计时器已启动</string>
     <string name="color_visualizer_toggle_title">颜色可视化工具</string>
     <string name="color_visualizer_toggle_desc">示例：#FF0000、rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">请输入十六进制或 RGB 颜色</string>
@@ -1162,5 +1172,6 @@
     <string name="settings_tavily_desc">添加 Tavily API 密钥，为不支持网页搜索的模型添加网页搜索功能。</string>
     <string name="settings_tavily_mode_always">始终使用 Tavily 进行网页搜索</string>
     <string name="settings_tavily_mode_when_unsupported">仅在模型不支持网页搜索时使用</string>
+    <string name="settings_weather_no_web_search_warning">天气需要网页结果。请选择支持网页搜索的模型，或在“API 密钥设置”中添加 Tavily API 密钥。</string>
     <string name="tavily_search_failed_toast">Tavily 网页搜索失败，将在没有网页结果的情况下回答。</string>
 </resources>

@@ -203,7 +203,7 @@
 <string name="dialog_edit_amazon_domain_message">Ülkeniz için Amazon alan adını güncelleyin.</string>
 <string name="dialog_edit_amazon_domain_title">Amazon alan adını düzenle</string>
 <string name="dialog_gemini_model_picker_title">Model seçin</string>
-<string name="dialog_nickname_message">"%1$s" için bir takma ad girin. Bu takma adı kullanarak arama yapabilirsiniz.</string>
+<string name="dialog_nickname_message">"%1$s" için virgülle ayırarak bir veya daha fazla takma ad girin. Bunlardan herhangi birini kullanarak arama yapabilirsiniz.</string>
 <string name="dialog_ok">Devam et</string>
 <string name="dialog_okay">Tamam</string>
 <string name="dialog_remember_choice">Seçimimi hatırla</string>
@@ -317,7 +317,7 @@
 <string name="action_disable_app_shortcut">Devre dışı bırak</string>
 <string name="action_disable_all_app_shortcuts_named">Tüm %1$s kısayollarını devre dışı bırak</string>
 <string name="snackbar_app_shortcut_disabled_title">Uygulama kısayolu devre dışı bırakıldı</string>
-<string name="snackbar_app_shortcut_disabled_supporting">Daha sonra Uygulama kısayolu ayarlarından etkinleştirebilirsiniz.</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Daha sonra Ayarlar\'dan etkinleştirebilirsiniz.</string>
 <string name="apps_refreshed_successfully">Uygulamalar başarıyla yenilendi</string>
 <string name="error_loading_user_apps">Uygulamalarınız yüklenemedi. Birazdan tekrar deneyin.</string>
 <string name="error_uninstall_app">%1$s kaldırılamadı</string>
@@ -662,6 +662,9 @@
 <string name="settings_all_quick_search_features_desc">Tüm özelliklerin ve yeteneklerin tam listesini görüntüle</string>
 <string name="settings_app_settings_desc">Quick Search ayarlarında ara</string>
 <string name="settings_features_load_failed">Özellik dokümantasyonu yüklenemedi.</string>
+<string name="settings_features_export">Özellikleri indir ve paylaş</string>
+<string name="settings_features_export_failed">Özellik dokümantasyonu kaydedilemedi.</string>
+<string name="settings_features_saved_to_downloads">İndirilenler\'e kaydedildi</string>
 <string name="settings_features_sections_title">İçindekiler</string>
 <string name="settings_search_description_change_app_theme">Uygulama temasını değiştir</string>
 <string name="settings_search_description_change_font_size">Uygulama yazı tipi boyutunu değiştir</string>
@@ -825,6 +828,9 @@
 <string name="settings_direct_search_grounding_label">Web araması</string>
 <string name="settings_direct_search_how_to">Ücretsiz API anahtarı al</string>
 <string name="settings_direct_search_model_label">Model</string>
+<string name="settings_select_model">Model seç</string>
+<string name="ai_error_selected_model_unavailable">Seçilen model kullanılamıyor. Lütfen ayarlardan başka bir model seçin.</string>
+<string name="settings_loading_models">Modeller yükleniyor…</string>
 <string name="settings_direct_search_personal_context">Kişisel bağlam</string>
 <string name="settings_direct_search_personal_context_hint">Cevaplar oluşturulurken AI\'ın kullanmasını istediğin bilgileri ek.</string>
 <string name="settings_direct_search_personal_context_unsupported">Kişisel bağlam bu model için desteklenmiyor.</string>
@@ -884,7 +890,7 @@
 <string name="settings_feedback_developer_title">%1$s v%2$s</string>
 <string name="settings_feedback_github_desc">Bu projenin kaynak kodunu GitHub\'da görüntüle</string>
 <string name="settings_feedback_github_title">Geliştirme</string>
-<string name="settings_feedback_rate_desc">Uygulamayı faydalı buluyorsan 5 yıldız ver</string>
+<string name="settings_feedback_rate_desc">Uygulamayı faydalı buluyorsan 5 yıldız ver 🙏</string>
 <string name="settings_feedback_rate_title">Quick Search\'ü değerlendir</string>
 <string name="settings_feedback_send_desc">Hataları bildir veya özellik iste</string>
 <string name="settings_feedback_send_title">Geri bildirim gönder</string>
@@ -904,6 +910,10 @@
 <string name="currency_converter_requires_gemini_key">Bir AI sağlayıcı API anahtarı gerektirir</string>
 <string name="currency_converter_toggle_desc">Örnek: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Döviz dönüştürücü</string>
+    <string name="set_alarm_action_label">Alarm Kur</string>
+    <string name="set_alarm_no_clock_app">Saat uygulaması bulunamadı</string>
+    <string name="start_timer_action_label">Zamanlayıcı başlat</string>
+    <string name="start_timer_started">Zamanlayıcı başlatıldı</string>
     <string name="color_visualizer_toggle_title">Renk Görselleştirici</string>
     <string name="color_visualizer_toggle_desc">Örnekler: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Bir hex veya RGB rengi girin</string>
@@ -1171,5 +1181,6 @@
     <string name="settings_tavily_desc">Web aramasını desteklemeyen modellere web araması eklemek için Tavily API anahtarı ekleyin.</string>
     <string name="settings_tavily_mode_always">Web araması için her zaman Tavily kullan</string>
     <string name="settings_tavily_mode_when_unsupported">Yalnızca model web aramasını desteklemediğinde kullan</string>
+    <string name="settings_weather_no_web_search_warning">Hava Durumu web sonuçlarına ihtiyaç duyar. Web aramasını destekleyen bir model seçin veya API Anahtarı Kurulumu bölümünden Tavily API anahtarı ekleyin.</string>
     <string name="tavily_search_failed_toast">Tavily web araması başarısız oldu. Web sonuçları olmadan yanıtlanıyor.</string>
 </resources>

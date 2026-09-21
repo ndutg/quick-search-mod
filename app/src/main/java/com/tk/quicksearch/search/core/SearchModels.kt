@@ -641,10 +641,10 @@ data class SearchUiState(
         val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val isSavingGeminiApiKey: Boolean = false,
         val personalContext: String = "",
-        val geminiModel: String = GeminiModelCatalog.DEFAULT_MODEL_ID,
+        val geminiModel: String = "",
         val geminiGroundingEnabled: Boolean = GeminiModelCatalog.DEFAULT_GROUNDING_ENABLED,
         val geminiThinkingEnabled: Boolean = false,
-        val availableGeminiModels: List<GeminiTextModel> = GeminiModelCatalog.FALLBACK_TEXT_MODELS,
+        val availableGeminiModels: List<GeminiTextModel> = emptyList(),
         val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>> = emptyMap(),
         // Release notes dialog
         val showReleaseNotesDialog: Boolean = false,

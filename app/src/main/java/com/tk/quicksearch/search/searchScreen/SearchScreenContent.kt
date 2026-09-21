@@ -99,6 +99,8 @@ import com.tk.quicksearch.shared.ui.theme.LocalSearchColorTheme
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
+import com.tk.quicksearch.tools.setAlarm.SetAlarmHandler
+import com.tk.quicksearch.tools.setAlarm.StartTimerHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
@@ -607,8 +609,7 @@ internal fun SearchScreenContent(
                 null
             } else if (manuallySwitchedToNumberKeyboard) {
                 stringResource(R.string.keyboard_switch_back)
-            } else if (state.query.isNotEmpty() &&
-                            state.query.none { it.isLetter() } &&
+            } else if (state.query.isCalculatorStyleQuery() &&
                             state.detectedShortcutTarget == null &&
                             state.detectedAliasSearchSection == null &&
                             !isCurrencyConverterAliasMode &&
@@ -623,6 +624,22 @@ internal fun SearchScreenContent(
             }
     val shouldShowPhoneCallAction =
             keyboardSwitchText != null && state.query.isPhoneNumberQuery()
+    val detectedAlarmTime =
+            remember(state.query, isToolAliasMode) {
+                if (isToolAliasMode) {
+                    null
+                } else {
+                    SetAlarmHandler.detectAlarmTime(state.query)
+                }
+            }
+    val detectedTimerSeconds =
+            remember(state.query, isToolAliasMode) {
+                if (isToolAliasMode) {
+                    null
+                } else {
+                    StartTimerHandler.detectTimerSeconds(state.query)
+                }
+            }
     val shouldShowPredictedHighlight = isImeVisible
     val isNonSubmittableSuggestionsTab = appsParams.isNonSubmittableSuggestionsTab()
     val firstSubmittableGridApp =
@@ -963,25 +980,31 @@ internal fun SearchScreenContent(
     }
 
     fun openMatchingTrigger(query: String): Boolean {
-        state.allApps.firstOrNull { app ->
-            appsParams.getAppTrigger(app.packageName)?.let { trigger ->
-                matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
-            } == true
-        }?.let { app ->
-            onAppClick(app)
-            return true
-        }
+        // App catalogs also load asynchronously. Search results can be ready first, so use both
+        // sources and retry when either one changes.
+        (state.allApps + renderingState.displayApps)
+            .distinctBy { it.launchCountKey() }
+            .firstOrNull { app ->
+                appsParams.getAppTrigger(app.packageName)?.let { trigger ->
+                    matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
+                } == true
+            }?.let { app ->
+                onAppClick(app)
+                return true
+            }
 
-        state.allAppShortcuts.firstOrNull { shortcut ->
-            appShortcutsParams.getShortcutTrigger(
-                com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey(shortcut),
-            )?.let { trigger ->
-                matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
-            } == true
-        }?.let { shortcut ->
-            appShortcutsParams.onShortcutClick(shortcut)
-            return true
-        }
+        (state.allAppShortcuts + renderingState.appShortcutResults)
+            .distinctBy { com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey(it) }
+            .firstOrNull { shortcut ->
+                appShortcutsParams.getShortcutTrigger(
+                    com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey(shortcut),
+                )?.let { trigger ->
+                    matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
+                } == true
+            }?.let { shortcut ->
+                appShortcutsParams.onShortcutClick(shortcut)
+                return true
+            }
 
         (renderingState.contactResults + state.pinnedContacts)
             .distinctBy { it.contactId }
@@ -1020,14 +1043,19 @@ internal fun SearchScreenContent(
                 return true
             }
 
-        state.allDeviceSettings.firstOrNull { setting ->
-            settingsParams.getSettingTrigger(setting.id)?.let { trigger ->
-                matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
-            } == true
-        }?.let { setting ->
-            settingsParams.onSettingClick(setting)
-            return true
-        }
+        // Settings shortcuts load asynchronously. A trigger can already have surfaced its
+        // matching result before the full catalog reaches allDeviceSettings, so include that
+        // rendered result as a launch candidate as well.
+        (state.allDeviceSettings + renderingState.settingResults)
+            .distinctBy { it.id }
+            .firstOrNull { setting ->
+                settingsParams.getSettingTrigger(setting.id)?.let { trigger ->
+                    matchesTrigger(query, trigger.word, trigger.triggerAfterSpace)
+                } == true
+            }?.let { setting ->
+                settingsParams.onSettingClick(setting)
+                return true
+            }
 
         (renderingState.noteResults + state.pinnedNotes)
             .distinctBy { it.noteId }
@@ -1046,9 +1074,14 @@ internal fun SearchScreenContent(
     var lastTriggeredQuery by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(
         state.query,
+        state.allApps,
+        renderingState.displayApps,
+        state.allAppShortcuts,
+        renderingState.appShortcutResults,
         renderingState.contactResults,
         renderingState.fileResults,
         renderingState.settingResults,
+        state.allDeviceSettings,
         renderingState.calendarEvents,
         renderingState.noteResults,
     ) {
@@ -1515,7 +1548,11 @@ internal fun SearchScreenContent(
         // Hide when files or contacts are expanded
         if (expandedSection == ExpandedSection.NONE) {
             AnimatedVisibility(
-                    visible = keyboardSwitchText != null || shouldShowPhoneCallAction,
+                    visible =
+                            keyboardSwitchText != null ||
+                                    shouldShowPhoneCallAction ||
+                                    detectedAlarmTime != null ||
+                                    detectedTimerSeconds != null,
                     enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
                     exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
             ) {
@@ -1544,6 +1581,67 @@ internal fun SearchScreenContent(
                                                 data = Uri.parse("tel:${Uri.encode(state.query)}")
                                             },
                                     )
+                                },
+                        )
+                    }
+                    if (detectedAlarmTime != null) {
+                        if (keyboardSwitchText != null || shouldShowPhoneCallAction) {
+                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        }
+                        SetAlarmPill(
+                                onClick = {
+                                    if (!SetAlarmHandler.launchSetAlarm(context, detectedAlarmTime)) {
+                                        android.widget.Toast.makeText(
+                                                        context,
+                                                        context.getString(R.string.set_alarm_no_clock_app),
+                                                        android.widget.Toast.LENGTH_SHORT,
+                                                )
+                                                .show()
+                                    }
+                                },
+                        )
+                    }
+                    if (detectedTimerSeconds != null) {
+                        if (keyboardSwitchText != null ||
+                                        shouldShowPhoneCallAction ||
+                                        detectedAlarmTime != null
+                        ) {
+                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        }
+                        StartTimerPill(
+                                onClick = {
+                                    val started =
+                                            StartTimerHandler.launchStartTimer(
+                                                    context,
+                                                    detectedTimerSeconds,
+                                            )
+                                    android.widget.Toast.makeText(
+                                                    context,
+                                                    context.getString(
+                                                            if (started) {
+                                                                R.string.start_timer_started
+                                                            } else {
+                                                                R.string.set_alarm_no_clock_app
+                                                            }
+                                                    ),
+                                                    android.widget.Toast.LENGTH_SHORT,
+                                            )
+                                            .show()
+                                },
+                        )
+                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        SetAlarmPill(
+                                onClick = {
+                                    val alarmTime =
+                                            StartTimerHandler.alarmTimeFor(detectedTimerSeconds)
+                                    if (!SetAlarmHandler.launchSetAlarm(context, alarmTime)) {
+                                        android.widget.Toast.makeText(
+                                                        context,
+                                                        context.getString(R.string.set_alarm_no_clock_app),
+                                                        android.widget.Toast.LENGTH_SHORT,
+                                                )
+                                                .show()
+                                    }
                                 },
                         )
                     }
@@ -1837,7 +1935,10 @@ internal fun SearchScreenContent(
                         text = openKeyboardText,
                         onVoiceClick = onVoiceClick,
                         showWallpaperBackground = state.showWallpaperBackground,
-                        modifier = Modifier.fillMaxWidth(),
+                        // Keep the Open Keyboard surface in the same vertical-swipe path as
+                        // the fixed search field and engine strip. This routes configured
+                        // keyboard gestures first, then the regular Home swipe actions.
+                        modifier = Modifier.fillMaxWidth().then(bottomBarSwipeModifier),
                         onClick = {
                             hideOpenKeyboardActionInstantly = true
                             delayedOpenKeyboardActionVisible = false
@@ -1853,6 +1954,17 @@ internal fun SearchScreenContent(
     }
     } 
 }
+
+/**
+ * True when every character could belong to a calculator expression: digits, whitespace, or one of
+ * the operators the number keyboard offers. Deliberately stricter than "contains no letters" so
+ * punctuation that only shows up in non-arithmetic queries (a time's colon, a URL's slash-slash)
+ * does not offer the number keyboard.
+ */
+private fun String.isCalculatorStyleQuery(): Boolean =
+        isNotEmpty() && all { it.isDigit() || it.isWhitespace() || it in CALCULATOR_QUERY_CHARS }
+
+private const val CALCULATOR_QUERY_CHARS = "+-*/×÷()[].,%^"
 
 private fun String.isPhoneNumberQuery(): Boolean {
     val digits = if (startsWith('+')) drop(1) else this

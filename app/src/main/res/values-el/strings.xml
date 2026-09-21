@@ -204,7 +204,7 @@
     <string name="dialog_edit_amazon_domain_message">Ενημερώστε το domain της Amazon για τη χώρα σας.</string>
     <string name="dialog_edit_amazon_domain_title">Επεξεργασία Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Επιλογή μοντέλου</string>
-    <string name="dialog_nickname_message">Εισαγάγετε ένα ψευδώνυμο για το "%1$s". Μπορείτε να το αναζητήσετε χρησιμοποιώντας αυτό το ψευδώνυμο.</string>
+    <string name="dialog_nickname_message">Εισαγάγετε ένα ή περισσότερα ψευδώνυμα για το "%1$s", χωρισμένα με κόμματα. Μπορείτε να το αναζητήσετε χρησιμοποιώντας οποιοδήποτε από αυτά.</string>
     <string name="dialog_ok">Συνέχεια</string>
     <string name="dialog_okay">Εντάξει</string>
     <string name="dialog_remember_choice">Απομνημόνευση επιλογής</string>
@@ -318,7 +318,7 @@
     <string name="action_disable_app_shortcut">Απενεργοποίηση</string>
     <string name="action_disable_all_app_shortcuts_named">Απενεργοποίηση όλων των συντομεύσεων %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Η συντόμευση απενεργοποιήθηκε</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις συντομεύσεων εφαρμογών.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις.</string>
     <string name="apps_refreshed_successfully">Επιτυχής ανανέωση εφαρμογών</string>
     <string name="error_loading_user_apps">Δεν ήταν δυνατή η φόρτωση των εφαρμογών σας. Δοκιμάστε ξανά σε λίγο.</string>
     <string name="error_uninstall_app">Αδυναμία απεγκατάστασης του %1$s</string>
@@ -663,6 +663,9 @@
     <string name="settings_all_quick_search_features_desc">Δείτε την πλήρη λίστα με τις δυνατότητες και τις λειτουργίες</string>
     <string name="settings_app_settings_desc">Αναζήτηση στις ρυθμίσεις του Quick Search</string>
     <string name="settings_features_load_failed">Αδυναμία φόρτωσης τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_export">Λήψη και κοινοποίηση δυνατοτήτων</string>
+    <string name="settings_features_export_failed">Δεν ήταν δυνατή η αποθήκευση της τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_saved_to_downloads">Αποθηκεύτηκε στις Λήψεις</string>
     <string name="settings_features_sections_title">Περιεχόμενα</string>
     <string name="settings_search_description_change_app_theme">Αλλαγή θέματος εφαρμογής</string>
     <string name="settings_search_description_change_font_size">Αλλαγή μεγέθους γραμματοσειράς εφαρμογής</string>
@@ -826,6 +829,9 @@
     <string name="settings_direct_search_grounding_label">Αναζήτηση στον ιστό</string>
     <string name="settings_direct_search_how_to">Λάβετε δωρεάν κλειδί API</string>
     <string name="settings_direct_search_model_label">Μοντέλο</string>
+    <string name="settings_select_model">Επιλογή μοντέλου</string>
+    <string name="ai_error_selected_model_unavailable">Το επιλεγμένο μοντέλο δεν είναι διαθέσιμο. Επιλέξτε άλλο μοντέλο στις ρυθμίσεις.</string>
+    <string name="settings_loading_models">Φόρτωση μοντέλων…</string>
     <string name="settings_direct_search_personal_context">Προσωπικό πλαίσιο</string>
     <string name="settings_direct_search_personal_context_hint">Προσθέστε οποιοδήποτε πλαίσιο θέλετε να χρησιμοποιεί η AI κατά τη δημιουργία απαντήσεων.</string>
     <string name="settings_direct_search_personal_context_unsupported">Το προσωπικό πλαίσιο δεν είναι διαθέσιμο για αυτό το μοντέλο.</string>
@@ -885,7 +891,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Δείτε τον πηγαίο κώδικα αυτού του έργου στο GitHub</string>
     <string name="settings_feedback_github_title">Ανάπτυξη</string>
-    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη</string>
+    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη 🙏</string>
     <string name="settings_feedback_rate_title">Αξιολογήστε το Quick Search</string>
     <string name="settings_feedback_send_desc">Αναφέρετε σφάλματα ή ζητήστε νέες δυνατότητες</string>
     <string name="settings_feedback_send_title">Αποστολή σχολίων</string>
@@ -905,6 +911,10 @@
     <string name="currency_converter_requires_gemini_key">Απαιτείται ένα κλειδί API παρόχου AI</string>
     <string name="currency_converter_toggle_desc">Παράδειγμα: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>
+    <string name="set_alarm_action_label">Ορισμός ξυπνητηριού</string>
+    <string name="set_alarm_no_clock_app">Δεν βρέθηκε εφαρμογή ρολογιού</string>
+    <string name="start_timer_action_label">Έναρξη χρονομέτρου</string>
+    <string name="start_timer_started">Ο χρονομέτρης ξεκίνησε</string>
     <string name="color_visualizer_toggle_title">Οπτικοποίηση χρώματος</string>
     <string name="color_visualizer_toggle_desc">Παραδείγματα: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Εισαγάγετε ένα χρώμα hex ή RGB</string>
@@ -1172,5 +1182,6 @@
     <string name="settings_tavily_desc">Προσθέστε κλειδί API του Tavily για υποστήριξη αναζήτησης ιστού σε μοντέλα που δεν την υποστηρίζουν.</string>
     <string name="settings_tavily_mode_always">Να χρησιμοποιείται πάντα το Tavily για αναζήτηση ιστού</string>
     <string name="settings_tavily_mode_when_unsupported">Χρήση μόνο όταν το μοντέλο δεν υποστηρίζει αναζήτηση ιστού</string>
+    <string name="settings_weather_no_web_search_warning">Ο Καιρός χρειάζεται αποτελέσματα ιστού. Επίλεξε μοντέλο που υποστηρίζει αναζήτηση ιστού ή πρόσθεσε κλειδί API Tavily στη Ρύθμιση κλειδιού API.</string>
     <string name="tavily_search_failed_toast">Η αναζήτηση ιστού Tavily απέτυχε. Απάντηση χωρίς αποτελέσματα ιστού.</string>
 </resources>

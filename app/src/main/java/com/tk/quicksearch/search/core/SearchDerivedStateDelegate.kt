@@ -37,6 +37,9 @@ internal class SearchDerivedStateDelegate(
     private val updatePermissionState: ((SearchPermissionState) -> SearchPermissionState) -> Unit,
     private val updateConfigState: ((SearchUiConfigState) -> SearchUiConfigState) -> Unit,
 ) {
+    @Volatile
+    private var searchableAppsSnapshotVersion: Long = -1L
+
     private val appSearchManager get() = handlersProvider().appSearchManager
     private val iconPackHandler get() = handlersProvider().iconPackHandler
     private val messagingHandler get() = handlersProvider().messagingHandler
@@ -48,8 +51,11 @@ internal class SearchDerivedStateDelegate(
 
     fun getSearchableAppsSnapshot(): List<AppInfo> {
         val cachedApps = cachedAllSearchableAppsProvider()
-        if (cachedApps.isNotEmpty()) return cachedApps
+        if (cachedApps.isNotEmpty() && searchableAppsSnapshotVersion == appSearchManager.catalogVersion) {
+            return cachedApps
+        }
 
+        val catalogVersion = appSearchManager.catalogVersion
         val loadedApps = appSearchManager.cachedApps
         if (loadedApps.isEmpty()) return emptyList()
 
@@ -57,17 +63,34 @@ internal class SearchDerivedStateDelegate(
             apps = loadedApps,
             resultHiddenPackages = userPreferences.getResultHiddenPackages(),
             pinnedPackages = userPreferences.getPinnedPackages(),
-        ).also(setCachedAllSearchableApps)
+        ).also { publishSearchableAppsSnapshot(it, catalogVersion) }
     }
 
-    fun warmSearchableAppsSnapshot(apps: List<AppInfo> = appSearchManager.cachedApps) {
-        setCachedAllSearchableApps(
+    fun warmSearchableAppsSnapshot(apps: List<AppInfo>? = null) {
+        // Read the version before the catalog so a change that lands mid-warmup can only make the
+        // stamp look older than the snapshot, which costs one rebuild instead of serving stale apps.
+        val catalogVersion = appSearchManager.catalogVersion
+        val sourceApps = apps ?: appSearchManager.cachedApps
+        publishSearchableAppsSnapshot(
             buildSearchableApps(
-                apps = apps,
+                apps = sourceApps,
                 resultHiddenPackages = userPreferences.getResultHiddenPackages(),
                 pinnedPackages = userPreferences.getPinnedPackages(),
             ),
+            catalogVersion,
         )
+    }
+
+    /**
+     * Stores the snapshot together with the catalog version it was derived from. Reads that see a
+     * newer catalog rebuild instead of matching against apps that were uninstalled or disabled.
+     */
+    private fun publishSearchableAppsSnapshot(
+        apps: List<AppInfo>,
+        catalogVersion: Long,
+    ) {
+        searchableAppsSnapshotVersion = catalogVersion
+        setCachedAllSearchableApps(apps)
     }
 
     fun refreshAppSuggestions(
@@ -77,6 +100,7 @@ internal class SearchDerivedStateDelegate(
         val startedAtElapsedMs = SystemClock.elapsedRealtime()
         appSearchManager.refreshNicknames()
 
+        val catalogVersionAtRead = appSearchManager.catalogVersion
         val apps = appSearchManager.cachedApps
         val visibleAppList = appSearchManager.availableApps()
         val hasUsagePermission = permissionStateProvider().hasUsagePermission
@@ -160,7 +184,7 @@ internal class SearchDerivedStateDelegate(
                 pinnedPackages = pinnedPackages,
                 pinnedAppsForResults = pinnedAppsForResults,
             )
-        setCachedAllSearchableApps(allSearchableApps)
+        publishSearchableAppsSnapshot(allSearchableApps, catalogVersionAtRead)
 
         val searchResults =
             if (trimmedQuery.isBlank()) {

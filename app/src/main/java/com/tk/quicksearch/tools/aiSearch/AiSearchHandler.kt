@@ -7,14 +7,12 @@ import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.data.UserAppPreferences
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 internal data class AiConversationTurn(
     val question: String,
@@ -52,10 +50,10 @@ class AiSearchHandler(
         AiSearchLlmProviderRegistry.get(AiSearchLlmProviderId.GEMINI, context)
     @Volatile private var llmApiKey: String? = null
     private var personalContext: String = ""
-    private var selectedModelId: String = GeminiModelCatalog.DEFAULT_MODEL_ID
+    private var selectedModelId: String = ""
     private var groundingEnabled: Boolean = GeminiModelCatalog.DEFAULT_GROUNDING_ENABLED
     private var thinkingEnabled: Boolean = false
-    private var availableGeminiModels: List<GeminiTextModel> = GeminiModelCatalog.FALLBACK_TEXT_MODELS
+    private var availableGeminiModels: List<GeminiTextModel> = emptyList()
     private var hasLoadedGeminiModelsFromApi: Boolean = false
 
     @Volatile private var hasAnyLlmApiKey: Boolean = false
@@ -73,7 +71,7 @@ class AiSearchHandler(
             selectedModelId = userPreferences.getLlmModel(activeProviderId)
             groundingEnabled = userPreferences.isLlmGroundingEnabled(activeProviderId)
             thinkingEnabled = userPreferences.isLlmThinkingEnabled(activeProviderId)
-            availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+            availableGeminiModels = emptyList()
             hasLoadedGeminiModelsFromApi = false
             hasAnyLlmApiKey = userPreferences.hasAnyLlmApiKey()
             hasLoadedApiKeyCache = true
@@ -99,7 +97,7 @@ class AiSearchHandler(
         selectedModelId = userPreferences.getLlmModel(providerId)
         groundingEnabled = userPreferences.isLlmGroundingEnabled(providerId)
         thinkingEnabled = userPreferences.isLlmThinkingEnabled(providerId)
-        availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+        availableGeminiModels = emptyList()
         hasLoadedGeminiModelsFromApi = false
         clearAiSearchState()
     }
@@ -120,7 +118,7 @@ class AiSearchHandler(
 
         hasAnyLlmApiKey = userPreferences.hasAnyLlmApiKey()
         if (llmApiKey == null) {
-            availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+            availableGeminiModels = emptyList()
             clearAiSearchState()
         }
     }
@@ -148,7 +146,7 @@ class AiSearchHandler(
                     setAiSearchProviderId(nextProvider)
                 } else {
                     llmApiKey = null
-                    availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+                    availableGeminiModels = emptyList()
                     hasLoadedGeminiModelsFromApi = false
                     clearAiSearchState()
                 }
@@ -164,7 +162,7 @@ class AiSearchHandler(
 
     fun setSelectedModelId(modelId: String?) {
         ensureInitialized()
-        val normalized = modelId?.trim().takeUnless { it.isNullOrBlank() } ?: activeProvider.defaultModelId
+        val normalized = modelId?.trim().orEmpty()
         if (normalized == selectedModelId) return
 
         selectedModelId = normalized
@@ -287,13 +285,22 @@ class AiSearchHandler(
             return availableGeminiModels
         }
 
-        val fetched =
-            activeProvider
-                .fetchAvailableTextModels(apiKey, context)
-                .getOrDefault(activeProvider.fallbackTextModels)
+        val result = activeProvider.fetchAvailableTextModels(apiKey, context)
+        val fetched = result.getOrDefault(emptyList())
+        if (result.isSuccess) {
+            val resolvedModelId = resolveModelSelection(selectedModelId, fetched)
+            if (resolvedModelId != selectedModelId) setSelectedModelId(resolvedModelId)
+        }
         availableGeminiModels = ensureModelExists(fetched)
         hasLoadedGeminiModelsFromApi = true
         return availableGeminiModels
+    }
+
+    /** Reuses a catalog already fetched by settings instead of issuing a second network request. */
+    fun updateAvailableModels(models: List<GeminiTextModel>) {
+        ensureInitialized()
+        availableGeminiModels = ensureModelExists(models)
+        hasLoadedGeminiModelsFromApi = true
     }
 
     fun requestAiSearch(query: String) {
@@ -344,6 +351,18 @@ class AiSearchHandler(
             }
             return
         }
+        if (selectedModelId.isBlank()) {
+            _aiSearchState.update {
+                AiSearchState(
+                    status = AiSearchStatus.Error,
+                    isFollowUp = isFollowUp,
+                    errorMessage = context.getString(R.string.ai_error_selected_model_unavailable),
+                    activeQuery = trimmedQuery,
+                    llmProviderId = activeProviderId,
+                )
+            }
+            return
+        }
 
         aiSearchJob?.cancel()
         val previousTurns = conversationTurns.toList()
@@ -361,6 +380,7 @@ class AiSearchHandler(
                 val selectedModel = availableGeminiModels.find { it.id == selectedModelId }
                 val webSearch =
                     prepareWebSearch(
+                        userPreferences = userPreferences,
                         searchQuery = trimmedQuery,
                         prompt =
                             if (isFollowUp) {
@@ -372,6 +392,7 @@ class AiSearchHandler(
                             providerSupportsNativeSearch(activeProviderId) &&
                                 selectedModel?.supportsGrounding != false,
                         nativeSearchRequested = groundingEnabled,
+                        onTavilyFailure = { showToastCallback(R.string.tavily_search_failed_toast) },
                     )
                 val result =
                     activeProvider.fetchAnswer(
@@ -488,6 +509,17 @@ class AiSearchHandler(
             }
             return
         }
+        if (modelId.isBlank()) {
+            _aiSearchState.update {
+                AiSearchState(
+                    status = AiSearchStatus.Error,
+                    errorMessage = context.getString(R.string.ai_error_selected_model_unavailable),
+                    activeQuery = trimmedQuery,
+                    llmProviderId = providerId,
+                )
+            }
+            return
+        }
 
         aiSearchJob?.cancel()
         aiSearchJob =
@@ -506,14 +538,15 @@ class AiSearchHandler(
                     providerModels.firstOrNull { it.id == modelId }?.supportsSystemInstructions
                         ?: !modelId.lowercase().startsWith("gemma-")
                 val supportsGrounding =
-                    providerModels.firstOrNull { it.id == modelId }?.supportsGrounding
-                        ?: !modelId.lowercase().startsWith("gemma-")
+                    modelSupportsGrounding(modelId, providerModels, providerId)
                 val webSearch =
                     prepareWebSearch(
+                        userPreferences = userPreferences,
                         searchQuery = trimmedQuery,
                         prompt = trimmedQuery,
                         nativeSearchSupported = providerSupportsNativeSearch(providerId) && supportsGrounding,
                         nativeSearchRequested = groundingEnabled,
+                        onTavilyFailure = { showToastCallback(R.string.tavily_search_failed_toast) },
                     )
                 val result =
                     provider.fetchAnswer(
@@ -591,60 +624,6 @@ class AiSearchHandler(
             }
     }
 
-    private fun providerSupportsNativeSearch(providerId: AiSearchLlmProviderId): Boolean =
-        providerId != AiSearchLlmProviderId.OPENAI &&
-            providerId != AiSearchLlmProviderId.GROQ &&
-            !providerId.isCustom
-
-    private data class PreparedWebSearch(
-        val prompt: String,
-        val useNativeSearch: Boolean,
-    )
-
-    /**
-     * Applies the Tavily web search setting to one request. If Tavily fails, the prompt is sent
-     * unchanged and the model's own web search is used when it is available and turned on.
-     */
-    private suspend fun prepareWebSearch(
-        searchQuery: String,
-        prompt: String,
-        nativeSearchSupported: Boolean,
-        nativeSearchRequested: Boolean,
-    ): PreparedWebSearch {
-        val (mode, tavilyApiKey) =
-            withContext(Dispatchers.IO) {
-                userPreferences.getTavilyWebSearchMode() to userPreferences.getTavilyApiKey()
-            }
-        val plan =
-            resolveWebSearchPlan(
-                mode = mode,
-                hasTavilyKey = !tavilyApiKey.isNullOrBlank(),
-                nativeSearchSupported = nativeSearchSupported,
-                nativeSearchRequested = nativeSearchRequested,
-            )
-        if (!plan.useTavily || tavilyApiKey == null) {
-            return PreparedWebSearch(prompt = prompt, useNativeSearch = plan.useNativeSearch)
-        }
-        return TavilyClient(tavilyApiKey)
-            .search(searchQuery)
-            .fold(
-                onSuccess = { results ->
-                    PreparedWebSearch(
-                        prompt = TavilyClient.buildPromptWithResults(prompt, results),
-                        useNativeSearch = false,
-                    )
-                },
-                onFailure = { error ->
-                    if (error is CancellationException) throw error
-                    showToastCallback(R.string.tavily_search_failed_toast)
-                    PreparedWebSearch(
-                        prompt = prompt,
-                        useNativeSearch = nativeSearchSupported && nativeSearchRequested,
-                    )
-                },
-            )
-    }
-
     fun clearAiSearchState() {
         aiSearchJob?.cancel()
         aiSearchJob = null
@@ -652,19 +631,8 @@ class AiSearchHandler(
         _aiSearchState.update { AiSearchState() }
     }
 
-    private fun ensureModelExists(models: List<GeminiTextModel>): List<GeminiTextModel> {
-        val normalized = if (models.isEmpty()) activeProvider.fallbackTextModels else models
-        return if (normalized.any { it.id == selectedModelId }) {
-            normalized
-        } else {
-            listOf(
-                GeminiTextModel(
-                    id = selectedModelId,
-                    displayName = selectedModelId,
-                ),
-            ) + normalized
-        }
-    }
+    private fun ensureModelExists(models: List<GeminiTextModel>): List<GeminiTextModel> =
+        models.distinctBy { it.id }
 
     /**
      * When the catalog entry is missing (e.g. stale cache), match [AiSearchClient] Gemma
@@ -673,10 +641,5 @@ class AiSearchHandler(
     private fun modelSupportsSystemInstructions(modelId: String): Boolean {
         val model = availableGeminiModels.find { it.id == modelId }
         return model?.supportsSystemInstructions ?: !modelId.lowercase().startsWith("gemma-")
-    }
-
-    private fun modelSupportsGrounding(modelId: String): Boolean {
-        val model = availableGeminiModels.find { it.id == modelId }
-        return model?.supportsGrounding ?: !modelId.lowercase().startsWith("gemma-")
     }
 }

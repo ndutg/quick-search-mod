@@ -197,6 +197,7 @@ object SearchRankingUtils {
     /**
      * Calculates match priority with optional nickname support.
      * Nickname is treated as an additional searchable name using the same priority rules.
+     * A nickname may hold several comma-separated aliases; the best-matching alias wins.
      */
     fun calculateMatchPriorityWithNickname(
         primaryText: String,
@@ -233,8 +234,9 @@ object SearchRankingUtils {
 
         val primaryPriority = calculateMatchPriority(primaryText, normalizedQuery, queryTokens, compactQuery)
         val nicknamePriority =
-            nickname?.let { calculateMatchPriority(it, normalizedQuery, queryTokens, compactQuery) }
-                ?: PRIORITY_NO_MATCH
+            bestNicknamePriority(nickname) {
+                calculateMatchPriority(it, normalizedQuery, queryTokens, compactQuery)
+            }
         return minOf(primaryPriority, nicknamePriority)
     }
 
@@ -257,4 +259,17 @@ object SearchRankingUtils {
      * @return true if priority is PRIORITY_NO_MATCH
      */
     fun isOtherMatch(priority: Int): Boolean = priority == PRIORITY_NO_MATCH
+
+    /**
+     * Scores every comma-separated alias in [nickname] and keeps the best one. Falls back to
+     * [PRIORITY_NO_MATCH] when there is no nickname or it holds nothing usable.
+     */
+    private inline fun bestNicknamePriority(
+        nickname: String?,
+        score: (String) -> Int,
+    ): Int {
+        if (nickname.isNullOrBlank()) return PRIORITY_NO_MATCH
+        if (!NicknameUtils.hasMultiple(nickname)) return score(nickname)
+        return NicknameUtils.split(nickname).minOfOrNull(score) ?: PRIORITY_NO_MATCH
+    }
 }

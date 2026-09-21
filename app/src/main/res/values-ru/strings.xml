@@ -204,7 +204,7 @@
 <string name="dialog_edit_amazon_domain_message">Обновите домен Amazon для вашей страны.</string>
 <string name="dialog_edit_amazon_domain_title">Изменить домен Amazon</string>
 <string name="dialog_gemini_model_picker_title">Выберите модель</string>
-    <string name="dialog_nickname_message">Введите псевдоним для «%1$s». Вы сможете искать его по этому псевдониму.</string>
+    <string name="dialog_nickname_message">Введите один или несколько псевдонимов для «%1$s», разделяя их запятыми. Вы сможете искать его по любому из них.</string>
 <string name="dialog_ok">Продолжить</string>
 <string name="dialog_okay">Окей</string>
 <string name="dialog_remember_choice">Запомнить выбор</string>
@@ -318,7 +318,7 @@
 <string name="action_disable_app_shortcut">Отключить</string>
 <string name="action_disable_all_app_shortcuts_named">Отключить все ярлыки %1$s</string>
 <string name="snackbar_app_shortcut_disabled_title">Ярлык приложения отключён</string>
-<string name="snackbar_app_shortcut_disabled_supporting">Вы можете включить его позже в настройках ярлыков приложений.</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Вы можете включить его позже в настройках.</string>
 <string name="apps_refreshed_successfully">Список приложений успешно обновлен</string>
 <string name="error_loading_user_apps">Не удалось загрузить ваши приложения. Повторите попытку позже.</string>
 <string name="error_uninstall_app">Не удалось удалить %1$s</string>
@@ -683,6 +683,9 @@
 <string name="settings_all_quick_search_features_desc">Просмотреть полный список возможностей и функций</string>
 <string name="settings_app_settings_desc">Поиск по настройкам Quick Search</string>
 <string name="settings_features_load_failed">Не удалось загрузить документацию функций.</string>
+<string name="settings_features_export">Скачать и поделиться списком функций</string>
+<string name="settings_features_export_failed">Не удалось сохранить документацию функций.</string>
+<string name="settings_features_saved_to_downloads">Сохранено в папку «Загрузки»</string>
 <string name="settings_features_sections_title">Содержание</string>
 <string name="settings_search_description_change_app_theme">Изменить тему приложения</string>
 <string name="settings_search_description_change_font_size">Изменить размер шрифта приложения</string>
@@ -846,6 +849,9 @@
 <string name="settings_direct_search_grounding_label">Поиск в Интернете</string>
 <string name="settings_direct_search_how_to">Получить бесплатный API-ключ</string>
 <string name="settings_direct_search_model_label">Модель</string>
+<string name="settings_select_model">Выберите модель</string>
+<string name="ai_error_selected_model_unavailable">Выбранная модель недоступна. Выберите другую модель в настройках.</string>
+<string name="settings_loading_models">Загрузка моделей…</string>
 <string name="settings_direct_search_personal_context">Персональный контекст</string>
 <string name="settings_direct_search_personal_context_hint">Добавьте любой контекст, который ИИ должен учитывать при создании ответов.</string>
 <string name="settings_direct_search_personal_context_unsupported">Персональный контекст не поддерживается для этой модели.</string>
@@ -905,7 +911,7 @@
 <string name="settings_feedback_developer_title">%1$s v%2$s</string>
 <string name="settings_feedback_github_desc">Посмотреть исходный код проекта на GitHub</string>
 <string name="settings_feedback_github_title">Разработка</string>
-<string name="settings_feedback_rate_desc">Поставьте нам 5 звезд, если приложение вам нравится</string>
+<string name="settings_feedback_rate_desc">Поставьте нам 5 звезд, если приложение вам нравится 🙏</string>
 <string name="settings_feedback_rate_title">Оценить Quick Search</string>
 <string name="settings_feedback_send_desc">Сообщить об ошибке или предложить функцию</string>
 <string name="settings_feedback_send_title">Отправить отзыв</string>
@@ -925,6 +931,10 @@
 <string name="currency_converter_requires_gemini_key">Требуется API-ключ AI-провайдера</string>
 <string name="currency_converter_toggle_desc">Пример: 100 USD в INR</string>
     <string name="currency_converter_toggle_title">Конвертер валют</string>
+    <string name="set_alarm_action_label">Установить будильник</string>
+    <string name="set_alarm_no_clock_app">Приложение часов не найдено</string>
+    <string name="start_timer_action_label">Запустить таймер</string>
+    <string name="start_timer_started">Таймер запущен</string>
     <string name="color_visualizer_toggle_title">Визуализатор цветов</string>
     <string name="color_visualizer_toggle_desc">Примеры: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Введите шестнадцатеричный цвет или RGB</string>
@@ -1192,5 +1202,6 @@
     <string name="settings_tavily_desc">Добавьте API-ключ Tavily, чтобы добавить веб-поиск моделям, которые его не поддерживают.</string>
     <string name="settings_tavily_mode_always">Всегда использовать Tavily для веб-поиска</string>
     <string name="settings_tavily_mode_when_unsupported">Использовать, только если модель не поддерживает веб-поиск</string>
+    <string name="settings_weather_no_web_search_warning">Погоде нужны результаты из интернета. Выберите модель с поддержкой веб-поиска или добавьте API-ключ Tavily в разделе «Настройка API-ключа».</string>
     <string name="tavily_search_failed_toast">Веб-поиск Tavily не удался. Ответ без результатов из интернета.</string>
 </resources>

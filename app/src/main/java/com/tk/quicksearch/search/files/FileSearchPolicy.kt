@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.files
 
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.FileSearchTextNormalizer
+import com.tk.quicksearch.search.utils.NicknameUtils
 import com.tk.quicksearch.search.utils.SearchRankingUtils
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
@@ -23,12 +24,26 @@ object FileSearchPolicy {
             return SearchRankingUtils.calculateMatchPriority("", fileQuery, emptyList())
         }
 
-        return SearchRankingUtils.calculateMatchPriorityWithNickname(
-            primaryText = FileSearchTextNormalizer.normalizeForFileSearch(displayName),
-            nickname = nickname?.let { FileSearchTextNormalizer.normalizeForFileSearch(it) },
-            normalizedQuery = fileQuery,
-            queryTokens = FileSearchTextNormalizer.queryTokens(fileQuery),
-        )
+        val normalizedName = FileSearchTextNormalizer.normalizeForFileSearch(displayName)
+        val queryTokens = FileSearchTextNormalizer.queryTokens(fileQuery)
+        // File normalization turns commas into spaces, so split the aliases before normalizing.
+        val aliases = NicknameUtils.split(nickname)
+        if (aliases.isEmpty()) {
+            return SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = normalizedName,
+                nickname = null,
+                normalizedQuery = fileQuery,
+                queryTokens = queryTokens,
+            )
+        }
+        return aliases.minOf { alias ->
+            SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = normalizedName,
+                nickname = FileSearchTextNormalizer.normalizeForFileSearch(alias),
+                normalizedQuery = fileQuery,
+                queryTokens = queryTokens,
+            )
+        }
     }
 
     fun areAllQueryTokensCovered(
@@ -41,7 +56,7 @@ object FileSearchPolicy {
         return SearchTokenCoveragePolicy.areAllTokensCovered(
             query = query,
             primaryText = displayName,
-            supportingText = nickname,
+            supportingText = NicknameUtils.searchText(nickname),
             fuzzyMinScore = fuzzyMinScore,
             fuzzyMaxEditDistance = fuzzyMaxEditDistance,
         )

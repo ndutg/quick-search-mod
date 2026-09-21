@@ -9,8 +9,8 @@ import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
+import com.tk.quicksearch.tools.aiSearch.resolveModelSelection
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
@@ -966,25 +966,35 @@ internal class SearchPreferencesDelegate(
             updateFeatureState { it.copy(isSavingGeminiApiKey = true) }
             try {
                 val hasKey = !apiKey.isNullOrBlank()
+                val isNewKey = hasKey && userPreferences.getLlmApiKey(providerId).isNullOrBlank()
 
                 aiSearchHandler.setLlmApiKey(providerId, apiKey)
 
                 val hasAnyKey = userPreferences.hasAnyLlmApiKey()
                 searchEngineManager.updateSearchTargetsForGemini(hasAnyKey)
 
-                val availableModels =
-                    if (hasKey && providerId == aiSearchHandler.getAiSearchProviderId()) {
-                        aiSearchHandler.refreshAvailableGeminiModels(forceRefresh = true)
-                    } else {
-                        aiSearchHandler.getAvailableGeminiModels()
-                    }
                 val providerModels =
                     if (hasKey) {
-                        fetchAvailableModels(providerId, apiKey.orEmpty())
+                        fetchAvailableModels(providerId, apiKey.orEmpty()).getOrDefault(emptyList())
                     } else {
-                        AiSearchLlmProviderRegistry
-                            .get(providerId, applicationProvider())
-                            .fallbackTextModels
+                        emptyList()
+                    }
+                if (isNewKey) {
+                    userPreferences.setLlmModel(providerId, null)
+                    userPreferences.setLlmGroundingEnabled(providerId, true)
+                    userPreferences.setLlmThinkingEnabled(providerId, false)
+                    if (providerId == aiSearchHandler.getAiSearchProviderId()) {
+                        aiSearchHandler.setSelectedModelId(null)
+                        aiSearchHandler.setGroundingEnabled(true)
+                        aiSearchHandler.setThinkingEnabled(false)
+                    }
+                }
+                val availableModels =
+                    if (hasKey && providerId == aiSearchHandler.getAiSearchProviderId()) {
+                        aiSearchHandler.updateAvailableModels(providerModels)
+                        aiSearchHandler.getAvailableGeminiModels()
+                    } else {
+                        aiSearchHandler.getAvailableGeminiModels()
                     }
 
                 updateFeatureState {
@@ -1029,14 +1039,11 @@ internal class SearchPreferencesDelegate(
                 aiSearchHandler.setAiSearchProviderId(providerId)
 
                 val models =
-                    fetchAvailableModels(providerId, provider.apiKey).ifEmpty {
-                        AiSearchLlmProviderRegistry
-                            .get(providerId, applicationProvider())
-                            .fallbackTextModels
-                    }
-                models.firstOrNull()?.id?.let { firstModelId ->
-                    aiSearchHandler.setSelectedModelId(firstModelId)
-                }
+                    fetchAvailableModels(providerId, provider.apiKey).getOrDefault(emptyList())
+                aiSearchHandler.setSelectedModelId(null)
+                aiSearchHandler.setGroundingEnabled(true)
+                aiSearchHandler.setThinkingEnabled(false)
+                aiSearchHandler.updateAvailableModels(models)
                 val hasAnyKey = userPreferences.hasAnyLlmApiKey()
                 searchEngineManager.updateSearchTargetsForGemini(hasAnyKey)
 
@@ -1076,7 +1083,7 @@ internal class SearchPreferencesDelegate(
             val normalized = modelId?.trim().takeUnless { it.isNullOrBlank() }
             updateFeatureState {
                 it.copy(
-                    geminiModel = normalized ?: GeminiModelCatalog.DEFAULT_MODEL_ID,
+                    geminiModel = normalized.orEmpty(),
                 )
             }
         }
@@ -1088,8 +1095,9 @@ internal class SearchPreferencesDelegate(
     ) {
         scope.launch(Dispatchers.IO) {
             aiSearchHandler.setSelectedModelId(providerId, modelId)
-            val models = aiSearchHandler.refreshAvailableGeminiModels(forceRefresh = false)
+            var models: List<GeminiTextModel> = emptyList()
             updateFeatureState {
+                models = it.availableLlmModelsByProvider[providerId].orEmpty()
                 it.copy(
                     aiSearchLlmProviderId = aiSearchHandler.getAiSearchProviderId(),
                     personalContext = aiSearchHandler.getPersonalContext(),
@@ -1101,6 +1109,7 @@ internal class SearchPreferencesDelegate(
                         it.availableLlmModelsByProvider + (providerId to models),
                 )
             }
+            aiSearchHandler.updateAvailableModels(models)
         }
     }
 
@@ -1151,21 +1160,33 @@ internal class SearchPreferencesDelegate(
                     userPreferences.setWorldClockProviderId(providerId)
                     userPreferences.setWorldClockModel(normalizedModelId)
                     userPreferences.setWorldClockGroundingEnabled(groundingEnabled)
-                    userPreferences.setWorldClockThinkingEnabled(thinkingEnabled)
+                    if (userPreferences.getWorldClockThinkingOverride() != null ||
+                        thinkingEnabled != userPreferences.isLlmThinkingEnabled(providerId)
+                    ) {
+                        userPreferences.setWorldClockThinkingEnabled(thinkingEnabled)
+                    }
                     userPreferences.setWorldClockAdvancedPayload(advancedPayload, advancedPayloadEnabled)
                 }
                 AiBackedToolConfigId.DICTIONARY -> {
                     userPreferences.setDictionaryProviderId(providerId)
                     userPreferences.setDictionaryModel(normalizedModelId)
                     userPreferences.setDictionaryGroundingEnabled(groundingEnabled)
-                    userPreferences.setDictionaryThinkingEnabled(thinkingEnabled)
+                    if (userPreferences.getDictionaryThinkingOverride() != null ||
+                        thinkingEnabled != userPreferences.isLlmThinkingEnabled(providerId)
+                    ) {
+                        userPreferences.setDictionaryThinkingEnabled(thinkingEnabled)
+                    }
                     userPreferences.setDictionaryAdvancedPayload(advancedPayload, advancedPayloadEnabled)
                 }
                 AiBackedToolConfigId.WEATHER -> {
                     userPreferences.setWeatherProviderId(providerId)
                     userPreferences.setWeatherModel(normalizedModelId)
                     userPreferences.setWeatherGroundingEnabled(true)
-                    userPreferences.setWeatherThinkingEnabled(thinkingEnabled)
+                    if (userPreferences.getWeatherThinkingOverride() != null ||
+                        thinkingEnabled != userPreferences.isLlmThinkingEnabled(providerId)
+                    ) {
+                        userPreferences.setWeatherThinkingEnabled(thinkingEnabled)
+                    }
                     userPreferences.setWeatherAdvancedPayload(advancedPayload, advancedPayloadEnabled)
                     userPreferences.setWeatherSystemPrompt(systemPrompt)
                     userPreferences.setWeatherLocation(location)
@@ -1201,26 +1222,73 @@ internal class SearchPreferencesDelegate(
 
     fun refreshAvailableGeminiModels() {
         scope.launch(Dispatchers.IO) {
-            val models = aiSearchHandler.refreshAvailableGeminiModels(forceRefresh = true)
-            val activeProviderId = aiSearchHandler.getAiSearchProviderId()
-            val configuredProviderModels =
-                userPreferences.getLlmApiKeyLast4ByProvider().keys.associateWith { providerId ->
-                    if (providerId == activeProviderId) {
-                        models
-                    } else {
-                        val apiKey = userPreferences.getLlmApiKey(providerId)
-                        if (apiKey.isNullOrBlank()) {
-                            AiSearchLlmProviderRegistry
-                                .get(providerId, applicationProvider())
-                                .fallbackTextModels
-                        } else {
-                            fetchAvailableModels(providerId, apiKey)
-                        }
-                    }
-                }
+            val configuredProviderIds = userPreferences.getLlmApiKeyLast4ByProvider().keys
             updateFeatureState {
                 it.copy(
-                    availableGeminiModels = models,
+                    availableGeminiModels = emptyList(),
+                    availableLlmModelsByProvider = emptyMap(),
+                )
+            }
+            val activeProviderId = aiSearchHandler.getAiSearchProviderId()
+            val results =
+                configuredProviderIds.associateWith { providerId ->
+                    val apiKey = userPreferences.getLlmApiKey(providerId)
+                    if (apiKey.isNullOrBlank()) {
+                        Result.success(emptyList())
+                    } else {
+                        fetchAvailableModels(providerId, apiKey)
+                    }
+                }
+            results.forEach { (providerId, result) ->
+                result.getOrNull()?.let { models ->
+                    val selectedModelId = userPreferences.getLlmModel(providerId)
+                    if (resolveModelSelection(selectedModelId, models) != selectedModelId) {
+                        userPreferences.setLlmModel(providerId, null)
+                        if (providerId == activeProviderId) {
+                            aiSearchHandler.setSelectedModelId(null)
+                        }
+                    }
+                    if (userPreferences.getCurrencyConverterProviderId() == providerId &&
+                        userPreferences.getCurrencyConverterModel().let { it.isNotBlank() && models.none { model -> model.id == it } }
+                    ) {
+                        userPreferences.clearCurrencyConverterModel()
+                    }
+                    if (userPreferences.getWorldClockProviderId() == providerId &&
+                        userPreferences.getWorldClockModel().let { it.isNotBlank() && models.none { model -> model.id == it } }
+                    ) {
+                        userPreferences.clearWorldClockModel()
+                    }
+                    if (userPreferences.getDictionaryProviderId() == providerId &&
+                        userPreferences.getDictionaryModel().let { it.isNotBlank() && models.none { model -> model.id == it } }
+                    ) {
+                        userPreferences.clearDictionaryModel()
+                    }
+                    if (userPreferences.getWeatherProviderId() == providerId &&
+                        userPreferences.getWeatherModel().let { it.isNotBlank() && models.none { model -> model.id == it } }
+                    ) {
+                        userPreferences.clearWeatherModel()
+                    }
+                }
+            }
+            val refreshedCustomTools =
+                userPreferences.getCustomTools().map { tool ->
+                    val models = results[tool.providerId]?.getOrNull() ?: return@map tool
+                    if (tool.modelId.isNotBlank() && models.none { it.id == tool.modelId }) {
+                        tool.copy(modelId = "")
+                    } else {
+                        tool
+                    }
+                }
+            userPreferences.setCustomTools(refreshedCustomTools)
+            val configuredProviderModels =
+                results.mapValues { (_, result) -> result.getOrDefault(emptyList()) }
+            val activeModels = configuredProviderModels[activeProviderId].orEmpty()
+            aiSearchHandler.updateAvailableModels(activeModels)
+            updateFeatureState {
+                it.copy(
+                    geminiModel = aiSearchHandler.getGeminiModel(),
+                    customTools = refreshedCustomTools,
+                    availableGeminiModels = activeModels,
                     availableLlmModelsByProvider = configuredProviderModels,
                 )
             }
@@ -1230,11 +1298,10 @@ internal class SearchPreferencesDelegate(
     private suspend fun fetchAvailableModels(
         providerId: AiSearchLlmProviderId,
         apiKey: String,
-    ): List<GeminiTextModel> {
+    ): Result<List<GeminiTextModel>> {
         val provider = AiSearchLlmProviderRegistry.get(providerId, applicationProvider())
         return provider
             .fetchAvailableTextModels(apiKey.trim(), applicationProvider())
-            .getOrDefault(provider.fallbackTextModels)
     }
 
     private fun updateBooleanPreference(
@@ -1374,8 +1441,6 @@ internal class SearchPreferencesDelegate(
         val normalizedModelId = modelId.trim()
         if (normalizedModelId.isNotBlank()) return normalizedModelId
 
-        return AiSearchLlmProviderRegistry
-            .get(providerId, applicationProvider())
-            .defaultModelId
+        return ""
     }
 }

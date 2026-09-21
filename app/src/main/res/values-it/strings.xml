@@ -203,7 +203,7 @@
     <string name="dialog_edit_amazon_domain_message">Aggiorna il dominio Amazon per il tuo Paese.</string>
     <string name="dialog_edit_amazon_domain_title">Modifica dominio Amazon</string>
     <string name="dialog_gemini_model_picker_title">Seleziona modello</string>
-    <string name="dialog_nickname_message">Inserisci un soprannome per "%1$s". Potrai cercarlo usando questo soprannome.</string>
+    <string name="dialog_nickname_message">Inserisci uno o più soprannomi per "%1$s", separati da virgole. Potrai cercarlo usando uno qualsiasi di essi.</string>
     <string name="dialog_ok">Continua</string>
     <string name="dialog_okay">OK</string>
     <string name="dialog_remember_choice">Ricorda questa scelta</string>
@@ -317,7 +317,7 @@
     <string name="action_disable_app_shortcut">Disattiva</string>
     <string name="action_disable_all_app_shortcuts_named">Disattiva tutte le scorciatoie di %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Scorciatoia disattivata</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Puoi riattivarla più tardi nelle impostazioni delle scorciatoie app.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Puoi riattivarla più tardi nelle impostazioni.</string>
     <string name="apps_refreshed_successfully">App aggiornate con successo</string>
     <string name="error_loading_user_apps">Impossibile caricare le tue app. Riprova tra un momento.</string>
     <string name="error_uninstall_app">Impossibile disinstallare %1$s</string>
@@ -662,6 +662,9 @@
     <string name="settings_all_quick_search_features_desc">Visualizza l\u2019elenco completo delle funzionalità e capacità</string>
     <string name="settings_app_settings_desc">Cerca nelle impostazioni di Quick Search</string>
     <string name="settings_features_load_failed">Impossibile caricare la documentazione delle funzionalità.</string>
+    <string name="settings_features_export">Scarica e condividi le funzionalità</string>
+    <string name="settings_features_export_failed">Impossibile salvare la documentazione delle funzionalità.</string>
+    <string name="settings_features_saved_to_downloads">Salvato in Download</string>
     <string name="settings_features_sections_title">Indice</string>
     <string name="settings_search_description_change_app_theme">Cambia il tema dell\u2019app</string>
     <string name="settings_search_description_change_font_size">Cambia la dimensione del carattere dell\u2019app</string>
@@ -825,6 +828,9 @@
     <string name="settings_direct_search_grounding_label">Ricerca Web</string>
     <string name="settings_direct_search_how_to">Ottieni una chiave API gratuita</string>
     <string name="settings_direct_search_model_label">Modello</string>
+    <string name="settings_select_model">Seleziona modello</string>
+    <string name="ai_error_selected_model_unavailable">Il modello selezionato non è disponibile. Scegli un altro modello nelle impostazioni.</string>
+    <string name="settings_loading_models">Caricamento modelli…</string>
     <string name="settings_direct_search_personal_context">Contesto personale</string>
     <string name="settings_direct_search_personal_context_hint">Aggiungi qualsiasi contesto desideri che l\u2019AI utilizzi durante la generazione delle risposte.</string>
     <string name="settings_direct_search_personal_context_unsupported">Il contesto personale non è disponibile per questo modello.</string>
@@ -884,7 +890,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Visualizza il codice sorgente di questo progetto su GitHub</string>
     <string name="settings_feedback_github_title">Sviluppo</string>
-    <string name="settings_feedback_rate_desc">Lascia una valutazione a 5 stelle se trovi utile questa app</string>
+    <string name="settings_feedback_rate_desc">Lascia una valutazione a 5 stelle se trovi utile questa app 🙏</string>
     <string name="settings_feedback_rate_title">Valuta Quick Search</string>
     <string name="settings_feedback_send_desc">Segnala bug o richiedi funzionalità</string>
     <string name="settings_feedback_send_title">Invia feedback</string>
@@ -904,6 +910,10 @@
     <string name="currency_converter_requires_gemini_key">Richiede la chiave API di un fornitore AI</string>
     <string name="currency_converter_toggle_desc">Esempio: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Convertitore di valuta</string>
+    <string name="set_alarm_action_label">Imposta sveglia</string>
+    <string name="set_alarm_no_clock_app">Nessuna app orologio trovata</string>
+    <string name="start_timer_action_label">Avvia timer</string>
+    <string name="start_timer_started">Timer avviato</string>
     <string name="color_visualizer_toggle_title">Visualizzatore colori</string>
     <string name="color_visualizer_toggle_desc">Esempi: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Inserisci un colore esadecimale o RGB</string>
@@ -1171,5 +1181,6 @@
     <string name="settings_tavily_desc">Aggiungi una chiave API Tavily per abilitare la ricerca web nei modelli che non la supportano.</string>
     <string name="settings_tavily_mode_always">Usa sempre Tavily per la ricerca web</string>
     <string name="settings_tavily_mode_when_unsupported">Usa solo quando il modello non supporta la ricerca web</string>
+    <string name="settings_weather_no_web_search_warning">Meteo richiede risultati web. Scegli un modello che supporta la ricerca web o aggiungi una chiave API Tavily in Configurazione chiave API.</string>
     <string name="tavily_search_failed_toast">Ricerca web Tavily non riuscita. Risposta senza risultati web.</string>
 </resources>
