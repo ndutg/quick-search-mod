@@ -1079,13 +1079,19 @@ internal fun SearchScreenContent(
         state.allAppShortcuts,
         renderingState.appShortcutResults,
         renderingState.contactResults,
+        state.pinnedContacts,
         renderingState.fileResults,
+        state.pinnedFiles,
         renderingState.settingResults,
         state.allDeviceSettings,
         renderingState.calendarEvents,
         renderingState.noteResults,
+        state.pinnedNotes,
+        state.nicknameUpdateVersion,
     ) {
-        if (state.query.isBlank() || state.query == lastTriggeredQuery) return@LaunchedEffect
+        if (state.query == lastTriggeredQuery) return@LaunchedEffect
+        lastTriggeredQuery = null
+        if (state.query.isBlank()) return@LaunchedEffect
         if (openMatchingTrigger(state.query)) {
             lastTriggeredQuery = state.query
         }

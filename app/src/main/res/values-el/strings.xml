@@ -109,6 +109,7 @@
     <string name="settings_gestures_desc">Προσαρμογή ενεργειών σάρωσης</string>
     <string name="settings_gesture_swipe_right">Σάρωση δεξιά</string>
     <string name="settings_gesture_widget_panel">Πίνακας widget</string>
+    <string name="widget_pinned_to_home">Προστέθηκε στην Αρχική</string>
     <string name="settings_gesture_swipe_left">Σάρωση αριστερά</string>
     <string name="settings_gesture_swipe_up">Σάρωση προς τα πάνω</string>
     <string name="settings_gesture_swipe_down">Σάρωση προς τα κάτω</string>
@@ -140,6 +141,8 @@
     <string name="notification_pinned_item_type_file">Αρχείο</string>
     <string name="notification_pinned_item_type_note">Σημείωση</string>
     <string name="action_remove">Κατάργηση</string>
+    <string name="folder_name_placeholder">Προσθήκη ονόματος φακέλου</string>
+    <string name="folder_remove_from_folder">Κατάργηση από τον φάκελο</string>
     <string name="app_swipe_current_action">Τρέχουσα ενέργεια</string>
     <string name="app_swipe_up_picker_title">Επιλογή ενέργειας σύρσης προς τα πάνω για %1$s</string>
     <string name="app_swipe_down_picker_title">Επιλογή ενέργειας σύρσης προς τα κάτω για %1$s</string>
@@ -239,7 +242,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Νέες/Ενημερωμένες</string>
     <string name="app_suggestions_tab_pinned">Καρφιτσωμένες</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Οι καρφιτσωμένες εφαρμογές θα εμφανίζονται ακόμα στην καρτέλα %1$s</string>
     <string name="app_suggestions_tab_recent">Πρόσφατες</string>
     <string name="app_suggestions_tabs_dialog_message">Επιλέξτε ποιες καρτέλες προτάσεων εφαρμογών θα εμφανίζονται στην αρχική οθόνη.</string>
     <string name="app_suggestions_tabs_dialog_title">Καρτέλες προτάσεων εφαρμογών</string>

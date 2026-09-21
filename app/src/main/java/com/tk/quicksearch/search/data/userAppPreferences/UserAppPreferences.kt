@@ -45,6 +45,7 @@ class UserAppPreferences(
     private val notesPreferences by lazy { NotesPreferences(context) }
     private val gesturesPreferences by lazy { GesturesPreferences(context) }
     private val appShortcutPreferences by lazy { AppShortcutPreferences(context) }
+    private val folderPreferences by lazy { FolderPreferences(context) }
     private val nicknamePreferences by lazy { NicknamePreferences(context) }
     private val triggerPreferences by lazy { TriggerPreferences(context) }
     private val taskerIntentPreferences by lazy { TaskerIntentPreferences(context) }
@@ -1151,6 +1152,12 @@ class UserAppPreferences(
     fun getPinnedAppGridOrder(): List<String> = uiPreferences.getPinnedAppGridOrder()
 
     fun setPinnedAppGridOrder(order: List<String>) = uiPreferences.setPinnedAppGridOrder(order)
+
+    fun getAppFolders(): List<com.tk.quicksearch.search.folders.AppFolder> =
+            folderPreferences.getAppFolders()
+
+    fun setAppFolders(folders: List<com.tk.quicksearch.search.folders.AppFolder>) =
+            folderPreferences.setAppFolders(folders)
 
     fun getDisabledTopMatchesSections(): Set<SearchSection> =
             uiPreferences.getDisabledTopMatchesSections()
