@@ -85,25 +85,10 @@ internal class StableTopMatchesBuffer {
         if (!state.isReady && (!isSearchRefreshing || deadlineReached)) {
             state = SettledTopMatchesState(currentMatches.take(limit), isReady = true)
         } else if (state.isReady && !isSearchRefreshing) {
-            val mergedMatches = state.matches.toMutableList()
-            val existingIndexByKey =
-                mergedMatches.mapIndexed { index, match -> match.stableKey() to index }.toMap()
-            currentMatches.forEach { candidate ->
-                val existingIndex = existingIndexByKey[candidate.stableKey()]
-                if (existingIndex == null) {
-                    if (mergedMatches.size < limit) mergedMatches += candidate
-                } else {
-                    val existing = mergedMatches[existingIndex]
-                    if (existing is TopMatchItem.AppGrid && candidate is TopMatchItem.AppGrid) {
-                        val packageNames = existing.apps.mapTo(mutableSetOf()) { it.packageName }
-                        mergedMatches[existingIndex] =
-                            existing.copy(
-                                apps = existing.apps + candidate.apps.filter { packageNames.add(it.packageName) },
-                            )
-                    }
-                }
-            }
-            state = state.copy(matches = mergedMatches)
+            // The deadline may be reached before slower sources (notably ContactsProvider) return.
+            // Once every local search has settled, adopt the final ranked set so a late, stronger
+            // match can replace an early result even when the deadline snapshot was already full.
+            state = SettledTopMatchesState(currentMatches.take(limit), isReady = true)
         }
         return state
     }
