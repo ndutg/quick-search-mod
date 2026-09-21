@@ -108,6 +108,7 @@
     <string name="settings_gestures_desc">Personalizza le azioni di scorrimento</string>
     <string name="settings_gesture_swipe_right">Scorri a destra</string>
     <string name="settings_gesture_widget_panel">Pannello widget</string>
+    <string name="widget_pinned_to_home">Aggiunto alla Home</string>
     <string name="settings_gesture_swipe_left">Scorri a sinistra</string>
     <string name="settings_gesture_swipe_up">Scorri verso l\'alto</string>
     <string name="settings_gesture_swipe_down">Scorri verso il basso</string>
@@ -139,6 +140,8 @@
     <string name="notification_pinned_item_type_file">File</string>
     <string name="notification_pinned_item_type_note">Nota</string>
     <string name="action_remove">Rimuovi</string>
+    <string name="folder_name_placeholder">Aggiungi nome cartella</string>
+    <string name="folder_remove_from_folder">Rimuovi dalla cartella</string>
     <string name="app_swipe_current_action">Azione attuale</string>
     <string name="app_swipe_up_picker_title">Seleziona l\'azione di scorrimento verso l\'alto per %1$s</string>
     <string name="app_swipe_down_picker_title">Seleziona l\'azione di scorrimento verso il basso per %1$s</string>
@@ -238,7 +241,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Nuove/Aggiornate</string>
     <string name="app_suggestions_tab_pinned">Fissate</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Le app fissate continueranno ad apparire nella scheda %1$s</string>
     <string name="app_suggestions_tab_recent">Recenti</string>
     <string name="app_suggestions_tabs_dialog_message">Scegli quali schede di suggerimenti app visualizzare nella schermata iniziale.</string>
     <string name="app_suggestions_tabs_dialog_title">Schede di suggerimenti app</string>

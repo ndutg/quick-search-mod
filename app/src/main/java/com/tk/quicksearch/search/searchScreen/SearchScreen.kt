@@ -15,6 +15,9 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import com.tk.quicksearch.widgetsPanel.HomeWidgetEditGuard
+import com.tk.quicksearch.widgetsPanel.LocalHomeWidgetEditGuard
+import com.tk.quicksearch.widgetsPanel.homeWidgetEditTapGuard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
@@ -77,6 +80,7 @@ fun SearchScreen(
     onUnpinApp: (AppInfo) -> Unit,
     onReorderPinnedApps: (List<AppInfo>) -> Unit,
     onReorderPinnedAppGrid: (List<String>, List<AppInfo>, List<StaticShortcut>) -> Unit = { _, _, _ -> },
+    appFolderActions: com.tk.quicksearch.search.folders.AppGridFolderActions? = null,
     onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
     onRateQuickSearchClick: () -> Unit,
     onRateQuickSearchNotNowClick: () -> Unit,
@@ -261,6 +265,7 @@ fun SearchScreen(
         onUnpinApp = onUnpinApp,
         onReorderPinnedApps = onReorderPinnedApps,
         onReorderPinnedAppGrid = onReorderPinnedAppGrid,
+        appFolderActions = appFolderActions,
         onSuggestionTabSelected = onSuggestionTabSelected,
         onRateQuickSearchClick = onRateQuickSearchClick,
         onRateQuickSearchNotNowClick = onRateQuickSearchNotNowClick,
@@ -452,11 +457,13 @@ fun SearchScreen(
         }
     }
 
+    val homeWidgetEditGuard = remember { HomeWidgetEditGuard() }
     CompositionLocalProvider(
         LocalImageBackgroundIsDark provides imageBackgroundIsDark,
         LocalHomeTextColorOverride provides state.homeTextColorOverride,
+        LocalHomeWidgetEditGuard provides homeWidgetEditGuard,
     ) {
-    Box(modifier = screenModifier) {
+    Box(modifier = screenModifier.homeWidgetEditTapGuard(homeWidgetEditGuard)) {
         if (!isOverlayPresentation) {
             if (stateResult.useSystemWallpaperBackdrop) {
                 Box(
