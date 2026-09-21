@@ -12,9 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.EventBusy
 import androidx.compose.material.icons.rounded.NotificationsOff
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -57,7 +64,15 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.time.LocalDate
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private enum class ReminderFilterOption(val labelResId: Int) {
+    ALL(R.string.settings_reminders_filter_all),
+    OVERDUE(R.string.reminder_status_overdue),
+    PAST(R.string.settings_reminders_filter_past),
+    FUTURE(R.string.settings_reminders_filter_future),
+}
 
 @Composable
 fun RemindersSettingsSection(
@@ -90,19 +105,47 @@ fun RemindersSettingsSection(
     val locale = Locale.getDefault()
     val normalizedQuery = remember(searchQuery, locale) { searchQuery.trim().lowercase(locale) }
     val today = LocalDate.now()
+    val nowMillis = System.currentTimeMillis()
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var selectedFilterOption by remember { mutableStateOf(ReminderFilterOption.ALL) }
+    var isFilterMenuExpanded by remember { mutableStateOf(false) }
     val sortedReminders =
-        remember(reminders, normalizedQuery, locale) {
+        remember(reminders, normalizedQuery, locale, nowMillis) {
             reminders
                 .filter { reminder ->
                     normalizedQuery.isBlank() ||
                         shortcutMatchPriority(name = reminder.title, query = normalizedQuery, locale = locale) != null
                 }
-                // Upcoming first (soonest at top), then past ones (most recent first).
-                .sortedWith(
-                    compareBy<ReminderInfo> { it.date.isBefore(today) }
-                        .thenBy { if (it.date.isBefore(today)) -it.dueMillis else it.dueMillis },
-                )
+                .sortedBy { it.dueMillis }
         }
+    val displayedReminders =
+        remember(sortedReminders, selectedFilterOption, normalizedQuery, nowMillis) {
+            if (normalizedQuery.isNotBlank()) {
+                sortedReminders
+            } else {
+                sortedReminders.filter { reminder ->
+                    when (selectedFilterOption) {
+                        ReminderFilterOption.ALL -> true
+                        ReminderFilterOption.OVERDUE -> !reminder.isDone && reminder.isOverdue(nowMillis)
+                        ReminderFilterOption.PAST -> reminder.isDone
+                        ReminderFilterOption.FUTURE -> !reminder.isDone && !reminder.isOverdue(nowMillis)
+                    }
+                }
+            }
+        }
+    val todayIndex = remember(displayedReminders, today) {
+        displayedReminders.indexOfFirst { reminder -> reminder.date >= today }
+    }
+    LaunchedEffect(selectedFilterOption, normalizedQuery, todayIndex, displayedReminders.size) {
+        val targetIndex =
+            if (normalizedQuery.isBlank() && selectedFilterOption == ReminderFilterOption.ALL && todayIndex >= 0) {
+                todayIndex
+            } else {
+                0
+            }
+        if (displayedReminders.isNotEmpty()) listState.scrollToItem(targetIndex)
+    }
 
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     Column(modifier = modifier) {
@@ -164,8 +207,53 @@ fun RemindersSettingsSection(
                 showDivider = false,
             )
         }
+        if (normalizedQuery.isBlank()) {
+            Box(
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .padding(
+                            start = DesignTokens.SpacingXSmall,
+                            bottom = DesignTokens.SpacingSmall,
+                        ),
+            ) {
+                Row(
+                    modifier = Modifier.clickable { isFilterMenuExpanded = true },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    Text(
+                        text = stringResource(selectedFilterOption.labelResId),
+                        color = AppColors.Accent,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.ExpandMore,
+                        contentDescription = null,
+                        tint = AppColors.Accent,
+                    )
+                }
+                DropdownMenu(
+                    expanded = isFilterMenuExpanded,
+                    onDismissRequest = { isFilterMenuExpanded = false },
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+                    properties = PopupProperties(focusable = false),
+                    containerColor = AppColors.DialogBackground,
+                ) {
+                    ReminderFilterOption.entries.forEachIndexed { index, option ->
+                        if (index > 0) HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(option.labelResId)) },
+                            onClick = {
+                                selectedFilterOption = option
+                                isFilterMenuExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+        }
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
-            if (sortedReminders.isEmpty()) {
+            if (displayedReminders.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxWidth().padding(DesignTokens.SpacingLarge),
                     contentAlignment = Alignment.Center,
@@ -177,14 +265,24 @@ fun RemindersSettingsSection(
                     )
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxWidth().heightIn(max = screenHeight)) {
-                    itemsIndexed(items = sortedReminders, key = { _, reminder -> reminder.reminderId }) { index, reminder ->
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxWidth().heightIn(max = screenHeight),
+                ) {
+                    itemsIndexed(items = displayedReminders, key = { _, reminder -> reminder.reminderId }) { index, reminder ->
                         ReminderManagementRow(
                             reminder = reminder,
-                            isPast = reminder.isDone || reminder.date.isBefore(today),
+                            isPast = reminder.isDone,
+                            isOverdue = !reminder.isDone && reminder.isOverdue(nowMillis),
                             onClick = { ReminderEditorRequests.openEdit(reminder) },
+                            onMarkDone = {
+                                scope.launch(Dispatchers.IO) { repository.setDone(reminder.reminderId, true) }
+                            },
+                            onDelete = {
+                                scope.launch(Dispatchers.IO) { repository.deleteReminder(reminder.reminderId) }
+                            },
                         )
-                        if (index < sortedReminders.lastIndex) {
+                        if (index < displayedReminders.lastIndex) {
                             HorizontalDivider(color = AppColors.SettingsDivider)
                         }
                     }
@@ -198,7 +296,10 @@ fun RemindersSettingsSection(
 private fun ReminderManagementRow(
     reminder: ReminderInfo,
     isPast: Boolean,
+    isOverdue: Boolean,
     onClick: () -> Unit,
+    onMarkDone: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     Row(
         modifier =
@@ -234,6 +335,24 @@ private fun ReminderManagementRow(
                 overflow = TextOverflow.Ellipsis,
             )
             ReminderRelativeDateText(reminder)
+        }
+        when {
+            isPast ->
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = stringResource(R.string.dialog_delete),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            isOverdue ->
+                IconButton(onClick = onMarkDone) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = stringResource(R.string.action_mark_as_done),
+                        tint = AppColors.Accent,
+                    )
+                }
         }
     }
 }

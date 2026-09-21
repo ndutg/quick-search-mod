@@ -1203,4 +1203,8 @@
     <string name="app_setting_create_reminder_desc">添加新提醒</string>
     <string name="permissions_exact_alarms_title">闹钟和提醒</string>
     <string name="permissions_exact_alarms_desc">用于准时发送提醒通知</string>
+    <string name="settings_reminders_filter_all">所有提醒</string>
+    <string name="settings_reminders_filter_past">过去</string>
+    <string name="settings_reminders_filter_future">未来</string>
+    <string name="reminders_home_card_dismiss_for_now">暂时关闭</string>
 </resources>

@@ -1233,4 +1233,8 @@
     <string name="app_setting_create_reminder_desc">Добавить новое напоминание</string>
     <string name="permissions_exact_alarms_title">Будильники и напоминания</string>
     <string name="permissions_exact_alarms_desc">Требуется для своевременной доставки уведомлений о напоминаниях</string>
+    <string name="settings_reminders_filter_all">Все напоминания</string>
+    <string name="settings_reminders_filter_past">Прошедшие</string>
+    <string name="settings_reminders_filter_future">Будущие</string>
+    <string name="reminders_home_card_dismiss_for_now">Скрыть пока</string>
 </resources>

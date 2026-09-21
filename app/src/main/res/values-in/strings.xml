@@ -1214,4 +1214,8 @@
     <string name="app_setting_create_reminder_desc">Tambahkan pengingat baru</string>
     <string name="permissions_exact_alarms_title">Alarm &amp; pengingat</string>
     <string name="permissions_exact_alarms_desc">Diperlukan untuk mengirim notifikasi pengingat tepat waktu</string>
+    <string name="settings_reminders_filter_all">Semua pengingat</string>
+    <string name="settings_reminders_filter_past">Sebelumnya</string>
+    <string name="settings_reminders_filter_future">Mendatang</string>
+    <string name="reminders_home_card_dismiss_for_now">Tutup untuk saat ini</string>
 </resources>

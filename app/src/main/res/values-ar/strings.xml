@@ -1215,4 +1215,8 @@
     <string name="app_setting_create_reminder_desc">إضافة تذكير جديد</string>
     <string name="permissions_exact_alarms_title">المنبّهات والتذكيرات</string>
     <string name="permissions_exact_alarms_desc">مطلوب لتسليم إشعارات التذكيرات في الوقت المحدد</string>
+    <string name="settings_reminders_filter_all">كل التذكيرات</string>
+    <string name="settings_reminders_filter_past">السابقة</string>
+    <string name="settings_reminders_filter_future">القادمة</string>
+    <string name="reminders_home_card_dismiss_for_now">تجاهل الآن</string>
 </resources>

@@ -1213,4 +1213,8 @@
     <string name="app_setting_create_reminder_desc">Neue Erinnerung hinzufügen</string>
     <string name="permissions_exact_alarms_title">Wecker und Erinnerungen</string>
     <string name="permissions_exact_alarms_desc">Erforderlich, um Erinnerungsbenachrichtigungen pünktlich zuzustellen</string>
+    <string name="settings_reminders_filter_all">Alle Erinnerungen</string>
+    <string name="settings_reminders_filter_past">Vergangen</string>
+    <string name="settings_reminders_filter_future">Zukünftig</string>
+    <string name="reminders_home_card_dismiss_for_now">Für jetzt ausblenden</string>
 </resources>

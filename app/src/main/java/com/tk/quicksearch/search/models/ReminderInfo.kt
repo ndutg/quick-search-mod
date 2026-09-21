@@ -17,6 +17,8 @@ data class ReminderInfo(
     val timeMinutes: Int?,
     val isDone: Boolean = false,
     val isDismissedFromHome: Boolean = false,
+    /** The local day on which this reminder was dismissed from the Home card. */
+    val dismissedFromHomeDate: LocalDate? = null,
 ) {
     val hasTime: Boolean get() = timeMinutes != null
 
@@ -38,6 +40,11 @@ data class ReminderInfo(
             } else {
                 date.isBefore(Instant.ofEpochMilli(nowMillis).atZone(ZoneId.systemDefault()).toLocalDate())
             }
+
+    /** A Home dismissal lasts only for the local calendar day on which it was requested. */
+    fun isDismissedFromHomeToday(nowMillis: Long = System.currentTimeMillis()): Boolean =
+        dismissedFromHomeDate ==
+            Instant.ofEpochMilli(nowMillis).atZone(ZoneId.systemDefault()).toLocalDate()
 
     private val effectiveTime: LocalTime
         get() = LocalTime.ofSecondOfDay((timeMinutes ?: DEFAULT_TIME_MINUTES) * 60L)

@@ -1212,4 +1212,8 @@
     <string name="app_setting_create_reminder_desc">Yeni bir hatırlatıcı ekle</string>
     <string name="permissions_exact_alarms_title">Alarmlar ve hatırlatıcılar</string>
     <string name="permissions_exact_alarms_desc">Hatırlatıcı bildirimlerini zamanında iletmek için gereklidir</string>
+    <string name="settings_reminders_filter_all">Tüm hatırlatıcılar</string>
+    <string name="settings_reminders_filter_past">Geçmiş</string>
+    <string name="settings_reminders_filter_future">Gelecek</string>
+    <string name="reminders_home_card_dismiss_for_now">Şimdilik kapat</string>
 </resources>

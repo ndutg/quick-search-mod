@@ -1213,4 +1213,8 @@
     <string name="app_setting_create_reminder_desc">కొత్త రిమైండర్‌ను జోడించండి</string>
     <string name="permissions_exact_alarms_title">అలారాలు &amp; రిమైండర్‌లు</string>
     <string name="permissions_exact_alarms_desc">రిమైండర్ నోటిఫికేషన్‌లను సమయానికి అందించడానికి అవసరం</string>
+    <string name="settings_reminders_filter_all">అన్ని రిమైండర్‌లు</string>
+    <string name="settings_reminders_filter_past">గతం</string>
+    <string name="settings_reminders_filter_future">భవిష్యత్తు</string>
+    <string name="reminders_home_card_dismiss_for_now">ప్రస్తుతానికి తొలగించు</string>
 </resources>

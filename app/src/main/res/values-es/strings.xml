@@ -1213,4 +1213,8 @@
     <string name="app_setting_create_reminder_desc">Añadir un nuevo recordatorio</string>
     <string name="permissions_exact_alarms_title">Alarmas y recordatorios</string>
     <string name="permissions_exact_alarms_desc">Necesario para enviar las notificaciones de recordatorios a tiempo</string>
+    <string name="settings_reminders_filter_all">Todos los recordatorios</string>
+    <string name="settings_reminders_filter_past">Pasados</string>
+    <string name="settings_reminders_filter_future">Futuros</string>
+    <string name="reminders_home_card_dismiss_for_now">Descartar por ahora</string>
 </resources>

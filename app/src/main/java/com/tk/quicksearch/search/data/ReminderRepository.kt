@@ -107,7 +107,7 @@ class ReminderRepository(context: Context) {
         readReminders()
             .filter { reminder ->
                 !reminder.isDone &&
-                    !reminder.isDismissedFromHome &&
+                    !reminder.isDismissedFromHomeToday(nowMillis) &&
                     reminder.dueMillis - HOME_CARD_LEAD_MILLIS <= nowMillis
             }
             .sortedBy { it.dueMillis }
@@ -152,6 +152,7 @@ class ReminderRepository(context: Context) {
                     timeMinutes = timeMinutes,
                     // A new time is a new occurrence, so it may surface on Home again.
                     isDismissedFromHome = reminder.isDismissedFromHome && !scheduleChanged,
+                    dismissedFromHomeDate = reminder.dismissedFromHomeDate.takeUnless { scheduleChanged },
                 )
             } ?: return null
         ReminderScheduler.cancelNotification(appContext, reminderId)
@@ -177,8 +178,12 @@ class ReminderRepository(context: Context) {
         return updated
     }
 
-    fun dismissFromHome(reminderId: Long): ReminderInfo? =
-        updateOne(reminderId) { it.copy(isDismissedFromHome = true) }
+    fun dismissFromHome(reminderId: Long, nowMillis: Long = System.currentTimeMillis()): ReminderInfo? {
+        val dismissalDate = Instant.ofEpochMilli(nowMillis).atZone(ZoneId.systemDefault()).toLocalDate()
+        return updateOne(reminderId) {
+            it.copy(isDismissedFromHome = true, dismissedFromHomeDate = dismissalDate)
+        }
+    }
 
     /** Moves the reminder 30 minutes past its due time, or past now if it is already overdue. */
     fun snooze(reminderId: Long, nowMillis: Long = System.currentTimeMillis()): ReminderInfo? {
@@ -245,6 +250,7 @@ class ReminderRepository(context: Context) {
         private const val FIELD_TIME_MINUTES = "timeMinutes"
         private const val FIELD_DONE = "done"
         private const val FIELD_DISMISSED_FROM_HOME = "dismissedFromHome"
+        private const val FIELD_DISMISSED_FROM_HOME_DATE = "dismissedFromHomeDate"
 
         private const val LEGACY_FIELD_EVENT_ID = "eventId"
         private const val LEGACY_FIELD_TITLE = "title"
@@ -282,6 +288,10 @@ class ReminderRepository(context: Context) {
                         },
                     isDone = obj.optBoolean(FIELD_DONE, false),
                     isDismissedFromHome = obj.optBoolean(FIELD_DISMISSED_FROM_HOME, false),
+                    dismissedFromHomeDate =
+                        obj.optString(FIELD_DISMISSED_FROM_HOME_DATE)
+                            .takeIf { it.isNotBlank() }
+                            ?.let { value -> runCatching { LocalDate.parse(value) }.getOrNull() },
                 )
             }
         }
@@ -296,7 +306,12 @@ class ReminderRepository(context: Context) {
                         .put(FIELD_DATE, reminder.date.toString())
                         .apply { reminder.timeMinutes?.let { put(FIELD_TIME_MINUTES, it) } }
                         .put(FIELD_DONE, reminder.isDone)
-                        .put(FIELD_DISMISSED_FROM_HOME, reminder.isDismissedFromHome),
+                        .put(FIELD_DISMISSED_FROM_HOME, reminder.isDismissedFromHome)
+                        .apply {
+                            reminder.dismissedFromHomeDate?.let {
+                                put(FIELD_DISMISSED_FROM_HOME_DATE, it.toString())
+                            }
+                        },
                 )
             }
             return array.toString()

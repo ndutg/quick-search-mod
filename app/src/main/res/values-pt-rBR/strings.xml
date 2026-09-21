@@ -1213,4 +1213,8 @@
     <string name="app_setting_create_reminder_desc">Adicionar um novo lembrete</string>
     <string name="permissions_exact_alarms_title">Alarmes e lembretes</string>
     <string name="permissions_exact_alarms_desc">Necessário para enviar as notificações de lembretes na hora certa</string>
+    <string name="settings_reminders_filter_all">Todos os lembretes</string>
+    <string name="settings_reminders_filter_past">Passados</string>
+    <string name="settings_reminders_filter_future">Futuros</string>
+    <string name="reminders_home_card_dismiss_for_now">Dispensar por enquanto</string>
 </resources>

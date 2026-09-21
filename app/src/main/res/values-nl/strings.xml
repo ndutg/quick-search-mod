@@ -1269,4 +1269,8 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="app_setting_create_reminder_desc">Een nieuwe herinnering toevoegen</string>
     <string name="permissions_exact_alarms_title">Wekkers en herinneringen</string>
     <string name="permissions_exact_alarms_desc">Vereist om herinneringsmeldingen op tijd te bezorgen</string>
+    <string name="settings_reminders_filter_all">Alle herinneringen</string>
+    <string name="settings_reminders_filter_past">Verleden</string>
+    <string name="settings_reminders_filter_future">Toekomst</string>
+    <string name="reminders_home_card_dismiss_for_now">Voor nu sluiten</string>
 </resources>

@@ -1213,4 +1213,8 @@
     <string name="app_setting_create_reminder_desc">Ajouter un nouveau rappel</string>
     <string name="permissions_exact_alarms_title">Alarmes et rappels</string>
     <string name="permissions_exact_alarms_desc">Requis pour envoyer les notifications de rappels à l\'heure</string>
+    <string name="settings_reminders_filter_all">Tous les rappels</string>
+    <string name="settings_reminders_filter_past">Passés</string>
+    <string name="settings_reminders_filter_future">À venir</string>
+    <string name="reminders_home_card_dismiss_for_now">Ignorer pour l\'instant</string>
 </resources>

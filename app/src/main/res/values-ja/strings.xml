@@ -1221,4 +1221,8 @@ www.google.com/search?q={{query}}</string>
     <string name="app_setting_create_reminder_desc">新しいリマインダーを追加</string>
     <string name="permissions_exact_alarms_title">アラームとリマインダー</string>
     <string name="permissions_exact_alarms_desc">リマインダーの通知を時間どおりに届けるために必要です。</string>
+    <string name="settings_reminders_filter_all">すべてのリマインダー</string>
+    <string name="settings_reminders_filter_past">過去</string>
+    <string name="settings_reminders_filter_future">今後</string>
+    <string name="reminders_home_card_dismiss_for_now">今は閉じる</string>
 </resources>

@@ -1213,4 +1213,8 @@
     <string name="app_setting_create_reminder_desc">Προσθήκη νέας υπενθύμισης</string>
     <string name="permissions_exact_alarms_title">Ξυπνητήρια και υπενθυμίσεις</string>
     <string name="permissions_exact_alarms_desc">Απαιτείται για την έγκαιρη παράδοση ειδοποιήσεων υπενθυμίσεων</string>
+    <string name="settings_reminders_filter_all">Όλες οι υπενθυμίσεις</string>
+    <string name="settings_reminders_filter_past">Παλαιότερα</string>
+    <string name="settings_reminders_filter_future">Μελλοντικά</string>
+    <string name="reminders_home_card_dismiss_for_now">Απόρριψη προς το παρόν</string>
 </resources>

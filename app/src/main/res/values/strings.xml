@@ -1206,4 +1206,8 @@
     <string name="app_setting_create_reminder_desc">Add a new reminder</string>
     <string name="permissions_exact_alarms_title">Alarms &amp; reminders</string>
     <string name="permissions_exact_alarms_desc">Required to deliver reminder notifications on time</string>
+    <string name="settings_reminders_filter_all">All Reminders</string>
+    <string name="settings_reminders_filter_past">Past</string>
+    <string name="settings_reminders_filter_future">Future</string>
+    <string name="reminders_home_card_dismiss_for_now">Dismiss for now</string>
 </resources>

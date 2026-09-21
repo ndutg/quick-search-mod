@@ -1213,4 +1213,8 @@
     <string name="app_setting_create_reminder_desc">नया रिमाइंडर जोड़ें</string>
     <string name="permissions_exact_alarms_title">अलार्म और रिमाइंडर</string>
     <string name="permissions_exact_alarms_desc">रिमाइंडर सूचनाएं समय पर भेजने के लिए आवश्यक</string>
+    <string name="settings_reminders_filter_all">सभी रिमाइंडर</string>
+    <string name="settings_reminders_filter_past">पिछले</string>
+    <string name="settings_reminders_filter_future">आगामी</string>
+    <string name="reminders_home_card_dismiss_for_now">अभी खारिज करें</string>
 </resources>

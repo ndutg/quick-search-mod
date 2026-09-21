@@ -1212,4 +1212,8 @@
     <string name="app_setting_create_reminder_desc">Aggiungi un nuovo promemoria</string>
     <string name="permissions_exact_alarms_title">Sveglie e promemoria</string>
     <string name="permissions_exact_alarms_desc">Necessario per inviare puntualmente le notifiche dei promemoria</string>
+    <string name="settings_reminders_filter_all">Tutti i promemoria</string>
+    <string name="settings_reminders_filter_past">Passati</string>
+    <string name="settings_reminders_filter_future">Futuri</string>
+    <string name="reminders_home_card_dismiss_for_now">Ignora per ora</string>
 </resources>

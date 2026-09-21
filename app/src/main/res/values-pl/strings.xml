@@ -1241,4 +1241,8 @@ www.google.com/search?q={{query}}</string>
     <string name="app_setting_create_reminder_desc">Dodaj nowe przypomnienie</string>
     <string name="permissions_exact_alarms_title">Alarmy i przypomnienia</string>
     <string name="permissions_exact_alarms_desc">Wymagane do terminowego dostarczania powiadomień o przypomnieniach</string>
+    <string name="settings_reminders_filter_all">Wszystkie przypomnienia</string>
+    <string name="settings_reminders_filter_past">Przeszłe</string>
+    <string name="settings_reminders_filter_future">Przyszłe</string>
+    <string name="reminders_home_card_dismiss_for_now">Odrzuć na razie</string>
 </resources>

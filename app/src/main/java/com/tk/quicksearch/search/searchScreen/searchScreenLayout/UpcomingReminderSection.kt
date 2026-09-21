@@ -63,10 +63,11 @@ import kotlinx.coroutines.withContext
 
 private val UpcomingReminderDismissSize = 28.dp
 private const val DAY_MILLIS = 24L * 60L * 60L * 1000L
+private const val REMINDER_NOW_WINDOW_MILLIS = 60L * 1000L
 
 /**
  * Home card for reminders due within 30 minutes or already overdue. It stays until the reminder is
- * marked done or removed from Home; removing it does not cancel the notification.
+ * marked done or dismissed for the current day; dismissing it does not cancel the notification.
  */
 @Composable
 internal fun UpcomingReminderSection(showWallpaperBackground: Boolean) {
@@ -116,7 +117,7 @@ internal fun UpcomingReminderSection(showWallpaperBackground: Boolean) {
                     },
                 )
                 if (index < reminders.lastIndex) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 }
             }
         }
@@ -134,26 +135,38 @@ private fun UpcomingReminderRow(
 ) {
     val context = LocalContext.current
     var showMenu by remember { mutableStateOf(false) }
+    // Keep a timed reminder at its due time in a brief "Now" state before it becomes overdue.
+    // This also avoids showing "1 minute ago" during the first minute after it is due.
+    val elapsedSinceDueMillis = nowMillis - reminder.dueMillis
+    val isNow =
+        !reminder.isDone &&
+            reminder.hasTime &&
+            elapsedSinceDueMillis in 0 until REMINDER_NOW_WINDOW_MILLIS
     // Overdue reminders show their time (or date once a day late) with a red "Overdue" in place of
     // the relative label; upcoming ones read best relative to now.
-    val isOverdue = reminder.isOverdue(nowMillis)
+    val isOverdue = reminder.isOverdue(nowMillis) && !isNow
     val time = remember(reminder.dueMillis, context) {
         DateFormat.getTimeFormat(context).format(Date(reminder.dueMillis))
     }
     val scheduleText =
         when {
-            !isOverdue -> "$time • ${calendarRelativeTimeLabel(reminder.dueMillis, nowMillis)}"
+            !isOverdue && !isNow -> "$time • ${calendarRelativeTimeLabel(reminder.dueMillis, nowMillis)}"
             nowMillis - reminder.dueMillis < DAY_MILLIS -> time
             else -> reminderScheduleLabel(reminder)
         }
-    val overdueText = stringResource(R.string.reminder_status_overdue)
-    val overdueColor = reminderOverdueColor()
+    val statusText =
+        when {
+            isNow -> stringResource(R.string.calendar_relative_now)
+            isOverdue -> stringResource(R.string.reminder_status_overdue)
+            else -> null
+        }
+    val statusColor = if (isNow) AppColors.Accent else reminderOverdueColor()
     val scheduleLabel =
         buildAnnotatedString {
             append(scheduleText)
-            if (isOverdue) {
+            if (statusText != null) {
                 append(" • ")
-                withStyle(SpanStyle(color = overdueColor)) { append(overdueText) }
+                withStyle(SpanStyle(color = statusColor)) { append(statusText) }
             }
         }
 
@@ -211,17 +224,26 @@ private fun UpcomingReminderRow(
                         onDone()
                     },
                 )
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.reminders_home_card_dismiss_for_now)) },
+                    leadingIcon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
+                    onClick = {
+                        showMenu = false
+                        onDismiss()
+                    },
+                )
             }
         }
         IconButton(
-            onClick = onDismiss,
+            onClick = onDone,
             modifier = Modifier.size(UpcomingReminderDismissSize),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Close,
-                contentDescription = stringResource(R.string.reminders_home_card_dismiss),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(16.dp),
+                imageVector = Icons.Rounded.Check,
+                contentDescription = stringResource(R.string.action_mark_as_done),
+                tint = AppColors.Accent,
+                modifier = Modifier.size(20.dp),
             )
         }
     }
