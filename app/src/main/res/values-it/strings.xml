@@ -1038,7 +1038,10 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">Se in seguito dovessi cambiare idea sull\u2019autorizzazione %1$s, potrai concederla dalle impostazioni dell\u2019app.</string>
     <string name="permissions_reminder_dialog_title">Autorizzazioni non concesse</string>
-    <string name="permissions_screen_subtitle">Tutte le autorizzazioni qui sono facoltative. Vengono utilizzate solo per sbloccare funzionalità aggiuntive. I tuoi dati rimangono sul tuo dispositivo.</string>
+    <string name="permissions_screen_subtitle">Tutte le autorizzazioni sono facoltative. Sbloccano solo funzionalità aggiuntive e i tuoi dati rimangono sul tuo dispositivo.</string>
+    <string name="permissions_open_source_title">Open source</string>
+    <string name="permissions_open_source_desc">Scopri esattamente come vengono usate queste autorizzazioni.</string>
+    <string name="permissions_open_source_action">Vedi codice</string>
     <string name="permissions_screen_optional_emphasis">facoltative</string>
     <string name="permissions_usage_desc">Richiesta per mostrare le app usate di recente nei suggerimenti.</string>
     <string name="setup_action_next">Avanti</string>

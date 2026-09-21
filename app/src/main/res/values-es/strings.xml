@@ -1039,7 +1039,10 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">Si más adelante cambias de opinión sobre el permiso de %1$s, puedes concederlo desde los ajustes de la app.</string>
     <string name="permissions_reminder_dialog_title">Permisos no concedidos</string>
-    <string name="permissions_screen_subtitle">Todos los permisos aquí son opcionales. Solo se utilizan para desbloquear funciones adicionales. Tus datos permanecen en tu dispositivo.</string>
+    <string name="permissions_screen_subtitle">Todos los permisos son opcionales. Solo desbloquean funciones adicionales y tus datos permanecen en tu dispositivo.</string>
+    <string name="permissions_open_source_title">Código abierto</string>
+    <string name="permissions_open_source_desc">Mira exactamente cómo se usan estos permisos.</string>
+    <string name="permissions_open_source_action">Ver código</string>
     <string name="permissions_screen_optional_emphasis">opcionales</string>
     <string name="permissions_usage_desc">Necesario para mostrar tus apps usadas recientemente en las sugerencias.</string>
     <string name="setup_action_next">Siguiente</string>

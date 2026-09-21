@@ -1039,7 +1039,10 @@
 <string name="permissions_mandatory_indicator">*</string>
 <string name="permissions_reminder_dialog_message">Si vous changez d\'avis plus tard concernant l\'autorisation %1$s, vous pourrez l\'accorder depuis les paramètres de l\'application.</string>
 <string name="permissions_reminder_dialog_title">Autorisations non accordées</string>
-<string name="permissions_screen_subtitle">Toutes les autorisations ici sont facultatives. Elles sont uniquement utilisées pour débloquer des fonctionnalités supplémentaires. Vos données restent sur votre appareil.</string>
+<string name="permissions_screen_subtitle">Toutes les autorisations sont facultatives. Elles débloquent uniquement des fonctionnalités supplémentaires et vos données restent sur votre appareil.</string>
+<string name="permissions_open_source_title">Open source</string>
+<string name="permissions_open_source_desc">Voyez exactement comment ces autorisations sont utilisées.</string>
+<string name="permissions_open_source_action">Voir le code</string>
 <string name="permissions_screen_optional_emphasis">facultatives</string>
 <string name="permissions_usage_desc">Requis pour afficher vos applications récemment utilisées dans les suggestions.</string>
 <string name="setup_action_next">Suivant</string>

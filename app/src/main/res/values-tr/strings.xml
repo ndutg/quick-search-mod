@@ -1038,7 +1038,10 @@
 <string name="permissions_mandatory_indicator">*</string>
 <string name="permissions_reminder_dialog_message">Daha sonra %1$s izni hakkında fikrini değiştirirsen, uygulama ayarlarından bu izni verebilirsin.</string>
 <string name="permissions_reminder_dialog_title">İzinler verilmedi</string>
-<string name="permissions_screen_subtitle">Buradaki tüm izinler isteğe bağlıdır. Yalnızca ek özelliklerin kilidini açmak için kullanılırlar. Verilerin cihazında kalır.</string>
+<string name="permissions_screen_subtitle">Tüm izinler isteğe bağlıdır. Yalnızca ek özelliklerin kilidini açarlar ve verilerin cihazında kalır.</string>
+<string name="permissions_open_source_title">Açık kaynak</string>
+<string name="permissions_open_source_desc">Bu izinlerin tam olarak nasıl kullanıldığını görün.</string>
+<string name="permissions_open_source_action">Kodu görüntüle</string>
 <string name="permissions_screen_optional_emphasis">isteğe bağlıdır</string>
 <string name="permissions_usage_desc">Son kullandığın uygulamaları önerilerde göstermek için gereklidir.</string>
 <string name="setup_action_next">Sonraki</string>

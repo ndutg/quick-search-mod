@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.permissions.OpenSourceTrustCard
 import com.tk.quicksearch.shared.permissions.PermissionCardTexts
 import com.tk.quicksearch.shared.permissions.PermissionsCardSection
 import com.tk.quicksearch.shared.permissions.permissionsScreenSubtitle
@@ -41,6 +42,13 @@ fun PermissionsSettings(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = DesignTokens.SpacingLarge),
+        )
+
+        OpenSourceTrustCard(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = DesignTokens.SpacingLarge),
         )
 
         PermissionsCardSection(
