@@ -803,7 +803,7 @@
     <string name="settings_at_a_glance_desc">Informazioni utili che compaiono nella schermata iniziale al momento giusto</string>
     <string name="settings_at_a_glance_alarms_title">Sveglie</string>
     <string name="settings_upcoming_alarm_desc">La prossima sveglia quando mancano meno di 45 minuti</string>
-    <string name="settings_at_a_glance_events_desc">Eventi di oggi</string>
+    <string name="settings_at_a_glance_events_desc">Eventi del calendario di oggi</string>
     <string name="settings_upcoming_reminders_desc">Promemoria in scadenza entro 30 minuti o scaduti</string>
     <string name="settings_use_system_font_desc">Usa lo stile del carattere del dispositivo</string>
     <string name="settings_use_system_font_title">Usa carattere di sistema</string>

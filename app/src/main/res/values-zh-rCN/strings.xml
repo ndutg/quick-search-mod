@@ -794,7 +794,7 @@
     <string name="settings_at_a_glance_desc">在合适的时间出现在主屏幕上的实用信息</string>
     <string name="settings_at_a_glance_alarms_title">闹钟</string>
     <string name="settings_upcoming_alarm_desc">45 分钟内响铃的下一个闹钟</string>
-    <string name="settings_at_a_glance_events_desc">今天的日程</string>
+    <string name="settings_at_a_glance_events_desc">今天的日历活动</string>
     <string name="settings_upcoming_reminders_desc">30 分钟内到期或已逾期的提醒</string>
     <string name="settings_use_system_font_desc">匹配并跟随您设备的系统字体样式</string>
     <string name="settings_use_system_font_title">使用系统字体</string>

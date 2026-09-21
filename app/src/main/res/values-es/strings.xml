@@ -804,7 +804,7 @@
     <string name="settings_at_a_glance_desc">Información útil que aparece en tu pantalla de inicio en el momento oportuno</string>
     <string name="settings_at_a_glance_alarms_title">Alarmas</string>
     <string name="settings_upcoming_alarm_desc">Tu próxima alarma cuando falten menos de 45 minutos</string>
-    <string name="settings_at_a_glance_events_desc">Eventos de hoy</string>
+    <string name="settings_at_a_glance_events_desc">Eventos del calendario de hoy</string>
     <string name="settings_upcoming_reminders_desc">Recordatorios que vencen en 30 minutos o están atrasados</string>
     <string name="settings_use_system_font_desc">Usa el estilo de fuente de tu dispositivo</string>
     <string name="settings_use_system_font_title">Usar fuente del sistema</string>

@@ -804,7 +804,7 @@
     <string name="settings_at_a_glance_desc">సరైన సమయంలో మీ హోమ్ స్క్రీన్‌లో కనిపించే ఉపయోగకరమైన సమాచారం</string>
     <string name="settings_at_a_glance_alarms_title">అలారాలు</string>
     <string name="settings_upcoming_alarm_desc">45 నిమిషాల్లోపు ఉన్నప్పుడు మీ తదుపరి అలారం</string>
-    <string name="settings_at_a_glance_events_desc">ఈరోజు ఈవెంట్‌లు</string>
+    <string name="settings_at_a_glance_events_desc">ఈరోజు క్యాలెండర్ ఈవెంట్‌లు</string>
     <string name="settings_upcoming_reminders_desc">30 నిమిషాల్లోపు గడువు ఉన్న లేదా గడువు దాటిన రిమైండర్‌లు</string>
     <string name="settings_use_system_font_desc">మీ పరికర ఫాంట్ శైలిని అనుసరించండి</string>
     <string name="settings_use_system_font_title">సిస్టమ్ ఫాంట్‌ను ఉపయోగించండి</string>

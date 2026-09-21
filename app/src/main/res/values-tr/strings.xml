@@ -803,7 +803,7 @@
 <string name="settings_at_a_glance_desc">Ana ekranınızda doğru zamanda görünen faydalı bilgiler</string>
 <string name="settings_at_a_glance_alarms_title">Alarmlar</string>
 <string name="settings_upcoming_alarm_desc">45 dakika içindeyse sonraki alarmınız</string>
-<string name="settings_at_a_glance_events_desc">Bugünün etkinlikleri</string>
+<string name="settings_at_a_glance_events_desc">Bugünün takvim etkinlikleri</string>
 <string name="settings_upcoming_reminders_desc">30 dakika içinde zamanı gelen veya gecikmiş hatırlatıcılar</string>
 <string name="settings_use_system_font_desc">Cihazının yazı tipi stilini takip et</string>
 <string name="settings_use_system_font_title">Sistem yazı tipini kullan</string>
