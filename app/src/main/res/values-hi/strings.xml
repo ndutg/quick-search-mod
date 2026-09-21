@@ -828,6 +828,9 @@
     <string name="settings_direct_search_grounding_label">वेब खोज</string>
     <string name="settings_direct_search_how_to">मुफ्त API Key प्राप्त करें</string>
     <string name="settings_direct_search_model_label">मॉडल</string>
+    <string name="settings_select_model">मॉडल चुनें</string>
+    <string name="ai_error_selected_model_unavailable">चुना गया मॉडल उपलब्ध नहीं है। कृपया सेटिंग में कोई दूसरा मॉडल चुनें।</string>
+    <string name="settings_loading_models">मॉडल लोड हो रहे हैं…</string>
     <string name="settings_direct_search_personal_context">व्यक्तिगत संदर्भ</string>
     <string name="settings_direct_search_personal_context_hint">उत्तर बनाते समय AI जिस संदर्भ का उपयोग करे, वह यहां जोड़ें।</string>
     <string name="settings_direct_search_personal_context_unsupported">इस मॉडल के लिए व्यक्तिगत संदर्भ उपलब्ध नहीं है।</string>

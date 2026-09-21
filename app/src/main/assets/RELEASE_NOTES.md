@@ -1,6 +1,6 @@
 - Support for Polish, Dutch, Japanese, and Indonesian languages
 - Search and access your notification history (requires permission)
-- You can also set alarms and start timers directly from search (example queries: 15 min, 2:45pm), upcoming alarms will show up in home.
+- You can set alarms and start timers directly from search (example queries: 15 min, 2:45pm), upcoming alarms will show up in home.
 - Tavily API key support to enable web search for AI models that don't support it.
 - Support for multiple nicknames for search results.
 - Reorder pinned sections

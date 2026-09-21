@@ -50,10 +50,10 @@ class AiSearchHandler(
         AiSearchLlmProviderRegistry.get(AiSearchLlmProviderId.GEMINI, context)
     @Volatile private var llmApiKey: String? = null
     private var personalContext: String = ""
-    private var selectedModelId: String = GeminiModelCatalog.DEFAULT_MODEL_ID
+    private var selectedModelId: String = ""
     private var groundingEnabled: Boolean = GeminiModelCatalog.DEFAULT_GROUNDING_ENABLED
     private var thinkingEnabled: Boolean = false
-    private var availableGeminiModels: List<GeminiTextModel> = GeminiModelCatalog.FALLBACK_TEXT_MODELS
+    private var availableGeminiModels: List<GeminiTextModel> = emptyList()
     private var hasLoadedGeminiModelsFromApi: Boolean = false
 
     @Volatile private var hasAnyLlmApiKey: Boolean = false
@@ -71,7 +71,7 @@ class AiSearchHandler(
             selectedModelId = userPreferences.getLlmModel(activeProviderId)
             groundingEnabled = userPreferences.isLlmGroundingEnabled(activeProviderId)
             thinkingEnabled = userPreferences.isLlmThinkingEnabled(activeProviderId)
-            availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+            availableGeminiModels = emptyList()
             hasLoadedGeminiModelsFromApi = false
             hasAnyLlmApiKey = userPreferences.hasAnyLlmApiKey()
             hasLoadedApiKeyCache = true
@@ -97,7 +97,7 @@ class AiSearchHandler(
         selectedModelId = userPreferences.getLlmModel(providerId)
         groundingEnabled = userPreferences.isLlmGroundingEnabled(providerId)
         thinkingEnabled = userPreferences.isLlmThinkingEnabled(providerId)
-        availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+        availableGeminiModels = emptyList()
         hasLoadedGeminiModelsFromApi = false
         clearAiSearchState()
     }
@@ -118,7 +118,7 @@ class AiSearchHandler(
 
         hasAnyLlmApiKey = userPreferences.hasAnyLlmApiKey()
         if (llmApiKey == null) {
-            availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+            availableGeminiModels = emptyList()
             clearAiSearchState()
         }
     }
@@ -146,7 +146,7 @@ class AiSearchHandler(
                     setAiSearchProviderId(nextProvider)
                 } else {
                     llmApiKey = null
-                    availableGeminiModels = ensureModelExists(activeProvider.fallbackTextModels)
+                    availableGeminiModels = emptyList()
                     hasLoadedGeminiModelsFromApi = false
                     clearAiSearchState()
                 }
@@ -162,7 +162,7 @@ class AiSearchHandler(
 
     fun setSelectedModelId(modelId: String?) {
         ensureInitialized()
-        val normalized = modelId?.trim().takeUnless { it.isNullOrBlank() } ?: activeProvider.defaultModelId
+        val normalized = modelId?.trim().orEmpty()
         if (normalized == selectedModelId) return
 
         selectedModelId = normalized
@@ -285,13 +285,22 @@ class AiSearchHandler(
             return availableGeminiModels
         }
 
-        val fetched =
-            activeProvider
-                .fetchAvailableTextModels(apiKey, context)
-                .getOrDefault(activeProvider.fallbackTextModels)
+        val result = activeProvider.fetchAvailableTextModels(apiKey, context)
+        val fetched = result.getOrDefault(emptyList())
+        if (result.isSuccess) {
+            val resolvedModelId = resolveModelSelection(selectedModelId, fetched)
+            if (resolvedModelId != selectedModelId) setSelectedModelId(resolvedModelId)
+        }
         availableGeminiModels = ensureModelExists(fetched)
         hasLoadedGeminiModelsFromApi = true
         return availableGeminiModels
+    }
+
+    /** Reuses a catalog already fetched by settings instead of issuing a second network request. */
+    fun updateAvailableModels(models: List<GeminiTextModel>) {
+        ensureInitialized()
+        availableGeminiModels = ensureModelExists(models)
+        hasLoadedGeminiModelsFromApi = true
     }
 
     fun requestAiSearch(query: String) {
@@ -336,6 +345,18 @@ class AiSearchHandler(
                     status = AiSearchStatus.Error,
                     isFollowUp = isFollowUp,
                     errorMessage = context.getString(R.string.direct_search_error_no_key),
+                    activeQuery = trimmedQuery,
+                    llmProviderId = activeProviderId,
+                )
+            }
+            return
+        }
+        if (selectedModelId.isBlank()) {
+            _aiSearchState.update {
+                AiSearchState(
+                    status = AiSearchStatus.Error,
+                    isFollowUp = isFollowUp,
+                    errorMessage = context.getString(R.string.ai_error_selected_model_unavailable),
                     activeQuery = trimmedQuery,
                     llmProviderId = activeProviderId,
                 )
@@ -488,6 +509,17 @@ class AiSearchHandler(
             }
             return
         }
+        if (modelId.isBlank()) {
+            _aiSearchState.update {
+                AiSearchState(
+                    status = AiSearchStatus.Error,
+                    errorMessage = context.getString(R.string.ai_error_selected_model_unavailable),
+                    activeQuery = trimmedQuery,
+                    llmProviderId = providerId,
+                )
+            }
+            return
+        }
 
         aiSearchJob?.cancel()
         aiSearchJob =
@@ -505,7 +537,8 @@ class AiSearchHandler(
                 val useSystemInstruction =
                     providerModels.firstOrNull { it.id == modelId }?.supportsSystemInstructions
                         ?: !modelId.lowercase().startsWith("gemma-")
-                val supportsGrounding = modelSupportsGrounding(modelId, providerModels)
+                val supportsGrounding =
+                    modelSupportsGrounding(modelId, providerModels, providerId)
                 val webSearch =
                     prepareWebSearch(
                         userPreferences = userPreferences,
@@ -598,19 +631,8 @@ class AiSearchHandler(
         _aiSearchState.update { AiSearchState() }
     }
 
-    private fun ensureModelExists(models: List<GeminiTextModel>): List<GeminiTextModel> {
-        val normalized = if (models.isEmpty()) activeProvider.fallbackTextModels else models
-        return if (normalized.any { it.id == selectedModelId }) {
-            normalized
-        } else {
-            listOf(
-                GeminiTextModel(
-                    id = selectedModelId,
-                    displayName = selectedModelId,
-                ),
-            ) + normalized
-        }
-    }
+    private fun ensureModelExists(models: List<GeminiTextModel>): List<GeminiTextModel> =
+        models.distinctBy { it.id }
 
     /**
      * When the catalog entry is missing (e.g. stale cache), match [AiSearchClient] Gemma

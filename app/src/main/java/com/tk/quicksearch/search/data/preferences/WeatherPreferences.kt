@@ -32,13 +32,22 @@ class WeatherPreferences(context: Context) : BasePreferences(context) {
 
     fun getModel(): String = prefs.getString(KEY_MODEL, "").orEmpty()
 
+    fun hasModelPreference(): Boolean = prefs.contains(KEY_MODEL)
+
     fun setModel(modelId: String) {
         val normalized = modelId.trim()
         if (normalized.isNotEmpty()) prefs.edit().putString(KEY_MODEL, normalized).apply()
     }
 
+    fun clearModel() {
+        prefs.edit().putString(KEY_MODEL, "").apply()
+    }
+
     fun getProviderId(): AiSearchLlmProviderId =
         AiSearchLlmProviderId.fromStorageValue(prefs.getString(KEY_PROVIDER_ID, null))
+
+    fun getProviderIdOverride(): AiSearchLlmProviderId? =
+        prefs.getString(KEY_PROVIDER_ID, null)?.let(AiSearchLlmProviderId::fromStorageValue)
 
     fun setProviderId(providerId: AiSearchLlmProviderId) {
         prefs.edit().putString(KEY_PROVIDER_ID, providerId.storageValue).apply()
@@ -49,6 +58,9 @@ class WeatherPreferences(context: Context) : BasePreferences(context) {
     fun setGroundingEnabled(enabled: Boolean) = setBooleanPref(KEY_GROUNDING_ENABLED, enabled)
 
     fun isThinkingEnabled(): Boolean = getBooleanPref(KEY_THINKING_ENABLED, false)
+
+    fun getThinkingOverride(): Boolean? =
+        if (prefs.contains(KEY_THINKING_ENABLED)) isThinkingEnabled() else null
 
     fun setThinkingEnabled(enabled: Boolean) = setBooleanPref(KEY_THINKING_ENABLED, enabled)
 

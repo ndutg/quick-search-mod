@@ -113,21 +113,7 @@ class AiSearchClient(
                     } while (!pageToken.isNullOrBlank())
 
                     val deduped = models.distinctBy { it.id }
-                    if (deduped.isEmpty()) {
-                        GeminiModelCatalog.FALLBACK_TEXT_MODELS
-                    } else {
-                        val withDefault =
-                            if (deduped.any { it.id == GeminiModelCatalog.DEFAULT_MODEL_ID }) {
-                                deduped
-                            } else {
-                                deduped +
-                                    GeminiTextModel(
-                                        id = GeminiModelCatalog.DEFAULT_MODEL_ID,
-                                        displayName = context.getString(R.string.gemini_model_flash_latest),
-                                    )
-                            }
-                        withDefault.sortedBy { it.displayName.lowercase() }
-                    }
+                    deduped.sortedBy { it.displayName.lowercase() }
                 }
             }
 

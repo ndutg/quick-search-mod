@@ -541,6 +541,7 @@ object SettingsBackupManager {
                         .put("id", provider.id)
                         .put("baseUrl", provider.baseUrl)
                         .put("modelId", provider.modelId)
+                        .put("groundingEnabled", provider.groundingEnabled)
                         .put("advancedPayload", provider.advancedPayload.orEmpty())
                         .put("advancedPayloadEnabled", provider.advancedPayloadEnabled)
                         .apply {
@@ -556,13 +557,14 @@ object SettingsBackupManager {
                 val item = array.optJSONObject(index) ?: continue
                 val id = item.optString("id").takeIf { it.isNotBlank() } ?: continue
                 val baseUrl = item.optString("baseUrl").takeIf { it.isNotBlank() } ?: continue
-                val modelId = item.optString("modelId").takeIf { it.isNotBlank() } ?: continue
+                val modelId = item.optString("modelId").orEmpty()
                 add(
                     CustomLlmProviderConfig(
                         id = id,
                         baseUrl = baseUrl,
                         apiKey = item.optString("apiKey").orEmpty(),
                         modelId = modelId,
+                        groundingEnabled = item.optBoolean("groundingEnabled", true),
                         advancedPayload = item.optString("advancedPayload").takeIf { it.isNotBlank() },
                         advancedPayloadEnabled = item.optBoolean("advancedPayloadEnabled", false),
                     ),
