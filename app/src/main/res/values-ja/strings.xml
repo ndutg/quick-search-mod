@@ -127,7 +127,7 @@
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
     <string name="accessibility_lock_screen_service_description">ホーム画面のダブルタップジェスチャーで画面をロックし、どのアプリからでも端からのスワイプやフローティングボタンで Quick Search を開けるようにします。画面の内容は読み取りません。</string>
     <string name="accessibility_permission_disclaimer_title">ユーザー補助の権限に関する免責事項</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Searchは、ホーム画面をダブルタップした際に端末をロックする目的、スワイプすると Quick Search を開く透明なハンドルを画面の端に表示する目的、およびタップすると Quick Search を開くフローティング検索ボタンを表示する目的でのみ、AndroidのAccessibilityService APIを使用します。このサービスを通じて、画面の内容や個人データを読み取り、収集、保存、共有することはありません。</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search は、ユーザー補助機能を次の目的で使用します。\n\n• 画面をロックするダブルタップジェスチャーを有効にする。\n• 端からのスワイプジェスチャーで Quick Search を開く。\n• フローティングボタンで Quick Search を開く。\n\n画面の内容やその他の個人データを読み取り、収集、保存、共有することはありません。</string>
     <string name="settings_gesture_none">なし</string>
     <string name="settings_gesture_custom">カスタム（アプリ、ファイルなど）</string>
     <string name="settings_keyboard_gestures_title">キーボードジェスチャー（ホーム）</string>
@@ -1064,7 +1064,7 @@ www.google.com/search?q={{query}}</string>
     <string name="permissions_notifications_desc">リマインダーの通知と、検索結果を通知パネルに固定するために必要です。</string>
     <string name="permissions_notification_access_desc">通知ドットと通知履歴機能を有効にするために必要です</string>
     <string name="permissions_accessibility_lock_screen_title">ユーザー補助</string>
-    <string name="permissions_accessibility_lock_screen_desc">ダブルタップジェスチャーで端末をロックし、端からのスワイプやフローティングボタンで Quick Search を開けるようにします。</string>
+    <string name="permissions_accessibility_lock_screen_desc">画面をロックするダブルタップジェスチャー、または端からのスワイプジェスチャーやフローティングボタンで Quick Search を起動するために必要です。</string>
     <string name="permissions_contacts_desc">連絡先を検索するために必要です。</string>
     <string name="permissions_files_desc">ドキュメントやその他のファイルを検索するために必要です。</string>
     <string name="permissions_files_title">ファイルへのアクセス</string>

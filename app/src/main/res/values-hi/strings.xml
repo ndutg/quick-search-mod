@@ -122,7 +122,7 @@
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
     <string name="settings_gesture_notification_panel">नोटिफिकेशन पैनल</string>
 <string name="accessibility_permission_disclaimer_title">सुलभता अनुमति अस्वीकरण</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search Android की AccessibilityService API का उपयोग केवल होम स्क्रीन पर दो बार टैप करने पर आपके डिवाइस को लॉक करने, स्क्रीन के किनारे पर एक अदृश्य हैंडल दिखाने के लिए, जिस पर स्वाइप करने से Quick Search खुलता है, और एक फ़्लोटिंग सर्च बटन दिखाने के लिए करता है, जिस पर टैप करने से Quick Search खुलता है। इस सेवा के माध्यम से Quick Search आपकी स्क्रीन की सामग्री या अन्य निजी डेटा को पढ़ता, एकत्र करता, संग्रहीत या साझा नहीं करता है।</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search Accessibility का उपयोग इन कामों के लिए करता है:\n\n• स्क्रीन लॉक करने के लिए डबल-टैप जेस्चर सक्षम करने के लिए।\n• किनारे से स्वाइप जेस्चर से Quick Search खोलने के लिए।\n• फ़्लोटिंग बटन से Quick Search खोलने के लिए।\n\nयह आपकी स्क्रीन सामग्री या अन्य निजी डेटा को पढ़ता, एकत्र करता, संग्रहीत या साझा नहीं करता है।</string>
     <string name="settings_gesture_none">कोई नहीं</string>
     <string name="settings_gesture_custom">कस्टम (ऐप्स, फ़ाइलें आदि)</string>
     <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर (होम)</string>
@@ -1049,7 +1049,7 @@
     <string name="permissions_notifications_desc">रिमाइंडर सूचनाओं और खोज परिणामों को सूचना पैनल में पिन करने के लिए आवश्यक</string>
     <string name="permissions_notification_access_desc">सूचना बिंदु और सूचना इतिहास सुविधाएं चालू करने के लिए आवश्यक</string>
     <string name="permissions_accessibility_lock_screen_title">सुलभता</string>
-    <string name="permissions_accessibility_lock_screen_desc">डबल-टैप जेस्चर से आपका डिवाइस लॉक किया जा सकता है, और एज स्वाइप जेस्चर व फ़्लोटिंग बटन से Quick Search खोला जा सकता है।</string>
+    <string name="permissions_accessibility_lock_screen_desc">स्क्रीन लॉक करने के लिए डबल-टैप जेस्चर या एज स्वाइप जेस्चर अथवा फ़्लोटिंग बटन से Quick Search लॉन्च करने के लिए आवश्यक।</string>
     <string name="permissions_contacts_desc">आपके कॉन्टैक्ट्स खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_desc">आपके दस्तावेज़ों और अन्य फाइलों में खोजने के लिए आवश्यक।</string>
     <string name="permissions_files_title">फाइल पहुंच</string>

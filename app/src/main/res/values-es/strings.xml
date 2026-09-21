@@ -122,7 +122,7 @@
     <string name="settings_gesture_close_keyboard">Cerrar teclado</string>
     <string name="settings_gesture_notification_panel">Panel de notificaciones</string>
     <string name="accessibility_permission_disclaimer_title">Aviso sobre el permiso de accesibilidad</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search usa la API AccessibilityService de Android únicamente para bloquear el dispositivo cuando tocas dos veces la pantalla de inicio, para mostrar un controlador invisible en el borde de la pantalla que abre Quick Search cuando deslizas sobre él y para mostrar un botón de búsqueda flotante que abre Quick Search cuando lo tocas. Mediante este servicio, Quick Search no lee, recopila, almacena ni comparte el contenido de la pantalla ni otros datos personales.</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search usa Accesibilidad para:\n\n• Activar el gesto de doble toque para bloquear la pantalla.\n• Abrir Quick Search mediante gestos de deslizamiento desde el borde.\n• Abrir Quick Search mediante el botón flotante.\n\nNo lee, recopila, almacena ni comparte el contenido de tu pantalla ni otros datos personales.</string>
     <string name="settings_gesture_none">Ninguno</string>
     <string name="settings_gesture_custom">Personalizado (Apps, archivos, etc.)</string>
     <string name="settings_keyboard_gestures_title">Gestos del teclado (Inicio)</string>
@@ -1049,7 +1049,7 @@
     <string name="permissions_notifications_desc">Necesario para las notificaciones de recordatorios y para fijar resultados de búsqueda en el panel de notificaciones</string>
     <string name="permissions_notification_access_desc">Necesario para activar los puntos de notificación y el historial de notificaciones</string>
     <string name="permissions_accessibility_lock_screen_title">Accesibilidad</string>
-    <string name="permissions_accessibility_lock_screen_desc">Permite que el gesto de doble toque bloquee el dispositivo y que el gesto de deslizar desde el borde y el botón flotante abran Quick Search.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Necesario para el gesto de doble toque para bloquear la pantalla o para iniciar Quick Search con un gesto de deslizar desde el borde o el botón flotante.</string>
     <string name="permissions_contacts_desc">Necesario para buscar tus contactos.</string>
     <string name="permissions_files_desc">Necesario para buscar en tus documentos y otros archivos.</string>
     <string name="permissions_files_title">Acceso a archivos</string>

@@ -122,7 +122,7 @@
 <string name="settings_gesture_close_keyboard">Fermer le clavier</string>
 <string name="settings_gesture_notification_panel">Panneau de notifications</string>
 <string name="accessibility_permission_disclaimer_title">Avis relatif à l’autorisation d’accessibilité</string>
-<string name="accessibility_lock_screen_disclosure_message">Quick Search utilise l’API AccessibilityService d’Android uniquement pour verrouiller votre appareil lorsque vous appuyez deux fois sur l’écran d’accueil, pour afficher une poignée invisible sur le bord de l’écran qui ouvre Quick Search lorsque vous la balayez et pour afficher un bouton de recherche flottant qui ouvre Quick Search lorsque vous appuyez dessus. Par l’intermédiaire de ce service, Quick Search ne lit, ne collecte, ne stocke et ne partage ni le contenu de votre écran ni aucune autre donnée personnelle.</string>
+<string name="accessibility_lock_screen_disclosure_message">Quick Search utilise l’accessibilité pour :\n\n• Activer le geste de double appui pour verrouiller l’écran.\n• Ouvrir Quick Search avec des gestes de balayage depuis le bord.\n• Ouvrir Quick Search avec le bouton flottant.\n\nIl ne lit, ne collecte, ne stocke et ne partage ni le contenu de votre écran ni aucune autre donnée personnelle.</string>
 <string name="settings_gesture_none">Aucun</string>
 <string name="settings_gesture_custom">Personnalisé (Applications, fichiers, etc.)</string>
 <string name="settings_keyboard_gestures_title">Gestes du clavier (Accueil)</string>
@@ -1049,7 +1049,7 @@
     <string name="permissions_notifications_desc">Requis pour les notifications de rappels et pour épingler des résultats de recherche dans le volet des notifications</string>
     <string name="permissions_notification_access_desc">Requis pour activer les pastilles de notification et l\'historique des notifications</string>
 <string name="permissions_accessibility_lock_screen_title">Accessibilité</string>
-<string name="permissions_accessibility_lock_screen_desc">Permet au geste de double appui de verrouiller votre appareil, et au geste de balayage depuis le bord ainsi qu’au bouton flottant d’ouvrir Quick Search.</string>
+<string name="permissions_accessibility_lock_screen_desc">Nécessaire pour le geste de double appui afin de verrouiller l’écran, ou pour lancer Quick Search avec le geste de balayage depuis le bord ou le bouton flottant.</string>
 <string name="permissions_contacts_desc">Requis pour rechercher vos contacts.</string>
 <string name="permissions_files_desc">Requis pour rechercher parmi vos documents et autres fichiers.</string>
 <string name="permissions_files_title">Accès aux fichiers</string>

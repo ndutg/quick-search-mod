@@ -122,7 +122,7 @@
 <string name="settings_gesture_close_keyboard">Закрыть клавиатуру</string>
 <string name="settings_gesture_notification_panel">Панель уведомлений</string>
 <string name="accessibility_permission_disclaimer_title">Уведомление о разрешении специальных возможностей</string>
-<string name="accessibility_lock_screen_disclosure_message">Quick Search использует API AccessibilityService Android только для блокировки устройства при двойном нажатии на главный экран, для отображения невидимой области у края экрана, которая открывает Quick Search при смахивании по ней, и для отображения плавающей кнопки поиска, которая открывает Quick Search при нажатии. Через эту службу Quick Search не читает, не собирает, не хранит и не передает содержимое экрана или другие персональные данные.</string>
+<string name="accessibility_lock_screen_disclosure_message">Quick Search использует специальные возможности, чтобы:\n\n• Включать жест двойного нажатия для блокировки экрана.\n• Открывать Quick Search жестами смахивания от края.\n• Открывать Quick Search с помощью плавающей кнопки.\n\nОн не читает, не собирает, не хранит и не передает содержимое экрана или другие персональные данные.</string>
 <string name="settings_gesture_none">Нет</string>
 <string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
 <string name="settings_keyboard_gestures_title">Жесты клавиатуры (Главный экран)</string>
@@ -1069,7 +1069,7 @@
     <string name="permissions_notifications_desc">Требуется для уведомлений о напоминаниях и закрепления результатов поиска на панели уведомлений</string>
     <string name="permissions_notification_access_desc">Требуется для значков уведомлений и истории уведомлений</string>
 <string name="permissions_accessibility_lock_screen_title">Специальные возможности</string>
-<string name="permissions_accessibility_lock_screen_desc">Позволяет блокировать устройство с помощью жеста двойного нажатия и открывать Quick Search жестом смахивания от края или плавающей кнопкой.</string>
+<string name="permissions_accessibility_lock_screen_desc">Требуется для жеста двойного нажатия, чтобы заблокировать экран, или для запуска Quick Search жестом смахивания от края либо плавающей кнопкой.</string>
 <string name="permissions_contacts_desc">Требуется для поиска по вашим контактам.</string>
 <string name="permissions_files_desc">Требуется для поиска по вашим документам и другим файлам.</string>
 <string name="permissions_files_title">Доступ к файлам</string>

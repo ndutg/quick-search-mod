@@ -122,7 +122,7 @@
     <string name="settings_gesture_close_keyboard">Fechar teclado</string>
     <string name="settings_gesture_notification_panel">Painel de notificações</string>
     <string name="accessibility_permission_disclaimer_title">Aviso sobre a permissão de acessibilidade</string>
-    <string name="accessibility_lock_screen_disclosure_message">O Quick Search usa a API AccessibilityService do Android somente para bloquear seu dispositivo quando você toca duas vezes na tela inicial, para mostrar uma alça invisível na borda da tela que abre o Quick Search quando você desliza sobre ela e para mostrar um botão de pesquisa flutuante que abre o Quick Search quando você toca nele. Por meio desse serviço, o Quick Search não lê, coleta, armazena nem compartilha o conteúdo da tela ou outros dados pessoais.</string>
+    <string name="accessibility_lock_screen_disclosure_message">O Quick Search usa a Acessibilidade para:\n\n• Ativar o gesto de toque duplo para bloquear a tela.\n• Abrir o Quick Search com gestos de deslizar pela borda.\n• Abrir o Quick Search com o botão flutuante.\n\nEle não lê, coleta, armazena nem compartilha o conteúdo da tela ou outros dados pessoais.</string>
     <string name="settings_gesture_none">Nenhum</string>
     <string name="settings_gesture_custom">Personalizado (Apps, arquivos etc.)</string>
     <string name="settings_keyboard_gestures_title">Gestos do teclado (Início)</string>
@@ -1049,7 +1049,7 @@
     <string name="permissions_notifications_desc">Necessário para notificações de lembretes e para fixar resultados de pesquisa no painel de notificações</string>
     <string name="permissions_notification_access_desc">Necessário para ativar os pontos de notificação e o histórico de notificações</string>
     <string name="permissions_accessibility_lock_screen_title">Acessibilidade</string>
-    <string name="permissions_accessibility_lock_screen_desc">Permite que o gesto de toque duplo bloqueie seu dispositivo e que o gesto de deslizar da borda e o botão flutuante abram o Quick Search.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Necessário para o gesto de toque duplo bloquear a tela ou para iniciar o Quick Search com o gesto de deslizar da borda ou o botão flutuante.</string>
     <string name="permissions_contacts_desc">Necessário para pesquisar seus contatos.</string>
     <string name="permissions_files_desc">Necessário para pesquisar em seus documentos e outros arquivos.</string>
     <string name="permissions_files_title">Acesso aos arquivos</string>

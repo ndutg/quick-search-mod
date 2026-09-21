@@ -127,7 +127,7 @@
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
     <string name="accessibility_lock_screen_service_description">Umożliwia aplikacji Quick Search blokowanie ekranu za pomocą gestu dwukrotnego dotknięcia na ekranie głównym oraz otwieranie jej przesunięciem od krawędzi lub pływającym przyciskiem w dowolnej aplikacji. Nie odczytuje zawartości ekranu.</string>
     <string name="accessibility_permission_disclaimer_title">Informacja o uprawnieniu ułatwień dostępu</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search korzysta z interfejsu AccessibilityService API wyłącznie do blokowania urządzenia po dwukrotnym dotknięciu ekranu głównego, do wyświetlania niewidocznego uchwytu przy krawędzi ekranu, który otwiera Quick Search po przesunięciu na nim palcem, oraz do wyświetlania pływającego przycisku wyszukiwania, który otwiera Quick Search po dotknięciu. Za pośrednictwem tej usługi Quick Search nie odczytuje, nie gromadzi, nie przechowuje ani nie udostępnia zawartości ekranu ani innych danych osobowych.</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search używa ułatwień dostępu, aby:\n\n• włączyć gest dwukrotnego dotknięcia do blokowania ekranu.\n• otwierać Quick Search gestami przesunięcia od krawędzi.\n• otwierać Quick Search pływającym przyciskiem.\n\nNie odczytuje, nie gromadzi, nie przechowuje ani nie udostępnia zawartości ekranu ani innych danych osobowych.</string>
     <string name="settings_gesture_none">Brak</string>
     <string name="settings_gesture_custom">Własne (Aplikacje, Pliki itp.)</string>
     <string name="settings_keyboard_gestures_title">Gesty klawiatury (Ekran główny)</string>
@@ -1084,7 +1084,7 @@ www.google.com/search?q={{query}}</string>
     <string name="permissions_notifications_desc">Wymagane do powiadomień o przypomnieniach i przypinania wyników wyszukiwania w panelu powiadomień</string>
     <string name="permissions_notification_access_desc">Wymagane do włączenia kropek powiadomień i historii powiadomień</string>
     <string name="permissions_accessibility_lock_screen_title">Ułatwienia dostępu</string>
-    <string name="permissions_accessibility_lock_screen_desc">Umożliwia blokowanie urządzenia za pomocą gestu dwukrotnego dotknięcia oraz otwieranie Quick Search gestem przesunięcia od krawędzi lub pływającym przyciskiem.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Wymagane do gestu podwójnego stuknięcia w celu zablokowania ekranu lub uruchamiania Quick Search gestem przesunięcia od krawędzi albo pływającym przyciskiem.</string>
     <string name="permissions_contacts_desc">Wymagane do wyszukiwania kontaktów.</string>
     <string name="permissions_files_desc">Wymagane do przeszukiwania dokumentów i innych plików.</string>
     <string name="permissions_files_title">Dostęp do plików</string>

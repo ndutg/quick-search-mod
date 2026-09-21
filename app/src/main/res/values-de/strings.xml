@@ -122,7 +122,7 @@
     <string name="settings_gesture_close_keyboard">Tastatur schließen</string>
     <string name="settings_gesture_notification_panel">Benachrichtigungsleiste</string>
     <string name="accessibility_permission_disclaimer_title">Hinweis zur Berechtigung für Bedienungshilfen</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search verwendet die AccessibilityService API von Android ausschließlich, um dein Gerät zu sperren, wenn du zweimal auf den Startbildschirm tippst, um einen unsichtbaren Griff am Bildschirmrand anzuzeigen, der Quick Search öffnet, wenn du darauf wischst, und um eine schwebende Suchschaltfläche anzuzeigen, die Quick Search öffnet, wenn du darauf tippst. Quick Search liest, erfasst, speichert oder teilt über diesen Dienst weder Bildschirminhalte noch andere personenbezogene Daten.</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search verwendet die Bedienungshilfe, um:\n\n• die Doppeltipp-Geste zum Sperren des Bildschirms zu aktivieren.\n• Quick Search mit Wischgesten vom Bildschirmrand zu öffnen.\n• Quick Search über die schwebende Schaltfläche zu öffnen.\n\nEs liest, erfasst, speichert oder teilt weder deine Bildschirminhalte noch andere persönliche Daten.</string>
     <string name="settings_gesture_none">Keine</string>
     <string name="settings_gesture_custom">Benutzerdefiniert (Apps, Dateien usw.)</string>
     <string name="settings_keyboard_gestures_title">Tastaturgesten (Startseite)</string>
@@ -1049,7 +1049,7 @@
     <string name="permissions_notifications_desc">Erforderlich für Erinnerungsbenachrichtigungen und um Suchergebnisse im Benachrichtigungsfeld anzuheften</string>
     <string name="permissions_notification_access_desc">Erforderlich für Benachrichtigungspunkte und den Benachrichtigungsverlauf</string>
     <string name="permissions_accessibility_lock_screen_title">Bedienungshilfen</string>
-    <string name="permissions_accessibility_lock_screen_desc">Ermöglicht es, das Gerät mit der Doppeltipp-Geste zu sperren und Quick Search mit der Wischgeste vom Rand oder der schwebenden Schaltfläche zu öffnen.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Erforderlich für die Doppeltipp-Geste zum Sperren des Bildschirms sowie zum Starten von Quick Search per Wischgeste vom Rand oder schwebender Schaltfläche.</string>
     <string name="permissions_contacts_desc">Erforderlich, um Kontakte zu durchsuchen.</string>
     <string name="permissions_files_desc">Erforderlich, um Dokumente und andere Dateien zu durchsuchen.</string>
     <string name="permissions_files_title">Dateizugriff</string>
