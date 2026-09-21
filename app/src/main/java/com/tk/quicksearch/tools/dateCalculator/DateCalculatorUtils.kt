@@ -296,6 +296,17 @@ object DateCalculatorUtils {
     }
 
     /**
+     * Parses a relative-time expression at the end of a reminder-style query, such as
+     * "Laundry in 1 hr". This is deliberately separate from [parseTimeArithmeticQuery], whose
+     * bare-duration support should remain restricted to standalone calculator queries.
+     */
+    fun parseTrailingTimeArithmeticQuery(query: String): TimeResult? {
+        val expressionStart = query.lowercase(Locale.US).lastIndexOf(" in ")
+        if (expressionStart <= 0) return null
+        return parseTimeArithmeticQuery(query.substring(expressionStart + 1))
+    }
+
+    /**
      * Parses an absolute time reference like "5am", "5:00 AM", "14:30" and returns both
      * the past occurrence and the next future occurrence as a pair (past, future).
      *

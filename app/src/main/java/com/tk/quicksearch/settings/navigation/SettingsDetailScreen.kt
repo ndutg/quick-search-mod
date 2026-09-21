@@ -301,6 +301,9 @@ internal fun SettingsDetailLevel1Screen(
                             onNavigateToNotes = {
                                 onNavigateToDetail(SettingsDetailType.NOTES)
                             },
+                            onNavigateToReminders = {
+                                onNavigateToDetail(SettingsDetailType.REMINDERS)
+                            },
                         )
                     }
 
@@ -599,6 +602,7 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.APP_SHORTCUTS,
                     SettingsDetailType.DEVICE_SETTINGS,
                     SettingsDetailType.CALENDAR_EVENTS,
+                    SettingsDetailType.REMINDERS,
                     SettingsDetailType.NOTES,
                     SettingsDetailType.NOTE_EDITOR,
                     SettingsDetailType.CALLS_TEXTS,

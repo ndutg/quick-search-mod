@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Tune
@@ -90,7 +91,7 @@ fun SettingsExportDialog(
                             onSelectionStateChange(selectionState.copy(includeNotes = it))
                         },
                         icon = Icons.Rounded.Description,
-                        isLastItem = !selectionState.showCalendarEventsOption && !selectionState.showApiKeysOption,
+                        isLastItem = !selectionState.showCalendarEventsOption && !selectionState.showRemindersOption && !selectionState.showApiKeysOption,
                     )
                 }
                 if (selectionState.showCalendarEventsOption) {
@@ -102,6 +103,18 @@ fun SettingsExportDialog(
                             onSelectionStateChange(selectionState.copy(includeCalendarEvents = it))
                         },
                         icon = Icons.Rounded.CalendarMonth,
+                        isLastItem = !selectionState.showRemindersOption && !selectionState.showApiKeysOption,
+                    )
+                }
+                if (selectionState.showRemindersOption) {
+                    SettingsCheckboxRow(
+                        title = stringResource(R.string.section_reminders),
+                        description = "",
+                        checked = selectionState.includeReminders,
+                        onCheckedChange = {
+                            onSelectionStateChange(selectionState.copy(includeReminders = it))
+                        },
+                        icon = Icons.Rounded.NotificationsActive,
                         isLastItem = !selectionState.showApiKeysOption,
                     )
                 }
@@ -144,10 +157,12 @@ data class ExportSelectionState(
     val includePinnedItems: Boolean = true,
     val includeNotes: Boolean = true,
     val includeCalendarEvents: Boolean = true,
+    val includeReminders: Boolean = true,
     val includeApiKeys: Boolean = false,
     val showPinnedItemsOption: Boolean = true,
     val showNotesOption: Boolean = true,
     val showCalendarEventsOption: Boolean = false,
+    val showRemindersOption: Boolean = false,
     val showApiKeysOption: Boolean = false,
 ) {
     fun toExportOptions(): SettingsBackupManager.ExportOptions {
@@ -159,6 +174,7 @@ data class ExportSelectionState(
             add(SettingsBackupManager.ExportItem.SHORTCUTS)
             if (includeNotes) add(SettingsBackupManager.ExportItem.NOTES)
             if (includeCalendarEvents) add(SettingsBackupManager.ExportItem.CALENDAR_EVENTS)
+            if (includeReminders) add(SettingsBackupManager.ExportItem.REMINDERS)
             if (includeApiKeys && showApiKeysOption) add(SettingsBackupManager.ExportItem.API_KEYS)
         }
         return SettingsBackupManager.ExportOptions(selectedItems = items)

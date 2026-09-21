@@ -1183,6 +1183,7 @@ fun SearchResultsSettingsSection(
     onNavigateToDeviceSettings: () -> Unit,
     onNavigateToCalendarEvents: () -> Unit,
     onNavigateToNotes: () -> Unit,
+    onNavigateToReminders: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val context = LocalView.current.context
@@ -1273,6 +1274,8 @@ fun SearchResultsSettingsSection(
             notesSubtitle = stringResource(R.string.settings_notes_view_all_desc),
             onNotesClick = onNavigateToNotes,
             onNotesClickNoRipple = true,
+            remindersSubtitle = stringResource(R.string.settings_reminders_view_all_desc),
+            onRemindersClick = onNavigateToReminders,
             sectionsWithHiddenAlias = buildSet {
                 if (!hasContactPermission) add(SearchSection.CONTACTS)
                 if (!hasFilePermission) add(SearchSection.FILES)

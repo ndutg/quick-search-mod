@@ -22,6 +22,7 @@ import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Icon
@@ -180,6 +181,17 @@ internal fun StartTimerPill(
 ) = ClockActionPill(
     icon = Icons.Rounded.Timer,
     label = stringResource(R.string.start_timer_action_label),
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+internal fun CreateReminderPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = ClockActionPill(
+    icon = Icons.Rounded.Notifications,
+    label = stringResource(R.string.app_setting_create_reminder),
     onClick = onClick,
     modifier = modifier,
 )
