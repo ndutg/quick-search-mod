@@ -15,6 +15,8 @@ data class PanelWidgetInfo(
     val row: Int? = null,
     val columnSpan: Int? = null,
     val rowSpan: Int? = null,
+    /** False after a Home-pinned widget is removed from the widgets panel. */
+    val isInPanel: Boolean = true,
     /** Home placement; null when the widget is only in the widgets panel. */
     val home: HomeWidgetPlacement? = null,
 )
@@ -69,6 +71,7 @@ class WidgetsPanelPreferences(
                                 row = item.optGridInt(FIELD_ROW),
                                 columnSpan = item.optGridInt(FIELD_COLUMN_SPAN),
                                 rowSpan = item.optGridInt(FIELD_ROW_SPAN),
+                                isInPanel = item.optBoolean(FIELD_IS_IN_PANEL, true),
                                 home = item.optJSONObject(FIELD_HOME)?.toHomePlacement(),
                             ),
                         )
@@ -93,6 +96,7 @@ class WidgetsPanelPreferences(
                         widget.row?.let { put(FIELD_ROW, it) }
                         widget.columnSpan?.let { put(FIELD_COLUMN_SPAN, it) }
                         widget.rowSpan?.let { put(FIELD_ROW_SPAN, it) }
+                        if (!widget.isInPanel) put(FIELD_IS_IN_PANEL, false)
                         widget.home?.let { put(FIELD_HOME, it.toJson()) }
                     },
             )
@@ -142,7 +146,16 @@ class WidgetsPanelPreferences(
     }
 
     fun removeWidget(appWidgetId: Int): List<PanelWidgetInfo> {
-        val next = getWidgets().filterNot { it.appWidgetId == appWidgetId }
+        val next =
+            getWidgets().mapNotNull { widget ->
+                if (widget.appWidgetId != appWidgetId) {
+                    widget
+                } else if (widget.home != null) {
+                    widget.copy(isInPanel = false)
+                } else {
+                    null
+                }
+            }
         setWidgets(next)
         return next
     }
@@ -163,6 +176,7 @@ class WidgetsPanelPreferences(
 
     private companion object {
         const val KEY_WIDGETS_PANEL_ITEMS = "widgets_panel_items"
+        const val FIELD_IS_IN_PANEL = "isInPanel"
         const val FIELD_APP_WIDGET_ID = "appWidgetId"
         const val FIELD_PROVIDER_PACKAGE = "providerPackage"
         const val FIELD_PROVIDER_CLASS = "providerClassName"

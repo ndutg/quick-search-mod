@@ -51,7 +51,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -240,7 +240,11 @@ fun WidgetsPanelScreen(
             quickNoteWidget = quickNote
             preferences.setQuickNoteWidget(quickNote)
         }
-        persistWidgets(next.filterNot { it.isQuickNoteWidget() })
+        // Home-only widgets are intentionally absent from the panel grid, so preserve them while
+        // saving a panel reorder, resize, or other layout update.
+        persistWidgets(
+            widgets.filterNot { it.isInPanel } + next.filterNot { it.isQuickNoteWidget() },
+        )
     }
 
     fun finalizeAddWidget(request: PendingWidgetRequest) {
@@ -486,7 +490,8 @@ fun WidgetsPanelScreen(
                     },
                 )
 
-                val isQuickNoteSolo = isQuickNoteEnabled && widgets.isEmpty()
+                val panelWidgets = widgets.filter { it.isInPanel }
+                val isQuickNoteSolo = isQuickNoteEnabled && panelWidgets.isEmpty()
                 if (isQuickNoteSolo) {
                     Box(
                         modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -550,7 +555,7 @@ fun WidgetsPanelScreen(
                         val panelItems =
                             buildList {
                                 if (isQuickNoteEnabled) add(quickNoteWidget)
-                                addAll(widgets)
+                                addAll(panelWidgets)
                             }
                         if (panelItems.isNotEmpty() && showHostedWidgets) {
                             WidgetPanelGrid(
@@ -584,7 +589,9 @@ fun WidgetsPanelScreen(
                                         notesPreferences.setQuickNoteEnabled(false)
                                         isQuickNoteEnabled = false
                                     } else {
-                                        appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
+                                        if (widget.home == null) {
+                                            appWidgetHost.deleteAppWidgetId(widget.appWidgetId)
+                                        }
                                         persistWidgets(
                                             preferences.removeWidget(widget.appWidgetId),
                                         )
@@ -1351,7 +1358,7 @@ private fun BoxScope.WidgetEditOverlay(
 }
 
 /**
- * Edit badges grouped at the widget's top-end corner, ordered Pin, Settings, Remove. Unavailable
+ * Edit badges grouped at the widget's top-end corner, ordered Home, Settings, Remove. Unavailable
  * actions are omitted so the remaining badges stay packed against the corner.
  */
 @Composable
@@ -1369,7 +1376,7 @@ internal fun BoxScope.WidgetEditActionButtons(
     ) {
         onPinToHome?.let { onClick ->
             WidgetActionButton(
-                icon = Icons.Rounded.PushPin,
+                icon = Icons.Rounded.Home,
                 tint = MaterialTheme.colorScheme.onPrimary,
                 background = MaterialTheme.colorScheme.primary,
                 onClick = onClick,
