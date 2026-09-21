@@ -525,7 +525,6 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">新しい予定を作成して追加</string>
     <string name="app_settings_create_calendar_event_title">新しいカレンダーの予定</string>
-    <string name="agenda_title">本日の予定</string>
     <string name="calendar_create_event_name_hint">予定名</string>
     <string name="calendar_create_event_select_date">日付を選択</string>
     <string name="calendar_create_event_sync_notice">この予定は端末のカレンダーには同期されません</string>
@@ -811,6 +810,12 @@
     <string name="settings_tools_gemini_api_title">AIプロバイダーを設定</string>
     <string name="settings_tools_info_examples_header">検索バーに入力できる質問の例です</string>
     <string name="settings_tools_title">ツール</string>
+    <string name="settings_at_a_glance_title">ひと目で確認</string>
+    <string name="settings_at_a_glance_desc">適切なタイミングでホーム画面に表示される便利な情報</string>
+    <string name="settings_at_a_glance_alarms_title">アラーム</string>
+    <string name="settings_upcoming_alarm_desc">45分以内に鳴る次のアラーム</string>
+    <string name="settings_at_a_glance_events_desc">今日の予定</string>
+    <string name="settings_upcoming_reminders_desc">30分以内に期限が来る、または期限切れのリマインダー</string>
     <string name="settings_use_system_font_desc">端末のフォントスタイルに従う</string>
     <string name="settings_use_system_font_title">システムフォントを使用</string>
     <string name="settings_accent_color_from_wallpaper">壁紙</string>

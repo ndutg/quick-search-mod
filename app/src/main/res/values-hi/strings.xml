@@ -516,7 +516,6 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">नया इवेंट बनाएं और जोड़ें</string>
     <string name="app_settings_create_calendar_event_title">नया कैलेंडर इवेंट</string>
-    <string name="agenda_title">आज का एजेंडा</string>
     <string name="calendar_create_event_name_hint">इवेंट नाम</string>
     <string name="calendar_create_event_select_date">तारीख चुनें</string>
     <string name="calendar_create_event_sync_notice">यह इवेंट आपके डिवाइस कैलेंडर से सिंक नहीं होगा</string>
@@ -801,6 +800,12 @@
     <string name="settings_tools_gemini_api_title">AI Provider कॉन्फ़िगर करें</string>
     <string name="settings_tools_info_examples_header">यहां कुछ उदाहरण हैं जिन्हें आप सर्च बार में पूछ सकते हैं</string>
     <string name="settings_tools_title">टूल्स</string>
+    <string name="settings_at_a_glance_title">एक नज़र में</string>
+    <string name="settings_at_a_glance_desc">उपयोगी जानकारी जो सही समय पर आपकी होम स्क्रीन पर दिखती है</string>
+    <string name="settings_at_a_glance_alarms_title">अलार्म</string>
+    <string name="settings_upcoming_alarm_desc">45 मिनट के भीतर होने पर आपका अगला अलार्म</string>
+    <string name="settings_at_a_glance_events_desc">आज के इवेंट्स</string>
+    <string name="settings_upcoming_reminders_desc">30 मिनट के भीतर देय या बकाया रिमाइंडर</string>
     <string name="settings_use_system_font_desc">अपने डिवाइस की फ़ॉन्ट शैली का पालन करें</string>
     <string name="settings_use_system_font_title">सिस्टम फ़ॉन्ट उपयोग करें</string>
     <string name="settings_accent_color_from_wallpaper">वॉलपेपर</string>

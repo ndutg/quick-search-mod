@@ -43,6 +43,7 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Swipe
+import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.Upload
@@ -311,6 +312,16 @@ fun SettingsScreen(
                             icon = Icons.Rounded.Build,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.TOOLS)
+                            },
+                        ),
+                    )
+                    add(
+                        SettingsCardItem(
+                            title = stringResource(R.string.settings_at_a_glance_title),
+                            description = stringResource(R.string.settings_at_a_glance_desc),
+                            icon = Icons.Rounded.Today,
+                            actionOnPress = {
+                                onNavigateToDetail(SettingsDetailType.AT_A_GLANCE)
                             },
                         ),
                     )

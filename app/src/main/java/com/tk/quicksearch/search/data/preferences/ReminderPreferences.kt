@@ -6,6 +6,12 @@ import android.content.Context
 class ReminderPreferences(
     context: Context,
 ) : BasePreferences(context) {
+    fun isShowUpcomingRemindersEnabled(): Boolean =
+        getBooleanPref(BasePreferences.KEY_HOME_SHOW_UPCOMING_REMINDERS, true)
+
+    fun setShowUpcomingRemindersEnabled(enabled: Boolean) =
+        setBooleanPref(BasePreferences.KEY_HOME_SHOW_UPCOMING_REMINDERS, enabled)
+
     fun getRemindersJson(): String = prefs.getString(BasePreferences.KEY_REMINDERS_DATA, null).orEmpty()
 
     fun setRemindersJson(json: String) {

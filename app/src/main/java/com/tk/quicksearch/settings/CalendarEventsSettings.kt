@@ -132,7 +132,6 @@ fun CalendarEventsSettingsSection(
     val calendarPreferences = remember(context) { CalendarPreferences(context) }
     var hasPermission by remember { mutableStateOf(calendarRepository.hasPermission()) }
     var selectedEventGroupForSheet by remember { mutableStateOf<CalendarEventGroup?>(null) }
-    var showTodayEvents by remember { mutableStateOf(calendarPreferences.getShowTodayEvents()) }
     var includePastEvents by remember { mutableStateOf(calendarPreferences.getIncludePastEvents()) }
     var defaultCalendarPackage by remember { mutableStateOf(calendarPreferences.getDefaultCalendarPackage()) }
     var showDefaultCalendarDialog by remember { mutableStateOf(false) }
@@ -239,17 +238,6 @@ fun CalendarEventsSettingsSection(
                     ),
             )
             HorizontalDivider(color = AppColors.SettingsDivider)
-            SettingsToggleRow(
-                title = stringResource(R.string.settings_calendar_show_today_events_title),
-                subtitle = stringResource(R.string.settings_calendar_show_today_events_desc),
-                checked = showTodayEvents,
-                onCheckedChange = { enabled ->
-                    showTodayEvents = enabled
-                    calendarPreferences.setShowTodayEvents(enabled)
-                },
-                isFirstItem = false,
-                isLastItem = false,
-            )
             SettingsToggleRow(
                 title = stringResource(R.string.settings_calendar_include_past_events_title),
                 subtitle = stringResource(R.string.settings_calendar_include_past_events_desc),

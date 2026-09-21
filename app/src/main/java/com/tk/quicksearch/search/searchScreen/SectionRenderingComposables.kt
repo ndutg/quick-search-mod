@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +28,8 @@ import com.tk.quicksearch.search.reminders.RemindersResultsSection
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.AtAGlanceCardShell
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.AtAGlanceTitle
 import com.tk.quicksearch.app.startup.StartupTrace
 import kotlinx.coroutines.delay
 
@@ -385,18 +388,23 @@ private fun renderCalendarSection(
     }
     val visibleTodayCalendarEvents =
         context.todayCalendarEventsList.filter { event -> event.allDay || event.endMillis >= nowMillis }
+    val atAGlanceContent = context.atAGlanceContent
+    if (context.isHomeScreenCalendarMode && visibleTodayCalendarEvents.isEmpty() && atAGlanceContent != null) {
+        // Today's events have all ended, so the remaining At a Glance rows get a card of their own.
+        if (!context.hideHomeSectionTitleRows) {
+            AtAGlanceTitle()
+        }
+        AtAGlanceCardShell(showWallpaperBackground = calendarParams.showWallpaperBackground) {
+            atAGlanceContent(false, false)
+        }
+    }
     if (context.shouldRenderCalendar || visibleTodayCalendarEvents.isNotEmpty()) {
         if (context.isHomeScreenCalendarMode || visibleTodayCalendarEvents.isNotEmpty()) {
             LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.CalendarRendered") }
         }
         if (context.isHomeScreenCalendarMode && visibleTodayCalendarEvents.isNotEmpty()) {
             if (!calendarParams.isExpanded && !context.hideHomeSectionTitleRows) {
-                Text(
-                    text = stringResource(R.string.agenda_title),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = homeTextColor(),
-                    modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
-                )
+                AtAGlanceTitle()
             }
             CalendarEventsSection(
                 events = visibleTodayCalendarEvents,
@@ -425,6 +433,8 @@ private fun renderCalendarSection(
                 showPinnedItemMenu = false,
                 collapsedEvents = visibleTodayCalendarEvents,
                 allowInternalScroll = true,
+                glanceContent = context.atAGlanceContent,
+                glanceContentFirst = context.atAGlanceContentFirst,
             )
         }
         if (context.calendarEventsList.isEmpty() && context.isHomeScreenCalendarMode) return

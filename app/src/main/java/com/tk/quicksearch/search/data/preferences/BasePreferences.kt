@@ -498,6 +498,7 @@ abstract class BasePreferences(
 
         // Reminders preferences keys
         const val KEY_REMINDERS_DATA = "reminders_data"
+        const val KEY_HOME_SHOW_UPCOMING_REMINDERS = "home_show_upcoming_reminders"
         const val KEY_REMINDER_ID_COUNTER = "reminder_id_counter"
         const val KEY_PINNED_REMINDER_IDS = "pinned_reminder_ids"
         const val KEY_PINNED_REMINDER_ORDER = "pinned_reminder_order"

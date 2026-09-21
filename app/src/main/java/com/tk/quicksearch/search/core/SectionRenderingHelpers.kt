@@ -668,4 +668,7 @@ data class SectionRenderContext(
     val isSectionAliasMode: Boolean = false,
     val isHomeScreenCalendarMode: Boolean = false,
     val hideHomeSectionTitleRows: Boolean = false,
+    // Home At a Glance rows hosted inside the today's events card; see CalendarEventsSection.
+    val atAGlanceContent: (@Composable (dividerBefore: Boolean, dividerAfter: Boolean) -> Unit)? = null,
+    val atAGlanceContentFirst: Boolean = true,
 )

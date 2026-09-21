@@ -923,6 +923,10 @@ internal fun SettingsDetailLevel2Screen(
                             GesturesSettingsSection(modifier = Modifier.fillMaxWidth())
                         }
 
+                        SettingsDetailType.AT_A_GLANCE -> {
+                            AtAGlanceSettingsSection(modifier = Modifier.fillMaxWidth())
+                        }
+
                         SettingsDetailType.EDGE_GESTURE -> {
                             EdgeGestureSettingsSection(modifier = Modifier.fillMaxWidth())
                         }

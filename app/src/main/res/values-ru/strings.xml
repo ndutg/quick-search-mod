@@ -518,7 +518,6 @@
      ============================================================================ -->
 <string name="app_settings_create_calendar_event_desc">Создать и добавить новое событие</string>
 <string name="app_settings_create_calendar_event_title">Новое событие календаря</string>
-<string name="agenda_title">Расписание на сегодня</string>
 <string name="calendar_create_event_name_hint">Название события</string>
 <string name="calendar_create_event_select_date">Выберите дату</string>
 <string name="calendar_create_event_sync_notice">Это событие не будет синхронизировано с системным календарем вашего устройства</string>
@@ -821,6 +820,12 @@
 <string name="settings_tools_gemini_api_title">Настройка AI-провайдера</string>
 <string name="settings_tools_info_examples_header">Вот несколько примеров того, что можно ввести в поисковой строке</string>
 <string name="settings_tools_title">Инструменты</string>
+<string name="settings_at_a_glance_title">Кратко</string>
+<string name="settings_at_a_glance_desc">Полезная информация, которая появляется на главном экране в нужное время</string>
+<string name="settings_at_a_glance_alarms_title">Будильники</string>
+<string name="settings_upcoming_alarm_desc">Следующий будильник, если он сработает в течение 45 минут</string>
+<string name="settings_at_a_glance_events_desc">Сегодняшние события</string>
+<string name="settings_upcoming_reminders_desc">Напоминания со сроком в течение 30 минут или просроченные</string>
 <string name="settings_use_system_font_desc">Использовать системный стиль шрифта вашего устройства</string>
 <string name="settings_use_system_font_title">Системный шрифт</string>
 <string name="settings_accent_color_from_wallpaper">Обои</string>

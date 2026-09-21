@@ -517,7 +517,6 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Create and add a new event</string>
     <string name="app_settings_create_calendar_event_title">New Calendar Event</string>
-    <string name="agenda_title">Today\'s Agenda</string>
     <string name="calendar_create_event_name_hint">Event name</string>
     <string name="calendar_create_event_select_date">Select date</string>
     <string name="calendar_create_event_sync_notice">This event won\'t sync to your device calendar</string>
@@ -803,6 +802,12 @@
     <string name="settings_tools_gemini_api_title">Configure AI Provider</string>
     <string name="settings_tools_info_examples_header">Here are some examples of things you can ask in the search bar</string>
     <string name="settings_tools_title">Tools</string>
+    <string name="settings_at_a_glance_title">At a Glance</string>
+    <string name="settings_at_a_glance_desc">Useful information that appears on your home screen at relevant times</string>
+    <string name="settings_at_a_glance_alarms_title">Alarms</string>
+    <string name="settings_upcoming_alarm_desc">Your next alarm when it\'s within 45 minutes</string>
+    <string name="settings_at_a_glance_events_desc">Today\'s events</string>
+    <string name="settings_upcoming_reminders_desc">Reminders due within 30 minutes or overdue</string>
     <string name="settings_use_system_font_desc">Follow your device font style</string>
     <string name="settings_use_system_font_title">Use System Font</string>
     <string name="settings_accent_color_from_wallpaper">Wallpaper</string>

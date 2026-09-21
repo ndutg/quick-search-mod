@@ -9,6 +9,7 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.SEARCH_RESULTS -> SettingsDetailType.SEARCH_RESULTS
         AppSettingsDestination.SEARCH_ENGINES -> SettingsDetailType.SEARCH_ENGINES
         AppSettingsDestination.TOOLS -> SettingsDetailType.TOOLS
+        AppSettingsDestination.AT_A_GLANCE -> SettingsDetailType.AT_A_GLANCE
         AppSettingsDestination.TASKER_INTEGRATION -> SettingsDetailType.TASKER_INTEGRATION
         AppSettingsDestination.LAUNCH_OPTIONS -> SettingsDetailType.LAUNCH_OPTIONS
         AppSettingsDestination.EDGE_GESTURE -> SettingsDetailType.EDGE_GESTURE

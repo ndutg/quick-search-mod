@@ -16,6 +16,7 @@ enum class AppSettingsDestination {
     SEARCH_RESULT_RANKING,
     SEARCH_ENGINES,
     TOOLS,
+    AT_A_GLANCE,
     TASKER_INTEGRATION,
     LAUNCH_OPTIONS,
     EDGE_GESTURE,

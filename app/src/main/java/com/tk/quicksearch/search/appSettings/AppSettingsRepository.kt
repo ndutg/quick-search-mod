@@ -82,6 +82,13 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.TOOLS,
                 keywords = listOf("calculator", "date", "time", "unit converter", "currency converter", "conversion", "alias"),
             )
+            addNavigation(
+                id = "app_settings_at_a_glance",
+                titleRes = R.string.settings_at_a_glance_title,
+                descriptionRes = R.string.settings_at_a_glance_desc,
+                destination = AppSettingsDestination.AT_A_GLANCE,
+                keywords = listOf("today", "calendar", "events", "alarm", "reminders", "home"),
+            )
             if (isTaskerInstalled()) {
                 addNavigation(
                     id = "app_settings_tasker_integration",

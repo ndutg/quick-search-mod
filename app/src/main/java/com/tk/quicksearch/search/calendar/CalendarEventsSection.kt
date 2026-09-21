@@ -101,6 +101,10 @@ fun CalendarEventsSection(
     showPinnedItemMenu: Boolean = false,
     collapsedEvents: List<CalendarEventInfo>? = null,
     allowInternalScroll: Boolean = true,
+    // Extra home At a Glance rows (alarm, reminders, ...) shown in this card while collapsed, above
+    // the events when [glanceContentFirst] and below them otherwise.
+    glanceContent: (@Composable (dividerBefore: Boolean, dividerAfter: Boolean) -> Unit)? = null,
+    glanceContentFirst: Boolean = true,
 ) {
     if (!hasPermission) {
         permissionDisabledCard(
@@ -179,6 +183,7 @@ fun CalendarEventsSection(
                     },
                 ),
         ) {
+            val showGlanceContent = glanceContent != null && !cardState.displayAsExpanded
             Column(
                 modifier =
                     Modifier.fillMaxWidth()
@@ -192,6 +197,9 @@ fun CalendarEventsSection(
                                 },
                         ),
             ) {
+                if (showGlanceContent && glanceContentFirst) {
+                    glanceContent?.invoke(false, true)
+                }
                 displayEvents.forEachIndexed { index, event ->
                     key(event.eventId) {
                         val isPredicted = predictedEventId != null && event.eventId == predictedEventId
@@ -221,6 +229,10 @@ fun CalendarEventsSection(
                             )
                         }
                     }
+                }
+
+                if (showGlanceContent && !glanceContentFirst) {
+                    glanceContent?.invoke(true, false)
                 }
 
                 if (cardState.shouldShowExpandButton) {

@@ -464,6 +464,26 @@ fun ContentLayout(
             .map { it.eventId }
             .toSet()
     val hasStandaloneTodayCalendarSection = standaloneTodayEventIds.isNotEmpty()
+    // Alarm, reminders and future At a Glance sources share the today's events card on home.
+    val atAGlanceItems =
+        rememberAtAGlanceItems(
+            enabled = !hasQuery,
+            reversed = isReversed,
+        )
+    val atAGlanceContent: (@Composable (dividerBefore: Boolean, dividerAfter: Boolean) -> Unit)? =
+        if (atAGlanceItems.isNotEmpty()) {
+            { dividerBefore, dividerAfter ->
+                AtAGlanceRows(
+                    items = atAGlanceItems,
+                    showWallpaperBackground = effectiveShowWallpaperBackground,
+                    dividerBefore = dividerBefore,
+                    dividerAfter = dividerAfter,
+                )
+            }
+        } else {
+            null
+        }
+    val hasAtAGlanceSection = hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty()
     val pinnedCalendarEventsForPinnedBlock =
         if (!hasQuery && standaloneTodayEventIds.isNotEmpty()) {
             renderingState.pinnedCalendarEvents.filterNot { it.eventId in standaloneTodayEventIds }
@@ -487,10 +507,10 @@ fun ContentLayout(
                     renderingState.hasPinnedReminders
             )
     var pinnedNonAppItemsRendered = false
-    var standaloneTodayCalendarRendered = false
+    var atAGlanceRendered = false
     var deferredSearchHistoryRendered = false
-    val shouldDeferSearchHistoryUntilTodayEvents =
-        showRecentItems && hasStandaloneTodayCalendarSection
+    val shouldDeferSearchHistoryUntilAtAGlance =
+        showRecentItems && hasAtAGlanceSection
     val showSectionedPinnedHeaders =
         !hasQuery &&
             !state.unifiedPinnedItemsEnabled &&
@@ -669,9 +689,7 @@ fun ContentLayout(
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
                 if (
-                    shouldShowSearchHistoryTitle(
-                        sectionContextForRecentHistoryExpansion.todayCalendarEventsList.isNotEmpty(),
-                    )
+                    shouldShowSearchHistoryTitle(hasAtAGlanceSection)
                 ) {
                     Text(
                         text = stringResource(R.string.recent_queries_toggle_title),
@@ -958,12 +976,20 @@ fun ContentLayout(
 
         when (itemType) {
             ItemPriorityConfig.ItemType.UPCOMING_ALARM -> {
-                if (!hasQuery && !isHomeCalendarExpanded && !hidePinnedAndAppsWhenSearchHistoryExpanded) {
-                    if (isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
-                        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
-                            renderSearchHistoryBlock()
-                            deferredSearchHistoryRendered = true
-                        }
+                if (
+                    !hasQuery &&
+                    !isHomeCalendarExpanded &&
+                    !hidePinnedAndAppsWhenSearchHistoryExpanded &&
+                    hasAtAGlanceSection &&
+                    !atAGlanceRendered
+                ) {
+                    // Search history sits between the apps and At a Glance, so it renders on the
+                    // far side of At a Glance from the apps grid in either layout direction.
+                    if (isReversed && shouldDeferSearchHistoryUntilAtAGlance && !deferredSearchHistoryRendered) {
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
+                    }
+                    if (hasStandaloneTodayCalendarSection && regularSectionParams.calendarParams != null) {
                         HomeLoadingAnimatedContent(
                             animationKey = "home-today-calendar",
                             enabled = true,
@@ -975,38 +1001,22 @@ fun ContentLayout(
                                 sectionContext = sectionContextForRecentHistoryExpansion.copy(
                                     shouldRenderCalendar = false,
                                     calendarEventsList = emptyList(),
+                                    atAGlanceContent = atAGlanceContent,
+                                    atAGlanceContentFirst = !isReversed,
                                 ),
                             )
                         }
-                        standaloneTodayCalendarRendered = true
+                    } else {
+                        AtAGlanceCard(
+                            items = atAGlanceItems,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            showTitle = !hideHomeSectionTitleRows,
+                        )
                     }
-                    if (isReversed) {
-                        UpcomingReminderSection(showWallpaperBackground = effectiveShowWallpaperBackground)
-                    }
-                    UpcomingAlarmSection(showWallpaperBackground = effectiveShowWallpaperBackground)
-                    if (!isReversed) {
-                        UpcomingReminderSection(showWallpaperBackground = effectiveShowWallpaperBackground)
-                    }
-                    if (!isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
-                        HomeLoadingAnimatedContent(
-                            animationKey = "home-today-calendar",
-                            enabled = true,
-                            appearedKeys = appearedHomeContentKeys,
-                        ) {
-                            renderSection(
-                                section = SearchSection.CALENDAR,
-                                params = regularSectionParams,
-                                sectionContext = sectionContextForRecentHistoryExpansion.copy(
-                                    shouldRenderCalendar = false,
-                                    calendarEventsList = emptyList(),
-                                ),
-                            )
-                        }
-                        standaloneTodayCalendarRendered = true
-                        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
-                            renderSearchHistoryBlock()
-                            deferredSearchHistoryRendered = true
-                        }
+                    atAGlanceRendered = true
+                    if (!isReversed && shouldDeferSearchHistoryUntilAtAGlance && !deferredSearchHistoryRendered) {
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
                     }
                 }
             }
@@ -1136,7 +1146,7 @@ fun ContentLayout(
                     if (deferredSearchHistoryRendered) {
                         return
                     }
-                    if (shouldDeferSearchHistoryUntilTodayEvents && !standaloneTodayCalendarRendered) {
+                    if (shouldDeferSearchHistoryUntilAtAGlance && !atAGlanceRendered) {
                         return
                     }
                     renderSearchHistoryBlock()
@@ -1207,7 +1217,7 @@ fun ContentLayout(
 
     @Composable
     fun renderDeferredSearchHistory() {
-        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered && showRecentItems) {
+        if (shouldDeferSearchHistoryUntilAtAGlance && !deferredSearchHistoryRendered && showRecentItems) {
             renderSearchHistoryBlock()
             deferredSearchHistoryRendered = true
         }

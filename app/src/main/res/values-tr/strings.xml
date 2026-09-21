@@ -515,7 +515,6 @@
      ============================================================================ -->
 <string name="app_settings_create_calendar_event_desc">Yeni bir etkinlik oluştur ve ekle</string>
 <string name="app_settings_create_calendar_event_title">Yeni takvim etkinliği</string>
-<string name="agenda_title">Bugünün gündemi</string>
 <string name="calendar_create_event_name_hint">Etkinlik adı</string>
 <string name="calendar_create_event_select_date">Tarih seç</string>
 <string name="calendar_create_event_sync_notice">Bu etkinlik cihaz takviminle senkronize edilmez</string>
@@ -800,6 +799,12 @@
 <string name="settings_tools_gemini_api_title">AI sağlayıcısını yapılandır</string>
 <string name="settings_tools_info_examples_header">Arama çubuğunda sorabileceğin şeylere dair some örnekler</string>
 <string name="settings_tools_title">Araçlar</string>
+<string name="settings_at_a_glance_title">Bir Bakışta</string>
+<string name="settings_at_a_glance_desc">Ana ekranınızda doğru zamanda görünen faydalı bilgiler</string>
+<string name="settings_at_a_glance_alarms_title">Alarmlar</string>
+<string name="settings_upcoming_alarm_desc">45 dakika içindeyse sonraki alarmınız</string>
+<string name="settings_at_a_glance_events_desc">Bugünün etkinlikleri</string>
+<string name="settings_upcoming_reminders_desc">30 dakika içinde zamanı gelen veya gecikmiş hatırlatıcılar</string>
 <string name="settings_use_system_font_desc">Cihazının yazı tipi stilini takip et</string>
 <string name="settings_use_system_font_title">Sistem yazı tipini kullan</string>
 <string name="settings_accent_color_from_wallpaper">Duvar kağıdı</string>

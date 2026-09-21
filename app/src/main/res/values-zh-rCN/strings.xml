@@ -515,7 +515,6 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">创建并添加新日程</string>
     <string name="app_settings_create_calendar_event_title">新日历日程</string>
-    <string name="agenda_title">今日议程</string>
     <string name="calendar_create_event_name_hint">日程名称</string>
     <string name="calendar_create_event_select_date">选择日期</string>
     <string name="calendar_create_event_sync_notice">此日程不会同步到您的设备系统日历</string>
@@ -791,6 +790,12 @@
     <string name="settings_tools_gemini_api_title">配置 AI 提供商</string>
     <string name="settings_tools_info_examples_header">以下是您可以在搜索栏中尝试输入的一些示例</string>
     <string name="settings_tools_title">实用工具</string>
+    <string name="settings_at_a_glance_title">一览</string>
+    <string name="settings_at_a_glance_desc">在合适的时间出现在主屏幕上的实用信息</string>
+    <string name="settings_at_a_glance_alarms_title">闹钟</string>
+    <string name="settings_upcoming_alarm_desc">45 分钟内响铃的下一个闹钟</string>
+    <string name="settings_at_a_glance_events_desc">今天的日程</string>
+    <string name="settings_upcoming_reminders_desc">30 分钟内到期或已逾期的提醒</string>
     <string name="settings_use_system_font_desc">匹配并跟随您设备的系统字体样式</string>
     <string name="settings_use_system_font_title">使用系统字体</string>
     <string name="settings_accent_color_from_wallpaper">壁纸</string>

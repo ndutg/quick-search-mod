@@ -614,6 +614,7 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.CALLS_TEXTS,
                     SettingsDetailType.FILES,
                     SettingsDetailType.TOOLS,
+                    SettingsDetailType.AT_A_GLANCE,
                     SettingsDetailType.GEMINI_API_CONFIG,
                     SettingsDetailType.API_KEY_SETUP,
                     SettingsDetailType.UNIT_CONVERTER_INFO,

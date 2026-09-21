@@ -516,7 +516,6 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Neues Ereignis erstellen und hinzufügen</string>
     <string name="app_settings_create_calendar_event_title">Neuer Kalendertermin</string>
-    <string name="agenda_title">Heutige Agenda</string>
     <string name="calendar_create_event_name_hint">Ereignisname</string>
     <string name="calendar_create_event_select_date">Datum auswählen</string>
     <string name="calendar_create_event_sync_notice">Dieses Ereignis wird nicht mit deinem Gerätekalender synchronisiert</string>
@@ -801,6 +800,12 @@
     <string name="settings_tools_gemini_api_title">AI-Anbieter konfigurieren</string>
     <string name="settings_tools_info_examples_header">Hier sind einige Beispiele, was du in der Suchleiste eingeben kannst</string>
     <string name="settings_tools_title">Tools</string>
+    <string name="settings_at_a_glance_title">Auf einen Blick</string>
+    <string name="settings_at_a_glance_desc">Nützliche Infos, die zur passenden Zeit auf deinem Startbildschirm erscheinen</string>
+    <string name="settings_at_a_glance_alarms_title">Wecker</string>
+    <string name="settings_upcoming_alarm_desc">Dein nächster Wecker, wenn er innerhalb von 45 Minuten klingelt</string>
+    <string name="settings_at_a_glance_events_desc">Heutige Ereignisse</string>
+    <string name="settings_upcoming_reminders_desc">Erinnerungen, die innerhalb von 30 Minuten fällig oder überfällig sind</string>
     <string name="settings_use_system_font_desc">Schriftstil des Geräts übernehmen</string>
     <string name="settings_use_system_font_title">Systemschrift verwenden</string>
     <string name="settings_accent_color_from_wallpaper">Hintergrundbild</string>

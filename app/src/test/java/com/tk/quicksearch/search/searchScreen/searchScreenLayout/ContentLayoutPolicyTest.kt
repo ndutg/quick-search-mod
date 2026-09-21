@@ -76,8 +76,8 @@ class ContentLayoutPolicyTest {
 
     @Test
     fun searchHistoryTitleIsOnlyShownWithStandaloneTodayAgenda() {
-        assertTrue(shouldShowSearchHistoryTitle(hasStandaloneTodayAgenda = true))
-        assertFalse(shouldShowSearchHistoryTitle(hasStandaloneTodayAgenda = false))
+        assertTrue(shouldShowSearchHistoryTitle(hasAtAGlanceSection = true))
+        assertFalse(shouldShowSearchHistoryTitle(hasAtAGlanceSection = false))
     }
 
     @Test

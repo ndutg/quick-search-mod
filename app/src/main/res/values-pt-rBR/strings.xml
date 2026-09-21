@@ -516,7 +516,6 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">Criar e adicionar um novo evento</string>
     <string name="app_settings_create_calendar_event_title">Novo evento no calendário</string>
-    <string name="agenda_title">Agenda de hoje</string>
     <string name="calendar_create_event_name_hint">Nome do evento</string>
     <string name="calendar_create_event_select_date">Selecionar data</string>
     <string name="calendar_create_event_sync_notice">Este evento não será sincronizado com o calendário do seu dispositivo</string>
@@ -801,6 +800,12 @@
     <string name="settings_tools_gemini_api_title">Configurar Provedor de IA</string>
     <string name="settings_tools_info_examples_header">Aqui estão alguns exemplos de coisas que você pode perguntar na barra de pesquisa</string>
     <string name="settings_tools_title">Ferramentas</string>
+    <string name="settings_at_a_glance_title">Visão rápida</string>
+    <string name="settings_at_a_glance_desc">Informações úteis que aparecem na tela inicial nos momentos certos</string>
+    <string name="settings_at_a_glance_alarms_title">Alarmes</string>
+    <string name="settings_upcoming_alarm_desc">Seu próximo alarme quando faltar menos de 45 minutos</string>
+    <string name="settings_at_a_glance_events_desc">Eventos de hoje</string>
+    <string name="settings_upcoming_reminders_desc">Lembretes que vencem em 30 minutos ou estão atrasados</string>
     <string name="settings_use_system_font_desc">Seguir o estilo de fonte do seu dispositivo</string>
     <string name="settings_use_system_font_title">Usar fonte do sistema</string>
     <string name="settings_accent_color_from_wallpaper">Papel de parede</string>

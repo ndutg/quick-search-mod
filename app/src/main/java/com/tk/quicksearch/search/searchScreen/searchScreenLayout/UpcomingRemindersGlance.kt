@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,7 +54,6 @@ import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.reminders.reminderOverdueColor
 import com.tk.quicksearch.search.reminders.reminderScheduleLabel
-import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Date
@@ -67,11 +67,21 @@ private const val DAY_MILLIS = 24L * 60L * 60L * 1000L
 private const val REMINDER_NOW_WINDOW_MILLIS = 60L * 1000L
 
 /**
- * Home card for reminders due within 30 minutes or already overdue. It stays until the reminder is
- * marked done or dismissed for the current day; dismissing it does not cancel the notification.
+ * Reminders due within 30 minutes or already overdue, shown in the home At a Glance card. A
+ * reminder stays until it is marked done or dismissed for the current day; dismissing it does not
+ * cancel the notification.
  */
+internal class UpcomingRemindersGlance(
+    val reminders: List<ReminderInfo>,
+    val nowMillis: Long,
+    val markDone: (ReminderInfo) -> Unit,
+    val dismiss: (ReminderInfo) -> Unit,
+    val delete: (ReminderInfo) -> Unit,
+)
+
+/** Polls the home-card reminders while [enabled]; refreshes on resume, on edits and every 10 seconds. */
 @Composable
-internal fun UpcomingReminderSection(showWallpaperBackground: Boolean) {
+internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingRemindersGlance {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
@@ -88,7 +98,11 @@ internal fun UpcomingReminderSection(showWallpaperBackground: Boolean) {
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
-    LaunchedEffect(repository, refreshKey, changeCount) {
+    LaunchedEffect(repository, refreshKey, changeCount, enabled) {
+        if (!enabled) {
+            reminders = emptyList()
+            return@LaunchedEffect
+        }
         while (true) {
             nowMillis = System.currentTimeMillis()
             reminders = withContext(Dispatchers.IO) { repository.getHomeCardReminders(nowMillis) }
@@ -96,42 +110,30 @@ internal fun UpcomingReminderSection(showWallpaperBackground: Boolean) {
         }
     }
 
-    if (reminders.isEmpty()) return
-
-    SearchResultCard(
-        modifier = Modifier.fillMaxWidth(),
-        showWallpaperBackground = showWallpaperBackground,
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            reminders.forEachIndexed { index, reminder ->
-                UpcomingReminderRow(
-                    reminder = reminder,
-                    nowMillis = nowMillis,
-                    onClick = { ReminderEditorRequests.openEdit(reminder) },
-                    onDone = {
-                        reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
-                        scope.launch(Dispatchers.IO) { repository.setDone(reminder.reminderId, true) }
-                    },
-                    onDismiss = {
-                        reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
-                        scope.launch(Dispatchers.IO) { repository.dismissFromHome(reminder.reminderId) }
-                    },
-                    onDelete = {
-                        reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
-                        scope.launch(Dispatchers.IO) { repository.deleteReminder(reminder.reminderId) }
-                    },
-                )
-                if (index < reminders.lastIndex) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-                }
-            }
-        }
+    fun removeLocally(reminder: ReminderInfo) {
+        reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
     }
+    return UpcomingRemindersGlance(
+        reminders = reminders,
+        nowMillis = nowMillis,
+        markDone = { reminder ->
+            removeLocally(reminder)
+            scope.launch(Dispatchers.IO) { repository.setDone(reminder.reminderId, true) }
+        },
+        dismiss = { reminder ->
+            removeLocally(reminder)
+            scope.launch(Dispatchers.IO) { repository.dismissFromHome(reminder.reminderId) }
+        },
+        delete = { reminder ->
+            removeLocally(reminder)
+            scope.launch(Dispatchers.IO) { repository.deleteReminder(reminder.reminderId) }
+        },
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun UpcomingReminderRow(
+internal fun UpcomingReminderRow(
     reminder: ReminderInfo,
     nowMillis: Long,
     onClick: () -> Unit,
@@ -177,9 +179,8 @@ private fun UpcomingReminderRow(
         }
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(
-            start = DesignTokens.SpacingLarge,
-            end = DesignTokens.SpacingMedium,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
+            start = 7.dp,
             top = DesignTokens.SpacingMedium,
             bottom = DesignTokens.SpacingMedium,
         ),
@@ -199,10 +200,10 @@ private fun UpcomingReminderRow(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp),
             )
-            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall)) {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = reminder.title,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

@@ -517,7 +517,6 @@
          ============================================================================ -->
     <string name="app_settings_create_calendar_event_desc">إنشاء حدث جديد وإضافته</string>
     <string name="app_settings_create_calendar_event_title">حدث تقويم جديد</string>
-    <string name="agenda_title">جدول أعمال اليوم</string>
     <string name="calendar_create_event_name_hint">اسم الحدث</string>
     <string name="calendar_create_event_select_date">اختر التاريخ</string>
     <string name="calendar_create_event_sync_notice">لن تتم مزامنة this الحدث مع تقويم جهازك</string>
@@ -802,6 +801,12 @@
     <string name="settings_tools_gemini_api_title">تكوين مزود AI</string>
     <string name="settings_tools_info_examples_header">أمثلة للبحث السريع في شريط البحث</string>
     <string name="settings_tools_title">الأدوات</string>
+    <string name="settings_at_a_glance_title">نظرة سريعة</string>
+    <string name="settings_at_a_glance_desc">معلومات مفيدة تظهر على شاشتك الرئيسية في الأوقات المناسبة</string>
+    <string name="settings_at_a_glance_alarms_title">المنبهات</string>
+    <string name="settings_upcoming_alarm_desc">المنبه التالي عندما يكون خلال 45 دقيقة</string>
+    <string name="settings_at_a_glance_events_desc">أحداث اليوم</string>
+    <string name="settings_upcoming_reminders_desc">التذكيرات المستحقة خلال 30 دقيقة أو المتأخرة</string>
     <string name="settings_use_system_font_desc">اتباع خط النظام الافتراضي للجهاز</string>
     <string name="settings_use_system_font_title">استخدام خط النظام</string>
     <string name="settings_accent_color_from_wallpaper">الخلفية</string>

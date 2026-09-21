@@ -542,7 +542,6 @@ Beschikbare snelkoppelingen: %1$s</string>
 
     <string name="app_settings_create_calendar_event_desc">Een nieuwe afspraak maken en toevoegen</string>
     <string name="app_settings_create_calendar_event_title">Nieuwe agenda-afspraak</string>
-    <string name="agenda_title">Agenda van vandaag</string>
     <string name="calendar_create_event_name_hint">Afspraaknaam</string>
     <string name="calendar_create_event_select_date">Datum selecteren</string>
     <string name="calendar_create_event_sync_notice">Deze afspraak wordt niet gesynchroniseerd met je apparaatagenda</string>
@@ -836,6 +835,12 @@ Beschikbare snelkoppelingen: %1$s</string>
     <string name="settings_tools_gemini_api_title">AI-provider configureren</string>
     <string name="settings_tools_info_examples_header">Hier zijn enkele voorbeelden van wat je in de zoekbalk kunt vragen</string>
     <string name="settings_tools_title">Hulpmiddelen</string>
+    <string name="settings_at_a_glance_title">In één oogopslag</string>
+    <string name="settings_at_a_glance_desc">Nuttige informatie die op het juiste moment op je startscherm verschijnt</string>
+    <string name="settings_at_a_glance_alarms_title">Wekkers</string>
+    <string name="settings_upcoming_alarm_desc">Je volgende wekker als die binnen 45 minuten afgaat</string>
+    <string name="settings_at_a_glance_events_desc">Afspraken van vandaag</string>
+    <string name="settings_upcoming_reminders_desc">Herinneringen die binnen 30 minuten verlopen of achterstallig zijn</string>
     <string name="settings_use_system_font_desc">Het lettertype van je apparaat volgen</string>
     <string name="settings_use_system_font_title">Systeemlettertype gebruiken</string>
     <string name="settings_accent_color_from_wallpaper">Achtergrond</string>

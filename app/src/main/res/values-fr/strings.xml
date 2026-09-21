@@ -516,7 +516,6 @@
      ============================================================================ -->
 <string name="app_settings_create_calendar_event_desc">Créer et ajouter un nouvel événement</string>
 <string name="app_settings_create_calendar_event_title">Nouvel événement d\'agenda</string>
-<string name="agenda_title">Agenda du jour</string>
 <string name="calendar_create_event_name_hint">Nom de l\'événement</string>
 <string name="calendar_create_event_select_date">Sélectionner la date</string>
 <string name="calendar_create_event_sync_notice">Cet événement ne sera pas synchronisé avec l\'agenda de votre appareil</string>
@@ -801,6 +800,12 @@
 <string name="settings_tools_gemini_api_title">Configurer le fournisseur AI</string>
 <string name="settings_tools_info_examples_header">Voici quelques exemples de requêtes que vous pouvez formuler dans la barre de recherche</string>
 <string name="settings_tools_title">Outils</string>
+<string name="settings_at_a_glance_title">En un coup d\'œil</string>
+<string name="settings_at_a_glance_desc">Des informations utiles qui apparaissent sur votre écran d\'accueil au bon moment</string>
+<string name="settings_at_a_glance_alarms_title">Alarmes</string>
+<string name="settings_upcoming_alarm_desc">Votre prochaine alarme lorsqu\'elle sonne dans moins de 45 minutes</string>
+<string name="settings_at_a_glance_events_desc">Événements d\'aujourd\'hui</string>
+<string name="settings_upcoming_reminders_desc">Rappels dus dans les 30 minutes ou en retard</string>
 <string name="settings_use_system_font_desc">Suivre le style de police de votre appareil</string>
 <string name="settings_use_system_font_title">Utiliser la police système</string>
 <string name="settings_accent_color_from_wallpaper">Fond d\'écran</string>

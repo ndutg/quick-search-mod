@@ -103,14 +103,16 @@ class ReminderRepository(context: Context) {
     }
 
     /** Reminders to surface on Home: due within 30 minutes or overdue, and not done or dismissed. */
-    fun getHomeCardReminders(nowMillis: Long = System.currentTimeMillis()): List<ReminderInfo> =
-        readReminders()
+    fun getHomeCardReminders(nowMillis: Long = System.currentTimeMillis()): List<ReminderInfo> {
+        if (!preferences.isShowUpcomingRemindersEnabled()) return emptyList()
+        return readReminders()
             .filter { reminder ->
                 !reminder.isDone &&
                     !reminder.isDismissedFromHomeToday(nowMillis) &&
                     reminder.dueMillis - HOME_CARD_LEAD_MILLIS <= nowMillis
             }
             .sortedBy { it.dueMillis }
+    }
 
     /** Undone reminders from today onward, soonest first; shown for the Reminders alias with no query. */
     fun getUpcomingReminders(limit: Int): List<ReminderInfo> {

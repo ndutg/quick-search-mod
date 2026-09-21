@@ -23,6 +23,7 @@ enum class SettingsDetailType {
     MORE_OPTIONS,
     PERMISSIONS,
     TOOLS,
+    AT_A_GLANCE,
     GEMINI_API_CONFIG,
     API_KEY_SETUP,
     FEATURES_LIST,
@@ -142,6 +143,11 @@ internal object SettingsDestinationRegistry {
             SettingsDetailType.TOOLS to
                 SettingsDestinationSpec(
                     titleResId = R.string.settings_tools_title,
+                    level = 2,
+                ),
+            SettingsDetailType.AT_A_GLANCE to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_at_a_glance_title,
                     level = 2,
                 ),
             SettingsDetailType.GEMINI_API_CONFIG to
