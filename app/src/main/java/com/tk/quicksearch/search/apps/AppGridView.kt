@@ -382,6 +382,23 @@ fun AppGridView(
             remember(pinnedFolders) {
                 pinnedFolders.flatMapTo(HashSet()) { folder -> folder.members.map { it.memberKey } }
             }
+    val folderByMemberKey =
+            remember(pinnedFolders) {
+                buildMap {
+                    pinnedFolders.forEach { folder ->
+                        folder.members.forEach { member -> put(member.memberKey, folder) }
+                    }
+                }
+            }
+    val effectivePinnedPackageNames =
+            remember(pinnedPackageNames, pinnedFolders) {
+                pinnedPackageNames +
+                        pinnedFolders.flatMap { folder ->
+                            folder.members.mapNotNull { member ->
+                                (member as? AppFolderMember.App)?.app?.launchCountKey()
+                            }
+                        }
+            }
     val hasPinnedGridItems =
             pinnedApps.isNotEmpty() || pinnedGridShortcuts.isNotEmpty() || pinnedFolders.isNotEmpty()
     val suggestionTabs =
@@ -551,6 +568,22 @@ fun AppGridView(
     val pinnedTabOrderKeys: () -> List<String> = {
         orderedPinnedEntries(pinnedApps, includeFolders = true).map { it.key }
     }
+    val onUnpinAppIncludingFolders: (AppInfo) -> Unit = { app ->
+        val memberKey = appFolderMemberKey(app)
+        val folder = folderByMemberKey[memberKey]
+        if (folder != null && folderActions != null) {
+            folderActions.onUnpinFromFolder(folder.id, memberKey, pinnedTabOrderKeys())
+        } else {
+            onUnpinApp(app)
+        }
+    }
+    val onHideAppIncludingFolders: (AppInfo) -> Unit = { app ->
+        val memberKey = appFolderMemberKey(app)
+        folderByMemberKey[memberKey]?.let { folder ->
+            folderActions?.onUnpinFromFolder(folder.id, memberKey, pinnedTabOrderKeys())
+        }
+        onHideApp(app)
+    }
     val onReorderPinnedEntries: (List<AppGridEntry>) -> Unit = { entries ->
         val reorderedApps = entries.filterIsInstance<AppGridEntry.App>().map { it.app }
         if (pinnedGridShortcuts.isEmpty() && pinnedFolders.isEmpty()) {
@@ -719,17 +752,17 @@ fun AppGridView(
                                 onAppShortcutClick = onAppShortcutClick,
                                 onAppInfoClick = onAppInfoClick,
                                 onUninstallClick = onUninstallClick,
-                                onHideApp = onHideApp,
+                                onHideApp = onHideAppIncludingFolders,
                                 onDisableAppShortcut = onDisableAppShortcut,
                                 onPinApp = onPinApp,
-                                onUnpinApp = onUnpinApp,
+                                onUnpinApp = onUnpinAppIncludingFolders,
                                 onReorderPinnedEntries = onReorderPinnedEntries,
                                 onNicknameClick = onNicknameClick,
                                 onTriggerClick = onTriggerClick,
                                 onOpenInSplitScreen = onOpenInSplitScreen,
                                 getAppNickname = getAppNickname,
                                 getAppTrigger = getAppTrigger,
-                                pinnedPackageNames = pinnedPackageNames,
+                                pinnedPackageNames = effectivePinnedPackageNames,
                                 shortcutsByPackage = shortcutsByPackage,
                                 rowCount = rowCount,
                                 phoneColumnOverride = phoneColumnOverride,
@@ -761,17 +794,17 @@ fun AppGridView(
                             onAppShortcutClick = onAppShortcutClick,
                             onAppInfoClick = onAppInfoClick,
                             onUninstallClick = onUninstallClick,
-                            onHideApp = onHideApp,
+                            onHideApp = onHideAppIncludingFolders,
                             onDisableAppShortcut = onDisableAppShortcut,
                             onPinApp = onPinApp,
-                            onUnpinApp = onUnpinApp,
+                            onUnpinApp = onUnpinAppIncludingFolders,
                             onReorderPinnedEntries = onReorderPinnedEntries,
                             onNicknameClick = onNicknameClick,
                             onTriggerClick = onTriggerClick,
                             onOpenInSplitScreen = onOpenInSplitScreen,
                             getAppNickname = getAppNickname,
                             getAppTrigger = getAppTrigger,
-                            pinnedPackageNames = pinnedPackageNames,
+                            pinnedPackageNames = effectivePinnedPackageNames,
                             shortcutsByPackage = shortcutsByPackage,
                             rowCount = rowCount,
                             phoneColumnOverride = phoneColumnOverride,
@@ -869,7 +902,7 @@ fun AppGridView(
                     },
                     onAppInfoClick = onAppInfoClick,
                     onUninstallClick = onUninstallClick,
-                    onHideApp = onHideApp,
+                    onHideApp = onHideAppIncludingFolders,
                     onDisableAppShortcut = onDisableAppShortcut,
                     onPinApp = onPinApp,
                     onUnpinApp = { app -> unpinMember(appFolderMemberKey(app)) },
@@ -931,16 +964,16 @@ fun AppGridView(
                 onAppShortcutClick = onAppShortcutClick,
                 onAppInfoClick = onAppInfoClick,
                 onUninstallClick = onUninstallClick,
-                onHideApp = onHideApp,
+                onHideApp = onHideAppIncludingFolders,
                 onDisableAppShortcut = onDisableAppShortcut,
                 onPinApp = onPinApp,
-                onUnpinApp = onUnpinApp,
+                onUnpinApp = onUnpinAppIncludingFolders,
                 onNicknameClick = onNicknameClick,
                 onTriggerClick = onTriggerClick,
                 onOpenInSplitScreen = onOpenInSplitScreen,
                 getAppNickname = getAppNickname,
                 getAppTrigger = getAppTrigger,
-                pinnedPackageNames = pinnedPackageNames,
+                pinnedPackageNames = effectivePinnedPackageNames,
                 shortcutsByPackage = shortcutsByPackage,
                 phoneColumnOverride = phoneColumnOverride,
                 appIconSizeStep = appIconSizeStep,

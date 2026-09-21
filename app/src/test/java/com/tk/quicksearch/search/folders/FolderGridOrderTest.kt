@@ -14,6 +14,30 @@ class FolderGridOrderTest {
     }
 
     @Test
+    fun removingFromTwoMemberFolderRestoresBothMembers() {
+        assertEquals(
+            listOf("x", "m"),
+            membersRestoredAfterRemoval(listOf("x", "m"), "m", repinRemovedMember = true),
+        )
+    }
+
+    @Test
+    fun unpinningFromTwoMemberFolderRestoresOnlyRemainingMember() {
+        assertEquals(
+            listOf("x"),
+            membersRestoredAfterRemoval(listOf("x", "m"), "m", repinRemovedMember = false),
+        )
+    }
+
+    @Test
+    fun removingFromThreeMemberFolderKeepsFolder() {
+        assertEquals(
+            null,
+            membersRestoredAfterRemoval(listOf("x", "m", "y"), "m", repinRemovedMember = true),
+        )
+    }
+
+    @Test
     fun removedMemberGoesRightAfterFolder() {
         assertEquals(
             listOf("a", "folder:f", "m", "c"),
@@ -22,18 +46,22 @@ class FolderGridOrderTest {
     }
 
     @Test
-    fun lastRemovedMemberTakesFolderPosition() {
+    fun dissolvedFolderMembersTakeFolderPosition() {
         assertEquals(
-            listOf("a", "m", "c"),
-            orderAfterRemovingMember(listOf("a", "folder:f", "c"), "folder:f", "m", folderRemoved = true),
+            listOf("a", "x", "m", "c"),
+            orderAfterDeletingFolder(
+                listOf("a", "folder:f", "c"),
+                "folder:f",
+                listOf("x", "m"),
+            ),
         )
     }
 
     @Test
-    fun unavailableMemberIsNotRestored() {
+    fun dissolvingAfterUnpinRestoresOnlyRemainingMember() {
         assertEquals(
-            listOf("a", "c"),
-            orderAfterRemovingMember(listOf("a", "folder:f", "c"), "folder:f", null, folderRemoved = true),
+            listOf("a", "x", "c"),
+            orderAfterDeletingFolder(listOf("a", "folder:f", "c"), "folder:f", listOf("x")),
         )
     }
 

@@ -82,4 +82,49 @@ class AppFolderTest {
             resolved.single().members.map { it.memberKey },
         )
     }
+
+    @Test
+    fun resolveSkipsFoldersWithOnlyOneAvailableMember() {
+        val mail = app("com.example.mail")
+        val folders =
+            listOf(
+                AppFolder(
+                    id = "a",
+                    memberKeys =
+                        listOf(
+                            appFolderMemberKey(mail),
+                            appFolderMemberKey(app("com.example.uninstalled")),
+                        ),
+                ),
+            )
+
+        val resolved =
+            resolveAppFolders(
+                folders = folders,
+                apps = listOf(mail),
+                shortcuts = emptyList(),
+                disabledShortcutIds = emptySet(),
+            )
+
+        assertTrue(resolved.isEmpty())
+    }
+
+    @Test
+    fun emptyCompletedShortcutCatalogMarksShortcutMembersUnavailable() {
+        val maps = shortcut("com.example.maps", "home")
+        val folder =
+            AppFolder(
+                id = "a",
+                memberKeys = listOf(appFolderMemberKey(maps)),
+            )
+
+        assertTrue(
+            availableFolderMemberKeys(
+                folder = folder,
+                appKeys = emptySet(),
+                shortcutKeys = emptySet(),
+                disabledShortcutKeys = emptySet(),
+            ).isEmpty(),
+        )
+    }
 }

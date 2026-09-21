@@ -83,8 +83,9 @@ class FolderManager(
     }
 
     /**
-     * Takes [memberKey] out of the folder, deleting the folder when it was the last member. It
-     * returns to the pinned grid right after the folder, or leaves the Pinned tab when not [repin].
+     * Takes [memberKey] out of the folder. If fewer than two members would remain, the folder is
+     * dissolved and its remaining member returns to the grid. The removed member also returns to
+     * the grid when [repin], or leaves the Pinned tab otherwise.
      */
     fun removeFromFolder(
         folderId: String,
@@ -96,8 +97,9 @@ class FolderManager(
         val folder = folders.firstOrNull { it.id == folderId } ?: return
         if (memberKey !in folder.memberKeys) return
         val remainingMembers = folder.memberKeys - memberKey
-        val memberGridKey = memberKeyToGridKey(memberKey)
-        val folderRemoved = remainingMembers.isEmpty()
+        val restoredMembers =
+            membersRestoredAfterRemoval(folder.memberKeys, memberKey, repin)
+        val folderRemoved = restoredMembers != null
         saveFolders(
             if (folderRemoved) {
                 folders.filterNot { it.id == folderId }
@@ -105,15 +107,21 @@ class FolderManager(
                 folders.map { if (it.id == folderId) it.copy(memberKeys = remainingMembers) else it }
             },
         )
-        val repinned = repin && pinMember(memberKey)
-        commitOrder(
-            orderAfterRemovingMember(
-                orderKeys = orderKeys,
-                folderGridKey = folder.gridKey,
-                memberGridKey = memberGridKey?.takeIf { repinned },
-                folderRemoved = folderRemoved,
-            ),
-        )
+        if (folderRemoved) {
+            val restoredGridKeys =
+                restoredMembers.orEmpty().filter(::pinMember).mapNotNull(::memberKeyToGridKey)
+            commitOrder(orderAfterDeletingFolder(orderKeys, folder.gridKey, restoredGridKeys))
+        } else {
+            val repinned = repin && pinMember(memberKey)
+            commitOrder(
+                orderAfterRemovingMember(
+                    orderKeys = orderKeys,
+                    folderGridKey = folder.gridKey,
+                    memberGridKey = memberKeyToGridKey(memberKey)?.takeIf { repinned },
+                    folderRemoved = false,
+                ),
+            )
+        }
     }
 
     /** Deletes the folder and returns its members to the pinned grid at the folder's position. */
@@ -156,7 +164,7 @@ class FolderManager(
 
     /**
      * Prunes uninstalled apps and removed or disabled shortcuts from folders whenever the app or
-     * shortcut catalog changes, deleting folders left empty.
+     * shortcut catalog changes, dissolving folders left with fewer than two members.
      */
     @OptIn(FlowPreview::class)
     fun observeAvailability(uiState: StateFlow<SearchUiState>) {
@@ -197,28 +205,31 @@ class FolderManager(
             folders.map { folder ->
                 folder.copy(
                     memberKeys =
-                        folder.memberKeys.filter { key ->
-                            if (isShortcutMemberKey(key)) {
-                                // An empty shortcut catalog may not have loaded yet.
-                                key !in disabledShortcutKeys &&
-                                    (shortcutKeys.isEmpty() || key in shortcutKeys)
-                            } else {
-                                key in appKeys
-                            }
-                        },
+                        availableFolderMemberKeys(
+                            folder = folder,
+                            appKeys = appKeys,
+                            shortcutKeys = shortcutKeys,
+                            disabledShortcutKeys = disabledShortcutKeys,
+                        ),
                 )
             }
-        if (prunedFolders == folders && folders.all { it.memberKeys.isNotEmpty() }) return
-        val (keptFolders, emptyFolders) = prunedFolders.partition { it.memberKeys.isNotEmpty() }
-        saveFolders(keptFolders)
-        if (emptyFolders.isEmpty()) return
-        val emptyFolderKeys = emptyFolders.mapTo(HashSet()) { it.gridKey }
-        val order = userPreferences.getPinnedAppGridOrder()
-        val updatedOrder = order.filterNot { it in emptyFolderKeys }
-        if (updatedOrder != order) {
-            updateFeatureState { it.copy(pinnedAppGridOrder = updatedOrder) }
-            userPreferences.setPinnedAppGridOrder(updatedOrder)
+        if (
+            prunedFolders == folders &&
+                folders.all { it.memberKeys.size >= MIN_APP_FOLDER_MEMBER_COUNT }
+        ) {
+            return
         }
+        val (keptFolders, dissolvedFolders) =
+            prunedFolders.partition { it.memberKeys.size >= MIN_APP_FOLDER_MEMBER_COUNT }
+        saveFolders(keptFolders)
+        if (dissolvedFolders.isEmpty()) return
+        val updatedOrder =
+            dissolvedFolders.fold(userPreferences.getPinnedAppGridOrder()) { order, folder ->
+                val restoredGridKeys =
+                    folder.memberKeys.filter(::pinMember).mapNotNull(::memberKeyToGridKey)
+                orderAfterDeletingFolder(order, folder.gridKey, restoredGridKeys)
+            }
+        commitOrder(updatedOrder)
     }
 
     private fun saveFolders(folders: List<AppFolder>) {

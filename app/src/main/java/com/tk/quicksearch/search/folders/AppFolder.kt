@@ -8,6 +8,7 @@ private const val APP_MEMBER_PREFIX = "APP:"
 private const val SHORTCUT_MEMBER_PREFIX = "SHORTCUT:"
 private const val FOLDER_GRID_KEY_PREFIX = "folder:"
 private const val SHORTCUT_GRID_KEY_PREFIX = "shortcut:"
+internal const val MIN_APP_FOLDER_MEMBER_COUNT = 2
 
 /** A Pinned-tab folder of apps and app shortcuts. [memberKeys] are ordered member keys. */
 data class AppFolder(
@@ -31,7 +32,7 @@ sealed interface AppFolderMember {
     }
 }
 
-/** A folder whose members are all currently available, in folder order. */
+/** A folder with at least two currently available members, in folder order. */
 data class ResolvedAppFolder(
     val folder: AppFolder,
     val members: List<AppFolderMember>,
@@ -69,6 +70,20 @@ fun gridKeyToMemberKey(gridKey: String): String? =
 
 fun isShortcutMemberKey(memberKey: String): Boolean = memberKey.startsWith(SHORTCUT_MEMBER_PREFIX)
 
+internal fun availableFolderMemberKeys(
+    folder: AppFolder,
+    appKeys: Set<String>,
+    shortcutKeys: Set<String>,
+    disabledShortcutKeys: Set<String>,
+): List<String> =
+    folder.memberKeys.filter { key ->
+        if (isShortcutMemberKey(key)) {
+            key in shortcutKeys && key !in disabledShortcutKeys
+        } else {
+            key in appKeys
+        }
+    }
+
 fun memberKeyToGridKey(memberKey: String): String? =
     when {
         memberKey.startsWith(APP_MEMBER_PREFIX) -> memberKey.removePrefix(APP_MEMBER_PREFIX)
@@ -79,7 +94,7 @@ fun memberKeyToGridKey(memberKey: String): String? =
 
 /**
  * Resolves folder members against the available apps and enabled shortcuts, skipping members that
- * are unavailable and folders left with no members.
+ * are unavailable and folders left with fewer than two members.
  */
 fun resolveAppFolders(
     folders: List<AppFolder>,
@@ -99,6 +114,8 @@ fun resolveAppFolders(
                 appsByKey[key]?.let { AppFolderMember.App(it) }
                     ?: shortcutsByKey[key]?.let { AppFolderMember.Shortcut(it) }
             }
-        members.takeIf { it.isNotEmpty() }?.let { ResolvedAppFolder(folder, it) }
+        members
+            .takeIf { it.size >= MIN_APP_FOLDER_MEMBER_COUNT }
+            ?.let { ResolvedAppFolder(folder, it) }
     }
 }

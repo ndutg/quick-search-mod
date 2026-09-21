@@ -14,6 +14,23 @@ internal fun orderAfterCreatingFolder(
         .map { if (it == targetKey) folderGridKey else it }
 
 /**
+ * Members that should return to the grid when removing [removedMemberKey] dissolves the folder, or
+ * null when enough members remain for the folder to stay. The removed member is included only when
+ * [repinRemovedMember].
+ */
+internal fun membersRestoredAfterRemoval(
+    memberKeys: List<String>,
+    removedMemberKey: String,
+    repinRemovedMember: Boolean,
+): List<String>? {
+    val remainingMembers = memberKeys - removedMemberKey
+    if (remainingMembers.size >= MIN_APP_FOLDER_MEMBER_COUNT) return null
+    return memberKeys.filter { memberKey ->
+        memberKey != removedMemberKey || repinRemovedMember
+    }
+}
+
+/**
  * The removed member's tile goes right after the folder, or in its place when the folder was
  * deleted with it. [memberGridKey] is null when the member is no longer available.
  */
