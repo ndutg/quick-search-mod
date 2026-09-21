@@ -8,6 +8,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -19,11 +20,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -1129,13 +1133,37 @@ internal fun SearchScreenContent(
     var measuredSearchBarHeight by remember { mutableStateOf(0.dp) }
     val insetEngineStripOverlap = InsetSearchBarGeometry.overlapFor(measuredSearchBarHeight)
 
+    // With the keyboard closed the card floats above the gesture handle, which the system keeps
+    // clear anyway. With the keyboard open nothing reserves that space, so the card spreads to the
+    // screen edges and down onto the keyboard. Keyed on the IME animation target so the card starts
+    // moving together with the keyboard in both directions instead of after it settles.
+    @OptIn(ExperimentalLayoutApi::class)
+    val isImeOpeningOrOpen = WindowInsets.imeAnimationTarget.getBottom(density) > 0
+    val insetEngineStripFullBleedFraction by
+            animateFloatAsState(
+                    targetValue =
+                            if (useInsetEngineStrip && !isOverlayPresentation && isImeOpeningOrOpen) {
+                                1f
+                            } else {
+                                0f
+                            },
+                    animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+                    label = "insetEngineStripFullBleed",
+            )
+
     val searchFieldModifier =
             if (useInsetEngineStrip) {
                 // Inset on every side by the same amount so the bar sits centred inside the card
                 // the strip paints; the strip reaches down by exactly these spacings plus the bar.
                 Modifier.padding(
-                        start = InsetSearchBarGeometry.BarHorizontalInset,
-                        end = InsetSearchBarGeometry.BarHorizontalInset,
+                        start =
+                                InsetSearchBarGeometry.barHorizontalInset(
+                                        insetEngineStripFullBleedFraction,
+                                ),
+                        end =
+                                InsetSearchBarGeometry.barHorizontalInset(
+                                        insetEngineStripFullBleedFraction,
+                                ),
                         top = InsetSearchBarGeometry.BarTopSpacing,
                         bottom = InsetSearchBarGeometry.BarBottomSpacing,
                 ).onSizeChanged { size ->
@@ -1739,6 +1767,7 @@ internal fun SearchScreenContent(
                                 showWallpaperBackground = state.showWallpaperBackground,
                                 useInsetContainer = useInsetEngineStrip,
                                 insetOverlap = insetEngineStripOverlap,
+                                insetFullBleedFraction = insetEngineStripFullBleedFraction,
                                 modifier = searchEnginesModifier,
                         )
                     } else {
@@ -1837,6 +1866,7 @@ internal fun SearchScreenContent(
                                         showOnlyToolAction = showOnlyToolActionInCompactSection,
                                         useInsetContainer = useInsetEngineStrip,
                                         insetOverlap = insetEngineStripOverlap,
+                                        insetFullBleedFraction = insetEngineStripFullBleedFraction,
                                 )
                             },
                             fullContent = {
@@ -1894,6 +1924,7 @@ internal fun SearchScreenContent(
                                             showOnlyToolAction = true,
                                             useInsetContainer = useInsetEngineStrip,
                                             insetOverlap = insetEngineStripOverlap,
+                                            insetFullBleedFraction = insetEngineStripFullBleedFraction,
                                     )
                                 } else {
                                     // Add padding when search engines are hidden to prevent keyboard from
@@ -1944,8 +1975,14 @@ internal fun SearchScreenContent(
                 searchFieldContent()
             }
             if (useInsetEngineStrip) {
-                // Keeps the pills below from sitting flush against the card's bottom edge.
-                Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                // Keeps the pills below from sitting flush against the card's bottom edge. Without
+                // the pills it collapses as the card goes full bleed so the card meets the keyboard.
+                val showsNumberKeyboardPills =
+                        expandedSection == ExpandedSection.NONE &&
+                                shouldRenderInlineNumberKeyboardOperators
+                val gapFraction =
+                        if (showsNumberKeyboardPills) 0f else insetEngineStripFullBleedFraction
+                Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall * (1f - gapFraction)))
             }
 
             Box(modifier = Modifier.fillMaxWidth().extendToScreenEdges()) {
