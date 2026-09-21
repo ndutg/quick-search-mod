@@ -25,6 +25,7 @@ import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.data.preferences.ReminderPreferences
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomEventFormDialog
+import com.tk.quicksearch.settings.settingsDetailScreen.FormDateTimeSuggestion
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import java.time.Instant
 import java.time.ZoneId
@@ -112,12 +113,22 @@ private fun ReminderFormDialog(
     onSave: (title: String, dateTimeMillis: Long, allDay: Boolean) -> Unit,
     onDelete: (() -> Unit)?,
 ) {
+    val accentColor = MaterialTheme.colorScheme.primary
+    val titleVisualTransformation = remember(accentColor) {
+        ReminderNaturalLanguageVisualTransformation(accentColor)
+    }
     CustomEventFormDialog(
         initialTitle = reminder?.title.orEmpty(),
         initialDateTimeMillis = reminder?.let { if (it.hasTime) it.dueMillis else it.dayStartMillis },
         initialAllDay = reminder?.hasTime != true,
         onDismiss = onDismiss,
-        onConfirm = onSave,
+        onConfirm = { title, dateTimeMillis, allDay ->
+            onSave(
+                ReminderNaturalLanguageParser.parse(title)?.title ?: title,
+                dateTimeMillis,
+                allDay,
+            )
+        },
         titleResId = if (reminder == null) R.string.reminder_new_title else R.string.reminder_edit_title,
         confirmResId = R.string.dialog_save,
         extraActions = {
@@ -135,6 +146,17 @@ private fun ReminderFormDialog(
         nameHintResId = R.string.reminder_name_hint,
         titleKeyboardCapitalization =
             if (reminder == null) KeyboardCapitalization.Sentences else KeyboardCapitalization.None,
+        titleDateTimeSuggestion = { title ->
+            ReminderNaturalLanguageParser.parse(title)?.let { schedule ->
+                val dateTime = schedule.date.atTime(schedule.time ?: java.time.LocalTime.MIDNIGHT)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+                FormDateTimeSuggestion(dateTimeMillis = dateTime, hasTime = schedule.time != null)
+            }
+        },
+        titleVisualTransformation = titleVisualTransformation,
+        titleMaxLines = 2,
     )
 }
 

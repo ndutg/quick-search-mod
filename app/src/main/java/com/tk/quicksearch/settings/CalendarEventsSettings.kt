@@ -66,6 +66,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -550,6 +551,12 @@ fun CalendarEventsBottomBar(
 // ============================================================================
 
 @OptIn(ExperimentalMaterial3Api::class)
+internal data class FormDateTimeSuggestion(
+    val dateTimeMillis: Long,
+    val hasTime: Boolean,
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CustomEventFormDialog(
     initialTitle: String,
@@ -564,6 +571,9 @@ internal fun CustomEventFormDialog(
     autoFocusTitle: Boolean = true,
     nameHintResId: Int = R.string.calendar_create_event_name_hint,
     titleKeyboardCapitalization: KeyboardCapitalization = KeyboardCapitalization.None,
+    titleDateTimeSuggestion: ((String) -> FormDateTimeSuggestion?)? = null,
+    titleVisualTransformation: VisualTransformation = VisualTransformation.None,
+    titleMaxLines: Int = 1,
 ) {
     val context = LocalContext.current
     var eventTitle by remember { mutableStateOf(initialTitle) }
@@ -677,10 +687,27 @@ internal fun CustomEventFormDialog(
                         }
                         OutlinedTextField(
                             value = eventTitle,
-                            onValueChange = { eventTitle = it },
+                            onValueChange = { value ->
+                                eventTitle = value
+                                titleDateTimeSuggestion?.invoke(value)?.let { suggestion ->
+                                    val dateTime = Instant.ofEpochMilli(suggestion.dateTimeMillis)
+                                        .atZone(ZoneId.systemDefault())
+                                        .toLocalDateTime()
+                                    datePickerState.selectedDateMillis = localMidnightToUtcMidnight(
+                                        dateTime.toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                                    )
+                                    if (suggestion.hasTime) {
+                                        timePickerState.hour = dateTime.hour
+                                        timePickerState.minute = dateTime.minute
+                                        hasTime = true
+                                    }
+                                }
+                            },
                             label = { Text(stringResource(nameHintResId)) },
-                            singleLine = true,
+                            singleLine = titleMaxLines == 1,
+                            maxLines = titleMaxLines,
                             keyboardOptions = KeyboardOptions(capitalization = titleKeyboardCapitalization),
+                            visualTransformation = titleVisualTransformation,
                             modifier = Modifier.fillMaxWidth().focusRequester(titleFocusRequester),
                         )
 
