@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
@@ -132,6 +133,8 @@ private fun ReminderFormDialog(
         },
         autoFocusTitle = reminder == null,
         nameHintResId = R.string.reminder_name_hint,
+        titleKeyboardCapitalization =
+            if (reminder == null) KeyboardCapitalization.Sentences else KeyboardCapitalization.None,
     )
 }
 

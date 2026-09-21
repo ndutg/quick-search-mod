@@ -65,6 +65,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -561,6 +563,7 @@ internal fun CustomEventFormDialog(
     noticeAboveNameResId: Int? = null,
     autoFocusTitle: Boolean = true,
     nameHintResId: Int = R.string.calendar_create_event_name_hint,
+    titleKeyboardCapitalization: KeyboardCapitalization = KeyboardCapitalization.None,
 ) {
     val context = LocalContext.current
     var eventTitle by remember { mutableStateOf(initialTitle) }
@@ -677,6 +680,7 @@ internal fun CustomEventFormDialog(
                             onValueChange = { eventTitle = it },
                             label = { Text(stringResource(nameHintResId)) },
                             singleLine = true,
+                            keyboardOptions = KeyboardOptions(capitalization = titleKeyboardCapitalization),
                             modifier = Modifier.fillMaxWidth().focusRequester(titleFocusRequester),
                         )
 
