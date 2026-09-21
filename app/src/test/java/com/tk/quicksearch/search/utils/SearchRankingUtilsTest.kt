@@ -65,6 +65,19 @@ class SearchRankingUtilsTest {
     }
 
     @Test
+    fun exactNicknameOutranksANameThatOnlyStartsWithTheQuery() {
+        val exactNicknamePriority =
+            SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = "Someone Else",
+                nickname = "Teja",
+                query = "teja",
+            )
+        val namePrefixPriority = SearchRankingUtils.calculateMatchPriority("Tejal", "teja")
+
+        assertTrue(exactNicknamePriority < namePrefixPriority)
+    }
+
+    @Test
     fun commaSeparatedNicknamesEachMatchOnTheirOwn() {
         listOf("tv", "remote", "cast").forEach { query ->
             val priority =
