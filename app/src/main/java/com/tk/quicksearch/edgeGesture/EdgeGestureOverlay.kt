@@ -17,8 +17,10 @@ import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.WindowManager
 import com.tk.quicksearch.app.MainActivity
+import com.tk.quicksearch.search.data.preferences.EdgeGestureActivation
 import com.tk.quicksearch.search.data.preferences.EdgeGestureConfig
 import com.tk.quicksearch.search.data.preferences.EdgeGesturePreferences
 import com.tk.quicksearch.search.data.preferences.EdgeGestureSide
@@ -26,15 +28,15 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /**
- * Invisible edge handle drawn as an accessibility overlay. Swiping it, or holding it briefly,
- * opens Quick Search from any app. It never reads screen content.
+ * Invisible edge handle drawn as an accessibility overlay. Tapping or sliding it, according to
+ * the user's selection, opens Quick Search from any app. It never reads screen content.
  */
 class EdgeGestureOverlay(
     private val service: AccessibilityService,
 ) {
     private val windowManager = service.getSystemService(WindowManager::class.java)
     private val preferences = EdgeGesturePreferences(service)
-    private var handleView: HandleView? = null
+    private val handleViews = mutableMapOf<HandleLocation, HandleView>()
     private var previewVisible = false
 
     // Held as a field: SharedPreferences keeps listeners only weakly.
@@ -53,7 +55,7 @@ class EdgeGestureOverlay(
         removeHandle()
     }
 
-    /** Highlights the handle while the user customizes it; swipes then only give feedback. */
+    /** Prevents the customization preview from launching Quick Search. */
     fun setPreviewVisible(visible: Boolean) {
         if (previewVisible == visible) return
         previewVisible = visible
@@ -66,36 +68,54 @@ class EdgeGestureOverlay(
             removeHandle()
             return
         }
-        val params = layoutParams(config)
-        val view = handleView
-        if (view == null) {
-            val newView = HandleView(service)
-            newView.background = handleBackground(config)
-            runCatching { windowManager.addView(newView, params) }
-                .onSuccess {
-                    handleView = newView
-                    Log.d(
-                        TAG,
-                        "handle added: ${params.width}x${params.height} at x=${params.x} y=${params.y}",
-                    )
-                }
-                .onFailure { error -> Log.w(TAG, "handle not added", error) }
-        } else {
-            view.background = handleBackground(config)
-            runCatching { windowManager.updateViewLayout(view, params) }
+        val desiredLocations = handleLocations(config.side)
+        (handleViews.keys - desiredLocations.toSet()).forEach(::removeHandle)
+        desiredLocations.forEach { location ->
+            val params = layoutParams(config, location)
+            val view = handleViews[location]
+            if (view == null) {
+                val newView = HandleView(service).apply { activation = config.activation }
+                newView.background = handleBackground(config, location)
+                runCatching { windowManager.addView(newView, params) }
+                    .onSuccess {
+                        handleViews[location] = newView
+                        // Request the exclusion again after WindowManager has attached and measured
+                        // the view, matching the lifecycle used by established edge-overlay apps.
+                        newView.post { newView.updateGestureExclusion() }
+                        Log.d(
+                            TAG,
+                            "$location handle added: ${params.width}x${params.height} " +
+                                "at x=${params.x} y=${params.y}",
+                        )
+                    }.onFailure { error -> Log.w(TAG, "$location handle not added", error) }
+            } else {
+                view.activation = config.activation
+                view.background = handleBackground(config, location)
+                runCatching { windowManager.updateViewLayout(view, params) }
+                    .onSuccess { view.post { view.updateGestureExclusion() } }
+            }
         }
+    }
+
+    private fun removeHandle(location: HandleLocation) {
+        val view = handleViews.remove(location) ?: return
+        runCatching { windowManager.removeView(view) }
     }
 
     private fun removeHandle() {
-        handleView?.let { view ->
-            // A hold in flight must not launch after the handle is gone.
-            view.cancelPendingTrigger()
-            runCatching { windowManager.removeView(view) }
-        }
-        handleView = null
+        handleViews.keys.toList().forEach(::removeHandle)
     }
 
-    private fun layoutParams(config: EdgeGestureConfig): WindowManager.LayoutParams {
+    private fun handleLocations(side: EdgeGestureSide): List<HandleLocation> =
+        when (side) {
+            EdgeGestureSide.LEFT -> listOf(HandleLocation.LEFT_EDGE)
+            EdgeGestureSide.RIGHT -> listOf(HandleLocation.RIGHT_EDGE)
+        }
+
+    private fun layoutParams(
+        config: EdgeGestureConfig,
+        location: HandleLocation,
+    ): WindowManager.LayoutParams {
         val screenHeight = screenHeightPx()
         val height = (screenHeight * config.size).roundToInt().coerceIn(1, screenHeight)
         val centerY = (screenHeight * config.position).roundToInt()
@@ -111,11 +131,17 @@ class EdgeGestureOverlay(
             PixelFormat.TRANSLUCENT,
         ).apply {
             gravity =
-                Gravity.TOP or
-                    if (config.side == EdgeGestureSide.LEFT) Gravity.LEFT else Gravity.RIGHT
-            x = dpToPx(config.offsetDp)
+                when (location) {
+                    HandleLocation.LEFT_EDGE -> Gravity.TOP or Gravity.LEFT
+                    HandleLocation.RIGHT_EDGE -> Gravity.TOP or Gravity.RIGHT
+                }
+            x = 0
             y = top
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // This overlay deliberately owns its exact edge bounds instead of being inset by
+                // system bars. Its requested gesture exclusion still remains subject to Android's
+                // per-edge limit.
+                fitInsetsTypes = 0
                 layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -125,19 +151,21 @@ class EdgeGestureOverlay(
         }
     }
 
-    private fun handleBackground(config: EdgeGestureConfig): GradientDrawable? {
-        // The customization screen always shows the handle, however faint the user made it.
-        val opacity = if (previewVisible) maxOf(config.opacity, PREVIEW_MIN_OPACITY) else config.opacity
+    private fun handleBackground(
+        config: EdgeGestureConfig,
+        location: HandleLocation,
+    ): GradientDrawable? {
+        // Use the configured opacity even on the customization screen so the slider previews live.
+        val opacity = config.opacity
         if (opacity <= 0f) return null
         // Radii wider than the handle itself make the shape collapse, so cap them.
         val radius = minOf(dpToPx(HANDLE_CORNER_RADIUS_DP), dpToPx(config.widthDp) / 2).toFloat()
-        // Flush against the edge only the inner side is rounded; once it is inset it is a pill.
         val radii =
-            when {
-                config.offsetDp > 0 -> FloatArray(8) { radius }
-                config.side == EdgeGestureSide.LEFT ->
+            when (location) {
+                HandleLocation.LEFT_EDGE ->
                     floatArrayOf(0f, 0f, radius, radius, radius, radius, 0f, 0f)
-                else -> floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius)
+                HandleLocation.RIGHT_EDGE ->
+                    floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius)
             }
         return GradientDrawable().apply {
             setColor(handleColor(opacity))
@@ -189,36 +217,34 @@ class EdgeGestureOverlay(
         context: Context,
     ) : View(context) {
         private val triggerDistancePx = dpToPx(TRIGGER_DISTANCE_DP).toFloat()
+        private val tapSlopPx = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
         private var downX = 0f
         private var downY = 0f
         private var triggered = false
+        var activation = EdgeGestureActivation.SLIDE
 
-        // Either a swipe in any direction or a press held in place. Inset from the screen edge the
-        // handle gets the whole pointer stream, so a swipe is safe here; at the edge the system
-        // back gesture takes it first, which is what the offset setting exists to avoid.
-        private val holdRunnable = Runnable { trigger() }
-
-        fun cancelPendingTrigger() = removeCallbacks(holdRunnable)
+        fun updateGestureExclusion() {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || width <= 0 || height <= 0) return
+            systemGestureExclusionRects = listOf(Rect(0, 0, width, height))
+        }
 
         private fun trigger() {
             if (triggered) return
             triggered = true
-            cancelPendingTrigger()
             onTrigger(this)
         }
 
-        override fun onSizeChanged(
-            width: Int,
-            height: Int,
-            oldWidth: Int,
-            oldHeight: Int,
+        override fun onLayout(
+            changed: Boolean,
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int,
         ) {
-            super.onSizeChanged(width, height, oldWidth, oldHeight)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
-            // Honoured on AOSP, ignored by some OEMs; it costs nothing and keeps the back gesture
-            // off the handle where it does work. The framework caps how much of a side edge an
-            // ordinary window may exclude, so a tall handle only keeps part of its length.
-            systemGestureExclusionRects = listOf(Rect(0, 0, width, height))
+            super.onLayout(changed, left, top, right, bottom)
+            // Give this narrow edge control priority over Back. Android limits the total honored
+            // vertical extent of gesture exclusions on each edge to 200 dp.
+            updateGestureExclusion()
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -228,18 +254,28 @@ class EdgeGestureOverlay(
                     downX = event.rawX
                     downY = event.rawY
                     triggered = false
-                    postDelayed(holdRunnable, TRIGGER_HOLD_MS)
                 }
 
                 MotionEvent.ACTION_MOVE ->
-                    if (!triggered &&
+                    if (activation == EdgeGestureActivation.SLIDE &&
+                        !triggered &&
                         (abs(event.rawX - downX) > triggerDistancePx ||
                             abs(event.rawY - downY) > triggerDistancePx)
                     ) {
                         trigger()
                     }
 
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> cancelPendingTrigger()
+                MotionEvent.ACTION_UP -> {
+                    if (activation == EdgeGestureActivation.TAP &&
+                        !triggered &&
+                        abs(event.rawX - downX) <= tapSlopPx &&
+                        abs(event.rawY - downY) <= tapSlopPx
+                    ) {
+                        trigger()
+                    }
+                }
+
+                MotionEvent.ACTION_CANCEL -> Unit
             }
             return true
         }
@@ -247,9 +283,7 @@ class EdgeGestureOverlay(
 
     companion object {
         private const val TAG = "EdgeGesture"
-        private const val TRIGGER_HOLD_MS = 350L
         private const val TRIGGER_DISTANCE_DP = 16
-        private const val PREVIEW_MIN_OPACITY = 0.7f
         private const val HANDLE_CORNER_RADIUS_DP = 12
 
         fun launchIntent(context: Context): Intent =
@@ -262,5 +296,10 @@ class EdgeGestureOverlay(
                         Intent.FLAG_ACTIVITY_CLEAR_TOP,
                 )
             }
+    }
+
+    private enum class HandleLocation {
+        LEFT_EDGE,
+        RIGHT_EDGE,
     }
 }

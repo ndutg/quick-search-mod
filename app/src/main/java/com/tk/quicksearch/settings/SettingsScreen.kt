@@ -388,31 +388,6 @@ fun SettingsScreen(
                     SettingsNavigationRow(
                         item =
                             SettingsCardItem(
-                                title = stringResource(R.string.settings_app_language_title),
-                                description =
-                                    stringResource(
-                                        R.string.settings_app_language_desc,
-                                        selectedLanguageLabel,
-                                    ),
-                                icon = Icons.Rounded.Translate,
-                                actionOnPress = {
-                                    showLanguageDialog = true
-                                },
-                            ),
-                        contentPadding =
-                            PaddingValues(
-                                horizontal = DesignTokens.SpacingXXLarge,
-                                vertical = DesignTokens.SpacingLarge,
-                            ),
-                    )
-
-                    HorizontalDivider(
-                        color = AppColors.SettingsDivider,
-                    )
-
-                    SettingsNavigationRow(
-                        item =
-                            SettingsCardItem(
                                 title = stringResource(R.string.settings_launch_options_title),
                                 description = stringResource(R.string.settings_launch_options_desc),
                                 icon = Icons.Rounded.RocketLaunch,
@@ -439,6 +414,31 @@ fun SettingsScreen(
                                 icon = Icons.Rounded.AdminPanelSettings,
                                 actionOnPress = {
                                     onNavigateToDetail(SettingsDetailType.PERMISSIONS)
+                                },
+                            ),
+                        contentPadding =
+                            PaddingValues(
+                                horizontal = DesignTokens.SpacingXXLarge,
+                                vertical = DesignTokens.SpacingLarge,
+                            ),
+                    )
+
+                    HorizontalDivider(
+                        color = AppColors.SettingsDivider,
+                    )
+
+                    SettingsNavigationRow(
+                        item =
+                            SettingsCardItem(
+                                title = stringResource(R.string.settings_app_language_title),
+                                description =
+                                    stringResource(
+                                        R.string.settings_app_language_desc,
+                                        selectedLanguageLabel,
+                                    ),
+                                icon = Icons.Rounded.Translate,
+                                actionOnPress = {
+                                    showLanguageDialog = true
                                 },
                             ),
                         contentPadding =

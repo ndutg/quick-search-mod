@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -28,6 +27,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.preferences.EdgeGestureActivation
 import com.tk.quicksearch.search.data.preferences.EdgeGestureConfig
 import com.tk.quicksearch.search.data.preferences.EdgeGestureSide
 import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
@@ -38,13 +38,10 @@ import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.settings.shared.SettingsToggleSliderDetails
 import com.tk.quicksearch.shared.permissions.LockScreenAccessibilityDisclosureDialog
 import com.tk.quicksearch.shared.permissions.shouldShowAccessibilityDisclosure
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlin.math.roundToInt
 
 private const val WidthStepDp = 4
-private const val OffsetStepDp = 8
-
 /** Enables the system-wide edge swipe handle and customizes its side, position, size and width. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +63,7 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
         }
     }
 
-    // Highlight the handle on screen only while this page is visible.
+    // Keep customization preview mode synchronized with this page's lifecycle.
     DisposableEffect(lifecycleOwner) {
         val observer =
             LifecycleEventObserver { _, event ->
@@ -137,7 +134,7 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
             }
         }
 
-        if (config.enabled) {
+        if (config.enabled && isAccessibilityEnabled) {
             SettingsCard(modifier = Modifier.fillMaxWidth()) {
                 Column(
                     modifier =
@@ -180,13 +177,46 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
                             }
                         }
                     }
+                    Text(
+                        text = stringResource(R.string.settings_edge_gesture_activation),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                        EdgeGestureActivation.entries.forEachIndexed { index, activation ->
+                            SegmentedButton(
+                                selected = config.activation == activation,
+                                onClick = {
+                                    preferences.setEdgeGestureActivation(activation)
+                                    config = config.copy(activation = activation)
+                                },
+                                shape =
+                                    SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = EdgeGestureActivation.entries.size,
+                                    ),
+                                icon = {},
+                            ) {
+                                Text(
+                                    stringResource(
+                                        when (activation) {
+                                            EdgeGestureActivation.TAP ->
+                                                R.string.settings_edge_gesture_activation_tap
+                                            EdgeGestureActivation.SLIDE ->
+                                                R.string.settings_edge_gesture_activation_slide
+                                        },
+                                    ),
+                                )
+                            }
+                        }
+                    }
                 }
-                HorizontalDivider(color = AppColors.SettingsDivider)
                 SettingsToggleRow(
                     title = stringResource(R.string.settings_edge_gesture_position),
                     checked = false,
                     onCheckedChange = {},
                     showSwitch = false,
+                    showDivider = false,
                     sliderDetails =
                         SettingsToggleSliderDetails(
                             value = config.position,
@@ -204,6 +234,7 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
                     checked = false,
                     onCheckedChange = {},
                     showSwitch = false,
+                    showDivider = false,
                     sliderDetails =
                         SettingsToggleSliderDetails(
                             value = config.size,
@@ -221,6 +252,7 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
                     checked = false,
                     onCheckedChange = {},
                     showSwitch = false,
+                    showDivider = false,
                     sliderDetails =
                         SettingsToggleSliderDetails(
                             value = config.opacity,
@@ -229,33 +261,7 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
                                 config = config.copy(opacity = value)
                             },
                             valueRange = 0f..1f,
-                            description = stringResource(R.string.settings_edge_gesture_visibility_desc),
                             valueLabel = "${(config.opacity * 100).roundToInt()}%",
-                            valueLabelWidth = DesignTokens.SpacingXXLarge * 2,
-                        ),
-                )
-                SettingsToggleRow(
-                    title = stringResource(R.string.settings_edge_gesture_offset),
-                    checked = false,
-                    onCheckedChange = {},
-                    showSwitch = false,
-                    sliderDetails =
-                        SettingsToggleSliderDetails(
-                            value = config.offsetDp.toFloat(),
-                            onValueChange = { value ->
-                                val offsetDp = (value / OffsetStepDp).roundToInt() * OffsetStepDp
-                                if (offsetDp != config.offsetDp) {
-                                    preferences.setEdgeGestureOffsetDp(offsetDp)
-                                    config = config.copy(offsetDp = offsetDp)
-                                }
-                            },
-                            valueRange =
-                                EdgeGestureConfig.MIN_OFFSET_DP.toFloat()..EdgeGestureConfig.MAX_OFFSET_DP.toFloat(),
-                            steps =
-                                (EdgeGestureConfig.MAX_OFFSET_DP - EdgeGestureConfig.MIN_OFFSET_DP) /
-                                    OffsetStepDp - 1,
-                            description = stringResource(R.string.settings_edge_gesture_offset_desc),
-                            valueLabel = "${config.offsetDp} dp",
                             valueLabelWidth = DesignTokens.SpacingXXLarge * 2,
                         ),
                 )
@@ -265,6 +271,7 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
                     onCheckedChange = {},
                     showSwitch = false,
                     isLastItem = true,
+                    showDivider = false,
                     sliderDetails =
                         SettingsToggleSliderDetails(
                             value = config.widthDp.toFloat(),
@@ -284,13 +291,6 @@ fun EdgeGestureSettingsSection(modifier: Modifier = Modifier) {
                         ),
                 )
             }
-
-            Text(
-                text = stringResource(R.string.settings_edge_gesture_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
-            )
         }
     }
 }

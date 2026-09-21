@@ -425,7 +425,8 @@ class UserAppPreferences(
 
     fun setEdgeGestureOpacity(opacity: Float) = edgeGesturePreferences.setOpacity(opacity)
 
-    fun setEdgeGestureOffsetDp(offsetDp: Int) = edgeGesturePreferences.setOffsetDp(offsetDp)
+    fun setEdgeGestureActivation(activation: EdgeGestureActivation) =
+        edgeGesturePreferences.setActivation(activation)
 
     // ============================================================================
     // Reminder Preferences
