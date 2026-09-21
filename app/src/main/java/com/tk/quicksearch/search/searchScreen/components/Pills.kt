@@ -18,9 +18,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +37,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -151,6 +155,93 @@ internal fun PhoneCallPill(
             Spacer(modifier = Modifier.size(DesignTokens.SpacingXSmall))
             Text(
                 text = stringResource(R.string.contact_method_call_label),
+                style = MaterialTheme.typography.labelSmall,
+                color = if (isDarkTheme) Color.White else Color.Black,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+    }
+}
+
+@Composable
+internal fun SetAlarmPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = ClockActionPill(
+    icon = Icons.Rounded.Alarm,
+    label = stringResource(R.string.set_alarm_action_label),
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+internal fun StartTimerPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = ClockActionPill(
+    icon = Icons.Rounded.Timer,
+    label = stringResource(R.string.start_timer_action_label),
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+internal fun CreateReminderPill(
+    onClick: () -> Unit,
+    useShortLabel: Boolean = false,
+    modifier: Modifier = Modifier,
+) = ClockActionPill(
+    icon = Icons.Rounded.Notifications,
+    label = stringResource(if (useShortLabel) R.string.reminder_name_hint else R.string.app_setting_create_reminder),
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
+private fun ClockActionPill(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isDarkTheme = LocalAppIsDarkTheme.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val borderColor =
+        if (isDarkTheme) {
+            AppColors.Accent.copy(alpha = 0.22f)
+        } else {
+            Color.Black.copy(alpha = 0.1f)
+        }
+
+    Surface(
+        modifier = modifier,
+        onClick = onClick,
+        interactionSource = interactionSource,
+        shape = DesignTokens.ShapeFull,
+        color = if (isDarkTheme) Color.Black else Color.White,
+        border = BorderStroke(DesignTokens.KeyboardPillBorderStrokeWidth, borderColor),
+        tonalElevation = DesignTokens.ElevationLevel0,
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .padding(
+                        horizontal = DesignTokens.SpacingMedium,
+                        vertical = DesignTokens.SpacingXSmall,
+                    )
+                    .height(DesignTokens.IconSize),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = AppColors.Accent,
+                modifier = Modifier.size(PhoneCallPillIconSize),
+            )
+            Spacer(modifier = Modifier.size(DesignTokens.SpacingXSmall))
+            Text(
+                text = label,
                 style = MaterialTheme.typography.labelSmall,
                 color = if (isDarkTheme) Color.White else Color.Black,
                 fontWeight = FontWeight.Medium,

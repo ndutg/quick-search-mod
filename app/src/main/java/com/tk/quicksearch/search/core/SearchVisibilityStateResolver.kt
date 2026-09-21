@@ -12,6 +12,7 @@ internal class SearchVisibilityStateResolver {
             filesSectionState = computeFilesSectionVisibility(state),
             settingsSectionState = computeSettingsSectionVisibility(state),
             calendarSectionState = computeCalendarSectionVisibility(state),
+            remindersSectionState = computeRemindersSectionVisibility(state),
             notesSectionState = computeNotesSectionVisibility(state),
             searchEnginesState = computeSearchEnginesVisibility(state),
         )
@@ -24,7 +25,8 @@ internal class SearchVisibilityStateResolver {
             !state.hasUsagePermission -> ScreenVisibilityState.NoPermissions
             state.query.isBlank() &&
                 state.recentApps.isEmpty() &&
-                state.pinnedApps.isEmpty() ->
+                state.pinnedApps.isEmpty() &&
+                state.appFolders.isEmpty() ->
                 ScreenVisibilityState.Empty
             else -> ScreenVisibilityState.Content
         }
@@ -39,6 +41,7 @@ internal class SearchVisibilityStateResolver {
                 val hasContent =
                     state.recentApps.isNotEmpty() ||
                         state.pinnedApps.isNotEmpty() ||
+                        state.appFolders.isNotEmpty() ||
                         (state.showAllAppsButton && state.allApps.any { it.hasLaunchIntent })
                 if (hasContent) {
                     AppsSectionVisibility.ShowingResults(hasPinned = state.pinnedApps.isNotEmpty())
@@ -145,6 +148,22 @@ internal class SearchVisibilityStateResolver {
                     CalendarSectionVisibility.ShowingResults(hasPinned = hasPinned)
                 } else {
                     CalendarSectionVisibility.NoResults
+                }
+            }
+        }
+    }
+
+    private fun computeRemindersSectionVisibility(state: SearchUiState): RemindersSectionVisibility {
+        val sectionEnabled = isSectionEnabledForCurrentQuery(state, SearchSection.REMINDERS)
+        return when {
+            !sectionEnabled -> RemindersSectionVisibility.Hidden
+            else -> {
+                val hasResults = state.reminderResults.isNotEmpty()
+                val hasPinned = state.pinnedReminders.isNotEmpty()
+                if (hasResults || hasPinned) {
+                    RemindersSectionVisibility.ShowingResults(hasPinned = hasPinned)
+                } else {
+                    RemindersSectionVisibility.NoResults
                 }
             }
         }

@@ -1093,6 +1093,8 @@ private sealed class CustomWidgetSearchResult {
             }
 
             is AppShortcut -> {
+                // No app-icon fallback here: the icon loaders fall back at render time, and a
+                // persisted app icon would be badged with a second copy of itself.
                 val iconBase64 =
                     shortcut.iconBase64
                         ?: loadShortcutIconBase64(
@@ -1100,7 +1102,6 @@ private sealed class CustomWidgetSearchResult {
                             packageName = shortcut.packageName,
                             iconResId = shortcut.iconResId,
                         )
-                        ?: loadAppIconBase64(context, shortcut.packageName)
 
                 CustomWidgetButtonAction.AppShortcut(
                     packageName = shortcut.packageName,

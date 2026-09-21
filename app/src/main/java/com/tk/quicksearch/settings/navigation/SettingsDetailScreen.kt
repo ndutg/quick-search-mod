@@ -1,7 +1,12 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -34,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
@@ -44,6 +51,7 @@ import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.settings.FeaturesList
 import com.tk.quicksearch.settings.OpenSourceLicenseEntry
 import com.tk.quicksearch.settings.OpenSourceLicensesList
+import com.tk.quicksearch.settings.downloadAndShareFeatures
 import com.tk.quicksearch.settings.searchEnginesScreen.SearchEngines
 import com.tk.quicksearch.settings.shared.SettingsScreenCallbacks
 import com.tk.quicksearch.settings.shared.SettingsCommand
@@ -77,6 +85,42 @@ internal fun SettingsDetailLevel1Screen(
     if (detailType.isLevel2()) return
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val exportFeatures: () -> Unit = {
+        coroutineScope.launch {
+            runCatching { downloadAndShareFeatures(context) }
+                .onFailure {
+                    Toast.makeText(
+                        context,
+                        R.string.settings_features_export_failed,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+        }
+    }
+    val legacyStoragePermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                exportFeatures()
+            } else {
+                Toast.makeText(
+                    context,
+                    R.string.settings_features_export_failed,
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
+    val onExportFeatures: () -> Unit = {
+        if (
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            legacyStoragePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            exportFeatures()
+        }
+    }
     var selectedOpenSourceLicense by
         remember(detailType) { mutableStateOf<OpenSourceLicenseEntry?>(null) }
     val onBackAction: () -> Unit =
@@ -86,7 +130,6 @@ internal fun SettingsDetailLevel1Screen(
             callbacks.onBack
         }
     BackHandler(onBack = onBackAction)
-    val coroutineScope = rememberCoroutineScope()
     val hasExcludedItems =
         state.suggestionExcludedApps.isNotEmpty() ||
             state.resultExcludedApps.isNotEmpty() ||
@@ -122,6 +165,21 @@ internal fun SettingsDetailLevel1Screen(
             SettingsDetailHeader(
                 title = stringResource(detailType.titleResId()),
                 onBack = onBackAction,
+                trailingContent =
+                    if (detailType == SettingsDetailType.FEATURES_LIST) {
+                        {
+                            IconButton(onClick = onExportFeatures) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Download,
+                                    contentDescription =
+                                        stringResource(R.string.settings_features_export),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                        }
+                    } else {
+                        null
+                    },
             )
 
             Column(
@@ -242,6 +300,9 @@ internal fun SettingsDetailLevel1Screen(
                             },
                             onNavigateToNotes = {
                                 onNavigateToDetail(SettingsDetailType.NOTES)
+                            },
+                            onNavigateToReminders = {
+                                onNavigateToDetail(SettingsDetailType.REMINDERS)
                             },
                         )
                     }
@@ -544,6 +605,7 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.APP_SHORTCUTS,
                     SettingsDetailType.DEVICE_SETTINGS,
                     SettingsDetailType.CALENDAR_EVENTS,
+                    SettingsDetailType.REMINDERS,
                     SettingsDetailType.NOTES,
                     SettingsDetailType.NOTE_EDITOR,
                     SettingsDetailType.CALLS_TEXTS,

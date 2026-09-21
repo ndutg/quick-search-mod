@@ -109,6 +109,7 @@
     <string name="settings_gestures_desc">Προσαρμογή ενεργειών σάρωσης</string>
     <string name="settings_gesture_swipe_right">Σάρωση δεξιά</string>
     <string name="settings_gesture_widget_panel">Πίνακας widget</string>
+    <string name="widget_pinned_to_home">Προστέθηκε στην Αρχική</string>
     <string name="settings_gesture_swipe_left">Σάρωση αριστερά</string>
     <string name="settings_gesture_swipe_up">Σάρωση προς τα πάνω</string>
     <string name="settings_gesture_swipe_down">Σάρωση προς τα κάτω</string>
@@ -140,6 +141,8 @@
     <string name="notification_pinned_item_type_file">Αρχείο</string>
     <string name="notification_pinned_item_type_note">Σημείωση</string>
     <string name="action_remove">Κατάργηση</string>
+    <string name="folder_name_placeholder">Προσθήκη ονόματος φακέλου</string>
+    <string name="folder_remove_from_folder">Κατάργηση από τον φάκελο</string>
     <string name="app_swipe_current_action">Τρέχουσα ενέργεια</string>
     <string name="app_swipe_up_picker_title">Επιλογή ενέργειας σύρσης προς τα πάνω για %1$s</string>
     <string name="app_swipe_down_picker_title">Επιλογή ενέργειας σύρσης προς τα κάτω για %1$s</string>
@@ -202,7 +205,7 @@
     <string name="dialog_edit_amazon_domain_message">Ενημερώστε το domain της Amazon για τη χώρα σας.</string>
     <string name="dialog_edit_amazon_domain_title">Επεξεργασία Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Επιλογή μοντέλου</string>
-    <string name="dialog_nickname_message">Εισαγάγετε ένα ψευδώνυμο για το "%1$s". Μπορείτε να το αναζητήσετε χρησιμοποιώντας αυτό το ψευδώνυμο.</string>
+    <string name="dialog_nickname_message">Εισαγάγετε ένα ή περισσότερα ψευδώνυμα για το "%1$s", χωρισμένα με κόμματα. Μπορείτε να το αναζητήσετε χρησιμοποιώντας οποιοδήποτε από αυτά.</string>
     <string name="dialog_ok">Συνέχεια</string>
     <string name="dialog_okay">Εντάξει</string>
     <string name="dialog_remember_choice">Απομνημόνευση επιλογής</string>
@@ -239,7 +242,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Νέες/Ενημερωμένες</string>
     <string name="app_suggestions_tab_pinned">Καρφιτσωμένες</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Οι καρφιτσωμένες εφαρμογές θα εμφανίζονται ακόμα στην καρτέλα %1$s</string>
     <string name="app_suggestions_tab_recent">Πρόσφατες</string>
     <string name="app_suggestions_tabs_dialog_message">Επιλέξτε ποιες καρτέλες προτάσεων εφαρμογών θα εμφανίζονται στην αρχική οθόνη.</string>
     <string name="app_suggestions_tabs_dialog_title">Καρτέλες προτάσεων εφαρμογών</string>
@@ -317,7 +319,7 @@
     <string name="action_disable_app_shortcut">Απενεργοποίηση</string>
     <string name="action_disable_all_app_shortcuts_named">Απενεργοποίηση όλων των συντομεύσεων %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Η συντόμευση απενεργοποιήθηκε</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις συντομεύσεων εφαρμογών.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Μπορείτε να την ενεργοποιήσετε αργότερα στις ρυθμίσεις.</string>
     <string name="apps_refreshed_successfully">Επιτυχής ανανέωση εφαρμογών</string>
     <string name="error_loading_user_apps">Δεν ήταν δυνατή η φόρτωση των εφαρμογών σας. Δοκιμάστε ξανά σε λίγο.</string>
     <string name="error_uninstall_app">Αδυναμία απεγκατάστασης του %1$s</string>
@@ -662,6 +664,9 @@
     <string name="settings_all_quick_search_features_desc">Δείτε την πλήρη λίστα με τις δυνατότητες και τις λειτουργίες</string>
     <string name="settings_app_settings_desc">Αναζήτηση στις ρυθμίσεις του Quick Search</string>
     <string name="settings_features_load_failed">Αδυναμία φόρτωσης τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_export">Λήψη και κοινοποίηση δυνατοτήτων</string>
+    <string name="settings_features_export_failed">Δεν ήταν δυνατή η αποθήκευση της τεκμηρίωσης δυνατοτήτων.</string>
+    <string name="settings_features_saved_to_downloads">Αποθηκεύτηκε στις Λήψεις</string>
     <string name="settings_features_sections_title">Περιεχόμενα</string>
     <string name="settings_search_description_change_app_theme">Αλλαγή θέματος εφαρμογής</string>
     <string name="settings_search_description_change_font_size">Αλλαγή μεγέθους γραμματοσειράς εφαρμογής</string>
@@ -838,6 +843,9 @@
     <string name="settings_direct_search_grounding_label">Αναζήτηση στον ιστό</string>
     <string name="settings_direct_search_how_to">Λάβετε δωρεάν κλειδί API</string>
     <string name="settings_direct_search_model_label">Μοντέλο</string>
+    <string name="settings_select_model">Επιλογή μοντέλου</string>
+    <string name="ai_error_selected_model_unavailable">Το επιλεγμένο μοντέλο δεν είναι διαθέσιμο. Επιλέξτε άλλο μοντέλο στις ρυθμίσεις.</string>
+    <string name="settings_loading_models">Φόρτωση μοντέλων…</string>
     <string name="settings_direct_search_personal_context">Προσωπικό πλαίσιο</string>
     <string name="settings_direct_search_personal_context_hint">Προσθέστε οποιοδήποτε πλαίσιο θέλετε να χρησιμοποιεί η AI κατά τη δημιουργία απαντήσεων.</string>
     <string name="settings_direct_search_personal_context_unsupported">Το προσωπικό πλαίσιο δεν είναι διαθέσιμο για αυτό το μοντέλο.</string>
@@ -897,7 +905,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Δείτε τον πηγαίο κώδικα αυτού του έργου στο GitHub</string>
     <string name="settings_feedback_github_title">Ανάπτυξη</string>
-    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη</string>
+    <string name="settings_feedback_rate_desc">Αφήστε μια αξιολόγηση 5 αστέρων εάν βρίσκετε αυτή την εφαρμογή χρήσιμη 🙏</string>
     <string name="settings_feedback_rate_title">Αξιολογήστε το Quick Search</string>
     <string name="settings_feedback_send_desc">Αναφέρετε σφάλματα ή ζητήστε νέες δυνατότητες</string>
     <string name="settings_feedback_send_title">Αποστολή σχολίων</string>
@@ -917,6 +925,10 @@
     <string name="currency_converter_requires_gemini_key">Απαιτείται ένα κλειδί API παρόχου AI</string>
     <string name="currency_converter_toggle_desc">Παράδειγμα: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>
+    <string name="set_alarm_action_label">Ορισμός ξυπνητηριού</string>
+    <string name="set_alarm_no_clock_app">Δεν βρέθηκε εφαρμογή ρολογιού</string>
+    <string name="start_timer_action_label">Έναρξη χρονομέτρου</string>
+    <string name="start_timer_started">Ο χρονομέτρης ξεκίνησε</string>
     <string name="color_visualizer_toggle_title">Οπτικοποίηση χρώματος</string>
     <string name="color_visualizer_toggle_desc">Παραδείγματα: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Εισαγάγετε ένα χρώμα hex ή RGB</string>
@@ -1031,7 +1043,7 @@
     <string name="permissions_calendar_desc">Απαραίτητο για την αναζήτηση συμβάντων στο ημερολόγιό σας.</string>
     <string name="permissions_calling_desc">Απαραίτητο για την απευθείας κλήση των επαφών σας χωρίς το άνοιγμα της εφαρμογής κλήσεων.</string>
     <string name="settings_notifications_permission_title">Δημοσίευση ειδοποιήσεων</string>
-    <string name="permissions_notifications_desc">Απαιτείται για το καρφίτσωμα αποτελεσμάτων αναζήτησης στον πίνακα ειδοποιήσεων</string>
+    <string name="permissions_notifications_desc">Απαιτείται για ειδοποιήσεις υπενθυμίσεων και για καρφίτσωμα αποτελεσμάτων αναζήτησης στον πίνακα ειδοποιήσεων</string>
     <string name="permissions_notification_access_desc">Απαιτείται για την ενεργοποίηση των κουκκίδων ειδοποιήσεων και του ιστορικού ειδοποιήσεων</string>
     <string name="permissions_accessibility_lock_screen_title">Προσβασιμότητα</string>
     <string name="permissions_accessibility_lock_screen_desc">Επιτρέπει στη χειρονομία διπλού πατήματος να κλειδώνει τη συσκευή σας και στη χειρονομία σάρωσης από την άκρη να ανοίγει το Quick Search.</string>
@@ -1184,5 +1196,38 @@
     <string name="settings_tavily_desc">Προσθέστε κλειδί API του Tavily για υποστήριξη αναζήτησης ιστού σε μοντέλα που δεν την υποστηρίζουν.</string>
     <string name="settings_tavily_mode_always">Να χρησιμοποιείται πάντα το Tavily για αναζήτηση ιστού</string>
     <string name="settings_tavily_mode_when_unsupported">Χρήση μόνο όταν το μοντέλο δεν υποστηρίζει αναζήτηση ιστού</string>
+    <string name="settings_weather_no_web_search_warning">Ο Καιρός χρειάζεται αποτελέσματα ιστού. Επίλεξε μοντέλο που υποστηρίζει αναζήτηση ιστού ή πρόσθεσε κλειδί API Tavily στη Ρύθμιση κλειδιού API.</string>
     <string name="tavily_search_failed_toast">Η αναζήτηση ιστού Tavily απέτυχε. Απάντηση χωρίς αποτελέσματα ιστού.</string>
+    <string name="search_hint_reminders">Αναζήτηση υπενθυμίσεων…</string>
+    <string name="search_section_reminders_toggle_desc">Ενεργοποίηση ή απενεργοποίηση αναζήτησης υπενθυμίσεων</string>
+    <string name="search_section_reminders_toggle_title">Αναζήτηση υπενθυμίσεων</string>
+    <string name="section_reminders">Υπενθυμίσεις</string>
+    <string name="reminders_notification_channel_name">Υπενθυμίσεις</string>
+    <string name="reminders_notification_channel_description">Ειδοποιήσεις για υπενθυμίσεις που δημιουργείτε στο Quick Search</string>
+    <string name="reminder_notification_action_done">Ολοκληρώθηκε</string>
+    <string name="reminder_notification_action_snooze">Αναβολή (30 λεπτά)</string>
+    <string name="reminder_new_title">Νέα υπενθύμιση</string>
+    <string name="reminder_edit_title">Επεξεργασία υπενθύμισης</string>
+    <string name="reminder_name_hint">Υπενθύμιση</string>
+    <string name="reminder_delete">Διαγραφή υπενθύμισης</string>
+    <string name="reminder_status_done">Ολοκληρώθηκε</string>
+    <string name="reminder_status_overdue">Εκπρόθεσμη</string>
+    <string name="reminder_notification_due_at">Λήγει στις %1$s</string>
+    <string name="reminder_notification_due_on">Λήγει στις %1$s</string>
+    <string name="action_mark_as_done">Σήμανση ως ολοκληρωμένη</string>
+    <string name="action_expand_more_reminders">Περισσότερες υπενθυμίσεις</string>
+    <string name="reminders_empty">Δεν υπάρχουν υπενθυμίσεις ακόμα</string>
+    <string name="settings_reminders_view_all_desc">Προβολή όλων των υπενθυμίσεων</string>
+    <string name="reminders_permission_hint">Απαιτείται άδεια για την εμφάνιση ειδοποιήσεων υπενθυμίσεων. Πατήστε για να επιτρέψετε.</string>
+    <string name="reminders_home_card_dismiss">Κατάργηση από την Αρχική</string>
+    <string name="settings_include_past_reminders_title">Προηγούμενες υπενθυμίσεις</string>
+    <string name="settings_include_past_reminders_desc">Εμφάνιση προηγούμενων υπενθυμίσεων στα αποτελέσματα αναζήτησης</string>
+    <string name="app_setting_create_reminder">Δημιουργία υπενθύμισης</string>
+    <string name="app_setting_create_reminder_desc">Προσθήκη νέας υπενθύμισης</string>
+    <string name="permissions_exact_alarms_title">Ξυπνητήρια και υπενθυμίσεις</string>
+    <string name="permissions_exact_alarms_desc">Απαιτείται για την έγκαιρη παράδοση ειδοποιήσεων υπενθυμίσεων</string>
+    <string name="settings_reminders_filter_all">Όλες οι υπενθυμίσεις</string>
+    <string name="settings_reminders_filter_past">Παλαιότερα</string>
+    <string name="settings_reminders_filter_future">Μελλοντικά</string>
+    <string name="reminders_home_card_dismiss_for_now">Απόρριψη προς το παρόν</string>
 </resources>

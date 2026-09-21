@@ -8,6 +8,7 @@ data class CustomLlmProviderConfig(
     val baseUrl: String,
     val apiKey: String,
     val modelId: String,
+    val groundingEnabled: Boolean = true,
     val advancedPayload: String? = null,
     val advancedPayloadEnabled: Boolean = false,
 )
@@ -20,17 +21,19 @@ class CustomOpenAiCompatibleLlmProvider(
     private val config: CustomLlmProviderConfig? = userPreferences.getCustomLlmProvider(id)
 
     override val displayName: String = "Custom"
-    override val defaultModelId: String = config?.modelId ?: OpenAiModelCatalog.DEFAULT_MODEL_ID
-    override val defaultGroundingEnabled: Boolean = false
+    override val defaultModelId: String = config?.modelId.orEmpty()
+    override val defaultGroundingEnabled: Boolean = config?.groundingEnabled ?: true
     override val fallbackTextModels: List<LlmTextModel> =
-        listOf(
-            LlmTextModel(
-                id = defaultModelId,
-                displayName = defaultModelId,
-                supportsSystemInstructions = true,
-                supportsGrounding = false,
-            ),
-        )
+        defaultModelId.takeIf { it.isNotBlank() }?.let { modelId ->
+            listOf(
+                LlmTextModel(
+                    id = modelId,
+                    displayName = modelId,
+                    supportsSystemInstructions = true,
+                    supportsGrounding = false,
+                ),
+            )
+        }.orEmpty()
 
     override suspend fun fetchAvailableTextModels(
         apiKey: String,
@@ -53,7 +56,7 @@ class CustomOpenAiCompatibleLlmProvider(
                             supportsSystemInstructions = true,
                             supportsGrounding = false,
                         )
-                    } + fallbackTextModels
+                    }
                 allModels.distinctBy { it.id }.sortedBy { it.displayName.lowercase() }
             }
     }

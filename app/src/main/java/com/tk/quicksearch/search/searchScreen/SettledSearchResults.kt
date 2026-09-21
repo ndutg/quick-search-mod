@@ -13,6 +13,7 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.CalendarEventInfo
+import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
@@ -85,25 +86,10 @@ internal class StableTopMatchesBuffer {
         if (!state.isReady && (!isSearchRefreshing || deadlineReached)) {
             state = SettledTopMatchesState(currentMatches.take(limit), isReady = true)
         } else if (state.isReady && !isSearchRefreshing) {
-            val mergedMatches = state.matches.toMutableList()
-            val existingIndexByKey =
-                mergedMatches.mapIndexed { index, match -> match.stableKey() to index }.toMap()
-            currentMatches.forEach { candidate ->
-                val existingIndex = existingIndexByKey[candidate.stableKey()]
-                if (existingIndex == null) {
-                    if (mergedMatches.size < limit) mergedMatches += candidate
-                } else {
-                    val existing = mergedMatches[existingIndex]
-                    if (existing is TopMatchItem.AppGrid && candidate is TopMatchItem.AppGrid) {
-                        val packageNames = existing.apps.mapTo(mutableSetOf()) { it.packageName }
-                        mergedMatches[existingIndex] =
-                            existing.copy(
-                                apps = existing.apps + candidate.apps.filter { packageNames.add(it.packageName) },
-                            )
-                    }
-                }
-            }
-            state = state.copy(matches = mergedMatches)
+            // The deadline may be reached before slower sources (notably ContactsProvider) return.
+            // Once every local search has settled, adopt the final ranked set so a late, stronger
+            // match can replace an early result even when the deadline snapshot was already full.
+            state = SettledTopMatchesState(currentMatches.take(limit), isReady = true)
         }
         return state
     }
@@ -143,6 +129,7 @@ internal fun TopMatchItem.stableKey(): String =
         is TopMatchItem.Setting -> "setting:${setting.id}"
         is TopMatchItem.AppSetting -> "app-setting:${setting.id}"
         is TopMatchItem.Calendar -> "calendar:${event.eventId}"
+        is TopMatchItem.Reminder -> "reminder:${reminder.reminderId}"
         is TopMatchItem.Note -> "note:${note.noteId}"
         is TopMatchItem.Other -> "other:$itemId"
     }
@@ -155,6 +142,7 @@ private data class RegularSearchResultsSnapshot(
     val settings: List<DeviceSetting> = emptyList(),
     val appSettings: List<AppSettingResult> = emptyList(),
     val calendarEvents: List<CalendarEventInfo> = emptyList(),
+    val reminders: List<ReminderInfo> = emptyList(),
     val notes: List<NoteInfo> = emptyList(),
 )
 
@@ -212,6 +200,13 @@ internal fun rememberSettledRegularSearchRenderingState(
                         currentState.calendarEvents,
                         SearchSection.CALENDAR in secondarySectionsRefreshing,
                     ),
+            reminders =
+                remember { SettledSearchResultsBuffer(emptyList<ReminderInfo>()) }
+                    .displayedValue(
+                        query,
+                        currentState.reminderResults,
+                        SearchSection.REMINDERS in secondarySectionsRefreshing,
+                    ),
             notes =
                 remember { SettledSearchResultsBuffer(emptyList<NoteInfo>()) }
                     .displayedValue(
@@ -231,6 +226,7 @@ internal fun rememberSettledRegularSearchRenderingState(
         hasSettingResults = displayedSnapshot.settings.isNotEmpty(),
         hasAppSettingResults = displayedSnapshot.appSettings.isNotEmpty(),
         hasCalendarResults = displayedSnapshot.calendarEvents.isNotEmpty(),
+        hasReminderResults = displayedSnapshot.reminders.isNotEmpty(),
         hasNoteResults = displayedSnapshot.notes.isNotEmpty(),
         displayApps = displayedSnapshot.apps,
         appShortcutResults = displayedSnapshot.appShortcuts,
@@ -239,6 +235,7 @@ internal fun rememberSettledRegularSearchRenderingState(
         settingResults = displayedSnapshot.settings,
         appSettingResults = displayedSnapshot.appSettings,
         calendarEvents = displayedSnapshot.calendarEvents,
+        reminderResults = displayedSnapshot.reminders,
         noteResults = displayedSnapshot.notes,
     )
 }

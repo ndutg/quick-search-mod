@@ -37,21 +37,20 @@ object DateCalculatorUtils {
      * Supported formats (case-insensitive):
      *   2 years ago | 1 year 3 months ago | 6 months ago | 10 days ago | 2 weeks ago
      *   in 2 years | in 1 year 6 months | in 3 months | in 10 days | in 2 weeks
+     *   2 weeks | 10 days | 3 months — a bare duration is read as "from now"
      */
     fun parseRelativeDateQuery(query: String): LocalDate? {
         val lower = query.trim().lowercase(Locale.US)
 
-        val isFuture = lower.startsWith("in ") ||
-            lower.endsWith(" from now") ||
-            lower.endsWith(" from today")
         val isPast = lower.endsWith(" ago")
-        if (!isFuture && !isPast) return null
 
         val core = when {
             lower.startsWith("in ") -> lower.removePrefix("in ").trim()
             lower.endsWith(" from now") -> lower.removeSuffix(" from now").trim()
             lower.endsWith(" from today") -> lower.removeSuffix(" from today").trim()
-            else -> lower.removeSuffix(" ago").trim()
+            isPast -> lower.removeSuffix(" ago").trim()
+            // Bare duration ("2 weeks") — treated as a future offset from today
+            else -> lower
         }
 
         val unitPattern = Regex("""(\d+)\s*(years?|months?|weeks?|days?)""")
@@ -76,7 +75,7 @@ object DateCalculatorUtils {
         if (years == 0 && months == 0 && weeks == 0 && days == 0) return null
 
         val today = LocalDate.now()
-        return if (isFuture) {
+        return if (!isPast) {
             today.plusYears(years.toLong())
                 .plusMonths(months.toLong())
                 .plusWeeks(weeks.toLong())
@@ -251,7 +250,8 @@ object DateCalculatorUtils {
 
     /**
      * Parses time arithmetic queries like "6 hours from now", "45 minutes ago",
-     * "2 hours 30 minutes from now". Returns a [TimeResult] with the formatted time,
+     * "2 hours 30 minutes from now". A bare duration ("5min", "2 hours 30 minutes")
+     * is read as "from now". Returns a [TimeResult] with the formatted time,
      * an optional day context ("tomorrow" / "yesterday"), and isAbsolute = true.
      *
      * Returns null if the query doesn't match.
@@ -259,38 +259,51 @@ object DateCalculatorUtils {
     fun parseTimeArithmeticQuery(query: String): TimeResult? {
         val lower = query.trim().lowercase(Locale.US)
 
-        val isFuture = lower.endsWith(" from now") || lower.endsWith(" later")
         val isPast = lower.endsWith(" ago")
-        if (!isFuture && !isPast) return null
 
         val core = when {
+            lower.startsWith("in ") -> lower.removePrefix("in ").trim()
             lower.endsWith(" from now") -> lower.removeSuffix(" from now").trim()
             lower.endsWith(" later") -> lower.removeSuffix(" later").trim()
-            else -> lower.removeSuffix(" ago").trim()
+            isPast -> lower.removeSuffix(" ago").trim()
+            // Bare duration ("5min") — treated as an offset from now
+            else -> lower
         }
 
-        val unitPattern = Regex("""(\d+)\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?)""")
+        val unitPattern = Regex("""(\d+)\s*(hours?|hrs?|h|minutes?|mins?|seconds?|secs?)""")
         var hours = 0L
         var minutes = 0L
+        var seconds = 0L
         var remaining = core
         for (match in unitPattern.findAll(core)) {
             val value = match.groupValues[1].toLongOrNull() ?: continue
             when {
-                match.groupValues[2].startsWith("hour") || match.groupValues[2].startsWith("hr") -> hours = value
+                match.groupValues[2].startsWith("h") -> hours = value
                 match.groupValues[2].startsWith("min") -> minutes = value
-                match.groupValues[2].startsWith("sec") -> minutes += value / 60
+                match.groupValues[2].startsWith("sec") -> seconds = value
             }
             remaining = remaining.replace(match.value, " ")
         }
 
         if (remaining.trim().any { it.isLetterOrDigit() }) return null
-        if (hours == 0L && minutes == 0L) return null
+        if (hours == 0L && minutes == 0L && seconds == 0L) return null
 
-        val totalMinutes = hours * 60 + minutes
+        val totalSeconds = hours * 3600 + minutes * 60 + seconds
         val now = LocalDateTime.now(ZoneId.systemDefault())
-        val resultDt = if (isFuture) now.plusMinutes(totalMinutes) else now.minusMinutes(totalMinutes)
+        val resultDt = if (isPast) now.minusSeconds(totalSeconds) else now.plusSeconds(totalSeconds)
         val (time, context) = formatTimeWithDayContext(resultDt)
         return TimeResult(label = time, contextLabel = context, isAbsolute = true)
+    }
+
+    /**
+     * Parses a relative-time expression at the end of a reminder-style query, such as
+     * "Laundry in 1 hr". This is deliberately separate from [parseTimeArithmeticQuery], whose
+     * bare-duration support should remain restricted to standalone calculator queries.
+     */
+    fun parseTrailingTimeArithmeticQuery(query: String): TimeResult? {
+        val expressionStart = query.lowercase(Locale.US).lastIndexOf(" in ")
+        if (expressionStart <= 0) return null
+        return parseTimeArithmeticQuery(query.substring(expressionStart + 1))
     }
 
     /**
@@ -343,14 +356,14 @@ object DateCalculatorUtils {
             val timePart = query.substring(idx + sep.length).trim()
             val baseTime = parseTimeString(timePart) ?: continue
 
-            val unitPattern = Regex("""(\d+)\s*(hours?|hrs?|minutes?|mins?)""")
+            val unitPattern = Regex("""(\d+)\s*(hours?|hrs?|h|minutes?|mins?)""")
             var hours = 0L
             var minutes = 0L
             var remaining = unitsPart
             for (match in unitPattern.findAll(unitsPart)) {
                 val value = match.groupValues[1].toLongOrNull() ?: continue
                 when {
-                    match.groupValues[2].startsWith("hour") || match.groupValues[2].startsWith("hr") -> hours = value
+                    match.groupValues[2].startsWith("h") -> hours = value
                     match.groupValues[2].startsWith("min") -> minutes = value
                 }
                 remaining = remaining.replace(match.value, " ")

@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.deviceSettings
 
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
+import com.tk.quicksearch.search.utils.NicknameUtils
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextCache
@@ -61,7 +62,9 @@ object DeviceSettingsSearchPolicy {
         fuzzyMaxEditDistance: Int,
         textCache: SearchTextCache? = null,
     ): Boolean {
-        val supportingText = listOfNotNull(description, keywords.joinToString(" "), nickname).joinToString(" ")
+        val supportingText =
+            listOfNotNull(description, keywords.joinToString(" "), NicknameUtils.searchText(nickname))
+                .joinToString(" ")
         if (textCache != null) {
             return SearchTokenCoveragePolicy.areAllTokensCovered(
                 query = query,

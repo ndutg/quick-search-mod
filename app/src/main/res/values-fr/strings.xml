@@ -109,6 +109,7 @@
 <string name="settings_gestures_desc">Personnaliser les actions de balayage</string>
 <string name="settings_gesture_swipe_right">Balayer vers la droite</string>
 <string name="settings_gesture_widget_panel">Panneau de widgets</string>
+<string name="widget_pinned_to_home">Ajouté à l\'accueil</string>
 <string name="settings_gesture_swipe_left">Balayer vers la gauche</string>
 <string name="settings_gesture_swipe_up">Balayer vers le haut</string>
 <string name="settings_gesture_swipe_down">Balayer vers le bas</string>
@@ -140,6 +141,8 @@
     <string name="notification_pinned_item_type_file">Fichier</string>
     <string name="notification_pinned_item_type_note">Note</string>
 <string name="action_remove">Supprimer</string>
+<string name="folder_name_placeholder">Ajouter un nom de dossier</string>
+<string name="folder_remove_from_folder">Retirer du dossier</string>
 <string name="app_swipe_current_action">Action actuelle</string>
 <string name="app_swipe_up_picker_title">Choisir l\'action du balayage vers le haut pour %1$s</string>
 <string name="app_swipe_down_picker_title">Choisir l\'action du balayage vers le bas pour %1$s</string>
@@ -202,7 +205,7 @@
 <string name="dialog_edit_amazon_domain_message">Mettez à jour le domaine Amazon pour votre pays.</string>
 <string name="dialog_edit_amazon_domain_title">Modifier le domaine Amazon</string>
 <string name="dialog_gemini_model_picker_title">Sélectionner le modèle</string>
-<string name="dialog_nickname_message">Saisissez un surnom pour « %1$s ». Vous pourrez le rechercher en utilisant ce surnom.</string>
+<string name="dialog_nickname_message">Saisissez un ou plusieurs surnoms pour « %1$s », séparés par des virgules. Vous pourrez le rechercher en utilisant n\'importe lequel d\'entre eux.</string>
 <string name="dialog_ok">Continuer</string>
 <string name="dialog_okay">D\'accord</string>
 <string name="dialog_remember_choice">Se souvenir de ce choix</string>
@@ -239,7 +242,6 @@
      ============================================================================ -->
 <string name="app_suggestions_tab_new_updated">Nouveautés/Mises à jour</string>
 <string name="app_suggestions_tab_pinned">Épinglées</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Les applications épinglées apparaîtront toujours dans l’onglet %1$s</string>
 <string name="app_suggestions_tab_recent">Récents</string>
 <string name="app_suggestions_tabs_dialog_message">Choisissez les onglets de suggestions d\'applications à afficher sur l\'écran d\'accueil.</string>
 <string name="app_suggestions_tabs_dialog_title">Onglets de suggestions d\'applications</string>
@@ -317,7 +319,7 @@
 <string name="action_disable_app_shortcut">Désactiver</string>
 <string name="action_disable_all_app_shortcuts_named">Désactiver tous les raccourcis %1$s</string>
 <string name="snackbar_app_shortcut_disabled_title">Raccourci désactivé</string>
-<string name="snackbar_app_shortcut_disabled_supporting">Vous pourrez le réactiver plus tard dans les paramètres des raccourcis d\'apps.</string>
+<string name="snackbar_app_shortcut_disabled_supporting">Vous pourrez l’activer plus tard dans les paramètres.</string>
 <string name="apps_refreshed_successfully">Applications actualisées avec succès</string>
 <string name="error_loading_user_apps">Impossible de charger vos applications. Réessayez dans un instant.</string>
 <string name="error_uninstall_app">Impossible de désinstaller %1$s</string>
@@ -662,6 +664,9 @@
 <string name="settings_all_quick_search_features_desc">Voir la liste complète des fonctionnalités et capacités</string>
 <string name="settings_app_settings_desc">Rechercher dans les paramètres de Quick Search</string>
 <string name="settings_features_load_failed">Impossible de charger la documentation des fonctionnalités.</string>
+<string name="settings_features_export">Télécharger et partager les fonctionnalités</string>
+<string name="settings_features_export_failed">Impossible d’enregistrer la documentation des fonctionnalités.</string>
+<string name="settings_features_saved_to_downloads">Enregistré dans Téléchargements</string>
 <string name="settings_features_sections_title">Sommaire</string>
 <string name="settings_search_description_change_app_theme">Changer le thème de l\'application</string>
 <string name="settings_search_description_change_font_size">Changer la taille de la police de l\'application</string>
@@ -838,6 +843,9 @@
 <string name="settings_direct_search_grounding_label">Recherche Web</string>
 <string name="settings_direct_search_how_to">Obtenir une clé API gratuite</string>
 <string name="settings_direct_search_model_label">Modèle</string>
+<string name="settings_select_model">Sélectionner un modèle</string>
+<string name="ai_error_selected_model_unavailable">Le modèle sélectionné n’est pas disponible. Choisissez un autre modèle dans les paramètres.</string>
+<string name="settings_loading_models">Chargement des modèles…</string>
 <string name="settings_direct_search_personal_context">Contexte personnel</string>
 <string name="settings_direct_search_personal_context_hint">Ajoutez tout contexte que vous souhaitez que l\'AI utilise pour générer ses réponses.</string>
 <string name="settings_direct_search_personal_context_unsupported">Le contexte personnel n\'est pas disponible pour ce modèle.</string>
@@ -897,7 +905,7 @@
 <string name="settings_feedback_developer_title">%1$s v%2$s</string>
 <string name="settings_feedback_github_desc">Voir le code source de ce projet sur GitHub</string>
 <string name="settings_feedback_github_title">Développement</string>
-<string name="settings_feedback_rate_desc">Laissez une note de 5 étoiles si vous trouvez cette application utile</string>
+<string name="settings_feedback_rate_desc">Laissez une note de 5 étoiles si vous trouvez cette application utile 🙏</string>
 <string name="settings_feedback_rate_title">Noter Quick Search</string>
 <string name="settings_feedback_send_desc">Signaler des bugs ou demander des fonctionnalités</string>
 <string name="settings_feedback_send_title">Envoyer des commentaires</string>
@@ -917,6 +925,10 @@
 <string name="currency_converter_requires_gemini_key">Nécessite une clé API d\'un fournisseur AI</string>
 <string name="currency_converter_toggle_desc">Exemple : 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Convertisseur de devises</string>
+    <string name="set_alarm_action_label">Régler l\'alarme</string>
+    <string name="set_alarm_no_clock_app">Aucune application d\'horloge trouvée</string>
+    <string name="start_timer_action_label">Démarrer le minuteur</string>
+    <string name="start_timer_started">Minuteur démarré</string>
     <string name="color_visualizer_toggle_title">Visualiseur de couleurs</string>
     <string name="color_visualizer_toggle_desc">Exemples : #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Saisissez une couleur hexadécimale ou RVB</string>
@@ -1031,7 +1043,7 @@
 <string name="permissions_calendar_desc">Requis pour rechercher les événements de votre agenda.</string>
 <string name="permissions_calling_desc">Requis pour appeler vos contacts directement sans ouvrir le clavier numérique.</string>
 <string name="settings_notifications_permission_title">Publier des notifications</string>
-<string name="permissions_notifications_desc">Requis pour épingler les résultats de recherche dans le panneau de notifications</string>
+    <string name="permissions_notifications_desc">Requis pour les notifications de rappels et pour épingler des résultats de recherche dans le volet des notifications</string>
     <string name="permissions_notification_access_desc">Requis pour activer les pastilles de notification et l\'historique des notifications</string>
 <string name="permissions_accessibility_lock_screen_title">Accessibilité</string>
 <string name="permissions_accessibility_lock_screen_desc">Permet au geste de double appui de verrouiller votre appareil et au geste de balayage depuis le bord d’ouvrir Quick Search.</string>
@@ -1184,5 +1196,38 @@
     <string name="settings_tavily_desc">Ajoutez une clé API Tavily pour activer la recherche web sur les modèles qui ne la prennent pas en charge.</string>
     <string name="settings_tavily_mode_always">Toujours utiliser Tavily pour la recherche web</string>
     <string name="settings_tavily_mode_when_unsupported">Utiliser uniquement si le modèle ne prend pas en charge la recherche web</string>
+    <string name="settings_weather_no_web_search_warning">La météo a besoin de résultats web. Choisissez un modèle qui prend en charge la recherche web, ou ajoutez une clé API Tavily dans Configuration de la clé API.</string>
     <string name="tavily_search_failed_toast">La recherche web Tavily a échoué. Réponse sans résultats web.</string>
+    <string name="search_hint_reminders">Rechercher des rappels…</string>
+    <string name="search_section_reminders_toggle_desc">Activer ou désactiver la recherche de rappels</string>
+    <string name="search_section_reminders_toggle_title">Recherche de rappels</string>
+    <string name="section_reminders">Rappels</string>
+    <string name="reminders_notification_channel_name">Rappels</string>
+    <string name="reminders_notification_channel_description">Notifications pour les rappels que vous créez dans Quick Search</string>
+    <string name="reminder_notification_action_done">Terminé</string>
+    <string name="reminder_notification_action_snooze">Reporter (30 min)</string>
+    <string name="reminder_new_title">Nouveau rappel</string>
+    <string name="reminder_edit_title">Modifier le rappel</string>
+    <string name="reminder_name_hint">Rappel</string>
+    <string name="reminder_delete">Supprimer le rappel</string>
+    <string name="reminder_status_done">Terminé</string>
+    <string name="reminder_status_overdue">En retard</string>
+    <string name="reminder_notification_due_at">Prévu à %1$s</string>
+    <string name="reminder_notification_due_on">Prévu le %1$s</string>
+    <string name="action_mark_as_done">Marquer comme terminé</string>
+    <string name="action_expand_more_reminders">Plus de rappels</string>
+    <string name="reminders_empty">Aucun rappel pour l\'instant</string>
+    <string name="settings_reminders_view_all_desc">Afficher tous les rappels</string>
+    <string name="reminders_permission_hint">Autorisation requise pour afficher les notifications de rappel. Appuyez pour autoriser.</string>
+    <string name="reminders_home_card_dismiss">Retirer de l\'accueil</string>
+    <string name="settings_include_past_reminders_title">Rappels passés</string>
+    <string name="settings_include_past_reminders_desc">Afficher les rappels passés dans les résultats de recherche</string>
+    <string name="app_setting_create_reminder">Créer un rappel</string>
+    <string name="app_setting_create_reminder_desc">Ajouter un nouveau rappel</string>
+    <string name="permissions_exact_alarms_title">Alarmes et rappels</string>
+    <string name="permissions_exact_alarms_desc">Requis pour envoyer les notifications de rappels à l\'heure</string>
+    <string name="settings_reminders_filter_all">Tous les rappels</string>
+    <string name="settings_reminders_filter_past">Passés</string>
+    <string name="settings_reminders_filter_future">À venir</string>
+    <string name="reminders_home_card_dismiss_for_now">Ignorer pour l\'instant</string>
 </resources>

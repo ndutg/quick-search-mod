@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.reminders.ReminderEditorRequests
 import androidx.compose.runtime.collectAsState
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
 import androidx.activity.compose.BackHandler
@@ -41,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.CustomTool
-import com.tk.quicksearch.search.data.CustomCalendarEventRepository
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.UserAppPreferences
@@ -70,6 +70,7 @@ import com.tk.quicksearch.settings.NotesBulkDeleteConfirmationDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomToolNavigationMemory
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
+import com.tk.quicksearch.tools.aiSearch.supportsThinkingControl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -105,8 +106,7 @@ internal fun SettingsDetailLevel2Screen(
     var appShortcutsSearchQuery by remember { mutableStateOf("") }
     var appManagementSearchQuery by remember { mutableStateOf("") }
     var calendarEventsSearchQuery by remember { mutableStateOf("") }
-    var calendarEventsRefreshSignal by remember { mutableIntStateOf(0) }
-    var showCreateCalendarEventDialog by remember { mutableStateOf(false) }
+    var remindersSearchQuery by remember { mutableStateOf("") }
     var notesSearchQuery by remember { mutableStateOf("") }
     var notificationHistorySearchQuery by remember { mutableStateOf("") }
     var showNotificationHistoryAppFilter by remember { mutableStateOf(false) }
@@ -490,56 +490,57 @@ internal fun SettingsDetailLevel2Screen(
             } else if (detailType == SettingsDetailType.CUSTOM_TOOL_EDITOR) {
                 val pendingToolId = remember { CustomToolNavigationMemory.consumePendingToolId() }
                 val pendingAiBackedTool = remember { CustomToolNavigationMemory.consumePendingAiBackedTool() }
+                val aiToolPreferences =
+                    remember(context) { UserAppPreferences(context.applicationContext) }
                 val existingTool = remember(pendingToolId, state.customTools) {
                     pendingToolId?.let { id -> state.customTools.firstOrNull { it.id == id } }
                 }
                 val builtInToolConfig = remember(pendingAiBackedTool, context) {
                     pendingAiBackedTool?.let { tool ->
-                        val preferences = UserAppPreferences(context)
                         when (tool) {
                             AiBackedToolConfigId.CURRENCY_CONVERTER -> BuiltInToolConfig(
                                 toolId = tool,
                                 title = context.getString(R.string.currency_converter_toggle_title),
-                                modelId = preferences.getCurrencyConverterModel(),
-                                providerId = preferences.getCurrencyConverterProviderId(),
-                                groundingEnabled = preferences.isCurrencyConverterGroundingEnabled(),
-                                thinkingEnabled = preferences.isCurrencyConverterThinkingEnabled(),
-                                advancedPayload = preferences.getCurrencyConverterAdvancedPayload(),
+                                modelId = aiToolPreferences.getCurrencyConverterModel(),
+                                providerId = aiToolPreferences.getCurrencyConverterProviderId(),
+                                groundingEnabled = aiToolPreferences.isCurrencyConverterGroundingEnabled(),
+                                thinkingEnabled = aiToolPreferences.isCurrencyConverterThinkingEnabled(),
+                                advancedPayload = aiToolPreferences.getCurrencyConverterAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.CURRENCY_CONVERTER_ALIAS_FEATURE_ID,
                             )
                             AiBackedToolConfigId.WORD_CLOCK -> BuiltInToolConfig(
                                 toolId = tool,
                                 title = context.getString(R.string.world_clock_toggle_title),
-                                modelId = preferences.getWorldClockModel(),
-                                providerId = preferences.getWorldClockProviderId(),
-                                groundingEnabled = preferences.isWorldClockGroundingEnabled(),
-                                thinkingEnabled = preferences.isWorldClockThinkingEnabled(),
-                                advancedPayload = preferences.getWorldClockAdvancedPayload(),
+                                modelId = aiToolPreferences.getWorldClockModel(),
+                                providerId = aiToolPreferences.getWorldClockProviderId(),
+                                groundingEnabled = aiToolPreferences.isWorldClockGroundingEnabled(),
+                                thinkingEnabled = aiToolPreferences.isWorldClockThinkingEnabled(),
+                                advancedPayload = aiToolPreferences.getWorldClockAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.WORD_CLOCK_ALIAS_FEATURE_ID,
                             )
                             AiBackedToolConfigId.DICTIONARY -> BuiltInToolConfig(
                                 toolId = tool,
                                 title = context.getString(R.string.dictionary_toggle_title),
-                                modelId = preferences.getDictionaryModel(),
-                                providerId = preferences.getDictionaryProviderId(),
-                                groundingEnabled = preferences.isDictionaryGroundingEnabled(),
-                                thinkingEnabled = preferences.isDictionaryThinkingEnabled(),
-                                advancedPayload = preferences.getDictionaryAdvancedPayload(),
+                                modelId = aiToolPreferences.getDictionaryModel(),
+                                providerId = aiToolPreferences.getDictionaryProviderId(),
+                                groundingEnabled = aiToolPreferences.isDictionaryGroundingEnabled(),
+                                thinkingEnabled = aiToolPreferences.isDictionaryThinkingEnabled(),
+                                advancedPayload = aiToolPreferences.getDictionaryAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
                             )
                             AiBackedToolConfigId.WEATHER -> BuiltInToolConfig(
                                 toolId = tool,
                                 title = context.getString(R.string.weather_toggle_title),
-                                modelId = preferences.getWeatherModel(),
-                                providerId = preferences.getWeatherProviderId(),
-                                groundingEnabled = preferences.isWeatherGroundingEnabled(),
-                                thinkingEnabled = preferences.isWeatherThinkingEnabled(),
-                                advancedPayload = preferences.getWeatherAdvancedPayload(),
+                                modelId = aiToolPreferences.getWeatherModel(),
+                                providerId = aiToolPreferences.getWeatherProviderId(),
+                                groundingEnabled = aiToolPreferences.isWeatherGroundingEnabled(),
+                                thinkingEnabled = aiToolPreferences.isWeatherThinkingEnabled(),
+                                advancedPayload = aiToolPreferences.getWeatherAdvancedPayload(),
                                 aliasFeatureId = AliasHandler.WEATHER_ALIAS_FEATURE_ID,
-                                prompt = preferences.getWeatherSystemPrompt(),
-                                location = preferences.getWeatherLocation(),
-                                temperatureUnit = preferences.getWeatherTemperatureUnit(),
-                                windSpeedUnit = preferences.getWeatherWindSpeedUnit(),
+                                prompt = aiToolPreferences.getWeatherSystemPrompt(),
+                                location = aiToolPreferences.getWeatherLocation(),
+                                temperatureUnit = aiToolPreferences.getWeatherTemperatureUnit(),
+                                windSpeedUnit = aiToolPreferences.getWeatherWindSpeedUnit(),
                             )
                         }
                     }
@@ -568,6 +569,12 @@ internal fun SettingsDetailLevel2Screen(
                         builtInToolConfig?.windSpeedUnit
                             ?: com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
                     selectedProviderId = state.aiSearchLlmProviderId,
+                    defaultModelId = state.geminiModel,
+                    defaultThinkingEnabled = state.geminiThinkingEnabled,
+                    thinkingEnabledByProvider =
+                        state.llmApiKeyLast4ByProvider.keys.associateWith(
+                            aiToolPreferences::isLlmThinkingEnabled,
+                        ),
                     availableModels = state.availableGeminiModels,
                     availableModelsByProvider = state.availableLlmModelsByProvider,
                     configuredProviderIds = state.llmApiKeyLast4ByProvider.keys,
@@ -614,11 +621,24 @@ internal fun SettingsDetailLevel2Screen(
                         .fillMaxHeight()
                         .align(Alignment.CenterHorizontally),
                 )
+            } else if (detailType == SettingsDetailType.REMINDERS) {
+                RemindersSettingsSection(
+                    searchQuery = remindersSearchQuery,
+                    modifier =
+                        Modifier
+                            .settingsContentWidth()
+                            .fillMaxHeight()
+                            .align(androidx.compose.ui.Alignment.CenterHorizontally)
+                            .padding(
+                                start = DesignTokens.ContentHorizontalPadding,
+                                end = DesignTokens.ContentHorizontalPadding,
+                                bottom = 96.dp,
+                            ),
+                )
             } else if (detailType == SettingsDetailType.CALENDAR_EVENTS) {
                 CalendarEventsSettingsSection(
                     onEventClick = callbacks.onLaunchCalendarEvent,
                     searchQuery = calendarEventsSearchQuery,
-                    refreshSignal = calendarEventsRefreshSignal,
                     modifier =
                         Modifier
                             .settingsContentWidth()
@@ -860,13 +880,11 @@ internal fun SettingsDetailLevel2Screen(
                                     onSetGeminiGroundingEnabled = callbacks.onSetGeminiGroundingEnabled,
                                     onSetGeminiThinkingEnabled = callbacks.onSetGeminiThinkingEnabled,
                                     onRefreshAvailableGeminiModels = callbacks.onRefreshAvailableGeminiModels,
-                                    showGroundingCheckbox =
-                                        state.aiSearchLlmProviderId != AiSearchLlmProviderId.OPENAI &&
-                                            !state.aiSearchLlmProviderId.isCustom &&
-                                            state.aiSearchLlmProviderId != AiSearchLlmProviderId.GROQ,
                                     showThinkingCheckbox =
-                                        state.aiSearchLlmProviderId != AiSearchLlmProviderId.OPENAI &&
-                                            !state.aiSearchLlmProviderId.isCustom,
+                                        supportsThinkingControl(
+                                            state.aiSearchLlmProviderId,
+                                            state.geminiModel,
+                                        ),
                                     onRequestScrollToBottom = {
                                         coroutineScope.launch {
                                             scrollState.scrollTo(scrollState.maxValue)
@@ -1000,15 +1018,23 @@ internal fun SettingsDetailLevel2Screen(
                 placeholder = stringResource(R.string.notification_history_search_hint),
                 modifier = Modifier.align(Alignment.BottomEnd),
             )
-        } else if (detailType == SettingsDetailType.CALENDAR_EVENTS) {
+        } else if (detailType == SettingsDetailType.REMINDERS) {
             CalendarEventsBottomBar(
-                query = calendarEventsSearchQuery,
-                onQueryChange = { calendarEventsSearchQuery = it },
-                onClear = { calendarEventsSearchQuery = "" },
-                onNewEvent = { showCreateCalendarEventDialog = true },
+                query = remindersSearchQuery,
+                onQueryChange = { remindersSearchQuery = it },
+                onClear = { remindersSearchQuery = "" },
+                onNewEvent = ReminderEditorRequests::openNew,
+                newItemLabelResId = R.string.reminder_new_title,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
+            )
+        } else if (detailType == SettingsDetailType.CALENDAR_EVENTS) {
+            SettingsManagementSearchBar(
+                query = calendarEventsSearchQuery,
+                onQueryChange = { calendarEventsSearchQuery = it },
+                onClear = { calendarEventsSearchQuery = "" },
+                modifier = Modifier.align(Alignment.BottomEnd),
             )
         }
 
@@ -1056,20 +1082,6 @@ internal fun SettingsDetailLevel2Screen(
             )
         }
 
-        if (showCreateCalendarEventDialog && detailType == SettingsDetailType.CALENDAR_EVENTS) {
-            CreateCalendarEventDialog(
-                onDismiss = { showCreateCalendarEventDialog = false },
-                onConfirm = { title, dateTimeMillis, allDay ->
-                    coroutineScope.launch {
-                        withContext(Dispatchers.IO) {
-                            CustomCalendarEventRepository(context).createCustomEvent(title, dateTimeMillis, allDay)
-                        }
-                        calendarEventsRefreshSignal++
-                        showCreateCalendarEventDialog = false
-                    }
-                            },
-                    )
-        }
     }
     }
 }

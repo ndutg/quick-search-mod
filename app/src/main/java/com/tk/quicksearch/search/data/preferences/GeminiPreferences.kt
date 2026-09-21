@@ -71,7 +71,7 @@ class GeminiPreferences(
 
     fun getGeminiModel(): String {
         val model = prefs.getString(BasePreferences.KEY_GEMINI_MODEL, null)?.trim()
-        return model.takeUnless { it.isNullOrEmpty() } ?: GeminiModelCatalog.DEFAULT_MODEL_ID
+        return model.orEmpty()
     }
 
     fun setGeminiModel(modelId: String?) {

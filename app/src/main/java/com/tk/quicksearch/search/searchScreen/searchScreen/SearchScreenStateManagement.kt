@@ -55,6 +55,7 @@ private fun SearchSection.toExpandedSectionOrNone(): ExpandedSection =
         SearchSection.NOTES -> ExpandedSection.NOTES
         SearchSection.APP_SETTINGS -> ExpandedSection.APP_SETTINGS
         SearchSection.CALENDAR -> ExpandedSection.CALENDAR
+        SearchSection.REMINDERS -> ExpandedSection.REMINDERS
         SearchSection.APPS -> ExpandedSection.NONE
     }
 
@@ -74,6 +75,7 @@ internal fun SearchScreenStateManagement(
     onUnpinApp: (AppInfo) -> Unit,
     onReorderPinnedApps: (List<AppInfo>) -> Unit,
     onReorderPinnedAppGrid: (List<String>, List<AppInfo>, List<StaticShortcut>) -> Unit = { _, _, _ -> },
+    appFolderActions: com.tk.quicksearch.search.folders.AppGridFolderActions? = null,
     onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
     onRateQuickSearchClick: () -> Unit,
     onRateQuickSearchNotNowClick: () -> Unit,
@@ -103,6 +105,7 @@ internal fun SearchScreenStateManagement(
     onUnpinNote: (NoteInfo) -> Unit,
     onMovePinnedNote: (NoteInfo, Boolean) -> Unit,
     onDeleteNote: (NoteInfo) -> Unit,
+    reminderActions: com.tk.quicksearch.search.searchScreen.ReminderSectionActions = com.tk.quicksearch.search.searchScreen.ReminderSectionActions(),
     onPinFile: (DeviceFile) -> Unit,
     onUnpinFile: (DeviceFile) -> Unit,
     onMovePinnedFile: (DeviceFile, Boolean) -> Unit,
@@ -453,6 +456,7 @@ internal fun SearchScreenStateManagement(
             onUnpinNote = onUnpinNote,
             onMovePinnedNote = onMovePinnedNote,
             onDeleteNote = onDeleteNote,
+            reminderActions = reminderActions,
             onOpenAppSettings = onOpenAppSettings,
             onOpenCalendarPermissionSettings = onOpenCalendarPermissionSettings,
             onAppClick = onAppClick,
@@ -464,6 +468,7 @@ internal fun SearchScreenStateManagement(
             onUnpinApp = onUnpinApp,
             onReorderPinnedApps = onReorderPinnedApps,
             onReorderPinnedAppGrid = onReorderPinnedAppGrid,
+            appFolderActions = appFolderActions,
             onSuggestionTabSelected = onSuggestionTabSelected,
             onRateQuickSearchClick = onRateQuickSearchClick,
             onRateQuickSearchNotNowClick = onRateQuickSearchNotNowClick,
@@ -566,6 +571,11 @@ internal fun SearchScreenStateManagement(
                     state.isWorldClockAliasMode ||
                     state.isDictionaryAliasMode ||
                     state.isWeatherAliasMode,
+            hasReminderResults = derivedState.hasReminderResults,
+            hasPinnedReminders = derivedState.hasPinnedReminders,
+            shouldShowReminders = derivedState.shouldShowReminders,
+            reminderResults = state.reminderResults,
+            pinnedReminders = state.pinnedReminders,
         )
 
     return SearchScreenStateResult(

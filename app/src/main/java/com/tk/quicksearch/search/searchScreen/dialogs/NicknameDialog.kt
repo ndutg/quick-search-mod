@@ -30,6 +30,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.utils.NicknameUtils
 import kotlinx.coroutines.delay
 
 @Composable
@@ -110,10 +111,7 @@ fun NicknameDialog(
         },
         confirmButton = {
             Button(
-                onClick = {
-                    val trimmedNickname = nicknameText.text.trim()
-                    onSave(if (trimmedNickname.isBlank()) null else trimmedNickname)
-                },
+                onClick = { onSave(NicknameUtils.normalizeInput(nicknameText.text)) },
             ) { Text(text = stringResource(R.string.dialog_save)) }
         },
         dismissButton = {

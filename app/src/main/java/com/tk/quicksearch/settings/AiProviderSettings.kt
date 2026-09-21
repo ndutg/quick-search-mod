@@ -26,7 +26,6 @@ import android.widget.Toast
 import com.tk.quicksearch.R
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.settings.shared.SettingsCard
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.settings.shared.ModelFeatureSettingsCard
@@ -53,7 +52,6 @@ fun AiProviderSettingsSection(
         onSetGeminiThinkingEnabled: (Boolean) -> Unit,
         onRefreshAvailableGeminiModels: () -> Unit,
         onRequestScrollToBottom: (() -> Unit)? = null,
-        showGroundingCheckbox: Boolean = true,
         showThinkingCheckbox: Boolean = true,
         modifier: Modifier = Modifier,
 ) {
@@ -68,23 +66,12 @@ fun AiProviderSettingsSection(
         LaunchedEffect(Unit) { onRefreshAvailableGeminiModels() }
         LaunchedEffect(personalContextInput) { onRequestScrollToBottom?.invoke() }
 
-        val modelOptions =
-                remember(availableGeminiModels, selectedModelInput) {
-                        val allKnownModels =
-                                availableGeminiModels + GeminiModelCatalog.FALLBACK_TEXT_MODELS
-                        val currentModel =
-                                allKnownModels.find { it.id == selectedModelInput }
-                                        ?: GeminiTextModel(selectedModelInput, selectedModelInput)
-
-                        (availableGeminiModels + currentModel).distinctBy { it.id }
-                }
-
         Column(
                 modifier = modifier,
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
         ) {
-                val selectedModel = modelOptions.firstOrNull { it.id == selectedModelInput }
-                val supportsInstructions = selectedModel?.supportsSystemInstructions != false
+                val selectedModel = availableGeminiModels.firstOrNull { it.id == selectedModelInput }
+                val supportsInstructions = selectedModel?.supportsSystemInstructions == true
 
                 ModelFeatureSettingsCard(
                         modifier = Modifier.fillMaxWidth(),
@@ -118,7 +105,6 @@ fun AiProviderSettingsSection(
                                 onSetGeminiGroundingEnabled(checked)
                         },
                         showThinkingCheckbox = showThinkingCheckbox,
-                        showGroundingCheckbox = showGroundingCheckbox,
                 )
 
                 Box(

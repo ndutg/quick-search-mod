@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.search.data.ReminderRepository
+import com.tk.quicksearch.search.searchScreen.ReminderSectionActions
 import android.Manifest
 import android.app.Activity
 import android.app.KeyguardManager
@@ -95,9 +97,7 @@ import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.settings.shared.applySettingsCommand
 import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
-import com.tk.quicksearch.search.data.CustomCalendarEventRepository
 import com.tk.quicksearch.search.data.preferences.CalendarPreferences
-import com.tk.quicksearch.settings.settingsDetailScreen.CustomEventEditDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.DefaultCalendarDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.SecondaryRankingDialog
 import com.tk.quicksearch.settings.AppearanceSettings.IconPackPickerDialog
@@ -256,13 +256,18 @@ fun SearchRoute(
         }
     val undoLabel = stringResource(R.string.action_undo)
 
+    // A new undo snackbar replaces the visible one right away instead of queueing behind it.
+    val undoSnackbarJob = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+
     val showUndoSnackbarVisuals: (UndoSnackbarVisuals, () -> Unit) -> Unit = { visuals, onUndo ->
-        snackbarScope.launch {
-            val result = effectiveSnackbarHostState.showSnackbar(visuals)
-            if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
-                onUndo()
+        undoSnackbarJob.value?.cancel()
+        undoSnackbarJob.value =
+            snackbarScope.launch {
+                val result = effectiveSnackbarHostState.showSnackbar(visuals)
+                if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                    onUndo()
+                }
             }
-        }
     }
 
     val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo ->
@@ -274,7 +279,7 @@ fun SearchRoute(
             UndoSnackbarVisuals(
                 message = context.getString(R.string.snackbar_app_shortcut_disabled_title),
                 supportingText = context.getString(R.string.snackbar_app_shortcut_disabled_supporting),
-                icon = androidx.compose.material.icons.Icons.Rounded.Block,
+                icon = null,
                 actionLabel = undoLabel,
             ),
             onUndo,
@@ -369,6 +374,20 @@ fun SearchRoute(
         }
     }
 
+    val reminderActions =
+        remember(viewModel, context) {
+            val reminderRepository = ReminderRepository(context)
+            ReminderSectionActions(
+                onPin = viewModel::pinReminder,
+                onUnpin = viewModel::unpinReminder,
+                onMovePinned = viewModel::movePinnedReminder,
+                onMarkDone = { reminder -> reminderRepository.setDone(reminder.reminderId, true) },
+                onDelete = { reminder ->
+                    viewModel.unpinReminder(reminder)
+                    reminderRepository.deleteReminder(reminder.reminderId)
+                },
+            )
+        }
     val onDeleteNoteWithUndo: (NoteInfo) -> Unit = noteDelete@{ note ->
         val staged = viewModel.stageDeleteNote(note) ?: return@noteDelete
         val label = staged.title.ifBlank { context.getString(R.string.notes_untitled) }
@@ -420,11 +439,9 @@ fun SearchRoute(
     var pendingPermissionSettingsAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     var pendingPermissionSettingsType by remember { mutableStateOf<Int?>(null) }
     var pendingDirectDialToggleFromAppSetting by remember { mutableStateOf(false) }
-    var editingCustomCalendarEvent by remember { mutableStateOf<CalendarEventInfo?>(null) }
     var previewFile by remember { mutableStateOf<DeviceFile?>(null) }
     // Non-null while a SpeedBump app is waiting out its interstitial before launching.
     var speedBumpApp by remember { mutableStateOf<com.tk.quicksearch.search.models.AppInfo?>(null) }
-    val customCalendarEventRepository = remember(context) { CustomCalendarEventRepository(context) }
     val calendarPreferences = remember(context) { CalendarPreferences(context) }
     var defaultCalendarPackage by remember { mutableStateOf(calendarPreferences.getDefaultCalendarPackage()) }
 
@@ -725,7 +742,7 @@ fun SearchRoute(
         mutableStateOf(gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher))
     }
     var homeDoubleTapAction by remember {
-        mutableStateOf(gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context)))
+        mutableStateOf(gesturePreferences.getHomeDoubleTapAction())
     }
     var homeCustomSwipeActions by remember {
         mutableStateOf(
@@ -762,7 +779,7 @@ fun SearchRoute(
             swipeAliasTargets = listOf(gesturePreferences.getSwipeRightAliasTarget(), gesturePreferences.getSwipeLeftAliasTarget(), gesturePreferences.getSwipeUpAliasTarget(), gesturePreferences.getSwipeDownAliasTarget())
             homeSwipeUpAction = gesturePreferences.getHomeSwipeUpAction()
             homeSwipeDownAction = gesturePreferences.getHomeSwipeDownAction(isDefaultLauncher)
-            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(LockScreenAccessibilityService.isEnabled(context))
+            homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             homeCustomSwipeActions =
                 listOf(
                     gesturePreferences.getHomeSwipeUpCustomAction(),
@@ -783,11 +800,11 @@ fun SearchRoute(
                 val isLockScreenAvailable = LockScreenAccessibilityService.isEnabled(context)
                 if (
                     !isLockScreenAvailable &&
-                    gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable) == HomeSwipeGestureAction.LOCK_SCREEN
+                    gesturePreferences.getHomeDoubleTapAction() == HomeSwipeGestureAction.LOCK_SCREEN
                 ) {
                     gesturePreferences.setHomeDoubleTapAction(HomeSwipeGestureAction.NONE)
                 }
-                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction(isLockScreenAvailable)
+                homeDoubleTapAction = gesturePreferences.getHomeDoubleTapAction()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -935,6 +952,18 @@ fun SearchRoute(
             onUnpinApp = viewModel::unpinApp,
             onReorderPinnedApps = viewModel::reorderPinnedApps,
             onReorderPinnedAppGrid = viewModel::reorderPinnedAppGrid,
+            appFolderActions =
+                remember(viewModel) {
+                    com.tk.quicksearch.search.folders.AppGridFolderActions(
+                        onCreateFolder = viewModel::createAppFolder,
+                        onAddToFolder = viewModel::addToAppFolder,
+                        onRemoveFromFolder = viewModel::removeFromAppFolder,
+                        onUnpinFromFolder = viewModel::unpinFromAppFolder,
+                        onReorderFolder = viewModel::reorderAppFolder,
+                        onRenameFolder = viewModel::renameAppFolder,
+                        onDeleteFolder = viewModel::deleteAppFolder,
+                    )
+                },
             onSuggestionTabSelected = viewModel::setSelectedAppSuggestionTab,
             onRateQuickSearchClick = { onAppSettingClick(rateQuickSearchSetting) },
             onRateQuickSearchNotNowClick = {
@@ -975,13 +1004,7 @@ fun SearchRoute(
             onUnpinContact = viewModel::unpinContact,
             onMovePinnedContact = viewModel::movePinnedContact,
             onExcludeContact = onExcludeContactWithUndo,
-            onCalendarEventClick = { event: com.tk.quicksearch.search.models.CalendarEventInfo ->
-                if (event.eventId < 0) {
-                    editingCustomCalendarEvent = event
-                } else {
-                    viewModel.openCalendarEvent(event)
-                }
-            },
+            onCalendarEventClick = viewModel::openCalendarEvent,
             onPinCalendarEvent = viewModel::pinCalendarEvent,
             onUnpinCalendarEvent = viewModel::unpinCalendarEvent,
             onMovePinnedCalendarEvent = viewModel::movePinnedCalendarEvent,
@@ -997,6 +1020,7 @@ fun SearchRoute(
             onUnpinNote = viewModel::unpinNote,
             onMovePinnedNote = viewModel::movePinnedNote,
             onDeleteNote = onDeleteNoteWithUndo,
+            reminderActions = reminderActions,
             onPinFile = viewModel::pinFile,
             onUnpinFile = viewModel::unpinFile,
             onMovePinnedFile = viewModel::movePinnedFile,
@@ -1234,23 +1258,6 @@ fun SearchRoute(
                             end = DesignTokens.SpacingLarge,
                             bottom = DesignTokens.SpacingHuge,
                         ),
-            )
-        }
-
-        editingCustomCalendarEvent?.let { event ->
-            CustomEventEditDialog(
-                event = event,
-                onDismiss = { editingCustomCalendarEvent = null },
-                onSave = { title, dateTimeMillis, allDay ->
-                    editingCustomCalendarEvent = null
-                    customCalendarEventRepository.updateCustomEvent(event.eventId, title, dateTimeMillis, allDay)
-                    viewModel.onQueryChange(uiState.query)
-                },
-                onDelete = {
-                    editingCustomCalendarEvent = null
-                    customCalendarEventRepository.deleteCustomEvent(event.eventId)
-                    viewModel.onQueryChange(uiState.query)
-                },
             )
         }
 

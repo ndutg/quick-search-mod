@@ -11,6 +11,7 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
+import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
@@ -105,6 +106,7 @@ enum class SearchSection {
         FILES,
         SETTINGS,
         CALENDAR,
+        REMINDERS,
         NOTES,
         APP_SETTINGS,
 }
@@ -420,6 +422,16 @@ sealed class CalendarSectionVisibility {
         ) : CalendarSectionVisibility()
 }
 
+sealed class RemindersSectionVisibility {
+        object Hidden : RemindersSectionVisibility()
+
+        object NoResults : RemindersSectionVisibility()
+
+        data class ShowingResults(
+                val hasPinned: Boolean = false,
+        ) : RemindersSectionVisibility()
+}
+
 sealed class NotesSectionVisibility {
         object Hidden : NotesSectionVisibility()
 
@@ -473,6 +485,7 @@ data class SearchUiState(
         val filesSectionState: FilesSectionVisibility = FilesSectionVisibility.Hidden,
         val settingsSectionState: SettingsSectionVisibility = SettingsSectionVisibility.Hidden,
         val calendarSectionState: CalendarSectionVisibility = CalendarSectionVisibility.Hidden,
+        val remindersSectionState: RemindersSectionVisibility = RemindersSectionVisibility.Hidden,
         val notesSectionState: NotesSectionVisibility = NotesSectionVisibility.Hidden,
         val searchEnginesState: SearchEnginesVisibility = SearchEnginesVisibility.Hidden,
         // App results
@@ -514,6 +527,9 @@ data class SearchUiState(
         val pinnedCalendarEvents: List<CalendarEventInfo> = emptyList(),
         val excludedCalendarEvents: List<CalendarEventInfo> = emptyList(),
         val todayCalendarEvents: List<CalendarEventInfo> = emptyList(),
+        // Reminder results
+        val reminderResults: List<ReminderInfo> = emptyList(),
+        val pinnedReminders: List<ReminderInfo> = emptyList(),
         // Notes results
         val noteResults: List<NoteInfo> = emptyList(),
         val pinnedNotes: List<NoteInfo> = emptyList(),
@@ -641,10 +657,10 @@ data class SearchUiState(
         val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val isSavingGeminiApiKey: Boolean = false,
         val personalContext: String = "",
-        val geminiModel: String = GeminiModelCatalog.DEFAULT_MODEL_ID,
+        val geminiModel: String = "",
         val geminiGroundingEnabled: Boolean = GeminiModelCatalog.DEFAULT_GROUNDING_ENABLED,
         val geminiThinkingEnabled: Boolean = false,
-        val availableGeminiModels: List<GeminiTextModel> = GeminiModelCatalog.FALLBACK_TEXT_MODELS,
+        val availableGeminiModels: List<GeminiTextModel> = emptyList(),
         val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>> = emptyMap(),
         // Release notes dialog
         val showReleaseNotesDialog: Boolean = false,
@@ -695,6 +711,7 @@ data class SearchUiState(
         val homePinnedSectionOrder: List<SearchSection> = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER,
         val pinnedAppShortcutsInAppGrid: Boolean = false,
         val pinnedAppGridOrder: List<String> = emptyList(),
+        val appFolders: List<com.tk.quicksearch.search.folders.AppFolder> = emptyList(),
         // Calendar
         val showTodayEvents: Boolean = true,
         // Usage permission banner
@@ -758,6 +775,8 @@ fun SearchUiState(
                 pinnedCalendarEvents = results.pinnedCalendarEvents,
                 excludedCalendarEvents = results.excludedCalendarEvents,
                 todayCalendarEvents = results.todayCalendarEvents,
+                reminderResults = results.reminderResults,
+                pinnedReminders = results.pinnedReminders,
                 noteResults = results.noteResults,
                 pinnedNotes = results.pinnedNotes,
                 screenState = results.screenState,
@@ -767,6 +786,7 @@ fun SearchUiState(
                 filesSectionState = results.filesSectionState,
                 settingsSectionState = results.settingsSectionState,
                 calendarSectionState = results.calendarSectionState,
+                remindersSectionState = results.remindersSectionState,
                 notesSectionState = results.notesSectionState,
                 searchEnginesState = results.searchEnginesState,
                 calculatorState = results.calculatorState,
@@ -864,6 +884,7 @@ fun SearchUiState(
                 homePinnedSectionOrder = features.homePinnedSectionOrder,
                 pinnedAppShortcutsInAppGrid = features.pinnedAppShortcutsInAppGrid,
                 pinnedAppGridOrder = features.pinnedAppGridOrder,
+                appFolders = features.appFolders,
                 showTodayEvents = features.showTodayEvents,
                 directDialEnabled = features.directDialEnabled,
                 numberSearchEnabled = features.numberSearchEnabled,

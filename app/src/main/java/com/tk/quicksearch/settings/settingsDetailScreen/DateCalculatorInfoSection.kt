@@ -28,7 +28,7 @@ private val dateCategories = listOf(
     ),
     DateCategory(
         nameRes = R.string.date_calculator_category_relative_dates,
-        examples = listOf("in 3 months", "2 weeks ago", "in 1 year 6 months", "10 days ago"),
+        examples = listOf("in 3 months", "2 weeks", "2 weeks ago", "in 1 year 6 months", "10 days ago"),
     ),
     DateCategory(
         nameRes = R.string.date_calculator_category_date_differences,
@@ -40,7 +40,7 @@ private val dateCategories = listOf(
     ),
     DateCategory(
         nameRes = R.string.date_calculator_category_time_arithmetic,
-        examples = listOf("6 hours from now", "45 minutes ago", "2 hours 30 minutes later"),
+        examples = listOf("6 hours from now", "5min", "45 minutes ago", "2 hours 30 minutes later"),
     ),
     DateCategory(
         nameRes = R.string.date_calculator_category_time_ranges,

@@ -14,6 +14,8 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
+import com.tk.quicksearch.search.models.ReminderInfo
+import com.tk.quicksearch.reminders.ReminderEditorRequests
 import com.tk.quicksearch.searchEngines.AliasParser
 import com.tk.quicksearch.searchEngines.defaultBrowserTarget
 import com.tk.quicksearch.searchEngines.getId
@@ -143,7 +145,9 @@ private fun AppsSectionParams.activeHomeSuggestionTab(): AppSuggestionTabType? {
             if (hasUsagePermission && AppSuggestionTabType.NEW_UPDATED in enabledSuggestionTabs) {
                 add(AppSuggestionTabType.NEW_UPDATED)
             }
-            if (pinnedApps.isNotEmpty() && AppSuggestionTabType.PINNED in enabledSuggestionTabs) {
+            val hasPinnedGridItems =
+                pinnedApps.isNotEmpty() || pinnedGridAppShortcuts.isNotEmpty() || appFolders.isNotEmpty()
+            if (hasPinnedGridItems && AppSuggestionTabType.PINNED in enabledSuggestionTabs) {
                 add(AppSuggestionTabType.PINNED)
             }
             if (AppSuggestionTabType.RECENTS in enabledSuggestionTabs) {
@@ -392,6 +396,8 @@ data class AppsSectionParams(
     val onReorderPinnedAppGrid: (List<String>, List<AppInfo>, List<StaticShortcut>) -> Unit =
         { _, _, _ -> },
     val pinnedGridShortcutActions: com.tk.quicksearch.search.apps.AppGridShortcutActions? = null,
+    val appFolders: List<com.tk.quicksearch.search.folders.AppFolder> = emptyList(),
+    val appFolderActions: com.tk.quicksearch.search.folders.AppGridFolderActions? = null,
 )
 
 /** Data class for Calendar section parameters */
@@ -436,6 +442,30 @@ data class NotesSectionParams(
     val onDelete: (NoteInfo) -> Unit,
     val onTriggerClick: (NoteInfo) -> Unit,
     val getNoteTrigger: (Long) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
+    val showExpandControls: Boolean,
+    val onExpandClick: () -> Unit,
+    val showWallpaperBackground: Boolean,
+    val predictedTarget: PredictedSubmitTarget? = null,
+    val expandedCardMaxHeight: Dp = SearchScreenConstants.EXPANDED_CARD_MAX_HEIGHT,
+)
+
+/** Reminder callbacks supplied by the route; defaults keep other callers compiling. */
+data class ReminderSectionActions(
+    val onPin: (ReminderInfo) -> Unit = {},
+    val onUnpin: (ReminderInfo) -> Unit = {},
+    val onMovePinned: (ReminderInfo, Boolean) -> Unit = { _, _ -> },
+    val onMarkDone: (ReminderInfo) -> Unit = {},
+    val onDelete: (ReminderInfo) -> Unit = {},
+)
+
+/** Data class for Reminders section parameters */
+data class RemindersSectionParams(
+    val pinnedReminderIds: Set<Long>,
+    val onReminderClick: (ReminderInfo) -> Unit,
+    val onTogglePin: (ReminderInfo) -> Unit,
+    val onMovePinned: (ReminderInfo, Boolean) -> Unit = { _, _ -> },
+    val onMarkDone: (ReminderInfo) -> Unit,
+    val onDelete: (ReminderInfo) -> Unit = {},
     val showExpandControls: Boolean,
     val onExpandClick: () -> Unit,
     val showWallpaperBackground: Boolean,
@@ -518,6 +548,7 @@ internal fun buildSectionParams(
     onUnpinApp: (AppInfo) -> Unit,
     onReorderPinnedApps: (List<AppInfo>) -> Unit,
     onReorderPinnedAppGrid: (List<String>, List<AppInfo>, List<StaticShortcut>) -> Unit,
+    appFolderActions: com.tk.quicksearch.search.folders.AppGridFolderActions?,
     onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
     onRateQuickSearchClick: () -> Unit,
     onRateQuickSearchNotNowClick: () -> Unit,
@@ -540,8 +571,10 @@ internal fun buildSectionParams(
     getNoteTrigger: (Long) -> com.tk.quicksearch.search.data.preferences.ResultTrigger?,
     onUpdateExpandedSection: (ExpandedSection) -> Unit,
     expandedSection: ExpandedSection,
+    reminderActions: ReminderSectionActions = ReminderSectionActions(),
 ) = remember(
     state,
+    reminderActions,
     derivedState,
     expandedSection,
     onFileClick,
@@ -999,6 +1032,8 @@ internal fun buildSectionParams(
                 },
             pinnedAppGridOrder = state.pinnedAppGridOrder,
             onReorderPinnedAppGrid = onReorderPinnedAppGrid,
+            appFolders = state.appFolders,
+            appFolderActions = appFolderActions,
             pinnedGridShortcutActions =
                 com.tk.quicksearch.search.apps.AppGridShortcutActions(
                     onTogglePin = appShortcutParams.onTogglePin,
@@ -1102,6 +1137,33 @@ internal fun buildSectionParams(
             showWallpaperBackground = state.showWallpaperBackground,
         )
 
+    val remindersParams =
+        RemindersSectionParams(
+            pinnedReminderIds = state.pinnedReminders.map { it.reminderId }.toSet(),
+            onReminderClick = ReminderEditorRequests::openEdit,
+            onTogglePin = { reminder ->
+                if (state.pinnedReminders.any { it.reminderId == reminder.reminderId }) {
+                    reminderActions.onUnpin(reminder)
+                } else {
+                    reminderActions.onPin(reminder)
+                }
+            },
+            onMovePinned = reminderActions.onMovePinned,
+            onMarkDone = reminderActions.onMarkDone,
+            onDelete = reminderActions.onDelete,
+            showExpandControls = derivedState.isSearching,
+            onExpandClick = {
+                onUpdateExpandedSection(
+                    if (expandedSection == ExpandedSection.REMINDERS) {
+                        ExpandedSection.NONE
+                    } else {
+                        ExpandedSection.REMINDERS
+                    },
+                )
+            },
+            showWallpaperBackground = state.showWallpaperBackground,
+        )
+
     SectionParams(
         filesParams = filesParams,
         appShortcutsParams = appShortcutParams,
@@ -1110,6 +1172,7 @@ internal fun buildSectionParams(
         calendarParams = calendarParams,
         notesParams = notesParams,
         appsParams = appsParams,
+        remindersParams = remindersParams,
     )
 }
 
@@ -1122,4 +1185,5 @@ data class SectionParams(
     val calendarParams: CalendarSectionParams,
     val notesParams: NotesSectionParams,
     val appsParams: AppsSectionParams,
+    val remindersParams: RemindersSectionParams,
 )

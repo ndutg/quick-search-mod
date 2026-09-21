@@ -4,12 +4,14 @@ package com.tk.quicksearch.search.utils
  * Utility object for calculating search result ranking priorities.
  *
  * Priority levels (lower is better):
+ * 0. Nickname exactly matches query
  * 1. Result starts with query
  * 2. Any word in the text starts with query
  * 3. Result contains query
  * 4. No match
  */
 object SearchRankingUtils {
+    private const val PRIORITY_EXACT_NICKNAME = 0
     private const val PRIORITY_STARTS_WITH = 1
     private const val PRIORITY_WORD_STARTS_WITH = 2
     private const val PRIORITY_CONTAINS = 3
@@ -197,6 +199,7 @@ object SearchRankingUtils {
     /**
      * Calculates match priority with optional nickname support.
      * Nickname is treated as an additional searchable name using the same priority rules.
+     * A nickname may hold several comma-separated aliases; the best-matching alias wins.
      */
     fun calculateMatchPriorityWithNickname(
         primaryText: String,
@@ -233,8 +236,14 @@ object SearchRankingUtils {
 
         val primaryPriority = calculateMatchPriority(primaryText, normalizedQuery, queryTokens, compactQuery)
         val nicknamePriority =
-            nickname?.let { calculateMatchPriority(it, normalizedQuery, queryTokens, compactQuery) }
-                ?: PRIORITY_NO_MATCH
+            bestNicknamePriority(nickname) { alias ->
+                val preparedAlias = SearchTextNormalizer.prepareForSearch(alias)
+                if (isExactNicknameMatch(preparedAlias, normalizedQuery, compactQuery)) {
+                    PRIORITY_EXACT_NICKNAME
+                } else {
+                    calculateMatchPriority(preparedAlias, normalizedQuery, queryTokens, compactQuery)
+                }
+            }
         return minOf(primaryPriority, nicknamePriority)
     }
 
@@ -246,9 +255,24 @@ object SearchRankingUtils {
         if (query.normalizedQuery.isBlank()) return PRIORITY_NO_MATCH
 
         val primaryPriority = calculateMatchPriority(primaryText, query)
-        val nicknamePriority = nickname?.let { calculateMatchPriority(it, query) } ?: PRIORITY_NO_MATCH
+        val nicknamePriority =
+            nickname?.let {
+                if (isExactNicknameMatch(it, query.normalizedQuery, query.compactQuery)) {
+                    PRIORITY_EXACT_NICKNAME
+                } else {
+                    calculateMatchPriority(it, query)
+                }
+            } ?: PRIORITY_NO_MATCH
         return minOf(primaryPriority, nicknamePriority)
     }
+
+    private fun isExactNicknameMatch(
+        nickname: PreparedSearchText,
+        normalizedQuery: String,
+        compactQuery: String,
+    ): Boolean =
+        nickname.normalized == normalizedQuery ||
+            (compactQuery.isNotBlank() && nickname.compact == compactQuery)
 
     /**
      * Checks if the given priority represents a non-match (lowest priority).
@@ -257,4 +281,17 @@ object SearchRankingUtils {
      * @return true if priority is PRIORITY_NO_MATCH
      */
     fun isOtherMatch(priority: Int): Boolean = priority == PRIORITY_NO_MATCH
+
+    /**
+     * Scores every comma-separated alias in [nickname] and keeps the best one. Falls back to
+     * [PRIORITY_NO_MATCH] when there is no nickname or it holds nothing usable.
+     */
+    private inline fun bestNicknamePriority(
+        nickname: String?,
+        score: (String) -> Int,
+    ): Int {
+        if (nickname.isNullOrBlank()) return PRIORITY_NO_MATCH
+        if (!NicknameUtils.hasMultiple(nickname)) return score(nickname)
+        return NicknameUtils.split(nickname).minOfOrNull(score) ?: PRIORITY_NO_MATCH
+    }
 }

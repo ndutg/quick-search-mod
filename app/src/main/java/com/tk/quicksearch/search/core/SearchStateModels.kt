@@ -10,6 +10,7 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.NoteInfo
+import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
@@ -80,6 +81,9 @@ data class SearchResultsState(
         val pinnedCalendarEvents: List<CalendarEventInfo> = emptyList(),
         val excludedCalendarEvents: List<CalendarEventInfo> = emptyList(),
         val todayCalendarEvents: List<CalendarEventInfo> = emptyList(),
+        // Reminder results
+        val reminderResults: List<ReminderInfo> = emptyList(),
+        val pinnedReminders: List<ReminderInfo> = emptyList(),
         // Notes results
         val noteResults: List<NoteInfo> = emptyList(),
         val pinnedNotes: List<NoteInfo> = emptyList(),
@@ -92,6 +96,7 @@ data class SearchResultsState(
         val filesSectionState: FilesSectionVisibility = FilesSectionVisibility.Hidden,
         val settingsSectionState: SettingsSectionVisibility = SettingsSectionVisibility.Hidden,
         val calendarSectionState: CalendarSectionVisibility = CalendarSectionVisibility.Hidden,
+        val remindersSectionState: RemindersSectionVisibility = RemindersSectionVisibility.Hidden,
         val notesSectionState: NotesSectionVisibility = NotesSectionVisibility.Hidden,
         val searchEnginesState: SearchEnginesVisibility = SearchEnginesVisibility.Hidden,
         // Transient search state (calculator answer, AI search, web suggestions)
@@ -179,10 +184,10 @@ data class SearchFeatureState(
         val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         val isSavingGeminiApiKey: Boolean = false,
         val personalContext: String = "",
-        val geminiModel: String = GeminiModelCatalog.DEFAULT_MODEL_ID,
+        val geminiModel: String = "",
         val geminiGroundingEnabled: Boolean = GeminiModelCatalog.DEFAULT_GROUNDING_ENABLED,
         val geminiThinkingEnabled: Boolean = false,
-        val availableGeminiModels: List<GeminiTextModel> = GeminiModelCatalog.FALLBACK_TEXT_MODELS,
+        val availableGeminiModels: List<GeminiTextModel> = emptyList(),
         val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>> = emptyMap(),
         // Web suggestions
         val webSuggestionsEnabled: Boolean = true,
@@ -217,6 +222,7 @@ data class SearchFeatureState(
         val homePinnedSectionOrder: List<SearchSection> = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER,
         val pinnedAppShortcutsInAppGrid: Boolean = false,
         val pinnedAppGridOrder: List<String> = emptyList(),
+        val appFolders: List<com.tk.quicksearch.search.folders.AppFolder> = emptyList(),
         // Calendar
         val showTodayEvents: Boolean = true,
         // Direct dial

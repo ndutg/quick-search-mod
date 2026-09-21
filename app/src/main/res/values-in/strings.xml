@@ -110,6 +110,7 @@
     <string name="settings_gestures_desc">Sesuaikan tindakan geser</string>
     <string name="settings_gesture_swipe_right">Geser ke Kanan</string>
     <string name="settings_gesture_widget_panel">Panel Widget</string>
+    <string name="widget_pinned_to_home">Ditambahkan ke Beranda</string>
     <string name="settings_gesture_swipe_left">Geser ke Kiri</string>
     <string name="settings_gesture_swipe_up">Geser ke Atas</string>
     <string name="settings_gesture_swipe_down">Geser ke Bawah</string>
@@ -145,6 +146,8 @@
     <string name="notification_pinned_item_type_file">File</string>
     <string name="notification_pinned_item_type_note">Catatan</string>
     <string name="action_remove">Hapus</string>
+    <string name="folder_name_placeholder">Tambahkan nama folder</string>
+    <string name="folder_remove_from_folder">Hapus dari folder</string>
     <string name="app_swipe_current_action">Tindakan Saat Ini</string>
     <string name="app_swipe_up_picker_title">Pilih tindakan Geser ke atas untuk %1$s</string>
     <string name="app_swipe_down_picker_title">Pilih tindakan Geser ke bawah untuk %1$s</string>
@@ -207,7 +210,7 @@
     <string name="dialog_edit_amazon_domain_message">Perbarui domain Amazon untuk negara Anda.</string>
     <string name="dialog_edit_amazon_domain_title">Edit Domain Amazon</string>
     <string name="dialog_gemini_model_picker_title">Pilih Model</string>
-    <string name="dialog_nickname_message">Masukkan nama panggilan untuk "%1$s". Anda dapat mencarinya menggunakan nama panggilan ini.</string>
+    <string name="dialog_nickname_message">Masukkan satu atau beberapa nama panggilan untuk "%1$s", dipisahkan dengan koma. Anda dapat mencarinya menggunakan salah satu di antaranya.</string>
     <string name="dialog_ok">Lanjutkan</string>
     <string name="dialog_okay">Oke</string>
     <string name="dialog_remember_choice">Ingat pilihan ini</string>
@@ -244,7 +247,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Baru/Diperbarui</string>
     <string name="app_suggestions_tab_pinned">Disematkan</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Aplikasi yang disematkan akan tetap muncul di tab %1$s</string>
     <string name="app_suggestions_tab_recent">Terbaru</string>
     <string name="app_suggestions_tabs_dialog_message">Pilih tab saran aplikasi yang ditampilkan di layar utama.</string>
     <string name="app_suggestions_tabs_dialog_title">Tab Saran Aplikasi</string>
@@ -322,7 +324,7 @@
     <string name="action_disable_app_shortcut">Nonaktifkan</string>
     <string name="action_disable_all_app_shortcuts_named">Nonaktifkan semua pintasan %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Pintasan aplikasi dinonaktifkan</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Anda dapat mengaktifkan pintasan ini nanti di pengaturan Pintasan aplikasi.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Anda dapat mengaktifkannya nanti di Setelan.</string>
     <string name="apps_refreshed_successfully">Aplikasi berhasil diperbarui</string>
     <string name="error_loading_user_apps">Kami tidak dapat memuat aplikasi Anda. Coba lagi beberapa saat lagi.</string>
     <string name="error_uninstall_app">Tidak dapat mencopot pemasangan %1$s</string>
@@ -670,6 +672,9 @@
     <string name="settings_more_apps_from_developer_title">Aplikasi Lainnya dari Pengembang</string>
     <string name="settings_app_settings_desc">Cari pengaturan Quick Search</string>
     <string name="settings_features_load_failed">Tidak dapat memuat dokumentasi fitur.</string>
+    <string name="settings_features_export">Unduh dan bagikan fitur</string>
+    <string name="settings_features_export_failed">Tidak dapat menyimpan dokumentasi fitur.</string>
+    <string name="settings_features_saved_to_downloads">Disimpan ke Unduhan</string>
     <string name="settings_features_sections_title">Daftar Isi</string>
     <string name="settings_search_description_change_app_theme">Ubah tema aplikasi</string>
     <string name="settings_search_description_change_font_size">Ubah ukuran font aplikasi</string>
@@ -846,6 +851,9 @@
     <string name="settings_direct_search_grounding_label">Pencarian Web</string>
     <string name="settings_direct_search_how_to">Dapatkan Kunci API Gratis</string>
     <string name="settings_direct_search_model_label">Model</string>
+    <string name="settings_select_model">Pilih model</string>
+    <string name="ai_error_selected_model_unavailable">Model yang dipilih tidak tersedia. Pilih model lain di setelan.</string>
+    <string name="settings_loading_models">Memuat model…</string>
     <string name="settings_direct_search_personal_context">Konteks Pribadi</string>
     <string name="settings_direct_search_personal_context_hint">Tambahkan konteks apa pun yang ingin digunakan AI saat menghasilkan jawaban.</string>
     <string name="settings_direct_search_personal_context_unsupported">Konteks pribadi tidak tersedia untuk model ini.</string>
@@ -905,7 +913,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Lihat kode sumber proyek ini di GitHub</string>
     <string name="settings_feedback_github_title">Pengembangan</string>
-    <string name="settings_feedback_rate_desc">Beri rating bintang 5 jika Anda merasa aplikasi ini bermanfaat</string>
+    <string name="settings_feedback_rate_desc">Beri rating bintang 5 jika Anda merasa aplikasi ini bermanfaat 🙏</string>
     <string name="settings_feedback_rate_title">Beri Nilai Quick Search</string>
     <string name="settings_feedback_send_desc">Laporkan bug atau minta fitur baru</string>
     <string name="settings_feedback_send_title">Kirim Masukan</string>
@@ -925,6 +933,10 @@
     <string name="currency_converter_requires_gemini_key">Memerlukan kunci API penyedia AI</string>
     <string name="currency_converter_toggle_desc">Contoh: 100 USD ke INR</string>
     <string name="currency_converter_toggle_title">Konverter Mata Uang</string>
+    <string name="set_alarm_action_label">Setel Alarm</string>
+    <string name="set_alarm_no_clock_app">Aplikasi jam tidak ditemukan</string>
+    <string name="start_timer_action_label">Mulai Timer</string>
+    <string name="start_timer_started">Timer dimulai</string>
     <string name="color_visualizer_toggle_title">Visualisasi Warna</string>
     <string name="color_visualizer_toggle_desc">Contoh: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Masukkan warna heksadesimal atau RGB</string>
@@ -1041,7 +1053,7 @@
     <string name="permissions_calendar_desc">Diperlukan untuk mencari acara kalender Anda.</string>
     <string name="permissions_calling_desc">Diperlukan untuk menelepon kontak secara langsung tanpa membuka dialer.</string>
     <string name="settings_notifications_permission_title">Kirim Notifikasi</string>
-    <string name="permissions_notifications_desc">Diperlukan untuk menyematkan hasil pencarian ke panel notifikasi</string>
+    <string name="permissions_notifications_desc">Diperlukan untuk notifikasi pengingat dan untuk menyematkan hasil pencarian di panel notifikasi</string>
     <string name="permissions_notification_access_desc">Diperlukan untuk mengaktifkan titik notifikasi dan fitur riwayat notifikasi</string>
     <string name="permissions_accessibility_lock_screen_title">Aksesibilitas</string>
     <string name="permissions_accessibility_lock_screen_desc">Mengizinkan gestur ketuk dua kali untuk mengunci perangkat Anda dan gestur geser tepi untuk membuka Quick Search.</string>
@@ -1186,5 +1198,38 @@
     <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>
     <string name="settings_tavily_mode_always">Selalu gunakan Tavily untuk penelusuran web</string>
     <string name="settings_tavily_mode_when_unsupported">Gunakan hanya jika model tidak mendukung penelusuran web</string>
+    <string name="settings_weather_no_web_search_warning">Cuaca memerlukan hasil web. Pilih model yang mendukung penelusuran web, atau tambahkan kunci API Tavily di Penyiapan Kunci API.</string>
     <string name="tavily_search_failed_toast">Penelusuran web Tavily gagal. Menjawab tanpa hasil web.</string>
+    <string name="search_hint_reminders">Cari pengingat…</string>
+    <string name="search_section_reminders_toggle_desc">Aktifkan atau nonaktifkan pencarian pengingat</string>
+    <string name="search_section_reminders_toggle_title">Pencarian Pengingat</string>
+    <string name="section_reminders">Pengingat</string>
+    <string name="reminders_notification_channel_name">Pengingat</string>
+    <string name="reminders_notification_channel_description">Notifikasi untuk pengingat yang Anda buat di Quick Search</string>
+    <string name="reminder_notification_action_done">Selesai</string>
+    <string name="reminder_notification_action_snooze">Tunda (30 mnt)</string>
+    <string name="reminder_new_title">Pengingat Baru</string>
+    <string name="reminder_edit_title">Edit Pengingat</string>
+    <string name="reminder_name_hint">Pengingat</string>
+    <string name="reminder_delete">Hapus pengingat</string>
+    <string name="reminder_status_done">Selesai</string>
+    <string name="reminder_status_overdue">Terlambat</string>
+    <string name="reminder_notification_due_at">Jatuh tempo pukul %1$s</string>
+    <string name="reminder_notification_due_on">Jatuh tempo pada %1$s</string>
+    <string name="action_mark_as_done">Tandai selesai</string>
+    <string name="action_expand_more_reminders">Pengingat Lainnya</string>
+    <string name="reminders_empty">Belum ada pengingat</string>
+    <string name="settings_reminders_view_all_desc">Lihat semua pengingat</string>
+    <string name="reminders_permission_hint">Izin diperlukan untuk menampilkan notifikasi pengingat. Ketuk untuk mengizinkan.</string>
+    <string name="reminders_home_card_dismiss">Hapus dari Beranda</string>
+    <string name="settings_include_past_reminders_title">Pengingat sebelumnya</string>
+    <string name="settings_include_past_reminders_desc">Tampilkan pengingat sebelumnya di hasil pencarian</string>
+    <string name="app_setting_create_reminder">Buat Pengingat</string>
+    <string name="app_setting_create_reminder_desc">Tambahkan pengingat baru</string>
+    <string name="permissions_exact_alarms_title">Alarm &amp; pengingat</string>
+    <string name="permissions_exact_alarms_desc">Diperlukan untuk mengirim notifikasi pengingat tepat waktu</string>
+    <string name="settings_reminders_filter_all">Semua pengingat</string>
+    <string name="settings_reminders_filter_past">Sebelumnya</string>
+    <string name="settings_reminders_filter_future">Mendatang</string>
+    <string name="reminders_home_card_dismiss_for_now">Tutup untuk saat ini</string>
 </resources>

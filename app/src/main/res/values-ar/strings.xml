@@ -110,6 +110,7 @@
     <string name="settings_gestures_desc">تخصيص إجراءات السحب</string>
     <string name="settings_gesture_swipe_right">السحب لليمين</string>
     <string name="settings_gesture_widget_panel">لوحة عناصر واجهة المستخدم</string>
+    <string name="widget_pinned_to_home">تمت الإضافة إلى الشاشة الرئيسية</string>
     <string name="settings_gesture_swipe_left">السحب لليسار</string>
     <string name="settings_gesture_swipe_up">السحب للأعلى</string>
     <string name="settings_gesture_swipe_down">السحب للأسفل</string>
@@ -141,6 +142,8 @@
     <string name="notification_pinned_item_type_file">ملف</string>
     <string name="notification_pinned_item_type_note">ملاحظة</string>
     <string name="action_remove">إزالة</string>
+    <string name="folder_name_placeholder">أضف اسم المجلد</string>
+    <string name="folder_remove_from_folder">إزالة من المجلد</string>
     <string name="app_swipe_current_action">الإجراء الحالي</string>
     <string name="app_swipe_up_picker_title">اختر إجراء السحب لأعلى لـ %1$s</string>
     <string name="app_swipe_down_picker_title">اختر إجراء السحب لأسفل لـ %1$s</string>
@@ -203,7 +206,7 @@
     <string name="dialog_edit_amazon_domain_message">قم بتحديث نطاق Amazon لبلدك.</string>
     <string name="dialog_edit_amazon_domain_title">تعديل نطاق Amazon</string>
     <string name="dialog_gemini_model_picker_title">اختر النموذج</string>
-    <string name="dialog_nickname_message">أدخل لقباً لـ "%1$s". ستتمكن من البحث عنه باستخدام هذا اللقب.</string>
+    <string name="dialog_nickname_message">أدخل لقباً واحداً أو أكثر لـ "%1$s"، مفصولة بفواصل. ستتمكن من البحث عنه باستخدام أي منها.</string>
     <string name="dialog_ok">متابعة</string>
     <string name="dialog_okay">موافق</string>
     <string name="dialog_remember_choice">تذكر هذا الخيار</string>
@@ -240,7 +243,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">جديد/محدث</string>
     <string name="app_suggestions_tab_pinned">مثبت</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">ستظل التطبيقات المثبتة ظاهرة في تبويب %1$s</string>
     <string name="app_suggestions_tab_recent">الأخيرة</string>
     <string name="app_suggestions_tabs_dialog_message">اختر تبويبات اقتراحات التطبيقات التي تظهر على الشاشة الرئيسية.</string>
     <string name="app_suggestions_tabs_dialog_title">تبويبات اقتراحات التطبيقات</string>
@@ -318,7 +320,7 @@
     <string name="action_disable_app_shortcut">تعطيل</string>
     <string name="action_disable_all_app_shortcuts_named">تعطيل جميع اختصارات %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">تم تعطيل اختصار التطبيق</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">يمكنك تفعيله لاحقًا من إعدادات اختصارات التطبيقات.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">يمكنك تفعيله لاحقًا في الإعدادات.</string>
     <string name="apps_refreshed_successfully">تم تحديث التطبيقات بنجاح</string>
     <string name="error_loading_user_apps">عذراً، تعذر تحميل تطبيقاتك. يرجى المحاولة مرة أخرى بعد قليل.</string>
     <string name="error_uninstall_app">تعذر إلغاء تثبيت %1$s</string>
@@ -663,6 +665,9 @@
     <string name="settings_all_quick_search_features_desc">عرض القائمة الكاملة للميزات والإمكانيات</string>
     <string name="settings_app_settings_desc">ابحث عن إعدادات Quick Search</string>
     <string name="settings_features_load_failed">تعذر تحميل مستندات الميزات.</string>
+    <string name="settings_features_export">تنزيل الميزات ومشاركتها</string>
+    <string name="settings_features_export_failed">تعذر حفظ مستند الميزات.</string>
+    <string name="settings_features_saved_to_downloads">تم الحفظ في التنزيلات</string>
     <string name="settings_features_sections_title">المحتويات</string>
     <string name="settings_search_description_change_app_theme">تغيير سمة التطبيق</string>
     <string name="settings_search_description_change_font_size">تغيير حجم الخط في التطبيق</string>
@@ -839,6 +844,9 @@
     <string name="settings_direct_search_grounding_label">البحث في الويب</string>
     <string name="settings_direct_search_how_to">احصل على مفتاح API مجاناً</string>
     <string name="settings_direct_search_model_label">النموذج</string>
+    <string name="settings_select_model">اختيار نموذج</string>
+    <string name="ai_error_selected_model_unavailable">النموذج المحدد غير متاح. يُرجى اختيار نموذج آخر من الإعدادات.</string>
+    <string name="settings_loading_models">جارٍ تحميل النماذج…</string>
     <string name="settings_direct_search_personal_context">السياق الشخصي</string>
     <string name="settings_direct_search_personal_context_hint">أضف أي سياق تريد من الذكاء الاصطناعي (AI) استخدامه عند صياغة الإجابات.</string>
     <string name="settings_direct_search_personal_context_unsupported">السياق الشخصي غير مدعوم في هذا النموذج.</string>
@@ -898,7 +906,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">عرض الكود المصدري للمشروع على GitHub</string>
     <string name="settings_feedback_github_title">المساهمة والتطوير</string>
-    <string name="settings_feedback_rate_desc">اترك تقييم 5 نجوم إذا وجدت هذا التطبيق مفيداً</string>
+    <string name="settings_feedback_rate_desc">اترك تقييم 5 نجوم إذا وجدت هذا التطبيق مفيداً 🙏</string>
     <string name="settings_feedback_rate_title">تقييم تطبيق Quick Search</string>
     <string name="settings_feedback_send_desc">الإبلاغ عن الأخطاء أو طلب ميزات جديدة</string>
     <string name="settings_feedback_send_title">إرسال الملاحظات</string>
@@ -918,6 +926,10 @@
     <string name="currency_converter_requires_gemini_key">يتطلب مفتاح API لمزود AI</string>
     <string name="currency_converter_toggle_desc">مثال: 100 USD إلى INR</string>
     <string name="currency_converter_toggle_title">محول العملات</string>
+    <string name="set_alarm_action_label">ضبط المنبه</string>
+    <string name="set_alarm_no_clock_app">لم يتم العثور على تطبيق ساعة</string>
+    <string name="start_timer_action_label">بدء المؤقت</string>
+    <string name="start_timer_started">بدأ المؤقت</string>
     <string name="color_visualizer_toggle_title">عارض الألوان</string>
     <string name="color_visualizer_toggle_desc">أمثلة: #FF0000، rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">أدخل لونًا سداسيًا أو RGB</string>
@@ -1032,7 +1044,7 @@
     <string name="permissions_calendar_desc">مطلوب للبحث في أحداث التقويم الخاص بك.</string>
     <string name="permissions_calling_desc">مطلوب للاتصال بجهات الاتصال الخاصة بك مباشرة دون فتح لوحة الاتصال.</string>
     <string name="settings_notifications_permission_title">نشر الإشعارات</string>
-    <string name="permissions_notifications_desc">مطلوب لتثبيت نتائج البحث في لوحة الإشعارات</string>
+    <string name="permissions_notifications_desc">مطلوب لإشعارات التذكيرات ولتثبيت نتائج البحث في لوحة الإشعارات</string>
     <string name="permissions_notification_access_desc">مطلوب لتفعيل نقاط الإشعارات وميزة سجل الإشعارات</string>
     <string name="permissions_accessibility_lock_screen_title">إمكانية الوصول</string>
     <string name="permissions_accessibility_lock_screen_desc">يسمح لإيماءة النقر المزدوج بقفل جهازك ولإيماءة السحب من الحافة بفتح Quick Search.</string>
@@ -1186,5 +1198,38 @@
     <string name="settings_tavily_desc">أضف مفتاح Tavily API لإضافة دعم البحث على الويب للنماذج التي لا تدعمه.</string>
     <string name="settings_tavily_mode_always">استخدم Tavily دائمًا للبحث على الويب</string>
     <string name="settings_tavily_mode_when_unsupported">استخدمه فقط عندما لا يدعم النموذج البحث على الويب</string>
+    <string name="settings_weather_no_web_search_warning">يحتاج الطقس إلى نتائج من الويب. اختر نموذجًا يدعم البحث على الويب، أو أضف مفتاح Tavily API في إعداد مفتاح API.</string>
     <string name="tavily_search_failed_toast">فشل البحث على الويب عبر Tavily. تتم الإجابة بدون نتائج الويب.</string>
+    <string name="search_hint_reminders">البحث في التذكيرات…</string>
+    <string name="search_section_reminders_toggle_desc">تشغيل البحث في التذكيرات أو إيقافه</string>
+    <string name="search_section_reminders_toggle_title">البحث في التذكيرات</string>
+    <string name="section_reminders">التذكيرات</string>
+    <string name="reminders_notification_channel_name">التذكيرات</string>
+    <string name="reminders_notification_channel_description">إشعارات للتذكيرات التي تنشئها في Quick Search</string>
+    <string name="reminder_notification_action_done">تم</string>
+    <string name="reminder_notification_action_snooze">غفوة (30 دقيقة)</string>
+    <string name="reminder_new_title">تذكير جديد</string>
+    <string name="reminder_edit_title">تعديل التذكير</string>
+    <string name="reminder_name_hint">تذكير</string>
+    <string name="reminder_delete">حذف التذكير</string>
+    <string name="reminder_status_done">تم</string>
+    <string name="reminder_status_overdue">متأخر</string>
+    <string name="reminder_notification_due_at">مستحق في %1$s</string>
+    <string name="reminder_notification_due_on">مستحق في %1$s</string>
+    <string name="action_mark_as_done">وضع علامة كمنجز</string>
+    <string name="action_expand_more_reminders">المزيد من التذكيرات</string>
+    <string name="reminders_empty">لا توجد تذكيرات بعد</string>
+    <string name="settings_reminders_view_all_desc">عرض كل التذكيرات</string>
+    <string name="reminders_permission_hint">يلزم إذن لعرض إشعارات التذكيرات. انقر للسماح.</string>
+    <string name="reminders_home_card_dismiss">إزالة من الشاشة الرئيسية</string>
+    <string name="settings_include_past_reminders_title">التذكيرات السابقة</string>
+    <string name="settings_include_past_reminders_desc">عرض التذكيرات السابقة في نتائج البحث</string>
+    <string name="app_setting_create_reminder">إنشاء تذكير</string>
+    <string name="app_setting_create_reminder_desc">إضافة تذكير جديد</string>
+    <string name="permissions_exact_alarms_title">المنبّهات والتذكيرات</string>
+    <string name="permissions_exact_alarms_desc">مطلوب لتسليم إشعارات التذكيرات في الوقت المحدد</string>
+    <string name="settings_reminders_filter_all">كل التذكيرات</string>
+    <string name="settings_reminders_filter_past">السابقة</string>
+    <string name="settings_reminders_filter_future">القادمة</string>
+    <string name="reminders_home_card_dismiss_for_now">تجاهل الآن</string>
 </resources>

@@ -34,6 +34,7 @@
     <string name="search_hint_weather">Enter a location or use your default</string>
     <string name="search_hint_files">Search Files…</string>
     <string name="search_hint_notes">Search Notes…</string>
+    <string name="search_hint_reminders">Search Reminders…</string>
     <string name="search_hint_settings">Search Device Settings…</string>
     <string name="search_hint_static">Search Anything</string>
     <string name="search_hint_world_clock">Enter any place to get their local time</string>
@@ -101,6 +102,7 @@
     <string name="settings_gestures_desc">Customize swipe actions</string>
     <string name="settings_gesture_swipe_right">Swipe Right</string>
     <string name="settings_gesture_widget_panel">Widget Panel</string>
+    <string name="widget_pinned_to_home">Added to Home</string>
     <string name="settings_gesture_swipe_left">Swipe Left</string>
     <string name="settings_gesture_swipe_up">Swipe Up</string>
     <string name="settings_gesture_swipe_down">Swipe Down</string>
@@ -136,6 +138,8 @@
     <string name="notification_pinned_item_type_file">File</string>
     <string name="notification_pinned_item_type_note">Note</string>
     <string name="action_remove">Remove</string>
+    <string name="folder_name_placeholder">Add folder name</string>
+    <string name="folder_remove_from_folder">Remove from folder</string>
     <string name="app_swipe_current_action">Current Action</string>
     <string name="app_swipe_up_picker_title">Select Swipe up action for %1$s</string>
     <string name="app_swipe_down_picker_title">Select Swipe down action for %1$s</string>
@@ -198,7 +202,7 @@
     <string name="dialog_edit_amazon_domain_message">Update Amazon domain for your country.</string>
     <string name="dialog_edit_amazon_domain_title">Edit Amazon Domain</string>
     <string name="dialog_gemini_model_picker_title">Select Model</string>
-    <string name="dialog_nickname_message">Enter a nickname for "%1$s". You can search for it using this nickname.</string>
+    <string name="dialog_nickname_message">Enter one or more nicknames for "%1$s", separated by commas. You can search for it using any of them.</string>
     <string name="dialog_ok">Continue</string>
     <string name="dialog_okay">Okay</string>
     <string name="dialog_remember_choice">Remember this choice</string>
@@ -235,7 +239,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">New/Updated</string>
     <string name="app_suggestions_tab_pinned">Pinned</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Pinned apps will still appear in %1$s tab</string>
     <string name="app_suggestions_tab_recent">Recents</string>
     <string name="app_suggestions_tabs_dialog_message">Choose which app suggestion tabs appear on the home screen.</string>
     <string name="app_suggestions_tabs_dialog_title">App Suggestion Tabs</string>
@@ -274,6 +277,8 @@
     <string name="search_section_device_settings_toggle_title">Device Settings Search</string>
     <string name="search_section_files_toggle_desc">Turn files search on or off</string>
     <string name="search_section_files_toggle_title">File Search</string>
+    <string name="search_section_reminders_toggle_desc">Turn reminders search on or off</string>
+    <string name="search_section_reminders_toggle_title">Reminders Search</string>
     <string name="search_section_notes_toggle_desc">Turn notes search on or off</string>
     <string name="search_section_notes_toggle_title">Notes Search</string>
     <string name="section_app_settings">App Settings</string>
@@ -313,7 +318,7 @@
     <string name="action_disable_app_shortcut">Disable</string>
     <string name="action_disable_all_app_shortcuts_named">Disable all %1$s shortcuts</string>
     <string name="snackbar_app_shortcut_disabled_title">App shortcut disabled</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">You can enable this shortcut later in App shortcut settings.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">You can enable later in settings.</string>
     <string name="apps_refreshed_successfully">Apps refreshed successfully</string>
     <string name="error_loading_user_apps">We could not load your apps. Try again in a moment.</string>
     <string name="error_uninstall_app">Unable to uninstall %1$s</string>
@@ -661,6 +666,9 @@
     <string name="settings_more_apps_from_developer_title">More Apps from the Developer</string>
     <string name="settings_app_settings_desc">Search for Quick Search settings</string>
     <string name="settings_features_load_failed">Unable to load feature documentation.</string>
+    <string name="settings_features_export">Download and share features</string>
+    <string name="settings_features_export_failed">Unable to save feature documentation.</string>
+    <string name="settings_features_saved_to_downloads">Saved to downloads</string>
     <string name="settings_features_sections_title">Contents</string>
     <string name="settings_search_description_change_app_theme">Change app theme</string>
     <string name="settings_search_description_change_font_size">Change app font size</string>
@@ -837,6 +845,9 @@
     <string name="settings_direct_search_grounding_label">Web Search</string>
     <string name="settings_direct_search_how_to">Get Free API Key</string>
     <string name="settings_direct_search_model_label">Model</string>
+    <string name="settings_select_model">Select Model</string>
+    <string name="ai_error_selected_model_unavailable">Selected model isn\'t available. Please choose another model in settings.</string>
+    <string name="settings_loading_models">Loading Models...</string>
     <string name="settings_direct_search_personal_context">Personal Context</string>
     <string name="settings_direct_search_personal_context_hint">Add any context you want AI to use when generating answers.</string>
     <string name="settings_direct_search_personal_context_unsupported">Personal context is not available for this model.</string>
@@ -851,6 +862,7 @@
     <string name="settings_tavily_desc">Add Tavily API key to add web search support for models that don\u2019t support it.</string>
     <string name="settings_tavily_mode_always">Always use Tavily for web search</string>
     <string name="settings_tavily_mode_when_unsupported">Use only when the model does not support web search</string>
+    <string name="settings_weather_no_web_search_warning">Weather needs web results. Pick a model that supports web search, or add a Tavily API key under API Key Setup.</string>
     <string name="tavily_search_failed_toast">Tavily web search failed. Answering without web results.</string>
     <string name="settings_gemini_api_key_reset">Reset Key</string>
     <string name="settings_gemini_api_key_saving">Saving...</string>
@@ -901,7 +913,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">View this project\'s source code on GitHub</string>
     <string name="settings_feedback_github_title">Development</string>
-    <string name="settings_feedback_rate_desc">Leave a 5 star rating if you find this app useful</string>
+    <string name="settings_feedback_rate_desc">Leave a 5 star rating if you find this app useful 🙏</string>
     <string name="settings_feedback_rate_title">Rate Quick Search</string>
     <string name="settings_feedback_send_desc">Report bugs or request features</string>
     <string name="settings_feedback_send_title">Send Feedback</string>
@@ -921,6 +933,10 @@
     <string name="currency_converter_requires_gemini_key">Requires an AI provider API key</string>
     <string name="currency_converter_toggle_desc">Example: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Currency Converter</string>
+    <string name="set_alarm_action_label">Set Alarm</string>
+    <string name="set_alarm_no_clock_app">No clock app found</string>
+    <string name="start_timer_action_label">Start Timer</string>
+    <string name="start_timer_started">Timer started</string>
     <string name="color_visualizer_toggle_title">Color Visualizer</string>
     <string name="color_visualizer_toggle_desc">Examples: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Enter a hex or RGB color</string>
@@ -1037,7 +1053,7 @@
     <string name="permissions_calendar_desc">Required to search your calendar events.</string>
     <string name="permissions_calling_desc">Required to call your contacts directly without opening the dialer.</string>
     <string name="settings_notifications_permission_title">Post Notifications</string>
-    <string name="permissions_notifications_desc">Required to pin search results to notification panel</string>
+    <string name="permissions_notifications_desc">Required for reminder notifications and to pin search results to notification panel</string>
     <string name="permissions_notification_access_desc">Required to enable notification dots and notification history features</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibility</string>
     <string name="permissions_accessibility_lock_screen_desc">Allows the double-tap gesture to lock your device and the edge swipe gesture to open Quick Search.</string>
@@ -1131,7 +1147,7 @@
     <string name="settings_custom_tool_delete_button">Delete Tool</string>
     <string name="settings_custom_tool_editor_title">Custom Tool</string>
     <string name="settings_custom_tool_name_label">Tool Name</string>
-    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.\n\n Use {time} to include current date and time in the prompt.</string>
+    <string name="settings_custom_tool_prompt_hint">Describe what this tool does. This prompt guides the AI when the tool is triggered.\n\nUse {time} to include current date and time in the prompt.</string>
     <string name="settings_custom_tool_prompt_label">System Prompt</string>
     <string name="settings_excluded_items_clear_all">Unhide all items</string>
     <string name="settings_excluded_items_clear_all_confirmation">Are you sure you want to clear all hidden items? This action cannot be undone.</string>
@@ -1178,4 +1194,34 @@
     <string name="speed_bump_overlay_title">Take a deep breath</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Upcoming Alarm</string>
+    <!-- Reminders -->
+    <string name="section_reminders">Reminders</string>
+    <string name="reminders_notification_channel_name">Reminders</string>
+    <string name="reminders_notification_channel_description">Notifications for reminders you create in Quick Search</string>
+    <string name="reminder_notification_action_done">Done</string>
+    <string name="reminder_notification_action_snooze">Snooze (30 min)</string>
+    <string name="reminder_new_title">New Reminder</string>
+    <string name="reminder_edit_title">Edit Reminder</string>
+    <string name="reminder_name_hint">Reminder</string>
+    <string name="reminder_delete">Delete reminder</string>
+    <string name="reminder_status_done">Done</string>
+    <string name="reminder_status_overdue">Overdue</string>
+    <string name="reminder_notification_due_at">Due at %1$s</string>
+    <string name="reminder_notification_due_on">Due on %1$s</string>
+    <string name="action_mark_as_done">Mark as Done</string>
+    <string name="action_expand_more_reminders">More Reminders</string>
+    <string name="reminders_empty">No reminders yet</string>
+    <string name="settings_reminders_view_all_desc">View all reminders</string>
+    <string name="reminders_permission_hint">Need permission to show reminder notifications. Tap to allow.</string>
+    <string name="reminders_home_card_dismiss">Remove from Home</string>
+    <string name="settings_include_past_reminders_title">Past reminders</string>
+    <string name="settings_include_past_reminders_desc">Show past reminders in search results</string>
+    <string name="app_setting_create_reminder">Create Reminder</string>
+    <string name="app_setting_create_reminder_desc">Add a new reminder</string>
+    <string name="permissions_exact_alarms_title">Alarms &amp; reminders</string>
+    <string name="permissions_exact_alarms_desc">Required to deliver reminder notifications on time</string>
+    <string name="settings_reminders_filter_all">All Reminders</string>
+    <string name="settings_reminders_filter_past">Past</string>
+    <string name="settings_reminders_filter_future">Future</string>
+    <string name="reminders_home_card_dismiss_for_now">Dismiss for now</string>
 </resources>

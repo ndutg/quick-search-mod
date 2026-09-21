@@ -518,16 +518,7 @@ internal class SearchStartupLifecycleDelegate(
                     geminiGroundingEnabled = aiSearchHandler.isGeminiGroundingEnabled(),
                     geminiThinkingEnabled = aiSearchHandler.isGeminiThinkingEnabled(),
                     availableGeminiModels = availableAiModels,
-                    availableLlmModelsByProvider =
-                        userPreferences.getConfiguredLlmProviderIds().associateWith { providerId ->
-                            if (providerId == activeProviderId) {
-                                availableAiModels
-                            } else {
-                                AiSearchLlmProviderRegistry
-                                    .get(providerId, applicationProvider())
-                                    .fallbackTextModels
-                            }
-                        },
+                    availableLlmModelsByProvider = emptyMap(),
                 )
             }
             updateResultsState { state ->
@@ -640,16 +631,7 @@ internal class SearchStartupLifecycleDelegate(
                         geminiGroundingEnabled = aiSearchHandler.isGeminiGroundingEnabled(),
                         geminiThinkingEnabled = aiSearchHandler.isGeminiThinkingEnabled(),
                         availableGeminiModels = availableGeminiModels,
-                        availableLlmModelsByProvider =
-                            userPreferences.getConfiguredLlmProviderIds().associateWith { providerId ->
-                                if (providerId == activeProviderId) {
-                                    availableGeminiModels
-                                } else {
-                                    AiSearchLlmProviderRegistry
-                                        .get(providerId, applicationProvider())
-                                        .fallbackTextModels
-                                }
-                            },
+                        availableLlmModelsByProvider = emptyMap(),
                     )
                 }
                 val pinnedAppShortcutsState = appShortcutSearchHandler.getPinnedAndExcludedOnly()
@@ -962,6 +944,7 @@ internal class SearchStartupLifecycleDelegate(
                 homePinnedSectionOrder = userPreferences.getHomePinnedSectionOrder(),
                 pinnedAppShortcutsInAppGrid = userPreferences.isPinnedAppShortcutsInAppGridEnabled(),
                 pinnedAppGridOrder = userPreferences.getPinnedAppGridOrder(),
+                appFolders = userPreferences.getAppFolders(),
                 shouldShowUsagePermissionBanner = userPreferences.shouldShowUsagePermissionBanner(),
             )
         }
@@ -1036,16 +1019,7 @@ internal class SearchStartupLifecycleDelegate(
                         geminiGroundingEnabled = geminiGroundingEnabled,
                         geminiThinkingEnabled = geminiThinkingEnabled,
                         availableGeminiModels = availableGeminiModels,
-                        availableLlmModelsByProvider =
-                            userPreferences.getConfiguredLlmProviderIds().associateWith { providerId ->
-                                if (providerId == aiSearchHandler.getAiSearchProviderId()) {
-                                    availableGeminiModels
-                                } else {
-                                    AiSearchLlmProviderRegistry
-                                        .get(providerId, applicationProvider())
-                                        .fallbackTextModels
-                                }
-                            },
+                        availableLlmModelsByProvider = emptyMap(),
                     )
                 }
                 updateConfigState { state ->

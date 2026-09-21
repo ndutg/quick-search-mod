@@ -65,6 +65,58 @@ class SearchRankingUtilsTest {
     }
 
     @Test
+    fun exactNicknameOutranksANameThatOnlyStartsWithTheQuery() {
+        val exactNicknamePriority =
+            SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = "Someone Else",
+                nickname = "Teja",
+                query = "teja",
+            )
+        val namePrefixPriority = SearchRankingUtils.calculateMatchPriority("Tejal", "teja")
+
+        assertTrue(exactNicknamePriority < namePrefixPriority)
+    }
+
+    @Test
+    fun commaSeparatedNicknamesEachMatchOnTheirOwn() {
+        listOf("tv", "remote", "cast").forEach { query ->
+            val priority =
+                SearchRankingUtils.calculateMatchPriorityWithNickname(
+                    primaryText = "Mi Remote",
+                    nickname = "tv, remote, cast",
+                    query = query,
+                )
+
+            assertTrue("Expected \"$query\" to match one of the nicknames", DefaultSearchMatcher.isMatch(priority))
+        }
+    }
+
+    @Test
+    fun aliasIsRankedAsAStandaloneNameRatherThanPartOfTheJoinedString() {
+        val query = SearchQueryContext.fromRawQuery("remote")
+        val split = DefaultSearchMatcher.match("Mi Remote", query, "tv, remote")
+        val single = DefaultSearchMatcher.match("Mi Remote", query, "remote")
+
+        // "remote" starts the second alias, so it must score the same as if it were the only one.
+        assertEquals(single, split)
+    }
+
+    @Test
+    fun blankAliasesAreIgnoredInsteadOfMatchingEverything() {
+        val query = SearchQueryContext.fromRawQuery("quantum")
+
+        assertFalse(DefaultSearchMatcher.isMatch(DefaultSearchMatcher.match("No match", query, ", , ")))
+        assertFalse(DefaultSearchMatcher.isMatch(CachedSearchMatcher(SearchTextCache()).match("No match", query, ", , ")))
+    }
+
+    @Test
+    fun normalizeInputTrimsDeduplicatesAndDropsEmptyAliases() {
+        assertEquals("tv, remote", NicknameUtils.normalizeInput("  tv ,, remote ,  tv  "))
+        assertEquals(null, NicknameUtils.normalizeInput(" , , "))
+        assertEquals(null, NicknameUtils.normalizeInput(null))
+    }
+
+    @Test
     fun cachedMatcherProducesTheSamePrioritiesAsTheDefaultMatcher() {
         val cachedMatcher = CachedSearchMatcher(SearchTextCache())
         val cases =
@@ -72,6 +124,9 @@ class SearchRankingUtilsTest {
                 Triple("Özgür Işık", "ozgur isik", null),
                 Triple("F-Droid", "fdroi", null),
                 Triple("Contact", "balagunateja", "Bala Guna Teja"),
+                Triple("Mi Remote", "remote", "tv, remote, cast"),
+                Triple("Mi Remote", "cast", "tv, remote, cast"),
+                Triple("No match", "quantum", "tv, remote"),
                 Triple("Passport Office", "teja passport", null),
                 Triple("No match", "quantum", null),
             )
