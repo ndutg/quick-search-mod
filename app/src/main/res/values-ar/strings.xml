@@ -1042,7 +1042,10 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">إذا غيرت رأيك لاحقاً بشأن إذن %1$s، يمكنك منحه في أي وقت من إعدادات التطبيق.</string>
     <string name="permissions_reminder_dialog_title">الأذونات غير ممنوحة</string>
-    <string name="permissions_screen_subtitle">جميع الأذونات هنا اختيارية. ولا تُستخدم إلا لفتح ميزات إضافية. تظل بياناتك على جهازك.</string>
+    <string name="permissions_screen_subtitle">جميع الأذونات اختيارية. فهي تفتح ميزات إضافية فقط، وتظل بياناتك على جهازك.</string>
+    <string name="permissions_open_source_title">مفتوح المصدر</string>
+    <string name="permissions_open_source_desc">اطّلع بالضبط على كيفية استخدام هذه الأذونات.</string>
+    <string name="permissions_open_source_action">عرض الكود</string>
     <string name="permissions_screen_optional_emphasis">اختيارية</string>
     <string name="permissions_usage_desc">مطلوب لعرض تطبيقاتك المستخدمة مؤخراً في قسم الاقتراحات.</string>
     <string name="setup_action_next">التالي</string>

@@ -1041,7 +1041,10 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">यदि बाद में आप %1$s अनुमति के बारे में अपना निर्णय बदलते हैं, तो आप ऐप सेटिंग्स से अनुमति दे सकते हैं।</string>
     <string name="permissions_reminder_dialog_title">अनुमतियां प्रदान नहीं की गईं</string>
-    <string name="permissions_screen_subtitle">यहाँ सभी अनुमतियाँ वैकल्पिक हैं। इनका उपयोग केवल अतिरिक्त सुविधाएँ अनलॉक करने के लिए किया जाता है। आपका डेटा आपके डिवाइस पर ही रहता है।</string>
+    <string name="permissions_screen_subtitle">सभी अनुमतियाँ वैकल्पिक हैं। ये केवल अतिरिक्त सुविधाएँ अनलॉक करती हैं और आपका डेटा आपके डिवाइस पर ही रहता है।</string>
+    <string name="permissions_open_source_title">ओपन सोर्स</string>
+    <string name="permissions_open_source_desc">देखें कि इन अनुमतियों का उपयोग कैसे किया जाता है।</string>
+    <string name="permissions_open_source_action">कोड देखें</string>
     <string name="permissions_screen_optional_emphasis">वैकल्पिक</string>
     <string name="permissions_usage_desc">सुझावों में हाल ही में उपयोग किए गए ऐप्स दिखाने के लिए आवश्यक।</string>
     <string name="setup_action_next">आगे</string>

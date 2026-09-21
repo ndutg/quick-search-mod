@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,6 +35,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.onboarding.OnboardingHeader
 import com.tk.quicksearch.search.core.AppTheme
+import com.tk.quicksearch.shared.permissions.OpenSourceTrustCard
 import com.tk.quicksearch.shared.permissions.PermissionCardStates
 import com.tk.quicksearch.shared.permissions.PermissionCardTexts
 import com.tk.quicksearch.shared.permissions.PermissionsCardSection
@@ -91,7 +93,11 @@ fun PermissionsScreen(
             modifier = Modifier.padding(top = DesignTokens.SpacingSmall),
         )
 
-        Spacer(modifier = Modifier.height(DesignTokens.SpacingXLarge))
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
+
+        OpenSourceTrustCard(modifier = Modifier.fillMaxWidth())
+
+        Spacer(modifier = Modifier.height(DesignTokens.SpacingLarge))
 
         Column(
             modifier = Modifier.weight(1f),
@@ -125,7 +131,8 @@ fun PermissionsScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(DesignTokens.OnboardingPermissionCardViewportHeight),
+                        .weight(1f, fill = false)
+                        .heightIn(max = DesignTokens.OnboardingPermissionCardViewportHeight),
                 internalScrollEnabled = true,
                 showCalendarPermission = true,
                 showCallingPermission = true,

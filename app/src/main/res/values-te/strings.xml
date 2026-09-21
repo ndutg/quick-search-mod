@@ -1041,7 +1041,10 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">ఒకవేళ మీరు తర్వాత %1$s అనుమతి గురించి మీ నిర్ణయాన్ని మార్చుకుంటే, మీరు యాప్ సెట్టింగ్‌ల నుండి అనుమతిని మంజూరు చేయవచ్చు.</string>
     <string name="permissions_reminder_dialog_title">అనుమతులు మంజూరు చేయబడలేదు</string>
-    <string name="permissions_screen_subtitle">ఇక్కడి అనుమతులన్నీ ఐచ్ఛికం. అవి అదనపు ఫీచర్‌లను అన్‌లాక్ చేయడానికి మాత్రమే ఉపయోగించబడతాయి. మీ డేటా మీ పరికరంలోనే ఉంటుంది.</string>
+    <string name="permissions_screen_subtitle">అన్ని అనుమతులు ఐచ్ఛికం. అవి అదనపు ఫీచర్‌లను మాత్రమే అన్‌లాక్ చేస్తాయి, మీ డేటా మీ పరికరంలోనే ఉంటుంది.</string>
+    <string name="permissions_open_source_title">ఓపెన్ సోర్స్</string>
+    <string name="permissions_open_source_desc">ఈ అనుమతులు ఎలా ఉపయోగించబడుతున్నాయో చూడండి.</string>
+    <string name="permissions_open_source_action">కోడ్ చూడండి</string>
     <string name="permissions_screen_optional_emphasis">ఐచ్ఛికం</string>
     <string name="permissions_usage_desc">మీరు ఇటీవల ఉపయోగించిన యాప్‌లను సూచనలలో చూపించడానికి అవసరం.</string>
     <string name="setup_action_next">తదుపరి</string>

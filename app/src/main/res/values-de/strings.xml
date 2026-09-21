@@ -1041,7 +1041,10 @@
     <string name="permissions_mandatory_indicator">*</string>
     <string name="permissions_reminder_dialog_message">Wenn du es dir bezüglich der Berechtigung für %1$s später anders überlegst, kannst du sie in den App-Einstellungen erteilen.</string>
     <string name="permissions_reminder_dialog_title">Berechtigungen nicht erteilt</string>
-    <string name="permissions_screen_subtitle">Alle Berechtigungen hier sind optional. Sie werden nur verwendet, um zusätzliche Funktionen freizuschalten. Deine Daten bleiben auf deinem Gerät.</string>
+    <string name="permissions_screen_subtitle">Alle Berechtigungen sind optional. Sie schalten nur zusätzliche Funktionen frei und deine Daten bleiben auf deinem Gerät.</string>
+    <string name="permissions_open_source_title">Open Source</string>
+    <string name="permissions_open_source_desc">Sieh genau, wie diese Berechtigungen verwendet werden.</string>
+    <string name="permissions_open_source_action">Code ansehen</string>
     <string name="permissions_screen_optional_emphasis">optional</string>
     <string name="permissions_usage_desc">Erforderlich, um zuletzt verwendete Apps in Vorschlägen anzuzeigen.</string>
     <string name="setup_action_next">Weiter</string>
