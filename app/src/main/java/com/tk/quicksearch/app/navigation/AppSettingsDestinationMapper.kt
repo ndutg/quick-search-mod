@@ -11,6 +11,8 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.TOOLS -> SettingsDetailType.TOOLS
         AppSettingsDestination.TASKER_INTEGRATION -> SettingsDetailType.TASKER_INTEGRATION
         AppSettingsDestination.LAUNCH_OPTIONS -> SettingsDetailType.LAUNCH_OPTIONS
+        AppSettingsDestination.EDGE_GESTURE -> SettingsDetailType.EDGE_GESTURE
+        AppSettingsDestination.FLOATING_BUTTON -> SettingsDetailType.FLOATING_BUTTON
         AppSettingsDestination.MORE_OPTIONS -> SettingsDetailType.MORE_OPTIONS
         AppSettingsDestination.PERMISSIONS -> SettingsDetailType.PERMISSIONS
         AppSettingsDestination.APP_MANAGEMENT -> SettingsDetailType.APP_MANAGEMENT

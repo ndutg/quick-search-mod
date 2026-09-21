@@ -116,9 +116,10 @@
     <string name="settings_gesture_notification_panel">Notification Panel</string>
     <string name="settings_gesture_lock_screen">Lock Screen</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
-    <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture. It does not read screen content.</string>
+    <string name="accessibility_lock_screen_service_label">Quick Search</string>
+    <string name="accessibility_lock_screen_service_description">Allows Quick Search to lock the screen from the Home double-tap gesture and to open from an edge swipe or a floating button in any app. It does not read screen content.</string>
     <string name="accessibility_permission_disclaimer_title">Accessibility Permission Disclaimer</string>
-    <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Android’s AccessibilityService API only to lock your device when you double-tap the Home screen. Through this service, Quick Search does not read, collect, store, or share your screen content or other personal data.</string>
+    <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Accessibility to:\n\n• Enable double-tap to lock screen gesture.\n• Open Quick Search using edge swipe gestures.\n• Open Quick Search using floating button.\n\nIt does not read, collect, store, or share your screen content or other personal data.</string>
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
     <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>
@@ -732,6 +733,22 @@
     <string name="settings_icon_title">Settings Icon</string>
     <string name="settings_launch_options_desc">Different ways to launch this app</string>
     <string name="settings_launch_options_title">Launch Options</string>
+    <string name="settings_edge_gesture_title">Edge Swipe Gesture</string>
+    <string name="settings_edge_gesture_desc">Open Quick Search from any app</string>
+    <string name="settings_edge_gesture_side">Side</string>
+    <string name="settings_edge_gesture_side_left">Left</string>
+    <string name="settings_edge_gesture_side_right">Right</string>
+    <string name="settings_edge_gesture_activation">Gesture</string>
+    <string name="settings_edge_gesture_activation_tap">Tap</string>
+    <string name="settings_edge_gesture_activation_slide">Slide</string>
+    <string name="settings_edge_gesture_position">Position</string>
+    <string name="settings_edge_gesture_size">Size</string>
+    <string name="settings_edge_gesture_width">Width</string>
+    <string name="settings_edge_gesture_visibility">Visibility</string>
+    <string name="settings_floating_button_title">Floating Button</string>
+    <string name="settings_floating_button_desc">Tap a floating search button to open Quick Search from any app</string>
+    <string name="settings_floating_button_move_hint">Long press the button and drag it to move it anywhere on the screen.</string>
+    <string name="settings_floating_button_opacity">Opacity</string>
     <string name="settings_app_language_title">App Language</string>
     <string name="settings_app_language_desc">Current: %1$s</string>
     <string name="settings_app_language_picker_title">Choose App Language</string>
@@ -1036,15 +1053,15 @@
     <!-- ============================================================================
          Permissions &amp; Onboarding
          ============================================================================ -->
-    <string name="permissions_calendar_desc">Required to search your calendar events.</string>
-    <string name="permissions_calling_desc">Required to call your contacts directly without opening the dialer.</string>
+    <string name="permissions_calendar_desc">Needed to search your calendar events.</string>
+    <string name="permissions_calling_desc">Needed to call your contacts directly without opening the dialer.</string>
     <string name="settings_notifications_permission_title">Post Notifications</string>
-    <string name="permissions_notifications_desc">Required for reminder notifications and to pin search results to notification panel</string>
-    <string name="permissions_notification_access_desc">Required to enable notification dots and notification history features</string>
+    <string name="permissions_notifications_desc">Needed for reminder notifications and to pin search results to notification panel</string>
+    <string name="permissions_notification_access_desc">Needed to enable notification dots and notification history features</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibility</string>
-    <string name="permissions_accessibility_lock_screen_desc">Allows the double-tap gesture to lock your device.</string>
-    <string name="permissions_contacts_desc">Required to search your contacts.</string>
-    <string name="permissions_files_desc">Required to search through your documents and other files.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Needed for double-tap to lock screen gesture, launch Quick Search with edge swipe gesture or floating button</string>
+    <string name="permissions_contacts_desc">Needed to search your contacts.</string>
+    <string name="permissions_files_desc">Needed to search through your documents and other files.</string>
     <string name="permissions_files_title">Files Access</string>
     <string name="permissions_granted">Granted</string>
     <string name="permissions_mandatory_indicator">*</string>
@@ -1055,7 +1072,7 @@
     <string name="permissions_open_source_desc">See exactly how these permissions are used.</string>
     <string name="permissions_open_source_action">View Code</string>
     <string name="permissions_screen_optional_emphasis">optional</string>
-    <string name="permissions_usage_desc">Required to show your recently used apps in suggestions.</string>
+    <string name="permissions_usage_desc">Needed to show your recently used apps in suggestions.</string>
     <string name="setup_action_next">Next</string>
     <string name="setup_action_start">Start Searching!</string>
     <string name="setup_final_title">Almost Done!</string>
@@ -1207,8 +1224,8 @@
     <string name="settings_include_past_reminders_desc">Show past reminders in search results</string>
     <string name="app_setting_create_reminder">Create Reminder</string>
     <string name="app_setting_create_reminder_desc">Add a new reminder</string>
-    <string name="permissions_exact_alarms_title">Alarms &amp; reminders</string>
-    <string name="permissions_exact_alarms_desc">Required to deliver reminder notifications on time</string>
+    <string name="permissions_exact_alarms_title">Alarms &amp; Reminders</string>
+    <string name="permissions_exact_alarms_desc">Needed to deliver reminder notifications on time</string>
     <string name="settings_reminders_filter_all">All Reminders</string>
     <string name="settings_reminders_filter_past">Past</string>
     <string name="settings_reminders_filter_future">Future</string>

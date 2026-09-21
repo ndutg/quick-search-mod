@@ -923,6 +923,14 @@ internal fun SettingsDetailLevel2Screen(
                             GesturesSettingsSection(modifier = Modifier.fillMaxWidth())
                         }
 
+                        SettingsDetailType.EDGE_GESTURE -> {
+                            EdgeGestureSettingsSection(modifier = Modifier.fillMaxWidth())
+                        }
+
+                        SettingsDetailType.FLOATING_BUTTON -> {
+                            FloatingButtonSettingsSection(modifier = Modifier.fillMaxWidth())
+                        }
+
                         SettingsDetailType.UNIT_CONVERTER_INFO -> {
                             UnitConverterInfoSection(modifier = Modifier.fillMaxWidth())
                         }

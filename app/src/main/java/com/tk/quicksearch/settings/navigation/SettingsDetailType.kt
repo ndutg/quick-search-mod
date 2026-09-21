@@ -35,6 +35,8 @@ enum class SettingsDetailType {
     TRIGGERS,
     GESTURES,
     NOTIFICATION_HISTORY,
+    EDGE_GESTURE,
+    FLOATING_BUTTON,
 }
 
 internal data class SettingsDestinationSpec(
@@ -210,6 +212,18 @@ internal object SettingsDestinationRegistry {
                 SettingsDestinationSpec(
                     titleResId = R.string.settings_shortcut_notification_history,
                     level = 2,
+                ),
+            SettingsDetailType.EDGE_GESTURE to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_edge_gesture_title,
+                    level = 2,
+                    fallbackBackDestination = SettingsDetailType.LAUNCH_OPTIONS,
+                ),
+            SettingsDetailType.FLOATING_BUTTON to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_floating_button_title,
+                    level = 2,
+                    fallbackBackDestination = SettingsDetailType.LAUNCH_OPTIONS,
                 ),
         )
 

@@ -1455,8 +1455,9 @@ class UiPreferences(
         const val KEY_LAST_SEEN_VERSION_CODE = "last_seen_version_code"
         const val KEY_ACCESSIBILITY_PERMISSION_DISCLAIMER_PENDING =
             "accessibility_permission_disclaimer_pending"
+        // Versioned so existing users see the disclosure again whenever its scope changes.
         const val KEY_HAS_SEEN_ACCESSIBILITY_PERMISSION_DISCLAIMER =
-            "has_seen_accessibility_permission_disclaimer"
+            "has_seen_accessibility_permission_disclaimer_v2"
         const val KEY_AI_SEARCH_SETUP_EXPANDED = "direct_search_setup_expanded"
         const val KEY_DISABLED_SEARCH_ENGINES_EXPANDED = "disabled_search_engines_expanded"
         const val KEY_HOME_PINNED_SECTION_EXPANDED_PREFIX = "home_pinned_section_expanded_"

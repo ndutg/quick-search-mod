@@ -551,6 +551,12 @@ internal fun SettingsDetailLevel1Screen(
                                 callbacks.onToggleAssistantLaunchVoiceMode,
                             onAddHomeScreenWidget = callbacks.onAddHomeScreenWidget,
                             onAddQuickSettingsTile = callbacks.onAddQuickSettingsTile,
+                            onOpenEdgeGesture = {
+                                onNavigateToDetail(SettingsDetailType.EDGE_GESTURE)
+                            },
+                            onOpenFloatingButton = {
+                                onNavigateToDetail(SettingsDetailType.FLOATING_BUTTON)
+                            },
                             modifier = Modifier,
                         )
                     }
@@ -618,6 +624,8 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.TRIGGERS,
                     SettingsDetailType.GESTURES,
                     SettingsDetailType.NOTIFICATION_HISTORY,
+                    SettingsDetailType.EDGE_GESTURE,
+                    SettingsDetailType.FLOATING_BUTTON,
                     -> Unit
                 }
             }
