@@ -101,6 +101,8 @@ import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.setAlarm.SetAlarmHandler
 import com.tk.quicksearch.tools.setAlarm.StartTimerHandler
+import com.tk.quicksearch.reminders.ReminderEditorRequests
+import com.tk.quicksearch.reminders.ReminderNaturalLanguageParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
@@ -114,6 +116,7 @@ import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
+import java.util.Locale
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -639,6 +642,15 @@ internal fun SearchScreenContent(
                     null
                 } else {
                     StartTimerHandler.detectTimerSeconds(state.query)
+                }
+            }
+    val detectedReminderSchedule =
+            remember(state.query, isToolAliasMode) {
+                if (isToolAliasMode) {
+                    null
+                } else {
+                    ReminderNaturalLanguageParser.parse(state.query)
+                        ?.takeIf { it.title.isNotBlank() }
                 }
             }
     val shouldShowPredictedHighlight = isImeVisible
@@ -1562,7 +1574,8 @@ internal fun SearchScreenContent(
                             keyboardSwitchText != null ||
                                     shouldShowPhoneCallAction ||
                                     detectedAlarmTime != null ||
-                                    detectedTimerSeconds != null,
+                                    detectedTimerSeconds != null ||
+                                    detectedReminderSchedule != null,
                     enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
                     exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
             ) {
@@ -1652,6 +1665,38 @@ internal fun SearchScreenContent(
                                                 )
                                                 .show()
                                     }
+                                },
+                        )
+                    }
+                    if (detectedReminderSchedule != null) {
+                        if (keyboardSwitchText != null ||
+                                        shouldShowPhoneCallAction ||
+                                        detectedAlarmTime != null ||
+                                        detectedTimerSeconds != null
+                        ) {
+                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        }
+                        CreateReminderPill(
+                                onClick = {
+                                    val schedule = detectedReminderSchedule
+                                    val dateTime = schedule.date.atTime(
+                                            schedule.time ?: java.time.LocalTime.MIDNIGHT,
+                                    )
+                                    ReminderEditorRequests.openNew(
+                                            initialTitle = schedule.title.replaceFirstChar { first ->
+                                                if (first.isLowerCase()) {
+                                                    first.titlecase(Locale.getDefault())
+                                                } else {
+                                                    first.toString()
+                                                }
+                                            },
+                                            initialDateTimeMillis = dateTime
+                                                    .atZone(java.time.ZoneId.systemDefault())
+                                                    .toInstant()
+                                                    .toEpochMilli(),
+                                            initialAllDay = schedule.time == null,
+                                            autoFocusTitle = false,
+                                    )
                                 },
                         )
                     }

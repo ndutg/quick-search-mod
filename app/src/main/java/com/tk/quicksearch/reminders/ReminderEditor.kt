@@ -35,7 +35,12 @@ import kotlinx.coroutines.flow.asStateFlow
 
 /** Which reminder dialog is open. Shared so any surface (search, Home, settings) can open it. */
 sealed interface ReminderEditorRequest {
-    data object New : ReminderEditorRequest
+    data class New(
+        val initialTitle: String = "",
+        val initialDateTimeMillis: Long? = null,
+        val initialAllDay: Boolean = true,
+        val autoFocusTitle: Boolean = true,
+    ) : ReminderEditorRequest
 
     data class Edit(val reminder: ReminderInfo) : ReminderEditorRequest
 }
@@ -44,8 +49,18 @@ object ReminderEditorRequests {
     private val _request = MutableStateFlow<ReminderEditorRequest?>(null)
     val request: StateFlow<ReminderEditorRequest?> = _request.asStateFlow()
 
-    fun openNew() {
-        _request.value = ReminderEditorRequest.New
+    fun openNew(
+        initialTitle: String = "",
+        initialDateTimeMillis: Long? = null,
+        initialAllDay: Boolean = true,
+        autoFocusTitle: Boolean = true,
+    ) {
+        _request.value = ReminderEditorRequest.New(
+            initialTitle,
+            initialDateTimeMillis,
+            initialAllDay,
+            autoFocusTitle,
+        )
     }
 
     fun openEdit(reminder: ReminderInfo) {
@@ -72,9 +87,13 @@ fun ReminderEditorHost() {
 
     when (val current = request) {
         null -> Unit
-        ReminderEditorRequest.New ->
+        is ReminderEditorRequest.New ->
             ReminderFormDialog(
                 reminder = null,
+                initialTitle = current.initialTitle,
+                initialDateTimeMillis = current.initialDateTimeMillis,
+                initialAllDay = current.initialAllDay,
+                autoFocusTitle = current.autoFocusTitle,
                 onDismiss = ReminderEditorRequests::close,
                 onSave = { title, dateTimeMillis, allDay ->
                     ReminderEditorRequests.close()
@@ -91,6 +110,10 @@ fun ReminderEditorHost() {
             }
             ReminderFormDialog(
                 reminder = reminder,
+                initialTitle = reminder.title,
+                initialDateTimeMillis = if (reminder.hasTime) reminder.dueMillis else reminder.dayStartMillis,
+                initialAllDay = !reminder.hasTime,
+                autoFocusTitle = false,
                 onDismiss = ReminderEditorRequests::close,
                 onSave = { title, dateTimeMillis, allDay ->
                     ReminderEditorRequests.close()
@@ -109,6 +132,10 @@ fun ReminderEditorHost() {
 @Composable
 private fun ReminderFormDialog(
     reminder: ReminderInfo?,
+    initialTitle: String,
+    initialDateTimeMillis: Long?,
+    initialAllDay: Boolean,
+    autoFocusTitle: Boolean,
     onDismiss: () -> Unit,
     onSave: (title: String, dateTimeMillis: Long, allDay: Boolean) -> Unit,
     onDelete: (() -> Unit)?,
@@ -118,9 +145,9 @@ private fun ReminderFormDialog(
         ReminderNaturalLanguageVisualTransformation(accentColor)
     }
     CustomEventFormDialog(
-        initialTitle = reminder?.title.orEmpty(),
-        initialDateTimeMillis = reminder?.let { if (it.hasTime) it.dueMillis else it.dayStartMillis },
-        initialAllDay = reminder?.hasTime != true,
+        initialTitle = initialTitle,
+        initialDateTimeMillis = initialDateTimeMillis,
+        initialAllDay = initialAllDay,
         onDismiss = onDismiss,
         onConfirm = { title, dateTimeMillis, allDay ->
             onSave(
@@ -142,7 +169,7 @@ private fun ReminderFormDialog(
                 }
             }
         },
-        autoFocusTitle = reminder == null,
+        autoFocusTitle = autoFocusTitle,
         nameHintResId = R.string.reminder_name_hint,
         titleKeyboardCapitalization =
             if (reminder == null) KeyboardCapitalization.Sentences else KeyboardCapitalization.None,

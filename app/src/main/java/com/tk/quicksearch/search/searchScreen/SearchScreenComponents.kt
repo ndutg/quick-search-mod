@@ -190,6 +190,15 @@ internal fun StartTimerPill(
 )
 
 @Composable
+internal fun CreateReminderPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) = com.tk.quicksearch.search.searchScreen.components.CreateReminderPill(
+    onClick = onClick,
+    modifier = modifier,
+)
+
+@Composable
 internal fun OpenKeyboardAction(
     text: String,
     onClick: () -> Unit,
