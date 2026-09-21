@@ -127,9 +127,9 @@ import com.tk.quicksearch.search.folders.AppFolderMember
 import com.tk.quicksearch.search.folders.AppGridFolderActions
 import com.tk.quicksearch.search.folders.FolderContentsPopup
 import com.tk.quicksearch.search.folders.FolderGridItem
+import com.tk.quicksearch.search.folders.FolderPreviewIcon
 import com.tk.quicksearch.search.folders.appFolderMemberKey
 import com.tk.quicksearch.search.folders.ResolvedAppFolder
-import com.tk.quicksearch.search.folders.folderMergePreview
 import com.tk.quicksearch.search.folders.resolveAppFolders
 import com.tk.quicksearch.search.folders.shortcutGridKey
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -171,8 +171,8 @@ private val MergeableReorderRestSlop = 12.dp
 // Share of a cell, centered on its item, where a dragged item starts merging instead of reordering
 // (roughly where the two icons mostly overlap), and the larger share it can drift within once it is
 // resting on that item. Resting anywhere else on the cell reorders.
-private const val FolderMergeEnterZoneFraction = 0.4f
-private const val FolderMergeStayZoneFraction = 0.6f
+private const val FolderMergeEnterZoneFraction = 0.65f
+private const val FolderMergeStayZoneFraction = 0.8f
 private val AllAppsDialogIconSurfaceSize = DesignTokens.AppIconSize
 private val AllAppsDialogRowSpacing = DesignTokens.SpacingXXSmall
 
@@ -201,6 +201,13 @@ private fun AppGridEntry.folderMemberKey(): String? =
         when (this) {
             is AppGridEntry.App -> appFolderMemberKey(app)
             is AppGridEntry.Shortcut -> appFolderMemberKey(shortcut)
+            is AppGridEntry.Folder -> null
+        }
+
+private fun AppGridEntry.asFolderMember(): AppFolderMember? =
+        when (this) {
+            is AppGridEntry.App -> AppFolderMember.App(app)
+            is AppGridEntry.Shortcut -> AppFolderMember.Shortcut(shortcut)
             is AppGridEntry.Folder -> null
         }
 
@@ -1399,6 +1406,12 @@ private fun AppGrid(
         hapticToggle(view)()
     }
     val armedMergeTargetKey = mergeCandidate?.key?.takeIf { isMergeArmed }
+    val isArmedMergeTargetFolderFull =
+            (displayedEntries.firstOrNull { it.key == armedMergeTargetKey } as? AppGridEntry.Folder)
+                    ?.folder
+                    ?.members
+                    ?.size
+                    ?.let { it >= 4 } == true
     var measuredItemHeightPx by remember { mutableStateOf(0f) }
     val maxVisibleColumns = getAppGridColumns(phoneColumnOverride)
     val columns =
@@ -1875,6 +1888,15 @@ private fun AppGrid(
                         // Also shrinks an item about to be dropped on the drop target.
                         val isMergeSource =
                                 isThisDragging && (armedMergeTargetKey != null || isOverDropTarget)
+                        val fadeMergeSource =
+                                isThisDragging && armedMergeTargetKey != null && isArmedMergeTargetFolderFull
+                        val mergePreviewMember =
+                                dragState
+                                        ?.key
+                                        ?.let { draggedKey ->
+                                            displayedEntries.firstOrNull { it.key == draggedKey }
+                                        }
+                                        ?.asFolderMember()
                         val entryDragOffset =
                                 if (isThisDragging) {
                                     dragState?.let {
@@ -1904,6 +1926,7 @@ private fun AppGrid(
                                     showWallpaperBackground = showWallpaperBackground,
                                     isDragging = isThisDragging,
                                     isMergeTarget = isMergeTarget,
+                                    mergePreviewMember = mergePreviewMember,
                                     dragOffset = entryDragOffset,
                                     onItemMeasured = { height ->
                                         measuredItemHeightPx = height.toFloat()
@@ -1931,6 +1954,7 @@ private fun AppGrid(
                                     showWallpaperBackground = showWallpaperBackground,
                                     isDragging = isThisDragging,
                                     isMergeSource = isMergeSource,
+                                    fadeMergeSource = fadeMergeSource,
                                     isMergeTarget = isMergeTarget,
                                     dragOffset = entryDragOffset,
                                     onItemMeasured = { height ->
@@ -1966,6 +1990,7 @@ private fun AppGrid(
                                     showPinnedIndicators = showPinnedIndicators,
                                     isDragging = isThisDragging,
                                     isMergeSource = isMergeSource,
+                                    fadeMergeSource = fadeMergeSource,
                                     isMergeTarget = isMergeTarget,
                                     dragOffset = entryDragOffset,
                                     onItemMeasured = { height ->
@@ -2013,6 +2038,7 @@ private fun AppGridItem(
         onPinnedDrag: ((Float, Float) -> Unit)? = null,
         onPinnedDragEnd: ((Boolean) -> Unit)? = null,
         isMergeSource: Boolean = false,
+        fadeMergeSource: Boolean = false,
         isMergeTarget: Boolean = false,
         onHoldChange: ((Boolean) -> Unit)? = null,
 ) {
@@ -2083,7 +2109,12 @@ private fun AppGridItem(
             label = "pinnedAppDragScale",
     )
     val dragAlpha by animateFloatAsState(
-            targetValue = if (showDraggedPresentation) DraggedPinnedAppAlpha else 1f,
+            targetValue =
+                    when {
+                        showDraggedPresentation && fadeMergeSource -> 0.35f
+                        showDraggedPresentation -> DraggedPinnedAppAlpha
+                        else -> 1f
+                    },
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "pinnedAppDragAlpha",
     )
@@ -2149,24 +2180,21 @@ private fun AppGridItem(
                     onClick = { if (!showOptions) appActions.onClick() },
                     onLongClick = if (isDraggable) null else ({ showOptions = true }),
                     gestureModifier =
-                            Modifier.folderMergePreview(
-                                            active = isMergeTarget,
-                                            iconSize = appIconSize,
-                                            appIconShape = appIconShape,
-                                            showWallpaperBackground = showWallpaperBackground,
-                                    )
-                                    .appSwipeGestures(appInfo)
+                            Modifier.appSwipeGestures(appInfo)
                                     .then(dragModifier),
                     clickGesturesEnabled = !isDraggable,
                     appIconSurfaceSize = appIconSurfaceSize,
                     appIconSize = appIconSize,
                     appIconShape = appIconShape,
                     hasCustomIconPack = iconPackPackage != null,
+                    iconPackPackage = iconPackPackage,
                     oneHandedMode = oneHandedMode,
                     themedIconsEnabled = themedIconsEnabled,
                     showWallpaperBackground = showWallpaperBackground,
                     showPinnedIndicator = showPinnedIndicators && appState.isPinned,
                     showNotificationDot = appInfo.hasNotificationDot(notificationDotKeys),
+                    folderPreviewMember =
+                            AppFolderMember.App(appInfo).takeIf { isMergeTarget },
             )
             if (appState.showAppLabel) {
                 AppLabelText(
@@ -2217,11 +2245,13 @@ private fun AppIconSurface(
         appIconSize: Dp,
         appIconShape: AppIconShape = AppIconShape.DEFAULT,
         hasCustomIconPack: Boolean = false,
+        iconPackPackage: String? = null,
         oneHandedMode: Boolean = false,
         themedIconsEnabled: Boolean = true,
         showWallpaperBackground: Boolean = false,
         showPinnedIndicator: Boolean = false,
         showNotificationDot: Boolean = false,
+        folderPreviewMember: AppFolderMember? = null,
 ) {
     val view = LocalView.current
     val context = LocalContext.current
@@ -2300,7 +2330,15 @@ private fun AppIconSurface(
                 modifier = Modifier.fillMaxSize().then(clickModifier),
                 contentAlignment = Alignment.Center,
         ) {
-            if (showThemedIcon && monochromeData != null) {
+            if (folderPreviewMember != null) {
+                FolderPreviewIcon(
+                        members = listOf(folderPreviewMember),
+                        iconSize = appIconSize,
+                        iconPackPackage = iconPackPackage,
+                        appIconShape = appIconShape,
+                        showWallpaperBackground = showWallpaperBackground,
+                )
+            } else if (showThemedIcon && monochromeData != null) {
                 Box(
                         modifier = Modifier
                                 .then(

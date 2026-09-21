@@ -3,6 +3,10 @@ package com.tk.quicksearch.search.folders
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,12 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawOutline
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -76,8 +76,6 @@ private val FolderBorderWidth = 1.dp
 private const val FolderBorderAlpha = 0.25f
 private const val FolderBackdropDarkWallpaperAlpha = 0.55f
 private const val FolderBackdropLightWallpaperAlpha = 0.65f
-private const val MergePreviewBackdropScale = 1.22f
-private const val MergePreviewIconScale = 0.82f
 
 /** Folders are always round, whatever the app icon shape. */
 internal val FolderBackdropShape: Shape = CircleShape
@@ -89,53 +87,6 @@ internal fun folderBackdropColor(showWallpaperBackground: Boolean): Color =
             LocalAppIsDarkTheme.current -> Color.Black.copy(alpha = FolderBackdropDarkWallpaperAlpha)
             else -> Color.White.copy(alpha = FolderBackdropLightWallpaperAlpha)
         }
-
-/**
- * Folder preview shown behind an app or shortcut icon while another item is held over it: a folder
- * backdrop grows in behind the icon, which shrinks slightly as if it were already inside.
- */
-@Composable
-internal fun Modifier.folderMergePreview(
-        active: Boolean,
-        iconSize: Dp,
-        appIconShape: AppIconShape,
-        showWallpaperBackground: Boolean,
-): Modifier {
-    val progress by
-            animateFloatAsState(
-                    targetValue = if (active) 1f else 0f,
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                    label = "folderMergePreview",
-            )
-    val backdropColor = folderBackdropColor(showWallpaperBackground)
-    val backdropShape = FolderBackdropShape
-    val iconSizePx = with(LocalDensity.current) { iconSize.toPx() }
-    return this
-            .drawBehind {
-                if (progress <= 0f) return@drawBehind
-                val backdropSize = iconSizePx * (1f + (MergePreviewBackdropScale - 1f) * progress)
-                val outline =
-                        backdropShape.createOutline(
-                                Size(backdropSize, backdropSize),
-                                layoutDirection,
-                                this,
-                        )
-                translate(
-                        left = (size.width - backdropSize) / 2f,
-                        top = (size.height - backdropSize) / 2f,
-                ) {
-                    drawOutline(
-                            outline = outline,
-                            color = backdropColor.copy(alpha = backdropColor.alpha * progress),
-                    )
-                }
-            }
-            .graphicsLayer {
-                val scale = 1f - (1f - MergePreviewIconScale) * progress
-                scaleX = scale
-                scaleY = scale
-            }
-}
 
 /**
  * A Pinned-tab folder tile, the same size as an app cell: a folder backdrop previewing the first
@@ -156,6 +107,7 @@ internal fun FolderGridItem(
         modifier: Modifier = Modifier,
         isDragging: Boolean = false,
         isMergeTarget: Boolean = false,
+        mergePreviewMember: AppFolderMember? = null,
         dragOffset: IntOffset? = null,
         onItemMeasured: (Int) -> Unit = {},
         onPinnedDragStart: (() -> Unit)? = null,
@@ -264,13 +216,26 @@ internal fun FolderGridItem(
                                     .semantics { contentDescription = folderLabel },
                     contentAlignment = Alignment.Center,
             ) {
-                FolderPreviewIcon(
-                        members = folder.members,
-                        iconSize = iconSize,
-                        iconPackPackage = iconPackPackage,
-                        appIconShape = appIconShape,
-                        showWallpaperBackground = showWallpaperBackground,
-                )
+                val previewIncomingMember =
+                        mergePreviewMember?.takeIf { isMergeTarget && folder.members.size < FolderPreviewSlotCount }
+                AnimatedContent(
+                        targetState = previewIncomingMember,
+                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                        label = "folderMergeMemberPreview",
+                ) { incomingMember ->
+                    FolderPreviewIcon(
+                            members =
+                                    if (incomingMember == null) {
+                                        folder.members
+                                    } else {
+                                        folder.members + incomingMember
+                                    },
+                            iconSize = iconSize,
+                            iconPackPackage = iconPackPackage,
+                            appIconShape = appIconShape,
+                            showWallpaperBackground = showWallpaperBackground,
+                    )
+                }
             }
             if (showLabel) {
                 AppLabelText(
@@ -295,7 +260,7 @@ internal fun FolderGridItem(
 
 /** Round folder backdrop with a 2×2 preview of the first four member icons. */
 @Composable
-private fun FolderPreviewIcon(
+internal fun FolderPreviewIcon(
         members: List<AppFolderMember>,
         iconSize: Dp,
         iconPackPackage: String?,

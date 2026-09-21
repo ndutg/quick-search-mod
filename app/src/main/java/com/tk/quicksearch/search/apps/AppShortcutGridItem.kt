@@ -34,7 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import com.tk.quicksearch.search.appShortcuts.AppShortcutResultMenu
-import com.tk.quicksearch.search.folders.folderMergePreview
+import com.tk.quicksearch.search.folders.AppFolderMember
+import com.tk.quicksearch.search.folders.FolderPreviewIcon
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.rememberShortcutIcon
@@ -83,6 +84,7 @@ internal fun AppShortcutGridItem(
         onPinnedDrag: ((Float, Float) -> Unit)? = null,
         onPinnedDragEnd: ((Boolean) -> Unit)? = null,
         isMergeSource: Boolean = false,
+        fadeMergeSource: Boolean = false,
         isMergeTarget: Boolean = false,
         showWallpaperBackground: Boolean = false,
         onHoldChange: ((Boolean) -> Unit)? = null,
@@ -126,7 +128,12 @@ internal fun AppShortcutGridItem(
             label = "pinnedShortcutDragScale",
     )
     val dragAlpha by animateFloatAsState(
-            targetValue = if (showDraggedPresentation) DraggedPinnedAppAlpha else 1f,
+            targetValue =
+                    when {
+                        showDraggedPresentation && fadeMergeSource -> 0.35f
+                        showDraggedPresentation -> DraggedPinnedAppAlpha
+                        else -> 1f
+                    },
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "pinnedShortcutDragAlpha",
     )
@@ -190,18 +197,20 @@ internal fun AppShortcutGridItem(
             Box(
                     modifier =
                             Modifier.requiredSize(iconSurfaceSize)
-                                    .folderMergePreview(
-                                            active = isMergeTarget,
-                                            iconSize = iconSize,
-                                            appIconShape = appIconShape,
-                                            showWallpaperBackground = showWallpaperBackground,
-                                    )
                                     .clip(DesignTokens.ShapeLarge)
                                     .then(dragModifier)
                                     .then(clickModifier),
                     contentAlignment = Alignment.Center,
             ) {
-                Box(modifier = Modifier.size(iconSize), contentAlignment = Alignment.Center) {
+                if (isMergeTarget) {
+                    FolderPreviewIcon(
+                            members = listOf(AppFolderMember.Shortcut(shortcut)),
+                            iconSize = iconSize,
+                            iconPackPackage = iconPackPackage,
+                            appIconShape = appIconShape,
+                            showWallpaperBackground = showWallpaperBackground,
+                    )
+                } else Box(modifier = Modifier.size(iconSize), contentAlignment = Alignment.Center) {
                     val mainIcon = shortcutIcon ?: appIcon
                     if (mainIcon != null) {
                         Image(
