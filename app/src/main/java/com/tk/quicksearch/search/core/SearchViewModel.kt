@@ -527,6 +527,7 @@ class SearchViewModel(
         setupAiSearchStateListener()
         setupStartupHomeSurfaceCacheListener()
         setupReminderChangeListener()
+        managementApiDelegate.folderManager.observeAvailability(uiState)
     }
 
     /** Reminders also change from notification actions and settings, so refresh whenever they do. */

@@ -69,9 +69,7 @@ class MetaClient(
                                     ),
                                 )
                             }
-                        }.distinctBy { it.id }.ifEmpty {
-                            MetaModelCatalog.FALLBACK_TEXT_MODELS
-                        }
+                        }.distinctBy { it.id }.sortedBy { it.displayName.lowercase() }
                     } finally {
                         connection.disconnect()
                     }

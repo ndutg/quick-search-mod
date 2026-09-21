@@ -8,6 +8,9 @@ import android.content.Context
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.os.storage.StorageManager
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import com.tk.quicksearch.R
@@ -126,7 +129,7 @@ internal object FileIntents {
                 uri =
                     DocumentsContract.buildDocumentUri(
                         EXTERNAL_STORAGE_DOCUMENTS_AUTHORITY,
-                        "${toDocumentVolumeId(deviceFile.volumeName) ?: "primary"}:$folderRelativePath",
+                        "${resolveDocumentVolumeId(context, deviceFile.volumeName)}:$folderRelativePath",
                     ),
                 displayName = folderName,
                 mimeType = DocumentsContract.Document.MIME_TYPE_DIR,
@@ -144,10 +147,15 @@ internal object FileIntents {
         deviceFile: DeviceFile,
         onShowToast: ((Int, String?) -> Unit)? = null,
     ) {
-        val folderPath = buildFolderPath(deviceFile)
-
-        // Try Samsung My Files first (if available)
-        if (folderPath != null && trySamsungMyFiles(context, folderPath)) {
+        val folderPath = buildFolderPath(context, deviceFile)
+        // Try Samsung My Files first (if available). My Files silently shows its home screen when
+        // handed a path it cannot resolve, so skip it whenever the path is provably absent. That
+        // check is only trustworthy with all-files access; without it scoped storage reports false
+        // for valid directories, so My Files is still attempted in that case.
+        if (folderPath != null &&
+            !isKnownMissingDirectory(folderPath) &&
+            trySamsungMyFiles(context, folderPath)
+        ) {
             return
         }
 
@@ -180,6 +188,8 @@ internal object FileIntents {
 
         return try {
             context.startActivity(samsungIntent)
+            // Launched, not necessarily honored: My Files silently ignores an unusable START_PATH
+            // and shows its home screen instead, which does not throw here.
             true
         } catch (_: ActivityNotFoundException) {
             false
@@ -193,7 +203,7 @@ internal object FileIntents {
         deviceFile: DeviceFile,
         onShowToast: ((Int, String?) -> Unit)? = null,
     ) {
-        val documentsUri = buildDocumentsDirectoryUri(deviceFile)
+        val documentsUri = buildDocumentsDirectoryUri(context, deviceFile)
         if (documentsUri != null) {
             val documentsIntent =
                 Intent(Intent.ACTION_VIEW).apply {
@@ -240,7 +250,10 @@ internal object FileIntents {
         }
     }
 
-    private fun buildDocumentsDirectoryUri(deviceFile: DeviceFile): Uri? {
+    private fun buildDocumentsDirectoryUri(
+        context: Context,
+        deviceFile: DeviceFile,
+    ): Uri? {
         val relativePath =
             deviceFile.relativePath
                 ?.trim()
@@ -256,20 +269,47 @@ internal object FileIntents {
                 else -> "$relativePath/$displayName"
             }
 
-        val volumeId = toDocumentVolumeId(deviceFile.volumeName) ?: return null
+        val volumeId = resolveDocumentVolumeId(context, deviceFile.volumeName)
         val documentId = "$volumeId:$basePath"
         return DocumentsContract.buildDocumentUri(EXTERNAL_STORAGE_DOCUMENTS_AUTHORITY, documentId)
     }
 
-    private fun toDocumentVolumeId(volumeName: String?): String? {
-        if (volumeName.isNullOrBlank()) return "primary"
-        return when (volumeName) {
-            MediaStore.VOLUME_EXTERNAL_PRIMARY, "external_primary", "external" -> "primary"
-            else -> volumeName
-        }
+    private fun isPrimaryVolume(volumeName: String?): Boolean {
+        if (volumeName.isNullOrBlank()) return true
+        return volumeName == MediaStore.VOLUME_EXTERNAL_PRIMARY ||
+            volumeName == "external_primary" ||
+            volumeName == "external"
     }
 
-    private fun buildFolderPath(deviceFile: DeviceFile): String? {
+    /**
+     * Document id volume for [volumeName]. MediaStore lowercases removable volume uuids, while
+     * ExternalStorageProvider keeps the volume's own casing, so the uuid is looked up rather than
+     * passed through.
+     */
+    private fun resolveDocumentVolumeId(
+        context: Context,
+        volumeName: String?,
+    ): String {
+        if (isPrimaryVolume(volumeName)) return "primary"
+        // Keep the volume's own casing when it is known; adopted storage uses lowercase guids and
+        // only the FAT-style fallback guess needs uppercasing.
+        findStorageVolume(context, volumeName)?.uuid?.let { return it }
+        return volumeName?.uppercase(java.util.Locale.US) ?: "primary"
+    }
+
+    private fun findStorageVolume(
+        context: Context,
+        volumeName: String?,
+    ) = runCatching {
+        context.getSystemService(StorageManager::class.java)
+            ?.storageVolumes
+            ?.firstOrNull { it.uuid?.equals(volumeName, ignoreCase = true) == true }
+    }.getOrNull()
+
+    private fun buildFolderPath(
+        context: Context,
+        deviceFile: DeviceFile,
+    ): String? {
         val relativePath =
             deviceFile.relativePath
                 ?.trim()
@@ -286,7 +326,40 @@ internal object FileIntents {
                 else -> "$relativePath/$displayName"
             }
 
-        // Convert to absolute path format expected by Samsung My Files
-        return "/storage/emulated/0/$basePath"
+        // Files on removable volumes do not live under the primary storage root, so resolve the
+        // mount point for this file's volume instead of assuming /storage/emulated/0.
+        val volumeRoot = resolveVolumeRoot(context, deviceFile.volumeName) ?: return null
+
+        return "$volumeRoot/$basePath"
     }
+
+    /** Mount point for [volumeName], e.g. /storage/emulated/0 or /storage/8268-171A. */
+    private fun resolveVolumeRoot(
+        context: Context,
+        volumeName: String?,
+    ): String? {
+        if (isPrimaryVolume(volumeName)) {
+            return Environment.getExternalStorageDirectory().absolutePath
+        }
+
+        // MediaStore reports the volume uuid lowercased; the mount point keeps the original case.
+        val storageVolume = findStorageVolume(context, volumeName)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            storageVolume?.directory?.absolutePath?.let { return it }
+        }
+
+        // Same casing rule as resolveDocumentVolumeId: trust a known uuid, uppercase only a guess.
+        storageVolume?.uuid?.let { return "/storage/$it" }
+        val uuid = volumeName ?: return null
+        return "/storage/${uuid.uppercase(java.util.Locale.US)}"
+    }
+
+    /** Whether [java.io.File] checks on shared storage can be trusted. */
+    private fun hasAllFilesAccess(): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()
+
+    /** True only when the path is provably absent; false when we cannot tell. */
+    private fun isKnownMissingDirectory(path: String): Boolean =
+        hasAllFilesAccess() && !java.io.File(path).isDirectory
 }

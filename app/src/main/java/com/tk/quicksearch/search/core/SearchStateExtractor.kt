@@ -150,6 +150,7 @@ internal object SearchStateExtractor {
             homePinnedSectionOrder = s.homePinnedSectionOrder,
             pinnedAppShortcutsInAppGrid = s.pinnedAppShortcutsInAppGrid,
             pinnedAppGridOrder = s.pinnedAppGridOrder,
+            appFolders = s.appFolders,
             showTodayEvents = s.showTodayEvents,
             directDialEnabled = s.directDialEnabled,
             numberSearchEnabled = s.numberSearchEnabled,

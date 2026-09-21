@@ -18,7 +18,6 @@ import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInpu
 import com.tk.quicksearch.shared.util.isPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.CustomLlmProviderConfig
-import com.tk.quicksearch.tools.aiSearch.OpenAiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.TavilyWebSearchMode
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
@@ -47,6 +46,7 @@ class UserAppPreferences(
     private val reminderPreferences by lazy { ReminderPreferences(context) }
     private val gesturesPreferences by lazy { GesturesPreferences(context) }
     private val appShortcutPreferences by lazy { AppShortcutPreferences(context) }
+    private val folderPreferences by lazy { FolderPreferences(context) }
     private val nicknamePreferences by lazy { NicknamePreferences(context) }
     private val triggerPreferences by lazy { TriggerPreferences(context) }
     private val taskerIntentPreferences by lazy { TaskerIntentPreferences(context) }
@@ -495,8 +495,7 @@ class UserAppPreferences(
     fun getHomeSwipeDownAliasTarget(): String? = gesturesPreferences.getHomeSwipeDownAliasTarget()
     fun setHomeSwipeDownAliasTarget(targetId: String?) = gesturesPreferences.setHomeSwipeDownAliasTarget(targetId)
 
-    fun getHomeDoubleTapAction(isLockScreenAvailable: Boolean = false): HomeSwipeGestureAction =
-        gesturesPreferences.getHomeDoubleTapAction(isLockScreenAvailable)
+    fun getHomeDoubleTapAction(): HomeSwipeGestureAction = gesturesPreferences.getHomeDoubleTapAction()
 
     fun setHomeDoubleTapAction(action: HomeSwipeGestureAction) = gesturesPreferences.setHomeDoubleTapAction(action)
 
@@ -880,7 +879,7 @@ class UserAppPreferences(
 
     fun getLlmModel(providerId: AiSearchLlmProviderId): String =
         if (providerId.isCustom) {
-            customLlmProviderPreferences.getProvider(providerId)?.modelId ?: OpenAiModelCatalog.DEFAULT_MODEL_ID
+            customLlmProviderPreferences.getProvider(providerId)?.modelId.orEmpty()
         } else {
             when (providerId) {
                 AiSearchLlmProviderId.GEMINI -> geminiPreferences.getGeminiModel()
@@ -888,7 +887,7 @@ class UserAppPreferences(
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getModel()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getModel()
                 AiSearchLlmProviderId.META -> metaPreferences.getModel()
-                else -> OpenAiModelCatalog.DEFAULT_MODEL_ID
+                else -> ""
             }
         }
 
@@ -909,7 +908,7 @@ class UserAppPreferences(
 
     fun isLlmGroundingEnabled(providerId: AiSearchLlmProviderId): Boolean =
         if (providerId.isCustom) {
-            false
+            customLlmProviderPreferences.getProvider(providerId)?.groundingEnabled ?: true
         } else {
             when (providerId) {
                 AiSearchLlmProviderId.GEMINI -> geminiPreferences.isGeminiGroundingEnabled()
@@ -922,7 +921,10 @@ class UserAppPreferences(
         }
 
     fun setLlmGroundingEnabled(providerId: AiSearchLlmProviderId, enabled: Boolean) {
-        if (providerId.isCustom) return
+        if (providerId.isCustom) {
+            customLlmProviderPreferences.setProviderGroundingEnabled(providerId, enabled)
+            return
+        }
         when (providerId) {
             AiSearchLlmProviderId.GEMINI -> geminiPreferences.setGeminiGroundingEnabled(enabled)
             AiSearchLlmProviderId.OPENAI -> openAiPreferences.setGroundingEnabled(enabled)
@@ -1171,6 +1173,12 @@ class UserAppPreferences(
     fun getPinnedAppGridOrder(): List<String> = uiPreferences.getPinnedAppGridOrder()
 
     fun setPinnedAppGridOrder(order: List<String>) = uiPreferences.setPinnedAppGridOrder(order)
+
+    fun getAppFolders(): List<com.tk.quicksearch.search.folders.AppFolder> =
+            folderPreferences.getAppFolders()
+
+    fun setAppFolders(folders: List<com.tk.quicksearch.search.folders.AppFolder>) =
+            folderPreferences.setAppFolders(folders)
 
     fun getDisabledTopMatchesSections(): Set<SearchSection> =
             uiPreferences.getDisabledTopMatchesSections()
@@ -1517,6 +1525,7 @@ class UserAppPreferences(
             getLlmModel(getCurrencyConverterProviderId())
         }
     fun setCurrencyConverterModel(modelId: String) = uiPreferences.setCurrencyConverterModel(modelId)
+    fun clearCurrencyConverterModel() = uiPreferences.clearCurrencyConverterModel()
     fun getCurrencyConverterAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getCurrencyConverterAdvancedPayload()
     fun setCurrencyConverterAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setCurrencyConverterAdvancedPayload(payload, enabled)
     fun getCurrencyConverterProviderId(): AiSearchLlmProviderId =
@@ -1533,13 +1542,24 @@ class UserAppPreferences(
         uiPreferences.setCurrencyConverterThinkingEnabled(enabled)
 
     fun getWorldClockModel(): String =
-        uiPreferences.getWorldClockModel().ifBlank {
-            getLlmModel(getWorldClockProviderId())
+        if (uiPreferences.hasWorldClockModelPreference()) {
+            uiPreferences.getWorldClockModel()
+        } else {
+            uiPreferences.getWorldClockModel().ifBlank {
+                getLlmModel(getWorldClockProviderId())
+            }
         }
     fun setWorldClockModel(modelId: String) = uiPreferences.setWorldClockModel(modelId)
+    fun clearWorldClockModel() = uiPreferences.clearWorldClockModel()
     fun getWorldClockAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getWorldClockAdvancedPayload()
     fun setWorldClockAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setWorldClockAdvancedPayload(payload, enabled)
-    fun getWorldClockProviderId(): AiSearchLlmProviderId = uiPreferences.getWorldClockProviderId()
+    fun getWorldClockProviderId(): AiSearchLlmProviderId =
+        uiPreferences.getWorldClockProviderIdOverride()
+            ?: if (uiPreferences.getWorldClockModel().isBlank()) {
+                getAiSearchProviderId()
+            } else {
+                AiSearchLlmProviderId.GEMINI
+            }
     fun setWorldClockProviderId(providerId: AiSearchLlmProviderId) =
         uiPreferences.setWorldClockProviderId(providerId)
     fun isWorldClockGroundingEnabled(): Boolean =
@@ -1547,18 +1567,31 @@ class UserAppPreferences(
     fun setWorldClockGroundingEnabled(enabled: Boolean) =
         uiPreferences.setWorldClockGroundingEnabled(enabled)
     fun isWorldClockThinkingEnabled(): Boolean =
-        uiPreferences.isWorldClockThinkingEnabled()
+        uiPreferences.getWorldClockThinkingOverride()
+            ?: isLlmThinkingEnabled(getWorldClockProviderId())
+    fun getWorldClockThinkingOverride(): Boolean? = uiPreferences.getWorldClockThinkingOverride()
     fun setWorldClockThinkingEnabled(enabled: Boolean) =
         uiPreferences.setWorldClockThinkingEnabled(enabled)
 
     fun getDictionaryModel(): String =
-        uiPreferences.getDictionaryModel().ifBlank {
-            getLlmModel(getDictionaryProviderId())
+        if (uiPreferences.hasDictionaryModelPreference()) {
+            uiPreferences.getDictionaryModel()
+        } else {
+            uiPreferences.getDictionaryModel().ifBlank {
+                getLlmModel(getDictionaryProviderId())
+            }
         }
     fun setDictionaryModel(modelId: String) = uiPreferences.setDictionaryModel(modelId)
+    fun clearDictionaryModel() = uiPreferences.clearDictionaryModel()
     fun getDictionaryAdvancedPayload(): Pair<Boolean, String> = uiPreferences.getDictionaryAdvancedPayload()
     fun setDictionaryAdvancedPayload(payload: String?, enabled: Boolean) = uiPreferences.setDictionaryAdvancedPayload(payload, enabled)
-    fun getDictionaryProviderId(): AiSearchLlmProviderId = uiPreferences.getDictionaryProviderId()
+    fun getDictionaryProviderId(): AiSearchLlmProviderId =
+        uiPreferences.getDictionaryProviderIdOverride()
+            ?: if (uiPreferences.getDictionaryModel().isBlank()) {
+                getAiSearchProviderId()
+            } else {
+                AiSearchLlmProviderId.GEMINI
+            }
     fun setDictionaryProviderId(providerId: AiSearchLlmProviderId) =
         uiPreferences.setDictionaryProviderId(providerId)
     fun isDictionaryGroundingEnabled(): Boolean =
@@ -1566,7 +1599,9 @@ class UserAppPreferences(
     fun setDictionaryGroundingEnabled(enabled: Boolean) =
         uiPreferences.setDictionaryGroundingEnabled(enabled)
     fun isDictionaryThinkingEnabled(): Boolean =
-        uiPreferences.isDictionaryThinkingEnabled()
+        uiPreferences.getDictionaryThinkingOverride()
+            ?: isLlmThinkingEnabled(getDictionaryProviderId())
+    fun getDictionaryThinkingOverride(): Boolean? = uiPreferences.getDictionaryThinkingOverride()
     fun setDictionaryThinkingEnabled(enabled: Boolean) =
         uiPreferences.setDictionaryThinkingEnabled(enabled)
 
@@ -1577,17 +1612,28 @@ class UserAppPreferences(
     fun getWeatherSystemPrompt(): String = weatherPreferences.getSystemPrompt()
     fun setWeatherSystemPrompt(prompt: String) = weatherPreferences.setSystemPrompt(prompt)
     fun getWeatherModel(): String =
-        weatherPreferences.getModel().ifBlank {
+        if (weatherPreferences.hasModelPreference()) {
+            weatherPreferences.getModel()
+        } else {
             getLlmModel(getWeatherProviderId())
         }
     fun setWeatherModel(modelId: String) = weatherPreferences.setModel(modelId)
-    fun getWeatherProviderId(): AiSearchLlmProviderId = weatherPreferences.getProviderId()
+    fun clearWeatherModel() = weatherPreferences.clearModel()
+    fun getWeatherProviderId(): AiSearchLlmProviderId =
+        weatherPreferences.getProviderIdOverride()
+            ?: if (weatherPreferences.getModel().isBlank()) {
+                getAiSearchProviderId()
+            } else {
+                AiSearchLlmProviderId.GEMINI
+            }
     fun setWeatherProviderId(providerId: AiSearchLlmProviderId) =
         weatherPreferences.setProviderId(providerId)
     fun isWeatherGroundingEnabled(): Boolean = true
     fun setWeatherGroundingEnabled(enabled: Boolean) =
         weatherPreferences.setGroundingEnabled(true)
-    fun isWeatherThinkingEnabled(): Boolean = weatherPreferences.isThinkingEnabled()
+    fun isWeatherThinkingEnabled(): Boolean =
+        weatherPreferences.getThinkingOverride() ?: isLlmThinkingEnabled(getWeatherProviderId())
+    fun getWeatherThinkingOverride(): Boolean? = weatherPreferences.getThinkingOverride()
     fun setWeatherThinkingEnabled(enabled: Boolean) = weatherPreferences.setThinkingEnabled(enabled)
     fun getWeatherTemperatureUnit(): com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit =
         weatherPreferences.getTemperatureUnit()

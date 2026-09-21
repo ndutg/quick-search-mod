@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.data.preferences
 
 import android.content.Context
+import com.tk.quicksearch.search.utils.NicknameUtils
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import java.util.concurrent.ConcurrentHashMap
 
@@ -77,11 +78,7 @@ class NicknamePreferences(
         nickname: String?,
     ) {
         val key = "${BasePreferences.KEY_NICKNAME_APP_PREFIX}$packageName"
-        if (nickname.isNullOrBlank()) {
-            customizationStore.putString(key, null)
-        } else {
-            customizationStore.putString(key, nickname.trim())
-        }
+        customizationStore.putString(key, NicknameUtils.normalizeInput(nickname))
     }
 
     fun getAllAppNicknames(): Map<String, String> {
@@ -106,13 +103,12 @@ class NicknamePreferences(
         nickname: String?,
     ) {
         val key = "${BasePreferences.KEY_NICKNAME_APP_SHORTCUT_PREFIX}$shortcutId"
-        if (nickname.isNullOrBlank()) {
-            customizationStore.putString(key, null)
+        val normalized = NicknameUtils.normalizeInput(nickname)
+        customizationStore.putString(key, normalized)
+        if (normalized == null) {
             appShortcutNicknameCache.remove(shortcutId)
         } else {
-            val trimmed = nickname.trim()
-            customizationStore.putString(key, trimmed)
-            appShortcutNicknameCache[shortcutId] = trimmed
+            appShortcutNicknameCache[shortcutId] = normalized
         }
     }
 
@@ -127,13 +123,12 @@ class NicknamePreferences(
         nickname: String?,
     ) {
         val key = "${BasePreferences.KEY_NICKNAME_CONTACT_PREFIX}$contactId"
-        if (nickname.isNullOrBlank()) {
-            customizationStore.putString(key, null)
+        val normalized = NicknameUtils.normalizeInput(nickname)
+        customizationStore.putString(key, normalized)
+        if (normalized == null) {
             contactNicknameCache.remove(contactId)
         } else {
-            val trimmed = nickname.trim()
-            customizationStore.putString(key, trimmed)
-            contactNicknameCache[contactId] = trimmed
+            contactNicknameCache[contactId] = normalized
         }
     }
 
@@ -146,13 +141,12 @@ class NicknamePreferences(
         nickname: String?,
     ) {
         val key = "${BasePreferences.KEY_NICKNAME_FILE_PREFIX}$uri"
-        if (nickname.isNullOrBlank()) {
-            customizationStore.putString(key, null)
+        val normalized = NicknameUtils.normalizeInput(nickname)
+        customizationStore.putString(key, normalized)
+        if (normalized == null) {
             fileNicknameCache.remove(uri)
         } else {
-            val trimmed = nickname.trim()
-            customizationStore.putString(key, trimmed)
-            fileNicknameCache[uri] = trimmed
+            fileNicknameCache[uri] = normalized
         }
     }
 
@@ -165,13 +159,12 @@ class NicknamePreferences(
         nickname: String?,
     ) {
         val key = "${BasePreferences.KEY_NICKNAME_SETTING_PREFIX}$id"
-        if (nickname.isNullOrBlank()) {
-            customizationStore.putString(key, null)
+        val normalized = NicknameUtils.normalizeInput(nickname)
+        customizationStore.putString(key, normalized)
+        if (normalized == null) {
             settingNicknameCache.remove(id)
         } else {
-            val trimmed = nickname.trim()
-            customizationStore.putString(key, trimmed)
-            settingNicknameCache[id] = trimmed
+            settingNicknameCache[id] = normalized
         }
     }
 
@@ -184,13 +177,12 @@ class NicknamePreferences(
         nickname: String?,
     ) {
         val key = "${BasePreferences.KEY_NICKNAME_CALENDAR_EVENT_PREFIX}$eventId"
-        if (nickname.isNullOrBlank()) {
-            customizationStore.putString(key, null)
+        val normalized = NicknameUtils.normalizeInput(nickname)
+        customizationStore.putString(key, normalized)
+        if (normalized == null) {
             calendarEventNicknameCache.remove(eventId)
         } else {
-            val trimmed = nickname.trim()
-            customizationStore.putString(key, trimmed)
-            calendarEventNicknameCache[eventId] = trimmed
+            calendarEventNicknameCache[eventId] = normalized
         }
     }
 
@@ -272,8 +264,21 @@ class NicknamePreferences(
         normalizedQuery: String,
         compactQuery: String,
     ): Boolean {
-        val normalizedNickname = SearchTextNormalizer.normalizeForSearch(nickname)
-        return normalizedNickname.contains(normalizedQuery) ||
-            SearchTextNormalizer.removeSearchWhitespace(normalizedNickname).contains(compactQuery)
+        if (!NicknameUtils.hasMultiple(nickname)) {
+            return aliasMatchesQuery(nickname, normalizedQuery, compactQuery)
+        }
+        return NicknameUtils.split(nickname).any { alias ->
+            aliasMatchesQuery(alias, normalizedQuery, compactQuery)
+        }
+    }
+
+    private fun aliasMatchesQuery(
+        alias: String,
+        normalizedQuery: String,
+        compactQuery: String,
+    ): Boolean {
+        val normalizedAlias = SearchTextNormalizer.normalizeForSearch(alias)
+        return normalizedAlias.contains(normalizedQuery) ||
+            SearchTextNormalizer.removeSearchWhitespace(normalizedAlias).contains(compactQuery)
     }
 }

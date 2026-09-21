@@ -598,8 +598,14 @@ fun SearchContentArea(
                                                         expandedSectionBottomInset
                                                     }
                                                 } else if (alignResultsToBottom) {
-                                                    // Bottom-anchored results sit closer to the search bar.
-                                                    DesignTokens.SpacingXXSmall
+                                                    // The app grid reads fine tucked against the search
+                                                    // bar, but result cards need breathing room so they
+                                                    // do not touch the bar/engine strip.
+                                                    if (hasQuery) {
+                                                        DesignTokens.SpacingMedium
+                                                    } else {
+                                                        DesignTokens.SpacingXXSmall
+                                                    }
                                                 } else {
                                                     DesignTokens
                                                         .SpacingMedium
@@ -685,6 +691,7 @@ fun SearchContentArea(
                                 onOpenPermissionsSettings = onOpenPermissionsSettings,
                                 onHomePinnedSectionOrderChange = onHomePinnedSectionOrderChange,
                                 selectedTopMatchIndex = selectedTopMatchIndex,
+                                isScrollInProgress = { scrollState.isScrollInProgress },
                             )
                         }
                     }

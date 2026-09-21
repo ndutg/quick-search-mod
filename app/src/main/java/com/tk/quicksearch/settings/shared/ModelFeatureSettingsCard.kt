@@ -19,12 +19,46 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.R
+import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.ModelPickerDialog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
+import com.tk.quicksearch.tools.aiSearch.isWebSearchAvailable
+import com.tk.quicksearch.tools.aiSearch.modelSupportsGrounding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+/** Whether a Tavily key is stored, with `Unknown` while the encrypted read is still in flight. */
+enum class TavilyKeyState {
+    Unknown,
+    Present,
+    Absent,
+    ;
+
+    val isPresent: Boolean
+        get() = this == Present
+}
+
+/**
+ * Reads the stored Tavily key off the main thread. Stays [TavilyKeyState.Unknown] until the read
+ * lands, so callers can avoid acting on a key that is merely not loaded yet.
+ */
+@Composable
+fun rememberTavilyKeyState(): TavilyKeyState {
+    val context = LocalContext.current
+    val preferences = remember(context) { UserAppPreferences(context.applicationContext) }
+    var state by remember(preferences) { mutableStateOf(TavilyKeyState.Unknown) }
+    LaunchedEffect(preferences) {
+        val hasKey = withContext(Dispatchers.IO) { !preferences.getTavilyApiKey().isNullOrBlank() }
+        state = if (hasKey) TavilyKeyState.Present else TavilyKeyState.Absent
+    }
+    return state
+}
 
 @Composable
 fun ModelFeatureSettingsCard(
@@ -49,34 +83,32 @@ fun ModelFeatureSettingsCard(
     showThinkingCheckbox: Boolean = true,
     showGroundingCheckbox: Boolean = true,
     groundingCheckboxEnabled: Boolean = true,
-    includeSelectedModelIfMissing: Boolean = true,
+    tavilyKeyState: TavilyKeyState = rememberTavilyKeyState(),
 ) {
     var showModelDialog by remember { mutableStateOf(false) }
 
     val modelOptions =
-        remember(availableModels, selectedModelId, includeSelectedModelIfMissing) {
-            val allKnownModels = availableModels + GeminiModelCatalog.FALLBACK_TEXT_MODELS
-            val currentModel = allKnownModels.find { it.id == selectedModelId }
-
-            val options =
-                if (includeSelectedModelIfMissing && currentModel == null) {
-                    availableModels + GeminiTextModel(selectedModelId, selectedModelId)
-                } else {
-                    availableModels
-                }
-
-            options.distinctBy { it.id }.sortedBy { it.displayName.lowercase() }
+        remember(availableModels) {
+            availableModels.distinctBy { it.id }.sortedBy { it.displayName.lowercase() }
         }
 
     val selectedModel = modelOptions.firstOrNull { it.id == selectedModelId }
-    val selectedModelLabel = selectedModel?.displayName ?: selectedModelId
-    val supportsGrounding = selectedModel?.supportsGrounding != false
-
-    LaunchedEffect(supportsGrounding, groundingEnabled) {
-        if (!supportsGrounding && groundingEnabled) {
-            onGroundingChange(false)
+    val isLoadingModels =
+        configuredProviderIds.isNotEmpty() &&
+            configuredProviderIds.any { it !in availableModelsByProvider }
+    val selectedModelLabel =
+        when {
+            isLoadingModels -> stringResource(R.string.settings_loading_models)
+            selectedModel != null -> selectedModel.displayName
+            else -> stringResource(R.string.settings_select_model)
         }
-    }
+    val webSearchAvailable =
+        isWebSearchAvailable(
+            providerId = selectedProviderId,
+            modelSupportsGrounding =
+                modelSupportsGrounding(selectedModelId, availableModels, selectedProviderId),
+            hasTavilyKey = tavilyKeyState.isPresent,
+        )
 
     SettingsCard(modifier = modifier.fillMaxWidth()) {
         Column(
@@ -90,7 +122,7 @@ fun ModelFeatureSettingsCard(
             Row(
                 modifier =
                     Modifier.fillMaxWidth()
-                        .clickable { showModelDialog = true }
+                        .clickable(enabled = !isLoadingModels) { showModelDialog = true }
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -117,8 +149,8 @@ fun ModelFeatureSettingsCard(
                 )
             }
 
-            val showGroundingPill = showGroundingCheckbox && supportsGrounding
-            if (showThinkingCheckbox || showGroundingPill) {
+            val showGroundingPill = showGroundingCheckbox && webSearchAvailable
+            if (!isLoadingModels && selectedModel != null && (showThinkingCheckbox || showGroundingPill)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -161,19 +193,9 @@ fun ModelFeatureSettingsCard(
             },
             onModelSelected = { modelId ->
                 onModelSelected(modelId)
-                val newModel = modelOptions.firstOrNull { it.id == modelId }
-                if (newModel?.supportsGrounding == false && groundingEnabled) {
-                    onGroundingChange(false)
-                }
             },
             onProviderModelSelected = { providerId, modelId ->
                 onProviderModelSelected(providerId, modelId)
-                val newModel =
-                    availableModelsByProvider[providerId]?.firstOrNull { it.id == modelId }
-                        ?: modelOptions.firstOrNull { it.id == modelId }
-                if (newModel?.supportsGrounding == false && groundingEnabled) {
-                    onGroundingChange(false)
-                }
             },
             onDismiss = { showModelDialog = false },
             showGroundingToggle = false,

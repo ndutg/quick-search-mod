@@ -109,6 +109,7 @@
     <string name="settings_gestures_desc">Personalizar ações de deslizar</string>
     <string name="settings_gesture_swipe_right">Deslizar para a direita</string>
     <string name="settings_gesture_widget_panel">Painel de widgets</string>
+    <string name="widget_pinned_to_home">Adicionado ao Início</string>
     <string name="settings_gesture_swipe_left">Deslizar para a esquerda</string>
     <string name="settings_gesture_swipe_up">Deslizar para cima</string>
     <string name="settings_gesture_swipe_down">Deslizar para baixo</string>
@@ -140,6 +141,8 @@
     <string name="notification_pinned_item_type_file">Arquivo</string>
     <string name="notification_pinned_item_type_note">Nota</string>
     <string name="action_remove">Remover</string>
+    <string name="folder_name_placeholder">Adicionar nome da pasta</string>
+    <string name="folder_remove_from_folder">Remover da pasta</string>
     <string name="app_swipe_current_action">Ação atual</string>
     <string name="app_swipe_up_picker_title">Selecionar ação de deslizar para cima para %1$s</string>
     <string name="app_swipe_down_picker_title">Selecionar ação de deslizar para baixo para %1$s</string>
@@ -202,7 +205,7 @@
     <string name="dialog_edit_amazon_domain_message">Atualize o domínio da Amazon para o seu país.</string>
     <string name="dialog_edit_amazon_domain_title">Editar domínio da Amazon</string>
     <string name="dialog_gemini_model_picker_title">Selecionar modelo</string>
-    <string name="dialog_nickname_message">Insira um apelido para "%1$s". Você poderá pesquisar por ele usando este apelido.</string>
+    <string name="dialog_nickname_message">Insira um ou mais apelidos para "%1$s", separados por vírgulas. Você poderá pesquisar por ele usando qualquer um deles.</string>
     <string name="dialog_ok">Continuar</string>
     <string name="dialog_okay">Entendi</string>
     <string name="dialog_remember_choice">Lembrar desta escolha</string>
@@ -239,7 +242,6 @@
          ============================================================================ -->
     <string name="app_suggestions_tab_new_updated">Novos/Atualizados</string>
     <string name="app_suggestions_tab_pinned">Fixados</string>
-    <string name="app_suggestions_tab_pinned_disabled_description">Os apps fixados continuarão aparecendo na guia %1$s</string>
     <string name="app_suggestions_tab_recent">Recentes</string>
     <string name="app_suggestions_tabs_dialog_message">Escolha quais guias de sugestões de apps aparecem na tela inicial.</string>
     <string name="app_suggestions_tabs_dialog_title">Guias de sugestões de apps</string>
@@ -317,7 +319,7 @@
     <string name="action_disable_app_shortcut">Desativar</string>
     <string name="action_disable_all_app_shortcuts_named">Desativar todos os atalhos de %1$s</string>
     <string name="snackbar_app_shortcut_disabled_title">Atalho desativado</string>
-    <string name="snackbar_app_shortcut_disabled_supporting">Você pode ativá-lo depois nas configurações de atalhos de apps.</string>
+    <string name="snackbar_app_shortcut_disabled_supporting">Você pode ativá-lo depois nas configurações.</string>
     <string name="apps_refreshed_successfully">Apps atualizados com sucesso</string>
     <string name="error_loading_user_apps">Não foi possível carregar seus apps. Tente novamente em alguns instantes.</string>
     <string name="error_uninstall_app">Não foi possível desinstalar %1$s</string>
@@ -662,6 +664,9 @@
     <string name="settings_all_quick_search_features_desc">Ver a lista completa de recursos e capacidades</string>
     <string name="settings_app_settings_desc">Pesquise por configurações do Quick Search</string>
     <string name="settings_features_load_failed">Não foi possível carregar a documentação dos recursos.</string>
+    <string name="settings_features_export">Baixar e compartilhar recursos</string>
+    <string name="settings_features_export_failed">Não foi possível salvar a documentação dos recursos.</string>
+    <string name="settings_features_saved_to_downloads">Salvo em Downloads</string>
     <string name="settings_features_sections_title">Conteúdo</string>
     <string name="settings_search_description_change_app_theme">Alterar o tema do app</string>
     <string name="settings_search_description_change_font_size">Alterar o tamanho da fonte do app</string>
@@ -825,6 +830,9 @@
     <string name="settings_direct_search_grounding_label">Pesquisa na Web</string>
     <string name="settings_direct_search_how_to">Obter chave de API gratuita</string>
     <string name="settings_direct_search_model_label">Modelo</string>
+    <string name="settings_select_model">Selecionar modelo</string>
+    <string name="ai_error_selected_model_unavailable">O modelo selecionado não está disponível. Escolha outro modelo nas configurações.</string>
+    <string name="settings_loading_models">Carregando modelos…</string>
     <string name="settings_direct_search_personal_context">Contexto pessoal</string>
     <string name="settings_direct_search_personal_context_hint">Adicione qualquer contexto que deseja que a IA utilize ao gerar as respostas.</string>
     <string name="settings_direct_search_personal_context_unsupported">O contexto pessoal não está disponível para este modelo.</string>
@@ -884,7 +892,7 @@
     <string name="settings_feedback_developer_title">%1$s v%2$s</string>
     <string name="settings_feedback_github_desc">Veja o código-fonte deste projeto no GitHub</string>
     <string name="settings_feedback_github_title">Desenvolvimento</string>
-    <string name="settings_feedback_rate_desc">Deixe uma avaliação de 5 estrelas se você achar este app útil</string>
+    <string name="settings_feedback_rate_desc">Deixe uma avaliação de 5 estrelas se você achar este app útil 🙏</string>
     <string name="settings_feedback_rate_title">Avaliar Quick Search</string>
     <string name="settings_feedback_send_desc">Reportar bugs ou solicitar recursos</string>
     <string name="settings_feedback_send_title">Enviar feedback</string>
@@ -904,6 +912,10 @@
     <string name="currency_converter_requires_gemini_key">Requer uma chave de API do provedor de IA</string>
     <string name="currency_converter_toggle_desc">Exemplo: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Conversor de moedas</string>
+    <string name="set_alarm_action_label">Definir alarme</string>
+    <string name="set_alarm_no_clock_app">Nenhum app de relógio encontrado</string>
+    <string name="start_timer_action_label">Iniciar timer</string>
+    <string name="start_timer_started">Timer iniciado</string>
     <string name="color_visualizer_toggle_title">Visualizador de cores</string>
     <string name="color_visualizer_toggle_desc">Exemplos: #FF0000, rgb(255, 0, 0)</string>
     <string name="color_visualizer_invalid_input">Insira uma cor hexadecimal ou RGB</string>
@@ -1171,6 +1183,7 @@
     <string name="settings_tavily_desc">Adicione uma chave de API do Tavily para dar pesquisa na web aos modelos que não oferecem suporte.</string>
     <string name="settings_tavily_mode_always">Sempre usar o Tavily para pesquisa na web</string>
     <string name="settings_tavily_mode_when_unsupported">Usar somente quando o modelo não oferecer pesquisa na web</string>
+    <string name="settings_weather_no_web_search_warning">Clima precisa de resultados da web. Escolha um modelo que ofereça pesquisa na web ou adicione uma chave de API do Tavily em Configuração da chave de API.</string>
     <string name="tavily_search_failed_toast">A pesquisa na web do Tavily falhou. Respondendo sem resultados da web.</string>
     <string name="search_hint_reminders">Pesquisar lembretes…</string>
     <string name="search_section_reminders_toggle_desc">Ativar ou desativar a pesquisa de lembretes</string>

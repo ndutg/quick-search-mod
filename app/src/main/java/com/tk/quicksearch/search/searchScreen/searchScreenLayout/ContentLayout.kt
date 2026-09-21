@@ -2,8 +2,8 @@ package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -34,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -86,6 +87,9 @@ import com.tk.quicksearch.search.other.OtherSearchItemRegistry
 import com.tk.quicksearch.search.other.OtherSearchResults
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.startup.StartupTrace
+import com.tk.quicksearch.widgetsPanel.HomeWidgetStack
+import com.tk.quicksearch.widgetsPanel.rememberHomePinnedWidgets
+import com.tk.quicksearch.widgetsPanel.rememberHomeWidgetHost
 
 /** Unified content layout that handles both one-handed mode and top-aligned layouts. */
 @Composable
@@ -137,6 +141,7 @@ fun ContentLayout(
     onOpenPermissionsSettings: () -> Unit = {},
     onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit = {},
     selectedTopMatchIndex: Int? = null,
+    isScrollInProgress: () -> Boolean = { false },
 ) {
     val context = LocalContext.current
     val userPreferences = remember(context) { UserAppPreferences(context) }
@@ -189,12 +194,8 @@ fun ContentLayout(
             isAppSearchRefreshing = state.isAppSearchInProgress,
             secondarySectionsRefreshing = state.secondarySearchSectionsInProgress,
         )
-    // The overlay already animates its full surface on entry. In one-handed mode, layering every
-    // async Home section height animation on top of that bottom-anchored surface makes early
-    // content briefly reflow in the opposite direction. App suggestions are the exception: they
-    // arrive after the agenda is visible, so their height must expand instead of being inserted in
-    // one frame and jumping the agenda to its final position.
-    val animateHomeLoadingContent = !(isOverlayPresentation && state.oneHandedMode)
+    // Home sections reserve their full height as soon as their data arrives and only fade in, so
+    // nothing above them reflows while the rest of the agenda is still loading.
     var suggestionsAppGridHasAppeared by remember { mutableStateOf(false) }
     val appearedHomeContentKeys = remember { mutableSetOf<String>() }
     val effectiveAppsParams = appsParams.copy(
@@ -660,7 +661,7 @@ fun ContentLayout(
         LaunchedEffect(Unit) { StartupTrace.mark("QS.Home.SearchHistoryRendered") }
         HomeLoadingAnimatedContent(
             animationKey = "home-search-history",
-            enabled = !hasQuery && animateHomeLoadingContent,
+            enabled = !hasQuery,
             appearedKeys = appearedHomeContentKeys,
         ) {
             Column(
@@ -808,413 +809,452 @@ fun ContentLayout(
         }
     }
 
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        if (showTopMatchesSection && !isReversed) {
-            renderTopMatches()
-        }
-        finalLayoutOrder.forEach { itemType ->
-            val section = itemType.toSearchSectionOrNull()
-            val isSectionItem = section != null
+    @Composable
+    fun renderLayoutItem(itemType: ItemPriorityConfig.ItemType) {
+        val section = itemType.toSearchSectionOrNull()
+        val isSectionItem = section != null
 
-            // If a section is expanded, we hide all OTHER non-section items.
-            if (isExpanded && !isSectionItem) return@forEach
+        // If a section is expanded, we hide all OTHER non-section items.
+        if (isExpanded && !isSectionItem) return
 
-            if (section != null) {
-                // The expanded search history owns the whole content area. Skipping the sections
-                // outright keeps them from emitting empty layout nodes, which would still take a
-                // slot in this Column's arrangement spacing and push the card down.
-                if (hidePinnedAndAppsWhenSearchHistoryExpanded) return@forEach
-                if (isHomeCalendarExpanded && section != SearchSection.CALENDAR) return@forEach
-                if (searchHistoryExpanded && section == SearchSection.NOTES) return@forEach
-                if (!shouldRenderSection(section)) return@forEach
-                if (holdRegularSectionsForTopMatches) return@forEach
-                if (section == SearchSection.APPS && isUrlQuery) return@forEach
-                if (hideOtherContent && section != SearchSection.APPS) return@forEach
-                if (
-                    !hasQuery &&
-                        shouldSkipRegularCalendarSectionForStandaloneTodayEvents(
-                            section = section,
-                            todayCalendarEventsCount = standaloneTodayEventIds.size,
-                            pinnedCalendarEventsCount =
-                                sectionContextForRecentHistoryExpansion.calendarEventsList.size,
-                        ) && !isHomeCalendarExpanded
-                ) {
-                    // Today's events are injected after the app grid. Rendering this otherwise empty
-                    // calendar slot as well produces a duplicate home-screen calendar card.
-                    return@forEach
-                }
+        if (section != null) {
+            // The expanded search history owns the whole content area. Skipping the sections
+            // outright keeps them from emitting empty layout nodes, which would still take a
+            // slot in this Column's arrangement spacing and push the card down.
+            if (hidePinnedAndAppsWhenSearchHistoryExpanded) return
+            if (isHomeCalendarExpanded && section != SearchSection.CALENDAR) return
+            if (searchHistoryExpanded && section == SearchSection.NOTES) return
+            if (!shouldRenderSection(section)) return
+            if (holdRegularSectionsForTopMatches) return
+            if (section == SearchSection.APPS && isUrlQuery) return
+            if (hideOtherContent && section != SearchSection.APPS) return
+            if (
+                !hasQuery &&
+                    shouldSkipRegularCalendarSectionForStandaloneTodayEvents(
+                        section = section,
+                        todayCalendarEventsCount = standaloneTodayEventIds.size,
+                        pinnedCalendarEventsCount =
+                            sectionContextForRecentHistoryExpansion.calendarEventsList.size,
+                    ) && !isHomeCalendarExpanded
+            ) {
+                // Today's events are injected after the app grid. Rendering this otherwise empty
+                // calendar slot as well produces a duplicate home-screen calendar card.
+                return
+            }
 
-                if (!hasQuery && section != SearchSection.APPS && showPinnedNonAppItems && !showRecentItems) {
-                    if (!pinnedNonAppItemsRendered) {
-                        UnifiedPinnedItemsBlock(
-                            userPreferences = userPreferences,
+            if (!hasQuery && section != SearchSection.APPS && showPinnedNonAppItems && !showRecentItems) {
+                if (!pinnedNonAppItemsRendered) {
+                    UnifiedPinnedItemsBlock(
+                        userPreferences = userPreferences,
+                        showWallpaperBackground = effectiveShowWallpaperBackground,
+                    ) {
+                        PinnedNonAppItemsSection(
+                            pinnedItemOrder = state.pinnedNonAppItemOrder,
+                            contacts = renderingState.pinnedContacts,
+                            files = renderingState.pinnedFiles,
+                            appShortcuts = renderingState.pinnedAppShortcuts,
+                            settings = renderingState.pinnedSettings,
+                            calendarEvents = pinnedCalendarEventsForPinnedBlock,
+                            notes = renderingState.pinnedNotes,
+                            reminders = renderingState.pinnedReminders,
+                            contactsParams = effectiveContactsParams,
+                            filesParams = effectiveFilesParams,
+                            appShortcutsParams = effectiveAppShortcutsParams,
+                            settingsParams = effectiveSettingsParams,
+                            calendarParams = effectiveCalendarParams,
+                            notesParams = effectiveNotesParams,
+                            remindersParams = effectiveRemindersParams,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                    pinnedNonAppItemsRendered = true
+                }
+                return
+            }
+
+            val showAliasRecentForSection =
+                showAliasRecentItems && section in ALIAS_RECENT_ELIGIBLE_SECTIONS
+
+            if (showAliasRecentForSection) {
+                AliasRecentItemsSection(
+                    items = state.aliasRecentItems,
+                    contactsParams = effectiveContactsParams,
+                    filesParams = effectiveFilesParams,
+                    settingsParams = effectiveSettingsParams,
+                    appShortcutsParams = effectiveAppShortcutsParams,
+                    notesParams = notesParams,
+                    remindersParams = remindersParams,
+                    onRecentQueryClick = onRecentQueryClick,
+                    onDeleteRecentItem = onDeleteRecentItem,
+                    expandedCardMaxHeight = expandedCardMaxHeight,
+                    showWallpaperBackground = effectiveShowWallpaperBackground,
+                    isOverlayPresentation = isOverlayPresentation,
+                )
+            }
+            if (showAliasRecentForSection) return
+
+            val permissionMessageRes =
+                sectionAliasPermissionMessageRes(
+                    state = state,
+                    section = section,
+                    isSectionAliasMode = isSectionAliasMode,
+                )
+            if (permissionMessageRes != null) {
+                SectionPermissionResultCard(
+                    title = stringResource(R.string.permission_required_title),
+                    message = stringResource(permissionMessageRes),
+                    showWallpaperBackground = effectiveShowWallpaperBackground,
+                    onActionClick = onOpenPermissionsSettings,
+                )
+                return
+            }
+
+            val sectionContext =
+                if (
+                    section == SearchSection.CALENDAR &&
+                    !hasQuery &&
+                    !state.unifiedPinnedItemsEnabled &&
+                    !isHomeCalendarExpanded &&
+                    hasStandaloneTodayCalendarSection
+                ) {
+                    sectionContextForRecentHistoryExpansion.copy(
+                        todayCalendarEventsList = emptyList(),
+                    )
+                } else {
+                    sectionContextForRecentHistoryExpansion
+                }
+            if (
+                skipItemlessHomeSections &&
+                section.supportsPinnedHomeCollapse() &&
+                !homePinnedSectionHasItems(section, sectionContext)
+            ) {
+                return
+            }
+            val homeSectionContentReady =
+                section != SearchSection.APPS ||
+                    (
+                        sectionContext.shouldRenderApps &&
+                            (
+                                effectiveAppsParams.hasAppResults && effectiveAppsParams.apps.isNotEmpty() ||
+                                    effectiveAppsParams.showAllAppsButton && effectiveAppsParams.allApps.isNotEmpty()
+                            )
+                    )
+            if (homeSectionContentReady) {
+                HomeLoadingAnimatedContent(
+                    animationKey = "home-section-${section.name}",
+                    enabled = !hasQuery && !isHomeCalendarExpanded,
+                    appearedKeys = appearedHomeContentKeys,
+                ) {
+                    renderHomePinnedSection(section) {
+                        renderSection(section, regularSectionParams, sectionContext)
+                    }
+                }
+            }
+            return
+        }
+
+        if (hideOtherContent) return
+
+        when (itemType) {
+            ItemPriorityConfig.ItemType.UPCOMING_ALARM -> {
+                if (!hasQuery && !isHomeCalendarExpanded && !hidePinnedAndAppsWhenSearchHistoryExpanded) {
+                    if (isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
+                        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                            renderSearchHistoryBlock()
+                            deferredSearchHistoryRendered = true
+                        }
+                        HomeLoadingAnimatedContent(
+                            animationKey = "home-today-calendar",
+                            enabled = true,
+                            appearedKeys = appearedHomeContentKeys,
                         ) {
-                            PinnedNonAppItemsSection(
-                                pinnedItemOrder = state.pinnedNonAppItemOrder,
-                                contacts = renderingState.pinnedContacts,
-                                files = renderingState.pinnedFiles,
-                                appShortcuts = renderingState.pinnedAppShortcuts,
-                                settings = renderingState.pinnedSettings,
-                                calendarEvents = pinnedCalendarEventsForPinnedBlock,
-                                notes = renderingState.pinnedNotes,
-                                reminders = renderingState.pinnedReminders,
-                                contactsParams = effectiveContactsParams,
-                                filesParams = effectiveFilesParams,
-                                appShortcutsParams = effectiveAppShortcutsParams,
-                                settingsParams = effectiveSettingsParams,
-                                calendarParams = effectiveCalendarParams,
-                                notesParams = effectiveNotesParams,
-                                remindersParams = effectiveRemindersParams,
-                                showWallpaperBackground = effectiveShowWallpaperBackground,
-                                modifier = Modifier.fillMaxWidth(),
+                            renderSection(
+                                section = SearchSection.CALENDAR,
+                                params = regularSectionParams,
+                                sectionContext = sectionContextForRecentHistoryExpansion.copy(
+                                    shouldRenderCalendar = false,
+                                    calendarEventsList = emptyList(),
+                                ),
                             )
                         }
-                        pinnedNonAppItemsRendered = true
+                        standaloneTodayCalendarRendered = true
                     }
-                    return@forEach
+                    if (isReversed) {
+                        UpcomingReminderSection(showWallpaperBackground = effectiveShowWallpaperBackground)
+                    }
+                    UpcomingAlarmSection(showWallpaperBackground = effectiveShowWallpaperBackground)
+                    if (!isReversed) {
+                        UpcomingReminderSection(showWallpaperBackground = effectiveShowWallpaperBackground)
+                    }
+                    if (!isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
+                        HomeLoadingAnimatedContent(
+                            animationKey = "home-today-calendar",
+                            enabled = true,
+                            appearedKeys = appearedHomeContentKeys,
+                        ) {
+                            renderSection(
+                                section = SearchSection.CALENDAR,
+                                params = regularSectionParams,
+                                sectionContext = sectionContextForRecentHistoryExpansion.copy(
+                                    shouldRenderCalendar = false,
+                                    calendarEventsList = emptyList(),
+                                ),
+                            )
+                        }
+                        standaloneTodayCalendarRendered = true
+                        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
+                            renderSearchHistoryBlock()
+                            deferredSearchHistoryRendered = true
+                        }
+                    }
                 }
+            }
 
-                val showAliasRecentForSection =
-                    showAliasRecentItems && section in ALIAS_RECENT_ELIGIBLE_SECTIONS
-
-                if (showAliasRecentForSection) {
-                    AliasRecentItemsSection(
-                        items = state.aliasRecentItems,
-                        contactsParams = effectiveContactsParams,
-                        filesParams = effectiveFilesParams,
-                        settingsParams = effectiveSettingsParams,
-                        appShortcutsParams = effectiveAppShortcutsParams,
-                        notesParams = notesParams,
-                        remindersParams = remindersParams,
-                        onRecentQueryClick = onRecentQueryClick,
-                        onDeleteRecentItem = onDeleteRecentItem,
-                        expandedCardMaxHeight = expandedCardMaxHeight,
-                        showWallpaperBackground = effectiveShowWallpaperBackground,
-                        isOverlayPresentation = isOverlayPresentation,
+            ItemPriorityConfig.ItemType.ERROR_BANNER -> {
+                if (state.screenState is ScreenVisibilityState.Error) {
+                    InfoBanner(
+                        message =
+                            (
+                                state.screenState as
+                                        ScreenVisibilityState.Error
+                            ).message,
                     )
                 }
-                if (showAliasRecentForSection) return@forEach
+            }
 
-                val permissionMessageRes =
-                    sectionAliasPermissionMessageRes(
-                        state = state,
-                        section = section,
-                        isSectionAliasMode = isSectionAliasMode,
-                    )
-                if (permissionMessageRes != null) {
-                    SectionPermissionResultCard(
-                        title = stringResource(R.string.permission_required_title),
-                        message = stringResource(permissionMessageRes),
-                        showWallpaperBackground = effectiveShowWallpaperBackground,
-                        onActionClick = onOpenPermissionsSettings,
-                    )
-                    return@forEach
-                }
-
-                val sectionContext =
-                    if (
-                        section == SearchSection.CALENDAR &&
-                        !hasQuery &&
-                        !state.unifiedPinnedItemsEnabled &&
-                        !isHomeCalendarExpanded &&
-                        hasStandaloneTodayCalendarSection
-                    ) {
-                        sectionContextForRecentHistoryExpansion.copy(
-                            todayCalendarEventsList = emptyList(),
+            ItemPriorityConfig.ItemType.CALCULATOR_RESULT -> {
+                if (showCalculator) {
+                    if (state.calculatorState.toolType == com.tk.quicksearch.search.core.SearchToolType.COLOR_VISUALIZER) {
+                        ColorVisualizerResult(
+                            calculatorState = state.calculatorState,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
                         )
                     } else {
-                        sectionContextForRecentHistoryExpansion
-                    }
-                if (
-                    skipItemlessHomeSections &&
-                    section.supportsPinnedHomeCollapse() &&
-                    !homePinnedSectionHasItems(section, sectionContext)
-                ) {
-                    return@forEach
-                }
-                val homeSectionContentReady =
-                    section != SearchSection.APPS ||
-                        (
-                            sectionContext.shouldRenderApps &&
-                                (
-                                    effectiveAppsParams.hasAppResults && effectiveAppsParams.apps.isNotEmpty() ||
-                                        effectiveAppsParams.showAllAppsButton && effectiveAppsParams.allApps.isNotEmpty()
-                                )
-                        )
-                if (homeSectionContentReady) {
-                    HomeLoadingAnimatedContent(
-                        animationKey = "home-section-${section.name}",
-                        enabled =
-                            !hasQuery &&
-                                !isHomeCalendarExpanded &&
-                                (animateHomeLoadingContent || section == SearchSection.APPS),
-                        fadeContent = section != SearchSection.APPS,
-                        appearedKeys = appearedHomeContentKeys,
-                    ) {
-                        renderHomePinnedSection(section) {
-                            renderSection(section, regularSectionParams, sectionContext)
-                        }
-                    }
-                }
-                return@forEach
-            }
-
-            if (hideOtherContent) return@forEach
-
-            when (itemType) {
-                ItemPriorityConfig.ItemType.UPCOMING_ALARM -> {
-                    if (!hasQuery && !isHomeCalendarExpanded && !hidePinnedAndAppsWhenSearchHistoryExpanded) {
-                        if (isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
-                            if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
-                                renderSearchHistoryBlock()
-                                deferredSearchHistoryRendered = true
-                            }
-                            HomeLoadingAnimatedContent(
-                                animationKey = "home-today-calendar",
-                                enabled = animateHomeLoadingContent,
-                                appearedKeys = appearedHomeContentKeys,
-                            ) {
-                                renderSection(
-                                    section = SearchSection.CALENDAR,
-                                    params = regularSectionParams,
-                                    sectionContext = sectionContextForRecentHistoryExpansion.copy(
-                                        shouldRenderCalendar = false,
-                                        calendarEventsList = emptyList(),
-                                    ),
-                                )
-                            }
-                            standaloneTodayCalendarRendered = true
-                        }
-                        if (isReversed) {
-                            UpcomingReminderSection(showWallpaperBackground = effectiveShowWallpaperBackground)
-                        }
-                        UpcomingAlarmSection(showWallpaperBackground = effectiveShowWallpaperBackground)
-                        if (!isReversed) {
-                            UpcomingReminderSection(showWallpaperBackground = effectiveShowWallpaperBackground)
-                        }
-                        if (!isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
-                            HomeLoadingAnimatedContent(
-                                animationKey = "home-today-calendar",
-                                enabled = animateHomeLoadingContent,
-                                appearedKeys = appearedHomeContentKeys,
-                            ) {
-                                renderSection(
-                                    section = SearchSection.CALENDAR,
-                                    params = regularSectionParams,
-                                    sectionContext = sectionContextForRecentHistoryExpansion.copy(
-                                        shouldRenderCalendar = false,
-                                        calendarEventsList = emptyList(),
-                                    ),
-                                )
-                            }
-                            standaloneTodayCalendarRendered = true
-                            if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
-                                renderSearchHistoryBlock()
-                                deferredSearchHistoryRendered = true
-                            }
-                        }
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.ERROR_BANNER -> {
-                    if (state.screenState is ScreenVisibilityState.Error) {
-                        InfoBanner(
-                            message =
-                                (
-                                    state.screenState as
-                                            ScreenVisibilityState.Error
-                                ).message,
-                        )
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.CALCULATOR_RESULT -> {
-                    if (showCalculator) {
-                        if (state.calculatorState.toolType == com.tk.quicksearch.search.core.SearchToolType.COLOR_VISUALIZER) {
-                            ColorVisualizerResult(
-                                calculatorState = state.calculatorState,
-                                showWallpaperBackground = effectiveShowWallpaperBackground,
-                            )
-                        } else {
-                            CalculatorResult(
-                                calculatorState = state.calculatorState,
-                                showWallpaperBackground =
-                                    effectiveShowWallpaperBackground,
-                            )
-                        }
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.CURRENCY_CONVERTER_RESULT -> {
-                    if (showCurrencyConverter) {
-                        CurrencyConverterResult(
-                                currencyConverterState = state.currencyConverterState,
-                                showWallpaperBackground = effectiveShowWallpaperBackground,
-                        )
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.WORD_CLOCK_RESULT -> {
-                    if (showWorldClock) {
-                        WorldClockResult(
-                                worldClockState = state.worldClockState,
-                                llmProviderId = state.worldClockState.llmProviderId
-                                        ?: state.aiSearchLlmProviderId,
-                                showWallpaperBackground = effectiveShowWallpaperBackground,
-                                onGeminiModelInfoClick = onGeminiModelInfoClick,
-                        )
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.DICTIONARY_RESULT -> {
-                    if (showDictionary) {
-                        DictionaryResult(
-                                dictionaryState = state.dictionaryState,
-                                llmProviderId = state.dictionaryState.llmProviderId
-                                        ?: state.aiSearchLlmProviderId,
-                                showWallpaperBackground = effectiveShowWallpaperBackground,
-                                onGeminiModelInfoClick = onGeminiModelInfoClick,
-                        )
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.WEATHER_RESULT -> {
-                    if (showWeather) {
-                        WeatherResult(
-                            weatherState = state.weatherState,
-                            llmProviderId = state.weatherState.llmProviderId
-                                ?: state.aiSearchLlmProviderId,
-                            showWallpaperBackground = effectiveShowWallpaperBackground,
-                            onGeminiModelInfoClick = onGeminiModelInfoClick,
-                        )
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.OTHER_RESULTS -> {
-                    if (!hasQuery || !state.topMatchesEnabled) {
-                        OtherSearchResults(
-                            query = state.query,
-                            pinnedItemOrder = state.pinnedNonAppItemOrder,
-                            state = state.screenTimeState,
-                            showWallpaperBackground = effectiveShowWallpaperBackground,
-                            iconPackPackage = state.selectedIconPackPackage,
-                            onTogglePin = onToggleOtherSearchItemPin,
-                        )
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.AI_SEARCH_RESULT -> {
-                    if (showAiSearch && aiSearchState != null) {
-                        AiSearchResult(
-                            aiSearchState = aiSearchState,
-                            aiSearchLlmProviderId = state.aiSearchLlmProviderId,
-                            showWallpaperBackground = effectiveShowWallpaperBackground,
-                            onGeminiModelInfoClick = onGeminiModelInfoClick,
-                            onOpenAiSearchConfigure = onOpenAiSearchConfigure,
-                            onPhoneNumberClick = onPhoneNumberClick,
-                            onEmailClick = onEmailClick,
-                        )
-                    }
-                }
-
-                // --- Suggestions & Engines ---
-                ItemPriorityConfig.ItemType.WEB_SUGGESTIONS -> {
-                    val allowWebSuggestions =
-                        !hideResults || state.detectedShortcutTarget != null
-                    val isVisible = allowWebSuggestions && hasQuery && showWebSuggestions
-
-                    if (isVisible) {
-                        WebSuggestionsSection(
-                            suggestions = state.webSuggestions,
-                            onSuggestionClick = onWebSuggestionClick,
-                            showWallpaperBackground = effectiveShowWallpaperBackground,
-                            reverseOrder = isReversed,
-                            isShortcutDetected = state.detectedShortcutTarget != null,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.RECENT_QUERIES -> {
-                    val isVisible = !hideResults && showRecentItems
-                    if (isVisible) {
-                        if (deferredSearchHistoryRendered) {
-                            return@forEach
-                        }
-                        if (shouldDeferSearchHistoryUntilTodayEvents && !standaloneTodayCalendarRendered) {
-                            return@forEach
-                        }
-                        renderSearchHistoryBlock()
-                        deferredSearchHistoryRendered = true
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.SEARCH_ENGINES_INLINE -> {
-                    // Inline search engines.
-                    // Condition: Not compact mode.
-                    val showInlineSearchEngines =
-                        !hideResults &&
-                            hasQuery &&
-                            (isUrlQuery || queryLength > 1) &&
-                            (!state.isSearchEngineCompactMode || isUrlQuery)
-
-                    if (showInlineSearchEngines) {
-                        NoResultsSearchEngineCards(
-                            query = state.query,
-                            enabledEngines = inlineTargets,
-                            onSearchEngineClick = onSearchTargetClick,
-                            onCustomizeClick =
-                            onCustomizeSearchEnginesClick,
-                            onSearchEngineLongPress =
-                            onSearchEngineLongPress,
-                            showCustomizeCard = false,
-                            isReversed = isReversed,
+                        CalculatorResult(
+                            calculatorState = state.calculatorState,
                             showWallpaperBackground =
                                 effectiveShowWallpaperBackground,
-                            predictedTarget = predictedTarget,
-                            appIconShape = state.appIconShape,
-                            iconPackPackage = state.selectedIconPackPackage,
-                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }
-
-                ItemPriorityConfig.ItemType.SEARCH_ENGINES_COMPACT -> {
-                    // If we ever need to render compact engines in the list, do
-                    // it here.
-                    // Currently checking isSearchEngineCompactMode to HIDE
-                    // inline ones.
-                    // If compact engines are intended to be in the list, add
-                    // logic here.
-                    // For now, config doesn't use this in
-                    // SEARCHING_STATE_LAYOUT, but
-                    // we handle it for completeness.
-                }
-
-                ItemPriorityConfig.ItemType.NO_RESULTS_MESSAGE -> {
-                    if (!hideResults) {
-                        NoResultsMessage(state)
-                    }
-                }
-
-                ItemPriorityConfig.ItemType.APPS_SECTION,
-                ItemPriorityConfig.ItemType.APP_SHORTCUTS_SECTION,
-                ItemPriorityConfig.ItemType.FILES_SECTION,
-                ItemPriorityConfig.ItemType.CONTACTS_SECTION,
-                ItemPriorityConfig.ItemType.SETTINGS_SECTION,
-                ItemPriorityConfig.ItemType.CALENDAR_SECTION,
-                ItemPriorityConfig.ItemType.REMINDERS_SECTION,
-                ItemPriorityConfig.ItemType.NOTES_SECTION,
-                ItemPriorityConfig.ItemType.APP_SETTINGS_SECTION,
-                -> Unit
             }
-        }
 
+            ItemPriorityConfig.ItemType.CURRENCY_CONVERTER_RESULT -> {
+                if (showCurrencyConverter) {
+                    CurrencyConverterResult(
+                            currencyConverterState = state.currencyConverterState,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                    )
+                }
+            }
+
+            ItemPriorityConfig.ItemType.WORD_CLOCK_RESULT -> {
+                if (showWorldClock) {
+                    WorldClockResult(
+                            worldClockState = state.worldClockState,
+                            llmProviderId = state.worldClockState.llmProviderId
+                                    ?: state.aiSearchLlmProviderId,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            onGeminiModelInfoClick = onGeminiModelInfoClick,
+                    )
+                }
+            }
+
+            ItemPriorityConfig.ItemType.DICTIONARY_RESULT -> {
+                if (showDictionary) {
+                    DictionaryResult(
+                            dictionaryState = state.dictionaryState,
+                            llmProviderId = state.dictionaryState.llmProviderId
+                                    ?: state.aiSearchLlmProviderId,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            onGeminiModelInfoClick = onGeminiModelInfoClick,
+                    )
+                }
+            }
+
+            ItemPriorityConfig.ItemType.WEATHER_RESULT -> {
+                if (showWeather) {
+                    WeatherResult(
+                        weatherState = state.weatherState,
+                        llmProviderId = state.weatherState.llmProviderId
+                            ?: state.aiSearchLlmProviderId,
+                        showWallpaperBackground = effectiveShowWallpaperBackground,
+                        onGeminiModelInfoClick = onGeminiModelInfoClick,
+                    )
+                }
+            }
+
+            ItemPriorityConfig.ItemType.OTHER_RESULTS -> {
+                if (!hasQuery || !state.topMatchesEnabled) {
+                    OtherSearchResults(
+                        query = state.query,
+                        pinnedItemOrder = state.pinnedNonAppItemOrder,
+                        state = state.screenTimeState,
+                        showWallpaperBackground = effectiveShowWallpaperBackground,
+                        iconPackPackage = state.selectedIconPackPackage,
+                        onTogglePin = onToggleOtherSearchItemPin,
+                    )
+                }
+            }
+
+            ItemPriorityConfig.ItemType.AI_SEARCH_RESULT -> {
+                if (showAiSearch && aiSearchState != null) {
+                    AiSearchResult(
+                        aiSearchState = aiSearchState,
+                        aiSearchLlmProviderId = state.aiSearchLlmProviderId,
+                        showWallpaperBackground = effectiveShowWallpaperBackground,
+                        onGeminiModelInfoClick = onGeminiModelInfoClick,
+                        onOpenAiSearchConfigure = onOpenAiSearchConfigure,
+                        onPhoneNumberClick = onPhoneNumberClick,
+                        onEmailClick = onEmailClick,
+                    )
+                }
+            }
+
+            // --- Suggestions & Engines ---
+            ItemPriorityConfig.ItemType.WEB_SUGGESTIONS -> {
+                val allowWebSuggestions =
+                    !hideResults || state.detectedShortcutTarget != null
+                val isVisible = allowWebSuggestions && hasQuery && showWebSuggestions
+
+                if (isVisible) {
+                    WebSuggestionsSection(
+                        suggestions = state.webSuggestions,
+                        onSuggestionClick = onWebSuggestionClick,
+                        showWallpaperBackground = effectiveShowWallpaperBackground,
+                        reverseOrder = isReversed,
+                        isShortcutDetected = state.detectedShortcutTarget != null,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+
+            ItemPriorityConfig.ItemType.RECENT_QUERIES -> {
+                val isVisible = !hideResults && showRecentItems
+                if (isVisible) {
+                    if (deferredSearchHistoryRendered) {
+                        return
+                    }
+                    if (shouldDeferSearchHistoryUntilTodayEvents && !standaloneTodayCalendarRendered) {
+                        return
+                    }
+                    renderSearchHistoryBlock()
+                    deferredSearchHistoryRendered = true
+                }
+            }
+
+            ItemPriorityConfig.ItemType.SEARCH_ENGINES_INLINE -> {
+                // Inline search engines.
+                // Condition: Not compact mode.
+                val showInlineSearchEngines =
+                    !hideResults &&
+                        hasQuery &&
+                        (isUrlQuery || queryLength > 1) &&
+                        (!state.isSearchEngineCompactMode || isUrlQuery)
+
+                if (showInlineSearchEngines) {
+                    NoResultsSearchEngineCards(
+                        query = state.query,
+                        enabledEngines = inlineTargets,
+                        onSearchEngineClick = onSearchTargetClick,
+                        onCustomizeClick =
+                        onCustomizeSearchEnginesClick,
+                        onSearchEngineLongPress =
+                        onSearchEngineLongPress,
+                        showCustomizeCard = false,
+                        isReversed = isReversed,
+                        showWallpaperBackground =
+                            effectiveShowWallpaperBackground,
+                        predictedTarget = predictedTarget,
+                        appIconShape = state.appIconShape,
+                        iconPackPackage = state.selectedIconPackPackage,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+
+            ItemPriorityConfig.ItemType.SEARCH_ENGINES_COMPACT -> {
+                // If we ever need to render compact engines in the list, do
+                // it here.
+                // Currently checking isSearchEngineCompactMode to HIDE
+                // inline ones.
+                // If compact engines are intended to be in the list, add
+                // logic here.
+                // For now, config doesn't use this in
+                // SEARCHING_STATE_LAYOUT, but
+                // we handle it for completeness.
+            }
+
+            ItemPriorityConfig.ItemType.NO_RESULTS_MESSAGE -> {
+                if (!hideResults) {
+                    NoResultsMessage(state)
+                }
+            }
+
+            ItemPriorityConfig.ItemType.APPS_SECTION,
+            ItemPriorityConfig.ItemType.APP_SHORTCUTS_SECTION,
+            ItemPriorityConfig.ItemType.FILES_SECTION,
+            ItemPriorityConfig.ItemType.CONTACTS_SECTION,
+            ItemPriorityConfig.ItemType.SETTINGS_SECTION,
+            ItemPriorityConfig.ItemType.CALENDAR_SECTION,
+            ItemPriorityConfig.ItemType.REMINDERS_SECTION,
+            ItemPriorityConfig.ItemType.NOTES_SECTION,
+            ItemPriorityConfig.ItemType.APP_SETTINGS_SECTION,
+            -> Unit
+        }
+    }
+
+    @Composable
+    fun renderDeferredSearchHistory() {
         if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered && showRecentItems) {
             renderSearchHistoryBlock()
             deferredSearchHistoryRendered = true
         }
+    }
+
+    val homeWidgets = rememberHomePinnedWidgets(enabled = !isOverlayPresentation)
+    // The container only depends on whether any widget is pinned, so typing a query keeps the same
+    // layout tree instead of rebuilding every section.
+    val homeWidgetHost = if (homeWidgets.isNotEmpty()) rememberHomeWidgetHost() else null
+    val showHomeWidgets =
+        !hasQuery &&
+            !hideResults &&
+            !isSectionAliasMode &&
+            !isExpanded &&
+            !hideOtherContent &&
+            !hidePinnedAndAppsWhenSearchHistoryExpanded &&
+            !isHomeCalendarExpanded
+
+    if (homeWidgetHost != null) {
+        HomeWidgetStack(
+            layoutOrder = finalLayoutOrder,
+            isReversed = isReversed,
+            widgets = homeWidgets,
+            showWidgets = showHomeWidgets,
+            host = homeWidgetHost,
+            spacing = 14.dp,
+            isScrollInProgress = isScrollInProgress,
+            modifier = modifier,
+            leadingContent = {
+                if (showTopMatchesSection && !isReversed) renderTopMatches()
+            },
+            trailingContent = {
+                renderDeferredSearchHistory()
+                if (showTopMatchesSection && isReversed) renderTopMatches()
+            },
+            itemContent = { itemType -> renderLayoutItem(itemType) },
+        )
+        return
+    }
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        if (showTopMatchesSection && !isReversed) {
+            renderTopMatches()
+        }
+        finalLayoutOrder.forEach { itemType -> renderLayoutItem(itemType) }
+
+        renderDeferredSearchHistory()
 
         if (showTopMatchesSection && isReversed) {
             renderTopMatches()
@@ -1223,15 +1263,14 @@ fun ContentLayout(
 }
 
 /**
- * Animates home sections from zero height when their asynchronously loaded data first arrives.
- * Expanding the section height also moves every section below it, so late app suggestions push
- * an already-visible agenda down instead of making it jump to its final position.
+ * Fades home sections in when their asynchronously loaded data first arrives. The section is laid
+ * out at its final height from the first frame, so neighbouring sections never slide as late
+ * content appears; only its opacity animates.
  */
 @Composable
 private fun HomeLoadingAnimatedContent(
     animationKey: String,
     enabled: Boolean,
-    fadeContent: Boolean = true,
     appearedKeys: MutableSet<String>,
     content: @Composable () -> Unit,
 ) {
@@ -1250,31 +1289,22 @@ private fun HomeLoadingAnimatedContent(
     LaunchedEffect(animationKey) {
         visible = true
     }
-    AnimatedVisibility(
-        visible = visible,
-        modifier = Modifier.fillMaxWidth(),
-        enter =
-            expandVertically(
-                expandFrom = Alignment.Top,
-                animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis),
-            ) +
-                if (fadeContent) {
-                    fadeIn(animationSpec = tween(durationMillis = HomeSectionFadeDurationMillis))
-                } else {
-                    androidx.compose.animation.EnterTransition.None
-                },
+    val contentAlpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(durationMillis = HomeSectionFadeDurationMillis),
+        label = "homeSectionFade",
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer { alpha = contentAlpha },
+        verticalArrangement = Arrangement.spacedBy(HomeSectionContentSpacing),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(HomeSectionContentSpacing),
-        ) {
-            content()
-        }
+        content()
     }
 }
 
 private const val HomeSectionFadeDurationMillis = 180
-private const val HomeSectionExpandDurationMillis = 220
 private val HomeSectionContentSpacing = 14.dp
 
 private fun hasMoreResults(

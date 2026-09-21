@@ -45,9 +45,7 @@ import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
 import com.tk.quicksearch.settings.AppShortcutsSettings.EditCustomShortcutDialog
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.ModelPickerDialog
-import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -183,11 +181,8 @@ internal fun SearchScreenDialogLogic(
 
     // Gemini model dialog
     if (showGeminiModelDialog) {
-        val modelOptions = remember(state.geminiModel, state.availableGeminiModels) {
-            val allKnown = state.availableGeminiModels + GeminiModelCatalog.FALLBACK_TEXT_MODELS
-            val currentModel = allKnown.find { it.id == state.geminiModel }
-                ?: GeminiTextModel(state.geminiModel, state.geminiModel)
-            (state.availableGeminiModels + currentModel).distinctBy { it.id }
+        val modelOptions = remember(state.availableGeminiModels) {
+            state.availableGeminiModels.distinctBy { it.id }
                 .sortedBy { it.displayName.lowercase() }
         }
         ModelPickerDialog(

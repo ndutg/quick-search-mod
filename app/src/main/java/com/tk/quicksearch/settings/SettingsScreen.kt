@@ -153,14 +153,6 @@ fun SettingsScreen(
     var pendingImportSourceUri by remember { mutableStateOf<Uri?>(null) }
     var showExportSelectionDialog by remember { mutableStateOf(false) }
     var exportSelectionState by remember { mutableStateOf(ExportSelectionState()) }
-    val exportLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.CreateDocument("application/octet-stream"),
-        ) { uri ->
-            if (uri == null) return@rememberLauncherForActivityResult
-            exportSettingsToUri(context, uri, exportSelectionState, coroutineScope)
-        }
-
     val importLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.OpenDocument(),
@@ -567,7 +559,7 @@ fun SettingsScreen(
             },
             onExport = {
                 showExportSelectionDialog = false
-                exportLauncher.launch(defaultBackupFileName())
+                exportSettingsToDownloads(context, exportSelectionState, coroutineScope)
             },
         )
     }

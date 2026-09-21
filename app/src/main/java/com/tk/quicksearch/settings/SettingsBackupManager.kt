@@ -6,6 +6,7 @@ import com.tk.quicksearch.reminders.ReminderScheduler
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.search.data.preferences.CustomLlmProviderPreferences
 import com.tk.quicksearch.search.data.preferences.GeminiPreferences
+import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.data.notes.NotesRoomStore
@@ -411,7 +412,9 @@ object SettingsBackupManager {
             key == BasePreferences.KEY_PINNED_REMINDER_IDS ||
             key == BasePreferences.KEY_PINNED_REMINDER_ORDER ||
             key == BasePreferences.KEY_PINNED_APP_SHORTCUTS ||
-            key == BasePreferences.KEY_PINNED_APP_SHORTCUT_ORDER
+            key == BasePreferences.KEY_PINNED_APP_SHORTCUT_ORDER ||
+            key == BasePreferences.KEY_APP_FOLDERS ||
+            key == UiPreferences.KEY_PINNED_APP_GRID_ORDER
     }
 
     private fun isShortcutKey(
@@ -577,6 +580,7 @@ object SettingsBackupManager {
                         .put("id", provider.id)
                         .put("baseUrl", provider.baseUrl)
                         .put("modelId", provider.modelId)
+                        .put("groundingEnabled", provider.groundingEnabled)
                         .put("advancedPayload", provider.advancedPayload.orEmpty())
                         .put("advancedPayloadEnabled", provider.advancedPayloadEnabled)
                         .apply {
@@ -592,13 +596,14 @@ object SettingsBackupManager {
                 val item = array.optJSONObject(index) ?: continue
                 val id = item.optString("id").takeIf { it.isNotBlank() } ?: continue
                 val baseUrl = item.optString("baseUrl").takeIf { it.isNotBlank() } ?: continue
-                val modelId = item.optString("modelId").takeIf { it.isNotBlank() } ?: continue
+                val modelId = item.optString("modelId").orEmpty()
                 add(
                     CustomLlmProviderConfig(
                         id = id,
                         baseUrl = baseUrl,
                         apiKey = item.optString("apiKey").orEmpty(),
                         modelId = modelId,
+                        groundingEnabled = item.optBoolean("groundingEnabled", true),
                         advancedPayload = item.optString("advancedPayload").takeIf { it.isNotBlank() },
                         advancedPayloadEnabled = item.optBoolean("advancedPayloadEnabled", false),
                     ),
