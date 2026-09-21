@@ -63,6 +63,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.SearchTarget
@@ -98,8 +99,29 @@ object InsetSearchBarGeometry {
     /** Lets the card sit slightly outside the regular content inset. */
     val ContainerHorizontalExtension = DesignTokens.SpacingXSmall
 
+    /**
+     * Cancels the search screen's horizontal content padding so the card reaches the screen edges.
+     * Used while the keyboard is open: nothing reserves space for the gesture handle then, so the
+     * resting inset would only read as an empty gap around the card.
+     */
+    private val FullBleedHorizontalExtension = DesignTokens.SpacingLarge
+
+    /** Horizontal extension of the card, [fullBleedFraction] of the way from resting to full bleed. */
+    fun containerHorizontalExtension(fullBleedFraction: Float): Dp =
+        lerp(ContainerHorizontalExtension, FullBleedHorizontalExtension, fullBleedFraction)
+
     /** Pulls the bar in from the card's side edges. */
     val BarHorizontalInset = DesignTokens.SpacingSmall
+
+    /**
+     * Bar inset while the card is full bleed. The card grows outward then, so the bar widens a
+     * little too rather than leaving a wider margin than the resting card has.
+     */
+    private val FullBleedBarHorizontalInset = 0.dp
+
+    /** Bar inset [fullBleedFraction] of the way from resting to full bleed. */
+    fun barHorizontalInset(fullBleedFraction: Float): Dp =
+        lerp(BarHorizontalInset, FullBleedBarHorizontalInset, fullBleedFraction)
 
     /** Slight gap between the engine row and the top of the bar in the combined compact card. */
     val BarTopSpacing = DesignTokens.SpacingXXSmall
@@ -141,11 +163,20 @@ private object SearchEngineSectionConstants {
      */
     val INSET_CONTAINER_SHAPE = RoundedCornerShape(INSET_CORNER_RADIUS)
 
+    /** Squares off the bottom corners as the card goes full bleed against the keyboard. */
+    fun insetContainerShape(fullBleedFraction: Float): RoundedCornerShape {
+        if (fullBleedFraction <= 0f) return INSET_CONTAINER_SHAPE
+        val bottomRadius = lerp(INSET_CORNER_RADIUS, 0.dp, fullBleedFraction)
+        return RoundedCornerShape(
+            topStart = INSET_CORNER_RADIUS,
+            topEnd = INSET_CORNER_RADIUS,
+            bottomStart = bottomRadius,
+            bottomEnd = bottomRadius,
+        )
+    }
+
     /** How far the container reaches down behind the bar it is attached to. */
     val INSET_CONTAINER_OVERLAP = InsetSearchBarGeometry.ContainerOverlap
-
-    /** Lets the attached background sit slightly outside the regular content inset. */
-    val INSET_HORIZONTAL_EXTENSION = InsetSearchBarGeometry.ContainerHorizontalExtension
 
     /** Trimmed row padding so the full engine row still fits inside the narrower inset strip. */
     val INSET_HORIZONTAL_PADDING = DesignTokens.SpacingSmall
@@ -226,6 +257,7 @@ fun SearchEngineIconsSection(
     showOnlyToolAction: Boolean = false,
     useInsetContainer: Boolean = false,
     insetOverlap: Dp = SearchEngineSectionConstants.INSET_CONTAINER_OVERLAP,
+    insetFullBleedFraction: Float = 0f,
 ) {
     val hasToolAction = toolActionLabel != null && onToolActionClick != null
     if (enabledEngines.isEmpty() && detectedShortcutTarget == null && !hasToolAction) return
@@ -280,7 +312,9 @@ fun SearchEngineIconsSection(
                             Modifier.attachToBottomSearchBar(
                                 overlap = insetOverlap,
                                 horizontalExtension =
-                                    SearchEngineSectionConstants.INSET_HORIZONTAL_EXTENSION,
+                                    InsetSearchBarGeometry.containerHorizontalExtension(
+                                        insetFullBleedFraction,
+                                    ),
                             )
                         } else {
                             Modifier.extendToScreenEdges()
@@ -292,7 +326,7 @@ fun SearchEngineIconsSection(
             color = backgroundColor,
             shape =
                 if (useInsetContainer) {
-                    SearchEngineSectionConstants.INSET_CONTAINER_SHAPE
+                    SearchEngineSectionConstants.insetContainerShape(insetFullBleedFraction)
                 } else {
                     RectangleShape
                 },
@@ -511,6 +545,7 @@ internal fun AiFollowUpInputSection(
     modifier: Modifier = Modifier,
     useInsetContainer: Boolean = false,
     insetOverlap: Dp = SearchEngineSectionConstants.INSET_CONTAINER_OVERLAP,
+    insetFullBleedFraction: Float = 0f,
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -538,7 +573,9 @@ internal fun AiFollowUpInputSection(
                     Modifier.attachToBottomSearchBar(
                         overlap = insetOverlap,
                         horizontalExtension =
-                            SearchEngineSectionConstants.INSET_HORIZONTAL_EXTENSION,
+                            InsetSearchBarGeometry.containerHorizontalExtension(
+                                insetFullBleedFraction,
+                            ),
                     )
                 } else {
                     Modifier.extendToScreenEdges()
@@ -552,7 +589,7 @@ internal fun AiFollowUpInputSection(
             },
         shape =
             if (useInsetContainer) {
-                SearchEngineSectionConstants.INSET_CONTAINER_SHAPE
+                SearchEngineSectionConstants.insetContainerShape(insetFullBleedFraction)
             } else {
                 RectangleShape
             },
