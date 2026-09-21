@@ -829,6 +829,9 @@
     <string name="settings_direct_search_grounding_label">البحث في الويب</string>
     <string name="settings_direct_search_how_to">احصل على مفتاح API مجاناً</string>
     <string name="settings_direct_search_model_label">النموذج</string>
+    <string name="settings_select_model">اختيار نموذج</string>
+    <string name="ai_error_selected_model_unavailable">النموذج المحدد غير متاح. يُرجى اختيار نموذج آخر من الإعدادات.</string>
+    <string name="settings_loading_models">جارٍ تحميل النماذج…</string>
     <string name="settings_direct_search_personal_context">السياق الشخصي</string>
     <string name="settings_direct_search_personal_context_hint">أضف أي سياق تريد من الذكاء الاصطناعي (AI) استخدامه عند صياغة الإجابات.</string>
     <string name="settings_direct_search_personal_context_unsupported">السياق الشخصي غير مدعوم في هذا النموذج.</string>

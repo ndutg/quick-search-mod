@@ -83,7 +83,7 @@ fun ModelPickerDialog(
                 .flatMap { providerId ->
                     val providerModels =
                         modelsByProvider[providerId]
-                            ?: if (providerId == selectedProviderId) models else fallbackModels(providerId)
+                            ?: if (providerId == selectedProviderId) models else emptyList()
                     providerModels.map { model ->
                         LlmModelPickerOption(providerId = providerId, model = model)
                     }
@@ -155,6 +155,16 @@ fun ModelPickerDialog(
                     modifier = Modifier.fillMaxWidth().heightIn(max = modelListMaxHeight),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
+                    if (filteredOptions.isEmpty()) {
+                        item {
+                            Text(
+                                text = stringResource(R.string.settings_select_model),
+                                modifier = Modifier.fillMaxWidth().padding(12.dp),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
                     items(filteredOptions) { option ->
                         val model = option.model
                         val isSelected =
@@ -235,16 +245,6 @@ fun ModelPickerDialog(
         },
     )
 }
-
-private fun fallbackModels(providerId: AiSearchLlmProviderId): List<GeminiTextModel> =
-    when (providerId) {
-        AiSearchLlmProviderId.GEMINI -> GeminiModelCatalog.FALLBACK_TEXT_MODELS
-        AiSearchLlmProviderId.OPENAI -> OpenAiModelCatalog.FALLBACK_TEXT_MODELS
-        AiSearchLlmProviderId.ANTHROPIC -> AnthropicModelCatalog.FALLBACK_TEXT_MODELS
-        AiSearchLlmProviderId.GROQ -> GroqModelCatalog.FALLBACK_TEXT_MODELS
-        AiSearchLlmProviderId.META -> MetaModelCatalog.FALLBACK_TEXT_MODELS
-        else -> emptyList()
-    }
 
 private fun providerSortOrder(providerId: AiSearchLlmProviderId): Int =
     when (providerId) {

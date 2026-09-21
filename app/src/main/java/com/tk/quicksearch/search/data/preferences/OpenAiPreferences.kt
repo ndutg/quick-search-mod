@@ -48,7 +48,7 @@ class OpenAiPreferences(
 
     fun getModel(): String {
         val model = prefs.getString(BasePreferences.KEY_OPENAI_MODEL, null)?.trim()
-        return model.takeUnless { it.isNullOrEmpty() } ?: OpenAiModelCatalog.DEFAULT_MODEL_ID
+        return model.orEmpty()
     }
 
     fun setModel(modelId: String?) {

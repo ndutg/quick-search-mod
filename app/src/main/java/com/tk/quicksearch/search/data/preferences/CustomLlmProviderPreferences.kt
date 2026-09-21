@@ -31,7 +31,8 @@ class CustomLlmProviderPreferences(
                     val baseUrl = item.optString(FIELD_BASE_URL).takeIf { it.isNotBlank() } ?: continue
                     // Blank when restored from a backup exported without API keys.
                     val apiKey = item.optString(FIELD_API_KEY).orEmpty()
-                    val modelId = item.optString(FIELD_MODEL_ID).takeIf { it.isNotBlank() } ?: continue
+                    val modelId = item.optString(FIELD_MODEL_ID).orEmpty()
+                    val groundingEnabled = item.optBoolean(FIELD_GROUNDING_ENABLED, true)
                     val advancedPayload = item.optString(FIELD_ADVANCED_PAYLOAD).takeIf { it.isNotBlank() }
                     val advancedPayloadEnabled = item.optBoolean(FIELD_ADVANCED_PAYLOAD_ENABLED, false)
                     add(
@@ -40,6 +41,7 @@ class CustomLlmProviderPreferences(
                             baseUrl = baseUrl,
                             apiKey = apiKey,
                             modelId = modelId,
+                            groundingEnabled = groundingEnabled,
                             advancedPayload = advancedPayload,
                             advancedPayloadEnabled = advancedPayloadEnabled,
                         ),
@@ -77,7 +79,8 @@ class CustomLlmProviderPreferences(
                 id = UUID.randomUUID().toString(),
                 baseUrl = normalizedBaseUrl,
                 apiKey = normalizedApiKey,
-                modelId = OpenAiModelCatalog.DEFAULT_MODEL_ID,
+                modelId = "",
+                groundingEnabled = true,
             )
         val updated = getProviders() + provider
         securePrefs.edit().putString(BasePreferences.KEY_CUSTOM_LLM_PROVIDERS, encode(updated)).apply()
@@ -148,7 +151,7 @@ class CustomLlmProviderPreferences(
                 return
             }
         val customId = providerId.customId ?: return
-        val normalizedModelId = modelId?.trim().takeUnless { it.isNullOrBlank() } ?: return
+        val normalizedModelId = modelId?.trim().orEmpty()
         val updated =
             getProviders().map { provider ->
                 if (provider.id == customId) {
@@ -156,6 +159,23 @@ class CustomLlmProviderPreferences(
                 } else {
                     provider
                 }
+            }
+        securePrefs.edit().putString(BasePreferences.KEY_CUSTOM_LLM_PROVIDERS, encode(updated)).apply()
+    }
+
+    fun setProviderGroundingEnabled(
+        providerId: AiSearchLlmProviderId,
+        enabled: Boolean,
+    ) {
+        val securePrefs =
+            encryptedPrefs ?: run {
+                Log.e(TAG, "EncryptedSharedPreferences unavailable; custom LLM provider web search not persisted")
+                return
+            }
+        val customId = providerId.customId ?: return
+        val updated =
+            getProviders().map { provider ->
+                if (provider.id == customId) provider.copy(groundingEnabled = enabled) else provider
             }
         securePrefs.edit().putString(BasePreferences.KEY_CUSTOM_LLM_PROVIDERS, encode(updated)).apply()
     }
@@ -195,6 +215,7 @@ class CustomLlmProviderPreferences(
                     .put(FIELD_BASE_URL, provider.baseUrl)
                     .put(FIELD_API_KEY, provider.apiKey)
                     .put(FIELD_MODEL_ID, provider.modelId)
+                    .put(FIELD_GROUNDING_ENABLED, provider.groundingEnabled)
                     .put(FIELD_ADVANCED_PAYLOAD, provider.advancedPayload.orEmpty())
                     .put(FIELD_ADVANCED_PAYLOAD_ENABLED, provider.advancedPayloadEnabled),
             )
@@ -208,6 +229,7 @@ class CustomLlmProviderPreferences(
         const val FIELD_BASE_URL = "baseUrl"
         const val FIELD_API_KEY = "apiKey"
         const val FIELD_MODEL_ID = "modelId"
+        const val FIELD_GROUNDING_ENABLED = "groundingEnabled"
         const val FIELD_ADVANCED_PAYLOAD = "advancedPayload"
         const val FIELD_ADVANCED_PAYLOAD_ENABLED = "advancedPayloadEnabled"
     }

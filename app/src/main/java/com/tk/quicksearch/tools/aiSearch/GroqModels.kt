@@ -3,7 +3,9 @@ package com.tk.quicksearch.tools.aiSearch
 /** Shared Groq model configuration defaults. */
 object GroqModelCatalog {
     const val DEFAULT_MODEL_ID = "openai/gpt-oss-120b"
-    const val DEFAULT_GROUNDING_ENABLED = false
+    // Kept on even though Groq has no native search so adding Tavily immediately enables the
+    // already-selected Web Search preference.
+    const val DEFAULT_GROUNDING_ENABLED = true
 
     /**
      * Models Groq has shut down for free and developer tiers, mapped to their recommended

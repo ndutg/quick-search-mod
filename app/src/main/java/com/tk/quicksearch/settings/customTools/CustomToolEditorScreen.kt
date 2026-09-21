@@ -38,10 +38,10 @@ import com.tk.quicksearch.settings.settingsDetailScreen.AdvancedPayloadSettingsS
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
 import com.tk.quicksearch.tools.aiSearch.modelSupportsGrounding
 import com.tk.quicksearch.tools.aiSearch.providerSupportsNativeSearch
+import com.tk.quicksearch.tools.aiSearch.supportsThinkingControl
 
 @Composable
 fun CustomToolEditorScreen(
@@ -51,6 +51,9 @@ fun CustomToolEditorScreen(
     existingTemperatureUnit: WeatherTemperatureUnit = WeatherTemperatureUnit.CELSIUS,
     existingWindSpeedUnit: WeatherWindSpeedUnit = WeatherWindSpeedUnit.KILOMETERS_PER_HOUR,
     selectedProviderId: AiSearchLlmProviderId,
+    defaultModelId: String,
+    defaultThinkingEnabled: Boolean,
+    thinkingEnabledByProvider: Map<AiSearchLlmProviderId, Boolean>,
     availableModels: List<GeminiTextModel>,
     availableModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>>,
     configuredProviderIds: Set<AiSearchLlmProviderId>,
@@ -73,7 +76,7 @@ fun CustomToolEditorScreen(
         mutableStateOf(existingTool?.prompt.orEmpty())
     }
     var selectedModelId by remember(existingTool?.id) {
-        mutableStateOf(existingTool?.modelId ?: GeminiModelCatalog.DEFAULT_MODEL_ID)
+        mutableStateOf(existingTool?.modelId ?: defaultModelId)
     }
     var selectedProviderInput by remember(existingTool?.id, selectedProviderId) {
         mutableStateOf(existingTool?.providerId ?: selectedProviderId)
@@ -94,8 +97,9 @@ fun CustomToolEditorScreen(
         mutableStateOf(existingTool?.groundingEnabled ?: false)
     }
     var thinkingEnabled by remember(existingTool?.id) {
-        mutableStateOf(existingTool?.thinkingEnabled ?: false)
+        mutableStateOf(existingTool?.thinkingEnabled ?: defaultThinkingEnabled)
     }
+    var thinkingWasChanged by remember(existingTool?.id) { mutableStateOf(false) }
     var advancedPayloadInput by remember(existingTool?.id) {
         mutableStateOf(existingTool?.advancedPayload.orEmpty())
     }
@@ -115,7 +119,8 @@ fun CustomToolEditorScreen(
     }
 
     val selectedProviderModels = remember(selectedProviderInput, availableModelsByProvider, availableModels) {
-        availableModelsByProvider[selectedProviderInput].orEmpty().ifEmpty { availableModels }
+        availableModelsByProvider[selectedProviderInput]
+            ?: if (selectedProviderInput == selectedProviderId) availableModels else emptyList()
     }
 
     LaunchedEffect(selectedModelId, selectedProviderInput, availableModelsByProvider) {
@@ -134,18 +139,17 @@ fun CustomToolEditorScreen(
         }
     }
 
-    LaunchedEffect(existingTool?.id, selectedProviderModels, selectedModelId) {
-        if (existingTool != null) return@LaunchedEffect
-        val firstAvailableModelId = selectedProviderModels.firstOrNull()?.id ?: return@LaunchedEffect
-        val hasSelectedModel = selectedProviderModels.any { it.id == selectedModelId }
-        if (!hasSelectedModel) {
-            selectedModelId = firstAvailableModelId
+    LaunchedEffect(selectedProviderInput, selectedProviderModels, availableModelsByProvider) {
+        val providerCatalogLoaded = selectedProviderInput in availableModelsByProvider
+        if (providerCatalogLoaded &&
+            selectedModelId.isNotBlank() &&
+            selectedProviderModels.none { it.id == selectedModelId }
+        ) {
+            selectedModelId = ""
         }
     }
 
-    val showThinkingToggle =
-        selectedProviderInput != AiSearchLlmProviderId.OPENAI &&
-            !selectedProviderInput.isCustom
+    val showThinkingToggle = supportsThinkingControl(selectedProviderInput, selectedModelId)
     val supportsAdvancedPayload = selectedProviderInput.isCustom
 
     val tavilyKeyState = rememberTavilyKeyState()
@@ -156,13 +160,18 @@ fun CustomToolEditorScreen(
             tavilyKeyState == TavilyKeyState.Absent &&
             !(
                 providerSupportsNativeSearch(selectedProviderInput) &&
-                    modelSupportsGrounding(selectedModelId, selectedProviderModels)
+                    modelSupportsGrounding(
+                        selectedModelId,
+                        selectedProviderModels,
+                        selectedProviderInput,
+                    )
             )
 
     val isNameValid = !showNameInput || nameInput.trim().isNotBlank()
     val isPromptValid = !showPromptInput || promptInput.trim().isNotBlank()
     val isAliasValid = !showAliasInput || aliasInput.trim().isNotBlank()
-    val canSave = isNameValid && isPromptValid && isAliasValid
+    val canSave =
+        isNameValid && isPromptValid && isAliasValid && selectedModelId.isNotBlank()
 
     Column(
         modifier = modifier
@@ -315,9 +324,15 @@ fun CustomToolEditorScreen(
                 onProviderModelSelected = { providerId, modelId ->
                     selectedProviderInput = providerId
                     selectedModelId = modelId
+                    if (!thinkingWasChanged) {
+                        thinkingEnabled = thinkingEnabledByProvider[providerId] ?: false
+                    }
                     onProviderModelSelected(providerId, modelId)
                 },
-                onThinkingChange = { thinkingEnabled = it },
+                onThinkingChange = {
+                    thinkingEnabled = it
+                    thinkingWasChanged = true
+                },
                 onGroundingChange = { enabled ->
                     if (!webSearchAlwaysEnabled) groundingEnabled = enabled
                 },

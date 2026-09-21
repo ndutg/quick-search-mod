@@ -78,11 +78,7 @@ class AnthropicClient(
                             )
                         }
                         val deduped = models.distinctBy { it.id }
-                        if (deduped.isEmpty()) {
-                            AnthropicModelCatalog.FALLBACK_TEXT_MODELS
-                        } else {
-                            deduped.sortedBy { it.displayName.lowercase() }
-                        }
+                        deduped.sortedBy { it.displayName.lowercase() }
                     } finally {
                         connection.disconnect()
                     }

@@ -33,7 +33,14 @@ class WeatherHandler(
                 IllegalStateException(context.getString(R.string.direct_search_error_no_key)),
             )
         }
-        val modelId = userPreferences.getWeatherModel().trim().ifBlank { provider.defaultModelId }
+        val modelId = userPreferences.getWeatherModel().trim()
+        if (modelId.isBlank()) {
+            return Result.failure(
+                IllegalStateException(
+                    context.getString(R.string.ai_error_selected_model_unavailable),
+                ),
+            )
+        }
         val advancedPayload = userPreferences.getWeatherAdvancedPayload()
         val weatherQuery =
             buildWeatherRequestQuery(location, temperatureUnit.promptValue, windSpeedUnit.promptValue)
@@ -45,7 +52,11 @@ class WeatherHandler(
                 prompt = weatherQuery,
                 nativeSearchSupported =
                     providerSupportsNativeSearch(providerId) &&
-                        modelSupportsGrounding(modelId, provider.fallbackTextModels),
+                        modelSupportsGrounding(
+                            modelId,
+                            provider.fallbackTextModels,
+                            providerId,
+                        ),
                 nativeSearchRequested = true,
             )
         return provider.fetchAnswer(

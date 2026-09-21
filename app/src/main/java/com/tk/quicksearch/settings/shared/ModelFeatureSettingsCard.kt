@@ -20,14 +20,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
-import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
 import com.tk.quicksearch.tools.aiSearch.ModelPickerDialog
 import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
-import com.tk.quicksearch.tools.aiSearch.providerSupportsNativeSearch
+import com.tk.quicksearch.tools.aiSearch.isWebSearchAvailable
+import com.tk.quicksearch.tools.aiSearch.modelSupportsGrounding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -81,50 +83,32 @@ fun ModelFeatureSettingsCard(
     showThinkingCheckbox: Boolean = true,
     showGroundingCheckbox: Boolean = true,
     groundingCheckboxEnabled: Boolean = true,
-    includeSelectedModelIfMissing: Boolean = true,
     tavilyKeyState: TavilyKeyState = rememberTavilyKeyState(),
 ) {
     var showModelDialog by remember { mutableStateOf(false) }
 
     val modelOptions =
-        remember(availableModels, selectedModelId, includeSelectedModelIfMissing) {
-            val allKnownModels = availableModels + GeminiModelCatalog.FALLBACK_TEXT_MODELS
-            val currentModel = allKnownModels.find { it.id == selectedModelId }
-
-            val options =
-                if (includeSelectedModelIfMissing && currentModel == null) {
-                    availableModels + GeminiTextModel(selectedModelId, selectedModelId)
-                } else {
-                    availableModels
-                }
-
-            options.distinctBy { it.id }.sortedBy { it.displayName.lowercase() }
+        remember(availableModels) {
+            availableModels.distinctBy { it.id }.sortedBy { it.displayName.lowercase() }
         }
 
     val selectedModel = modelOptions.firstOrNull { it.id == selectedModelId }
-    val selectedModelLabel = selectedModel?.displayName ?: selectedModelId
-    // Both the provider and the model have to be able to search for native grounding to work.
-    val supportsGrounding =
-        providerSupportsNativeSearch(selectedProviderId) && selectedModel?.supportsGrounding != false
-    // A Tavily key lets any model search the web, so the toggle stays meaningful without
-    // native grounding support.
-    val hasTavilyKey = tavilyKeyState.isPresent
-    val webSearchAvailable = supportsGrounding || hasTavilyKey
-
-    // Waiting for the key read matters: clearing on TavilyKeyState.Unknown would wipe a saved
-    // toggle before we know whether Tavily can back it. Conversely, a newly available Tavily
-    // key should opt unsupported models into web search, matching Weather's always-on behavior.
-    // Do not key this effect on groundingEnabled so the user can still turn Web Search off.
-    LaunchedEffect(tavilyKeyState, supportsGrounding) {
+    val isLoadingModels =
+        configuredProviderIds.isNotEmpty() &&
+            configuredProviderIds.any { it !in availableModelsByProvider }
+    val selectedModelLabel =
         when {
-            tavilyKeyState == TavilyKeyState.Present && !supportsGrounding && !groundingEnabled -> {
-                onGroundingChange(true)
-            }
-            tavilyKeyState != TavilyKeyState.Unknown && !webSearchAvailable && groundingEnabled -> {
-                onGroundingChange(false)
-            }
+            isLoadingModels -> stringResource(R.string.settings_loading_models)
+            selectedModel != null -> selectedModel.displayName
+            else -> stringResource(R.string.settings_select_model)
         }
-    }
+    val webSearchAvailable =
+        isWebSearchAvailable(
+            providerId = selectedProviderId,
+            modelSupportsGrounding =
+                modelSupportsGrounding(selectedModelId, availableModels, selectedProviderId),
+            hasTavilyKey = tavilyKeyState.isPresent,
+        )
 
     SettingsCard(modifier = modifier.fillMaxWidth()) {
         Column(
@@ -138,7 +122,7 @@ fun ModelFeatureSettingsCard(
             Row(
                 modifier =
                     Modifier.fillMaxWidth()
-                        .clickable { showModelDialog = true }
+                        .clickable(enabled = !isLoadingModels) { showModelDialog = true }
                         .padding(horizontal = 12.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -166,7 +150,7 @@ fun ModelFeatureSettingsCard(
             }
 
             val showGroundingPill = showGroundingCheckbox && webSearchAvailable
-            if (showThinkingCheckbox || showGroundingPill) {
+            if (!isLoadingModels && selectedModel != null && (showThinkingCheckbox || showGroundingPill)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -209,25 +193,9 @@ fun ModelFeatureSettingsCard(
             },
             onModelSelected = { modelId ->
                 onModelSelected(modelId)
-                val newModel = modelOptions.firstOrNull { it.id == modelId }
-                if (newModel?.supportsGrounding == false &&
-                    tavilyKeyState == TavilyKeyState.Absent &&
-                    groundingEnabled
-                ) {
-                    onGroundingChange(false)
-                }
             },
             onProviderModelSelected = { providerId, modelId ->
                 onProviderModelSelected(providerId, modelId)
-                val newModel =
-                    availableModelsByProvider[providerId]?.firstOrNull { it.id == modelId }
-                        ?: modelOptions.firstOrNull { it.id == modelId }
-                if (newModel?.supportsGrounding == false &&
-                    tavilyKeyState == TavilyKeyState.Absent &&
-                    groundingEnabled
-                ) {
-                    onGroundingChange(false)
-                }
             },
             onDismiss = { showModelDialog = false },
             showGroundingToggle = false,

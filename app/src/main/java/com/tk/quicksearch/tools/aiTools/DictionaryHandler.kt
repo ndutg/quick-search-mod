@@ -65,10 +65,14 @@ class DictionaryHandler(
                     IllegalStateException(context.getString(R.string.direct_search_error_no_key)),
             )
         }
-        val modelId =
-                userPreferences.getDictionaryModel().trim().ifBlank {
-                    provider.defaultModelId
-                }
+        val modelId = userPreferences.getDictionaryModel().trim()
+        if (modelId.isBlank()) {
+            return Result.failure(
+                    IllegalStateException(
+                            context.getString(R.string.ai_error_selected_model_unavailable),
+                    ),
+            )
+        }
         val groundingEnabled = userPreferences.isDictionaryGroundingEnabled()
         val thinkingEnabled = userPreferences.isDictionaryThinkingEnabled()
         val advancedPayload = userPreferences.getDictionaryAdvancedPayload()
@@ -82,7 +86,11 @@ class DictionaryHandler(
                         prompt = userMessage,
                         nativeSearchSupported =
                                 providerSupportsNativeSearch(providerId) &&
-                                        modelSupportsGrounding(modelId, provider.fallbackTextModels),
+                                        modelSupportsGrounding(
+                                            modelId,
+                                            provider.fallbackTextModels,
+                                            providerId,
+                                        ),
                         nativeSearchRequested = groundingEnabled,
                 )
         val result =

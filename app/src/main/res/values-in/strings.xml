@@ -835,6 +835,9 @@
     <string name="settings_direct_search_grounding_label">Pencarian Web</string>
     <string name="settings_direct_search_how_to">Dapatkan Kunci API Gratis</string>
     <string name="settings_direct_search_model_label">Model</string>
+    <string name="settings_select_model">Pilih model</string>
+    <string name="ai_error_selected_model_unavailable">Model yang dipilih tidak tersedia. Pilih model lain di setelan.</string>
+    <string name="settings_loading_models">Memuat model…</string>
     <string name="settings_direct_search_personal_context">Konteks Pribadi</string>
     <string name="settings_direct_search_personal_context_hint">Tambahkan konteks apa pun yang ingin digunakan AI saat menghasilkan jawaban.</string>
     <string name="settings_direct_search_personal_context_unsupported">Konteks pribadi tidak tersedia untuk model ini.</string>
