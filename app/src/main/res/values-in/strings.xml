@@ -1206,10 +1206,10 @@
     <string name="action_expand_more_reminders">Pengingat Lainnya</string>
     <string name="reminders_empty">Belum ada pengingat</string>
     <string name="settings_reminders_view_all_desc">Lihat semua pengingat</string>
-    <string name="reminders_permission_hint">Pengingat memerlukan izin notifikasi dan alarm agar dapat memberi tahu Anda tepat waktu. Ketuk untuk mengizinkan.</string>
+    <string name="reminders_permission_hint">Izin diperlukan untuk menampilkan notifikasi pengingat. Ketuk untuk mengizinkan.</string>
     <string name="reminders_home_card_dismiss">Hapus dari Beranda</string>
     <string name="settings_include_past_reminders_title">Pengingat sebelumnya</string>
-    <string name="settings_include_past_reminders_desc">Tampilkan pengingat dari hari-hari sebelumnya di hasil pencarian</string>
+    <string name="settings_include_past_reminders_desc">Tampilkan pengingat sebelumnya di hasil pencarian</string>
     <string name="app_setting_create_reminder">Buat Pengingat</string>
     <string name="app_setting_create_reminder_desc">Tambahkan pengingat baru</string>
     <string name="permissions_exact_alarms_title">Alarm &amp; pengingat</string>

@@ -1,8 +1,5 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
-import com.tk.quicksearch.search.data.ReminderRepository
-import com.tk.quicksearch.search.data.preferences.ReminderPreferences
-import androidx.compose.material.icons.rounded.EventBusy
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -150,8 +147,6 @@ private fun SearchOptionsCard(
     val context = LocalContext.current
     var pinnedNotificationItems by remember { mutableStateOf(PinnedNotifications.pinnedItems(context)) }
     var showPinnedNotificationItemsDialog by rememberSaveable { mutableStateOf(false) }
-    val reminderPreferences = remember(context) { ReminderPreferences(context) }
-    var includePastReminders by remember { mutableStateOf(reminderPreferences.getIncludePastReminders()) }
 
     LaunchedEffect(appSuggestionsEnabled) {
         if (!appSuggestionsEnabled) {
@@ -227,22 +222,6 @@ private fun SearchOptionsCard(
                     },
                 isFirstItem = false,
                 isLastItem = false,
-            )
-
-            HorizontalDivider(color = AppColors.SettingsDivider)
-            SettingsToggleRow(
-                title = stringResource(R.string.settings_include_past_reminders_title),
-                subtitle = stringResource(R.string.settings_include_past_reminders_desc),
-                checked = includePastReminders,
-                onCheckedChange = { enabled ->
-                    includePastReminders = enabled
-                    reminderPreferences.setIncludePastReminders(enabled)
-                    ReminderRepository.notifyChanged()
-                },
-                leadingIcon = Icons.Rounded.EventBusy,
-                isFirstItem = false,
-                isLastItem = false,
-                showDivider = false,
             )
 
             if (fuzzySearchAvailable) {

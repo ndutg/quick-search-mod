@@ -1205,10 +1205,10 @@
     <string name="action_expand_more_reminders">మరిన్ని రిమైండర్‌లు</string>
     <string name="reminders_empty">ఇంకా రిమైండర్‌లు లేవు</string>
     <string name="settings_reminders_view_all_desc">అన్ని రిమైండర్‌లను చూడండి</string>
-    <string name="reminders_permission_hint">సమయానికి మీకు తెలియజేయడానికి రిమైండర్‌లకు నోటిఫికేషన్ మరియు అలారం అనుమతులు అవసరం. అనుమతించడానికి నొక్కండి.</string>
+    <string name="reminders_permission_hint">రిమైండర్ నోటిఫికేషన్‌లను చూపడానికి అనుమతి అవసరం. అనుమతించడానికి నొక్కండి.</string>
     <string name="reminders_home_card_dismiss">హోమ్ నుండి తీసివేయండి</string>
     <string name="settings_include_past_reminders_title">గత రిమైండర్‌లు</string>
-    <string name="settings_include_past_reminders_desc">మునుపటి రోజుల రిమైండర్‌లను శోధన ఫలితాల్లో చూపండి</string>
+    <string name="settings_include_past_reminders_desc">గత రిమైండర్‌లను శోధన ఫలితాల్లో చూపండి</string>
     <string name="app_setting_create_reminder">రిమైండర్‌ను సృష్టించండి</string>
     <string name="app_setting_create_reminder_desc">కొత్త రిమైండర్‌ను జోడించండి</string>
     <string name="permissions_exact_alarms_title">అలారాలు &amp; రిమైండర్‌లు</string>

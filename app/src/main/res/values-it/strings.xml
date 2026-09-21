@@ -1204,10 +1204,10 @@
     <string name="action_expand_more_reminders">Altri promemoria</string>
     <string name="reminders_empty">Nessun promemoria</string>
     <string name="settings_reminders_view_all_desc">Visualizza tutti i promemoria</string>
-    <string name="reminders_permission_hint">I promemoria richiedono i permessi per notifiche e sveglie per avvisarti in tempo. Tocca per consentire.</string>
+    <string name="reminders_permission_hint">È necessaria l\'autorizzazione per mostrare le notifiche dei promemoria. Tocca per consentire.</string>
     <string name="reminders_home_card_dismiss">Rimuovi dalla Home</string>
     <string name="settings_include_past_reminders_title">Promemoria passati</string>
-    <string name="settings_include_past_reminders_desc">Mostra i promemoria dei giorni precedenti nei risultati di ricerca</string>
+    <string name="settings_include_past_reminders_desc">Mostra i promemoria passati nei risultati di ricerca</string>
     <string name="app_setting_create_reminder">Crea promemoria</string>
     <string name="app_setting_create_reminder_desc">Aggiungi un nuovo promemoria</string>
     <string name="permissions_exact_alarms_title">Sveglie e promemoria</string>

@@ -1261,10 +1261,10 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="action_expand_more_reminders">Meer herinneringen</string>
     <string name="reminders_empty">Nog geen herinneringen</string>
     <string name="settings_reminders_view_all_desc">Alle herinneringen bekijken</string>
-    <string name="reminders_permission_hint">Herinneringen hebben toestemming voor meldingen en wekkers nodig om je op tijd te waarschuwen. Tik om toe te staan.</string>
+    <string name="reminders_permission_hint">Toestemming nodig om herinneringsmeldingen te tonen. Tik om toe te staan.</string>
     <string name="reminders_home_card_dismiss">Verwijderen van startscherm</string>
     <string name="settings_include_past_reminders_title">Eerdere herinneringen</string>
-    <string name="settings_include_past_reminders_desc">Herinneringen van eerdere dagen tonen in zoekresultaten</string>
+    <string name="settings_include_past_reminders_desc">Eerdere herinneringen tonen in zoekresultaten</string>
     <string name="app_setting_create_reminder">Herinnering maken</string>
     <string name="app_setting_create_reminder_desc">Een nieuwe herinnering toevoegen</string>
     <string name="permissions_exact_alarms_title">Wekkers en herinneringen</string>

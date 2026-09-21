@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.EventBusy
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,11 +45,13 @@ import com.tk.quicksearch.reminders.ReminderEditorRequests
 import com.tk.quicksearch.reminders.ReminderPermissions
 import com.tk.quicksearch.reminders.rememberMissingReminderPermissionRequester
 import com.tk.quicksearch.search.data.ReminderRepository
+import com.tk.quicksearch.search.data.preferences.ReminderPreferences
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.reminders.ReminderRelativeDateText
 import com.tk.quicksearch.search.reminders.reminderScheduleLabel
 import com.tk.quicksearch.settings.AppShortcutsSettings.shortcutMatchPriority
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.time.LocalDate
@@ -62,8 +67,11 @@ fun RemindersSettingsSection(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val repository = remember(context) { ReminderRepository(context) }
+    val reminderPreferences = remember(context) { ReminderPreferences(context) }
     val changeCount by ReminderRepository.changes.collectAsState()
+    var includePastReminders by remember { mutableStateOf(reminderPreferences.getIncludePastReminders()) }
     var hasPermissions by remember { mutableStateOf(ReminderPermissions.hasAllPermissions(context)) }
+    var permissionHintDismissed by remember { mutableStateOf(false) }
     val refreshPermissions = { hasPermissions = ReminderPermissions.hasAllPermissions(context) }
     val requestMissingPermission = rememberMissingReminderPermissionRequester(onResult = refreshPermissions)
 
@@ -98,7 +106,7 @@ fun RemindersSettingsSection(
 
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     Column(modifier = modifier) {
-        if (!hasPermissions) {
+        if (!hasPermissions && !permissionHintDismissed) {
             SettingsCard(
                 modifier = Modifier.fillMaxWidth().padding(bottom = DesignTokens.SectionTopPadding),
             ) {
@@ -125,8 +133,36 @@ fun RemindersSettingsSection(
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f),
                     )
+                    IconButton(onClick = { permissionHintDismissed = true }) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = stringResource(R.string.common_close),
+                            tint = AppColors.Accent,
+                        )
+                    }
                 }
             }
+        }
+        SettingsCard(
+            modifier =
+                Modifier.fillMaxWidth().padding(
+                    bottom = DesignTokens.SectionTopPadding,
+                ),
+        ) {
+            SettingsToggleRow(
+                title = stringResource(R.string.settings_include_past_reminders_title),
+                subtitle = stringResource(R.string.settings_include_past_reminders_desc),
+                checked = includePastReminders,
+                onCheckedChange = { enabled ->
+                    includePastReminders = enabled
+                    reminderPreferences.setIncludePastReminders(enabled)
+                    ReminderRepository.notifyChanged()
+                },
+                leadingIcon = Icons.Rounded.EventBusy,
+                isFirstItem = true,
+                isLastItem = true,
+                showDivider = false,
+            )
         }
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             if (sortedReminders.isEmpty()) {

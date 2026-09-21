@@ -1207,10 +1207,10 @@
     <string name="action_expand_more_reminders">المزيد من التذكيرات</string>
     <string name="reminders_empty">لا توجد تذكيرات بعد</string>
     <string name="settings_reminders_view_all_desc">عرض كل التذكيرات</string>
-    <string name="reminders_permission_hint">تحتاج التذكيرات إلى إذني الإشعارات والمنبّهات لتنبيهك في الوقت المحدد. انقر للسماح.</string>
+    <string name="reminders_permission_hint">يلزم إذن لعرض إشعارات التذكيرات. انقر للسماح.</string>
     <string name="reminders_home_card_dismiss">إزالة من الشاشة الرئيسية</string>
     <string name="settings_include_past_reminders_title">التذكيرات السابقة</string>
-    <string name="settings_include_past_reminders_desc">عرض تذكيرات الأيام السابقة في نتائج البحث</string>
+    <string name="settings_include_past_reminders_desc">عرض التذكيرات السابقة في نتائج البحث</string>
     <string name="app_setting_create_reminder">إنشاء تذكير</string>
     <string name="app_setting_create_reminder_desc">إضافة تذكير جديد</string>
     <string name="permissions_exact_alarms_title">المنبّهات والتذكيرات</string>
