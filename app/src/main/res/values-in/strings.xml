@@ -1028,6 +1028,8 @@
     <string name="media_command_play_pause">Putar/Jeda</string>
     <string name="media_command_previous">Trek Sebelumnya</string>
     <string name="media_command_next">Trek Berikutnya</string>
+    <string name="media_seek_back">Mundur 15 Detik</string>
+    <string name="media_seek_forward">Maju 15 Detik</string>
     <string name="widget_custom_buttons_restriction">Tidak tersedia saat tombol kustom aktif.</string>
     <string name="widget_custom_buttons_title">Tombol Kustom</string>
     <string name="widget_custom_buttons_widget_title">Widget Tombol Kustom</string>

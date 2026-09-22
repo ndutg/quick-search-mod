@@ -4,6 +4,7 @@ import android.content.Intent
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.PlaybackState
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -19,6 +20,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.FastForward
+import androidx.compose.material.icons.rounded.FastRewind
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -39,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -46,25 +50,32 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
+import com.tk.quicksearch.media.MediaSeek
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 private val NowPlayingAlbumArtSize = 56.dp
 private val NowPlayingControlButtonSize = 40.dp
-private val NowPlayingControlIconSize = 22.dp
+private val NowPlayingControlIconSize = 26.dp
 private val NowPlayingPlayPauseCircleSize = 28.dp
 private val NowPlayingPlayPauseIconSize = 18.dp
 private val NowPlayingDismissButtonSize = 28.dp
-private val NowPlayingControlsEndInset = 56.dp
+private val NowPlayingSecondaryControlIconSize = 18.dp
 
 /** The active now-playing media session shown in the home At a Glance card, with transport controls. */
 internal class NowPlayingGlance(
     val title: String,
     val albumArt: android.graphics.Bitmap?,
     val isPlaying: Boolean,
+    /** Whether the session accepts seeks; the rewind/forward buttons are hidden otherwise. */
+    val canSeek: Boolean,
+    /** Long media: rewind/forward are emphasized over previous/next and sit beside play/pause. */
+    val isSeekMode: Boolean,
     val playPause: () -> Unit,
     val previous: () -> Unit,
     val next: () -> Unit,
+    val seekBack: () -> Unit,
+    val seekForward: () -> Unit,
     val dismiss: () -> Unit,
     val open: () -> Unit,
 )
@@ -146,6 +157,7 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
         activeMetadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             ?: activeMetadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
     val isPlaying = playbackState?.state == PlaybackState.STATE_PLAYING
+    val isSeekMode = MediaSeek.isSeekMode(activeMetadata, playbackState)
     val dismissedForCurrentSession = dismissedSessionToken == activeController.sessionToken
     val shouldRemainDismissed =
         dismissedForCurrentSession &&
@@ -176,6 +188,8 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
         title = title,
         albumArt = albumArt,
         isPlaying = isPlaying,
+        canSeek = MediaSeek.supportsSeek(playbackState),
+        isSeekMode = isSeekMode,
         playPause = {
             runCatching {
                 if (isPlaying) activeController.transportControls.pause() else activeController.transportControls.play()
@@ -183,6 +197,8 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
         },
         previous = { runCatching { activeController.transportControls.skipToPrevious() } },
         next = { runCatching { activeController.transportControls.skipToNext() } },
+        seekBack = { MediaSeek.seekBy(activeController, -MediaSeek.STEP_MS) },
+        seekForward = { MediaSeek.seekBy(activeController, MediaSeek.STEP_MS) },
         dismiss = {
             dismissedSessionToken = activeController.sessionToken
             dismissedWhilePlaying = isPlaying
@@ -248,48 +264,80 @@ internal fun NowPlayingRow(glance: NowPlayingGlance) {
                     )
                 }
             }
+            // The emphasized pair (see NowPlayingGlance.isSeekMode) sits beside play/pause; the
+            // other pair moves to the outer slots, each centered in the space left over there.
+            val skipBack = NowPlayingControl(Icons.Rounded.SkipPrevious, R.string.media_command_previous, glance.previous)
+            val skipForward = NowPlayingControl(Icons.Rounded.SkipNext, R.string.media_command_next, glance.next)
+            val seekBack =
+                NowPlayingControl(Icons.Rounded.FastRewind, R.string.media_seek_back, glance.seekBack)
+                    .takeIf { glance.canSeek }
+            val seekForward =
+                NowPlayingControl(Icons.Rounded.FastForward, R.string.media_seek_forward, glance.seekForward)
+                    .takeIf { glance.canSeek }
+            val (outerBack, innerBack) = if (glance.isSeekMode) skipBack to seekBack else seekBack to skipBack
+            val (outerForward, innerForward) =
+                if (glance.isSeekMode) skipForward to seekForward else seekForward to skipForward
             Row(
-                // Sit left of center so the controls stay clear of the close button above.
-                modifier = Modifier.fillMaxWidth().padding(end = NowPlayingControlsEndInset),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement =
-                    Arrangement.spacedBy(DesignTokens.SpacingXXLarge, Alignment.CenterHorizontally),
             ) {
-                IconButton(onClick = glance.previous, modifier = Modifier.size(NowPlayingControlButtonSize)) {
-                    Icon(
-                        imageVector = Icons.Rounded.SkipPrevious,
-                        contentDescription = stringResource(R.string.media_command_previous),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(NowPlayingControlIconSize),
-                    )
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    outerBack?.let { NowPlayingSkipButton(it, isProminent = false) }
                 }
-                IconButton(onClick = glance.playPause, modifier = Modifier.size(NowPlayingControlButtonSize)) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(NowPlayingPlayPauseCircleSize)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.onSurface),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = if (glance.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                            contentDescription = stringResource(R.string.media_command_play_pause),
-                            tint = MaterialTheme.colorScheme.surface,
-                            modifier = Modifier.size(NowPlayingPlayPauseIconSize),
-                        )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                ) {
+                    innerBack?.let { NowPlayingSkipButton(it, isProminent = true) }
+                    IconButton(onClick = glance.playPause, modifier = Modifier.size(NowPlayingControlButtonSize)) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .size(NowPlayingPlayPauseCircleSize)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.onSurface),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = if (glance.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                                contentDescription = stringResource(R.string.media_command_play_pause),
+                                tint = MaterialTheme.colorScheme.surface,
+                                modifier = Modifier.size(NowPlayingPlayPauseIconSize),
+                            )
+                        }
                     }
+                    innerForward?.let { NowPlayingSkipButton(it, isProminent = true) }
                 }
-                IconButton(onClick = glance.next, modifier = Modifier.size(NowPlayingControlButtonSize)) {
-                    Icon(
-                        imageVector = Icons.Rounded.SkipNext,
-                        contentDescription = stringResource(R.string.media_command_next),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(NowPlayingControlIconSize),
-                    )
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    outerForward?.let { NowPlayingSkipButton(it, isProminent = false) }
                 }
             }
         }
+    }
+}
+
+private class NowPlayingControl(
+    val icon: ImageVector,
+    @StringRes val labelRes: Int,
+    val onClick: () -> Unit,
+)
+
+/**
+ * A skip or seek control. Whichever pair suits the media is [isProminent], drawn larger next to
+ * play/pause: seeking for long media (see [MediaSeek.isSeekMode]), track skipping otherwise.
+ */
+@Composable
+private fun NowPlayingSkipButton(
+    control: NowPlayingControl,
+    isProminent: Boolean,
+) {
+    IconButton(onClick = control.onClick, modifier = Modifier.size(NowPlayingControlButtonSize)) {
+        Icon(
+            imageVector = control.icon,
+            contentDescription = stringResource(control.labelRes),
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(if (isProminent) NowPlayingControlIconSize else NowPlayingSecondaryControlIconSize),
+        )
     }
 }
 

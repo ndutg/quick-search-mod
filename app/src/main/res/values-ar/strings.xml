@@ -1019,6 +1019,8 @@
     <string name="media_command_play_pause">تشغيل/إيقاف مؤقت</string>
     <string name="media_command_previous">المقطع السابق</string>
     <string name="media_command_next">المقطع التالي</string>
+    <string name="media_seek_back">ترجيع 15 ثانية</string>
+    <string name="media_seek_forward">تقديم 15 ثانية</string>
     <string name="widget_custom_buttons_restriction">غير متاح عندما تكون الأزرار المخصصة مفعلة.</string>
     <string name="widget_custom_buttons_title">أزرار مخصصة</string>
     <string name="widget_custom_buttons_widget_title">عنصر واجهة مستخدم الأزرار المخصصة</string>

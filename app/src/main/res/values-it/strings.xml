@@ -1017,6 +1017,8 @@
     <string name="media_command_play_pause">Riproduci/Pausa</string>
     <string name="media_command_previous">Traccia precedente</string>
     <string name="media_command_next">Traccia successiva</string>
+    <string name="media_seek_back">Indietro di 15 secondi</string>
+    <string name="media_seek_forward">Avanti di 15 secondi</string>
     <string name="widget_custom_buttons_restriction">Non disponibile quando i pulsanti personalizzati sono attivi.</string>
     <string name="widget_custom_buttons_title">Pulsanti personalizzati</string>
     <string name="widget_custom_buttons_widget_title">Widget pulsanti personalizzati</string>

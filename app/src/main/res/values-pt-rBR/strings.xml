@@ -1018,6 +1018,8 @@
     <string name="media_command_play_pause">Reproduzir/Pausar</string>
     <string name="media_command_previous">Faixa anterior</string>
     <string name="media_command_next">Próxima faixa</string>
+    <string name="media_seek_back">Voltar 15 segundos</string>
+    <string name="media_seek_forward">Avançar 15 segundos</string>
     <string name="widget_custom_buttons_restriction">Não disponível quando os botões personalizados estão ativos.</string>
     <string name="widget_custom_buttons_title">Botões personalizados</string>
     <string name="widget_custom_buttons_widget_title">Widget de botões personalizados</string>

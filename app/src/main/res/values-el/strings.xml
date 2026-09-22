@@ -1018,6 +1018,8 @@
     <string name="media_command_play_pause">Αναπαραγωγή/Παύση</string>
     <string name="media_command_previous">Προηγούμενο κομμάτι</string>
     <string name="media_command_next">Επόμενο κομμάτι</string>
+    <string name="media_seek_back">Πίσω 15 δευτερόλεπτα</string>
+    <string name="media_seek_forward">Μπροστά 15 δευτερόλεπτα</string>
     <string name="widget_custom_buttons_restriction">Μη διαθέσιμο όταν τα προσαρμοσμένα κουμπιά είναι ενεργά.</string>
     <string name="widget_custom_buttons_title">Προσαρμοσμένα κουμπιά</string>
     <string name="widget_custom_buttons_widget_title">Widget προσαρμοσμένων κουμπιών</string>

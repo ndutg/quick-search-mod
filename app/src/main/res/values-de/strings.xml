@@ -1018,6 +1018,8 @@
     <string name="media_command_play_pause">Wiedergabe/Pause</string>
     <string name="media_command_previous">Vorheriger Titel</string>
     <string name="media_command_next">Nächster Titel</string>
+    <string name="media_seek_back">15 Sekunden zurück</string>
+    <string name="media_seek_forward">15 Sekunden vor</string>
     <string name="widget_custom_buttons_restriction">Nicht verfügbar, wenn benutzerdefinierte Schaltflächen aktiv sind.</string>
     <string name="widget_custom_buttons_title">Benutzerdefinierte Schaltflächen</string>
     <string name="widget_custom_buttons_widget_title">Widget mit benutzerdefinierten Schaltflächen</string>

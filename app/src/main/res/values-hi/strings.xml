@@ -1018,6 +1018,8 @@
     <string name="media_command_play_pause">प्ले/पॉज़</string>
     <string name="media_command_previous">पिछला ट्रैक</string>
     <string name="media_command_next">अगला ट्रैक</string>
+    <string name="media_seek_back">15 सेकंड पीछे</string>
+    <string name="media_seek_forward">15 सेकंड आगे</string>
     <string name="widget_custom_buttons_restriction">जब कस्टम बटन सक्रिय हों, तब उपलब्ध नहीं।</string>
     <string name="widget_custom_buttons_title">कस्टम बटन</string>
     <string name="widget_custom_buttons_widget_title">कस्टम बटन विजेट</string>

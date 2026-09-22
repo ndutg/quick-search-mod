@@ -1017,6 +1017,8 @@
 <string name="media_command_play_pause">Oynat/Duraklat</string>
 <string name="media_command_previous">Önceki Parça</string>
 <string name="media_command_next">Sonraki Parça</string>
+<string name="media_seek_back">15 Saniye Geri</string>
+<string name="media_seek_forward">15 Saniye İleri</string>
 <string name="widget_custom_buttons_restriction">Özel butonlar aktifken kullanılamaz.</string>
 <string name="widget_custom_buttons_title">Özel butonlar</string>
 <string name="widget_custom_buttons_widget_title">Özel butonlar widget\'ı</string>

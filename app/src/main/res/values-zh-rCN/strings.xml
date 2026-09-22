@@ -1008,6 +1008,8 @@
     <string name="media_command_play_pause">播放/暂停</string>
     <string name="media_command_previous">上一曲</string>
     <string name="media_command_next">下一曲</string>
+    <string name="media_seek_back">后退 15 秒</string>
+    <string name="media_seek_forward">快进 15 秒</string>
     <string name="widget_custom_buttons_restriction">当自定义按钮处于激活状态时此项不可用。</string>
     <string name="widget_custom_buttons_title">自定义快捷按钮</string>
     <string name="widget_custom_buttons_widget_title">自定义按钮小部件</string>

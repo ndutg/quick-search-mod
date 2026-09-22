@@ -1018,6 +1018,8 @@
     <string name="media_command_play_pause">ప్లే/పాజ్</string>
     <string name="media_command_previous">మునుపటి ట్రాక్</string>
     <string name="media_command_next">తదుపరి ట్రాక్</string>
+    <string name="media_seek_back">15 సెకన్లు వెనక్కి</string>
+    <string name="media_seek_forward">15 సెకన్లు ముందుకు</string>
     <string name="widget_custom_buttons_restriction">కస్టమ్ బటన్‌లు సక్రియంగా ఉన్నప్పుడు అందుబాటులో ఉండదు.</string>
     <string name="widget_custom_buttons_title">కస్టమ్ బటన్‌లు</string>
     <string name="widget_custom_buttons_widget_title">కస్టమ్ బటన్‌ల విడ్జెట్</string>

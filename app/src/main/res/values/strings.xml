@@ -1028,6 +1028,8 @@
     <string name="media_command_play_pause">Play/Pause</string>
     <string name="media_command_previous">Previous Track</string>
     <string name="media_command_next">Next Track</string>
+    <string name="media_seek_back">Rewind 15 Seconds</string>
+    <string name="media_seek_forward">Forward 15 Seconds</string>
     <string name="widget_custom_buttons_restriction">Not available when custom buttons are active.</string>
     <string name="widget_custom_buttons_title">Custom Buttons</string>
     <string name="widget_custom_buttons_widget_title">Custom Buttons Widget</string>
