@@ -8,10 +8,13 @@ import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import com.tk.quicksearch.R
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceiver
+import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidget
+import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
 import com.tk.quicksearch.widgets.searchWidget.SearchWidget
 import com.tk.quicksearch.widgets.searchWidget.SearchWidgetReceiver
 
@@ -61,18 +64,33 @@ private fun showToast(
 }
 
 /**
- * Redraws every placed search and custom-buttons widget instance, e.g. so a Play/Pause button's
- * icon reflects a playback-state change that just happened outside of this app.
+ * Redraws every placed search, custom-buttons and media controls widget instance, e.g. so a
+ * Play/Pause button's icon reflects a playback-state change that just happened outside of this app.
  */
 suspend fun refreshAllSearchWidgets(context: Context) {
-    refreshWidgets(context, SearchWidgetReceiver::class.java, WidgetVariant.STANDARD)
-    refreshWidgets(context, CustomButtonsWidgetReceiver::class.java, WidgetVariant.CUSTOM_BUTTONS_ONLY)
+    refreshWidgets(context, SearchWidgetReceiver::class.java, SearchWidget(WidgetVariant.STANDARD))
+    refreshWidgets(context, CustomButtonsWidgetReceiver::class.java, SearchWidget(WidgetVariant.CUSTOM_BUTTONS_ONLY))
+    refreshMediaControlsWidgets(context)
 }
+
+/** Redraws placed media controls widgets, e.g. when the playing track's title or artwork changes. */
+suspend fun refreshMediaControlsWidgets(context: Context) {
+    refreshWidgets(context, MediaControlsWidgetReceiver::class.java, MediaControlsWidget())
+}
+
+/** The Glance widget that renders [variant]'s placed instances. */
+fun glanceWidgetFor(variant: WidgetVariant): GlanceAppWidget =
+    when (variant) {
+        WidgetVariant.STANDARD,
+        WidgetVariant.CUSTOM_BUTTONS_ONLY,
+        -> SearchWidget(variant)
+        WidgetVariant.MEDIA_CONTROLS -> MediaControlsWidget()
+    }
 
 private suspend fun refreshWidgets(
     context: Context,
     receiverClass: Class<*>,
-    variant: WidgetVariant,
+    widget: GlanceAppWidget,
 ) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
     val componentName = ComponentName(context, receiverClass)
@@ -82,14 +100,14 @@ private suspend fun refreshWidgets(
         runCatching { glanceManager.getGlanceIdBy(appWidgetId) }
             .getOrNull()
             ?.let { glanceId ->
-                // SearchWidget observes its Glance preferences. Advancing this otherwise-private
-                // revision makes an already running Glance composition re-evaluate the live
-                // playback icon instead of coalescing the request as an unchanged update.
+                // The widgets observe their Glance preferences. Advancing this otherwise-private
+                // revision makes an already running Glance composition re-read live playback
+                // instead of coalescing the request as an unchanged update.
                 updateAppWidgetState(context, glanceId) { preferences ->
                     preferences[MediaPlaybackRevisionKey] =
                         (preferences[MediaPlaybackRevisionKey] ?: 0L) + 1L
                 }
-                SearchWidget(variant).update(context, glanceId)
+                widget.update(context, glanceId)
             }
     }
 }

@@ -1023,6 +1023,10 @@
 <string name="widget_custom_buttons_restriction">Non disponible lorsque les boutons personnalisés sont actifs.</string>
 <string name="widget_custom_buttons_title">Boutons personnalisés</string>
 <string name="widget_custom_buttons_widget_title">Widget de boutons personnalisés</string>
+<string name="widget_media_controls_widget_title">Widget de commandes multimédias</string>
+<string name="widget_media_controls_nothing_playing">Aucune lecture en cours</string>
+<string name="widget_media_controls_grant_access">Appuyez pour autoriser l\'accès aux notifications</string>
+<string name="widget_media_controls_permission_hint">Ce widget a besoin de l\'accès aux notifications pour afficher et contrôler la lecture en cours. Appuyez pour l\'autoriser.</string>
 <string name="widget_icon_center">Centré</string>
 <string name="widget_icon_left">Gauche</string>
 <string name="widget_icon_off">Désactivé</string>

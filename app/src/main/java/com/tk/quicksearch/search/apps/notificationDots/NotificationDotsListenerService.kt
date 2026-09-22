@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.apps.notificationDots
 
 import android.content.ComponentName
+import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSession
 import android.media.session.MediaSessionManager
@@ -10,6 +11,7 @@ import android.service.notification.StatusBarNotification
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryStore
 import com.tk.quicksearch.widgets.utils.refreshAllSearchWidgets
+import com.tk.quicksearch.widgets.utils.refreshMediaControlsWidgets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -53,9 +55,9 @@ class NotificationDotsListenerService : NotificationListenerService() {
     }
 
     /**
-     * Mirrors active sessions' play/pause state to any placed custom-buttons widget, so a
-     * Play/Pause button's icon flips as soon as playback changes rather than on the widget's next
-     * unrelated redraw.
+     * Mirrors active sessions' playback to placed widgets, so a Play/Pause button's icon (and the
+     * media controls widget's track) updates as soon as playback changes rather than on the
+     * widget's next unrelated redraw.
      */
     private fun startMediaPlaybackMonitoring() {
         val manager = getSystemService(MediaSessionManager::class.java) ?: return
@@ -101,6 +103,14 @@ class NotificationDotsListenerService : NotificationListenerService() {
                         // that read can still expose the previous state (especially on pause),
                         // leaving the widget icon stuck on Pause.
                         refreshWidgets()
+                    }
+
+                    // Only the media controls widget shows the track, so a new title or artwork
+                    // does not need to redraw the search widgets.
+                    override fun onMetadataChanged(metadata: MediaMetadata?) {
+                        widgetRefreshScope.launch {
+                            refreshMediaControlsWidgets(this@NotificationDotsListenerService)
+                        }
                     }
 
                     override fun onSessionDestroyed() {

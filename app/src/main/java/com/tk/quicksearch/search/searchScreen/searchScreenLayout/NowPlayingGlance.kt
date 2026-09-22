@@ -1,6 +1,5 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
-import android.content.Intent
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.PlaybackState
@@ -52,9 +51,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.media.MediaSeek
+import com.tk.quicksearch.media.openMediaSessionPlayer
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.util.sendFromUserTap
 
 private val NowPlayingAlbumArtSize = 56.dp
 private val NowPlayingControlButtonSize = 44.dp
@@ -209,20 +208,7 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
             dismissedWhilePlaying = isPlaying
             sawNonPlayingStateAfterDismiss = false
         },
-        open = {
-            // The session activity usually opens the player itself; fall back to the app's launcher
-            // entry when the session has none or the send is refused.
-            val openedSessionActivity =
-                runCatching { activeController.sessionActivity }.getOrNull()?.sendFromUserTap() == true
-            if (!openedSessionActivity) {
-                val launchIntent = context.packageManager.getLaunchIntentForPackage(activeController.packageName)
-                if (launchIntent != null) {
-                    runCatching {
-                        context.startActivity(launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                    }
-                }
-            }
-        },
+        open = { openMediaSessionPlayer(context, activeController) },
     )
 }
 

@@ -1033,6 +1033,10 @@
     <string name="widget_custom_buttons_restriction">Tidak tersedia saat tombol kustom aktif.</string>
     <string name="widget_custom_buttons_title">Tombol Kustom</string>
     <string name="widget_custom_buttons_widget_title">Widget Tombol Kustom</string>
+    <string name="widget_media_controls_widget_title">Widget Kontrol Media</string>
+    <string name="widget_media_controls_nothing_playing">Tidak ada yang diputar</string>
+    <string name="widget_media_controls_grant_access">Ketuk untuk mengizinkan akses notifikasi</string>
+    <string name="widget_media_controls_permission_hint">Widget ini memerlukan akses notifikasi untuk menampilkan dan mengontrol yang sedang diputar. Ketuk untuk mengizinkan.</string>
     <string name="widget_icon_center">Tengah</string>
     <string name="widget_icon_left">Kiri</string>
     <string name="widget_icon_off">Mati</string>

@@ -1022,6 +1022,10 @@
 <string name="widget_custom_buttons_restriction">Özel butonlar aktifken kullanılamaz.</string>
 <string name="widget_custom_buttons_title">Özel butonlar</string>
 <string name="widget_custom_buttons_widget_title">Özel butonlar widget\'ı</string>
+<string name="widget_media_controls_widget_title">Medya Kontrolleri Widget\'ı</string>
+<string name="widget_media_controls_nothing_playing">Hiçbir şey çalmıyor</string>
+<string name="widget_media_controls_grant_access">Bildirim erişimine izin vermek için dokunun</string>
+<string name="widget_media_controls_permission_hint">Bu widget, çalan içeriği göstermek ve kontrol etmek için bildirim erişimine ihtiyaç duyar. İzin vermek için dokunun.</string>
 <string name="widget_icon_center">Ortala</string>
 <string name="widget_icon_left">Sola hizala</string>
 <string name="widget_icon_off">Kapalı</string>

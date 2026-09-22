@@ -1024,6 +1024,10 @@
     <string name="widget_custom_buttons_restriction">غير متاح عندما تكون الأزرار المخصصة مفعلة.</string>
     <string name="widget_custom_buttons_title">أزرار مخصصة</string>
     <string name="widget_custom_buttons_widget_title">عنصر واجهة مستخدم الأزرار المخصصة</string>
+    <string name="widget_media_controls_widget_title">أداة التحكم في الوسائط</string>
+    <string name="widget_media_controls_nothing_playing">لا شيء قيد التشغيل</string>
+    <string name="widget_media_controls_grant_access">انقر للسماح بالوصول إلى الإشعارات</string>
+    <string name="widget_media_controls_permission_hint">تحتاج هذه الأداة إلى الوصول إلى الإشعارات لعرض ما يتم تشغيله والتحكم فيه. انقر للسماح.</string>
     <string name="widget_icon_center">توسيط</string>
     <string name="widget_icon_left">يسار</string>
     <string name="widget_icon_off">إيقاف</string>

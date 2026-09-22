@@ -1022,6 +1022,10 @@
     <string name="widget_custom_buttons_restriction">Non disponibile quando i pulsanti personalizzati sono attivi.</string>
     <string name="widget_custom_buttons_title">Pulsanti personalizzati</string>
     <string name="widget_custom_buttons_widget_title">Widget pulsanti personalizzati</string>
+    <string name="widget_media_controls_widget_title">Widget controlli multimediali</string>
+    <string name="widget_media_controls_nothing_playing">Nessuna riproduzione in corso</string>
+    <string name="widget_media_controls_grant_access">Tocca per consentire l\'accesso alle notifiche</string>
+    <string name="widget_media_controls_permission_hint">Questo widget richiede l\'accesso alle notifiche per mostrare e controllare ciò che è in riproduzione. Tocca per consentire.</string>
     <string name="widget_icon_center">Al centro</string>
     <string name="widget_icon_left">A sinistra</string>
     <string name="widget_icon_off">Disattivato</string>

@@ -1023,6 +1023,10 @@
     <string name="widget_custom_buttons_restriction">जब कस्टम बटन सक्रिय हों, तब उपलब्ध नहीं।</string>
     <string name="widget_custom_buttons_title">कस्टम बटन</string>
     <string name="widget_custom_buttons_widget_title">कस्टम बटन विजेट</string>
+    <string name="widget_media_controls_widget_title">मीडिया कंट्रोल विजेट</string>
+    <string name="widget_media_controls_nothing_playing">कुछ नहीं चल रहा</string>
+    <string name="widget_media_controls_grant_access">सूचना एक्सेस की अनुमति देने के लिए टैप करें</string>
+    <string name="widget_media_controls_permission_hint">चल रहे मीडिया को दिखाने और नियंत्रित करने के लिए इस विजेट को सूचना एक्सेस चाहिए। अनुमति देने के लिए टैप करें।</string>
     <string name="widget_icon_center">मध्य</string>
     <string name="widget_icon_left">बाएं</string>
     <string name="widget_icon_off">बंद</string>

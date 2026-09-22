@@ -3,4 +3,4 @@
 - Pin widgets to Home by long-pressing them in the Widgets panel.
 - Create app folders in Pinned Apps by dragging one app onto another.
 - New optional ways to launch Quick Search: a system-wide edge swipe gesture and a floating button.
-- Added media controls to custom widget buttons.
+- New Media Controls Widget and custom widget buttons for media controls.

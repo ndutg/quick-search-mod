@@ -205,6 +205,8 @@ class SearchWidget(
                     internalVerticalPaddingDp = config.internalVerticalPaddingDp,
                     customButtons = customButtons,
                 )
+            // Rendered by MediaControlsWidget; SearchWidget is never bound to that provider.
+            WidgetVariant.MEDIA_CONTROLS -> Unit
         }
     }
 

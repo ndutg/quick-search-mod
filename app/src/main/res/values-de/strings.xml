@@ -1023,6 +1023,10 @@
     <string name="widget_custom_buttons_restriction">Nicht verfügbar, wenn benutzerdefinierte Schaltflächen aktiv sind.</string>
     <string name="widget_custom_buttons_title">Benutzerdefinierte Schaltflächen</string>
     <string name="widget_custom_buttons_widget_title">Widget mit benutzerdefinierten Schaltflächen</string>
+    <string name="widget_media_controls_widget_title">Mediensteuerungs-Widget</string>
+    <string name="widget_media_controls_nothing_playing">Keine Wiedergabe</string>
+    <string name="widget_media_controls_grant_access">Tippen, um Benachrichtigungszugriff zu erlauben</string>
+    <string name="widget_media_controls_permission_hint">Dieses Widget benötigt Benachrichtigungszugriff, um die aktuelle Wiedergabe anzuzeigen und zu steuern. Tippen, um zu erlauben.</string>
     <string name="widget_icon_center">Mitte</string>
     <string name="widget_icon_left">Links</string>
     <string name="widget_icon_off">Aus</string>

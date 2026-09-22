@@ -1033,6 +1033,10 @@
     <string name="widget_custom_buttons_restriction">Not available when custom buttons are active.</string>
     <string name="widget_custom_buttons_title">Custom Buttons</string>
     <string name="widget_custom_buttons_widget_title">Custom Buttons Widget</string>
+    <string name="widget_media_controls_widget_title">Media Controls Widget</string>
+    <string name="widget_media_controls_nothing_playing">Nothing playing</string>
+    <string name="widget_media_controls_grant_access">Tap to allow notification access</string>
+    <string name="widget_media_controls_permission_hint">This widget needs notification access to show and control what\'s playing. Tap to allow.</string>
     <string name="widget_icon_center">Center</string>
     <string name="widget_icon_left">Left</string>
     <string name="widget_icon_off">Off</string>

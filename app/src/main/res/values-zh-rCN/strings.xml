@@ -1013,6 +1013,10 @@
     <string name="widget_custom_buttons_restriction">当自定义按钮处于激活状态时此项不可用。</string>
     <string name="widget_custom_buttons_title">自定义快捷按钮</string>
     <string name="widget_custom_buttons_widget_title">自定义按钮小部件</string>
+    <string name="widget_media_controls_widget_title">媒体控制小部件</string>
+    <string name="widget_media_controls_nothing_playing">没有正在播放的内容</string>
+    <string name="widget_media_controls_grant_access">点按以允许通知访问权限</string>
+    <string name="widget_media_controls_permission_hint">此小部件需要通知访问权限才能显示和控制正在播放的内容。点按以允许。</string>
     <string name="widget_icon_center">居中</string>
     <string name="widget_icon_left">居左</string>
     <string name="widget_icon_off">关闭</string>

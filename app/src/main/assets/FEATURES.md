@@ -313,6 +313,7 @@ An optional Home section that shows useful information when it matters.
 - **Pin Widgets to Home** - Long-press a widget in the Widgets Panel to pin it to Home.
 - **Search Widget** - Tap the widget to instantly open Quick Search. Highly customizable with mic button support and up to 2 custom buttons alongside the search functionality.
 - **Custom Buttons Widget** - A dedicated widget for custom buttons - apps, app shortcuts, contacts, files, device settings, and notes - with enhanced customizable layouts and actions.
+- **Media Controls Widget** - A dedicated home-screen widget that shows the current track and album art, with playback, previous/next, and rewind/forward controls. Requires notification access to show and control active media.
 
 ---
 

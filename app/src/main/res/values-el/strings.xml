@@ -1023,6 +1023,10 @@
     <string name="widget_custom_buttons_restriction">Μη διαθέσιμο όταν τα προσαρμοσμένα κουμπιά είναι ενεργά.</string>
     <string name="widget_custom_buttons_title">Προσαρμοσμένα κουμπιά</string>
     <string name="widget_custom_buttons_widget_title">Widget προσαρμοσμένων κουμπιών</string>
+    <string name="widget_media_controls_widget_title">Γραφικό στοιχείο ελέγχου πολυμέσων</string>
+    <string name="widget_media_controls_nothing_playing">Δεν αναπαράγεται τίποτα</string>
+    <string name="widget_media_controls_grant_access">Πατήστε για να επιτρέψετε την πρόσβαση στις ειδοποιήσεις</string>
+    <string name="widget_media_controls_permission_hint">Αυτό το widget χρειάζεται πρόσβαση στις ειδοποιήσεις για να εμφανίζει και να ελέγχει ό,τι αναπαράγεται. Πατήστε για να επιτρέψετε.</string>
     <string name="widget_icon_center">Κέντρο</string>
     <string name="widget_icon_left">Αριστερά</string>
     <string name="widget_icon_off">Απενεργοποιημένο</string>

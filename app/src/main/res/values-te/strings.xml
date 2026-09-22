@@ -1023,6 +1023,10 @@
     <string name="widget_custom_buttons_restriction">కస్టమ్ బటన్‌లు సక్రియంగా ఉన్నప్పుడు అందుబాటులో ఉండదు.</string>
     <string name="widget_custom_buttons_title">కస్టమ్ బటన్‌లు</string>
     <string name="widget_custom_buttons_widget_title">కస్టమ్ బటన్‌ల విడ్జెట్</string>
+    <string name="widget_media_controls_widget_title">మీడియా నియంత్రణల విడ్జెట్</string>
+    <string name="widget_media_controls_nothing_playing">ఏదీ ప్లే కావడం లేదు</string>
+    <string name="widget_media_controls_grant_access">నోటిఫికేషన్ యాక్సెస్‌ను అనుమతించడానికి నొక్కండి</string>
+    <string name="widget_media_controls_permission_hint">ప్లే అవుతున్నదాన్ని చూపించడానికి మరియు నియంత్రించడానికి ఈ విడ్జెట్‌కు నోటిఫికేషన్ యాక్సెస్ అవసరం. అనుమతించడానికి నొక్కండి.</string>
     <string name="widget_icon_center">మధ్యలో</string>
     <string name="widget_icon_left">ఎడమవైపు</string>
     <string name="widget_icon_off">ఆఫ్</string>
