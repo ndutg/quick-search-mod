@@ -50,7 +50,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.media.AppSeekAction
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.centeredOnCard
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 
@@ -228,21 +230,75 @@ private fun PreviewAlbumArt(
 private class PreviewControl(
     @DrawableRes val iconRes: Int,
     @StringRes val labelRes: Int,
+    /** An app seek button's own icon and label (see [MediaControlsSnapshot.appSeek]). */
+    val appIcon: ImageBitmap? = null,
+    val appLabel: String? = null,
 )
+
+@Composable
+private fun rememberSeekControl(
+    media: MediaControlsSnapshot,
+    action: AppSeekAction?,
+    appIcon: android.graphics.Bitmap?,
+    @DrawableRes iconRes: Int,
+    @StringRes labelRes: Int,
+): PreviewControl? {
+    val icon = remember(appIcon) { appIcon?.asImageBitmap() }
+    return if (action != null) {
+        PreviewControl(iconRes, labelRes, icon, action.label.takeIf { it.isNotBlank() })
+    } else {
+        PreviewControl(iconRes, labelRes).takeIf { media.canSeek }
+    }
+}
 
 @Composable
 private fun PreviewTransportRow(
     media: MediaControlsSnapshot,
     colors: MediaControlsColors,
 ) {
-    val skipBack = PreviewControl(R.drawable.ic_media_controls_previous, R.string.media_command_previous)
-    val skipForward = PreviewControl(R.drawable.ic_media_controls_next, R.string.media_command_next)
-    val seekBack =
-        PreviewControl(R.drawable.ic_media_controls_rewind, R.string.media_seek_back).takeIf { media.canSeek }
-    val seekForward =
-        PreviewControl(R.drawable.ic_media_controls_fast_forward, R.string.media_seek_forward).takeIf { media.canSeek }
-    val (outerBack, innerBack) = if (media.isSeekMode) skipBack to seekBack else seekBack to skipBack
-    val (outerForward, innerForward) = if (media.isSeekMode) skipForward to seekForward else seekForward to skipForward
+    val appSeek = media.appSeek
+    val outerBack: PreviewControl?
+    val innerBack: PreviewControl?
+    val outerForward: PreviewControl?
+    val innerForward: PreviewControl?
+    if (appSeek != null) {
+        outerBack = null
+        outerForward = null
+        innerBack =
+            rememberSeekControl(
+                media,
+                appSeek.back,
+                media.appSeekBackIcon,
+                R.drawable.ic_media_controls_rewind,
+                R.string.media_seek_back,
+            )
+        innerForward =
+            rememberSeekControl(
+                media,
+                appSeek.forward,
+                media.appSeekForwardIcon,
+                R.drawable.ic_media_controls_fast_forward,
+                R.string.media_seek_forward,
+            )
+    } else {
+        val skipBack = PreviewControl(R.drawable.ic_media_controls_previous, R.string.media_command_previous)
+        val skipForward = PreviewControl(R.drawable.ic_media_controls_next, R.string.media_command_next)
+        val seekBack =
+            PreviewControl(R.drawable.ic_media_controls_rewind, R.string.media_seek_back).takeIf { media.canSeek }
+        val seekForward =
+            PreviewControl(R.drawable.ic_media_controls_fast_forward, R.string.media_seek_forward).takeIf { media.canSeek }
+        if (media.isSeekMode) {
+            outerBack = skipBack
+            innerBack = seekBack
+            outerForward = skipForward
+            innerForward = seekForward
+        } else {
+            outerBack = seekBack
+            innerBack = skipBack
+            outerForward = seekForward
+            innerForward = skipForward
+        }
+    }
     val playPauseIcon =
         when {
             !media.hasAccess -> R.drawable.ic_widget_media_play_pause
@@ -250,9 +306,17 @@ private fun PreviewTransportRow(
             else -> R.drawable.ic_media_controls_play
         }
 
+    val hasOuterControls = outerBack != null || outerForward != null
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        OuterSlot(outerBack, colors)
+        if (hasOuterControls) OuterSlot(outerBack, colors)
         Row(
+            // Matches the widget: without outer controls, center the group on the card.
+            modifier =
+                if (hasOuterControls) {
+                    Modifier
+                } else {
+                    Modifier.weight(1f).centeredOnCard(MediaControlsWidgetDimens.COLUMN_LEADING_OFFSET)
+                },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MediaControlsWidgetDimens.INNER_CONTROL_SPACING),
         ) {
@@ -270,7 +334,7 @@ private fun PreviewTransportRow(
             }
             innerForward?.let { ProminentControl(it, colors) }
         }
-        OuterSlot(outerForward, colors)
+        if (hasOuterControls) OuterSlot(outerForward, colors)
     }
 }
 
@@ -282,7 +346,7 @@ private fun RowScope.OuterSlot(
     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
         control?.let {
             ControlSlot(Modifier.fillMaxWidth()) {
-                PreviewIcon(it.iconRes, it.labelRes, MediaControlsWidgetDimens.SECONDARY_CONTROL_ICON_SIZE, colors.content)
+                PreviewIcon(it, MediaControlsWidgetDimens.SECONDARY_CONTROL_ICON_SIZE, colors.content)
             }
         }
     }
@@ -301,7 +365,7 @@ private fun ProminentControl(
                     .border(MediaControlsWidgetDimens.PROMINENT_CIRCLE_STROKE, colors.prominentCircleBorder, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            PreviewIcon(control.iconRes, control.labelRes, MediaControlsWidgetDimens.CONTROL_ICON_SIZE, colors.content)
+            PreviewIcon(control, MediaControlsWidgetDimens.CONTROL_ICON_SIZE, colors.content)
         }
     }
 }
@@ -316,6 +380,25 @@ private fun ControlSlot(
         contentAlignment = Alignment.Center,
     ) {
         content()
+    }
+}
+
+@Composable
+private fun PreviewIcon(
+    control: PreviewControl,
+    size: Dp,
+    tint: Color,
+) {
+    val appIcon = control.appIcon
+    if (appIcon != null) {
+        Icon(
+            bitmap = appIcon,
+            contentDescription = control.appLabel ?: stringResource(control.labelRes),
+            tint = tint,
+            modifier = Modifier.size(size),
+        )
+    } else {
+        PreviewIcon(control.iconRes, control.labelRes, size, tint)
     }
 }
 

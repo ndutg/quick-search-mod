@@ -11,9 +11,13 @@ import android.graphics.Shader
 import android.media.MediaMetadata
 import android.media.session.PlaybackState
 import android.os.Build
+import com.tk.quicksearch.media.AppSeekAction
+import com.tk.quicksearch.media.AppSeekActions
+import com.tk.quicksearch.media.MediaAppSeek
 import com.tk.quicksearch.media.MediaSeek
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 /**
  * What the Media Controls widget shows: the system-priority session, i.e. the same one its media
@@ -29,6 +33,11 @@ internal data class MediaControlsSnapshot(
     val isPlaying: Boolean,
     val canSeek: Boolean,
     val isSeekMode: Boolean,
+    /** The app's own seek buttons; when set they replace rewind/forward and previous/next is hidden. */
+    val appSeek: AppSeekActions? = null,
+    /** [appSeek]'s icons from the media app's resources, rasterized at the control icon size. */
+    val appSeekBackIcon: Bitmap? = null,
+    val appSeekForwardIcon: Bitmap? = null,
 ) {
     val hasSession: Boolean
         get() = title != null
@@ -70,6 +79,13 @@ internal fun readMediaControlsSnapshot(context: Context): MediaControlsSnapshot 
                 packageManager.getApplicationInfo(controller.packageName, 0).loadLabel(packageManager).toString()
             }.getOrNull()
             ?: controller.packageName
+    val appSeek = MediaAppSeek.find(playbackState)
+    val iconSizePx =
+        (MediaControlsWidgetDimens.CONTROL_ICON_SIZE.value * context.resources.displayMetrics.density)
+            .roundToInt()
+            .coerceAtLeast(1)
+    fun appSeekIcon(action: AppSeekAction?): Bitmap? =
+        action?.let { MediaAppSeek.loadIcon(context, controller.packageName, it.iconRes, iconSizePx) }
     return MediaControlsSnapshot(
         hasAccess = hasAccess,
         title = title,
@@ -79,6 +95,9 @@ internal fun readMediaControlsSnapshot(context: Context): MediaControlsSnapshot 
         isPlaying = playbackState?.state == PlaybackState.STATE_PLAYING,
         canSeek = MediaSeek.supportsSeek(playbackState),
         isSeekMode = MediaSeek.isSeekMode(metadata, playbackState),
+        appSeek = appSeek,
+        appSeekBackIcon = appSeekIcon(appSeek?.back),
+        appSeekForwardIcon = appSeekIcon(appSeek?.forward),
     )
 }
 

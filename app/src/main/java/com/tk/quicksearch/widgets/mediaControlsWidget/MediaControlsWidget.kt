@@ -1,6 +1,7 @@
 package com.tk.quicksearch.widgets.mediaControlsWidget
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -41,7 +42,10 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.tk.quicksearch.R
+import com.tk.quicksearch.media.AppSeekAction
+import com.tk.quicksearch.media.AppSeekActions
 import com.tk.quicksearch.media.MediaCommand
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.CenteredOnCardNudge
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetMediaAction
 import com.tk.quicksearch.widgets.utils.WidgetBitmapUtils
 import com.tk.quicksearch.widgets.utils.WidgetLayoutUtils
@@ -68,6 +72,9 @@ internal object MediaControlsWidgetDimens {
     val ART_SPACING = 14.dp
     val INNER_CONTROL_SPACING = 10.dp
     val PROMINENT_CIRCLE_STROKE = 1.dp
+
+    /** How far the title/controls column starts from the card content's start edge. */
+    val COLUMN_LEADING_OFFSET = ALBUM_ART_SIZE + ART_SPACING
     /** Card height: fits one home-screen row, and stays this compact in taller cells. */
     const val HEIGHT_DP = 110f
 
@@ -141,6 +148,7 @@ class MediaControlsWidget : GlanceAppWidget() {
             ) {
                 MediaControlsContent(
                     context = context,
+                    widthDp = widthDp,
                     media = media,
                     colors = colors,
                     artCornerRadius = MediaControlsWidgetDimens.albumArtCornerRadius(config.borderRadiusDp),
@@ -154,6 +162,7 @@ class MediaControlsWidget : GlanceAppWidget() {
 @Composable
 private fun MediaControlsContent(
     context: Context,
+    widthDp: Dp,
     media: MediaControlsSnapshot,
     colors: MediaControlsColors,
     artCornerRadius: Dp,
@@ -196,7 +205,7 @@ private fun MediaControlsContent(
                     maxLines = 1,
                 )
             }
-            TransportRow(context, media, colors)
+            TransportRow(context, widthDp, media, colors)
         }
     }
 }
@@ -248,26 +257,81 @@ private enum class ControlStyle { PLAIN, PROMINENT, PLAY_PAUSE }
 private class Control(
     @DrawableRes val iconRes: Int,
     val command: MediaCommand,
+    /** An app seek button: its own icon, label and custom action, with [command] as the fallback. */
+    val appIcon: Bitmap? = null,
+    val appLabel: String? = null,
+    val customAction: String? = null,
 )
+
+/** The app's seek button for one direction, or ours when the app has none for it (see [AppSeekActions]). */
+private fun seekControl(
+    media: MediaControlsSnapshot,
+    action: AppSeekAction?,
+    appIcon: Bitmap?,
+    @DrawableRes iconRes: Int,
+    command: MediaCommand,
+): Control? =
+    if (action != null) {
+        Control(
+            iconRes = iconRes,
+            command = command,
+            appIcon = appIcon,
+            appLabel = action.label.takeIf { it.isNotBlank() },
+            customAction = action.action,
+        )
+    } else {
+        Control(iconRes, command).takeIf { media.canSeek }
+    }
 
 /**
  * Same arrangement as the At a Glance card: whichever pair suits the media (seeking for long
  * media, track skipping otherwise) sits in outlined circles beside play/pause, and the other pair
- * is centered in the outer slots. Rewind/forward are dropped when the session refuses seeks.
+ * is centered in the outer slots. Rewind/forward are dropped when the session refuses seeks. When
+ * the app has its own seek buttons, those sit beside play/pause and the outer slots stay empty.
  */
 @Composable
 private fun TransportRow(
     context: Context,
+    widthDp: Dp,
     media: MediaControlsSnapshot,
     colors: MediaControlsColors,
 ) {
-    val skipBack = Control(R.drawable.ic_media_controls_previous, MediaCommand.PREVIOUS)
-    val skipForward = Control(R.drawable.ic_media_controls_next, MediaCommand.NEXT)
-    val seekBack = Control(R.drawable.ic_media_controls_rewind, MediaCommand.SEEK_BACK).takeIf { media.canSeek }
-    val seekForward =
-        Control(R.drawable.ic_media_controls_fast_forward, MediaCommand.SEEK_FORWARD).takeIf { media.canSeek }
-    val (outerBack, innerBack) = if (media.isSeekMode) skipBack to seekBack else seekBack to skipBack
-    val (outerForward, innerForward) = if (media.isSeekMode) skipForward to seekForward else seekForward to skipForward
+    val appSeek = media.appSeek
+    val outerBack: Control?
+    val innerBack: Control?
+    val outerForward: Control?
+    val innerForward: Control?
+    if (appSeek != null) {
+        outerBack = null
+        outerForward = null
+        innerBack =
+            seekControl(media, appSeek.back, media.appSeekBackIcon, R.drawable.ic_media_controls_rewind, MediaCommand.SEEK_BACK)
+        innerForward =
+            seekControl(
+                media,
+                appSeek.forward,
+                media.appSeekForwardIcon,
+                R.drawable.ic_media_controls_fast_forward,
+                MediaCommand.SEEK_FORWARD,
+            )
+    } else {
+        val skipBack = Control(R.drawable.ic_media_controls_previous, MediaCommand.PREVIOUS)
+        val skipForward = Control(R.drawable.ic_media_controls_next, MediaCommand.NEXT)
+        val seekBack = Control(R.drawable.ic_media_controls_rewind, MediaCommand.SEEK_BACK).takeIf { media.canSeek }
+        val seekForward =
+            Control(R.drawable.ic_media_controls_fast_forward, MediaCommand.SEEK_FORWARD).takeIf { media.canSeek }
+        if (media.isSeekMode) {
+            outerBack = skipBack
+            innerBack = seekBack
+            outerForward = skipForward
+            innerForward = seekForward
+        } else {
+            outerBack = seekBack
+            innerBack = skipBack
+            outerForward = seekForward
+            innerForward = skipForward
+        }
+    }
     val playPauseIcon =
         when {
             // Playback state is unknown without access, so show the combined glyph rather than guess.
@@ -276,12 +340,28 @@ private fun TransportRow(
             else -> R.drawable.ic_media_controls_play
         }
 
+    val hasOuterControls = outerBack != null || outerForward != null
     Row(
         modifier = GlanceModifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = GlanceModifier.defaultWeight(), contentAlignment = Alignment.Center) {
-            outerBack?.let { ControlButton(context, colors, it, ControlStyle.PLAIN) }
+        if (hasOuterControls) {
+            Box(modifier = GlanceModifier.defaultWeight(), contentAlignment = Alignment.Center) {
+                outerBack?.let { ControlButton(context, colors, it, ControlStyle.PLAIN) }
+            }
+        } else {
+            // The group alone would sit right of the card's center, since this column starts
+            // after the album art; RemoteViews cannot offset, so pad it onto the card's center.
+            val groupCount = 1 + listOfNotNull(innerBack, innerForward).size
+            val groupWidth =
+                MediaControlsWidgetDimens.PROMINENT_CIRCLE_SIZE * groupCount +
+                    MediaControlsWidgetDimens.INNER_CONTROL_SPACING * (groupCount - 1)
+            val columnWidth =
+                widthDp - MediaControlsWidgetDimens.CONTENT_PADDING_HORIZONTAL * 2 - MediaControlsWidgetDimens.COLUMN_LEADING_OFFSET
+            val startPadding =
+                ((columnWidth - MediaControlsWidgetDimens.COLUMN_LEADING_OFFSET - groupWidth) / 2 + CenteredOnCardNudge)
+                    .coerceIn(0.dp, (columnWidth - groupWidth).coerceAtLeast(0.dp))
+            Spacer(modifier = GlanceModifier.width(startPadding))
         }
         innerBack?.let {
             ControlButton(context, colors, it, ControlStyle.PROMINENT)
@@ -292,8 +372,10 @@ private fun TransportRow(
             Spacer(modifier = GlanceModifier.width(MediaControlsWidgetDimens.INNER_CONTROL_SPACING))
             ControlButton(context, colors, it, ControlStyle.PROMINENT)
         }
-        Box(modifier = GlanceModifier.defaultWeight(), contentAlignment = Alignment.Center) {
-            outerForward?.let { ControlButton(context, colors, it, ControlStyle.PLAIN) }
+        if (hasOuterControls) {
+            Box(modifier = GlanceModifier.defaultWeight(), contentAlignment = Alignment.Center) {
+                outerForward?.let { ControlButton(context, colors, it, ControlStyle.PLAIN) }
+            }
         }
     }
 }
@@ -320,16 +402,24 @@ private fun ControlButton(
                 .clickable(
                     onClick =
                         actionRunCallback<CustomButtonsWidgetMediaAction>(
-                            actionParametersOf(CustomButtonsWidgetMediaAction.MEDIA_COMMAND_KEY to control.command.value),
+                            if (control.customAction != null) {
+                                actionParametersOf(
+                                    CustomButtonsWidgetMediaAction.MEDIA_COMMAND_KEY to control.command.value,
+                                    CustomButtonsWidgetMediaAction.CUSTOM_ACTION_KEY to control.customAction,
+                                )
+                            } else {
+                                actionParametersOf(CustomButtonsWidgetMediaAction.MEDIA_COMMAND_KEY to control.command.value)
+                            },
                         ),
                     rippleOverride = android.R.color.transparent,
                 ),
         contentAlignment = Alignment.Center,
     ) {
-        val contentDescription = context.getString(control.command.labelRes)
+        val contentDescription = control.appLabel ?: context.getString(control.command.labelRes)
+        val icon = control.appIcon?.let { ImageProvider(it) } ?: ImageProvider(control.iconRes)
         when (style) {
             ControlStyle.PLAIN ->
-                ControlIcon(control.iconRes, contentDescription, MediaControlsWidgetDimens.SECONDARY_CONTROL_ICON_SIZE, colors.content)
+                ControlIcon(icon, contentDescription, MediaControlsWidgetDimens.SECONDARY_CONTROL_ICON_SIZE, colors.content)
             ControlStyle.PROMINENT ->
                 Box(contentAlignment = Alignment.Center) {
                     ShapeImage(
@@ -338,7 +428,7 @@ private fun ControlButton(
                         stroke = colors.prominentCircleBorder,
                         density = context.resources.displayMetrics.density,
                     )
-                    ControlIcon(control.iconRes, contentDescription, MediaControlsWidgetDimens.CONTROL_ICON_SIZE, colors.content)
+                    ControlIcon(icon, contentDescription, MediaControlsWidgetDimens.CONTROL_ICON_SIZE, colors.content)
                 }
             ControlStyle.PLAY_PAUSE ->
                 Box(contentAlignment = Alignment.Center) {
@@ -348,7 +438,7 @@ private fun ControlButton(
                         fill = colors.playPauseCircle,
                         density = context.resources.displayMetrics.density,
                     )
-                    ControlIcon(control.iconRes, contentDescription, MediaControlsWidgetDimens.CONTROL_ICON_SIZE, colors.playPauseIcon)
+                    ControlIcon(icon, contentDescription, MediaControlsWidgetDimens.CONTROL_ICON_SIZE, colors.playPauseIcon)
                 }
         }
     }
@@ -356,13 +446,13 @@ private fun ControlButton(
 
 @Composable
 private fun ControlIcon(
-    @DrawableRes iconRes: Int,
+    provider: ImageProvider,
     contentDescription: String,
     size: Dp,
     color: Color,
 ) {
     Image(
-        provider = ImageProvider(iconRes),
+        provider = provider,
         contentDescription = contentDescription,
         modifier = GlanceModifier.size(size),
         colorFilter = ColorFilter.tint(ColorProvider(color)),

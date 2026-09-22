@@ -41,15 +41,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
+import com.tk.quicksearch.media.AppSeekAction
+import com.tk.quicksearch.media.MediaAppSeek
 import com.tk.quicksearch.media.MediaSeek
 import com.tk.quicksearch.media.openMediaSessionPlayer
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
@@ -65,6 +71,10 @@ private val NowPlayingPlayPauseCircleSize = NowPlayingProminentCircleSize
 private val NowPlayingPlayPauseIconSize = NowPlayingControlIconSize
 private val NowPlayingDismissButtonSize = 28.dp
 private val NowPlayingSecondaryControlIconSize = 18.dp
+private val NowPlayingRowStartPadding = 7.dp
+
+/** How far the title/controls column starts from the card content's start edge. */
+private val NowPlayingColumnLeadingOffset = NowPlayingRowStartPadding + NowPlayingAlbumArtSize + DesignTokens.SpacingMedium
 
 /** The active now-playing media session shown in the home At a Glance card, with transport controls. */
 internal class NowPlayingGlance(
@@ -80,9 +90,34 @@ internal class NowPlayingGlance(
     val next: () -> Unit,
     val seekBack: () -> Unit,
     val seekForward: () -> Unit,
+    /** The app's own seek buttons; when set they replace rewind/forward and previous/next is hidden. */
+    val appSeek: NowPlayingAppSeek?,
     val dismiss: () -> Unit,
     val open: () -> Unit,
 )
+
+internal class NowPlayingAppSeekButton(
+    /** Null when the app's drawable could not be loaded; our rewind/forward glyph stands in. */
+    val icon: ImageBitmap?,
+    val label: String?,
+    val onClick: () -> Unit,
+)
+
+/** A missing direction falls back to the 15 second seek button (see [com.tk.quicksearch.media.AppSeekActions]). */
+internal class NowPlayingAppSeek(
+    val back: NowPlayingAppSeekButton?,
+    val forward: NowPlayingAppSeekButton?,
+)
+
+/**
+ * A dismissal outlives the card's composition, which is torn down whenever home is left (for
+ * example to open the widget panel), so coming back does not bring the card back on its own.
+ */
+private object NowPlayingDismissal {
+    var sessionToken by mutableStateOf<Any?>(null)
+    var dismissedWhilePlaying by mutableStateOf(false)
+    var sawNonPlayingState by mutableStateOf(false)
+}
 
 /**
  * Tracks the system's active media session while [enabled], refreshing whenever the set of
@@ -98,9 +133,7 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
     var controller by remember { mutableStateOf<MediaController?>(null) }
     var metadata by remember { mutableStateOf<MediaMetadata?>(null) }
     var playbackState by remember { mutableStateOf<PlaybackState?>(null) }
-    var dismissedSessionToken by remember { mutableStateOf<Any?>(null) }
-    var dismissedWhilePlaying by remember { mutableStateOf(false) }
-    var sawNonPlayingStateAfterDismiss by remember { mutableStateOf(false) }
+    val dismissal = NowPlayingDismissal
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -162,29 +195,43 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
             ?: activeMetadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
     val isPlaying = playbackState?.state == PlaybackState.STATE_PLAYING
     val isSeekMode = MediaSeek.isSeekMode(activeMetadata, playbackState)
-    val dismissedForCurrentSession = dismissedSessionToken == activeController.sessionToken
+    val dismissedForCurrentSession = dismissal.sessionToken == activeController.sessionToken
     val shouldRemainDismissed =
         dismissedForCurrentSession &&
-            !(isPlaying && (!dismissedWhilePlaying || sawNonPlayingStateAfterDismiss))
+            !(isPlaying && (!dismissal.dismissedWhilePlaying || dismissal.sawNonPlayingState))
 
     androidx.compose.runtime.LaunchedEffect(
-        dismissedSessionToken,
+        dismissal.sessionToken,
         activeController.sessionToken,
         isPlaying,
     ) {
         when {
-            dismissedSessionToken == null -> Unit
+            dismissal.sessionToken == null -> Unit
             !dismissedForCurrentSession -> {
-                dismissedSessionToken = null
-                sawNonPlayingStateAfterDismiss = false
+                dismissal.sessionToken = null
+                dismissal.sawNonPlayingState = false
             }
-            !isPlaying -> sawNonPlayingStateAfterDismiss = true
-            !dismissedWhilePlaying || sawNonPlayingStateAfterDismiss -> {
-                dismissedSessionToken = null
-                sawNonPlayingStateAfterDismiss = false
+            !isPlaying -> dismissal.sawNonPlayingState = true
+            !dismissal.dismissedWhilePlaying || dismissal.sawNonPlayingState -> {
+                dismissal.sessionToken = null
+                dismissal.sawNonPlayingState = false
             }
         }
     }
+
+    val appSeekActions = MediaAppSeek.find(playbackState)
+    val appSeekIconSizePx = with(LocalDensity.current) { NowPlayingControlIconSize.roundToPx() }.coerceAtLeast(1)
+    val packageName = activeController.packageName
+    val appSeekIcons =
+        remember(packageName, appSeekActions, appSeekIconSizePx) {
+            appSeekActions?.let { actions ->
+                listOf(actions.back, actions.forward).map { action ->
+                    action?.let {
+                        MediaAppSeek.loadIcon(context, packageName, it.iconRes, appSeekIconSizePx)?.asImageBitmap()
+                    }
+                }
+            }
+        }
 
     if (shouldRemainDismissed) return null
 
@@ -203,10 +250,29 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
         next = { runCatching { activeController.transportControls.skipToNext() } },
         seekBack = { MediaSeek.seekBy(activeController, -MediaSeek.STEP_MS) },
         seekForward = { MediaSeek.seekBy(activeController, MediaSeek.STEP_MS) },
+        appSeek =
+            appSeekActions?.let { actions ->
+                fun button(
+                    action: AppSeekAction?,
+                    icon: ImageBitmap?,
+                    fallback: () -> Unit,
+                ) = action?.let {
+                    NowPlayingAppSeekButton(
+                        icon = icon,
+                        label = it.label.takeIf { label -> label.isNotBlank() },
+                        onClick = { if (!MediaAppSeek.send(activeController, it.action)) fallback() },
+                    )
+                }
+                NowPlayingAppSeek(
+                    back = button(actions.back, appSeekIcons?.getOrNull(0)) { MediaSeek.seekBy(activeController, -MediaSeek.STEP_MS) },
+                    forward =
+                        button(actions.forward, appSeekIcons?.getOrNull(1)) { MediaSeek.seekBy(activeController, MediaSeek.STEP_MS) },
+                )
+            },
         dismiss = {
-            dismissedSessionToken = activeController.sessionToken
-            dismissedWhilePlaying = isPlaying
-            sawNonPlayingStateAfterDismiss = false
+            dismissal.sessionToken = activeController.sessionToken
+            dismissal.dismissedWhilePlaying = isPlaying
+            dismissal.sawNonPlayingState = false
         },
         open = { openMediaSessionPlayer(context, activeController) },
     )
@@ -219,7 +285,7 @@ internal fun NowPlayingRow(glance: NowPlayingGlance) {
             Modifier
                 .fillMaxWidth()
                 .padding(
-                    start = 7.dp,
+                    start = NowPlayingRowStartPadding,
                     top = DesignTokens.SpacingMedium,
                     bottom = DesignTokens.SpacingSmall,
                 ),
@@ -259,25 +325,65 @@ internal fun NowPlayingRow(glance: NowPlayingGlance) {
             }
             // The emphasized pair (see NowPlayingGlance.isSeekMode) sits beside play/pause; the
             // other pair moves to the outer slots, each centered in the space left over there.
-            val skipBack = NowPlayingControl(Icons.Rounded.SkipPrevious, R.string.media_command_previous, glance.previous)
-            val skipForward = NowPlayingControl(Icons.Rounded.SkipNext, R.string.media_command_next, glance.next)
-            val seekBack =
-                NowPlayingControl(Icons.Rounded.FastRewind, R.string.media_seek_back, glance.seekBack)
-                    .takeIf { glance.canSeek }
-            val seekForward =
-                NowPlayingControl(Icons.Rounded.FastForward, R.string.media_seek_forward, glance.seekForward)
-                    .takeIf { glance.canSeek }
-            val (outerBack, innerBack) = if (glance.isSeekMode) skipBack to seekBack else seekBack to skipBack
-            val (outerForward, innerForward) =
-                if (glance.isSeekMode) skipForward to seekForward else seekForward to skipForward
+            // The app's own seek buttons take the inner slots alone, leaving the outer ones empty.
+            val appSeek = glance.appSeek
+            val outerBack: NowPlayingControl?
+            val innerBack: NowPlayingControl?
+            val outerForward: NowPlayingControl?
+            val innerForward: NowPlayingControl?
+            if (appSeek != null) {
+                outerBack = null
+                outerForward = null
+                innerBack =
+                    seekControl(appSeek.back, Icons.Rounded.FastRewind, R.string.media_seek_back, glance.seekBack, glance.canSeek)
+                innerForward =
+                    seekControl(
+                        appSeek.forward,
+                        Icons.Rounded.FastForward,
+                        R.string.media_seek_forward,
+                        glance.seekForward,
+                        glance.canSeek,
+                    )
+            } else {
+                val skipBack = NowPlayingControl(Icons.Rounded.SkipPrevious, R.string.media_command_previous, glance.previous)
+                val skipForward = NowPlayingControl(Icons.Rounded.SkipNext, R.string.media_command_next, glance.next)
+                val seekBack =
+                    NowPlayingControl(Icons.Rounded.FastRewind, R.string.media_seek_back, glance.seekBack)
+                        .takeIf { glance.canSeek }
+                val seekForward =
+                    NowPlayingControl(Icons.Rounded.FastForward, R.string.media_seek_forward, glance.seekForward)
+                        .takeIf { glance.canSeek }
+                if (glance.isSeekMode) {
+                    outerBack = skipBack
+                    innerBack = seekBack
+                    outerForward = skipForward
+                    innerForward = seekForward
+                } else {
+                    outerBack = seekBack
+                    innerBack = skipBack
+                    outerForward = seekForward
+                    innerForward = skipForward
+                }
+            }
+            val hasOuterControls = outerBack != null || outerForward != null
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    outerBack?.let { NowPlayingSkipButton(it, isProminent = false) }
+                if (hasOuterControls) {
+                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                        outerBack?.let { NowPlayingSkipButton(it, isProminent = false) }
+                    }
                 }
                 Row(
+                    // Without outer controls the group alone would sit right of the card's center,
+                    // since this column starts after the album art; center it on the card instead.
+                    modifier =
+                        if (hasOuterControls) {
+                            Modifier
+                        } else {
+                            Modifier.weight(1f).centeredOnCard(NowPlayingColumnLeadingOffset)
+                        },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                 ) {
@@ -301,19 +407,59 @@ internal fun NowPlayingRow(glance: NowPlayingGlance) {
                     }
                     innerForward?.let { NowPlayingSkipButton(it, isProminent = true) }
                 }
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    outerForward?.let { NowPlayingSkipButton(it, isProminent = false) }
+                if (hasOuterControls) {
+                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                        outerForward?.let { NowPlayingSkipButton(it, isProminent = false) }
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * Nudge right of the card's exact center: the album art weighs down the start side, so the
+ * controls read as centered a little past the true middle.
+ */
+internal val CenteredOnCardNudge = 20.dp
+
+/**
+ * Lays the content out across the full width it is given, horizontally centered (plus
+ * [CenteredOnCardNudge]) on a card whose content starts [leadingOffset] before this column (with
+ * matching padding on both card edges), but never starting before the column itself.
+ */
+internal fun Modifier.centeredOnCard(leadingOffset: Dp): Modifier =
+    layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints.copy(minWidth = 0))
+        val width = if (constraints.hasBoundedWidth) constraints.maxWidth else placeable.width
+        val x =
+            ((width - leadingOffset.roundToPx() - placeable.width) / 2 + CenteredOnCardNudge.roundToPx())
+                .coerceIn(0, (width - placeable.width).coerceAtLeast(0))
+        layout(width, placeable.height) { placeable.place(x, 0) }
+    }
+
 private class NowPlayingControl(
     val icon: ImageVector,
     @StringRes val labelRes: Int,
     val onClick: () -> Unit,
+    /** An app seek button's own icon and label, shown in place of [icon] and [labelRes]. */
+    val appIcon: ImageBitmap? = null,
+    val appLabel: String? = null,
 )
+
+/** The app's seek button for one direction, or the 15 second one when the app has none for it. */
+private fun seekControl(
+    appButton: NowPlayingAppSeekButton?,
+    icon: ImageVector,
+    @StringRes labelRes: Int,
+    fallback: () -> Unit,
+    canSeek: Boolean,
+): NowPlayingControl? =
+    if (appButton != null) {
+        NowPlayingControl(icon, labelRes, appButton.onClick, appButton.icon, appButton.label)
+    } else {
+        NowPlayingControl(icon, labelRes, fallback).takeIf { canSeek }
+    }
 
 /**
  * A skip or seek control. Whichever pair suits the media is [isProminent], drawn in an outlined
@@ -327,13 +473,24 @@ private fun NowPlayingSkipButton(
     IconButton(onClick = control.onClick, modifier = Modifier.size(NowPlayingControlButtonSize)) {
         val icon =
             @Composable {
-                Icon(
-                    imageVector = control.icon,
-                    contentDescription = stringResource(control.labelRes),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier =
-                        Modifier.size(if (isProminent) NowPlayingControlIconSize else NowPlayingSecondaryControlIconSize),
-                )
+                val contentDescription = control.appLabel ?: stringResource(control.labelRes)
+                val modifier = Modifier.size(if (isProminent) NowPlayingControlIconSize else NowPlayingSecondaryControlIconSize)
+                val appIcon = control.appIcon
+                if (appIcon != null) {
+                    Icon(
+                        bitmap = appIcon,
+                        contentDescription = contentDescription,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = modifier,
+                    )
+                } else {
+                    Icon(
+                        imageVector = control.icon,
+                        contentDescription = contentDescription,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = modifier,
+                    )
+                }
             }
         if (isProminent) {
             // Outlined, and a step smaller than the filled play/pause circle, so it reads as secondary to it.
