@@ -559,6 +559,7 @@ private fun PinnedNotificationItemsDialog(
                                     CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
                                     CustomWidgetButtonType.SETTING -> stringResource(R.string.settings_gesture_settings)
                                     CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
+                                    CustomWidgetButtonType.MEDIA -> stringResource(R.string.section_media)
                                 }
                             Surface(
                                 color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
@@ -1183,6 +1184,7 @@ fun SearchResultsSettingsSection(
     onNavigateToDeviceSettings: () -> Unit,
     onNavigateToCalendarEvents: () -> Unit,
     onNavigateToNotes: () -> Unit,
+    onNavigateToReminders: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val context = LocalView.current.context
@@ -1273,6 +1275,8 @@ fun SearchResultsSettingsSection(
             notesSubtitle = stringResource(R.string.settings_notes_view_all_desc),
             onNotesClick = onNavigateToNotes,
             onNotesClickNoRipple = true,
+            remindersSubtitle = stringResource(R.string.settings_reminders_view_all_desc),
+            onRemindersClick = onNavigateToReminders,
             sectionsWithHiddenAlias = buildSet {
                 if (!hasContactPermission) add(SearchSection.CONTACTS)
                 if (!hasFilePermission) add(SearchSection.FILES)

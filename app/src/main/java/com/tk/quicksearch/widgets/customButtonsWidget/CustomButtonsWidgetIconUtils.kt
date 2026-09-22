@@ -1,6 +1,7 @@
 package com.tk.quicksearch.widgets.customButtonsWidget
 
 import android.content.Context
+import androidx.annotation.DrawableRes
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -20,9 +21,11 @@ import androidx.core.content.ContextCompat
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
+import com.tk.quicksearch.media.MediaCommand
 import com.tk.quicksearch.search.contacts.contactInitials
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.AppShortcutRepository.loadShortcutIconAndroidBitmap
+import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.search.managers.IconPackManager
 import com.tk.quicksearch.search.common.UserHandleUtils
@@ -128,6 +131,30 @@ fun rememberWidgetButtonIcon(
         is CustomWidgetButtonAction.Note -> {
             WidgetButtonIcon(drawableResId = R.drawable.ic_widget_note, shouldTint = true)
         }
+
+        is CustomWidgetButtonAction.Media -> {
+            val iconResId =
+                if (action.command == MediaCommand.PLAY_PAUSE) {
+                    playPauseIconRes(context)
+                } else {
+                    action.command.iconRes
+                }
+            WidgetButtonIcon(drawableResId = iconResId, shouldTint = true)
+        }
+    }
+}
+
+/**
+ * Icon for a Play/Pause widget button. Without notification access the playback state is unknown,
+ * so the combined play/pause glyph is shown instead of a play icon that may be wrong.
+ */
+@DrawableRes
+fun playPauseIconRes(context: Context): Int {
+    val repository = MediaPlaybackRepository(context)
+    return when {
+        !repository.hasAccess() -> MediaCommand.PLAY_PAUSE.iconRes
+        repository.isCurrentlyPlaying() -> R.drawable.ic_widget_media_pause
+        else -> R.drawable.ic_widget_media_play
     }
 }
 

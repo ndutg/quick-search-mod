@@ -80,7 +80,7 @@ fun Modifier.appSwipeGestures(app: AppInfo): Modifier {
                 if (isUp) totalDrag <= -triggerDistancePx else totalDrag >= triggerDistancePx
             if (completed && chosen != null && reachedDistance) {
                 hapticConfirm(view)()
-                context.startActivity(WidgetActionActivity.createIntent(context, chosen))
+                WidgetActionActivity.launch(context, chosen)
             }
         }
     }

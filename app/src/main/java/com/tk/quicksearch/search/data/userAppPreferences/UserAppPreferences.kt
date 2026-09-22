@@ -43,7 +43,10 @@ class UserAppPreferences(
     private val settingsPreferences by lazy { SettingsPreferences(context) }
     private val calendarPreferences by lazy { CalendarPreferences(context) }
     private val notesPreferences by lazy { NotesPreferences(context) }
+    private val reminderPreferences by lazy { ReminderPreferences(context) }
     private val gesturesPreferences by lazy { GesturesPreferences(context) }
+    private val edgeGesturePreferences by lazy { EdgeGesturePreferences(context) }
+    private val floatingButtonPreferences by lazy { FloatingButtonPreferences(context) }
     private val appShortcutPreferences by lazy { AppShortcutPreferences(context) }
     private val folderPreferences by lazy { FolderPreferences(context) }
     private val nicknamePreferences by lazy { NicknamePreferences(context) }
@@ -404,6 +407,59 @@ class UserAppPreferences(
     fun isQuickNoteEnabled(): Boolean = notesPreferences.isQuickNoteEnabled()
 
     fun setQuickNoteEnabled(enabled: Boolean) = notesPreferences.setQuickNoteEnabled(enabled)
+
+    // ============================================================================
+    // Edge Gesture Preferences
+    // ============================================================================
+
+    fun getEdgeGestureConfig(): EdgeGestureConfig = edgeGesturePreferences.getConfig()
+
+    fun setEdgeGestureEnabled(enabled: Boolean) = edgeGesturePreferences.setEnabled(enabled)
+
+    fun setEdgeGestureSide(side: EdgeGestureSide) = edgeGesturePreferences.setSide(side)
+
+    fun setEdgeGesturePosition(position: Float) = edgeGesturePreferences.setPosition(position)
+
+    fun setEdgeGestureSize(size: Float) = edgeGesturePreferences.setSize(size)
+
+    fun setEdgeGestureWidthDp(widthDp: Int) = edgeGesturePreferences.setWidthDp(widthDp)
+
+    fun setEdgeGestureOpacity(opacity: Float) = edgeGesturePreferences.setOpacity(opacity)
+
+    fun setEdgeGestureActivation(activation: EdgeGestureActivation) =
+        edgeGesturePreferences.setActivation(activation)
+
+    // ============================================================================
+    // Floating Button Preferences
+    // ============================================================================
+
+    fun getFloatingButtonConfig(): FloatingButtonConfig = floatingButtonPreferences.getConfig()
+
+    fun setFloatingButtonEnabled(enabled: Boolean) = floatingButtonPreferences.setEnabled(enabled)
+
+    fun setFloatingButtonSizeDp(sizeDp: Int) = floatingButtonPreferences.setSizeDp(sizeDp)
+
+    fun setFloatingButtonOpacity(opacity: Float) = floatingButtonPreferences.setOpacity(opacity)
+
+    // ============================================================================
+    // Reminder Preferences
+    // ============================================================================
+
+    fun getPinnedReminderIds(): Set<Long> = reminderPreferences.getPinnedReminderIds()
+
+    fun getPinnedReminderOrder(): List<Long> = reminderPreferences.getPinnedReminderOrder()
+
+    fun setPinnedReminderOrder(order: List<Long>): List<Long> =
+            reminderPreferences.setPinnedReminderOrder(order)
+
+    fun pinReminder(reminderId: Long): Set<Long> = reminderPreferences.pinReminder(reminderId)
+
+    fun unpinReminder(reminderId: Long): Set<Long> = reminderPreferences.unpinReminder(reminderId)
+
+
+    fun getIncludePastReminders(): Boolean = reminderPreferences.getIncludePastReminders()
+
+    fun setIncludePastReminders(value: Boolean) = reminderPreferences.setIncludePastReminders(value)
 
     // ============================================================================
     // Gesture Preferences

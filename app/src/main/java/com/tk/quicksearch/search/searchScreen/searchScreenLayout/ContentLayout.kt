@@ -77,6 +77,7 @@ import com.tk.quicksearch.search.searchScreen.SettingsSectionParams
 import com.tk.quicksearch.search.searchScreen.AppsSectionParams
 import com.tk.quicksearch.search.searchScreen.CalendarSectionParams
 import com.tk.quicksearch.search.searchScreen.NotesSectionParams
+import com.tk.quicksearch.search.searchScreen.RemindersSectionParams
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.PinnedNonAppItemsSection
 import com.tk.quicksearch.search.searchScreen.components.SectionPermissionResultCard
@@ -102,6 +103,7 @@ fun ContentLayout(
     settingsParams: SettingsSectionParams,
     calendarParams: CalendarSectionParams,
     notesParams: NotesSectionParams,
+    remindersParams: RemindersSectionParams? = null,
     appsParams: AppsSectionParams,
     predictedTarget: PredictedSubmitTarget? = null,
     isPhysicalKeyboardConnected: Boolean,
@@ -173,6 +175,11 @@ fun ContentLayout(
             predictedTarget = predictedTarget,
             expandedCardMaxHeight = expandedCardMaxHeight,
         )
+    val effectiveRemindersParams =
+        remindersParams?.copy(
+            predictedTarget = predictedTarget,
+            expandedCardMaxHeight = expandedCardMaxHeight,
+        )
     val hasQuery = state.query.isNotBlank()
     val isLocalSearchRefreshing =
         shouldDeferTopMatchesForLocalSearch(
@@ -238,6 +245,7 @@ fun ContentLayout(
             settingsParams = effectiveSettingsParams,
             calendarParams = effectiveCalendarParams,
             notesParams = effectiveNotesParams,
+            remindersParams = effectiveRemindersParams,
             appShortcutsParams = effectiveAppShortcutsParams,
             appsParams = regularAppsParams,
             isSearching = hasQuery,
@@ -253,6 +261,7 @@ fun ContentLayout(
             settingsParams = effectiveSettingsParams,
             calendarParams = effectiveCalendarParams,
             notesParams = effectiveNotesParams,
+            remindersParams = effectiveRemindersParams,
             appsParams = regularAppsParams,
             isReversed = isReversed,
         )
@@ -431,6 +440,7 @@ fun ContentLayout(
                 settingsParams = sectionParams.settingsParams?.copy(predictedTarget = null),
                 calendarParams = sectionParams.calendarParams?.copy(predictedTarget = null),
                 notesParams = sectionParams.notesParams?.copy(predictedTarget = null),
+                remindersParams = sectionParams.remindersParams,
                 appsParams =
                     sectionParams.appsParams?.copy(
                         predictedTarget = null,
@@ -454,6 +464,29 @@ fun ContentLayout(
             .map { it.eventId }
             .toSet()
     val hasStandaloneTodayCalendarSection = standaloneTodayEventIds.isNotEmpty()
+    // Low battery, alarm, reminders and future At a Glance sources share the today's events card on
+    // home; media controls get a card of their own.
+    val atAGlanceItems =
+        rememberAtAGlanceItems(
+            enabled = !hasQuery,
+            reversed = isReversed,
+        )
+    val atAGlanceContent: (@Composable (dividerBefore: Boolean, dividerAfter: Boolean) -> Unit)? =
+        if (atAGlanceItems.isNotEmpty()) {
+            { dividerBefore, dividerAfter ->
+                AtAGlanceRows(
+                    items = atAGlanceItems,
+                    showWallpaperBackground = effectiveShowWallpaperBackground,
+                    dividerBefore = dividerBefore,
+                    dividerAfter = dividerAfter,
+                )
+            }
+        } else {
+            null
+        }
+    val nowPlaying = rememberNowPlayingGlance(enabled = !hasQuery)
+    val hasAtAGlanceSection =
+        hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty() || nowPlaying != null
     val pinnedCalendarEventsForPinnedBlock =
         if (!hasQuery && standaloneTodayEventIds.isNotEmpty()) {
             renderingState.pinnedCalendarEvents.filterNot { it.eventId in standaloneTodayEventIds }
@@ -473,13 +506,14 @@ fun ContentLayout(
                     renderingState.hasPinnedFiles ||
                     renderingState.hasPinnedSettings ||
                     pinnedCalendarEventsForPinnedBlock.isNotEmpty() ||
-                    renderingState.hasPinnedNotes
+                    renderingState.hasPinnedNotes ||
+                    renderingState.hasPinnedReminders
             )
     var pinnedNonAppItemsRendered = false
-    var standaloneTodayCalendarRendered = false
+    var atAGlanceRendered = false
     var deferredSearchHistoryRendered = false
-    val shouldDeferSearchHistoryUntilTodayEvents =
-        showRecentItems && hasStandaloneTodayCalendarSection
+    val shouldDeferSearchHistoryUntilAtAGlance =
+        showRecentItems && hasAtAGlanceSection
     val showSectionedPinnedHeaders =
         !hasQuery &&
             !state.unifiedPinnedItemsEnabled &&
@@ -637,6 +671,8 @@ fun ContentLayout(
                 (sectionContext.shouldRenderCalendar && sectionContext.calendarEventsList.isNotEmpty()) ||
                     (sectionContext.isHomeScreenCalendarMode &&
                         sectionContext.todayCalendarEventsList.isNotEmpty())
+            SearchSection.REMINDERS ->
+                sectionContext.shouldRenderReminders && sectionContext.remindersList.isNotEmpty()
             SearchSection.NOTES ->
                 sectionContext.shouldRenderNotes && sectionContext.notesList.isNotEmpty()
             SearchSection.APPS, SearchSection.APP_SETTINGS -> true
@@ -656,9 +692,7 @@ fun ContentLayout(
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
             ) {
                 if (
-                    shouldShowSearchHistoryTitle(
-                        sectionContextForRecentHistoryExpansion.todayCalendarEventsList.isNotEmpty(),
-                    )
+                    shouldShowSearchHistoryTitle(hasAtAGlanceSection)
                 ) {
                     Text(
                         text = stringResource(R.string.recent_queries_toggle_title),
@@ -746,12 +780,14 @@ fun ContentLayout(
                             settings = renderingState.pinnedSettings,
                             calendarEvents = pinnedCalendarEventsForPinnedBlock,
                             notes = renderingState.pinnedNotes,
+                            reminders = renderingState.pinnedReminders,
                             contactsParams = effectiveContactsParams,
                             filesParams = effectiveFilesParams,
                             appShortcutsParams = effectiveAppShortcutsParams,
                             settingsParams = effectiveSettingsParams,
                             calendarParams = effectiveCalendarParams,
                             notesParams = effectiveNotesParams,
+                            remindersParams = effectiveRemindersParams,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
                             modifier = Modifier.fillMaxWidth(),
                             )
@@ -841,12 +877,14 @@ fun ContentLayout(
                             settings = renderingState.pinnedSettings,
                             calendarEvents = pinnedCalendarEventsForPinnedBlock,
                             notes = renderingState.pinnedNotes,
+                            reminders = renderingState.pinnedReminders,
                             contactsParams = effectiveContactsParams,
                             filesParams = effectiveFilesParams,
                             appShortcutsParams = effectiveAppShortcutsParams,
                             settingsParams = effectiveSettingsParams,
                             calendarParams = effectiveCalendarParams,
                             notesParams = effectiveNotesParams,
+                            remindersParams = effectiveRemindersParams,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -867,6 +905,7 @@ fun ContentLayout(
                     settingsParams = effectiveSettingsParams,
                     appShortcutsParams = effectiveAppShortcutsParams,
                     notesParams = notesParams,
+                    remindersParams = remindersParams,
                     onRecentQueryClick = onRecentQueryClick,
                     onDeleteRecentItem = onDeleteRecentItem,
                     expandedCardMaxHeight = expandedCardMaxHeight,
@@ -940,30 +979,31 @@ fun ContentLayout(
 
         when (itemType) {
             ItemPriorityConfig.ItemType.UPCOMING_ALARM -> {
-                if (!hasQuery && !isHomeCalendarExpanded && !hidePinnedAndAppsWhenSearchHistoryExpanded) {
-                    if (isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
-                        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
-                            renderSearchHistoryBlock()
-                            deferredSearchHistoryRendered = true
-                        }
-                        HomeLoadingAnimatedContent(
-                            animationKey = "home-today-calendar",
-                            enabled = true,
-                            appearedKeys = appearedHomeContentKeys,
-                        ) {
-                            renderSection(
-                                section = SearchSection.CALENDAR,
-                                params = regularSectionParams,
-                                sectionContext = sectionContextForRecentHistoryExpansion.copy(
-                                    shouldRenderCalendar = false,
-                                    calendarEventsList = emptyList(),
-                                ),
-                            )
-                        }
-                        standaloneTodayCalendarRendered = true
+                if (
+                    !hasQuery &&
+                    !isHomeCalendarExpanded &&
+                    !hidePinnedAndAppsWhenSearchHistoryExpanded &&
+                    hasAtAGlanceSection &&
+                    !atAGlanceRendered
+                ) {
+                    // Search history sits between the apps and At a Glance, so it renders on the
+                    // far side of At a Glance from the apps grid in either layout direction.
+                    if (isReversed && shouldDeferSearchHistoryUntilAtAGlance && !deferredSearchHistoryRendered) {
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
                     }
-                    UpcomingAlarmSection(showWallpaperBackground = effectiveShowWallpaperBackground)
-                    if (!isReversed && hasStandaloneTodayCalendarSection && !standaloneTodayCalendarRendered) {
+                    // Media gets its own card on the search-bar side of the other At a Glance
+                    // rows, and carries the section title whenever it comes first.
+                    val showGlanceTitle = !hideHomeSectionTitleRows
+                    val mediaCardFirst = nowPlaying != null && !isReversed
+                    if (mediaCardFirst && nowPlaying != null) {
+                        if (showGlanceTitle) AtAGlanceTitle()
+                        NowPlayingCard(
+                            glance = nowPlaying,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                        )
+                    }
+                    if (hasStandaloneTodayCalendarSection && regularSectionParams.calendarParams != null) {
                         HomeLoadingAnimatedContent(
                             animationKey = "home-today-calendar",
                             enabled = true,
@@ -975,14 +1015,31 @@ fun ContentLayout(
                                 sectionContext = sectionContextForRecentHistoryExpansion.copy(
                                     shouldRenderCalendar = false,
                                     calendarEventsList = emptyList(),
+                                    atAGlanceContent = atAGlanceContent,
+                                    atAGlanceContentFirst = !isReversed,
+                                    hideHomeSectionTitleRows = !showGlanceTitle || mediaCardFirst,
                                 ),
                             )
                         }
-                        standaloneTodayCalendarRendered = true
-                        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered) {
-                            renderSearchHistoryBlock()
-                            deferredSearchHistoryRendered = true
-                        }
+                    } else {
+                        AtAGlanceCard(
+                            items = atAGlanceItems,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                            showTitle = showGlanceTitle && !mediaCardFirst,
+                        )
+                    }
+                    if (nowPlaying != null && isReversed) {
+                        val hasOtherGlanceCard = hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty()
+                        if (showGlanceTitle && !hasOtherGlanceCard) AtAGlanceTitle()
+                        NowPlayingCard(
+                            glance = nowPlaying,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                        )
+                    }
+                    atAGlanceRendered = true
+                    if (!isReversed && shouldDeferSearchHistoryUntilAtAGlance && !deferredSearchHistoryRendered) {
+                        renderSearchHistoryBlock()
+                        deferredSearchHistoryRendered = true
                     }
                 }
             }
@@ -1112,7 +1169,7 @@ fun ContentLayout(
                     if (deferredSearchHistoryRendered) {
                         return
                     }
-                    if (shouldDeferSearchHistoryUntilTodayEvents && !standaloneTodayCalendarRendered) {
+                    if (shouldDeferSearchHistoryUntilAtAGlance && !atAGlanceRendered) {
                         return
                     }
                     renderSearchHistoryBlock()
@@ -1174,6 +1231,7 @@ fun ContentLayout(
             ItemPriorityConfig.ItemType.CONTACTS_SECTION,
             ItemPriorityConfig.ItemType.SETTINGS_SECTION,
             ItemPriorityConfig.ItemType.CALENDAR_SECTION,
+            ItemPriorityConfig.ItemType.REMINDERS_SECTION,
             ItemPriorityConfig.ItemType.NOTES_SECTION,
             ItemPriorityConfig.ItemType.APP_SETTINGS_SECTION,
             -> Unit
@@ -1182,7 +1240,7 @@ fun ContentLayout(
 
     @Composable
     fun renderDeferredSearchHistory() {
-        if (shouldDeferSearchHistoryUntilTodayEvents && !deferredSearchHistoryRendered && showRecentItems) {
+        if (shouldDeferSearchHistoryUntilAtAGlance && !deferredSearchHistoryRendered && showRecentItems) {
             renderSearchHistoryBlock()
             deferredSearchHistoryRendered = true
         }
@@ -1293,7 +1351,8 @@ private fun hasMoreResults(
         (sectionContext.shouldRenderSettings && sectionContext.settingsList.isNotEmpty()) ||
         (sectionContext.shouldRenderAppSettings && sectionContext.appSettingsList.isNotEmpty()) ||
         (sectionContext.shouldRenderCalendar && sectionContext.calendarEventsList.isNotEmpty()) ||
-        (sectionContext.shouldRenderNotes && sectionContext.notesList.isNotEmpty())
+        (sectionContext.shouldRenderNotes && sectionContext.notesList.isNotEmpty()) ||
+        (sectionContext.shouldRenderReminders && sectionContext.remindersList.isNotEmpty())
 
 private fun SearchSection.supportsPinnedHomeCollapse(): Boolean =
     when (this) {
@@ -1303,6 +1362,7 @@ private fun SearchSection.supportsPinnedHomeCollapse(): Boolean =
         SearchSection.FILES,
         SearchSection.SETTINGS,
         SearchSection.CALENDAR,
+        SearchSection.REMINDERS,
         SearchSection.NOTES,
         -> true
     }
@@ -1441,6 +1501,7 @@ private fun AliasRecentItemsSection(
     settingsParams: SettingsSectionParams,
     appShortcutsParams: AppShortcutsSectionParams,
     notesParams: NotesSectionParams,
+    remindersParams: RemindersSectionParams? = null,
     onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
     onDeleteRecentItem: (RecentSearchEntry) -> Unit,
     expandedCardMaxHeight: Dp,

@@ -135,6 +135,17 @@ class DateCalculatorHandler(
             )
         }
 
+        // Only inspect the trailing "in …" expression after standalone calculator parsing
+        // fails, so ordinary searches don't change calculator matching or its hot path.
+        DateCalculatorUtils.parseTrailingTimeArithmeticQuery(trimmedQuery)?.let { r ->
+            return CalculatorState(
+                timeResultLabel = r.label,
+                timeContextLabel = r.contextLabel,
+                isTimeAbsoluteResult = r.isAbsolute,
+                toolType = SearchToolType.DATE_CALCULATOR,
+            )
+        }
+
         DateCalculatorUtils.parseAbsoluteTimeQuery(trimmedQuery)?.let { (past, future) ->
             return CalculatorState(
                 timeResultLabel = past.label,

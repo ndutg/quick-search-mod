@@ -52,6 +52,7 @@ internal fun loadExportSelectionState(context: Context): ExportSelectionState {
             BasePreferences.KEY_PINNED_FILE_URIS,
             BasePreferences.KEY_PINNED_SETTINGS,
             BasePreferences.KEY_PINNED_CALENDAR_EVENT_IDS,
+            BasePreferences.KEY_PINNED_REMINDER_IDS,
             BasePreferences.KEY_PINNED_APP_SHORTCUTS,
         ).any { key ->
             userPrefs.getStringSet(key, emptySet()).orEmpty().isNotEmpty()
@@ -67,15 +68,22 @@ internal fun loadExportSelectionState(context: Context): ExportSelectionState {
             val eventsJson = userPrefs.getString(BasePreferences.KEY_CUSTOM_CALENDAR_EVENTS_DATA, null).orEmpty()
             eventsJson.isNotBlank() && eventsJson != "[]"
         }
+    val hasReminders =
+        run {
+            val remindersJson = userPrefs.getString(BasePreferences.KEY_REMINDERS_DATA, null).orEmpty()
+            remindersJson.isNotBlank() && remindersJson != "[]"
+        }
     val hasApiKeys = UserAppPreferences(context).hasAnyLlmApiKey()
     return ExportSelectionState(
         includePinnedItems = hasPinnedItems,
         includeNotes = hasNotes,
         includeCalendarEvents = hasCustomCalendarEvents,
+        includeReminders = hasReminders,
         includeApiKeys = false,
         showPinnedItemsOption = hasPinnedItems,
         showNotesOption = hasNotes,
         showCalendarEventsOption = hasCustomCalendarEvents,
+        showRemindersOption = hasReminders,
         showApiKeysOption = hasApiKeys,
     )
 }

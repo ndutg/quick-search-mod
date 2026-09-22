@@ -136,7 +136,7 @@ class TopMatchesRankingTest {
     }
 
     @Test
-    fun topMatchesSettleAtDeadlineAndAppendLateMatchesOnceSearchCompletes() {
+    fun topMatchesSettleAtDeadlineAndAdoptFinalRankingOnceSearchCompletes() {
         val first = topMatch("first", priority = 1, secondaryScore = 0L, index = 0)
         val betterLate = topMatch("late", priority = 0, secondaryScore = 0L, index = 0)
         val buffer = StableTopMatchesBuffer()
@@ -161,13 +161,36 @@ class TopMatchesRankingTest {
             ).matches,
         )
         assertEquals(
-            listOf(first, betterLate),
+            listOf(betterLate, first),
             buffer.displayedValue(
                 "te",
                 listOf(betterLate, first),
                 false,
                 deadlineReached = true,
                 limit = 3,
+            ).matches,
+        )
+    }
+
+    @Test
+    fun lateMatchReplacesDeadlineResultWhenTopMatchesAreAlreadyFull() {
+        val early = topMatch("early", priority = 1, secondaryScore = 0L, index = 0)
+        val betterLate = topMatch("late", priority = 0, secondaryScore = 0L, index = 0)
+        val buffer = StableTopMatchesBuffer()
+
+        assertEquals(
+            listOf(early),
+            buffer.displayedValue("te", listOf(early), true, deadlineReached = true, limit = 1)
+                .matches,
+        )
+        assertEquals(
+            listOf(betterLate),
+            buffer.displayedValue(
+                "te",
+                listOf(betterLate),
+                false,
+                deadlineReached = true,
+                limit = 1,
             ).matches,
         )
     }

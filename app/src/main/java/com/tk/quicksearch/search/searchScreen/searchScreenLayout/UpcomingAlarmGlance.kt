@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -37,15 +38,23 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
 import com.tk.quicksearch.search.data.UpcomingAlarmRepository
-import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Date
 import kotlinx.coroutines.delay
 
 private val UpcomingAlarmDismissSize = 28.dp
 
+/** The next clock-app alarm shown in the home At a Glance card, with its row actions. */
+internal class UpcomingAlarmGlance(
+    val alarm: AlarmManager.AlarmClockInfo,
+    val nowMillis: Long,
+    val open: () -> Boolean,
+    val dismiss: () -> Unit,
+)
+
+/** Polls the next alarm within 45 minutes while [enabled]; refreshes on resume and every 10 seconds. */
 @Composable
-internal fun UpcomingAlarmSection(showWallpaperBackground: Boolean) {
+internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance? {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val repository = remember(context) { UpcomingAlarmRepository(context) }
@@ -60,7 +69,11 @@ internal fun UpcomingAlarmSection(showWallpaperBackground: Boolean) {
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
-    LaunchedEffect(repository, refreshKey) {
+    LaunchedEffect(repository, refreshKey, enabled) {
+        if (!enabled) {
+            alarm = null
+            return@LaunchedEffect
+        }
         while (true) {
             nowMillis = System.currentTimeMillis()
             alarm = repository.nextWithinFortyFiveMinutes(nowMillis)
@@ -68,66 +81,73 @@ internal fun UpcomingAlarmSection(showWallpaperBackground: Boolean) {
         }
     }
 
-    val nextAlarm = alarm ?: return
-    val alarmTime = remember(nextAlarm.triggerTime, context) {
-        DateFormat.getTimeFormat(context).format(Date(nextAlarm.triggerTime))
+    val nextAlarm = alarm ?: return null
+    return UpcomingAlarmGlance(
+        alarm = nextAlarm,
+        nowMillis = nowMillis,
+        open = { repository.open(nextAlarm) },
+        dismiss = {
+            repository.dismiss(nextAlarm)
+            alarm = null
+        },
+    )
+}
+
+@Composable
+internal fun UpcomingAlarmRow(glance: UpcomingAlarmGlance) {
+    val context = LocalContext.current
+    val alarmTime = remember(glance.alarm.triggerTime, context) {
+        DateFormat.getTimeFormat(context).format(Date(glance.alarm.triggerTime))
     }
-    val scheduleLabel = "$alarmTime · ${calendarRelativeTimeLabel(nextAlarm.triggerTime, nowMillis)}"
+    val scheduleLabel = "$alarmTime • ${calendarRelativeTimeLabel(glance.alarm.triggerTime, glance.nowMillis)}"
     val title = stringResource(R.string.home_upcoming_alarm)
     val failureMessage = stringResource(R.string.common_error_unable_to_open, title)
     val showFailure = { Toast.makeText(context, failureMessage, Toast.LENGTH_SHORT).show() }
 
-    SearchResultCard(
-        modifier = Modifier.fillMaxWidth(),
-        showWallpaperBackground = showWallpaperBackground,
+    Row(
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
+            start = 7.dp,
+            top = DesignTokens.SpacingMedium,
+            bottom = DesignTokens.SpacingMedium,
+        ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(
-                horizontal = DesignTokens.SpacingLarge,
-                vertical = DesignTokens.SpacingMedium,
-            ),
+            modifier = Modifier.weight(1f).clickable {
+                if (!glance.open()) showFailure()
+            },
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.weight(1f).clickable {
-                    if (!repository.open(nextAlarm)) showFailure()
-                },
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.AccessTime,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp),
+            Icon(
+                imageVector = Icons.Rounded.AccessTime,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp),
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
-                Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = scheduleLabel,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-            IconButton(
-                onClick = {
-                    repository.dismiss(nextAlarm)
-                    alarm = null
-                },
-                modifier = Modifier.size(UpcomingAlarmDismissSize),
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = stringResource(R.string.common_close),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(16.dp),
+                Text(
+                    text = scheduleLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+        IconButton(
+            onClick = glance.dismiss,
+            modifier = Modifier.size(UpcomingAlarmDismissSize),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = stringResource(R.string.common_close),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }

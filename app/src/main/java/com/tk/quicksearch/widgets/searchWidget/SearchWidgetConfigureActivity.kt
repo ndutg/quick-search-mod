@@ -36,10 +36,14 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.widgets.WidgetConfigScreen.WidgetConfigScreen
+import com.tk.quicksearch.widgets.mediaControlsWidget.rememberMediaControlsAccess
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
+import com.tk.quicksearch.widgets.utils.WidgetTheme
 import com.tk.quicksearch.widgets.utils.WidgetVariant
 import com.tk.quicksearch.widgets.utils.applyWidgetPreferences
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceiver
+import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
+import com.tk.quicksearch.widgets.utils.glanceWidgetFor
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
 import com.tk.quicksearch.widgets.utils.toWidgetPreferences
 import kotlinx.coroutines.launch
@@ -167,7 +171,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
         updateAppWidgetState(context = this, glanceId = glanceId) { mutablePrefs ->
             mutablePrefs.applyWidgetPreferences(constrainedPrefs, this@SearchWidgetConfigureActivity)
         }
-        SearchWidget(widgetVariant).update(this, glanceId)
+        glanceWidgetFor(widgetVariant).update(this, glanceId)
     }
 
     private fun createResultIntent(): Intent = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -179,10 +183,10 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                 .getAppWidgetInfo(appWidgetId)
                 ?.provider
                 ?.className
-        return if (providerClassName == CustomButtonsWidgetReceiver::class.java.name) {
-            WidgetVariant.CUSTOM_BUTTONS_ONLY
-        } else {
-            WidgetVariant.STANDARD
+        return when (providerClassName) {
+            CustomButtonsWidgetReceiver::class.java.name -> WidgetVariant.CUSTOM_BUTTONS_ONLY
+            MediaControlsWidgetReceiver::class.java.name -> WidgetVariant.MEDIA_CONTROLS
+            else -> WidgetVariant.STANDARD
         }
     }
 
@@ -220,7 +224,9 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
         LaunchedEffect(appWidgetId, deviceThemeEnabled, useDarkThemeForDeviceTheme) {
             val loaded = loadWidgetPreferences(appWidgetId)
             config = loaded.preferences
-            if (!loaded.hasStoredConfig && deviceThemeEnabled) {
+            if (!loaded.hasStoredConfig && widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
+                config = config.copy(theme = WidgetTheme.DARK, backgroundColor = null)
+            } else if (!loaded.hasStoredConfig && deviceThemeEnabled) {
                 config =
                     config.copy(
                         backgroundColor = resolveDeviceThemeBackgroundColor(useDarkThemeForDeviceTheme),
@@ -229,6 +235,9 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
             }
             isLoaded = true
         }
+
+        // Media Controls cannot show anything without notification access, so it is required.
+        val hasMediaAccess = widgetVariant != WidgetVariant.MEDIA_CONTROLS || rememberMediaControlsAccess()
 
         WidgetConfigScreen(
             state = config,
@@ -239,7 +248,11 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                     (
                         widgetVariant != WidgetVariant.CUSTOM_BUTTONS_ONLY ||
                             config.hasCustomButtons
-                    ),
+                    ) &&
+                    hasMediaAccess,
+            showNotificationAccessBanner = !hasMediaAccess,
+            saveLabelResId =
+                if (hasMediaAccess) R.string.dialog_save else R.string.settings_overlay_source_needs_permission,
             onStateChange = { config = it.enforceVariantConstraints(widgetVariant) },
             onApply = {
                 scope.launch {
@@ -252,10 +265,10 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
             searchViewModel = searchViewModel,
             widgetVariant = widgetVariant,
             titleResId =
-                if (widgetVariant == WidgetVariant.CUSTOM_BUTTONS_ONLY) {
-                    R.string.widget_custom_buttons_widget_title
-                } else {
-                    R.string.widget_settings_title
+                when (widgetVariant) {
+                    WidgetVariant.CUSTOM_BUTTONS_ONLY -> R.string.widget_custom_buttons_widget_title
+                    WidgetVariant.MEDIA_CONTROLS -> R.string.widget_media_controls_widget_title
+                    WidgetVariant.STANDARD -> R.string.widget_settings_title
                 },
         )
     }

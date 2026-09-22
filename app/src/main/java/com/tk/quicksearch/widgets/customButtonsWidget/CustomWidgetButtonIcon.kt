@@ -180,5 +180,14 @@ fun CustomWidgetButtonIcon(
                 modifier = modifier.size(iconSize),
             )
         }
+
+        is CustomWidgetButtonAction.Media -> {
+            Icon(
+                imageVector = ImageVector.vectorResource(action.command.iconRes),
+                contentDescription = action.contentDescription(),
+                tint = tintColor,
+                modifier = modifier.size(iconSize),
+            )
+        }
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,9 +25,13 @@ import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonsSection
 import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
@@ -34,6 +39,8 @@ import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetPreviewCard
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
 import com.tk.quicksearch.widgets.utils.WidgetVariant
+import com.tk.quicksearch.widgets.WidgetConfigScreen.components.MediaControlsTextColorSection
+import com.tk.quicksearch.widgets.WidgetConfigScreen.components.MediaControlsThemeSection
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetLoadingState
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetMicIconSection
 import com.tk.quicksearch.widgets.WidgetConfigScreen.components.WidgetInternalPaddingSection
@@ -51,6 +58,8 @@ fun WidgetConfigScreen(
     showDeviceThemeOption: Boolean = false,
     isLoaded: Boolean,
     isSaveEnabled: Boolean = isLoaded,
+    showNotificationAccessBanner: Boolean = false,
+    saveLabelResId: Int = R.string.dialog_save,
     onStateChange: (WidgetPreferences) -> Unit,
     onApply: () -> Unit,
     onCancel: () -> Unit,
@@ -120,7 +129,7 @@ fun WidgetConfigScreen(
                                 ),
                     ) {
                         Text(
-                            text = stringResource(R.string.dialog_save),
+                            text = stringResource(saveLabelResId),
                             style = MaterialTheme.typography.labelLarge,
                         )
                     }
@@ -155,6 +164,9 @@ fun WidgetConfigScreen(
                 )
             }
 
+            // The media controls widget only offers a background, corner radius and transparency.
+            val isMediaControls = widgetVariant == WidgetVariant.MEDIA_CONTROLS
+
             // Scrollable preferences section
             Column(
                 modifier =
@@ -166,6 +178,8 @@ fun WidgetConfigScreen(
                             start =
                                 WidgetConfigConstants
                                     .HORIZONTAL_PADDING,
+                            // Its first setting sits right under the preview otherwise.
+                            top = if (isMediaControls) WidgetConfigConstants.SECTION_SPACING else 0.dp,
                             end =
                                 WidgetConfigConstants
                                     .HORIZONTAL_PADDING,
@@ -176,6 +190,16 @@ fun WidgetConfigScreen(
                 verticalArrangement =
                     Arrangement.spacedBy(WidgetConfigConstants.SECTION_SPACING),
             ) {
+                if (showNotificationAccessBanner) {
+                    val context = LocalContext.current
+                    TipBanner(
+                        text = stringResource(R.string.widget_media_controls_permission_hint),
+                        icon = Icons.Rounded.Info,
+                        onContentClick = { NotificationDotsPermission.openNotificationListenerSettings(context) },
+                        showDismissButton = false,
+                        showContentRipple = false,
+                    )
+                }
                 if (
                     widgetVariant == WidgetVariant.CUSTOM_BUTTONS_ONLY ||
                     widgetVariant == WidgetVariant.STANDARD
@@ -193,13 +217,28 @@ fun WidgetConfigScreen(
                     )
                 }
 
-                WidgetThemeSection(
+                if (isMediaControls) {
+                    MediaControlsThemeSection(
+                        state = constrainedState,
+                        onStateChange = onConstrainedStateChange,
+                    )
+                    MediaControlsTextColorSection(
+                        state = constrainedState,
+                        onStateChange = onConstrainedStateChange,
+                    )
+                } else {
+                    WidgetThemeSection(
+                        state = constrainedState,
+                        showDeviceThemeOption = showDeviceThemeOption,
+                        onStateChange = onConstrainedStateChange,
+                    )
+                }
+
+                WidgetSlidersSection(
                     state = constrainedState,
-                    showDeviceThemeOption = showDeviceThemeOption,
+                    showBorderControls = !isMediaControls,
                     onStateChange = onConstrainedStateChange,
                 )
-
-                WidgetSlidersSection(state = constrainedState, onStateChange = onConstrainedStateChange)
                 if (widgetVariant == WidgetVariant.STANDARD) {
                     WidgetSearchIconSection(
                         state = constrainedState,
@@ -220,10 +259,12 @@ fun WidgetConfigScreen(
                         onStateChange = onConstrainedStateChange,
                     )
                 }
-                WidgetInternalPaddingSection(
-                    state = constrainedState,
-                    onStateChange = onConstrainedStateChange,
-                )
+                if (!isMediaControls) {
+                    WidgetInternalPaddingSection(
+                        state = constrainedState,
+                        onStateChange = onConstrainedStateChange,
+                    )
+                }
             }
         }
     }

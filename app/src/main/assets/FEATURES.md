@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss.
 
-**Version**: 4.5 (Updated September 18 2026)
+**Version**: 4.6 (Updated September 21 2026)
 
 ### Search
 
@@ -11,11 +11,12 @@ This document highlights all the available features. It also includes details ab
 - **Contact Search** - Quickly locate contacts in your phone and perform various actions for that contact, e.g. Call, SMS, Google Meet Voice/Video call, WhatsApp (Chat, Audio/Video Call), Telegram (Chat, Audio/Video Call), Signal (Chat, Audio/Video Call)
 - **File Search** - Search through device files & folders
 - **Calendar Events Search** - Search through your calendar events
+- **Reminders Search** - Create and search reminders directly from the search bar. For example, search `Laundry in 2 hrs`.
 - **Notes Search** - Write notes and search them quickly from the search bar. Swipe left from home for a quick note.
 - **Notification History** - Search your notification history and open the Notification History screen. Requires notification access; only notifications received after access is granted are saved.
 - **Device Settings Search** - Find specific device settings
 - **App Settings Search** - Find and access Quick Search app settings directly by searching
-- **App Suggestions** - Shows suggested apps when no search query is entered. Swipe left or right on the suggestions row to switch between **New & Updated**, **Pinned**, and **Most Used** apps. You can also choose to hide app suggestions completely. This feature requires usage access permission. If permission is not granted, the app shows suggestions based on apps you recently opened from within the app.
+- **App Suggestions** - Shows suggested apps when no search query is entered. Swipe left or right on the suggestions row to switch between **New & Updated**, **Pinned**, and **Most Used** apps. You can also choose to hide app suggestions completely. This feature requires usage access permission. If permission is not granted, the app shows suggestions based on apps you recently opened from within the app. Create folders in Pinned Apps by dragging one app onto another.
 - **View All Apps** - A button below app suggestions lets you browse all installed apps at once. Enable it in settings.
 - **Screen Time** - Search **Screen Time** to check your daily phone usage. Long-press an app to view its individual screen time.
 
@@ -157,7 +158,18 @@ Long-press on most results to open a context menu with quick actions.
 - **Excluded Items** - When you exclude any item on the search results page, you can find them here and clear them if you want to.
 - **Refresh Data** - The app automatically refreshes your data from time to time, but if you want to manually refresh the data, you can do it here.
 - **Calendar Options** - Create custom calendar entries, choose which calendar app opens your events, and choose to ignore past events in results. Timed events appear on the home screen 30 minutes before they start, and tap **More Events** to view all of today's events.
+- **Reminders Options** - Choose whether past reminders appear in results.
 - **Upcoming Alarms** - Your next alarm appears on Home when it is within 45 minutes of going off.
+
+---
+
+### At a Glance
+An optional Home section that shows useful information when it matters.
+
+- **Today's Calendar Events** - See your events for today.
+- **Upcoming Reminders & Timers** - See reminders and timers that are coming up.
+- **Media Controls** - Control currently playing media.
+- **Low Battery Warnings** - See a warning when your battery is low.
 
 ---
 
@@ -280,6 +292,8 @@ Long-press on most results to open a context menu with quick actions.
 - **Default Assistant** - Set Quick Search as your default assistant app to replace Google Assistant or Gemini. You can enable Assistant Voice Mode to open the app with voice typing enabled when triggered with digital assistant gesture.
 - **Set as Launcher** - Set Quick Search as your default launcher so it opens directly from the home button. Swipe right to access widgets.
 - **Quick Settings Tile** - Add a Quick Search tile to notification quick settings for quick access
+- **System-Wide Edge Swipe** - Option to launch Quick Search from anywhere with an edge swipe gesture.
+- **Floating Button** - Option to launch Quick Search from a floating button.
 
 ---
 
@@ -296,8 +310,10 @@ Long-press on most results to open a context menu with quick actions.
 ### Widgets
 
 - **Widgets Panel** - Add home-screen widgets to a side panel inside Quick Search. You do not need to set Quick Search as your launcher; assign a swipe gesture to open the panel, then add widgets from there.
+- **Pin Widgets to Home** - Long-press a widget in the Widgets Panel to pin it to Home.
 - **Search Widget** - Tap the widget to instantly open Quick Search. Highly customizable with mic button support and up to 2 custom buttons alongside the search functionality.
 - **Custom Buttons Widget** - A dedicated widget for custom buttons - apps, app shortcuts, contacts, files, device settings, and notes - with enhanced customizable layouts and actions.
+- **Media Controls Widget** - A dedicated home-screen widget that shows the current track and album art, with playback, previous/next, and rewind/forward controls. Requires notification access to show and control active media.
 
 ---
 
@@ -310,6 +326,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Icons & Buttons** - Toggle search and mic icons and configure up to 2 custom buttons on the search widget or a full set of custom buttons on the custom buttons widget.
 - **Icon Size** - Increase the size of icons displayed in the widget.
 - **Custom Button Icons** - Set custom icons for widget buttons to personalize how shortcuts appear on your home screen.
+- **Media Controls** - Add media controls to custom widget buttons.
 - The widget mic button can be customized to open other device assistants like Gemini, Perplexity, Bixby, etc.
 
 ---

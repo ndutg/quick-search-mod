@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import com.tk.quicksearch.R
+import com.tk.quicksearch.media.MediaControls
 import com.tk.quicksearch.search.contacts.dialogs.ContactActionsPopup
 import com.tk.quicksearch.search.contacts.dialogs.ContactActionsPopupState
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
@@ -394,6 +395,12 @@ class WidgetActionActivity : ComponentActivity() {
                     noteId = action.noteId,
                 )
             }
+
+            // Reached from pinned launcher shortcuts and notifications, which can only start an
+            // activity; in-app taps and the widget dispatch directly instead (see launch()).
+            is CustomWidgetButtonAction.Media -> {
+                MediaControls.dispatch(this, action.command)
+            }
         }
     }
 
@@ -422,5 +429,20 @@ class WidgetActionActivity : ComponentActivity() {
                 putExtra(EXTRA_CUSTOM_BUTTON_ACTION, action.toJson())
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
+
+        /**
+         * Runs [action] from inside the app. Media keys are sent directly so repeated taps do not
+         * flash an activity over the current screen.
+         */
+        fun launch(
+            context: Context,
+            action: CustomWidgetButtonAction,
+        ) {
+            if (action is CustomWidgetButtonAction.Media) {
+                MediaControls.dispatch(context, action.command)
+            } else {
+                context.startActivity(createIntent(context, action))
+            }
+        }
     }
 }
