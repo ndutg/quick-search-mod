@@ -92,6 +92,7 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
+import com.tk.quicksearch.media.MediaCommand
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -602,7 +603,7 @@ fun CustomWidgetButtonPickerDialog(
             if (query.text.trim().isEmpty()) {
                 emptyList()
             } else {
-                buildCustomWidgetSearchResults(searchState).filter(selectedFilter::matches)
+                buildCustomWidgetSearchResults(searchState, query.text, context).filter(selectedFilter::matches)
             }
         }
 
@@ -846,6 +847,7 @@ private enum class CustomWidgetResultFilter(
     FILES(R.string.section_files),
     SETTINGS(R.string.section_settings),
     NOTES(R.string.section_notes),
+    MEDIA(R.string.section_media),
     ;
 
     fun matches(result: CustomWidgetSearchResult): Boolean =
@@ -857,6 +859,7 @@ private enum class CustomWidgetResultFilter(
             FILES -> result is CustomWidgetSearchResult.File
             SETTINGS -> result is CustomWidgetSearchResult.Setting
             NOTES -> result is CustomWidgetSearchResult.Note
+            MEDIA -> result is CustomWidgetSearchResult.Media
         }
 }
 
@@ -945,6 +948,11 @@ private sealed class CustomWidgetSearchResult {
         val note: NoteInfo,
     ) : CustomWidgetSearchResult()
 
+    data class Media(
+        val command: MediaCommand,
+        val label: String,
+    ) : CustomWidgetSearchResult()
+
     fun displayLabel(): String =
         when (this) {
             is App -> {
@@ -972,6 +980,10 @@ private sealed class CustomWidgetSearchResult {
 
             is Note -> {
                 note.title
+            }
+
+            is Media -> {
+                label
             }
         }
 
@@ -1076,6 +1088,13 @@ private sealed class CustomWidgetSearchResult {
                     title = note.title,
                 )
             }
+
+            is Media -> {
+                CustomWidgetButtonAction.Media(
+                    command = command,
+                    title = label,
+                )
+            }
         }
 
     fun toPersistedAction(context: Context): CustomWidgetButtonAction =
@@ -1143,8 +1162,13 @@ private fun Bitmap.toBase64Png(): String? =
         }
     }.getOrNull()
 
-private fun buildCustomWidgetSearchResults(state: SearchUiState): List<CustomWidgetSearchResult> =
+private fun buildCustomWidgetSearchResults(
+    state: SearchUiState,
+    query: String,
+    context: Context,
+): List<CustomWidgetSearchResult> =
     buildList {
+        matchingMediaResults(context, query).forEach { add(it) }
         state.searchResults.forEach { add(CustomWidgetSearchResult.App(it)) }
         state.appShortcutResults.forEach { add(CustomWidgetSearchResult.AppShortcut(it)) }
         state.contactResults.forEach { add(CustomWidgetSearchResult.Contact(it)) }
@@ -1152,6 +1176,24 @@ private fun buildCustomWidgetSearchResults(state: SearchUiState): List<CustomWid
         state.settingResults.forEach { add(CustomWidgetSearchResult.Setting(it)) }
         state.noteResults.forEach { add(CustomWidgetSearchResult.Note(it)) }
     }
+
+/**
+ * Media transport controls are hardcoded rather than sourced from search, since they are not
+ * device content to look up but fixed actions the custom-buttons widget can dispatch.
+ */
+private fun matchingMediaResults(context: Context, query: String): List<CustomWidgetSearchResult.Media> {
+    val normalizedQuery = query.trim().lowercase()
+    if (normalizedQuery.isEmpty()) return emptyList()
+    return MediaCommand.entries.mapNotNull { command ->
+        val label = context.getString(command.labelRes)
+        val haystack = (command.searchKeywords + label.lowercase()).joinToString(" ")
+        if (haystack.contains(normalizedQuery)) {
+            CustomWidgetSearchResult.Media(command = command, label = label)
+        } else {
+            null
+        }
+    }
+}
 
 private fun CustomWidgetButtonAction.matchesResult(result: CustomWidgetSearchResult): Boolean =
     when (result) {
@@ -1181,6 +1223,10 @@ private fun CustomWidgetButtonAction.matchesResult(result: CustomWidgetSearchRes
 
         is CustomWidgetSearchResult.Note -> {
             this is CustomWidgetButtonAction.Note && noteId == result.note.noteId
+        }
+
+        is CustomWidgetSearchResult.Media -> {
+            this is CustomWidgetButtonAction.Media && command == result.command
         }
     }
 

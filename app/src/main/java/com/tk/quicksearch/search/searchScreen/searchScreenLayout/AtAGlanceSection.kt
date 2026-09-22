@@ -21,7 +21,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
  * One row of the home At a Glance card. Today's calendar events are hosted by the calendar card
- * itself; every other glanceable source (alarm, reminders, and future ones) contributes rows here.
+ * itself; every other glanceable source (low battery, media, alarm, reminders, and future ones) contributes rows here.
  * Rows sit inside the card's inset and follow CalendarEventRow: 7dp before a 24dp icon, then 12dp
  * to the text.
  */
@@ -40,10 +40,12 @@ internal fun rememberAtAGlanceItems(
     enabled: Boolean,
     reversed: Boolean,
 ): List<AtAGlanceItem> {
+    val lowBattery = rememberLowBatteryGlance(enabled)
     val alarm = rememberUpcomingAlarmGlance(enabled)
     val reminders = rememberUpcomingRemindersGlance(enabled)
     val groups =
         listOf(
+            listOfNotNull(lowBattery?.let { AtAGlanceItem(key = "low-battery") { LowBatteryRow(it) } }),
             listOfNotNull(alarm?.let { AtAGlanceItem(key = "alarm") { UpcomingAlarmRow(it) } }),
             reminders.reminders.map { reminder ->
                 AtAGlanceItem(key = "reminder-${reminder.reminderId}") {
@@ -133,5 +135,16 @@ internal fun AtAGlanceCard(
     if (showTitle) AtAGlanceTitle()
     AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
         AtAGlanceRows(items = items, showWallpaperBackground = showWallpaperBackground)
+    }
+}
+
+/** Media controls sit in their own card under the At a Glance title, apart from the other rows. */
+@Composable
+internal fun NowPlayingCard(
+    glance: NowPlayingGlance,
+    showWallpaperBackground: Boolean,
+) {
+    AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
+        NowPlayingRow(glance)
     }
 }

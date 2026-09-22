@@ -300,6 +300,7 @@
     <string name="section_calendar">Agenda-afspraken</string>
     <string name="section_files">Bestanden</string>
     <string name="section_notes">Notities</string>
+    <string name="section_media">Mediabediening</string>
     <string name="section_settings">Apparaatinstellingen</string>
     <string name="top_match_title">Beste overeenkomst</string>
     <string name="top_matches_count_label">Aantal resultaten</string>
@@ -841,6 +842,9 @@ Beschikbare snelkoppelingen: %1$s</string>
     <string name="settings_upcoming_alarm_desc">Je volgende wekker als die binnen 45 minuten afgaat</string>
     <string name="settings_at_a_glance_events_desc">Agenda-items van vandaag</string>
     <string name="settings_upcoming_reminders_desc">Herinneringen die binnen 30 minuten verlopen of achterstallig zijn</string>
+    <string name="settings_at_a_glance_low_battery_title">Batterij bijna leeg</string>
+    <string name="settings_low_battery_desc">Je batterij wanneer deze op %1$d%% of lager staat</string>
+    <string name="settings_now_playing_desc">Afspeelbediening voor wat er nu wordt afgespeeld</string>
     <string name="settings_use_system_font_desc">Het lettertype van je apparaat volgen</string>
     <string name="settings_use_system_font_title">Systeemlettertype gebruiken</string>
     <string name="settings_accent_color_from_wallpaper">Achtergrond</string>
@@ -1059,6 +1063,9 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_custom_buttons_dialog_title">Actie selecteren</string>
     <string name="widget_custom_buttons_no_results">Geen resultaten gevonden.</string>
     <string name="widget_custom_buttons_filter_all">Alles</string>
+    <string name="media_command_play_pause">Afspelen/Pauzeren</string>
+    <string name="media_command_previous">Vorig nummer</string>
+    <string name="media_command_next">Volgend nummer</string>
     <string name="widget_custom_buttons_restriction">Niet beschikbaar wanneer aangepaste knoppen actief zijn.</string>
     <string name="widget_custom_buttons_title">Aangepaste knoppen</string>
     <string name="widget_custom_buttons_widget_title">Widget voor aangepaste knoppen</string>
@@ -1260,6 +1267,8 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="speed_bump_overlay_title">Haal even adem</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Aankomende wekker</string>
+    <string name="home_low_battery_saver_off">Tik om Batterijbesparing aan te zetten</string>
+    <string name="home_low_battery_saver_on">Batterijbesparing staat aan</string>
     <string name="settings_tavily_title">Tavily voor webzoeken</string>
     <string name="settings_tavily_desc">Voeg een Tavily API-sleutel toe om webzoeken toe te voegen aan modellen die dit niet ondersteunen.</string>
     <string name="settings_tavily_mode_always">Altijd Tavily gebruiken voor webzoekopdrachten</string>

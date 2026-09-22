@@ -287,6 +287,7 @@
 <string name="section_calendar">Takvim etkinlikleri</string>
 <string name="section_files">Dosyalar</string>
 <string name="section_notes">Notlar</string>
+<string name="section_media">Medya Kontrolleri</string>
 <string name="section_settings">Cihaz ayarları</string>
 <string name="top_match_title">En iyi eşleşme</string>
 <string name="top_matches_count_label">Eşleşme sayısı</string>
@@ -805,6 +806,9 @@
 <string name="settings_upcoming_alarm_desc">45 dakika içindeyse sonraki alarmınız</string>
 <string name="settings_at_a_glance_events_desc">Bugünün takvim etkinlikleri</string>
 <string name="settings_upcoming_reminders_desc">30 dakika içinde zamanı gelen veya gecikmiş hatırlatıcılar</string>
+    <string name="settings_at_a_glance_low_battery_title">Düşük pil</string>
+    <string name="settings_low_battery_desc">Piliniz %%%1$d veya altına düştüğünde</string>
+<string name="settings_now_playing_desc">O anda çalan içerik için oynatma kontrolleri</string>
 <string name="settings_use_system_font_desc">Cihazının yazı tipi stilini takip et</string>
 <string name="settings_use_system_font_title">Sistem yazı tipini kullan</string>
 <string name="settings_accent_color_from_wallpaper">Duvar kağıdı</string>
@@ -1010,6 +1014,9 @@
 <string name="widget_custom_buttons_dialog_title">İşlem seç</string>
 <string name="widget_custom_buttons_no_results">Sonuç bulunamadı.</string>
 <string name="widget_custom_buttons_filter_all">Tümü</string>
+<string name="media_command_play_pause">Oynat/Duraklat</string>
+<string name="media_command_previous">Önceki Parça</string>
+<string name="media_command_next">Sonraki Parça</string>
 <string name="widget_custom_buttons_restriction">Özel butonlar aktifken kullanılamaz.</string>
 <string name="widget_custom_buttons_title">Özel butonlar</string>
 <string name="widget_custom_buttons_widget_title">Özel butonlar widget\'ı</string>
@@ -1202,6 +1209,8 @@
     <string name="speed_bump_overlay_title">Derin bir nefes al</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Yaklaşan alarm</string>
+    <string name="home_low_battery_saver_off">Pil Tasarrufu\'nu açmak için dokunun</string>
+    <string name="home_low_battery_saver_on">Pil Tasarrufu açık</string>
     <string name="settings_tavily_title">Web Araması için Tavily</string>
     <string name="settings_tavily_desc">Web aramasını desteklemeyen modellere web araması eklemek için Tavily API anahtarı ekleyin.</string>
     <string name="settings_tavily_mode_always">Web araması için her zaman Tavily kullan</string>

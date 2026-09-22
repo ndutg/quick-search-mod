@@ -1,5 +1,8 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,26 +18,98 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
+import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
+import com.tk.quicksearch.search.data.preferences.BatteryPreferences
 import com.tk.quicksearch.search.data.preferences.CalendarPreferences
+import com.tk.quicksearch.search.data.preferences.MediaPreferences
 import com.tk.quicksearch.search.data.preferences.ReminderPreferences
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
+import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
-/** Toggles for the glanceable cards shown on the home screen: today's events, alarm and reminders. */
+/** Toggles for the glanceable cards shown on the home screen: media, today's events, alarm, reminders and low battery. */
 @Composable
 fun AtAGlanceSettingsSection(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val calendarPreferences = remember(context) { CalendarPreferences(context.applicationContext) }
     val alarmPreferences = remember(context) { UpcomingAlarmPreferences(context.applicationContext) }
     val reminderPreferences = remember(context) { ReminderPreferences(context.applicationContext) }
+    val mediaPreferences = remember(context) { MediaPreferences(context.applicationContext) }
+    val batteryPreferences = remember(context) { BatteryPreferences(context.applicationContext) }
     var showTodayEvents by remember { mutableStateOf(calendarPreferences.getShowTodayEvents()) }
     var showUpcomingAlarm by remember { mutableStateOf(alarmPreferences.isShowUpcomingAlarmEnabled()) }
     var showUpcomingReminders by remember {
         mutableStateOf(reminderPreferences.isShowUpcomingRemindersEnabled())
     }
+    var showNowPlaying by remember { mutableStateOf(mediaPreferences.isShowNowPlayingEnabled()) }
+    var showLowBattery by remember { mutableStateOf(batteryPreferences.isShowLowBatteryEnabled()) }
+    var hasMediaAccess by remember {
+        mutableStateOf(NotificationDotsPermission.hasNotificationListenerAccess(context))
+    }
+    var hasCalendarAccess by remember { mutableStateOf(PermissionHelper.checkCalendarPermission(context)) }
+    // Set while the calendar grant is in flight (dialog or system settings), so the toggle turns on
+    // once the user comes back with the permission granted.
+    var pendingCalendarEnable by remember { mutableStateOf(false) }
+    val enableTodayEvents = {
+        pendingCalendarEnable = false
+        showTodayEvents = true
+        calendarPreferences.setShowTodayEvents(true)
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, context) {
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    hasMediaAccess = NotificationDotsPermission.hasNotificationListenerAccess(context)
+                    hasCalendarAccess = PermissionHelper.checkCalendarPermission(context)
+                    if (pendingCalendarEnable && hasCalendarAccess) enableTodayEvents()
+                }
+            }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val calendarPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
+            hasCalendarAccess = results[Manifest.permission.READ_CALENDAR] == true
+            if (hasCalendarAccess) {
+                enableTodayEvents()
+            } else {
+                // Keep waiting only if the denial sent the user to app settings to grant it there.
+                pendingCalendarEnable =
+                    PermissionHelper.handleDeniedRuntimePermission(
+                        context = context,
+                        permission = Manifest.permission.READ_CALENDAR,
+                        wasPreviouslyDenied = true,
+                    )
+            }
+        }
+    val requestCalendarPermission = {
+        pendingCalendarEnable = true
+        PermissionHelper.requestRuntimePermissionOrOpenSettings(
+            context = context,
+            permission = Manifest.permission.READ_CALENDAR,
+            wasPreviouslyDenied = false,
+            runtimeLauncher = calendarPermissionLauncher,
+        )
+    }
+    val needsPermissionText = stringResource(R.string.settings_overlay_source_needs_permission)
+
+    // Reuses the notification-listener grant already used for notification dots, so the request
+    // dialog and permission bookkeeping are not duplicated for a second feature.
+    val onShowNowPlayingCheckedChange =
+        rememberNotificationDotsCheckedChange { enabled ->
+            showNowPlaying = enabled
+            mediaPreferences.setShowNowPlayingEnabled(enabled)
+        }
 
     Column(
         modifier = modifier,
@@ -47,14 +123,32 @@ fun AtAGlanceSettingsSection(modifier: Modifier = Modifier) {
         )
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             SettingsToggleRow(
+                title = stringResource(R.string.section_media),
+                subtitle =
+                    if (hasMediaAccess) stringResource(R.string.settings_now_playing_desc) else needsPermissionText,
+                checked = showNowPlaying && hasMediaAccess,
+                onCheckedChange = onShowNowPlayingCheckedChange,
+                enabled = hasMediaAccess,
+                onDisabledClick = { onShowNowPlayingCheckedChange(true) },
+                isFirstItem = true,
+                isLastItem = false,
+            )
+            SettingsToggleRow(
                 title = stringResource(R.string.section_calendar),
-                subtitle = stringResource(R.string.settings_at_a_glance_events_desc),
-                checked = showTodayEvents,
+                subtitle =
+                    if (hasCalendarAccess) {
+                        stringResource(R.string.settings_at_a_glance_events_desc)
+                    } else {
+                        needsPermissionText
+                    },
+                checked = showTodayEvents && hasCalendarAccess,
                 onCheckedChange = { enabled ->
                     showTodayEvents = enabled
                     calendarPreferences.setShowTodayEvents(enabled)
                 },
-                isFirstItem = true,
+                enabled = hasCalendarAccess,
+                onDisabledClick = requestCalendarPermission,
+                isFirstItem = false,
                 isLastItem = false,
             )
             SettingsToggleRow(
@@ -75,6 +169,17 @@ fun AtAGlanceSettingsSection(modifier: Modifier = Modifier) {
                 onCheckedChange = { enabled ->
                     showUpcomingReminders = enabled
                     reminderPreferences.setShowUpcomingRemindersEnabled(enabled)
+                },
+                isFirstItem = false,
+                isLastItem = false,
+            )
+            SettingsToggleRow(
+                title = stringResource(R.string.settings_at_a_glance_low_battery_title),
+                subtitle = stringResource(R.string.settings_low_battery_desc, BatteryPreferences.LOW_BATTERY_THRESHOLD_PERCENT),
+                checked = showLowBattery,
+                onCheckedChange = { enabled ->
+                    showLowBattery = enabled
+                    batteryPreferences.setShowLowBatteryEnabled(enabled)
                 },
                 isFirstItem = false,
                 isLastItem = true,

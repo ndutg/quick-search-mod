@@ -827,7 +827,7 @@ fun SearchRoute(
                         SwipeGestureAction.CUSTOM -> {
                             com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
                                 .fromJson(customSwipeActions[0])
-                                ?.let { action -> context.startActivity(com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity.createIntent(context, action)) }
+                                ?.let { action -> com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity.launch(context, action) }
                         }
                         SwipeGestureAction.SEARCH_ENGINE -> swipeAliasTargets[0]?.let(viewModel::activateGestureSearchTarget)
                         SwipeGestureAction.TOOL -> swipeAliasTargets[0]?.let(viewModel::activateGestureTool)
@@ -842,7 +842,7 @@ fun SearchRoute(
                     SwipeGestureAction.CUSTOM -> {
                         com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
                             .fromJson(customSwipeActions[1])
-                            ?.let { action -> context.startActivity(com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity.createIntent(context, action)) }
+                            ?.let { action -> com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity.launch(context, action) }
                     }
                     SwipeGestureAction.SEARCH_ENGINE -> swipeAliasTargets[1]?.let(viewModel::activateGestureSearchTarget)
                     SwipeGestureAction.TOOL -> swipeAliasTargets[1]?.let(viewModel::activateGestureTool)

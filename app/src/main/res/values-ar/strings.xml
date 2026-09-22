@@ -289,6 +289,7 @@
     <string name="section_calendar">أحداث التقويم</string>
     <string name="section_files">الملفات</string>
     <string name="section_notes">الملاحظات</string>
+    <string name="section_media">عناصر التحكم بالوسائط</string>
     <string name="section_settings">إعدادات الجهاز</string>
     <string name="top_match_title">أفضل مطابقة</string>
     <string name="top_matches_count_label">عدد التطابقات</string>
@@ -807,6 +808,9 @@
     <string name="settings_upcoming_alarm_desc">المنبه التالي عندما يكون خلال 45 دقيقة</string>
     <string name="settings_at_a_glance_events_desc">أحداث تقويم اليوم</string>
     <string name="settings_upcoming_reminders_desc">التذكيرات المستحقة خلال 30 دقيقة أو المتأخرة</string>
+    <string name="settings_at_a_glance_low_battery_title">البطارية منخفضة</string>
+    <string name="settings_low_battery_desc">البطارية عندما تكون %1$d%% أو أقل</string>
+    <string name="settings_now_playing_desc">أزرار التحكم بالتشغيل لما يتم تشغيله حاليًا</string>
     <string name="settings_use_system_font_desc">اتباع خط النظام الافتراضي للجهاز</string>
     <string name="settings_use_system_font_title">استخدام خط النظام</string>
     <string name="settings_accent_color_from_wallpaper">الخلفية</string>
@@ -1012,6 +1016,9 @@
     <string name="widget_custom_buttons_dialog_title">اختر الإجراء</string>
     <string name="widget_custom_buttons_no_results">لم يتم العثور على أي نتائج.</string>
     <string name="widget_custom_buttons_filter_all">الكل</string>
+    <string name="media_command_play_pause">تشغيل/إيقاف مؤقت</string>
+    <string name="media_command_previous">المقطع السابق</string>
+    <string name="media_command_next">المقطع التالي</string>
     <string name="widget_custom_buttons_restriction">غير متاح عندما تكون الأزرار المخصصة مفعلة.</string>
     <string name="widget_custom_buttons_title">أزرار مخصصة</string>
     <string name="widget_custom_buttons_widget_title">عنصر واجهة مستخدم الأزرار المخصصة</string>
@@ -1205,6 +1212,8 @@
     <string name="speed_bump_overlay_title">خذ نفسًا عميقًا</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">المنبه القادم</string>
+    <string name="home_low_battery_saver_off">انقر لتفعيل موفّر البطارية</string>
+    <string name="home_low_battery_saver_on">موفّر البطارية مفعّل</string>
     <string name="settings_tavily_title">Tavily للبحث على الويب</string>
     <string name="settings_tavily_desc">أضف مفتاح Tavily API لإضافة دعم البحث على الويب للنماذج التي لا تدعمه.</string>
     <string name="settings_tavily_mode_always">استخدم Tavily دائمًا للبحث على الويب</string>

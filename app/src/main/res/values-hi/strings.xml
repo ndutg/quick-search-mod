@@ -288,6 +288,7 @@
     <string name="section_calendar">कैलेंडर इवेंट्स</string>
     <string name="section_files">फाइलें</string>
     <string name="section_notes">नोट्स</string>
+    <string name="section_media">मीडिया नियंत्रण</string>
     <string name="section_settings">डिवाइस सेटिंग्स</string>
     <string name="top_match_title">टॉप मैच</string>
     <string name="top_matches_count_label">मैचों की संख्या</string>
@@ -806,6 +807,9 @@
     <string name="settings_upcoming_alarm_desc">45 मिनट के भीतर होने पर आपका अगला अलार्म</string>
     <string name="settings_at_a_glance_events_desc">आज के कैलेंडर इवेंट्स</string>
     <string name="settings_upcoming_reminders_desc">30 मिनट के भीतर देय या बकाया रिमाइंडर</string>
+    <string name="settings_at_a_glance_low_battery_title">कम बैटरी</string>
+    <string name="settings_low_battery_desc">जब आपकी बैटरी %1$d%% या उससे कम हो</string>
+    <string name="settings_now_playing_desc">जो अभी चल रहा है उसके लिए प्लेबैक नियंत्रण</string>
     <string name="settings_use_system_font_desc">अपने डिवाइस की फ़ॉन्ट शैली का पालन करें</string>
     <string name="settings_use_system_font_title">सिस्टम फ़ॉन्ट उपयोग करें</string>
     <string name="settings_accent_color_from_wallpaper">वॉलपेपर</string>
@@ -1011,6 +1015,9 @@
     <string name="widget_custom_buttons_dialog_title">क्रिया चुनें</string>
     <string name="widget_custom_buttons_no_results">कोई परिणाम नहीं मिला।</string>
     <string name="widget_custom_buttons_filter_all">सभी</string>
+    <string name="media_command_play_pause">प्ले/पॉज़</string>
+    <string name="media_command_previous">पिछला ट्रैक</string>
+    <string name="media_command_next">अगला ट्रैक</string>
     <string name="widget_custom_buttons_restriction">जब कस्टम बटन सक्रिय हों, तब उपलब्ध नहीं।</string>
     <string name="widget_custom_buttons_title">कस्टम बटन</string>
     <string name="widget_custom_buttons_widget_title">कस्टम बटन विजेट</string>
@@ -1203,6 +1210,8 @@
     <string name="speed_bump_overlay_title">एक गहरी सांस लें</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">आगामी अलार्म</string>
+    <string name="home_low_battery_saver_off">बैटरी सेवर चालू करने के लिए टैप करें</string>
+    <string name="home_low_battery_saver_on">बैटरी सेवर चालू है</string>
     <string name="settings_tavily_title">वेब सर्च के लिए Tavily</string>
     <string name="settings_tavily_desc">जो मॉडल वेब सर्च सपोर्ट नहीं करते, उनमें वेब सर्च जोड़ने के लिए Tavily API कुंजी जोड़ें।</string>
     <string name="settings_tavily_mode_always">वेब सर्च के लिए हमेशा Tavily का उपयोग करें</string>

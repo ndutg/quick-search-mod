@@ -293,6 +293,7 @@
     <string name="section_calendar">Acara Kalender</string>
     <string name="section_files">File</string>
     <string name="section_notes">Catatan</string>
+    <string name="section_media">Kontrol Media</string>
     <string name="section_settings">Pengaturan Perangkat</string>
     <string name="top_match_title">Kecocokan Teratas</string>
     <string name="top_matches_count_label">Jumlah kecocokan</string>
@@ -814,6 +815,9 @@
     <string name="settings_upcoming_alarm_desc">Alarm berikutnya jika dalam 45 menit</string>
     <string name="settings_at_a_glance_events_desc">Acara kalender hari ini</string>
     <string name="settings_upcoming_reminders_desc">Pengingat yang jatuh tempo dalam 30 menit atau terlambat</string>
+    <string name="settings_at_a_glance_low_battery_title">Baterai lemah</string>
+    <string name="settings_low_battery_desc">Baterai Anda saat berada di %1$d%% atau lebih rendah</string>
+    <string name="settings_now_playing_desc">Kontrol pemutaran untuk yang sedang diputar</string>
     <string name="settings_use_system_font_desc">Gunakan gaya font perangkat Anda</string>
     <string name="settings_use_system_font_title">Gunakan Font Sistem</string>
     <string name="settings_accent_color_from_wallpaper">Wallpaper</string>
@@ -1021,6 +1025,9 @@
     <string name="widget_custom_buttons_dialog_title">Pilih Tindakan</string>
     <string name="widget_custom_buttons_no_results">Hasil tidak ditemukan.</string>
     <string name="widget_custom_buttons_filter_all">Semua</string>
+    <string name="media_command_play_pause">Putar/Jeda</string>
+    <string name="media_command_previous">Trek Sebelumnya</string>
+    <string name="media_command_next">Trek Berikutnya</string>
     <string name="widget_custom_buttons_restriction">Tidak tersedia saat tombol kustom aktif.</string>
     <string name="widget_custom_buttons_title">Tombol Kustom</string>
     <string name="widget_custom_buttons_widget_title">Widget Tombol Kustom</string>
@@ -1205,6 +1212,8 @@
     <string name="speed_bump_overlay_title">Tarik napas dalam-dalam</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Alarm mendatang</string>
+    <string name="home_low_battery_saver_off">Ketuk untuk mengaktifkan Penghemat Baterai</string>
+    <string name="home_low_battery_saver_on">Penghemat Baterai aktif</string>
     <string name="settings_tavily_title">Tavily untuk Penelusuran Web</string>
     <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>
     <string name="settings_tavily_mode_always">Selalu gunakan Tavily untuk penelusuran web</string>

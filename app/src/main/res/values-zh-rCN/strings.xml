@@ -288,6 +288,7 @@
     <string name="section_calendar">日历日程</string>
     <string name="section_files">文件</string>
     <string name="section_notes">笔记</string>
+    <string name="section_media">媒体控制</string>
     <string name="section_settings">设备设置</string>
     <string name="top_match_title">最佳匹配</string>
     <string name="top_matches_count_label">匹配项数量</string>
@@ -796,6 +797,9 @@
     <string name="settings_upcoming_alarm_desc">45 分钟内响铃的下一个闹钟</string>
     <string name="settings_at_a_glance_events_desc">今天的日历活动</string>
     <string name="settings_upcoming_reminders_desc">30 分钟内到期或已逾期的提醒</string>
+    <string name="settings_at_a_glance_low_battery_title">电量低</string>
+    <string name="settings_low_battery_desc">电池电量不高于 %1$d%% 时</string>
+    <string name="settings_now_playing_desc">控制当前正在播放的内容</string>
     <string name="settings_use_system_font_desc">匹配并跟随您设备的系统字体样式</string>
     <string name="settings_use_system_font_title">使用系统字体</string>
     <string name="settings_accent_color_from_wallpaper">壁纸</string>
@@ -1001,6 +1005,9 @@
     <string name="widget_custom_buttons_dialog_title">选择关联操作</string>
     <string name="widget_custom_buttons_no_results">未找到匹配项结果。</string>
     <string name="widget_custom_buttons_filter_all">全部</string>
+    <string name="media_command_play_pause">播放/暂停</string>
+    <string name="media_command_previous">上一曲</string>
+    <string name="media_command_next">下一曲</string>
     <string name="widget_custom_buttons_restriction">当自定义按钮处于激活状态时此项不可用。</string>
     <string name="widget_custom_buttons_title">自定义快捷按钮</string>
     <string name="widget_custom_buttons_widget_title">自定义按钮小部件</string>
@@ -1193,6 +1200,8 @@
     <string name="speed_bump_overlay_title">深呼吸一下</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">即将响铃的闹钟</string>
+    <string name="home_low_battery_saver_off">点按即可开启省电模式</string>
+    <string name="home_low_battery_saver_on">省电模式已开启</string>
     <string name="settings_tavily_title">用于网页搜索的 Tavily</string>
     <string name="settings_tavily_desc">添加 Tavily API 密钥，为不支持网页搜索的模型添加网页搜索功能。</string>
     <string name="settings_tavily_mode_always">始终使用 Tavily 进行网页搜索</string>

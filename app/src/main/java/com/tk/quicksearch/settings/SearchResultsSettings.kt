@@ -559,6 +559,7 @@ private fun PinnedNotificationItemsDialog(
                                     CustomWidgetButtonType.FILE -> stringResource(R.string.notification_pinned_item_type_file)
                                     CustomWidgetButtonType.SETTING -> stringResource(R.string.settings_gesture_settings)
                                     CustomWidgetButtonType.NOTE -> stringResource(R.string.notification_pinned_item_type_note)
+                                    CustomWidgetButtonType.MEDIA -> stringResource(R.string.section_media)
                                 }
                             Surface(
                                 color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,

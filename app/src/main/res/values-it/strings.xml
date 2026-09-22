@@ -287,6 +287,7 @@
     <string name="section_calendar">Eventi calendario</string>
     <string name="section_files">File</string>
     <string name="section_notes">Note</string>
+    <string name="section_media">Controlli multimediali</string>
     <string name="section_settings">Impostazioni dispositivo</string>
     <string name="top_match_title">Migliore corrispondenza</string>
     <string name="top_matches_count_label">Numero di corrispondenze</string>
@@ -805,6 +806,9 @@
     <string name="settings_upcoming_alarm_desc">La prossima sveglia quando mancano meno di 45 minuti</string>
     <string name="settings_at_a_glance_events_desc">Eventi del calendario di oggi</string>
     <string name="settings_upcoming_reminders_desc">Promemoria in scadenza entro 30 minuti o scaduti</string>
+    <string name="settings_at_a_glance_low_battery_title">Batteria scarica</string>
+    <string name="settings_low_battery_desc">La batteria quando è al %1$d%% o meno</string>
+    <string name="settings_now_playing_desc">Controlli di riproduzione per ciò che è attualmente in riproduzione</string>
     <string name="settings_use_system_font_desc">Usa lo stile del carattere del dispositivo</string>
     <string name="settings_use_system_font_title">Usa carattere di sistema</string>
     <string name="settings_accent_color_from_wallpaper">Sfondo</string>
@@ -1010,6 +1014,9 @@
     <string name="widget_custom_buttons_dialog_title">Seleziona azione</string>
     <string name="widget_custom_buttons_no_results">Nessun risultato trovato.</string>
     <string name="widget_custom_buttons_filter_all">Tutti</string>
+    <string name="media_command_play_pause">Riproduci/Pausa</string>
+    <string name="media_command_previous">Traccia precedente</string>
+    <string name="media_command_next">Traccia successiva</string>
     <string name="widget_custom_buttons_restriction">Non disponibile quando i pulsanti personalizzati sono attivi.</string>
     <string name="widget_custom_buttons_title">Pulsanti personalizzati</string>
     <string name="widget_custom_buttons_widget_title">Widget pulsanti personalizzati</string>
@@ -1202,6 +1209,8 @@
     <string name="speed_bump_overlay_title">Fai un respiro profondo</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Prossima sveglia</string>
+    <string name="home_low_battery_saver_off">Tocca per attivare il Risparmio energetico</string>
+    <string name="home_low_battery_saver_on">Il Risparmio energetico è attivo</string>
     <string name="settings_tavily_title">Tavily per la ricerca web</string>
     <string name="settings_tavily_desc">Aggiungi una chiave API Tavily per abilitare la ricerca web nei modelli che non la supportano.</string>
     <string name="settings_tavily_mode_always">Usa sempre Tavily per la ricerca web</string>

@@ -287,6 +287,7 @@
     <string name="section_calendar">Calendar Events</string>
     <string name="section_files">Files</string>
     <string name="section_notes">Notes</string>
+    <string name="section_media">Media Controls</string>
     <string name="section_settings">Device Settings</string>
     <string name="top_match_title">Top Match</string>
     <string name="top_matches_count_label">No. of matches</string>
@@ -808,6 +809,9 @@
     <string name="settings_upcoming_alarm_desc">Your next alarm when it\'s within 45 minutes</string>
     <string name="settings_at_a_glance_events_desc">Today\'s calendar events</string>
     <string name="settings_upcoming_reminders_desc">Reminders due within 30 minutes or overdue</string>
+    <string name="settings_at_a_glance_low_battery_title">Low Battery</string>
+    <string name="settings_low_battery_desc">Your battery when it\'s at %1$d%% or lower</string>
+    <string name="settings_now_playing_desc">Playback controls for whatever\'s currently playing</string>
     <string name="settings_use_system_font_desc">Follow your device font style</string>
     <string name="settings_use_system_font_title">Use System Font</string>
     <string name="settings_accent_color_from_wallpaper">Wallpaper</string>
@@ -1021,6 +1025,9 @@
     <string name="widget_custom_buttons_dialog_title">Select Action</string>
     <string name="widget_custom_buttons_no_results">No results found.</string>
     <string name="widget_custom_buttons_filter_all">All</string>
+    <string name="media_command_play_pause">Play/Pause</string>
+    <string name="media_command_previous">Previous Track</string>
+    <string name="media_command_next">Next Track</string>
     <string name="widget_custom_buttons_restriction">Not available when custom buttons are active.</string>
     <string name="widget_custom_buttons_title">Custom Buttons</string>
     <string name="widget_custom_buttons_widget_title">Custom Buttons Widget</string>
@@ -1205,6 +1212,8 @@
     <string name="speed_bump_overlay_title">Take a deep breath</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Upcoming Alarm</string>
+    <string name="home_low_battery_saver_off">Tap to turn on Battery Saver</string>
+    <string name="home_low_battery_saver_on">Battery Saver is on</string>
     <!-- Reminders -->
     <string name="section_reminders">Reminders</string>
     <string name="reminders_notification_channel_name">Reminders</string>

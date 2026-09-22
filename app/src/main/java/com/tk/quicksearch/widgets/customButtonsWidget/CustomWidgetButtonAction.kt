@@ -3,6 +3,7 @@ package com.tk.quicksearch.widgets.customButtonsWidget
 import android.content.Intent
 import android.net.Uri
 import android.os.Parcelable
+import com.tk.quicksearch.media.MediaCommand
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
@@ -24,6 +25,7 @@ enum class CustomWidgetButtonType(
     SETTING("setting"),
     APP_SHORTCUT("app_shortcut"),
     NOTE("note"),
+    MEDIA("media"),
 }
 
 enum class SettingExtraType(
@@ -309,6 +311,27 @@ sealed class CustomWidgetButtonAction : Parcelable {
                 .toString()
     }
 
+    @Parcelize
+    data class Media(
+        val command: MediaCommand,
+        /** Localized label captured when the button was picked, like other actions' titles. */
+        val title: String,
+        override val customIconBase64: String? = null,
+    ) : CustomWidgetButtonAction() {
+        @IgnoredOnParcel
+        override val type: CustomWidgetButtonType = CustomWidgetButtonType.MEDIA
+
+        override fun displayLabel(): String = title.ifBlank { command.value }
+
+        override fun toJson(): String =
+            JSONObject()
+                .put(KEY_TYPE, type.value)
+                .put(KEY_MEDIA_COMMAND, command.value)
+                .put(KEY_TITLE, title)
+                .put(KEY_CUSTOM_ICON_BASE64, customIconBase64)
+                .toString()
+    }
+
     companion object {
         fun fromJson(raw: String?): CustomWidgetButtonAction? {
             if (raw.isNullOrBlank()) return null
@@ -434,6 +457,16 @@ sealed class CustomWidgetButtonAction : Parcelable {
                         )
                     }
 
+                    CustomWidgetButtonType.MEDIA.value -> {
+                        val command =
+                            MediaCommand.fromValue(json.optString(KEY_MEDIA_COMMAND))
+                                ?: return@runCatching null
+                        Media(
+                            command = command,
+                            title = json.optString(KEY_TITLE).nullIfBlankOrLiteralNull().orEmpty(),
+                        )
+                    }
+
                     else -> {
                         null
                     }
@@ -483,6 +516,7 @@ private const val KEY_ENABLED = "enabled"
 private const val KEY_INTENTS = "intents"
 private const val KEY_NOTE_ID = "noteId"
 private const val KEY_MARKDOWN_CONTENT = "markdownContent"
+private const val KEY_MEDIA_COMMAND = "mediaCommand"
 
 private const val KEY_INTENT_ACTION = "action"
 private const val KEY_INTENT_TARGET_PACKAGE = "targetPackage"
@@ -679,6 +713,7 @@ internal fun CustomWidgetButtonAction.withCustomIcon(iconBase64: String?): Custo
         is CustomWidgetButtonAction.Setting -> copy(customIconBase64 = iconBase64)
         is CustomWidgetButtonAction.AppShortcut -> copy(customIconBase64 = iconBase64)
         is CustomWidgetButtonAction.Note -> copy(customIconBase64 = iconBase64)
+        is CustomWidgetButtonAction.Media -> copy(customIconBase64 = iconBase64)
     }
 
 /** Returns a copy of a folder action with its built-in folder icon tint set to [colorArgb]. */

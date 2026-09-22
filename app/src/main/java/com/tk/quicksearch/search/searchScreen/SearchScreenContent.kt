@@ -148,7 +148,7 @@ private fun HomeSwipeGestureAction.performHomeGesture(
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
         HomeSwipeGestureAction.CUSTOM -> {
             CustomWidgetButtonAction.fromJson(actionJson)?.let { action ->
-                context.startActivity(WidgetActionActivity.createIntent(context, action))
+                WidgetActionActivity.launch(context, action)
             }
         }
         HomeSwipeGestureAction.SEARCH_ENGINE,

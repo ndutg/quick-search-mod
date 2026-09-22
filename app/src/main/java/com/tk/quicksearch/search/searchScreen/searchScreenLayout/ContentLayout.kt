@@ -464,7 +464,8 @@ fun ContentLayout(
             .map { it.eventId }
             .toSet()
     val hasStandaloneTodayCalendarSection = standaloneTodayEventIds.isNotEmpty()
-    // Alarm, reminders and future At a Glance sources share the today's events card on home.
+    // Low battery, alarm, reminders and future At a Glance sources share the today's events card on
+    // home; media controls get a card of their own.
     val atAGlanceItems =
         rememberAtAGlanceItems(
             enabled = !hasQuery,
@@ -483,7 +484,9 @@ fun ContentLayout(
         } else {
             null
         }
-    val hasAtAGlanceSection = hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty()
+    val nowPlaying = rememberNowPlayingGlance(enabled = !hasQuery)
+    val hasAtAGlanceSection =
+        hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty() || nowPlaying != null
     val pinnedCalendarEventsForPinnedBlock =
         if (!hasQuery && standaloneTodayEventIds.isNotEmpty()) {
             renderingState.pinnedCalendarEvents.filterNot { it.eventId in standaloneTodayEventIds }
@@ -989,6 +992,17 @@ fun ContentLayout(
                         renderSearchHistoryBlock()
                         deferredSearchHistoryRendered = true
                     }
+                    // Media gets its own card on the search-bar side of the other At a Glance
+                    // rows, and carries the section title whenever it comes first.
+                    val showGlanceTitle = !hideHomeSectionTitleRows
+                    val mediaCardFirst = nowPlaying != null && !isReversed
+                    if (mediaCardFirst && nowPlaying != null) {
+                        if (showGlanceTitle) AtAGlanceTitle()
+                        NowPlayingCard(
+                            glance = nowPlaying,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
+                        )
+                    }
                     if (hasStandaloneTodayCalendarSection && regularSectionParams.calendarParams != null) {
                         HomeLoadingAnimatedContent(
                             animationKey = "home-today-calendar",
@@ -1003,6 +1017,7 @@ fun ContentLayout(
                                     calendarEventsList = emptyList(),
                                     atAGlanceContent = atAGlanceContent,
                                     atAGlanceContentFirst = !isReversed,
+                                    hideHomeSectionTitleRows = !showGlanceTitle || mediaCardFirst,
                                 ),
                             )
                         }
@@ -1010,7 +1025,15 @@ fun ContentLayout(
                         AtAGlanceCard(
                             items = atAGlanceItems,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
-                            showTitle = !hideHomeSectionTitleRows,
+                            showTitle = showGlanceTitle && !mediaCardFirst,
+                        )
+                    }
+                    if (nowPlaying != null && isReversed) {
+                        val hasOtherGlanceCard = hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty()
+                        if (showGlanceTitle && !hasOtherGlanceCard) AtAGlanceTitle()
+                        NowPlayingCard(
+                            glance = nowPlaying,
+                            showWallpaperBackground = effectiveShowWallpaperBackground,
                         )
                     }
                     atAGlanceRendered = true
