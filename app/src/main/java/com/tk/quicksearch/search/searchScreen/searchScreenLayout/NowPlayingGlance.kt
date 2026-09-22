@@ -54,6 +54,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.media.MediaSeek
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.sendFromUserTap
 
 private val NowPlayingAlbumArtSize = 56.dp
 private val NowPlayingControlButtonSize = 44.dp
@@ -209,8 +210,10 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
             sawNonPlayingStateAfterDismiss = false
         },
         open = {
+            // The session activity usually opens the player itself; fall back to the app's launcher
+            // entry when the session has none or the send is refused.
             val openedSessionActivity =
-                runCatching { activeController.sessionActivity?.send() }.isSuccess
+                runCatching { activeController.sessionActivity }.getOrNull()?.sendFromUserTap() == true
             if (!openedSessionActivity) {
                 val launchIntent = context.packageManager.getLaunchIntentForPackage(activeController.packageName)
                 if (launchIntent != null) {
