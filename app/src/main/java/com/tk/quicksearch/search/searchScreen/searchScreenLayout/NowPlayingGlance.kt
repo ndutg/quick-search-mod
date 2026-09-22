@@ -7,6 +7,7 @@ import android.media.session.PlaybackState
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,10 +56,13 @@ import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 private val NowPlayingAlbumArtSize = 56.dp
-private val NowPlayingControlButtonSize = 40.dp
-private val NowPlayingControlIconSize = 26.dp
-private val NowPlayingPlayPauseCircleSize = 28.dp
-private val NowPlayingPlayPauseIconSize = 18.dp
+private val NowPlayingControlButtonSize = 44.dp
+private val NowPlayingControlIconSize = 21.dp
+private val NowPlayingProminentCircleSize = 33.dp
+private val NowPlayingProminentCircleBorder = 1.dp
+private const val NowPlayingProminentCircleBorderAlpha = 0.35f
+private val NowPlayingPlayPauseCircleSize = NowPlayingProminentCircleSize
+private val NowPlayingPlayPauseIconSize = NowPlayingControlIconSize
 private val NowPlayingDismissButtonSize = 28.dp
 private val NowPlayingSecondaryControlIconSize = 18.dp
 
@@ -323,8 +327,8 @@ private class NowPlayingControl(
 )
 
 /**
- * A skip or seek control. Whichever pair suits the media is [isProminent], drawn larger next to
- * play/pause: seeking for long media (see [MediaSeek.isSeekMode]), track skipping otherwise.
+ * A skip or seek control. Whichever pair suits the media is [isProminent], drawn in an outlined
+ * circle next to play/pause: seeking for long media (see [MediaSeek.isSeekMode]), track skipping otherwise.
  */
 @Composable
 private fun NowPlayingSkipButton(
@@ -332,12 +336,34 @@ private fun NowPlayingSkipButton(
     isProminent: Boolean,
 ) {
     IconButton(onClick = control.onClick, modifier = Modifier.size(NowPlayingControlButtonSize)) {
-        Icon(
-            imageVector = control.icon,
-            contentDescription = stringResource(control.labelRes),
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(if (isProminent) NowPlayingControlIconSize else NowPlayingSecondaryControlIconSize),
-        )
+        val icon =
+            @Composable {
+                Icon(
+                    imageVector = control.icon,
+                    contentDescription = stringResource(control.labelRes),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier =
+                        Modifier.size(if (isProminent) NowPlayingControlIconSize else NowPlayingSecondaryControlIconSize),
+                )
+            }
+        if (isProminent) {
+            // Outlined, and a step smaller than the filled play/pause circle, so it reads as secondary to it.
+            Box(
+                modifier =
+                    Modifier
+                        .size(NowPlayingProminentCircleSize)
+                        .border(
+                            NowPlayingProminentCircleBorder,
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = NowPlayingProminentCircleBorderAlpha),
+                            CircleShape,
+                        ),
+                contentAlignment = Alignment.Center,
+            ) {
+                icon()
+            }
+        } else {
+            icon()
+        }
     }
 }
 
