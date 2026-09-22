@@ -1,8 +1,6 @@
-- Support for Polish, Dutch, Japanese, and Indonesian languages
-- Search and access your notification history (requires permission)
-- You can set alarms and start timers directly from search (example queries: 15 min, 2:45pm), upcoming alarms will show up in home.
-- Tavily API key support to enable web search for AI models that don't support it.
-- Support for multiple nicknames for search results.
-- Reorder pinned sections
-- Option to make pinned app shortcuts appear within app grid.
-- Added shortcuts to quickly access Manage Apps, Widgets and Notification History screens.
+- New At a Glance section on Home shows useful information when it matters. Currently supports today’s calendar events, upcoming reminders and timers, media controls, and low battery warnings.
+- Create reminders directly from search. Example: Laundry in 2 hrs
+- Pin widgets to Home by long-pressing them in the Widgets panel.
+- Create app folders in Pinned Apps by dragging one app onto another.
+- New optional ways to launch Quick Search: a system-wide edge swipe gesture and a floating button.
+- Added media controls to custom widget buttons.
