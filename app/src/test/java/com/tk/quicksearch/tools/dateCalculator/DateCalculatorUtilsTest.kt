@@ -57,6 +57,20 @@ class DateCalculatorUtilsTest {
     }
 
     @Test
+    fun parseTrailingTimeArithmeticQuery_readsReminderStyleQuery() {
+        val standalone = DateCalculatorUtils.parseTimeArithmeticQuery("in 1 hr")
+        val reminderStyle = DateCalculatorUtils.parseTrailingTimeArithmeticQuery("Laundry in 1 hr")
+
+        assertEquals(standalone?.label, reminderStyle?.label)
+        assertEquals(standalone?.contextLabel, reminderStyle?.contextLabel)
+    }
+
+    @Test
+    fun parseTrailingTimeArithmeticQuery_ignoresNonTrailingExpression() {
+        assertNull(DateCalculatorUtils.parseTrailingTimeArithmeticQuery("in 1 hr laundry"))
+    }
+
+    @Test
     fun parseTimeArithmeticQuery_ignoresNonDurationQueries() {
         assertNull(DateCalculatorUtils.parseTimeArithmeticQuery("5"))
         assertNull(DateCalculatorUtils.parseTimeArithmeticQuery("5 m"))

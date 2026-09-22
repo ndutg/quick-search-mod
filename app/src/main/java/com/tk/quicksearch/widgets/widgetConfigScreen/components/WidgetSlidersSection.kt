@@ -27,6 +27,7 @@ import java.util.Locale
 @Composable
 fun WidgetSlidersSection(
     state: WidgetPreferences,
+    showBorderControls: Boolean = true,
     onStateChange: (WidgetPreferences) -> Unit,
 ) {
     Column(
@@ -40,38 +41,54 @@ fun WidgetSlidersSection(
             valueFormatter = { "${it.roundToInt()} dp" },
             onValueChange = { onStateChange(state.copy(borderRadiusDp = it)) },
         )
-        SliderRow(
-            label = stringResource(R.string.widget_slider_border),
-            value = state.borderWidthDp,
-            valueRange = 0f..4f,
-            steps = 8,
-            valueFormatter = { formatBorderWidth(it) },
-            onValueChange = { onStateChange(state.copy(borderWidthDp = it)) },
-        )
-        Text(
-            text = stringResource(R.string.settings_wallpaper_transparency_label),
-            style = MaterialTheme.typography.titleSmall,
-        )
-        SliderRow(
-            label = stringResource(R.string.widget_slider_transparency_background),
-            value = state.backgroundAlpha,
-            valueRange = 0f..1f,
-            steps = 10,
-            valueFormatter = { "${(it * 100).roundToInt()}%" },
-            labelTextStyle = MaterialTheme.typography.bodySmall,
-            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onValueChange = { onStateChange(state.copy(backgroundAlpha = it)) },
-        )
-        SliderRow(
-            label = stringResource(R.string.widget_slider_transparency_border),
-            value = state.borderAlpha,
-            valueRange = 0f..1f,
-            steps = 10,
-            valueFormatter = { "${(it * 100).roundToInt()}%" },
-            labelTextStyle = MaterialTheme.typography.bodySmall,
-            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            onValueChange = { onStateChange(state.copy(borderAlpha = it)) },
-        )
+        if (showBorderControls) {
+            SliderRow(
+                label = stringResource(R.string.widget_slider_border),
+                value = state.borderWidthDp,
+                valueRange = 0f..4f,
+                steps = 8,
+                valueFormatter = { formatBorderWidth(it) },
+                onValueChange = { onStateChange(state.copy(borderWidthDp = it)) },
+            )
+        }
+        if (showBorderControls) {
+            Text(
+                text = stringResource(R.string.settings_wallpaper_transparency_label),
+                style = MaterialTheme.typography.titleSmall,
+            )
+            SliderRow(
+                label = stringResource(R.string.widget_slider_transparency_background),
+                value = state.backgroundAlpha,
+                valueRange = 0f..1f,
+                steps = 10,
+                valueFormatter = { "${(it * 100).roundToInt()}%" },
+                labelTextStyle = MaterialTheme.typography.bodySmall,
+                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                onValueChange = { onStateChange(state.copy(backgroundAlpha = it)) },
+            )
+        } else {
+            // Background is the only transparency here, so it needs no sub-label.
+            SliderRow(
+                label = stringResource(R.string.settings_wallpaper_transparency_label),
+                value = state.backgroundAlpha,
+                valueRange = 0f..1f,
+                steps = 10,
+                valueFormatter = { "${(it * 100).roundToInt()}%" },
+                onValueChange = { onStateChange(state.copy(backgroundAlpha = it)) },
+            )
+        }
+        if (showBorderControls) {
+            SliderRow(
+                label = stringResource(R.string.widget_slider_transparency_border),
+                value = state.borderAlpha,
+                valueRange = 0f..1f,
+                steps = 10,
+                valueFormatter = { "${(it * 100).roundToInt()}%" },
+                labelTextStyle = MaterialTheme.typography.bodySmall,
+                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                onValueChange = { onStateChange(state.copy(borderAlpha = it)) },
+            )
+        }
     }
 }
 

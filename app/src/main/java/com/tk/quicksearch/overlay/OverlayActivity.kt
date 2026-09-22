@@ -31,6 +31,7 @@ import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.WallpaperUtils
@@ -113,6 +114,16 @@ class OverlayActivity : FragmentActivity() {
         renderOverlayContent()
         handleVoiceIntentIfNeeded(intent)
         handleInitialQueryIfNeeded(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LockScreenAccessibilityService.onAppSurfaceResumed()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LockScreenAccessibilityService.onAppSurfacePaused()
     }
 
     override fun onStop() {
@@ -212,6 +223,7 @@ class OverlayActivity : FragmentActivity() {
                 customAccentColorArgb = uiState.customAccentColorArgb,
                 deviceThemeEnabled = uiState.deviceThemeEnabled,
             ) {
+                com.tk.quicksearch.reminders.ReminderEditorHost()
                 Box(
                     modifier = Modifier.fillMaxSize().background(Color.Transparent),
                 ) {

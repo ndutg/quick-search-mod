@@ -8,6 +8,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -19,11 +20,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -101,6 +105,8 @@ import com.tk.quicksearch.shared.util.rememberPhysicalKeyboardConnected
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.setAlarm.SetAlarmHandler
 import com.tk.quicksearch.tools.setAlarm.StartTimerHandler
+import com.tk.quicksearch.reminders.ReminderEditorRequests
+import com.tk.quicksearch.reminders.ReminderNaturalLanguageParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
@@ -114,6 +120,7 @@ import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
 import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
+import java.util.Locale
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -141,7 +148,7 @@ private fun HomeSwipeGestureAction.performHomeGesture(
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
         HomeSwipeGestureAction.CUSTOM -> {
             CustomWidgetButtonAction.fromJson(actionJson)?.let { action ->
-                context.startActivity(WidgetActionActivity.createIntent(context, action))
+                WidgetActionActivity.launch(context, action)
             }
         }
         HomeSwipeGestureAction.SEARCH_ENGINE,
@@ -167,6 +174,7 @@ internal fun SearchScreenContent(
         settingsParams: SettingsSectionParams,
         calendarParams: CalendarSectionParams,
         notesParams: NotesSectionParams,
+        remindersParams: RemindersSectionParams? = null,
         appsParams: AppsSectionParams,
         onQueryChanged: (String) -> Unit,
         onSelectRetainedQueryHandled: () -> Unit,
@@ -640,6 +648,15 @@ internal fun SearchScreenContent(
                     StartTimerHandler.detectTimerSeconds(state.query)
                 }
             }
+    val detectedReminderSchedule =
+            remember(state.query, isToolAliasMode) {
+                if (isToolAliasMode) {
+                    null
+                } else {
+                    ReminderNaturalLanguageParser.parse(state.query)
+                        ?.takeIf { it.title.isNotBlank() }
+                }
+            }
     val shouldShowPredictedHighlight = isImeVisible
     val isNonSubmittableSuggestionsTab = appsParams.isNonSubmittableSuggestionsTab()
     val firstSubmittableGridApp =
@@ -763,6 +780,7 @@ internal fun SearchScreenContent(
                     settingsParams = settingsParams,
                     calendarParams = calendarParams,
                     notesParams = notesParams,
+                    remindersParams = remindersParams,
                     appShortcutsParams = appShortcutsParams,
                     appsParams = appsParams,
                     isSearching = state.query.isNotBlank(),
@@ -777,6 +795,7 @@ internal fun SearchScreenContent(
                     settingsParams = settingsParams,
                     calendarParams = calendarParams,
                     notesParams = notesParams,
+                    remindersParams = remindersParams,
                     appsParams = appsParams,
                     isReversed = state.oneHandedMode,
             )
@@ -1114,13 +1133,37 @@ internal fun SearchScreenContent(
     var measuredSearchBarHeight by remember { mutableStateOf(0.dp) }
     val insetEngineStripOverlap = InsetSearchBarGeometry.overlapFor(measuredSearchBarHeight)
 
+    // With the keyboard closed the card floats above the gesture handle, which the system keeps
+    // clear anyway. With the keyboard open nothing reserves that space, so the card spreads to the
+    // screen edges and down onto the keyboard. Keyed on the IME animation target so the card starts
+    // moving together with the keyboard in both directions instead of after it settles.
+    @OptIn(ExperimentalLayoutApi::class)
+    val isImeOpeningOrOpen = WindowInsets.imeAnimationTarget.getBottom(density) > 0
+    val insetEngineStripFullBleedFraction by
+            animateFloatAsState(
+                    targetValue =
+                            if (useInsetEngineStrip && !isOverlayPresentation && isImeOpeningOrOpen) {
+                                1f
+                            } else {
+                                0f
+                            },
+                    animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+                    label = "insetEngineStripFullBleed",
+            )
+
     val searchFieldModifier =
             if (useInsetEngineStrip) {
                 // Inset on every side by the same amount so the bar sits centred inside the card
                 // the strip paints; the strip reaches down by exactly these spacings plus the bar.
                 Modifier.padding(
-                        start = InsetSearchBarGeometry.BarHorizontalInset,
-                        end = InsetSearchBarGeometry.BarHorizontalInset,
+                        start =
+                                InsetSearchBarGeometry.barHorizontalInset(
+                                        insetEngineStripFullBleedFraction,
+                                ),
+                        end =
+                                InsetSearchBarGeometry.barHorizontalInset(
+                                        insetEngineStripFullBleedFraction,
+                                ),
                         top = InsetSearchBarGeometry.BarTopSpacing,
                         bottom = InsetSearchBarGeometry.BarBottomSpacing,
                 ).onSizeChanged { size ->
@@ -1493,6 +1536,7 @@ internal fun SearchScreenContent(
                 settingsParams = settingsParams,
                 calendarParams = calendarParams,
                 notesParams = notesParams,
+                remindersParams = remindersParams,
                 appsParams = appsParams,
                 predictedTarget = predictedTargetForIndicator,
                 isPhysicalKeyboardConnected = isPhysicalKeyboardConnected,
@@ -1558,7 +1602,8 @@ internal fun SearchScreenContent(
                             keyboardSwitchText != null ||
                                     shouldShowPhoneCallAction ||
                                     detectedAlarmTime != null ||
-                                    detectedTimerSeconds != null,
+                                    detectedTimerSeconds != null ||
+                                    detectedReminderSchedule != null,
                     enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
                     exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
             ) {
@@ -1650,6 +1695,53 @@ internal fun SearchScreenContent(
                                     }
                                 },
                         )
+                        Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        CreateReminderPill(
+                                useShortLabel = true,
+                                onClick = {
+                                    ReminderEditorRequests.openNew(
+                                            initialDateTimeMillis =
+                                                    System.currentTimeMillis() +
+                                                            detectedTimerSeconds * 1000L,
+                                            initialAllDay = false,
+                                            // Duration-only queries have no reminder title, so open directly
+                                            // into the title field for immediate typing.
+                                            autoFocusTitle = true,
+                                    )
+                                },
+                        )
+                    }
+                    if (detectedReminderSchedule != null) {
+                        if (keyboardSwitchText != null ||
+                                        shouldShowPhoneCallAction ||
+                                        detectedAlarmTime != null ||
+                                        detectedTimerSeconds != null
+                        ) {
+                            Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                        }
+                        CreateReminderPill(
+                                onClick = {
+                                    val schedule = detectedReminderSchedule
+                                    val dateTime = schedule.date.atTime(
+                                            schedule.time ?: java.time.LocalTime.MIDNIGHT,
+                                    )
+                                    ReminderEditorRequests.openNew(
+                                            initialTitle = schedule.title.replaceFirstChar { first ->
+                                                if (first.isLowerCase()) {
+                                                    first.titlecase(Locale.getDefault())
+                                                } else {
+                                                    first.toString()
+                                                }
+                                            },
+                                            initialDateTimeMillis = dateTime
+                                                    .atZone(java.time.ZoneId.systemDefault())
+                                                    .toInstant()
+                                                    .toEpochMilli(),
+                                            initialAllDay = schedule.time == null,
+                                            autoFocusTitle = false,
+                                    )
+                                },
+                        )
                     }
                 }
             }
@@ -1675,6 +1767,7 @@ internal fun SearchScreenContent(
                                 showWallpaperBackground = state.showWallpaperBackground,
                                 useInsetContainer = useInsetEngineStrip,
                                 insetOverlap = insetEngineStripOverlap,
+                                insetFullBleedFraction = insetEngineStripFullBleedFraction,
                                 modifier = searchEnginesModifier,
                         )
                     } else {
@@ -1773,6 +1866,7 @@ internal fun SearchScreenContent(
                                         showOnlyToolAction = showOnlyToolActionInCompactSection,
                                         useInsetContainer = useInsetEngineStrip,
                                         insetOverlap = insetEngineStripOverlap,
+                                        insetFullBleedFraction = insetEngineStripFullBleedFraction,
                                 )
                             },
                             fullContent = {
@@ -1830,6 +1924,7 @@ internal fun SearchScreenContent(
                                             showOnlyToolAction = true,
                                             useInsetContainer = useInsetEngineStrip,
                                             insetOverlap = insetEngineStripOverlap,
+                                            insetFullBleedFraction = insetEngineStripFullBleedFraction,
                                     )
                                 } else {
                                     // Add padding when search engines are hidden to prevent keyboard from
@@ -1880,8 +1975,14 @@ internal fun SearchScreenContent(
                 searchFieldContent()
             }
             if (useInsetEngineStrip) {
-                // Keeps the pills below from sitting flush against the card's bottom edge.
-                Spacer(modifier = Modifier.size(DesignTokens.SpacingSmall))
+                // Keeps the pills below from sitting flush against the card's bottom edge. Without
+                // the pills it collapses as the card goes full bleed so the card meets the keyboard.
+                val showsNumberKeyboardPills =
+                        expandedSection == ExpandedSection.NONE &&
+                                shouldRenderInlineNumberKeyboardOperators
+                val gapFraction =
+                        if (showsNumberKeyboardPills) 0f else insetEngineStripFullBleedFraction
+                Spacer(modifier = Modifier.height(DesignTokens.SpacingSmall * (1f - gapFraction)))
             }
 
             Box(modifier = Modifier.fillMaxWidth().extendToScreenEdges()) {

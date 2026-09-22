@@ -15,6 +15,7 @@ class UpcomingAlarmRepository(private val context: Context) {
     private val preferences = UpcomingAlarmPreferences(context)
 
     fun nextWithinFortyFiveMinutes(nowMillis: Long = System.currentTimeMillis()): AlarmManager.AlarmClockInfo? {
+        if (!preferences.isShowUpcomingAlarmEnabled()) return null
         val alarm = alarmManager?.nextAlarmClock ?: return null
         if (!isFromClockApp(alarm)) return null
         val timeUntilAlarm = alarm.triggerTime - nowMillis

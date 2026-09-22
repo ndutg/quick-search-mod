@@ -21,9 +21,13 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
+import androidx.glance.action.Action
+import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
+import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.background
 import androidx.glance.appwidget.cornerRadius
@@ -48,9 +52,12 @@ import androidx.glance.color.ColorProvider as DayNightColorProvider
 import androidx.glance.unit.ColorProvider
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.MainActivity
+import com.tk.quicksearch.media.MediaCommand
 import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetMediaAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.WidgetActionActivity
+import com.tk.quicksearch.widgets.customButtonsWidget.playPauseIconRes
 import com.tk.quicksearch.widgets.customButtonsWidget.rememberWidgetButtonIcon
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.utils.BorderColorOption
@@ -198,6 +205,8 @@ class SearchWidget(
                     internalVerticalPaddingDp = config.internalVerticalPaddingDp,
                     customButtons = customButtons,
                 )
+            // Rendered by MediaControlsWidget; SearchWidget is never bound to that provider.
+            WidgetVariant.MEDIA_CONTROLS -> Unit
         }
     }
 
@@ -348,6 +357,32 @@ class SearchWidget(
         }
 }
 
+/**
+ * Media commands run in-process via [CustomButtonsWidgetMediaAction] instead of launching
+ * [WidgetActionActivity], since prev/next are tapped repeatedly and an activity launch on every
+ * tap would be slow and would flash over whatever the user is looking at.
+ */
+private fun Context.customButtonWidgetClickAction(action: CustomWidgetButtonAction): Action =
+    if (action is CustomWidgetButtonAction.Media) {
+        actionRunCallback<CustomButtonsWidgetMediaAction>(
+            actionParametersOf(CustomButtonsWidgetMediaAction.MEDIA_COMMAND_KEY to action.command.value),
+        )
+    } else {
+        actionStartActivity(WidgetActionActivity.createIntent(this, action))
+    }
+
+/**
+ * Extra `remember` key for [rememberWidgetButtonIcon]: a Play/Pause button's icon depends on live
+ * playback state, not just [action] itself, so without this the icon would be cached from the
+ * button's first render and never flip again across the redraws that a playback change triggers.
+ */
+private fun Context.mediaButtonPlaybackKey(action: CustomWidgetButtonAction): Int? =
+    if (action is CustomWidgetButtonAction.Media && action.command == MediaCommand.PLAY_PAUSE) {
+        playPauseIconRes(this)
+    } else {
+        null
+    }
+
 @Composable
 private fun CustomButtonsOnlyWidgetContent(
     widthDp: Dp,
@@ -438,7 +473,13 @@ private fun CustomButtonsOnlyWidgetContent(
                     ) {
                         visibleButtons.forEach { action ->
                             val icon =
-                                remember(action, iconPackPackage, iconSizePx, textIconColor) {
+                                remember(
+                                    action,
+                                    iconPackPackage,
+                                    iconSizePx,
+                                    textIconColor,
+                                    context.mediaButtonPlaybackKey(action),
+                                ) {
                                     rememberWidgetButtonIcon(
                                         context = context,
                                         action = action,
@@ -458,13 +499,7 @@ private fun CustomButtonsOnlyWidgetContent(
                                         GlanceModifier
                                             .size(touchSpace)
                                             .clickable(
-                                                onClick =
-                                                    actionStartActivity(
-                                                        WidgetActionActivity.createIntent(
-                                                            context,
-                                                            action,
-                                                        ),
-                                                    ),
+                                                onClick = context.customButtonWidgetClickAction(action),
                                                 rippleOverride = android.R.color.transparent,
                                             ),
                                     contentAlignment = Alignment.Center,
@@ -652,7 +687,13 @@ private fun WidgetContent(
                         if (widthDp > WidgetLayoutUtils.NARROW_WIDTH_DP.dp) {
                             customButtons.forEachIndexed { index, action ->
                                 val icon =
-                                    remember(action, iconPackPackage, iconSizePx, textIconColor) {
+                                    remember(
+                                        action,
+                                        iconPackPackage,
+                                        iconSizePx,
+                                        textIconColor,
+                                        context.mediaButtonPlaybackKey(action),
+                                    ) {
                                         rememberWidgetButtonIcon(
                                             context = context,
                                             action = action,
@@ -666,13 +707,7 @@ private fun WidgetContent(
                                         GlanceModifier
                                             .size(micTouchSpace)
                                             .clickable(
-                                                onClick =
-                                                    actionStartActivity(
-                                                        WidgetActionActivity.createIntent(
-                                                            context,
-                                                            action,
-                                                        ),
-                                                    ),
+                                                onClick = context.customButtonWidgetClickAction(action),
                                                 rippleOverride = android.R.color.transparent,
                                             ),
                                     contentAlignment = Alignment.Center,

@@ -13,6 +13,7 @@ enum class SettingsDetailType {
     APP_SHORTCUTS,
     DEVICE_SETTINGS,
     CALENDAR_EVENTS,
+    REMINDERS,
     NOTES,
     NOTE_EDITOR,
     APPEARANCE,
@@ -22,6 +23,7 @@ enum class SettingsDetailType {
     MORE_OPTIONS,
     PERMISSIONS,
     TOOLS,
+    AT_A_GLANCE,
     GEMINI_API_CONFIG,
     API_KEY_SETUP,
     FEATURES_LIST,
@@ -34,6 +36,8 @@ enum class SettingsDetailType {
     TRIGGERS,
     GESTURES,
     NOTIFICATION_HISTORY,
+    EDGE_GESTURE,
+    FLOATING_BUTTON,
 }
 
 internal data class SettingsDestinationSpec(
@@ -86,6 +90,12 @@ internal object SettingsDestinationRegistry {
                     level = 2,
                     fallbackBackDestination = SettingsDetailType.SEARCH_RESULTS,
                 ),
+            SettingsDetailType.REMINDERS to
+                SettingsDestinationSpec(
+                    titleResId = R.string.section_reminders,
+                    level = 2,
+                    fallbackBackDestination = SettingsDetailType.SEARCH_RESULTS,
+                ),
             SettingsDetailType.NOTES to
                 SettingsDestinationSpec(
                     titleResId = R.string.section_notes,
@@ -133,6 +143,11 @@ internal object SettingsDestinationRegistry {
             SettingsDetailType.TOOLS to
                 SettingsDestinationSpec(
                     titleResId = R.string.settings_tools_title,
+                    level = 2,
+                ),
+            SettingsDetailType.AT_A_GLANCE to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_at_a_glance_title,
                     level = 2,
                 ),
             SettingsDetailType.GEMINI_API_CONFIG to
@@ -203,6 +218,18 @@ internal object SettingsDestinationRegistry {
                 SettingsDestinationSpec(
                     titleResId = R.string.settings_shortcut_notification_history,
                     level = 2,
+                ),
+            SettingsDetailType.EDGE_GESTURE to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_edge_gesture_title,
+                    level = 2,
+                    fallbackBackDestination = SettingsDetailType.LAUNCH_OPTIONS,
+                ),
+            SettingsDetailType.FLOATING_BUTTON to
+                SettingsDestinationSpec(
+                    titleResId = R.string.settings_floating_button_title,
+                    level = 2,
+                    fallbackBackDestination = SettingsDetailType.LAUNCH_OPTIONS,
                 ),
         )
 

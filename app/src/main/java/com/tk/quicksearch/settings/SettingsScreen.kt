@@ -43,6 +43,7 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.RocketLaunch
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Swipe
+import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.Upload
@@ -316,6 +317,16 @@ fun SettingsScreen(
                     )
                     add(
                         SettingsCardItem(
+                            title = stringResource(R.string.settings_at_a_glance_title),
+                            description = stringResource(R.string.settings_at_a_glance_desc),
+                            icon = Icons.Rounded.Today,
+                            actionOnPress = {
+                                onNavigateToDetail(SettingsDetailType.AT_A_GLANCE)
+                            },
+                        ),
+                    )
+                    add(
+                        SettingsCardItem(
                             title = stringResource(R.string.common_ai_provider),
                             description = stringResource(R.string.settings_gemini_api_config_desc),
                             iconResId = R.drawable.direct_search,
@@ -388,31 +399,6 @@ fun SettingsScreen(
                     SettingsNavigationRow(
                         item =
                             SettingsCardItem(
-                                title = stringResource(R.string.settings_app_language_title),
-                                description =
-                                    stringResource(
-                                        R.string.settings_app_language_desc,
-                                        selectedLanguageLabel,
-                                    ),
-                                icon = Icons.Rounded.Translate,
-                                actionOnPress = {
-                                    showLanguageDialog = true
-                                },
-                            ),
-                        contentPadding =
-                            PaddingValues(
-                                horizontal = DesignTokens.SpacingXXLarge,
-                                vertical = DesignTokens.SpacingLarge,
-                            ),
-                    )
-
-                    HorizontalDivider(
-                        color = AppColors.SettingsDivider,
-                    )
-
-                    SettingsNavigationRow(
-                        item =
-                            SettingsCardItem(
                                 title = stringResource(R.string.settings_launch_options_title),
                                 description = stringResource(R.string.settings_launch_options_desc),
                                 icon = Icons.Rounded.RocketLaunch,
@@ -439,6 +425,31 @@ fun SettingsScreen(
                                 icon = Icons.Rounded.AdminPanelSettings,
                                 actionOnPress = {
                                     onNavigateToDetail(SettingsDetailType.PERMISSIONS)
+                                },
+                            ),
+                        contentPadding =
+                            PaddingValues(
+                                horizontal = DesignTokens.SpacingXXLarge,
+                                vertical = DesignTokens.SpacingLarge,
+                            ),
+                    )
+
+                    HorizontalDivider(
+                        color = AppColors.SettingsDivider,
+                    )
+
+                    SettingsNavigationRow(
+                        item =
+                            SettingsCardItem(
+                                title = stringResource(R.string.settings_app_language_title),
+                                description =
+                                    stringResource(
+                                        R.string.settings_app_language_desc,
+                                        selectedLanguageLabel,
+                                    ),
+                                icon = Icons.Rounded.Translate,
+                                actionOnPress = {
+                                    showLanguageDialog = true
                                 },
                             ),
                         contentPadding =

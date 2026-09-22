@@ -301,6 +301,9 @@ internal fun SettingsDetailLevel1Screen(
                             onNavigateToNotes = {
                                 onNavigateToDetail(SettingsDetailType.NOTES)
                             },
+                            onNavigateToReminders = {
+                                onNavigateToDetail(SettingsDetailType.REMINDERS)
+                            },
                         )
                     }
 
@@ -548,6 +551,12 @@ internal fun SettingsDetailLevel1Screen(
                                 callbacks.onToggleAssistantLaunchVoiceMode,
                             onAddHomeScreenWidget = callbacks.onAddHomeScreenWidget,
                             onAddQuickSettingsTile = callbacks.onAddQuickSettingsTile,
+                            onOpenEdgeGesture = {
+                                onNavigateToDetail(SettingsDetailType.EDGE_GESTURE)
+                            },
+                            onOpenFloatingButton = {
+                                onNavigateToDetail(SettingsDetailType.FLOATING_BUTTON)
+                            },
                             modifier = Modifier,
                         )
                     }
@@ -599,11 +608,13 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.APP_SHORTCUTS,
                     SettingsDetailType.DEVICE_SETTINGS,
                     SettingsDetailType.CALENDAR_EVENTS,
+                    SettingsDetailType.REMINDERS,
                     SettingsDetailType.NOTES,
                     SettingsDetailType.NOTE_EDITOR,
                     SettingsDetailType.CALLS_TEXTS,
                     SettingsDetailType.FILES,
                     SettingsDetailType.TOOLS,
+                    SettingsDetailType.AT_A_GLANCE,
                     SettingsDetailType.GEMINI_API_CONFIG,
                     SettingsDetailType.API_KEY_SETUP,
                     SettingsDetailType.UNIT_CONVERTER_INFO,
@@ -614,6 +625,8 @@ internal fun SettingsDetailLevel1Screen(
                     SettingsDetailType.TRIGGERS,
                     SettingsDetailType.GESTURES,
                     SettingsDetailType.NOTIFICATION_HISTORY,
+                    SettingsDetailType.EDGE_GESTURE,
+                    SettingsDetailType.FLOATING_BUTTON,
                     -> Unit
                 }
             }

@@ -57,6 +57,7 @@ enum class SearchIconDisplay(
 enum class WidgetVariant {
     STANDARD,
     CUSTOM_BUTTONS_ONLY,
+    MEDIA_CONTROLS,
 }
 
 internal object WidgetButtonSlotConfig {
@@ -119,6 +120,7 @@ private object WidgetKeys {
     val MIC_ACTION = stringPreferencesKey("quick_search_widget_mic_action")
     val TEXT_ICON_COLOR_OVERRIDE =
         stringPreferencesKey("quick_search_widget_text_icon_color_override")
+    val CUSTOM_TEXT_ICON_COLOR = intPreferencesKey("quick_search_widget_custom_text_icon_color")
     val INTERNAL_HORIZONTAL_PADDING =
         floatPreferencesKey("quick_search_widget_internal_horizontal_padding")
     val INTERNAL_VERTICAL_PADDING =
@@ -152,6 +154,8 @@ data class WidgetPreferences(
     val borderAlpha: Float = WidgetDefaults.BORDER_ALPHA,
     val micAction: MicAction = WidgetDefaults.MIC_ACTION,
     val textIconColorOverride: TextIconColorOverride = WidgetDefaults.TEXT_ICON_COLOR_OVERRIDE,
+    /** Custom text and icon color (Media Controls widget only); overrides [textIconColorOverride]. */
+    val customTextIconColor: Int? = null,
     val internalHorizontalPaddingDp: Float = WidgetDefaults.INTERNAL_HORIZONTAL_PADDING_DP,
     val internalVerticalPaddingDp: Float = WidgetDefaults.INTERNAL_VERTICAL_PADDING_DP,
     val useDeviceThemeBackground: Boolean = WidgetDefaults.USE_DEVICE_THEME_BACKGROUND,
@@ -289,6 +293,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
                 TextIconColorOverride.entries.find { it.value == overrideString }
             }
                 ?: WidgetDefaults.TEXT_ICON_COLOR_OVERRIDE,
+        customTextIconColor = this[WidgetKeys.CUSTOM_TEXT_ICON_COLOR],
         internalHorizontalPaddingDp =
             this[WidgetKeys.INTERNAL_HORIZONTAL_PADDING]
                 ?: WidgetDefaults.INTERNAL_HORIZONTAL_PADDING_DP,
@@ -322,6 +327,8 @@ fun MutablePreferences.applyWidgetPreferences(
     this[WidgetKeys.BORDER_ALPHA] = validated.borderAlpha
     this[WidgetKeys.MIC_ACTION] = validated.micAction.value
     this[WidgetKeys.TEXT_ICON_COLOR_OVERRIDE] = validated.textIconColorOverride.value
+    validated.customTextIconColor?.let { this[WidgetKeys.CUSTOM_TEXT_ICON_COLOR] = it }
+        ?: remove(WidgetKeys.CUSTOM_TEXT_ICON_COLOR)
     this[WidgetKeys.INTERNAL_HORIZONTAL_PADDING] = validated.internalHorizontalPaddingDp
     this[WidgetKeys.INTERNAL_VERTICAL_PADDING] = validated.internalVerticalPaddingDp
     this[WidgetKeys.USE_DEVICE_THEME_BACKGROUND] = validated.useDeviceThemeBackground
@@ -410,6 +417,27 @@ fun WidgetPreferences.enforceVariantConstraints(variant: WidgetVariant): WidgetP
                         normalized.customButtons,
                         WidgetButtonSlotConfig.CUSTOM_ONLY_COUNT,
                     ),
+            )
+        // Only the background (light, dark or a custom color), text and icon color (white, black
+        // or a custom color), corner radius and background transparency are configurable.
+        WidgetVariant.MEDIA_CONTROLS ->
+            normalized.copy(
+                theme = if (normalized.theme == WidgetTheme.LIGHT) WidgetTheme.LIGHT else WidgetTheme.DARK,
+                useDeviceThemeBackground = false,
+                useHomeScreenAppearance = false,
+                textIconColorOverride =
+                    if (normalized.textIconColorOverride == TextIconColorOverride.BLACK) {
+                        TextIconColorOverride.BLACK
+                    } else {
+                        TextIconColorOverride.WHITE
+                    },
+                borderWidthDp = 0f,
+                showLabel = false,
+                searchIconDisplay = SearchIconDisplay.OFF,
+                micAction = OFF,
+                internalHorizontalPaddingDp = 0f,
+                internalVerticalPaddingDp = 0f,
+                customButtons = emptyList(),
             )
     }
 }

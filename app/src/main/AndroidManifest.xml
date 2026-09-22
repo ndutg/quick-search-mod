@@ -17,6 +17,10 @@
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Reminders -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!-- Usage Statistics Permissions -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
@@ -377,6 +381,15 @@
             </intent-filter>
         </activity>
 
+        <!-- Own empty task affinity so finishing it returns to the launcher, not to Quick Search. -->
+        <activity
+            android:name=".widgets.mediaControlsWidget.MediaControlsOpenPlayerActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <activity
             android:name=".widgets.customButtonsWidget.WidgetActionActivity"
             android:exported="true"
@@ -410,6 +423,27 @@
             android:name=".pinnedNotifications.PinnedNotificationCopyContentReceiver"
             android:exported="false" />
 
+        <!-- Reminder Receivers -->
+        <receiver
+            android:name=".reminders.ReminderAlarmReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".reminders.ReminderActionReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".reminders.ReminderRescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Widget Receivers -->
         <receiver
             android:name=".widgets.searchWidget.SearchWidgetReceiver"
@@ -436,6 +470,20 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/custom_buttons_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.mediaControlsWidget.MediaControlsWidgetReceiver"
+            android:exported="false"
+            android:label="@string/widget_media_controls_widget_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
+                <action android:name="android.intent.action.WALLPAPER_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/media_controls_widget_info" />
         </receiver>
 
         <!-- Quick Settings Tile Service -->

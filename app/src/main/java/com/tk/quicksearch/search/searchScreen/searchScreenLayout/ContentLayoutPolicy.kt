@@ -33,8 +33,8 @@ internal fun homeLayoutOrder(
 
 internal fun shouldRenderStandaloneTodayAgendaBeforeApps(isReversed: Boolean): Boolean = isReversed
 
-internal fun shouldShowSearchHistoryTitle(hasStandaloneTodayAgenda: Boolean): Boolean =
-    hasStandaloneTodayAgenda
+internal fun shouldShowSearchHistoryTitle(hasAtAGlanceSection: Boolean): Boolean =
+    hasAtAGlanceSection
 
 internal fun shouldSkipRegularCalendarSectionForStandaloneTodayEvents(
     section: SearchSection,

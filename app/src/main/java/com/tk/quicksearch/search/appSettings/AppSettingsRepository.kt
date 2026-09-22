@@ -82,6 +82,13 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.TOOLS,
                 keywords = listOf("calculator", "date", "time", "unit converter", "currency converter", "conversion", "alias"),
             )
+            addNavigation(
+                id = "app_settings_at_a_glance",
+                titleRes = R.string.settings_at_a_glance_title,
+                descriptionRes = R.string.settings_at_a_glance_desc,
+                destination = AppSettingsDestination.AT_A_GLANCE,
+                keywords = listOf("today", "calendar", "events", "alarm", "reminders", "home", "media", "music", "playback"),
+            )
             if (isTaskerInstalled()) {
                 addNavigation(
                     id = "app_settings_tasker_integration",
@@ -103,6 +110,20 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_launch_options_title,
                 descriptionRes = R.string.settings_launch_options_desc,
                 destination = AppSettingsDestination.LAUNCH_OPTIONS,
+            )
+            addNavigation(
+                id = "app_settings_edge_gesture",
+                titleRes = R.string.settings_edge_gesture_title,
+                descriptionRes = R.string.settings_edge_gesture_desc,
+                destination = AppSettingsDestination.EDGE_GESTURE,
+                keywords = listOf("edge", "swipe", "side", "handle", "gesture"),
+            )
+            addNavigation(
+                id = "app_settings_floating_button",
+                titleRes = R.string.settings_floating_button_title,
+                descriptionRes = R.string.settings_floating_button_desc,
+                destination = AppSettingsDestination.FLOATING_BUTTON,
+                keywords = listOf("floating", "bubble", "button", "overlay", "shortcut"),
             )
             addNavigation(
                 id = "app_settings_default_assistant",
@@ -279,13 +300,6 @@ class AppSettingsRepository(
                 keywords = listOf("today"),
             )
             addNavigation(
-                id = "app_settings_create_calendar_event",
-                titleRes = R.string.app_settings_create_calendar_event_title,
-                descriptionRes = R.string.app_settings_create_calendar_event_desc,
-                destination = AppSettingsDestination.CREATE_CALENDAR_EVENT,
-                keywords = listOf("add event", "new event", "create event"),
-            )
-            addNavigation(
                 id = "app_settings_send_feedback",
                 titleRes = R.string.settings_feedback_send_title,
                 descriptionRes = R.string.settings_feedback_send_desc,
@@ -327,6 +341,20 @@ class AppSettingsRepository(
                 descriptionRes = R.string.settings_notes_view_all_desc,
                 destination = AppSettingsDestination.NOTES_LIST,
                 keywords = listOf("quick note"),
+            )
+            addNavigation(
+                id = "app_settings_create_reminder",
+                titleRes = R.string.app_setting_create_reminder,
+                descriptionRes = R.string.app_setting_create_reminder_desc,
+                destination = AppSettingsDestination.CREATE_REMINDER,
+                keywords = listOf("new reminder", "add reminder", "remind me", "alarm"),
+            )
+            addNavigation(
+                id = "app_settings_reminders_list",
+                titleRes = R.string.section_reminders,
+                descriptionRes = R.string.settings_reminders_view_all_desc,
+                destination = AppSettingsDestination.REMINDERS_LIST,
+                keywords = listOf("reminder", "todo"),
             )
 
             addToggle(
@@ -676,6 +704,7 @@ class AppSettingsRepository(
             SearchSection.FILES -> "app_toggle_search_files"
             SearchSection.SETTINGS -> "app_toggle_search_device_settings"
             SearchSection.CALENDAR -> "app_toggle_search_calendar"
+            SearchSection.REMINDERS -> "app_toggle_search_reminders"
             SearchSection.NOTES -> "app_toggle_search_notes"
             SearchSection.APP_SETTINGS -> "app_toggle_search_app_settings"
         }
@@ -688,6 +717,7 @@ class AppSettingsRepository(
             SearchSection.FILES -> R.string.search_section_files_toggle_title
             SearchSection.SETTINGS -> R.string.search_section_device_settings_toggle_title
             SearchSection.CALENDAR -> R.string.search_section_calendar_toggle_title
+            SearchSection.REMINDERS -> R.string.search_section_reminders_toggle_title
             SearchSection.NOTES -> R.string.search_section_notes_toggle_title
             SearchSection.APP_SETTINGS -> R.string.search_section_app_settings_toggle_title
         }
@@ -700,6 +730,7 @@ class AppSettingsRepository(
             SearchSection.FILES -> R.string.search_section_files_toggle_desc
             SearchSection.SETTINGS -> R.string.search_section_device_settings_toggle_desc
             SearchSection.CALENDAR -> R.string.search_section_calendar_toggle_desc
+            SearchSection.REMINDERS -> R.string.search_section_reminders_toggle_desc
             SearchSection.NOTES -> R.string.search_section_notes_toggle_desc
             SearchSection.APP_SETTINGS -> R.string.search_section_app_settings_toggle_desc
         }

@@ -40,6 +40,7 @@ import com.tk.quicksearch.search.data.UserAppPreferences
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
+import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetPreview
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import kotlin.math.floor
 
@@ -69,6 +70,10 @@ fun WidgetPreviewCard(
                     null
                 }
         }
+    if (widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
+        MediaControlsWidgetPreview(state = previewState, wallpaperBitmap = wallpaperBitmap)
+        return
+    }
     val colors = calculatePreviewColors(previewState)
     val borderShape = RoundedCornerShape(previewState.borderRadiusDp.dp)
     val shouldShowBorder = previewState.borderWidthDp >= WidgetConfigConstants.BORDER_VISIBILITY_THRESHOLD
@@ -306,6 +311,7 @@ fun WidgetPreviewCard(
                         }
                     }
                 }
+                WidgetVariant.MEDIA_CONTROLS -> Unit
             }
         }
     }
