@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewOutlineProvider
+import android.widget.RemoteViews
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.MemoryDiagnostics
 import kotlin.math.abs
@@ -38,6 +39,8 @@ internal class WidgetPanelHost(
         null
     var onWidgetDragEnd: ((appWidgetId: Int) -> Unit)? = null
     var onWidgetTouch: ((appWidgetId: Int) -> Boolean)? = null
+    /** Reports whether a provider has supplied content for a hosted widget yet. */
+    var onWidgetContentChanged: ((appWidgetId: Int, hasContent: Boolean) -> Unit)? = null
 
     /**
      * Provider for whether the surrounding scroll container is currently scrolling/flinging.
@@ -58,6 +61,7 @@ internal class WidgetPanelHost(
             view.onDragMove = { dx, dy -> onWidgetDragMove?.invoke(appWidgetId, dx, dy) }
             view.onDragEnd = { onWidgetDragEnd?.invoke(appWidgetId) }
             view.onTouchStarted = { onWidgetTouch?.invoke(appWidgetId) ?: false }
+            view.onContentChanged = { hasContent -> onWidgetContentChanged?.invoke(appWidgetId, hasContent) }
             view.isScrollInProgressProvider = { isScrollInProgressProvider() }
             view.onDetached = {
                 if (liveViews.remove(view)) MemoryDiagnostics.widgetViewsReleased(1)
@@ -109,6 +113,7 @@ internal class WidgetPanelHost(
         onWidgetDragMove = null
         onWidgetDragEnd = null
         onWidgetTouch = null
+        onWidgetContentChanged = null
         isScrollInProgressProvider = { false }
         val nextListener = activeHosts.lastOrNull()
         if (nextListener == null) {
@@ -142,6 +147,7 @@ private class WidgetPanelHostView(
     var onDragMove: ((deltaX: Float, deltaY: Float) -> Unit)? = null
     var onDragEnd: (() -> Unit)? = null
     var onTouchStarted: (() -> Boolean)? = null
+    var onContentChanged: ((Boolean) -> Unit)? = null
     var onDetached: (() -> Unit)? = null
     var isScrollInProgressProvider: () -> Boolean = { false }
 
@@ -156,6 +162,7 @@ private class WidgetPanelHostView(
         onDragMove = null
         onDragEnd = null
         onTouchStarted = null
+        onContentChanged = null
         onDetached = null
         isScrollInProgressProvider = { false }
     }
@@ -169,6 +176,11 @@ private class WidgetPanelHostView(
         // up with the Quick Note card; the rounded outline below then clips the widget's own
         // background instead of an inset square.
         setPadding(0, 0, 0, 0)
+    }
+
+    override fun updateAppWidget(remoteViews: RemoteViews?) {
+        super.updateAppWidget(remoteViews)
+        onContentChanged?.invoke(remoteViews != null)
     }
 
     init {
