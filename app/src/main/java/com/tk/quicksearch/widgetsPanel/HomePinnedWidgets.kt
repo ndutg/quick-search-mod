@@ -51,6 +51,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInWindow
@@ -80,6 +81,28 @@ private const val HOME_WIDGET_HOST_ID = 8291
 // Touches this close to the widget being edited still count as touching it, so the resize pills
 // that straddle its border stay usable.
 private val HomeWidgetEditTouchMargin = 12.dp
+
+// Step the empty space a widget can hold above it (below it in one-handed mode) snaps to while
+// it is dragged, so a dropped widget keeps the room the user left around it.
+private val HomeWidgetGapStep = 8.dp
+
+private const val HOME_STACK_LEADING_KEY = "home-stack-leading"
+private const val HOME_STACK_TRAILING_KEY = "home-stack-trailing"
+
+/**
+ * A widget only holds empty space at the open end of Home, where nothing renders past it: the
+ * bottom normally, and the top in one-handed mode, where the layout is reversed and bottom
+ * aligned. Sections with nothing to show take no room, so they do not close the end. Anywhere
+ * else the widget takes a slot between items and Home reflows around it as usual.
+ */
+private fun List<HomeLayoutEntry>.isOpenEndIndex(
+    index: Int,
+    isReversed: Boolean,
+    heightOf: (HomeLayoutEntry) -> Int,
+): Boolean {
+    val beyond = if (isReversed) take(index) else drop(index)
+    return beyond.none { heightOf(it) > 0 }
+}
 
 /**
  * Screen-wide guard for Home widget edit mode. While a widget is selected, a touch anywhere
@@ -305,18 +328,27 @@ private class HomeReorderShift(
     private val scope: CoroutineScope,
 ) {
     private var lastTop: Int? = null
+    private var lastEpoch = -1
     private var job: Job? = null
     var shift by mutableFloatStateOf(0f)
         private set
 
-    /** Call from `onPlaced` with the entry's layout top, measured outside any translation. */
+    /**
+     * Call from `onPlaced` with the entry's layout top, measured outside any translation.
+     * [reorderEpoch] changes only when the dragged widget lands in a different slot, so each entry
+     * animates once per reorder; the continuous shifts from growing empty space are applied
+     * straight away, keeping the layout glued to the finger.
+     */
     fun onPlacedTop(
         top: Int,
+        reorderEpoch: Int,
         animate: Boolean,
     ) {
         val previous = lastTop
         lastTop = top
-        if (previous == null || previous == top || !animate) return
+        val shouldAnimate = animate && reorderEpoch != lastEpoch
+        lastEpoch = reorderEpoch
+        if (previous == null || previous == top || !shouldAnimate) return
         // Written during layout so this frame already draws the entry at its old position.
         val start = shift + (previous - top)
         shift = start
@@ -339,6 +371,8 @@ private data class HomeWidgetDrag(
     val appWidgetId: Int,
     val startTop: Int,
     val startColumn: Int,
+    val startOriginY: Float,
+    val startGapPx: Float,
 )
 
 /**
@@ -373,6 +407,14 @@ internal fun HomeWidgetStack(
     var drag by remember { mutableStateOf<HomeWidgetDrag?>(null) }
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
     var draggedCurrentTop by remember { mutableIntStateOf(0) }
+    // Growing the empty space moves the whole stack in one-handed mode, where Home is bottom
+    // aligned, so drag math needs the stack's own position on screen.
+    var stackOriginY by remember { mutableFloatStateOf(0f) }
+    // Bumped only when the dragged widget changes slot; see [HomeReorderShift.onPlacedTop].
+    var reorderEpoch by remember { mutableIntStateOf(0) }
+    var dragTargetIndex by remember { mutableIntStateOf(-1) }
+    // Total stack height, written during measure and read from gesture callbacks.
+    val stackHeightPx = remember { floatArrayOf(0f) }
     // Eases a dropped widget from where the finger left it into its slot.
     var settlingWidgetId by remember { mutableStateOf<Int?>(null) }
     var settleOffset by remember { mutableFloatStateOf(0f) }
@@ -447,7 +489,7 @@ internal fun HomeWidgetStack(
     fun commit() {
         val final = liveWidgets
         drag?.let { active ->
-            val offset = active.startTop + dragOffsetY - draggedCurrentTop
+            val offset = active.startTop + dragOffsetY - (stackOriginY - active.startOriginY) - draggedCurrentTop
             if (offset != 0f) {
                 settleJob?.cancel()
                 settlingWidgetId = active.appWidgetId
@@ -481,7 +523,15 @@ internal fun HomeWidgetStack(
         val widget = currentDisplayWidgets.firstOrNull { it.appWidgetId == appWidgetId } ?: return
         val home = widget.home ?: return
         val startTop = bounds[appWidgetId]?.top ?: 0
-        drag = HomeWidgetDrag(appWidgetId, startTop, home.column)
+        drag =
+            HomeWidgetDrag(
+                appWidgetId = appWidgetId,
+                startTop = startTop,
+                startColumn = home.column,
+                startOriginY = stackOriginY,
+                startGapPx = home.gapSteps * with(density) { HomeWidgetGapStep.toPx() },
+            )
+        dragTargetIndex = -1
         draggedCurrentTop = startTop
         dragOffsetY = 0f
         isInteracting = true
@@ -497,33 +547,99 @@ internal fun HomeWidgetStack(
         dragOffsetY = totalDy
         val current = liveWidgets ?: currentWidgets
         val visual = homeLayoutEntries(currentLayoutOrder, currentIsReversed, current)
-        val draggedHeight = bounds[active.appWidgetId]?.height ?: 0
-        val draggedCenter = active.startTop + totalDy + draggedHeight / 2f
+        val draggedBounds = bounds[active.appWidgetId]
+        val draggedHeight = draggedBounds?.height ?: 0
+        val draggedTop = draggedBounds?.top ?: active.startTop
+        val stepPx = with(density) { HomeWidgetGapStep.toPx() }
+        val spacingPx = with(density) { spacing.toPx() }
+        val currentGapPx =
+            (current.firstOrNull { it.appWidgetId == active.appWidgetId }?.home?.gapSteps ?: 0) * stepPx
+        // The stack slides while empty space grows in one-handed mode, so read the finger in the
+        // stack's own coordinates instead of the screen's.
+        val fingerTop = active.startTop + totalDy - (stackOriginY - active.startOriginY)
+        val draggedCenter = fingerTop + draggedHeight / 2f
         val others =
             visual.filterNot {
                 it is HomeLayoutEntry.Widget && it.widget.appWidgetId == active.appWidgetId
             }
+        // Entries past the dragged widget carry its empty space; measuring against where they sit
+        // without it keeps every reorder threshold reachable however large the space grows.
+        fun entryTopWithoutGap(entryBounds: HomeEntryBounds): Float =
+            if (entryBounds.top > draggedTop) entryBounds.top - currentGapPx else entryBounds.top.toFloat()
+
         var targetIndex = others.size
         for ((index, entry) in others.withIndex()) {
             val entryBounds = bounds[entry.key] ?: continue
             if (entryBounds.height <= 0) continue
-            if (entryBounds.top + entryBounds.height / 2f > draggedCenter) {
+            if (entryTopWithoutGap(entryBounds) + entryBounds.height / 2f > draggedCenter) {
                 targetIndex = index
                 break
             }
         }
+        if (targetIndex != dragTargetIndex) {
+            if (dragTargetIndex != -1) reorderEpoch++
+            dragTargetIndex = targetIndex
+        }
+
+        // Only at the open end of Home does the leftover distance between the finger and the
+        // widget's slot become empty space, so the widget stays where it was dropped. Between
+        // items there is no room to spare: the widget takes a slot and Home reflows as before.
+        val openEndKey = if (currentIsReversed) HOME_STACK_LEADING_KEY else HOME_STACK_TRAILING_KEY
+        val isAtOpenEnd =
+            others.isOpenEndIndex(targetIndex, currentIsReversed) { entry ->
+                bounds[entry.key]?.height ?: 0
+            } && (bounds[openEndKey]?.height ?: 0) <= 0
+        val rawGapPx =
+            if (currentIsReversed) {
+                // Reversed Home is bottom aligned: the space goes after the widget, and the entry
+                // below it stays put while everything above rides up with the widget.
+                val successorTop =
+                    others
+                        .drop(targetIndex)
+                        .firstNotNullOfOrNull { entry -> bounds[entry.key]?.takeIf { it.height > 0 } }
+                        ?.let { it.top - spacingPx }
+                        ?: stackHeightPx[0]
+                successorTop - (fingerTop + draggedHeight)
+            } else {
+                val predecessorBottom =
+                    others
+                        .take(targetIndex)
+                        .asReversed()
+                        .firstNotNullOfOrNull { entry -> bounds[entry.key]?.takeIf { it.height > 0 } }
+                        ?.let { entryTopWithoutGap(it) + it.height + spacingPx }
+                        ?: 0f
+                fingerTop - predecessorBottom
+            }
+        // A gap can never outrun the finger: without the bottom alignment reversed Home relies on
+        // (a scrolled or overflowing Home), the space would otherwise feed itself. Away from the
+        // open end the space is dropped outright, so nothing invisible is left behind to come back
+        // the next time the widget lands at the end.
+        val travelLimit = kotlin.math.abs(totalDy) + stepPx
+        val gapSteps =
+            if (!isAtOpenEnd) {
+                0
+            } else {
+                (rawGapPx.coerceIn(active.startGapPx - travelLimit, active.startGapPx + travelLimit) / stepPx)
+                    .roundToInt()
+                    .coerceIn(0, HOME_WIDGET_GAP_STEPS_MAX)
+            }
+
         val reordered = moveHomeWidget(visual, active.appWidgetId, targetIndex, currentIsReversed)
         val unitWidth = gridUnitWidthPx[0]
         liveWidgets =
             reordered.map { widget ->
                 val home = widget.home
-                if (widget.appWidgetId != active.appWidgetId || home == null || unitWidth <= 0f) {
+                if (widget.appWidgetId != active.appWidgetId || home == null) {
                     widget
                 } else {
                     val column =
-                        (active.startColumn + (totalDx / unitWidth).roundToInt())
-                            .coerceIn(0, WIDGET_PANEL_GRID_COLUMNS - home.columnSpan)
-                    widget.copy(home = home.copy(column = column))
+                        if (unitWidth <= 0f) {
+                            home.column
+                        } else {
+                            (active.startColumn + (totalDx / unitWidth).roundToInt())
+                                .coerceIn(0, WIDGET_PANEL_GRID_COLUMNS - home.columnSpan)
+                        }
+                    widget.copy(home = home.copy(column = column, gapSteps = gapSteps))
                 }
             }
     }
@@ -572,8 +688,20 @@ internal fun HomeWidgetStack(
 
     Layout(
         content = {
-            key("home-stack-leading") {
-                HomeStackColumn(spacing = spacing) { leadingContent() }
+            key(HOME_STACK_LEADING_KEY) {
+                HomeStackColumn(
+                    spacing = spacing,
+                    modifier =
+                        Modifier
+                            .layoutId(HOME_STACK_LEADING_KEY)
+                            .onPlaced { coordinates ->
+                                bounds[HOME_STACK_LEADING_KEY] =
+                                    HomeEntryBounds(
+                                        top = coordinates.positionInParent().y.roundToInt(),
+                                        height = coordinates.size.height,
+                                    )
+                            },
+                ) { leadingContent() }
             }
             entries.forEach { entry ->
                 key(entry.key) {
@@ -584,11 +712,16 @@ internal fun HomeWidgetStack(
                                 spacing = spacing,
                                 modifier =
                                     Modifier
+                                        .layoutId(entry.key)
                                         .onPlaced { coordinates ->
                                             val top = coordinates.positionInParent().y.roundToInt()
                                             bounds[entry.key] =
                                                 HomeEntryBounds(top = top, height = coordinates.size.height)
-                                            reorderShift.onPlacedTop(top, animate = drag != null)
+                                            reorderShift.onPlacedTop(
+                                                top,
+                                                reorderEpoch = reorderEpoch,
+                                                animate = drag != null,
+                                            )
                                         }.graphicsLayer { translationY = reorderShift.shift },
                             ) {
                                 itemContent(entry.itemType)
@@ -612,6 +745,7 @@ internal fun HomeWidgetStack(
                                 },
                                 modifier =
                                     Modifier
+                                        .layoutId(appWidgetId)
                                         .onPlaced { coordinates ->
                                             val top = coordinates.positionInParent().y.roundToInt()
                                             bounds[appWidgetId] =
@@ -621,6 +755,7 @@ internal fun HomeWidgetStack(
                                             }
                                             reorderShift.onPlacedTop(
                                                 top,
+                                                reorderEpoch = reorderEpoch,
                                                 animate = drag != null && drag?.appWidgetId != appWidgetId,
                                             )
                                         }.zIndex(if (isDragged) 2f else if (editingWidgetId == appWidgetId) 1f else 0f)
@@ -629,7 +764,9 @@ internal fun HomeWidgetStack(
                                             translationY =
                                                 when {
                                                     active?.appWidgetId == appWidgetId ->
-                                                        active.startTop + dragOffsetY - draggedCurrentTop
+                                                        active.startTop + dragOffsetY -
+                                                            (stackOriginY - active.startOriginY) -
+                                                            draggedCurrentTop
                                                     settlingWidgetId == appWidgetId -> settleOffset
                                                     else -> reorderShift.shift
                                                 }
@@ -651,16 +788,50 @@ internal fun HomeWidgetStack(
                     }
                 }
             }
-            key("home-stack-trailing") {
-                HomeStackColumn(spacing = spacing) { trailingContent() }
+            key(HOME_STACK_TRAILING_KEY) {
+                HomeStackColumn(
+                    spacing = spacing,
+                    modifier =
+                        Modifier
+                            .layoutId(HOME_STACK_TRAILING_KEY)
+                            .onPlaced { coordinates ->
+                                bounds[HOME_STACK_TRAILING_KEY] =
+                                    HomeEntryBounds(
+                                        top = coordinates.positionInParent().y.roundToInt(),
+                                        height = coordinates.size.height,
+                                    )
+                            },
+                ) { trailingContent() }
             }
         },
         modifier =
-            modifier,
+            modifier.onPlaced { coordinates -> stackOriginY = coordinates.positionInWindow().y },
     ) { measurables, constraints ->
         val childConstraints = constraints.copy(minWidth = 0, minHeight = 0)
-        val placeables = measurables.map { it.measure(childConstraints) }
         val spacingPx = spacing.roundToPx()
+        val gapStepPx = HomeWidgetGapStep.roundToPx()
+        val placeables = measurables.map { it.measure(childConstraints) }
+        // Empty space belongs to the widget at Home's open end: the last child that actually
+        // renders something, or the first one once the layout is reversed. Sections with nothing
+        // to show take no room, so they never close the end; leading and trailing content does.
+        // Keyed rather than positional: a widget whose provider is gone composes nothing, so the
+        // entries and the measured children do not line up index for index.
+        val gapStepsByKey =
+            entries
+                .filterIsInstance<HomeLayoutEntry.Widget>()
+                .associate { it.key to (it.widget.home?.gapSteps ?: 0) }
+        val openEndIndex =
+            if (isReversed) {
+                placeables.indexOfFirst { it.height > 0 }
+            } else {
+                placeables.indexOfLast { it.height > 0 }
+            }
+        val gapKey = measurables.getOrNull(openEndIndex)?.layoutId
+        val gapPx = (gapStepsByKey[gapKey] ?: 0) * gapStepPx
+        val gaps =
+            IntArray(measurables.size) { index ->
+                if (gapPx > 0 && measurables[index].layoutId == gapKey) gapPx else 0
+            }
         val positions = IntArray(placeables.size)
         var y = 0
         var hasVisibleChild = false
@@ -668,10 +839,16 @@ internal fun HomeWidgetStack(
             // Empty slots (sections with nothing to show) take no spacing. Growing children ease
             // into the gap so height animations don't jump by the full spacing on their first frame.
             if (placeable.height > 0 && hasVisibleChild) y += min(placeable.height, spacingPx)
+            // A widget's empty space sits before it in logical Home order: above it normally,
+            // below it once the layout is reversed for one-handed mode.
+            val gap = if (placeable.height > 0) gaps[index] else 0
+            if (!isReversed) y += gap
             positions[index] = y
             y += placeable.height
+            if (isReversed) y += gap
             if (placeable.height > 0) hasVisibleChild = true
         }
+        stackHeightPx[0] = y.toFloat()
         val width =
             (placeables.maxOfOrNull { it.width } ?: 0).coerceIn(constraints.minWidth, constraints.maxWidth)
         val height = y.coerceIn(constraints.minHeight, constraints.maxHeight)
