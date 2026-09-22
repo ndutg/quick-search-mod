@@ -9,7 +9,8 @@ import android.os.SystemClock
 /**
  * Relative seeking for long media (podcasts, audiobooks, videos), where skipping 15 seconds is
  * more useful than skipping the whole track. The At a Glance card shows rewind/forward next to
- * previous/next and emphasizes them while [isSeekMode] holds. Custom buttons always skip tracks.
+ * previous/next and emphasizes them while [isSeekMode] holds. Custom buttons offer seeking as
+ * separate commands, so their previous/next always skip tracks.
  */
 object MediaSeek {
     const val STEP_MS = 15_000L

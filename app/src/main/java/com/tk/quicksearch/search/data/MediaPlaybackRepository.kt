@@ -49,6 +49,15 @@ class MediaPlaybackRepository(private val context: Context) {
     }
 
     /**
+     * The system-priority session, independent of the At a Glance toggle, matching the session
+     * that custom widget media keys reach.
+     */
+    fun priorityController(): MediaController? {
+        if (!hasAccess()) return null
+        return currentController()
+    }
+
+    /**
      * Whether the system-priority session is actively playing, independent of the At a Glance
      * toggle. Custom widget buttons dispatch media commands to that same priority session, so
      * their Play/Pause icon must not be held in the playing state by an older session.
