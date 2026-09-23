@@ -71,6 +71,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -195,6 +196,11 @@ fun WidgetsPanelScreen(
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
     var pendingRequest by remember { mutableStateOf<PendingWidgetRequest?>(null) }
+    // An app-widget backup can restore Quick Search's layout metadata, but Android does not
+    // restore the corresponding system-owned app-widget IDs. Keep those obsolete records from
+    // reserving invisible cells ahead of widgets added on this device.
+    var restoredWidgetIdsValidated by remember { mutableStateOf(false) }
+    val widgetContentAvailable = remember { mutableStateMapOf<Int, Boolean>() }
     // Keep the first panel frame independent of third-party RemoteViews. Some providers perform
     // expensive work while their host view is created; doing that during navigation blocks the
     // whole panel from appearing.
@@ -218,6 +224,14 @@ fun WidgetsPanelScreen(
         widgets = next
         preferences.setWidgets(next)
         HomePinnedWidgetsStore.publish(next)
+    }
+
+    fun discardInvalidRestoredWidgets() {
+        val validWidgets = widgets.filter { appWidgetManager.getAppWidgetInfo(it.appWidgetId) != null }
+        if (validWidgets != widgets) {
+            persistWidgets(validWidgets)
+        }
+        restoredWidgetIdsValidated = true
     }
 
     fun pinWidgetToHome(widget: PanelWidgetInfo) {
@@ -375,6 +389,9 @@ fun WidgetsPanelScreen(
 
     DisposableEffect(appWidgetHost) {
         appWidgetHost.isScrollInProgressProvider = { panelScrollState.isScrollInProgress }
+        appWidgetHost.onWidgetContentChanged = { appWidgetId, hasContent ->
+            widgetContentAvailable[appWidgetId] = hasContent
+        }
         appWidgetHost.startListeningShared()
         onDispose {
             appWidgetHost.release()
@@ -385,6 +402,10 @@ fun WidgetsPanelScreen(
         // Let the host begin listening and the panel draw once before creating provider views.
         withFrameNanos { }
         showHostedWidgets = true
+    }
+
+    LaunchedEffect(appWidgetManager) {
+        discardInvalidRestoredWidgets()
     }
 
     LaunchedEffect(appWidgetHost, panelScrollState) {
@@ -557,11 +578,12 @@ fun WidgetsPanelScreen(
                                 if (isQuickNoteEnabled) add(quickNoteWidget)
                                 addAll(panelWidgets)
                             }
-                        if (panelItems.isNotEmpty() && showHostedWidgets) {
+                        if (panelItems.isNotEmpty() && showHostedWidgets && restoredWidgetIdsValidated) {
                             WidgetPanelGrid(
                                 widgets = panelItems,
                                 appWidgetManager = appWidgetManager,
                                 appWidgetHost = appWidgetHost,
+                                widgetContentAvailable = widgetContentAvailable,
                                 editingWidgetId = editingWidgetId,
                                 density = density,
                                 panelScrollState = panelScrollState,
@@ -679,6 +701,7 @@ private fun WidgetPanelGrid(
     widgets: List<PanelWidgetInfo>,
     appWidgetManager: AppWidgetManager,
     appWidgetHost: WidgetPanelHost,
+    widgetContentAvailable: Map<Int, Boolean>,
     editingWidgetId: Int?,
     density: Density,
     panelScrollState: ScrollState,
@@ -887,6 +910,7 @@ private fun WidgetPanelGrid(
                         widget = widget,
                         appWidgetManager = appWidgetManager,
                         appWidgetHost = appWidgetHost,
+                        hasWidgetContent = widgetContentAvailable[widget.appWidgetId] == true,
                         isEditing = editingWidgetId == widget.appWidgetId,
                         cellWidth = cellWidth,
                         rowHeight = rowHeight,
@@ -947,6 +971,7 @@ private fun BoxScope.WidgetPanelGridItem(
     widget: PanelWidgetInfo,
     appWidgetManager: AppWidgetManager,
     appWidgetHost: WidgetPanelHost,
+    hasWidgetContent: Boolean,
     isEditing: Boolean,
     cellWidth: Dp,
     rowHeight: Dp,
@@ -1052,6 +1077,21 @@ private fun BoxScope.WidgetPanelGridItem(
             rowSpan = rowSpan,
             modifier = Modifier.fillMaxSize(),
         )
+        if (!hasWidgetContent) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                shape = DesignTokens.WidgetPanelCardShape,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = stringResource(R.string.widget_loading_state),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
 
         if (isEditing) {
             WidgetEditOverlay(
