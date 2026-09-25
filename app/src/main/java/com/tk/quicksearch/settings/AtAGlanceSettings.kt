@@ -3,21 +3,28 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -32,6 +39,7 @@ import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.permissions.PermissionHelper
+import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /** Toggles for the glanceable cards shown on the home screen: media, today's events, alarm, reminders and low battery. */
@@ -45,6 +53,8 @@ fun AtAGlanceSettingsSection(modifier: Modifier = Modifier) {
     val batteryPreferences = remember(context) { BatteryPreferences(context.applicationContext) }
     var showTodayEvents by remember { mutableStateOf(calendarPreferences.getShowTodayEvents()) }
     var showUpcomingAlarm by remember { mutableStateOf(alarmPreferences.isShowUpcomingAlarmEnabled()) }
+    var hiddenAlarmPackages by remember { mutableStateOf(alarmPreferences.getHiddenPackages()) }
+    var showHiddenAlarmAppsDialog by remember { mutableStateOf(false) }
     var showUpcomingReminders by remember {
         mutableStateOf(reminderPreferences.isShowUpcomingRemindersEnabled())
     }
@@ -70,6 +80,7 @@ fun AtAGlanceSettingsSection(modifier: Modifier = Modifier) {
                 if (event == Lifecycle.Event.ON_RESUME) {
                     hasMediaAccess = NotificationDotsPermission.hasNotificationListenerAccess(context)
                     hasCalendarAccess = PermissionHelper.checkCalendarPermission(context)
+                    hiddenAlarmPackages = alarmPreferences.getHiddenPackages()
                     if (pendingCalendarEnable && hasCalendarAccess) enableTodayEvents()
                 }
             }
@@ -153,7 +164,21 @@ fun AtAGlanceSettingsSection(modifier: Modifier = Modifier) {
             )
             SettingsToggleRow(
                 title = stringResource(R.string.settings_at_a_glance_alarms_title),
-                subtitle = stringResource(R.string.settings_upcoming_alarm_desc),
+                subtitle =
+                    if (hiddenAlarmPackages.isEmpty()) stringResource(R.string.settings_upcoming_alarm_desc) else null,
+                subtitleContent =
+                    if (hiddenAlarmPackages.isEmpty()) {
+                        null
+                    } else {
+                        {
+                            Text(
+                                text = stringResource(R.string.settings_hidden_alarm_apps_title),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable { showHiddenAlarmAppsDialog = true },
+                            )
+                        }
+                    },
                 checked = showUpcomingAlarm,
                 onCheckedChange = { enabled ->
                     showUpcomingAlarm = enabled
@@ -186,4 +211,68 @@ fun AtAGlanceSettingsSection(modifier: Modifier = Modifier) {
             )
         }
     }
+
+    if (showHiddenAlarmAppsDialog) {
+        HiddenAlarmAppsDialog(
+            packageNames = hiddenAlarmPackages,
+            onUnhide = { packageName ->
+                hiddenAlarmPackages = alarmPreferences.unhidePackage(packageName)
+                if (hiddenAlarmPackages.isEmpty()) showHiddenAlarmAppsDialog = false
+            },
+            onDismiss = { showHiddenAlarmAppsDialog = false },
+        )
+    }
+}
+
+/** Lists the apps whose alarms were hidden from At a Glance, each with an Unhide action. */
+@Composable
+private fun HiddenAlarmAppsDialog(
+    packageNames: Set<String>,
+    onUnhide: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val context = LocalContext.current
+    val apps =
+        remember(packageNames, context) {
+            val packageManager = context.packageManager
+            packageNames
+                .map { packageName ->
+                    val label =
+                        runCatching {
+                            packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
+                        }.getOrDefault(packageName)
+                    packageName to label
+                }.sortedBy { (_, label) -> label.lowercase() }
+        }
+
+    AppAlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.settings_hidden_alarm_apps_title)) },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                apps.forEach { (packageName, label) ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                        TextButton(onClick = { onUnhide(packageName) }) {
+                            Text(text = stringResource(R.string.action_include_generic))
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.common_close))
+            }
+        },
+    )
 }

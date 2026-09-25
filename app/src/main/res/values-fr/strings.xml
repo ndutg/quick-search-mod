@@ -805,6 +805,7 @@
 <string name="settings_at_a_glance_desc">Des informations utiles qui apparaissent sur votre écran d\'accueil au bon moment</string>
 <string name="settings_at_a_glance_alarms_title">Alarmes</string>
 <string name="settings_upcoming_alarm_desc">Votre prochaine alarme lorsqu\'elle sonne dans moins de 45 minutes</string>
+<string name="settings_hidden_alarm_apps_title">Apps d\'alarmes masquées</string>
 <string name="settings_at_a_glance_events_desc">Événements du calendrier d\'aujourd\'hui</string>
 <string name="settings_upcoming_reminders_desc">Rappels dus dans les 30 minutes ou en retard</string>
     <string name="settings_at_a_glance_low_battery_title">Batterie faible</string>
@@ -1216,6 +1217,7 @@
     <string name="speed_bump_overlay_title">Respirez profondément</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Alarme à venir</string>
+    <string name="home_upcoming_alarm_hide_app">Masquer les alarmes de %1$s</string>
     <string name="home_low_battery_saver_off">Appuyez pour activer l\'économiseur de batterie</string>
     <string name="home_low_battery_saver_on">L\'économiseur de batterie est activé</string>
     <string name="settings_tavily_title">Tavily pour la recherche web</string>

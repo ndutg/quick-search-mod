@@ -804,6 +804,7 @@
 <string name="settings_at_a_glance_desc">Ana ekranınızda doğru zamanda görünen faydalı bilgiler</string>
 <string name="settings_at_a_glance_alarms_title">Alarmlar</string>
 <string name="settings_upcoming_alarm_desc">45 dakika içindeyse sonraki alarmınız</string>
+<string name="settings_hidden_alarm_apps_title">Gizli Alarm Uygulamaları</string>
 <string name="settings_at_a_glance_events_desc">Bugünün takvim etkinlikleri</string>
 <string name="settings_upcoming_reminders_desc">30 dakika içinde zamanı gelen veya gecikmiş hatırlatıcılar</string>
     <string name="settings_at_a_glance_low_battery_title">Düşük pil</string>
@@ -1215,6 +1216,7 @@
     <string name="speed_bump_overlay_title">Derin bir nefes al</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Yaklaşan alarm</string>
+    <string name="home_upcoming_alarm_hide_app">%1$s alarmlarını gizle</string>
     <string name="home_low_battery_saver_off">Pil Tasarrufu\'nu açmak için dokunun</string>
     <string name="home_low_battery_saver_on">Pil Tasarrufu açık</string>
     <string name="settings_tavily_title">Web Araması için Tavily</string>

@@ -18,6 +18,7 @@ class UpcomingAlarmRepository(private val context: Context) {
         if (!preferences.isShowUpcomingAlarmEnabled()) return null
         val alarm = alarmManager?.nextAlarmClock ?: return null
         if (!isFromClockApp(alarm)) return null
+        if (alarm.showIntent?.creatorPackage?.let(preferences::isHiddenPackage) == true) return null
         val timeUntilAlarm = alarm.triggerTime - nowMillis
         return alarm.takeIf {
             timeUntilAlarm in 1..FORTY_FIVE_MINUTES_MILLIS &&
@@ -54,6 +55,19 @@ class UpcomingAlarmRepository(private val context: Context) {
 
     fun dismiss(alarm: AlarmManager.AlarmClockInfo) {
         preferences.dismiss(alarm.triggerTime)
+    }
+
+    /** Hides this and future alarms scheduled by the app that created [alarm]. */
+    fun hideAlarmsFromApp(alarm: AlarmManager.AlarmClockInfo) {
+        alarm.showIntent?.creatorPackage?.let(preferences::hidePackage)
+    }
+
+    fun appLabel(alarm: AlarmManager.AlarmClockInfo): String? {
+        val creatorPackage = alarm.showIntent?.creatorPackage ?: return null
+        return runCatching {
+            val packageManager = context.packageManager
+            packageManager.getApplicationInfo(creatorPackage, 0).loadLabel(packageManager).toString()
+        }.getOrNull()
     }
 
     fun open(alarm: AlarmManager.AlarmClockInfo): Boolean {

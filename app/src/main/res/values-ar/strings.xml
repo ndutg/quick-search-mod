@@ -806,6 +806,7 @@
     <string name="settings_at_a_glance_desc">معلومات مفيدة تظهر على شاشتك الرئيسية في الأوقات المناسبة</string>
     <string name="settings_at_a_glance_alarms_title">المنبهات</string>
     <string name="settings_upcoming_alarm_desc">المنبه التالي عندما يكون خلال 45 دقيقة</string>
+    <string name="settings_hidden_alarm_apps_title">تطبيقات المنبهات المخفية</string>
     <string name="settings_at_a_glance_events_desc">أحداث تقويم اليوم</string>
     <string name="settings_upcoming_reminders_desc">التذكيرات المستحقة خلال 30 دقيقة أو المتأخرة</string>
     <string name="settings_at_a_glance_low_battery_title">البطارية منخفضة</string>
@@ -1218,6 +1219,7 @@
     <string name="speed_bump_overlay_title">خذ نفسًا عميقًا</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">المنبه القادم</string>
+    <string name="home_upcoming_alarm_hide_app">إخفاء المنبهات من %1$s</string>
     <string name="home_low_battery_saver_off">انقر لتفعيل موفّر البطارية</string>
     <string name="home_low_battery_saver_on">موفّر البطارية مفعّل</string>
     <string name="settings_tavily_title">Tavily للبحث على الويب</string>

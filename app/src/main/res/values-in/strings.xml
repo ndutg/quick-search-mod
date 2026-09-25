@@ -813,6 +813,7 @@
     <string name="settings_at_a_glance_desc">Informasi berguna yang muncul di layar utama pada waktu yang tepat</string>
     <string name="settings_at_a_glance_alarms_title">Alarm</string>
     <string name="settings_upcoming_alarm_desc">Alarm berikutnya jika dalam 45 menit</string>
+    <string name="settings_hidden_alarm_apps_title">Aplikasi Alarm Tersembunyi</string>
     <string name="settings_at_a_glance_events_desc">Acara kalender hari ini</string>
     <string name="settings_upcoming_reminders_desc">Pengingat yang jatuh tempo dalam 30 menit atau terlambat</string>
     <string name="settings_at_a_glance_low_battery_title">Baterai lemah</string>
@@ -1218,6 +1219,7 @@
     <string name="speed_bump_overlay_title">Tarik napas dalam-dalam</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Alarm mendatang</string>
+    <string name="home_upcoming_alarm_hide_app">Sembunyikan alarm dari %1$s</string>
     <string name="home_low_battery_saver_off">Ketuk untuk mengaktifkan Penghemat Baterai</string>
     <string name="home_low_battery_saver_on">Penghemat Baterai aktif</string>
     <string name="settings_tavily_title">Tavily untuk Penelusuran Web</string>
