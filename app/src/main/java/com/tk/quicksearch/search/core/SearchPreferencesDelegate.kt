@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.core
 
+import android.widget.Toast
+import com.tk.quicksearch.R
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.search.apps.IconPackService
 import com.tk.quicksearch.search.data.UserAppPreferences
@@ -14,8 +16,11 @@ import com.tk.quicksearch.tools.aiSearch.resolveModelSelection
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal interface SearchPreferencesStateAccess {
     var enabledFileTypes: Set<FileType>
@@ -87,6 +92,9 @@ internal class SearchPreferencesDelegate(
     private val refreshCalendarEvents: () -> Unit,
     private val stateAccess: SearchPreferencesStateAccess,
 ) {
+    @Volatile private var lastModelRefreshAtMillis = 0L
+    @Volatile private var lastModelRefreshProviderIds: Set<AiSearchLlmProviderId> = emptySet()
+
     fun setCalculatorEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             userPreferences.setCalculatorEnabled(enabled)
@@ -1038,8 +1046,11 @@ internal class SearchPreferencesDelegate(
                 aiSearchHandler.setLlmApiKey(providerId, provider.apiKey)
                 aiSearchHandler.setAiSearchProviderId(providerId)
 
-                val models =
-                    fetchAvailableModels(providerId, provider.apiKey).getOrDefault(emptyList())
+                val modelsResult = fetchAvailableModels(providerId, provider.apiKey)
+                modelsResult.exceptionOrNull()?.let { error ->
+                    showCustomProviderModelsError(error)
+                }
+                val models = modelsResult.getOrDefault(emptyList())
                 aiSearchHandler.setSelectedModelId(null)
                 aiSearchHandler.setGroundingEnabled(true)
                 aiSearchHandler.setThinkingEnabled(false)
@@ -1223,21 +1234,28 @@ internal class SearchPreferencesDelegate(
     fun refreshAvailableGeminiModels() {
         scope.launch(Dispatchers.IO) {
             val configuredProviderIds = userPreferences.getLlmApiKeyLast4ByProvider().keys
-            updateFeatureState {
-                it.copy(
-                    availableGeminiModels = emptyList(),
-                    availableLlmModelsByProvider = emptyMap(),
-                )
+            val now = System.currentTimeMillis()
+            if (configuredProviderIds == lastModelRefreshProviderIds &&
+                now - lastModelRefreshAtMillis < MODEL_REFRESH_MIN_INTERVAL_MS
+            ) {
+                return@launch
             }
+            // Keep the cached catalogs visible while refetching; only providers with no cached
+            // list show the loading state.
             val activeProviderId = aiSearchHandler.getAiSearchProviderId()
             val results =
-                configuredProviderIds.associateWith { providerId ->
-                    val apiKey = userPreferences.getLlmApiKey(providerId)
-                    if (apiKey.isNullOrBlank()) {
-                        Result.success(emptyList())
-                    } else {
-                        fetchAvailableModels(providerId, apiKey)
-                    }
+                coroutineScope {
+                    configuredProviderIds
+                        .associateWith { providerId ->
+                            async {
+                                val apiKey = userPreferences.getLlmApiKey(providerId)
+                                if (apiKey.isNullOrBlank()) {
+                                    Result.success(emptyList())
+                                } else {
+                                    fetchAvailableModels(providerId, apiKey)
+                                }
+                            }
+                        }.mapValues { (_, deferred) -> deferred.await() }
                 }
             results.forEach { (providerId, result) ->
                 result.getOrNull()?.let { models ->
@@ -1280,11 +1298,16 @@ internal class SearchPreferencesDelegate(
                     }
                 }
             userPreferences.setCustomTools(refreshedCustomTools)
-            val configuredProviderModels =
-                results.mapValues { (_, result) -> result.getOrDefault(emptyList()) }
-            val activeModels = configuredProviderModels[activeProviderId].orEmpty()
-            aiSearchHandler.updateAvailableModels(activeModels)
+            var activeModels: List<GeminiTextModel> = emptyList()
             updateFeatureState {
+                // A failed fetch keeps the previously cached catalog instead of blanking it.
+                val configuredProviderModels =
+                    results.mapValues { (providerId, result) ->
+                        result.getOrNull()
+                            ?: it.availableLlmModelsByProvider[providerId]
+                            ?: emptyList()
+                    }
+                activeModels = configuredProviderModels[activeProviderId].orEmpty()
                 it.copy(
                     geminiModel = aiSearchHandler.getGeminiModel(),
                     customTools = refreshedCustomTools,
@@ -1292,6 +1315,23 @@ internal class SearchPreferencesDelegate(
                     availableLlmModelsByProvider = configuredProviderModels,
                 )
             }
+            aiSearchHandler.updateAvailableModels(activeModels)
+            if (results.values.all { it.isSuccess }) {
+                lastModelRefreshProviderIds = configuredProviderIds
+                lastModelRefreshAtMillis = now
+            }
+        }
+    }
+
+    private suspend fun showCustomProviderModelsError(error: Throwable) {
+        val app = applicationProvider()
+        val detail = error.message?.takeIf { it.isNotBlank() } ?: error.javaClass.simpleName
+        withContext(Dispatchers.Main) {
+            Toast.makeText(
+                app,
+                app.getString(R.string.custom_provider_models_load_failed, detail),
+                Toast.LENGTH_LONG,
+            ).show()
         }
     }
 
@@ -1442,5 +1482,9 @@ internal class SearchPreferencesDelegate(
         if (normalizedModelId.isNotBlank()) return normalizedModelId
 
         return ""
+    }
+
+    private companion object {
+        const val MODEL_REFRESH_MIN_INTERVAL_MS = 10 * 60 * 1000L
     }
 }

@@ -49,4 +49,60 @@ class AppGridOrderTest {
         assertEquals(apps, appsInVisualGridOrder(apps, columns = 5, oneHandedMode = false))
         assertEquals(apps, appsInPersistedGridOrder(apps, columns = 5, oneHandedMode = false))
     }
+
+    @Test
+    fun `grid rows are filled with gaps after trimming trailing gaps`() {
+        val items = listOf("a", "gap", "b", "gap", "gap")
+
+        val filled =
+                itemsFilledToGridRows(
+                        items,
+                        columns = 4,
+                        isGap = { it.startsWith("gap") },
+                        gap = { "gap$it" },
+                )
+
+        assertEquals(listOf("a", "gap", "b", "gap1"), filled)
+    }
+
+    @Test
+    fun `full rows and only gaps are not padded`() {
+        val isGap: (String) -> Boolean = { it.startsWith("gap") }
+
+        assertEquals(
+                listOf("a", "b"),
+                itemsFilledToGridRows(listOf("a", "b"), columns = 2, isGap = isGap, gap = { "gap$it" }),
+        )
+        assertEquals(
+                emptyList<String>(),
+                itemsFilledToGridRows(listOf("gap", "gap"), columns = 3, isGap = isGap, gap = { "gap$it" }),
+        )
+    }
+
+    @Test
+    fun `gap keys are recognized`() {
+        assertEquals(true, isPinnedGridGapKey(pinnedGridGapKey(3)))
+        assertEquals(false, isPinnedGridGapKey("com.example.app"))
+    }
+
+    @Test
+    fun `gaps after the last present item are dropped`() {
+        val g0 = pinnedGridGapKey(0)
+        val g1 = pinnedGridGapKey(1)
+
+        assertEquals(emptyList<String>(), gapKeysBeforeLastItem(listOf("a", "f", g0, g1), setOf("a", "f", "d")))
+        assertEquals(listOf(g0), gapKeysBeforeLastItem(listOf("a", g0, "b"), setOf("a", "b")))
+        assertEquals(emptyList<String>(), gapKeysBeforeLastItem(listOf("a", g0, g1, "x"), setOf("a")))
+    }
+
+    @Test
+    fun `added items fill gaps before being appended`() {
+        val isGap: (String) -> Boolean = { it == "_" }
+
+        assertEquals(
+                listOf("a", "d", "b", "e", "c", "f"),
+                itemsFillingGaps(listOf("a", "_", "b", "_", "c"), listOf("d", "e", "f"), isGap),
+        )
+        assertEquals(listOf("a", "d", "_"), itemsFillingGaps(listOf("a", "_", "_"), listOf("d"), isGap))
+    }
 }

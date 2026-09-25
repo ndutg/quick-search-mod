@@ -56,8 +56,6 @@ class AllAppsAlphabetSeekTest {
         val metrics =
                 LazyGridScrollbarMetrics(
                         totalItems = 80,
-                        visibleItemCount = 12,
-                        firstVisibleIndex = 0,
                         scrollFraction = 0.5f,
                         thumbSizeFraction = 0.2f,
                 )

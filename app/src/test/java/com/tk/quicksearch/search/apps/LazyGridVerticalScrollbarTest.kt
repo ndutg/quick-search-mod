@@ -4,51 +4,36 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class LazyGridVerticalScrollbarTest {
-    @Test
-    fun `track top jumps to first item`() {
-        val metrics =
-                LazyGridScrollbarMetrics(
-                        totalItems = 80,
-                        visibleItemCount = 12,
-                        firstVisibleIndex = 0,
-                        scrollFraction = 0f,
-                        thumbSizeFraction = 0.15f,
-                )
+    private val metrics =
+            LazyGridScrollbarMetrics(
+                    totalItems = 80,
+                    scrollFraction = 0f,
+                    thumbSizeFraction = 0.15f,
+                    columns = 4,
+                    rowHeightPx = 100f,
+                    scrollRangePx = 1500f,
+            )
 
-        assertEquals(0, targetIndexForTrackPosition(y = 0f, trackHeightPx = 400f, metrics = metrics))
+    @Test
+    fun `fraction zero maps to first item`() {
+        assertEquals(0 to 0, scrollPositionForFraction(0f, metrics))
     }
 
     @Test
-    fun `track bottom jumps to last scrollable index`() {
-        val metrics =
-                LazyGridScrollbarMetrics(
-                        totalItems = 80,
-                        visibleItemCount = 12,
-                        firstVisibleIndex = 0,
-                        scrollFraction = 0f,
-                        thumbSizeFraction = 0.15f,
-                )
-
-        assertEquals(
-                68,
-                targetIndexForTrackPosition(y = 400f, trackHeightPx = 400f, metrics = metrics),
-        )
+    fun `fraction maps to row start and pixel offset`() {
+        // 0.5 * 1500 = 750px -> row 7 (item 28) plus 50px into that row.
+        assertEquals(28 to 50, scrollPositionForFraction(0.5f, metrics))
     }
 
     @Test
-    fun `mid track maps proportionally`() {
-        val metrics =
-                LazyGridScrollbarMetrics(
-                        totalItems = 21,
-                        visibleItemCount = 1,
-                        firstVisibleIndex = 0,
-                        scrollFraction = 0f,
-                        thumbSizeFraction = 0.1f,
-                )
+    fun `fraction one maps to end of scroll range`() {
+        assertEquals(60 to 0, scrollPositionForFraction(1f, metrics))
+    }
 
-        assertEquals(
-                10,
-                targetIndexForTrackPosition(y = 200f, trackHeightPx = 400f, metrics = metrics),
-        )
+    @Test
+    fun `thumb top maps to clamped fraction`() {
+        assertEquals(0f, thumbFractionForTop(-20f, trackHeightPx = 400f, thumbHeightPx = 100f), 0.001f)
+        assertEquals(0.5f, thumbFractionForTop(150f, trackHeightPx = 400f, thumbHeightPx = 100f), 0.001f)
+        assertEquals(1f, thumbFractionForTop(500f, trackHeightPx = 400f, thumbHeightPx = 100f), 0.001f)
     }
 }
