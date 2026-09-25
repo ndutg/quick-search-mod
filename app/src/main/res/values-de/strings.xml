@@ -78,6 +78,7 @@
     <string name="action_unlock_app">Entsperren</string>
     <string name="app_lock_prompt_lock">%1$s sperren</string>
     <string name="app_lock_prompt_unlock">%1$s entsperren</string>
+    <string name="app_lock_unavailable">Öffne Quick Search, um diese App zu entsperren</string>
     <string name="action_change_icon">Symbol ändern</string>
     <string name="icon_picker_search">Symbole suchen</string>
     <string name="icon_picker_title">Symbol für „%1$s“ ändern</string>
@@ -805,6 +806,7 @@
     <string name="settings_at_a_glance_desc">Nützliche Infos, die zur passenden Zeit auf deinem Startbildschirm erscheinen</string>
     <string name="settings_at_a_glance_alarms_title">Wecker</string>
     <string name="settings_upcoming_alarm_desc">Dein nächster Wecker, wenn er innerhalb von 45 Minuten klingelt</string>
+    <string name="settings_hidden_alarm_apps_title">Ausgeblendete Wecker-Apps</string>
     <string name="settings_at_a_glance_events_desc">Heutige Kalenderereignisse</string>
     <string name="settings_upcoming_reminders_desc">Erinnerungen, die innerhalb von 30 Minuten fällig oder überfällig sind</string>
     <string name="settings_at_a_glance_low_battery_title">Akku schwach</string>
@@ -1216,6 +1218,7 @@
     <string name="speed_bump_overlay_title">Atme tief durch</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Anstehender Wecker</string>
+    <string name="home_upcoming_alarm_hide_app">Wecker von %1$s ausblenden</string>
     <string name="home_low_battery_saver_off">Tippen, um den Energiesparmodus einzuschalten</string>
     <string name="home_low_battery_saver_on">Energiesparmodus ist an</string>
     <string name="settings_tavily_title">Tavily für die Websuche</string>

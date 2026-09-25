@@ -78,6 +78,7 @@
     <string name="action_unlock_app">解锁</string>
     <string name="app_lock_prompt_lock">锁定 %1$s</string>
     <string name="app_lock_prompt_unlock">解锁 %1$s</string>
+    <string name="app_lock_unavailable">打开 Quick Search 以解锁此应用</string>
     <string name="action_change_icon">更改图标</string>
     <string name="icon_picker_search">搜索图标</string>
     <string name="icon_picker_title">更改“%1$s”的图标</string>
@@ -795,6 +796,7 @@
     <string name="settings_at_a_glance_desc">在合适的时间出现在主屏幕上的实用信息</string>
     <string name="settings_at_a_glance_alarms_title">闹钟</string>
     <string name="settings_upcoming_alarm_desc">45 分钟内响铃的下一个闹钟</string>
+    <string name="settings_hidden_alarm_apps_title">已隐藏闹钟的应用</string>
     <string name="settings_at_a_glance_events_desc">今天的日历活动</string>
     <string name="settings_upcoming_reminders_desc">30 分钟内到期或已逾期的提醒</string>
     <string name="settings_at_a_glance_low_battery_title">电量低</string>
@@ -1206,6 +1208,7 @@
     <string name="speed_bump_overlay_title">深呼吸一下</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">即将响铃的闹钟</string>
+    <string name="home_upcoming_alarm_hide_app">隐藏来自 %1$s 的闹钟</string>
     <string name="home_low_battery_saver_off">点按即可开启省电模式</string>
     <string name="home_low_battery_saver_on">省电模式已开启</string>
     <string name="settings_tavily_title">用于网页搜索的 Tavily</string>

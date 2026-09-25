@@ -5,15 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.tk.quicksearch.R
 import com.tk.quicksearch.media.MediaControls
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import com.tk.quicksearch.search.contacts.dialogs.ContactActionsPopup
 import com.tk.quicksearch.search.contacts.dialogs.ContactActionsPopupState
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
@@ -33,7 +34,7 @@ import com.tk.quicksearch.shared.util.AppLanguageManager
 import kotlinx.coroutines.launch
 import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
 
-class WidgetActionActivity : ComponentActivity() {
+class WidgetActionActivity : FragmentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AppLanguageManager.wrapContext(newBase))
     }
@@ -53,13 +54,35 @@ class WidgetActionActivity : ComponentActivity() {
                     specificAction = action.toContactCardAction(),
                 )
             } else {
-                handleAction(action)
-                finish()
+                // Widgets, pinned notifications, home shortcuts, and gestures all open apps through
+                // here, so a locked app is gated once for every one of those surfaces.
+                val lockTarget = action.appLockTarget()
+                if (lockTarget != null) {
+                    AppLockGate.runAfterUnlock(
+                        context = this,
+                        packageName = lockTarget.first,
+                        appName = lockTarget.second,
+                        onCancelled = ::finish,
+                    ) {
+                        handleAction(action)
+                        finish()
+                    }
+                } else {
+                    handleAction(action)
+                    finish()
+                }
             }
         } else {
             finish()
         }
     }
+
+    private fun CustomWidgetButtonAction.appLockTarget(): Pair<String, String>? =
+        when (this) {
+            is CustomWidgetButtonAction.App -> packageName to appName
+            is CustomWidgetButtonAction.AppShortcut -> packageName to appLabel
+            else -> null
+        }
 
     private fun loadFullContactInfo(
         contactAction: CustomWidgetButtonAction.Contact,

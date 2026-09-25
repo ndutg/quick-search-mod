@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.appShortcuts
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -662,13 +663,15 @@ private fun AppShortcutDropdownMenu(
                                 icon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
                                 onClick = {
                                         onDismissRequest()
-                                        try {
-                                                val intent = Intent(Intent.ACTION_DELETE).apply {
-                                                        data = Uri.parse("package:${shortcut.packageName}")
-                                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                                }
-                                                context.startActivity(intent)
-                                        } catch (_: Exception) {}
+                                        AppLockGate.runAfterUnlock(context, shortcut.packageName, shortcut.appLabel) {
+                                                try {
+                                                        val intent = Intent(Intent.ACTION_DELETE).apply {
+                                                                data = Uri.parse("package:${shortcut.packageName}")
+                                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                        }
+                                                        context.startActivity(intent)
+                                                } catch (_: Exception) {}
+                                        }
                                 },
                                 group = ItemMenuGroup.SYSTEM,
                         ))

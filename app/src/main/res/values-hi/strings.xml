@@ -78,6 +78,7 @@
     <string name="action_unlock_app">अनलॉक करें</string>
     <string name="app_lock_prompt_lock">%1$s को लॉक करें</string>
     <string name="app_lock_prompt_unlock">%1$s को अनलॉक करें</string>
+    <string name="app_lock_unavailable">इस ऐप को अनलॉक करने के लिए Quick Search खोलें</string>
     <string name="action_change_icon">आइकन बदलें</string>
     <string name="icon_picker_search">आइकन खोजें</string>
     <string name="icon_picker_title">"%1$s" के लिए आइकन बदलें</string>
@@ -805,6 +806,7 @@
     <string name="settings_at_a_glance_desc">उपयोगी जानकारी जो सही समय पर आपकी होम स्क्रीन पर दिखती है</string>
     <string name="settings_at_a_glance_alarms_title">अलार्म</string>
     <string name="settings_upcoming_alarm_desc">45 मिनट के भीतर होने पर आपका अगला अलार्म</string>
+    <string name="settings_hidden_alarm_apps_title">छिपे हुए अलार्म ऐप्स</string>
     <string name="settings_at_a_glance_events_desc">आज के कैलेंडर इवेंट्स</string>
     <string name="settings_upcoming_reminders_desc">30 मिनट के भीतर देय या बकाया रिमाइंडर</string>
     <string name="settings_at_a_glance_low_battery_title">कम बैटरी</string>
@@ -1216,6 +1218,7 @@
     <string name="speed_bump_overlay_title">एक गहरी सांस लें</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">आगामी अलार्म</string>
+    <string name="home_upcoming_alarm_hide_app">%1$s के अलार्म छिपाएं</string>
     <string name="home_low_battery_saver_off">बैटरी सेवर चालू करने के लिए टैप करें</string>
     <string name="home_low_battery_saver_on">बैटरी सेवर चालू है</string>
     <string name="settings_tavily_title">वेब सर्च के लिए Tavily</string>

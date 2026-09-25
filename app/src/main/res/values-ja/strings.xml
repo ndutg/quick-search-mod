@@ -77,6 +77,7 @@
     <string name="action_unlock_app">ロック解除</string>
     <string name="app_lock_prompt_lock">%1$s をロック</string>
     <string name="app_lock_prompt_unlock">%1$s のロックを解除</string>
+    <string name="app_lock_unavailable">このアプリのロックを解除するには Quick Search を開いてください</string>
     <string name="action_change_icon">アイコンを変更</string>
     <string name="icon_picker_no_icon_packs">アプリアイコンを変更するためのアイコンパックがインストールされていません。</string>
     <string name="icon_picker_download_icon_packs">ダウンロード</string>
@@ -815,6 +816,7 @@
     <string name="settings_at_a_glance_desc">適切なタイミングでホーム画面に表示される便利な情報</string>
     <string name="settings_at_a_glance_alarms_title">アラーム</string>
     <string name="settings_upcoming_alarm_desc">45分以内に鳴る次のアラーム</string>
+    <string name="settings_hidden_alarm_apps_title">非表示のアラームアプリ</string>
     <string name="settings_at_a_glance_events_desc">今日のカレンダーの予定</string>
     <string name="settings_upcoming_reminders_desc">30分以内に期限が来る、または期限切れのリマインダー</string>
     <string name="settings_at_a_glance_low_battery_title">バッテリー残量低下</string>
@@ -1225,6 +1227,7 @@ www.google.com/search?q={{query}}</string>
     <string name="speed_bump_overlay_title">深呼吸してください</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">次のアラーム</string>
+    <string name="home_upcoming_alarm_hide_app">%1$s のアラームを非表示</string>
     <string name="home_low_battery_saver_off">タップしてバッテリー セーバーをオン</string>
     <string name="home_low_battery_saver_on">バッテリー セーバーはオンです</string>
     <string name="settings_tavily_title">ウェブ検索用 Tavily</string>

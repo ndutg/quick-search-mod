@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
@@ -247,12 +248,14 @@ fun NotificationHistorySettingsSection(
                                     appLabel = appLabel,
                                     timeLabel = formatNotificationTime(entry.postTime, use24Hour, locale),
                                     onClick = {
-                                        if (!NotificationHistoryLauncher.open(context, entry)) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.common_error_unable_to_open, appLabel),
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
+                                        AppLockGate.runAfterUnlock(context, entry.packageName, appLabel) {
+                                            if (!NotificationHistoryLauncher.open(context, entry)) {
+                                                Toast.makeText(
+                                                    context,
+                                                    context.getString(R.string.common_error_unable_to_open, appLabel),
+                                                    Toast.LENGTH_SHORT,
+                                                ).show()
+                                            }
                                         }
                                     },
                                     onHideApp = {
