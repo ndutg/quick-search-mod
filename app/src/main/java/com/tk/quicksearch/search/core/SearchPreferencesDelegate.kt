@@ -16,6 +16,8 @@ import com.tk.quicksearch.tools.aiSearch.resolveModelSelection
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -90,6 +92,9 @@ internal class SearchPreferencesDelegate(
     private val refreshCalendarEvents: () -> Unit,
     private val stateAccess: SearchPreferencesStateAccess,
 ) {
+    @Volatile private var lastModelRefreshAtMillis = 0L
+    @Volatile private var lastModelRefreshProviderIds: Set<AiSearchLlmProviderId> = emptySet()
+
     fun setCalculatorEnabled(enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             userPreferences.setCalculatorEnabled(enabled)
@@ -1229,21 +1234,28 @@ internal class SearchPreferencesDelegate(
     fun refreshAvailableGeminiModels() {
         scope.launch(Dispatchers.IO) {
             val configuredProviderIds = userPreferences.getLlmApiKeyLast4ByProvider().keys
-            updateFeatureState {
-                it.copy(
-                    availableGeminiModels = emptyList(),
-                    availableLlmModelsByProvider = emptyMap(),
-                )
+            val now = System.currentTimeMillis()
+            if (configuredProviderIds == lastModelRefreshProviderIds &&
+                now - lastModelRefreshAtMillis < MODEL_REFRESH_MIN_INTERVAL_MS
+            ) {
+                return@launch
             }
+            // Keep the cached catalogs visible while refetching; only providers with no cached
+            // list show the loading state.
             val activeProviderId = aiSearchHandler.getAiSearchProviderId()
             val results =
-                configuredProviderIds.associateWith { providerId ->
-                    val apiKey = userPreferences.getLlmApiKey(providerId)
-                    if (apiKey.isNullOrBlank()) {
-                        Result.success(emptyList())
-                    } else {
-                        fetchAvailableModels(providerId, apiKey)
-                    }
+                coroutineScope {
+                    configuredProviderIds
+                        .associateWith { providerId ->
+                            async {
+                                val apiKey = userPreferences.getLlmApiKey(providerId)
+                                if (apiKey.isNullOrBlank()) {
+                                    Result.success(emptyList())
+                                } else {
+                                    fetchAvailableModels(providerId, apiKey)
+                                }
+                            }
+                        }.mapValues { (_, deferred) -> deferred.await() }
                 }
             results.forEach { (providerId, result) ->
                 result.getOrNull()?.let { models ->
@@ -1286,17 +1298,27 @@ internal class SearchPreferencesDelegate(
                     }
                 }
             userPreferences.setCustomTools(refreshedCustomTools)
-            val configuredProviderModels =
-                results.mapValues { (_, result) -> result.getOrDefault(emptyList()) }
-            val activeModels = configuredProviderModels[activeProviderId].orEmpty()
-            aiSearchHandler.updateAvailableModels(activeModels)
+            var activeModels: List<GeminiTextModel> = emptyList()
             updateFeatureState {
+                // A failed fetch keeps the previously cached catalog instead of blanking it.
+                val configuredProviderModels =
+                    results.mapValues { (providerId, result) ->
+                        result.getOrNull()
+                            ?: it.availableLlmModelsByProvider[providerId]
+                            ?: emptyList()
+                    }
+                activeModels = configuredProviderModels[activeProviderId].orEmpty()
                 it.copy(
                     geminiModel = aiSearchHandler.getGeminiModel(),
                     customTools = refreshedCustomTools,
                     availableGeminiModels = activeModels,
                     availableLlmModelsByProvider = configuredProviderModels,
                 )
+            }
+            aiSearchHandler.updateAvailableModels(activeModels)
+            if (results.values.all { it.isSuccess }) {
+                lastModelRefreshProviderIds = configuredProviderIds
+                lastModelRefreshAtMillis = now
             }
         }
     }
@@ -1460,5 +1482,9 @@ internal class SearchPreferencesDelegate(
         if (normalizedModelId.isNotBlank()) return normalizedModelId
 
         return ""
+    }
+
+    private companion object {
+        const val MODEL_REFRESH_MIN_INTERVAL_MS = 10 * 60 * 1000L
     }
 }
