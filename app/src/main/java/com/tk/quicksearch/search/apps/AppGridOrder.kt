@@ -68,3 +68,23 @@ internal fun gapKeysBeforeLastItem(
     val lastItemIndex = order.indexOfLast { it in presentKeys }
     return order.take(lastItemIndex.coerceAtLeast(0)).filter(::isPinnedGridGapKey)
 }
+
+/** [ordered] with each of [added] taking the first remaining gap, or appended once none is left. */
+internal fun <T> itemsFillingGaps(
+        ordered: List<T>,
+        added: List<T>,
+        isGap: (T) -> Boolean,
+): List<T> {
+    val result = ordered.toMutableList()
+    var searchFrom = 0
+    added.forEach { item ->
+        val gapIndex = (searchFrom until result.size).firstOrNull { isGap(result[it]) }
+        if (gapIndex == null) {
+            result.add(item)
+        } else {
+            result[gapIndex] = item
+            searchFrom = gapIndex + 1
+        }
+    }
+    return result
+}

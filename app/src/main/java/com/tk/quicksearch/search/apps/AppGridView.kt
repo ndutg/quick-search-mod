@@ -564,21 +564,33 @@ fun AppGridView(
         if (shortcutEntries.isEmpty() && folderEntries.isEmpty() && gapEntries.isEmpty()) {
             return appEntries
         }
-        val appIterator = appEntries.iterator()
-        val shortcutIterator = shortcutEntries.iterator()
-        val folderIterator = folderEntries.iterator()
-        var gapIndex = 0
-        return (appEntries + shortcutEntries + folderEntries + gapEntries)
-                .sortedBy { rank[it.key] ?: Int.MAX_VALUE }
-                .map { entry ->
-                    when (entry) {
-                        is AppGridEntry.App -> appIterator.next()
-                        is AppGridEntry.Shortcut -> shortcutIterator.next()
-                        is AppGridEntry.Folder -> folderIterator.next()
-                        // Renumbered so the gaps added to fill the last row get unused keys.
-                        is AppGridEntry.Gap -> AppGridEntry.Gap(pinnedGridGapKey(gapIndex++))
-                    }
+        // Items not in the grid order yet, such as new pins, fill empty cells before new rows.
+        val (placedEntries, newEntries) =
+                (appEntries + shortcutEntries + folderEntries + gapEntries).partition {
+                    it.key in rank
                 }
+        val appIterator = placedEntries.filterIsInstance<AppGridEntry.App>().iterator()
+        val shortcutIterator = placedEntries.filterIsInstance<AppGridEntry.Shortcut>().iterator()
+        val folderIterator = placedEntries.filterIsInstance<AppGridEntry.Folder>().iterator()
+        val placedInGridOrder =
+                placedEntries
+                        .sortedBy { rank.getValue(it.key) }
+                        .map { entry ->
+                            when (entry) {
+                                is AppGridEntry.App -> appIterator.next()
+                                is AppGridEntry.Shortcut -> shortcutIterator.next()
+                                is AppGridEntry.Folder -> folderIterator.next()
+                                is AppGridEntry.Gap -> entry
+                            }
+                        }
+        var gapIndex = 0
+        return itemsFillingGaps(
+                        ordered = placedInGridOrder,
+                        added = newEntries,
+                        isGap = { it is AppGridEntry.Gap },
+                )
+                // Renumbered so the gaps added to fill the last row get unused keys.
+                .map { if (it is AppGridEntry.Gap) AppGridEntry.Gap(pinnedGridGapKey(gapIndex++)) else it }
     }
     fun orderedPinnedEntries(pinned: List<AppInfo>, includeFolders: Boolean): List<AppGridEntry> {
         if (!includeFolders) return orderedPinnedItems(pinned, includeFolders = false)

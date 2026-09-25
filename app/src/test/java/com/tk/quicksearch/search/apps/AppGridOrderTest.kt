@@ -94,4 +94,15 @@ class AppGridOrderTest {
         assertEquals(listOf(g0), gapKeysBeforeLastItem(listOf("a", g0, "b"), setOf("a", "b")))
         assertEquals(emptyList<String>(), gapKeysBeforeLastItem(listOf("a", g0, g1, "x"), setOf("a")))
     }
+
+    @Test
+    fun `added items fill gaps before being appended`() {
+        val isGap: (String) -> Boolean = { it == "_" }
+
+        assertEquals(
+                listOf("a", "d", "b", "e", "c", "f"),
+                itemsFillingGaps(listOf("a", "_", "b", "_", "c"), listOf("d", "e", "f"), isGap),
+        )
+        assertEquals(listOf("a", "d", "_"), itemsFillingGaps(listOf("a", "_", "_"), listOf("d"), isGap))
+    }
 }
