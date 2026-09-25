@@ -77,6 +77,7 @@
     <string name="action_unlock_app">Sblocca</string>
     <string name="app_lock_prompt_lock">Blocca %1$s</string>
     <string name="app_lock_prompt_unlock">Sblocca %1$s</string>
+    <string name="app_lock_unavailable">Apri Quick Search per sbloccare questa app</string>
     <string name="action_change_icon">Cambia icona</string>
     <string name="icon_picker_search">Cerca icone</string>
     <string name="icon_picker_title">Cambia icona per "%1$s"</string>
@@ -804,6 +805,7 @@
     <string name="settings_at_a_glance_desc">Informazioni utili che compaiono nella schermata iniziale al momento giusto</string>
     <string name="settings_at_a_glance_alarms_title">Sveglie</string>
     <string name="settings_upcoming_alarm_desc">La prossima sveglia quando mancano meno di 45 minuti</string>
+    <string name="settings_hidden_alarm_apps_title">App sveglie nascoste</string>
     <string name="settings_at_a_glance_events_desc">Eventi del calendario di oggi</string>
     <string name="settings_upcoming_reminders_desc">Promemoria in scadenza entro 30 minuti o scaduti</string>
     <string name="settings_at_a_glance_low_battery_title">Batteria scarica</string>
@@ -1215,6 +1217,7 @@
     <string name="speed_bump_overlay_title">Fai un respiro profondo</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Prossima sveglia</string>
+    <string name="home_upcoming_alarm_hide_app">Nascondi sveglie di %1$s</string>
     <string name="home_low_battery_saver_off">Tocca per attivare il Risparmio energetico</string>
     <string name="home_low_battery_saver_on">Il Risparmio energetico è attivo</string>
     <string name="settings_tavily_title">Tavily per la ricerca web</string>

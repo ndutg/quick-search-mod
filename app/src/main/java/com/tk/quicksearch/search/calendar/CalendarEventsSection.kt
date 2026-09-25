@@ -220,6 +220,7 @@ fun CalendarEventsSection(
                             isHomescreenTodayEvent =
                                 isHomeScreenMode && !isPinned && !cardState.displayAsExpanded,
                             onArchive = onArchiveTodayEvent,
+                            showDoneOnlyMenu = isHomeScreenMode && !isPinned,
                             showPinnedItemMenu = showPinnedItemMenu,
                         )
                         if (index < displayEvents.lastIndex && !showPredictedOnRow) {
@@ -263,6 +264,8 @@ internal fun CalendarEventRow(
     isPredicted: Boolean,
     isHomescreenTodayEvent: Boolean = false,
     onArchive: (CalendarEventInfo) -> Unit = {},
+    // Home At a Glance events offer only Done, whether the card is collapsed or expanded.
+    showDoneOnlyMenu: Boolean = isHomescreenTodayEvent,
     showPinnedItemMenu: Boolean = false,
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -334,7 +337,7 @@ internal fun CalendarEventRow(
             properties = PopupProperties(focusable = false),
             containerColor = AppColors.DialogBackground,
         ) {
-            val menuItems = if (isHomescreenTodayEvent) {
+            val menuItems = if (showDoneOnlyMenu) {
                 listOf(
                     CalendarMenuItem(
                         textResId = R.string.dialog_done,

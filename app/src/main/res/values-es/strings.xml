@@ -78,6 +78,7 @@
     <string name="action_unlock_app">Desbloquear</string>
     <string name="app_lock_prompt_lock">Bloquear %1$s</string>
     <string name="app_lock_prompt_unlock">Desbloquear %1$s</string>
+    <string name="app_lock_unavailable">Abre Quick Search para desbloquear esta app</string>
     <string name="action_change_icon">Cambiar icono</string>
     <string name="icon_picker_search">Buscar iconos</string>
     <string name="icon_picker_title">Cambiar icono de "%1$s"</string>
@@ -805,6 +806,7 @@
     <string name="settings_at_a_glance_desc">Información útil que aparece en tu pantalla de inicio en el momento oportuno</string>
     <string name="settings_at_a_glance_alarms_title">Alarmas</string>
     <string name="settings_upcoming_alarm_desc">Tu próxima alarma cuando falten menos de 45 minutos</string>
+    <string name="settings_hidden_alarm_apps_title">Apps de alarmas ocultas</string>
     <string name="settings_at_a_glance_events_desc">Eventos del calendario de hoy</string>
     <string name="settings_upcoming_reminders_desc">Recordatorios que vencen en 30 minutos o están atrasados</string>
     <string name="settings_at_a_glance_low_battery_title">Batería baja</string>
@@ -1216,6 +1218,7 @@
     <string name="speed_bump_overlay_title">Respira hondo</string>
     <string name="speed_bump_title">SpeedBump</string>
     <string name="home_upcoming_alarm">Próxima alarma</string>
+    <string name="home_upcoming_alarm_hide_app">Ocultar alarmas de %1$s</string>
     <string name="home_low_battery_saver_off">Toca para activar el Ahorro de batería</string>
     <string name="home_low_battery_saver_on">El Ahorro de batería está activado</string>
     <string name="settings_tavily_title">Tavily para búsqueda web</string>

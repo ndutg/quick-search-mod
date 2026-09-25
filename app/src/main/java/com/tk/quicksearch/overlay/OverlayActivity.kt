@@ -1,5 +1,6 @@
 package com.tk.quicksearch.overlay
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.os.Bundle
@@ -60,6 +61,7 @@ class OverlayActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Trace.beginSection(TRACE_ON_CREATE_ENTRY)
+        AppLockGate.trackActivities(application)
         try {
         AppLanguageManager.applySavedAppLanguage(this)
         // Set transparent background for seamless overlay appearance

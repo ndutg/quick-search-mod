@@ -1,16 +1,20 @@
 package com.tk.quicksearch.search.searchScreen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
@@ -247,6 +251,10 @@ internal fun SearchScreenStateManagement(
 
     // Section expansion state
     var expandedSection by remember { mutableStateOf(ExpandedSection.NONE) }
+    // Collapsing a section only brings the keyboard back if it was open when the section expanded.
+    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val currentIsImeVisible by rememberUpdatedState(isImeVisible)
+    var keyboardOpenBeforeExpand by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val searchFocusRequester = remember { FocusRequester() }
     val showAiSearch = state.AiSearchState.status != AiSearchStatus.Idle
@@ -341,8 +349,10 @@ internal fun SearchScreenStateManagement(
             expandedSection != ExpandedSection.NONE && state.detectedAliasSearchSection == null,
     ) {
         expandedSection = ExpandedSection.NONE
-        searchFocusRequester.requestFocus()
-        keyboardController?.show()
+        if (keyboardOpenBeforeExpand) {
+            searchFocusRequester.requestFocus()
+            keyboardController?.show()
+        }
     }
 
     // Handle scroll behavior for one-handed mode
@@ -510,10 +520,15 @@ internal fun SearchScreenStateManagement(
             getSettingTrigger = getSettingTrigger,
             getNoteTrigger = getNoteTrigger,
             onUpdateExpandedSection = { newSection: ExpandedSection ->
+                if (expandedSection == ExpandedSection.NONE && newSection != ExpandedSection.NONE) {
+                    keyboardOpenBeforeExpand = currentIsImeVisible
+                }
                 expandedSection = newSection
                 if (newSection == ExpandedSection.NONE) {
-                    searchFocusRequester.requestFocus()
-                    keyboardController?.show()
+                    if (keyboardOpenBeforeExpand) {
+                        searchFocusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
                 } else {
                     focusManager.clearFocus(force = true)
                     keyboardController?.hide()

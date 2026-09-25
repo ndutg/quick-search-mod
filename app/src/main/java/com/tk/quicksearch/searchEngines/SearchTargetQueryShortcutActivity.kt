@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import com.tk.quicksearch.app.MainActivity
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
+import com.tk.quicksearch.search.apps.appLock.SearchTargetAppLock
 import com.tk.quicksearch.search.core.IntentHelpers
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.isLikelyWebUrl
@@ -16,7 +18,7 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.shared.util.AppLanguageManager
 
-class SearchTargetQueryShortcutActivity : ComponentActivity() {
+class SearchTargetQueryShortcutActivity : FragmentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(AppLanguageManager.wrapContext(newBase))
     }
@@ -24,8 +26,38 @@ class SearchTargetQueryShortcutActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AppLanguageManager.applySavedAppLanguage(this)
         super.onCreate(savedInstanceState)
-        handleShortcutIntent(intent)
-        finish()
+        val shortcutIntent = intent
+        AppLockGate.runAfterUnlockAny(this, shortcutTargetPackages(shortcutIntent), onCancelled = ::finish) {
+            handleShortcutIntent(shortcutIntent)
+            finish()
+        }
+    }
+
+    /** Apps this shortcut could open, so a locked one is gated like a direct search. */
+    private fun shortcutTargetPackages(intent: Intent?): List<String> {
+        if (intent?.action != ACTION_LAUNCH_SEARCH_TARGET_QUERY_SHORTCUT) return emptyList()
+        val query = intent.getStringExtra(EXTRA_QUERY)?.trim().orEmpty()
+        return when (intent.getStringExtra(EXTRA_TARGET_TYPE)) {
+            TARGET_TYPE_ENGINE -> {
+                val engine =
+                    intent.getStringExtra(EXTRA_ENGINE_NAME)
+                        ?.let { runCatching { SearchEngine.valueOf(it) }.getOrNull() }
+                        ?: return emptyList()
+                val amazonDomain =
+                    if (engine == SearchEngine.AMAZON) UserAppPreferences(this).getAmazonDomain() else null
+                SearchTargetAppLock.enginePackages(this, query, engine, amazonDomain)
+            }
+            TARGET_TYPE_BROWSER ->
+                SearchTargetAppLock.browserPackages(intent.getStringExtra(EXTRA_BROWSER_PACKAGE).orEmpty())
+            TARGET_TYPE_CUSTOM ->
+                SearchTargetAppLock.customPackages(
+                    this,
+                    query,
+                    intent.getStringExtra(EXTRA_CUSTOM_URL_TEMPLATE).orEmpty(),
+                    intent.getStringExtra(EXTRA_CUSTOM_BROWSER_PACKAGE),
+                )
+            else -> emptyList()
+        }
     }
 
     private fun handleShortcutIntent(intent: Intent?) {
