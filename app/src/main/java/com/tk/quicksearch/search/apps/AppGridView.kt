@@ -1091,7 +1091,7 @@ private fun AllAppsDialog(
             },
             text = {
                 val gridState = rememberLazyGridState()
-                var isScrollbarDragging by remember { mutableStateOf(false) }
+                var scrollbarDragFraction by remember { mutableStateOf<Float?>(null) }
                 Box(
                         modifier =
                                 Modifier
@@ -1166,7 +1166,7 @@ private fun AllAppsDialog(
                     AllAppsScrollLetterPopup(
                             apps = apps,
                             gridState = gridState,
-                            isScrollbarDragging = isScrollbarDragging,
+                            scrollbarDragFraction = scrollbarDragFraction,
                     )
                     LazyGridVerticalScrollbar(
                             state = gridState,
@@ -1174,7 +1174,7 @@ private fun AllAppsDialog(
                                     Modifier
                                             .align(Alignment.CenterEnd)
                                             .offset(x = AllAppsDialogSeekEdgeNudge),
-                            onDraggingChange = { isScrollbarDragging = it },
+                            onDragFractionChange = { scrollbarDragFraction = it },
                     )
                 }
             },

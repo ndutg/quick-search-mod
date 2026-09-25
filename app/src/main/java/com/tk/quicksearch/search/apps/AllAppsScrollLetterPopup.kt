@@ -49,20 +49,18 @@ private val LetterPopupScrollbarGap = DesignTokens.SpacingXSmall
 internal fun AllAppsScrollLetterPopup(
         apps: List<AppInfo>,
         gridState: LazyGridState,
-        isScrollbarDragging: Boolean,
+        scrollbarDragFraction: Float?,
         modifier: Modifier = Modifier,
 ) {
     val firstVisibleIndex by remember {
         derivedStateOf { gridState.firstVisibleItemIndex }
     }
-    val isScrolling by remember {
-        derivedStateOf { gridState.isScrollInProgress }
-    }
     val metrics by remember {
         derivedStateOf { scrollbarMetrics(gridState) }
     }
     val letter = apps.getOrNull(firstVisibleIndex)?.let { appSeekLetter(it.appName) }
-    val visible = letter != null && (isScrolling || isScrollbarDragging)
+    // Only shown while the scrollbar is dragged, not during regular list scrolling.
+    val visible = letter != null && scrollbarDragFraction != null
     val density = LocalDensity.current
     val bubbleColor = MaterialTheme.colorScheme.primaryContainer
     val letterColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -83,6 +81,7 @@ internal fun AllAppsScrollLetterPopup(
                     letterPopupThumbCenterY(
                             trackHeightPx = trackHeightPx,
                             metrics = metrics,
+                            scrollFraction = scrollbarDragFraction,
                             minThumbPx = with(density) { DesignTokens.Spacing48.toPx() },
                     )
             val yPx =
@@ -149,12 +148,12 @@ internal fun letterPopupThumbCenterY(
         trackHeightPx: Float,
         metrics: LazyGridScrollbarMetrics?,
         minThumbPx: Float,
+        scrollFraction: Float? = null,
 ): Float {
     if (trackHeightPx <= 0f || metrics == null) return trackHeightPx / 2f
-    val thumbHeightPx =
-            (trackHeightPx * metrics.thumbSizeFraction).coerceIn(minThumbPx, trackHeightPx)
+    val thumbHeightPx = thumbHeightPx(trackHeightPx, metrics, minThumbPx)
     val maxOffsetPx = (trackHeightPx - thumbHeightPx).coerceAtLeast(0f)
-    return maxOffsetPx * metrics.scrollFraction + thumbHeightPx / 2f
+    return maxOffsetPx * (scrollFraction ?: metrics.scrollFraction) + thumbHeightPx / 2f
 }
 
 internal val AlphabetSeekLetters: List<Char> = buildList {

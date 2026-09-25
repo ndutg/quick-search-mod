@@ -14,11 +14,15 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +31,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -35,11 +41,18 @@ private val ThumbWidth = DesignTokens.SpacingXSmall
 private val ThumbEndInset = 2.dp
 private val MinThumbHeight = DesignTokens.Spacing48
 
+/**
+ * Vertical scrollbar for a [LazyVerticalGrid] with a draggable thumb.
+ *
+ * While dragging, the thumb follows the finger directly and the grid is scrolled to the matching
+ * pixel position. [onDragFractionChange] reports the thumb's scroll fraction during a drag and
+ * `null` once the drag ends.
+ */
 @Composable
 internal fun LazyGridVerticalScrollbar(
         state: LazyGridState,
         modifier: Modifier = Modifier,
-        onDraggingChange: (Boolean) -> Unit = {},
+        onDragFractionChange: (Float?) -> Unit = {},
 ) {
     val metrics by remember {
         derivedStateOf { scrollbarMetrics(state) }
@@ -47,11 +60,24 @@ internal fun LazyGridVerticalScrollbar(
     if (metrics == null) return
 
     val currentMetrics = rememberUpdatedState(metrics)
-    val currentOnDraggingChange = rememberUpdatedState(onDraggingChange)
+    val currentOnDragFractionChange = rememberUpdatedState(onDragFractionChange)
+    var dragFraction by remember { mutableStateOf<Float?>(null) }
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
+    val minThumbPx = with(density) { MinThumbHeight.toPx() }
     val thumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
     val trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+
+    // Scroll requests are conflated so a fast drag only ever applies the latest thumb position.
+    LaunchedEffect(state) {
+        snapshotFlow { dragFraction }
+                .filterNotNull()
+                .collectLatest { fraction ->
+                    val snapshot = currentMetrics.value ?: return@collectLatest
+                    val (index, offset) = scrollPositionForFraction(fraction, snapshot)
+                    state.scrollToItem(index, offset)
+                }
+    }
 
     BoxWithConstraints(
             modifier =
@@ -62,39 +88,60 @@ internal fun LazyGridVerticalScrollbar(
                             .pointerInput(state) {
                                 detectTapGestures { offset ->
                                     val snapshot = currentMetrics.value ?: return@detectTapGestures
-                                    currentOnDraggingChange.value(true)
-                                    coroutineScope.launch {
-                                        try {
-                                            state.scrollToItem(
-                                                    targetIndexForTrackPosition(
-                                                            y = offset.y,
-                                                            trackHeightPx = size.height.toFloat(),
-                                                            metrics = snapshot,
-                                                    ),
+                                    val trackHeightPx = size.height.toFloat()
+                                    val thumbHeightPx = thumbHeightPx(trackHeightPx, snapshot, minThumbPx)
+                                    val fraction =
+                                            thumbFractionForTop(
+                                                    thumbTopPx = offset.y - thumbHeightPx / 2f,
+                                                    trackHeightPx = trackHeightPx,
+                                                    thumbHeightPx = thumbHeightPx,
                                             )
-                                        } finally {
-                                            currentOnDraggingChange.value(false)
-                                        }
-                                    }
+                                    val (index, itemOffset) = scrollPositionForFraction(fraction, snapshot)
+                                    coroutineScope.launch { state.scrollToItem(index, itemOffset) }
                                 }
                             }
                             .pointerInput(state) {
+                                var grabOffsetPx = 0f
+                                fun updateDrag(y: Float) {
+                                    val snapshot = currentMetrics.value ?: return
+                                    val trackHeightPx = size.height.toFloat()
+                                    val fraction =
+                                            thumbFractionForTop(
+                                                    thumbTopPx = y - grabOffsetPx,
+                                                    trackHeightPx = trackHeightPx,
+                                                    thumbHeightPx = thumbHeightPx(trackHeightPx, snapshot, minThumbPx),
+                                            )
+                                    dragFraction = fraction
+                                    currentOnDragFractionChange.value(fraction)
+                                }
+                                fun endDrag() {
+                                    dragFraction = null
+                                    currentOnDragFractionChange.value(null)
+                                }
                                 detectVerticalDragGestures(
-                                        onDragStart = { currentOnDraggingChange.value(true) },
-                                        onDragEnd = { currentOnDraggingChange.value(false) },
-                                        onDragCancel = { currentOnDraggingChange.value(false) },
+                                        onDragStart = { start ->
+                                            val snapshot = currentMetrics.value
+                                            val trackHeightPx = size.height.toFloat()
+                                            val thumbHeightPx =
+                                                    snapshot?.let { thumbHeightPx(trackHeightPx, it, minThumbPx) } ?: 0f
+                                            val thumbTopPx =
+                                                    (trackHeightPx - thumbHeightPx).coerceAtLeast(0f) *
+                                                            (snapshot?.scrollFraction ?: 0f)
+                                            // Keep the grab point when the thumb itself is dragged;
+                                            // otherwise center the thumb under the finger.
+                                            grabOffsetPx =
+                                                    if (start.y in thumbTopPx..(thumbTopPx + thumbHeightPx)) {
+                                                        start.y - thumbTopPx
+                                                    } else {
+                                                        thumbHeightPx / 2f
+                                                    }
+                                            updateDrag(start.y)
+                                        },
+                                        onDragEnd = { endDrag() },
+                                        onDragCancel = { endDrag() },
                                 ) { change, _ ->
                                     change.consume()
-                                    val snapshot = currentMetrics.value ?: return@detectVerticalDragGestures
-                                    coroutineScope.launch {
-                                        state.scrollToItem(
-                                                targetIndexForTrackPosition(
-                                                        y = change.position.y,
-                                                        trackHeightPx = size.height.toFloat(),
-                                                        metrics = snapshot,
-                                                ),
-                                        )
-                                    }
+                                    updateDrag(change.position.y)
                                 }
                             },
             contentAlignment = Alignment.TopEnd,
@@ -102,11 +149,8 @@ internal fun LazyGridVerticalScrollbar(
         val trackHeightPx = constraints.maxHeight.toFloat()
         if (trackHeightPx <= 0f) return@BoxWithConstraints
         val resolved = metrics ?: return@BoxWithConstraints
-        val minThumbPx = with(density) { MinThumbHeight.toPx() }
-        val thumbHeightPx =
-                (trackHeightPx * resolved.thumbSizeFraction).coerceIn(minThumbPx, trackHeightPx)
+        val thumbHeightPx = thumbHeightPx(trackHeightPx, resolved, minThumbPx)
         val maxOffsetPx = (trackHeightPx - thumbHeightPx).coerceAtLeast(0f)
-        val thumbOffsetPx = maxOffsetPx * resolved.scrollFraction
 
         Box(
                 modifier =
@@ -119,7 +163,10 @@ internal fun LazyGridVerticalScrollbar(
         Box(
                 modifier =
                         Modifier
-                                .offset { IntOffset(0, thumbOffsetPx.roundToInt()) }
+                                .offset {
+                                    val fraction = dragFraction ?: resolved.scrollFraction
+                                    IntOffset(0, (maxOffsetPx * fraction).roundToInt())
+                                }
                                 .width(ThumbWidth)
                                 .height(with(density) { thumbHeightPx.toDp() })
                                 .clip(RoundedCornerShape(percent = 50))
@@ -130,43 +177,85 @@ internal fun LazyGridVerticalScrollbar(
 
 internal data class LazyGridScrollbarMetrics(
         val totalItems: Int,
-        val visibleItemCount: Int,
-        val firstVisibleIndex: Int,
         val scrollFraction: Float,
         val thumbSizeFraction: Float,
+        val columns: Int = 1,
+        val rowHeightPx: Float = 0f,
+        val scrollRangePx: Float = 0f,
 )
 
+/**
+ * Pixel-based scroll metrics estimated from the visible rows, so the thumb moves continuously
+ * instead of jumping a row at a time.
+ */
 internal fun scrollbarMetrics(state: LazyGridState): LazyGridScrollbarMetrics? {
     val layoutInfo = state.layoutInfo
     val totalItems = layoutInfo.totalItemsCount
     val visibleItems = layoutInfo.visibleItemsInfo
     if (totalItems <= 0 || visibleItems.isEmpty()) return null
+    if (!state.canScrollForward && !state.canScrollBackward) return null
 
-    val visibleItemCount = visibleItems.size
-    val canScroll = state.canScrollForward || state.canScrollBackward
-    val contentOverflows = visibleItemCount < totalItems
-    if (!canScroll && !contentOverflows) return null
-
-    val scrollableRange = (totalItems - visibleItemCount).coerceAtLeast(1)
-    val firstVisibleIndex = state.firstVisibleItemIndex.coerceIn(0, totalItems - 1)
-    val scrollFraction = (firstVisibleIndex.toFloat() / scrollableRange.toFloat()).coerceIn(0f, 1f)
-    val thumbSizeFraction = (visibleItemCount.toFloat() / totalItems.toFloat()).coerceIn(0.08f, 1f)
+    val columns =
+            visibleItems
+                    .groupingBy { it.row }
+                    .eachCount()
+                    .values
+                    .maxOrNull()
+                    ?.coerceAtLeast(1) ?: 1
+    val rowHeightPx =
+            (visibleItems.maxOf { it.size.height } + layoutInfo.mainAxisItemSpacing).toFloat()
+    if (rowHeightPx <= 0f) return null
+    val totalRows = (totalItems + columns - 1) / columns
+    val contentHeightPx =
+            totalRows * rowHeightPx - layoutInfo.mainAxisItemSpacing +
+                    layoutInfo.beforeContentPadding + layoutInfo.afterContentPadding
+    val viewportHeightPx = layoutInfo.viewportSize.height.toFloat()
+    val scrollRangePx = (contentHeightPx - viewportHeightPx).coerceAtLeast(1f)
+    val scrolledPx =
+            (state.firstVisibleItemIndex / columns) * rowHeightPx +
+                    state.firstVisibleItemScrollOffset
+    val scrollFraction =
+            when {
+                !state.canScrollBackward -> 0f
+                !state.canScrollForward -> 1f
+                else -> (scrolledPx / scrollRangePx).coerceIn(0f, 1f)
+            }
+    val thumbSizeFraction = (viewportHeightPx / contentHeightPx).coerceIn(0.08f, 1f)
     return LazyGridScrollbarMetrics(
             totalItems = totalItems,
-            visibleItemCount = visibleItemCount,
-            firstVisibleIndex = firstVisibleIndex,
             scrollFraction = scrollFraction,
             thumbSizeFraction = thumbSizeFraction,
+            columns = columns,
+            rowHeightPx = rowHeightPx,
+            scrollRangePx = scrollRangePx,
     )
 }
 
-internal fun targetIndexForTrackPosition(
-        y: Float,
+internal fun thumbHeightPx(
         trackHeightPx: Float,
         metrics: LazyGridScrollbarMetrics,
-): Int {
-    if (trackHeightPx <= 0f || metrics.totalItems <= 0) return 0
-    val fraction = (y / trackHeightPx).coerceIn(0f, 1f)
-    val maxIndex = (metrics.totalItems - metrics.visibleItemCount).coerceAtLeast(0)
-    return (fraction * maxIndex).roundToInt().coerceIn(0, metrics.totalItems - 1)
+        minThumbPx: Float,
+): Float = (trackHeightPx * metrics.thumbSizeFraction).coerceIn(minThumbPx.coerceAtMost(trackHeightPx), trackHeightPx)
+
+internal fun thumbFractionForTop(
+        thumbTopPx: Float,
+        trackHeightPx: Float,
+        thumbHeightPx: Float,
+): Float {
+    val maxOffsetPx = trackHeightPx - thumbHeightPx
+    if (maxOffsetPx <= 0f) return 0f
+    return (thumbTopPx / maxOffsetPx).coerceIn(0f, 1f)
+}
+
+/** Maps a scroll fraction to the grid item index and pixel offset to pass to `scrollToItem`. */
+internal fun scrollPositionForFraction(
+        fraction: Float,
+        metrics: LazyGridScrollbarMetrics,
+): Pair<Int, Int> {
+    if (metrics.totalItems <= 0 || metrics.rowHeightPx <= 0f) return 0 to 0
+    val targetPx = fraction.coerceIn(0f, 1f) * metrics.scrollRangePx
+    val lastRow = (metrics.totalItems - 1) / metrics.columns
+    val row = (targetPx / metrics.rowHeightPx).toInt().coerceIn(0, lastRow)
+    val offsetPx = (targetPx - row * metrics.rowHeightPx).roundToInt().coerceAtLeast(0)
+    return (row * metrics.columns) to offsetPx
 }
