@@ -175,6 +175,7 @@ private const val FolderMergeEnterZoneFraction = 0.65f
 private const val FolderMergeStayZoneFraction = 0.8f
 private val AllAppsDialogIconSurfaceSize = DesignTokens.AppIconSize
 private val AllAppsDialogRowSpacing = DesignTokens.SpacingXXSmall
+private const val AllAppsDialogIconPrefetchParallelism = 4
 
 private enum class AppIconDisplayMode {
     OVERLAY,
@@ -1067,6 +1068,16 @@ private fun AllAppsDialog(
     val dialogColumns = getAppGridColumns(phoneColumnOverride)
     val context = LocalContext.current
     val addToHomeHandler = remember(context) { AddToHomeHandler(context) }
+    // Load every icon in the background up front so they are already cached when scrolled to.
+    LaunchedEffect(apps, iconPackPackage, appIconShape) {
+        prefetchAppIconRequests(
+                context = context.applicationContext,
+                requests = apps.map { AppIconRequest(it.packageName, it.userHandleId) },
+                iconPackPackage = iconPackPackage,
+                forceCircularMask = appIconShape == AppIconShape.CIRCLE,
+                parallelism = AllAppsDialogIconPrefetchParallelism,
+        )
+    }
     AppAlertDialog(
             modifier = Modifier.fillMaxWidth(0.94f),
             properties = DialogProperties(usePlatformDefaultWidth = false),
