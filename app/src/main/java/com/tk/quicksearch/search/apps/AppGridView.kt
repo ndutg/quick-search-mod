@@ -195,20 +195,23 @@ private sealed interface AppGridEntry {
     data class Folder(val folder: ResolvedAppFolder) : AppGridEntry {
         override val key: String get() = folder.folder.gridKey
     }
+
+    /** An empty cell of the Pinned tab's grid, which dragged items can be dropped into. */
+    data class Gap(override val key: String) : AppGridEntry
 }
 
 private fun AppGridEntry.folderMemberKey(): String? =
         when (this) {
             is AppGridEntry.App -> appFolderMemberKey(app)
             is AppGridEntry.Shortcut -> appFolderMemberKey(shortcut)
-            is AppGridEntry.Folder -> null
+            is AppGridEntry.Folder, is AppGridEntry.Gap -> null
         }
 
 private fun AppGridEntry.asFolderMember(): AppFolderMember? =
         when (this) {
             is AppGridEntry.App -> AppFolderMember.App(app)
             is AppGridEntry.Shortcut -> AppFolderMember.Shortcut(shortcut)
-            is AppGridEntry.Folder -> null
+            is AppGridEntry.Folder, is AppGridEntry.Gap -> null
         }
 
 /**
@@ -364,8 +367,8 @@ fun AppGridView(
     val newUpdatedTitle = stringResource(R.string.app_suggestions_tab_new_updated)
     val mostUsedTitle = stringResource(R.string.common_most_used)
     val allAppsTitle = stringResource(R.string.settings_app_shortcuts_filter_all_apps)
-    val suggestionSlotCount =
-            (rowCount * getAppGridColumns(phoneColumnOverride)).coerceAtLeast(1)
+    val gridColumns = getAppGridColumns(phoneColumnOverride)
+    val suggestionSlotCount = (rowCount * gridColumns).coerceAtLeast(1)
     val alphabeticalApps =
             remember(allApps) {
                 allApps.sortedWith(
@@ -527,7 +530,9 @@ fun AppGridView(
     // Interleaves pinned apps, shortcuts and (in the Pinned tab) folders by the saved grid order
     // while keeping the apps' and shortcuts' own pinned orders authoritative, so reorders made
     // elsewhere still apply. Folders have no order of their own, so the grid order places them.
-    fun orderedPinnedEntries(pinned: List<AppInfo>, includeFolders: Boolean): List<AppGridEntry> {
+    // The Pinned tab also keeps the empty cells left by drags into empty space, and fills its last
+    // row with empty cells so items can be dropped there.
+    fun orderedPinnedItems(pinned: List<AppInfo>, includeFolders: Boolean): List<AppGridEntry> {
         val appEntries =
                 pinned
                         .filterNot { includeFolders && appFolderMemberKey(it) in folderMemberKeys }
@@ -545,19 +550,44 @@ fun AppGridView(
                 } else {
                     emptyList()
                 }
-        if (shortcutEntries.isEmpty() && folderEntries.isEmpty()) return appEntries
+        val gapEntries =
+                if (includeFolders) {
+                    gapKeysBeforeLastItem(
+                                    pinnedAppGridOrder,
+                                    (appEntries + shortcutEntries + folderEntries)
+                                            .mapTo(HashSet()) { it.key },
+                            )
+                            .map { AppGridEntry.Gap(it) }
+                } else {
+                    emptyList()
+                }
+        if (shortcutEntries.isEmpty() && folderEntries.isEmpty() && gapEntries.isEmpty()) {
+            return appEntries
+        }
         val appIterator = appEntries.iterator()
         val shortcutIterator = shortcutEntries.iterator()
         val folderIterator = folderEntries.iterator()
-        return (appEntries + shortcutEntries + folderEntries)
+        var gapIndex = 0
+        return (appEntries + shortcutEntries + folderEntries + gapEntries)
                 .sortedBy { rank[it.key] ?: Int.MAX_VALUE }
                 .map { entry ->
                     when (entry) {
                         is AppGridEntry.App -> appIterator.next()
                         is AppGridEntry.Shortcut -> shortcutIterator.next()
                         is AppGridEntry.Folder -> folderIterator.next()
+                        // Renumbered so the gaps added to fill the last row get unused keys.
+                        is AppGridEntry.Gap -> AppGridEntry.Gap(pinnedGridGapKey(gapIndex++))
                     }
                 }
+    }
+    fun orderedPinnedEntries(pinned: List<AppInfo>, includeFolders: Boolean): List<AppGridEntry> {
+        if (!includeFolders) return orderedPinnedItems(pinned, includeFolders = false)
+        return itemsFilledToGridRows(
+                items = orderedPinnedItems(pinned, includeFolders = true),
+                columns = gridColumns,
+                isGap = { it is AppGridEntry.Gap },
+                gap = { AppGridEntry.Gap(pinnedGridGapKey(it)) },
+        )
     }
     fun gridEntriesFor(tabType: AppSuggestionTabType?, tabApps: List<AppInfo>): List<AppGridEntry> {
         if (tabType == AppSuggestionTabType.PINNED) {
@@ -591,9 +621,14 @@ fun AppGridView(
         }
         onHideApp(app)
     }
-    val onReorderPinnedEntries: (List<AppGridEntry>) -> Unit = { entries ->
+    val onReorderPinnedEntries: (List<AppGridEntry>) -> Unit = { displayed ->
+        val entries = displayed.dropLastWhile { it is AppGridEntry.Gap }
         val reorderedApps = entries.filterIsInstance<AppGridEntry.App>().map { it.app }
-        if (pinnedGridShortcuts.isEmpty() && pinnedFolders.isEmpty()) {
+        // Gaps live only in the grid order, which also has to drop gaps no longer shown.
+        val hasGaps =
+                entries.any { it is AppGridEntry.Gap } ||
+                        pinnedAppGridOrder.any(::isPinnedGridGapKey)
+        if (pinnedGridShortcuts.isEmpty() && pinnedFolders.isEmpty() && !hasGaps) {
             onReorderPinnedApps(reorderedApps)
         } else {
             onReorderPinnedAppGrid(
@@ -1510,8 +1545,8 @@ private fun AppGrid(
                             (AppGridRowSpacing * (visibleRows - 1).coerceAtLeast(0))
                 }
 
-        // Rearranges relative to the order at drag start: moving to a different row swaps the
-        // two apps, moving within the same row shifts the apps in between.
+        // Rearranges relative to the order at drag start: moving to a different row or into an
+        // empty cell swaps the two, moving within the same row shifts the apps in between.
         fun movePinnedApp(state: PinnedAppDragState, toVisualIndex: Int) {
             if (!reorderPinnedApps) return
             val originVisualOrder =
@@ -1524,7 +1559,11 @@ private fun AppGrid(
             }
             val reorderedVisualApps =
                     originVisualOrder.toMutableList().apply {
-                        if (fromVisualIndex / columns != toVisualIndex / columns) {
+                        // Dropping into an empty cell leaves one where the item was.
+                        if (
+                            fromVisualIndex / columns != toVisualIndex / columns ||
+                                originVisualOrder[toVisualIndex] is AppGridEntry.Gap
+                        ) {
                             this[fromVisualIndex] = originVisualOrder[toVisualIndex]
                             this[toVisualIndex] = originVisualOrder[fromVisualIndex]
                         } else if (fromVisualIndex != toVisualIndex) {
@@ -1557,7 +1596,11 @@ private fun AppGrid(
             val targetRow = (centerY / cellHeightPx).toInt().coerceAtLeast(0)
             val maxTargetIndex = min(displayedEntries.lastIndex, visibleAppLimit - 1)
             val rawIndex = targetRow * columns + targetColumn
-            val targetIndex = rawIndex.coerceIn(0, maxTargetIndex)
+            // Below the last row keeps the finger's column instead of jumping to the last cell.
+            val targetIndex =
+                    (targetRow.coerceAtMost(maxTargetIndex.coerceAtLeast(0) / columns) * columns +
+                                    targetColumn)
+                            .coerceIn(0, maxTargetIndex.coerceAtLeast(0))
             val offsetFromItemCenterX =
                     centerX - (targetColumn * cellWidthPx + rowItemWidthPx / 2f)
             val offsetFromItemCenterY =
@@ -1704,7 +1747,8 @@ private fun AppGrid(
             val hit = cellHitForDrag(updatedState)
             val canMerge =
                     onMergeEntries != null && visualEntries[currentIndex] !is AppGridEntry.Folder
-            val hitKey = visualEntries.getOrNull(hit.index)?.key
+            val hitKey =
+                    visualEntries.getOrNull(hit.index)?.takeIf { it !is AppGridEntry.Gap }?.key
             val mergeZoneFraction =
                     if (hitKey != null && hitKey == mergeCandidate?.key) {
                         FolderMergeStayZoneFraction
@@ -1818,7 +1862,9 @@ private fun AppGrid(
                         items = orderedEntries,
                         key = { entry -> entry.key },
                 ) { entry ->
-                    if (entry is AppGridEntry.Folder) {
+                    if (entry is AppGridEntry.Gap) {
+                        Spacer(modifier = Modifier.fillMaxWidth())
+                    } else if (entry is AppGridEntry.Folder) {
                         FolderGridItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 folder = entry.folder,
@@ -1912,7 +1958,19 @@ private fun AppGrid(
                                                 isDragging = isThisDragging,
                                                 dragOffset = entryDragOffset,
                                         )
-                        if (entry is AppGridEntry.Folder) {
+                        if (entry is AppGridEntry.Gap) {
+                            // Sized like a tile so a row of only empty cells keeps its height.
+                            Spacer(
+                                    modifier =
+                                            Modifier.width(rowItemWidth)
+                                                    .height(
+                                                            measuredItemHeightPx
+                                                                    .takeIf { it > 0f }
+                                                                    ?.let { with(density) { it.toDp() } }
+                                                                    ?: rowItemWidth,
+                                                    ),
+                            )
+                        } else if (entry is AppGridEntry.Folder) {
                             FolderGridItem(
                                     modifier = tileModifier,
                                     folder = entry.folder,
