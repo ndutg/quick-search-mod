@@ -78,6 +78,7 @@
     <string name="action_unlock_app">अनलॉक करें</string>
     <string name="app_lock_prompt_lock">%1$s को लॉक करें</string>
     <string name="app_lock_prompt_unlock">%1$s को अनलॉक करें</string>
+    <string name="app_lock_unavailable">इस ऐप को अनलॉक करने के लिए Quick Search खोलें</string>
     <string name="action_change_icon">आइकन बदलें</string>
     <string name="icon_picker_search">आइकन खोजें</string>
     <string name="icon_picker_title">"%1$s" के लिए आइकन बदलें</string>

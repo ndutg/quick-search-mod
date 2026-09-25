@@ -79,6 +79,7 @@
     <string name="action_unlock_app">إلغاء القفل</string>
     <string name="app_lock_prompt_lock">قفل %1$s</string>
     <string name="app_lock_prompt_unlock">إلغاء قفل %1$s</string>
+    <string name="app_lock_unavailable">افتح Quick Search لإلغاء قفل هذا التطبيق</string>
     <string name="action_change_icon">تغيير الأيقونة</string>
     <string name="icon_picker_search">البحث عن الأيقونات</string>
     <string name="icon_picker_title">تغيير أيقونة "%1$s"</string>

@@ -80,6 +80,7 @@
     <string name="action_unlock_app">Ontgrendelen</string>
     <string name="app_lock_prompt_lock">%1$s vergrendelen</string>
     <string name="app_lock_prompt_unlock">%1$s ontgrendelen</string>
+    <string name="app_lock_unavailable">Open Quick Search om deze app te ontgrendelen</string>
     <string name="action_change_icon">Icoon wijzigen</string>
     <string name="icon_picker_no_icon_packs">Er zijn geen icoonpakketten geïnstalleerd om het app-icoon te wijzigen.</string>
     <string name="icon_picker_download_icon_packs">Downloaden</string>

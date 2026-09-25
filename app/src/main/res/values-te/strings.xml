@@ -78,6 +78,7 @@
     <string name="action_unlock_app">అన్‌లాక్ చేయండి</string>
     <string name="app_lock_prompt_lock">%1$sను లాక్ చేయండి</string>
     <string name="app_lock_prompt_unlock">%1$sను అన్‌లాక్ చేయండి</string>
+    <string name="app_lock_unavailable">ఈ యాప్‌ను అన్‌లాక్ చేయడానికి Quick Searchను తెరవండి</string>
     <string name="action_change_icon">ఐకాన్ మార్చు</string>
     <string name="icon_picker_search">చిహ్నాలను శోధించండి</string>
     <string name="icon_picker_title">"%1$s" కోసం చిహ్నాన్ని మార్చండి</string>

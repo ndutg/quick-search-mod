@@ -78,6 +78,7 @@
     <string name="action_unlock_app">Разблокировать</string>
     <string name="app_lock_prompt_lock">Заблокировать %1$s</string>
     <string name="app_lock_prompt_unlock">Разблокировать %1$s</string>
+    <string name="app_lock_unavailable">Откройте Quick Search, чтобы разблокировать это приложение</string>
 <string name="action_change_icon">Изменить значок</string>
 <string name="icon_picker_search">Поиск значков</string>
 <string name="icon_picker_title">Изменить значок для «%1$s»</string>

@@ -77,6 +77,7 @@
     <string name="action_unlock_app">Sblocca</string>
     <string name="app_lock_prompt_lock">Blocca %1$s</string>
     <string name="app_lock_prompt_unlock">Sblocca %1$s</string>
+    <string name="app_lock_unavailable">Apri Quick Search per sbloccare questa app</string>
     <string name="action_change_icon">Cambia icona</string>
     <string name="icon_picker_search">Cerca icone</string>
     <string name="icon_picker_title">Cambia icona per "%1$s"</string>

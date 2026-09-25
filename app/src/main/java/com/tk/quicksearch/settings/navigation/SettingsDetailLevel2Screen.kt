@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import com.tk.quicksearch.reminders.ReminderEditorRequests
 import androidx.compose.runtime.collectAsState
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
@@ -305,7 +306,11 @@ internal fun SettingsDetailLevel2Screen(
                     searchQuery = appShortcutsSearchQuery,
                     collapseAllTrigger = appShortcutsCollapseAllTrigger,
                     onShortcutEnabledChange = callbacks.onToggleAppShortcutEnabled,
-                    onShortcutNameClick = callbacks.onLaunchAppShortcut,
+                    onShortcutNameClick = { shortcut ->
+                        AppLockGate.runAfterUnlock(context, shortcut.packageName, shortcut.appLabel) {
+                            callbacks.onLaunchAppShortcut(shortcut)
+                        }
+                    },
                     shortcutSources = appShortcutSources,
                     onAddShortcutFromSource = callbacks.onAddAppShortcutFromSource,
                     onAddAppDeepLinkShortcut = callbacks.onAddAppDeepLinkShortcut,

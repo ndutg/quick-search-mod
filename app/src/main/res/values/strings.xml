@@ -69,6 +69,7 @@
     <string name="action_unlock_app">Unlock</string>
     <string name="app_lock_prompt_lock">Lock %1$s</string>
     <string name="app_lock_prompt_unlock">Unlock %1$s</string>
+    <string name="app_lock_unavailable">Open Quick Search to unlock this app</string>
     <string name="action_change_icon">Change Icon</string>
     <string name="icon_picker_no_icon_packs">No Icon packs are installed to change the app icon.</string>
     <string name="icon_picker_download_icon_packs">Download</string>

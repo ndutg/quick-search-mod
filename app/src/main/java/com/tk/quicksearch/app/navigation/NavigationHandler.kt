@@ -5,6 +5,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
+import com.tk.quicksearch.search.apps.appLock.SearchTargetAppLock
 import com.tk.quicksearch.search.contacts.utils.ContactIntentHelpers
 import com.tk.quicksearch.search.core.IntentHelpers
 import com.tk.quicksearch.search.core.SearchEngine
@@ -145,21 +147,24 @@ class NavigationHandler(
             return
         }
 
-        // Save the query to recent queries
-        if (addToSearchHistory && trimmedQuery.isNotEmpty()) {
-            userPreferences.addRecentItem(RecentSearchEntry.Query(trimmedQuery))
-        }
-
         val amazonDomain =
             if (searchEngine == SearchEngine.AMAZON) {
                 userPreferences.getAmazonDomain()
             } else {
                 null
             }
-        IntentHelpers.openSearchUrl(application, trimmedQuery, searchEngine, amazonDomain, showToastCallback)
+        val targetPackages = SearchTargetAppLock.enginePackages(application, trimmedQuery, searchEngine, amazonDomain)
+        AppLockGate.runAfterUnlockAny(application, targetPackages) {
+            // Save the query to recent queries
+            if (addToSearchHistory && trimmedQuery.isNotEmpty()) {
+                userPreferences.addRecentItem(RecentSearchEntry.Query(trimmedQuery))
+            }
 
-        // Always clear query after search
-        onClearQuery()
+            IntentHelpers.openSearchUrl(application, trimmedQuery, searchEngine, amazonDomain, showToastCallback)
+
+            // Always clear query after search
+            onClearQuery()
+        }
     }
 
     fun openSearchTarget(
@@ -174,40 +179,44 @@ class NavigationHandler(
             }
 
             is SearchTarget.Browser -> {
-                if (addToSearchHistory && trimmedQuery.isNotEmpty()) {
-                    userPreferences.addRecentItem(RecentSearchEntry.Query(trimmedQuery))
-                }
+                AppLockGate.runAfterUnlockAny(application, SearchTargetAppLock.packagesFor(application, trimmedQuery, target)) {
+                    if (addToSearchHistory && trimmedQuery.isNotEmpty()) {
+                        userPreferences.addRecentItem(RecentSearchEntry.Query(trimmedQuery))
+                    }
 
-                if (isLikelyWebUrl(trimmedQuery)) {
-                    IntentHelpers.openBrowserUrl(
-                        application,
-                        normalizeToBrowsableUrl(trimmedQuery) ?: trimmedQuery,
-                        target.app.packageName,
-                    ) { stringResId, formatArg -> showToastCallback(stringResId, formatArg) }
-                } else {
-                    IntentHelpers.openBrowserSearch(
-                        application,
-                        trimmedQuery,
-                        target.app.packageName,
-                    ) { stringResId, formatArg -> showToastCallback(stringResId, formatArg) }
-                }
+                    if (isLikelyWebUrl(trimmedQuery)) {
+                        IntentHelpers.openBrowserUrl(
+                            application,
+                            normalizeToBrowsableUrl(trimmedQuery) ?: trimmedQuery,
+                            target.app.packageName,
+                        ) { stringResId, formatArg -> showToastCallback(stringResId, formatArg) }
+                    } else {
+                        IntentHelpers.openBrowserSearch(
+                            application,
+                            trimmedQuery,
+                            target.app.packageName,
+                        ) { stringResId, formatArg -> showToastCallback(stringResId, formatArg) }
+                    }
 
-                onClearQuery()
+                    onClearQuery()
+                }
             }
 
             is SearchTarget.Custom -> {
-                if (addToSearchHistory && trimmedQuery.isNotEmpty()) {
-                    userPreferences.addRecentItem(RecentSearchEntry.Query(trimmedQuery))
+                AppLockGate.runAfterUnlockAny(application, SearchTargetAppLock.packagesFor(application, trimmedQuery, target)) {
+                    if (addToSearchHistory && trimmedQuery.isNotEmpty()) {
+                        userPreferences.addRecentItem(RecentSearchEntry.Query(trimmedQuery))
+                    }
+
+                    IntentHelpers.openCustomSearchUrl(
+                        application,
+                        trimmedQuery,
+                        target.custom.urlTemplate,
+                        target.custom.browserPackage,
+                    ) { stringResId, formatArg -> showToastCallback(stringResId, formatArg) }
+
+                    onClearQuery()
                 }
-
-                IntentHelpers.openCustomSearchUrl(
-                    application,
-                    trimmedQuery,
-                    target.custom.urlTemplate,
-                    target.custom.browserPackage,
-                ) { stringResId, formatArg -> showToastCallback(stringResId, formatArg) }
-
-                onClearQuery()
             }
         }
     }

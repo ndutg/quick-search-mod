@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -405,13 +406,29 @@ fun AppManagementSettingsSection(
             if (selectedCount > 0) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        val queueKeys = sortedApps.map { it.launchCountKey() }.filter { it in selectedAppKeys }
-                        uninstallQueueKeys = queueKeys
-                        if (queueKeys.isNotEmpty()) {
-                            waitingForUninstallReturn = false
-                            leftScreenForUninstall = false
-                            currentUninstallKey = null
-                            batchUninstallInProgress = true
+                        val queuedApps = sortedApps.filter { it.launchCountKey() in selectedAppKeys }
+                        val startUninstallQueue = {
+                            val queueKeys = queuedApps.map { it.launchCountKey() }
+                            uninstallQueueKeys = queueKeys
+                            if (queueKeys.isNotEmpty()) {
+                                waitingForUninstallReturn = false
+                                leftScreenForUninstall = false
+                                currentUninstallKey = null
+                                batchUninstallInProgress = true
+                            }
+                        }
+                        // One prompt up front covers every locked app in the batch, so the queue
+                        // never stalls on a cancelled prompt halfway through.
+                        val lockedApps = queuedApps.filter { AppLockGate.isProtected(context, it.packageName) }
+                        if (lockedApps.isEmpty()) {
+                            startUninstallQueue()
+                        } else {
+                            AppLockGate.runAfterUnlock(
+                                context,
+                                lockedApps.first().packageName,
+                                lockedApps.joinToString { it.appName },
+                                action = startUninstallQueue,
+                            )
                         }
                     },
                     modifier =
@@ -444,7 +461,11 @@ fun AppManagementSettingsSection(
         AppDetailsDialog(
             app = app,
             iconPackPackage = iconPackPackage,
-            onOpenAppInfo = onOpenAppInfo,
+            onOpenAppInfo = { detailsApp ->
+                AppLockGate.runAfterUnlock(context, detailsApp.packageName, detailsApp.appName) {
+                    onOpenAppInfo(detailsApp)
+                }
+            },
             onDismiss = { selectedAppForDetails = null },
         )
     }

@@ -78,6 +78,7 @@
     <string name="action_unlock_app">Déverrouiller</string>
     <string name="app_lock_prompt_lock">Verrouiller %1$s</string>
     <string name="app_lock_prompt_unlock">Déverrouiller %1$s</string>
+    <string name="app_lock_unavailable">Ouvrez Quick Search pour déverrouiller cette appli</string>
 <string name="action_change_icon">Changer l\'icône</string>
 <string name="icon_picker_search">Rechercher des icônes</string>
 <string name="icon_picker_title">Changer l\'icône de « %1$s »</string>

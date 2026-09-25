@@ -77,6 +77,7 @@
     <string name="action_unlock_app">ロック解除</string>
     <string name="app_lock_prompt_lock">%1$s をロック</string>
     <string name="app_lock_prompt_unlock">%1$s のロックを解除</string>
+    <string name="app_lock_unavailable">このアプリのロックを解除するには Quick Search を開いてください</string>
     <string name="action_change_icon">アイコンを変更</string>
     <string name="icon_picker_no_icon_packs">アプリアイコンを変更するためのアイコンパックがインストールされていません。</string>
     <string name="icon_picker_download_icon_packs">ダウンロード</string>

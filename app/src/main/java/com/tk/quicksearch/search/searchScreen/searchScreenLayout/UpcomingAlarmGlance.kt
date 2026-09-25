@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.app.AlarmManager
 import android.text.format.DateFormat
 import android.widget.Toast
@@ -95,7 +96,15 @@ internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance?
     return UpcomingAlarmGlance(
         alarm = nextAlarm,
         nowMillis = nowMillis,
-        open = { repository.open(nextAlarm) },
+        open = {
+            val clockPackage = nextAlarm.showIntent?.creatorPackage
+            if (clockPackage != null && AppLockGate.isProtected(context, clockPackage)) {
+                AppLockGate.runAfterUnlock(context, clockPackage) { repository.open(nextAlarm) }
+                true
+            } else {
+                repository.open(nextAlarm)
+            }
+        },
         dismiss = {
             repository.dismiss(nextAlarm)
             alarm = null

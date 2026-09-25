@@ -1,5 +1,6 @@
 package com.tk.quicksearch.app
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.app.SearchManager
 import android.content.ComponentCallbacks2
 import android.content.Context
@@ -124,6 +125,7 @@ open class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         CrashLogManager.install(this)
+        AppLockGate.trackActivities(application)
         Trace.beginSection(TRACE_ON_CREATE_ENTRY)
         try {
             AppLanguageManager.applySavedAppLanguage(this)

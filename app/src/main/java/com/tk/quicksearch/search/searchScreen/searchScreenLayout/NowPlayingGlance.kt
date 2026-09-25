@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.PlaybackState
@@ -274,7 +275,11 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
             dismissal.dismissedWhilePlaying = isPlaying
             dismissal.sawNonPlayingState = false
         },
-        open = { openMediaSessionPlayer(context, activeController) },
+        open = {
+            AppLockGate.runAfterUnlock(context, activeController.packageName) {
+                openMediaSessionPlayer(context, activeController)
+            }
+        },
     )
 }
 
