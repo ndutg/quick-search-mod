@@ -838,6 +838,7 @@
     <string name="settings_configure_api_key_title">配置 API 密钥</string>
     <string name="settings_custom_provider_base_url_hint">例如：https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">接口根地址 (Base URL)</string>
+    <string name="custom_provider_models_load_failed">无法从此提供商加载模型：%1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">合并到通过此提供商发送的每个请求中。</string>
     <string name="settings_custom_provider_advanced_payload_error">请输入有效的 JSON 对象。</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>

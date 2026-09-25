@@ -848,6 +848,7 @@
     <string name="settings_configure_api_key_title">API key कॉन्फ़िगर करें</string>
     <string name="settings_custom_provider_base_url_hint">उदाहरण: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">बेस URL</string>
+    <string name="custom_provider_models_load_failed">इस प्रदाता से मॉडल लोड नहीं हो सके: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">इस प्रदाता के माध्यम से भेजे गए प्रत्येक अनुरोध में विलय कर दिया गया।</string>
     <string name="settings_custom_provider_advanced_payload_error">एक मान्य JSON ऑब्जेक्ट दर्ज करें।</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>

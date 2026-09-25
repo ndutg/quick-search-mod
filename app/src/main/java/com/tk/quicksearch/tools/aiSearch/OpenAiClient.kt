@@ -22,6 +22,7 @@ class OpenAiClient(
     private val apiKey: String,
     private val context: Context,
     private val baseUrl: String = DEFAULT_BASE_URL,
+    private val trustUserCertificates: Boolean = false,
 ) {
     companion object {
         private const val LOG_TAG = "AI_REQUEST"
@@ -39,6 +40,7 @@ class OpenAiClient(
             context: Context,
             baseUrl: String = DEFAULT_BASE_URL,
             filterForOpenAiPicker: Boolean = true,
+            trustUserCertificates: Boolean = false,
         ): Result<List<LlmTextModel>> =
             withContext(Dispatchers.IO) {
                 runCatching {
@@ -49,6 +51,7 @@ class OpenAiClient(
                             setRequestProperty("Authorization", "Bearer $apiKey")
                             connectTimeout = 15000
                             readTimeout = 20000
+                            if (trustUserCertificates) CustomProviderTls.apply(this)
                         }
                     try {
                         val responseCode = connection.responseCode
@@ -161,6 +164,7 @@ class OpenAiClient(
                     doOutput = true
                     connectTimeout = 15000
                     readTimeout = 30000
+                    if (trustUserCertificates) CustomProviderTls.apply(this)
                 }
 
             val payload = buildRequestBody(

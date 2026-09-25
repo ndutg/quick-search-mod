@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.core
 
+import android.widget.Toast
+import com.tk.quicksearch.R
 import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.search.apps.IconPackService
 import com.tk.quicksearch.search.data.UserAppPreferences
@@ -16,6 +18,7 @@ import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal interface SearchPreferencesStateAccess {
     var enabledFileTypes: Set<FileType>
@@ -1038,8 +1041,11 @@ internal class SearchPreferencesDelegate(
                 aiSearchHandler.setLlmApiKey(providerId, provider.apiKey)
                 aiSearchHandler.setAiSearchProviderId(providerId)
 
-                val models =
-                    fetchAvailableModels(providerId, provider.apiKey).getOrDefault(emptyList())
+                val modelsResult = fetchAvailableModels(providerId, provider.apiKey)
+                modelsResult.exceptionOrNull()?.let { error ->
+                    showCustomProviderModelsError(error)
+                }
+                val models = modelsResult.getOrDefault(emptyList())
                 aiSearchHandler.setSelectedModelId(null)
                 aiSearchHandler.setGroundingEnabled(true)
                 aiSearchHandler.setThinkingEnabled(false)
@@ -1292,6 +1298,18 @@ internal class SearchPreferencesDelegate(
                     availableLlmModelsByProvider = configuredProviderModels,
                 )
             }
+        }
+    }
+
+    private suspend fun showCustomProviderModelsError(error: Throwable) {
+        val app = applicationProvider()
+        val detail = error.message?.takeIf { it.isNotBlank() } ?: error.javaClass.simpleName
+        withContext(Dispatchers.Main) {
+            Toast.makeText(
+                app,
+                app.getString(R.string.custom_provider_models_load_failed, detail),
+                Toast.LENGTH_LONG,
+            ).show()
         }
     }
 
