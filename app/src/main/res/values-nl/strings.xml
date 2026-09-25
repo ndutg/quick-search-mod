@@ -888,6 +888,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_configure_api_key_title">API-sleutel configureren</string>
     <string name="settings_custom_provider_base_url_hint">Voorbeeld: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Basis-URL</string>
+    <string name="custom_provider_models_load_failed">Kan geen modellen laden van deze provider: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">Wordt toegevoegd aan elk verzoek dat via deze provider wordt verzonden.</string>
     <string name="settings_custom_provider_advanced_payload_error">Voer een geldig JSON-object in.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>

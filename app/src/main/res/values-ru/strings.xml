@@ -868,6 +868,7 @@
 <string name="settings_configure_api_key_title">Настроить API-ключ</string>
     <string name="settings_custom_provider_base_url_hint">Пример: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Базовый URL</string>
+    <string name="custom_provider_models_load_failed">Не удалось загрузить модели этого провайдера: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">Объединяется с каждым запросом, отправленным через этого провайдера.</string>
     <string name="settings_custom_provider_advanced_payload_error">Введите допустимый объект JSON.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>

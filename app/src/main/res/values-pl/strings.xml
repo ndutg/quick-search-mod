@@ -881,6 +881,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_configure_api_key_title">Skonfiguruj klucz API</string>
     <string name="settings_custom_provider_base_url_hint">Przykład: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Podstawowy adres URL</string>
+    <string name="custom_provider_models_load_failed">Nie udało się wczytać modeli od tego dostawcy: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">Dołączane do każdego żądania wysyłanego przez tego dostawcę.</string>
     <string name="settings_custom_provider_advanced_payload_error">Wprowadź prawidłowy obiekt JSON.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>

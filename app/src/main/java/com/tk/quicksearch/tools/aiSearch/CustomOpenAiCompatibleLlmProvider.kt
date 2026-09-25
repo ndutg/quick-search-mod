@@ -48,6 +48,7 @@ class CustomOpenAiCompatibleLlmProvider(
                 context = context,
                 baseUrl = providerConfig.baseUrl,
                 filterForOpenAiPicker = false,
+                trustUserCertificates = true,
             )
             .map { models ->
                 val allModels =
@@ -74,6 +75,7 @@ class CustomOpenAiCompatibleLlmProvider(
                 apiKey = apiKey,
                 context = context,
                 baseUrl = providerConfig.baseUrl,
+                trustUserCertificates = true,
             )
         return client.fetchAnswer(
             query = request.query,

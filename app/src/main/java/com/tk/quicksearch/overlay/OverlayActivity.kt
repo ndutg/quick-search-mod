@@ -143,7 +143,10 @@ class OverlayActivity : FragmentActivity() {
     @Suppress("DEPRECATION")
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+        // UI_HIDDEN only means the user left the app; keep icons cached so they reappear instantly.
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW &&
+            level != ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
+        ) {
             UiSurfaceMemoryManager.clearBitmapMemoryCaches()
         }
     }

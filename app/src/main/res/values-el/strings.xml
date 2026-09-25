@@ -848,6 +848,7 @@
     <string name="settings_configure_api_key_title">Διαμόρφωση κλειδιού API</string>
     <string name="settings_custom_provider_base_url_hint">Παράδειγμα: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">Βασικό URL</string>
+    <string name="custom_provider_models_load_failed">Δεν ήταν δυνατή η φόρτωση μοντέλων από αυτόν τον πάροχο: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">Συγχωνεύεται σε κάθε αίτημα που αποστέλλεται μέσω αυτού του παρόχου.</string>
     <string name="settings_custom_provider_advanced_payload_error">Εισαγάγετε ένα έγκυρο αντικείμενο JSON.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>

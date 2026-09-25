@@ -856,6 +856,7 @@
     <string name="settings_configure_api_key_title">Konfigurasi Kunci API</string>
     <string name="settings_custom_provider_base_url_hint">Contoh: https://openrouter.ai/api/v1</string>
     <string name="settings_custom_provider_base_url_input_label">URL Dasar</string>
+    <string name="custom_provider_models_load_failed">Tidak dapat memuat model dari penyedia ini: %1$s</string>
     <string name="settings_custom_provider_advanced_payload_desc">Digabungkan ke dalam setiap permintaan yang dikirim melalui penyedia ini.</string>
     <string name="settings_custom_provider_advanced_payload_error">Masukkan objek JSON yang valid.</string>
     <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Contoh: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>

@@ -848,6 +848,7 @@
 <string name="settings_configure_api_key_title">Configurez la clé API</string>
 <string name="settings_custom_provider_base_url_hint">Exemple : https://openrouter.ai/api/v1</string>
 <string name="settings_custom_provider_base_url_input_label">URL de base</string>
+<string name="custom_provider_models_load_failed">Impossible de charger les modèles de ce fournisseur : %1$s</string>
 <string name="settings_custom_provider_advanced_payload_desc">Fusionné dans chaque requête envoyée via ce fournisseur.</string>
 <string name="settings_custom_provider_advanced_payload_error">Saisissez un objet JSON valide.</string>
 <string name="settings_custom_provider_advanced_payload_hint" translatable="false">Example: { \"tools\": [{ \"type\": \"openrouter:web_search\" }] }</string>
