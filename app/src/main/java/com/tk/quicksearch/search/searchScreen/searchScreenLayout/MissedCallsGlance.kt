@@ -1,0 +1,190 @@
+package com.tk.quicksearch.search.searchScreen.searchScreenLayout
+
+import android.content.Context
+import android.content.Intent
+import android.provider.CallLog
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.PhoneMissed
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.appLock.AppLockGate
+import com.tk.quicksearch.search.data.MissedCallNotification
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import java.text.NumberFormat
+
+/**
+ * One summary row for missed call notifications, [calls] newest first. It names the callers, with
+ * the app in brackets for calls from apps other than the phone app, and counts them in the title
+ * when there is more than one. Tapping the row opens the newest call's app; when the calls come from more than
+ * one app, a chip for each app opens that app's calls.
+ */
+@Composable
+internal fun MissedCallsRow(
+    calls: List<MissedCallNotification>,
+    onDismiss: () -> Unit,
+) {
+    val context = LocalContext.current
+    val callerLabels = calls.map { call -> callerLabel(call) }.filterNotNull().distinct()
+    val subtitle = callerLabels.joinToString(", ").ifBlank { null }
+    val title =
+        if (calls.size == 1) {
+            stringResource(R.string.home_missed_call)
+        } else {
+            val count = remember(calls.size) { NumberFormat.getIntegerInstance().format(calls.size) }
+            stringResource(R.string.home_missed_calls_count, count)
+        }
+    // The newest call from each app, phone app first.
+    val appCalls = remember(calls) { calls.distinctBy { it.packageName }.sortedByDescending { it.fromPhoneApp } }
+    // GlanceStatusRow's layout, but with the dismiss button beside the title rather than centered.
+    Row(
+        modifier =
+            Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
+                start = 7.dp,
+                top = DesignTokens.SpacingMedium,
+                bottom = DesignTokens.SpacingMedium,
+            ),
+    ) {
+        Column(
+            modifier = Modifier.weight(1f).clickable { openCallHistory(context, calls.first()) },
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Rounded.PhoneMissed,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                    )
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (subtitle != null) {
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+            }
+            if (appCalls.size > 1) {
+                Row(
+                    modifier = Modifier.padding(start = 24.dp + DesignTokens.SpacingMedium),
+                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                ) {
+                    appCalls.forEach { call ->
+                        MissedCallAppChip(call = call, onClick = { openCallHistory(context, call) })
+                    }
+                }
+            }
+        }
+        IconButton(
+            onClick = onDismiss,
+            modifier = Modifier.padding(start = DesignTokens.SpacingSmall).size(GlanceDismissButtonSize),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = stringResource(R.string.common_close),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+    }
+}
+
+/** The caller, followed by the app in brackets when the call did not come through the phone app. */
+@Composable
+private fun callerLabel(call: MissedCallNotification): String? {
+    if (call.fromPhoneApp) return call.caller
+    val appLabel = rememberAppLabel(call.packageName)
+    return call.caller?.let { stringResource(R.string.home_missed_call_from_app, it, appLabel) } ?: appLabel
+}
+
+@Composable
+private fun MissedCallAppChip(
+    call: MissedCallNotification,
+    onClick: () -> Unit,
+) {
+    Surface(
+        onClick = onClick,
+        shape = CircleShape,
+        color = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 6.dp, end = 10.dp, top = 4.dp, bottom = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(modifier = Modifier.size(18.dp), contentAlignment = Alignment.Center) {
+                NotificationAppIcon(call.packageName)
+            }
+            Text(
+                text = rememberAppLabel(call.packageName),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+/**
+ * Opens the call history of the app that posted [latest] when it has one (the phone app), and
+ * otherwise the notification's own target, such as WhatsApp's calls.
+ */
+private fun openCallHistory(
+    context: Context,
+    latest: MissedCallNotification,
+) {
+    AppLockGate.runAfterUnlock(context, latest.packageName) {
+        // Only the app that posted the call is asked for its call history, so a WhatsApp or other
+        // app's missed call opens that app (through its notification) rather than the phone app.
+        val callLog =
+            Intent(Intent.ACTION_VIEW)
+                .setType(CallLog.Calls.CONTENT_TYPE)
+                .setPackage(latest.packageName)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val opened = runCatching { context.startActivity(callLog) }.isSuccess
+        if (!opened) launchNotificationTarget(context, latest.packageName, latest.contentIntent)
+    }
+}

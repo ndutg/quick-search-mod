@@ -2,20 +2,21 @@ package com.tk.quicksearch.search.core
 
 import android.content.Intent
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.data.AppShortcutRepository.AppShortcutRepository
-import com.tk.quicksearch.search.data.AppShortcutRepository.SearchTargetShortcutMode
-import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.AppShortcutRepository.isUserCreatedShortcut
-import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
+import com.tk.quicksearch.search.data.appShortcutRepository.AppShortcutRepository
+import com.tk.quicksearch.search.data.appShortcutRepository.SearchTargetShortcutMode
+import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.appShortcutRepository.isUserCreatedShortcut
+import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.data.AppsRepository
 import com.tk.quicksearch.search.data.CalendarRepository
 import com.tk.quicksearch.search.data.ContactRepository
 import com.tk.quicksearch.search.data.FileSearchRepository
-import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.apps.invalidateAppIconCache
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.tk.quicksearch.app.startup.StartupTrace
@@ -96,8 +97,14 @@ internal class SearchStaticDataDelegate(
         }
     }
 
-    fun refreshAppShortcutsCacheFirst() {
-        loadAppShortcuts()
+    /** Refreshes shortcuts from the system and suspends until the fresh result is in UI state. */
+    suspend fun refreshAppShortcutsAndAwait() {
+        if (isAppShortcutsLoadInFlight.compareAndSet(false, true)) {
+            // Run in the ViewModel scope so leaving the screen doesn't cancel the refresh.
+            scope.launch(Dispatchers.IO) { loadAppShortcutsNow() }.join()
+        } else {
+            while (isAppShortcutsLoadInFlight.get()) delay(APP_SHORTCUTS_LOAD_POLL_MS)
+        }
     }
 
     fun refreshSettingsState(updateResults: Boolean = true) {
@@ -280,6 +287,19 @@ internal class SearchStaticDataDelegate(
         if (shortcutIds.isEmpty()) return
         scope.launch(Dispatchers.IO) {
             userPreferences.setAppShortcutsEnabled(shortcutIds, enabled)
+            withContext(Dispatchers.Main) {
+                refreshAppShortcutsState()
+                refreshRecentItems()
+            }
+        }
+    }
+
+    fun setAllAppShortcutsEnabled(
+        packageName: String,
+        enabled: Boolean,
+    ) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setAllAppShortcutsEnabled(packageName, enabled)
             withContext(Dispatchers.Main) {
                 refreshAppShortcutsState()
                 refreshRecentItems()
@@ -518,3 +538,5 @@ private fun <T, K> List<T>.sortedByPinnedOrder(
     val orderIndex = order.withIndex().associate { it.value to it.index }
     return sortedBy { orderIndex[keySelector(it)] ?: Int.MAX_VALUE }
 }
+
+private const val APP_SHORTCUTS_LOAD_POLL_MS = 50L

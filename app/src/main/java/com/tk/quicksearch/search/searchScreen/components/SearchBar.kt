@@ -12,58 +12,37 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.automirrored.rounded.Shortcut
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.CurrencyExchange
-import androidx.compose.material.icons.rounded.Cloud
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.window.PopupProperties
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,9 +52,9 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import android.content.res.Configuration
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
@@ -88,24 +67,18 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.tk.quicksearch.R
-import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
-import com.tk.quicksearch.search.core.SearchSectionRegistry
-import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
-import com.tk.quicksearch.searchEngines.shared.IconRenderStyle
-import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.app.startup.StartupTrace
@@ -114,9 +87,7 @@ import com.tk.quicksearch.shared.util.hapticStrong
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
-
 private const val AliasIconMorphDurationMs = 260
-private const val AliasIconMorphEndScale = 0.5f
 private const val LeadingIconEnterDurationMs = 180
 private const val LeadingIconExitDurationMs = 120
 private const val LeadingIconEnterDelayMs = 40
@@ -129,15 +100,10 @@ private const val LightSearchBarShadowSpotAlpha = 0.62f
 /** Resting radius of the standalone bar, matching [DesignTokens.ShapeXXLarge]. */
 private val DefaultSearchBarCornerRadius = DesignTokens.Spacing28
 
-private val AliasMorphTextStartPadding = DesignTokens.Spacing48 + DesignTokens.SpacingXSmall
 private val AliasMorphHorizontalTravel = DesignTokens.Spacing28
 private val AliasMorphVerticalTravel = DesignTokens.SpacingXXSmall
 
-private data class SectionMenuEntry(
-    val section: SearchSection,
-)
 
-private val sectionMenuEntries = SearchSectionRegistry.orderedSections.map(::SectionMenuEntry)
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -261,6 +227,16 @@ internal fun PersistentSearchBar(
     var previousLeadingIconState by remember { mutableStateOf(leadingIconState) }
     var hasCompletedStartupAutoFocus by remember { mutableStateOf(!autoFocusOnStart) }
     val searchBarInteractionSource = remember { MutableInteractionSource() }
+    // A caret with no way to type is noise: hide it while the soft keyboard is closed, unless a
+    // hardware keyboard can still type into the field.
+    val density = LocalDensity.current
+    val imeInsets = WindowInsets.ime
+    val isImeVisible by remember(imeInsets, density) {
+        derivedStateOf { imeInsets.getBottom(density) > 0 }
+    }
+    val hasHardwareKeyboard =
+        LocalConfiguration.current.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO
+    val showCursor = isImeVisible || hasHardwareKeyboard
     fun submitSearchAction() {
         val keepKeyboardFromAction = onSearchAction()
         if (!keepKeyboardFromAction && query.isNotBlank()) {
@@ -414,8 +390,8 @@ internal fun PersistentSearchBar(
         onRestoreKeyboardHandled()
     }
 
-    // Animation state
-    // We use a linear progression 0 -> 1 to scan the gradient exactly once
+    // Welcome animation: the gradient scans across the border once, ending on its white tail,
+    // then the glow fades out while the resting border fades in.
     val animationProgress = remember { Animatable(0f) }
 
     val glowAlpha = remember { Animatable(0f) }
@@ -428,29 +404,18 @@ internal fun PersistentSearchBar(
 
     LaunchedEffect(showWelcomeAnimation, query.isEmpty()) {
         if (showWelcomeAnimation) {
-            // Setup Start State
             glowAlpha.snapTo(1f)
             borderAlpha.snapTo(0f)
             animationProgress.snapTo(0f)
 
-            // Phase 1: Animate the gradient flow (0 -> 1)
-            // This scans the colors and arrives at the end (White)
             animationProgress.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(DesignTokens.AnimationDurationLong, easing = LinearEasing),
             )
 
-            // Phase 2: Arrived at White. Make it permanent.
-            // We DO NOT snap border to 1f. We rely on the White Brush from Phase 1 to
-            // hold the
-            // white state.
-            // This maintains the "Glow" look during the hold.
-
-            // Hold for a tiny beat (imperceptible, just ensures scan completion)
+            // The white end of the gradient holds the glow; the border is not snapped to opaque here.
             delay(DesignTokens.AnimationDurationMicro.toLong())
 
-            // Phase 3: Dissipate Heat / Cool Down
-            // Quicker fade out (500ms) to prevent lingering
             launch {
                 glowAlpha.animateTo(
                     targetValue = 0f,
@@ -464,7 +429,6 @@ internal fun PersistentSearchBar(
                 )
             }
 
-            // Wait for fade out to complete, then reset the animation flag
             delay(DesignTokens.AnimationDurationFast.toLong())
             onWelcomeAnimationCompleted?.invoke()
         } else if (query.isEmpty()) {
@@ -478,7 +442,6 @@ internal fun PersistentSearchBar(
     }
     // Palettes are centralized in AppColors to keep color tokens out of feature files.
     val activeColors = AppColors.SearchFieldGooglePalette
-    val density = LocalDensity.current
     val aliasMorphHorizontalTravelPx = with(density) { AliasMorphHorizontalTravel.toPx() }
     val aliasMorphVerticalTravelPx = with(density) { AliasMorphVerticalTravel.toPx() }
 
@@ -510,29 +473,9 @@ internal fun PersistentSearchBar(
                         val strokeWidth = DesignTokens.SearchFieldBorderWidth.toPx()
                         val cornerRadiusVal = cornerRadius.toPx()
 
-                        // Calculate gradient movement based on animation
-                        // progress
-                        // We want to SCAN the gradient from Start (Colors)
-                        // to End
-                        // (White)
-                        // At t=0, we want offset=0 (Start of colors aligned
-                        // with left
-                        // edge)
-                        // At t=1, we want to look at the End (White).
-                        // So we slide the brush to the LEFT (negative
-                        // offset) until the
-                        // end is visible.
-
                         val gradientWidth = size.width * DesignTokens.SearchFieldGradientWidthMultiplier
 
-                        // xOffset moves from 0 down to -3*width.
-                        // At -3*width, the brush starts 3 screens to the
-                        // left.
-                        // The visible part [0, width] is at offset +3*width
-                        // = [3*width,
-                        // 4*width] of the gradient.
-                        // This is the last 25% of the gradient, which is
-                        // White.
+                        // Slides the brush left so the border ends on the gradient's white tail.
                         val xOffset =
                             -(animationProgress.value * size.width * DesignTokens.SearchFieldGradientTravelMultiplier)
 
@@ -546,13 +489,9 @@ internal fun PersistentSearchBar(
                                             gradientWidth,
                                         0f,
                                     ),
-                                // Tilt slightly for more dynamic
-                                // look? No,
-                                // straight looks cleaner for border
                             )
 
-                        // 1. Draw "Outer Glow" (Simulated Blur)
-                        // We draw wider, lower alpha strokes behind
+                        // Wide, faint strokes behind the border fake a blurred glow.
                         drawRoundRect(
                             brush = brush,
                             cornerRadius =
@@ -751,86 +690,39 @@ internal fun PersistentSearchBar(
                             )
                         }
                     }
-                    DropdownMenu(
+                    SearchBarSectionMenu(
                         expanded = showSectionMenu,
-                        onDismissRequest = { showSectionMenu = false },
-                        shape = RoundedCornerShape(24.dp),
-                        containerColor = AppColors.DialogBackground,
-                        properties = PopupProperties(focusable = false),
-                    ) {
-                        sectionMenuEntries.forEachIndexed { index, (section) ->
-                            val metadata = SearchSectionUiMetadataRegistry.metadataFor(section)
-                            if (index > 0) HorizontalDivider()
-                            DropdownMenuItem(
-                                text = { Text(stringResource(metadata.sectionLabelRes)) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = metadata.searchBarIcon,
-                                        contentDescription = null,
-                                    )
-                                },
-                                onClick = {
-                                    showSectionMenu = false
-                                    onSectionSelected(section)
-                                },
-                            )
-                        }
-                    }
+                        onDismiss = { showSectionMenu = false },
+                        onSectionSelected = { section ->
+                            showSectionMenu = false
+                            onSectionSelected(section)
+                        },
+                    )
                 }
             },
             trailingIcon = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement =
-                        Arrangement.spacedBy(DesignTokens.SpacingXSmall),
-                    modifier =
-                        Modifier.padding(end = DesignTokens.SpacingXSmall),
-                ) {
-                    if (isAliasDetected || query.isNotEmpty()) {
-                        IconButton(
-                            onClick = {
-                                if (query.isNotEmpty()) {
-                                    localInputAwaitingStateAck = null
-                                    onClearQuery()
-                                } else if (isAliasDetected) {
-                                    onClearDetectedShortcut()
-                                }
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription =
-                                    stringResource(
-                                        R.string
-                                            .desc_clear_search,
-                                    ),
-                                tint = accentColor,
-                            )
+                SearchBarTrailingIcon(
+                    showClear = isAliasDetected || query.isNotEmpty(),
+                    showSettings = showSettingsIcon,
+                    accentColor = accentColor,
+                    iconColor = searchBarIconColor,
+                    onClear = {
+                        if (query.isNotEmpty()) {
+                            localInputAwaitingStateAck = null
+                            onClearQuery()
+                        } else if (isAliasDetected) {
+                            onClearDetectedShortcut()
                         }
-                    } else if (showSettingsIcon) {
-                        IconButton(
-                            onClick = {
-                                hapticStrong(view)()
-                                if (dismissKeyboardBeforeSettingsClick) {
-                                    view.clearFocus()
-                                    keyboardController?.hide()
-                                }
-                                onSettingsClick()
-                            },
-                        ) {
-                            Icon(
-                                imageVector =
-                                    Icons.Rounded.Settings,
-                                contentDescription =
-                                    stringResource(
-                                        R.string
-                                            .desc_open_settings,
-                                    ),
-                                tint = searchBarIconColor,
-                            )
+                    },
+                    onSettings = {
+                        hapticStrong(view)()
+                        if (dismissKeyboardBeforeSettingsClick) {
+                            view.clearFocus()
+                            keyboardController?.hide()
                         }
-                    }
-                }
+                        onSettingsClick()
+                    },
+                )
             },
             keyboardOptions =
                 KeyboardOptions(
@@ -858,205 +750,17 @@ internal fun PersistentSearchBar(
                     disabledContainerColor = AppColors.AppBackgroundTransparent,
                     focusedTextColor = iconAndTextColor,
                     unfocusedTextColor = iconAndTextColor,
+                    cursorColor = if (showCursor) MaterialTheme.colorScheme.primary else Color.Transparent,
                 ),
             visualTransformation = aliasVisualTransformation,
             interactionSource = searchBarInteractionSource,
         )
 
-        val animatedAliasText = aliasMorphText
-        if (animatedAliasText != null) {
-            val progress = aliasMorphProgress.value.coerceIn(0f, 1f)
-            val scale = 1f - ((1f - AliasIconMorphEndScale) * progress)
-            Text(
-                text = animatedAliasText,
-                style = MaterialTheme.typography.titleMedium,
-                color = AppColors.LinkColor,
-                modifier =
-                    Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = AliasMorphTextStartPadding)
-                        .graphicsLayer {
-                            translationX = -aliasMorphHorizontalTravelPx * progress
-                            translationY = -aliasMorphVerticalTravelPx * progress
-                            scaleX = scale
-                            scaleY = scale
-                            alpha = 1f - progress
-                        },
-            )
-        }
+        SearchBarAliasMorphText(
+            text = aliasMorphText,
+            progress = aliasMorphProgress.value,
+            horizontalTravelPx = aliasMorphHorizontalTravelPx,
+            verticalTravelPx = aliasMorphVerticalTravelPx,
+        )
     }
-}
-
-@Composable
-private fun SearchBarLeadingIcon(
-    iconState: LeadingIconState,
-    iconTint: Color,
-) {
-    when (iconState) {
-        LeadingIconState.Calculator -> {
-            Icon(
-                imageVector = Icons.Rounded.Calculate,
-                contentDescription = stringResource(R.string.calculator_toggle_title),
-                tint = iconTint,
-                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-            )
-        }
-
-        LeadingIconState.UnitConverter -> {
-            Icon(
-                imageVector = Icons.Rounded.Straighten,
-                contentDescription = stringResource(R.string.unit_converter_info_title),
-                tint = iconTint,
-                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-            )
-        }
-
-        LeadingIconState.CurrencyConverter -> {
-            Icon(
-                imageVector = Icons.Rounded.CurrencyExchange,
-                contentDescription = stringResource(R.string.currency_converter_toggle_title),
-                tint = iconTint,
-                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-            )
-        }
-
-        LeadingIconState.WorldClock -> {
-            Icon(
-                imageVector = Icons.Rounded.AccessTime,
-                contentDescription = stringResource(R.string.world_clock_toggle_title),
-                tint = iconTint,
-                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-            )
-        }
-
-        LeadingIconState.Dictionary -> {
-            Icon(
-                imageVector = Icons.AutoMirrored.Rounded.MenuBook,
-                contentDescription = stringResource(R.string.dictionary_toggle_title),
-                tint = iconTint,
-                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-            )
-        }
-
-        LeadingIconState.Weather -> {
-            Icon(
-                imageVector = Icons.Rounded.Cloud,
-                contentDescription = stringResource(R.string.weather_toggle_title),
-                tint = iconTint,
-                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-            )
-        }
-
-        is LeadingIconState.Shortcut -> {
-            SearchTargetIcon(
-                target = iconState.target,
-                iconSize = DesignTokens.IconSize,
-                style = IconRenderStyle.ADVANCED,
-                modifier = Modifier.padding(start = DesignTokens.SpacingSmall),
-            )
-        }
-
-        is LeadingIconState.Section -> {
-            if (iconState.section == SearchSection.APP_SETTINGS) {
-                val appIconResult = rememberAppIcon(
-                    packageName = "com.tk.quicksearch",
-                    iconPackPackage = null,
-                )
-                val bitmap = appIconResult.bitmap
-                if (bitmap != null) {
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = stringResource(R.string.common_search),
-                        modifier = Modifier
-                            .padding(start = DesignTokens.SpacingSmall)
-                            .size(DesignTokens.IconSize),
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Rounded.Settings,
-                        contentDescription = stringResource(R.string.common_search),
-                        tint = iconTint,
-                        modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-                    )
-                }
-            } else {
-                Icon(
-                    imageVector =
-                        SearchSectionUiMetadataRegistry.metadataFor(iconState.section).searchBarIcon,
-                    contentDescription = stringResource(R.string.common_search),
-                    tint = iconTint,
-                    modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-                )
-            }
-        }
-
-        LeadingIconState.Search -> {
-            Icon(
-                imageVector = Icons.Rounded.Search,
-                contentDescription = stringResource(R.string.common_search),
-                tint = iconTint,
-                modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
-            )
-        }
-    }
-}
-
-private sealed interface LeadingIconState {
-    data object Search : LeadingIconState
-
-    data object Calculator : LeadingIconState
-
-    data object UnitConverter : LeadingIconState
-
-    data object CurrencyConverter : LeadingIconState
-
-    data object WorldClock : LeadingIconState
-
-    data object Dictionary : LeadingIconState
-
-    data object Weather : LeadingIconState
-
-    data class Shortcut(
-        val target: SearchTarget,
-    ) : LeadingIconState
-
-    data class Section(
-        val section: SearchSection,
-    ) : LeadingIconState
-}
-
-/**
- * The IME can send a newer composing value before the ViewModel-backed [stateQuery] has been
- * rendered. Do not replace that value with its stale prefix while it is awaiting that state
- * acknowledgment: doing so cancels the IME composition and can leave voice transcription
- * truncated. Clear actions and other external query updates continue through the normal
- * synchronization path.
- */
-internal fun shouldDeferTextFieldValueSync(
-    stateQuery: String,
-    localText: String,
-    localInputAwaitingStateAck: String?,
-): Boolean =
-    localInputAwaitingStateAck == localText &&
-        stateQuery.length < localText.length &&
-        localText.startsWith(stateQuery)
-
-private fun detectConsumedPrefixAlias(
-    previousText: String,
-    currentQuery: String,
-    activePrefixAliases: Set<String>,
-): String? {
-    if (activePrefixAliases.isEmpty()) return null
-    val queryWithNoLeadingWhitespace = previousText.trimStart()
-    if (queryWithNoLeadingWhitespace.isEmpty()) return null
-    val separatorIndex = queryWithNoLeadingWhitespace.indexOfFirst { it.isWhitespace() }
-    if (separatorIndex <= 0) return null
-
-    val aliasToken = queryWithNoLeadingWhitespace.substring(0, separatorIndex)
-    val aliasRemainder = queryWithNoLeadingWhitespace.substring(separatorIndex).trimStart()
-    if (aliasRemainder != currentQuery) return null
-
-    val normalizedAlias = aliasToken.lowercase(Locale.getDefault())
-    if (normalizedAlias !in activePrefixAliases) return null
-    return aliasToken
 }

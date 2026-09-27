@@ -1,6 +1,10 @@
 package com.tk.quicksearch.search.apps.notificationDots
 
+import android.content.BroadcastReceiver
 import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSession
@@ -8,9 +12,12 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import androidx.core.content.ContextCompat
+import com.tk.quicksearch.search.data.GlanceNotificationsStore
+import com.tk.quicksearch.search.data.preferences.BatteryPreferences
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryStore
-import com.tk.quicksearch.widgets.utils.refreshAllSearchWidgets
+import com.tk.quicksearch.widgets.utils.refreshAllWidgets
 import com.tk.quicksearch.widgets.utils.refreshMediaControlsWidgets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,34 +31,70 @@ class NotificationDotsListenerService : NotificationListenerService() {
     private val sessionCallbacks = mutableMapOf<MediaSession.Token, Pair<MediaController, MediaController.Callback>>()
     private val widgetRefreshScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
+    /** Ends a charging row dismissal on unplug, even while home is not showing to see it. */
+    private val powerDisconnectedReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                BatteryPreferences(context.applicationContext).clearChargingDismissal()
+            }
+        }
+    private var isPowerReceiverRegistered = false
+
     override fun onListenerConnected() {
         super.onListenerConnected()
         val active = runCatching { activeNotifications }.getOrNull()
         NotificationDotsStore.updateFromNotifications(active)
+        GlanceNotificationsStore.update(this, active)
         NotificationHistoryAccess.set(true)
         NotificationHistoryStore.seed(this, active)
         startMediaPlaybackMonitoring()
+        if (!isPowerReceiverRegistered) {
+            isPowerReceiverRegistered =
+                runCatching {
+                    ContextCompat.registerReceiver(
+                        this,
+                        powerDisconnectedReceiver,
+                        IntentFilter(Intent.ACTION_POWER_DISCONNECTED),
+                        ContextCompat.RECEIVER_NOT_EXPORTED,
+                    )
+                }.isSuccess
+        }
+    }
+
+    private fun unregisterPowerReceiver() {
+        if (!isPowerReceiverRegistered) return
+        runCatching { unregisterReceiver(powerDisconnectedReceiver) }
+        isPowerReceiverRegistered = false
     }
 
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
         NotificationDotsStore.clear()
+        GlanceNotificationsStore.clear()
         NotificationHistoryAccess.set(false)
         stopMediaPlaybackMonitoring()
+        unregisterPowerReceiver()
     }
 
     override fun onDestroy() {
         widgetRefreshScope.cancel()
+        unregisterPowerReceiver()
         super.onDestroy()
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        NotificationDotsStore.updateFromNotifications(runCatching { activeNotifications }.getOrNull())
+        updateActiveNotificationStores()
         NotificationHistoryStore.record(this, sbn)
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
-        NotificationDotsStore.updateFromNotifications(runCatching { activeNotifications }.getOrNull())
+        updateActiveNotificationStores()
+    }
+
+    private fun updateActiveNotificationStores() {
+        val active = runCatching { activeNotifications }.getOrNull()
+        NotificationDotsStore.updateFromNotifications(active)
+        GlanceNotificationsStore.update(this, active)
     }
 
     /**
@@ -125,7 +168,7 @@ class NotificationDotsListenerService : NotificationListenerService() {
 
     private fun refreshWidgets() {
         widgetRefreshScope.launch {
-            refreshAllSearchWidgets(this@NotificationDotsListenerService)
+            refreshAllWidgets(this@NotificationDotsListenerService)
         }
     }
 }

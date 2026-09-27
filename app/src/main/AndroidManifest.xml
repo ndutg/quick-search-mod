@@ -11,6 +11,8 @@
 
     <!-- Network Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- At a Glance hotspot row: the hotspot state broadcast and getter require it -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!-- Haptic Feedback -->
     <uses-permission android:name="android.permission.VIBRATE" />

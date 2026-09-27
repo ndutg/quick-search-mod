@@ -44,6 +44,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
+import com.tk.quicksearch.shared.ui.components.PreserveHostKeyboardStateEffect
 
 /**
  * Main permissions screen that allows users to grant optional permissions for enhanced functionality.
@@ -223,6 +224,8 @@ private fun PermissionReminderDialog(
             stringResource(R.string.settings_calendar_permission_title).takeIf { !calendarPermissionState.isGranted },
             stringResource(R.string.settings_shortcut_notification_listener).takeIf { !notificationAccessPermissionState.isGranted },
         ).joinToString(", ")
+
+    PreserveHostKeyboardStateEffect()
 
     Dialog(
         onDismissRequest = onDismiss,

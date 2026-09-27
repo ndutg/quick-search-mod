@@ -59,7 +59,7 @@ import com.tk.quicksearch.search.apps.TopResultIndicatorTopPadding
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.apps.rememberPinnedGridDragModifier
 import com.tk.quicksearch.search.core.AppIconShape
-import com.tk.quicksearch.search.data.AppShortcutRepository.rememberShortcutIcon
+import com.tk.quicksearch.search.data.appShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressDropdown
 import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressOption
@@ -81,8 +81,9 @@ private const val FolderBackdropLightWallpaperAlpha = 0.65f
 internal val FolderBackdropShape: Shape = CircleShape
 
 @Composable
-internal fun folderBackdropColor(showWallpaperBackground: Boolean): Color =
+internal fun folderBackdropColor(showWallpaperBackground: Boolean, color: Int? = null): Color =
         when {
+            color != null -> folderColorBackdrop(color, showWallpaperBackground)
             !showWallpaperBackground -> MaterialTheme.colorScheme.surfaceContainerHighest
             LocalAppIsDarkTheme.current -> Color.Black.copy(alpha = FolderBackdropDarkWallpaperAlpha)
             else -> Color.White.copy(alpha = FolderBackdropLightWallpaperAlpha)
@@ -234,6 +235,7 @@ internal fun FolderGridItem(
                             iconPackPackage = iconPackPackage,
                             appIconShape = appIconShape,
                             showWallpaperBackground = showWallpaperBackground,
+                            color = folder.color,
                     )
                 }
             }
@@ -266,6 +268,7 @@ internal fun FolderPreviewIcon(
         iconPackPackage: String?,
         appIconShape: AppIconShape,
         showWallpaperBackground: Boolean,
+        color: Int? = null,
 ) {
     val previewIconSize = iconSize * FolderPreviewIconScale
     val gap = iconSize * FolderPreviewGapScale
@@ -274,7 +277,7 @@ internal fun FolderPreviewIcon(
             modifier =
                     Modifier.size(iconSize)
                             .clip(FolderBackdropShape)
-                            .background(folderBackdropColor(showWallpaperBackground))
+                            .background(folderBackdropColor(showWallpaperBackground, color))
                             .border(
                                     width = FolderBorderWidth,
                                     color = Color.White.copy(alpha = FolderBorderAlpha),

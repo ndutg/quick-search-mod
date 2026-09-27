@@ -2,7 +2,7 @@ package com.tk.quicksearch.search.core
 
 import android.content.Context
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
-import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.filterAvailableStartupApps
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
@@ -149,6 +149,7 @@ internal object SearchViewModelInitialStateFactory {
                         it.launchCountKey() in pinnedAppKeys
                     },
                 pinnedNonAppItemOrder = startupPreferencesReader.getPinnedNonAppItemOrder(),
+                excludedOtherItemIds = startupPreferencesReader.getExcludedOtherItemIds(),
                 pinnedContacts =
                     if (hasContactPermission) {
                         cachedHome?.pinnedContacts.orEmpty().filter { it.contactId in pinnedContactIds }
@@ -299,6 +300,8 @@ internal object SearchViewModelInitialStateFactory {
                 showAllAppsButton = startupPreferencesReader.shouldShowAllAppsButton(),
                 includeNonLaunchableAppsInSearch =
                     startupPreferencesReader.shouldIncludeNonLaunchableAppsInSearch(),
+                includeArchivedAppsInSearch =
+                    startupPreferencesReader.shouldIncludeArchivedAppsInSearch(),
                 showInRecents = startupPreferencesReader.shouldShowInRecents(),
                 notificationDotsEnabled =
                     startupPreferencesReader.areNotificationDotsEnabled() &&

@@ -31,6 +31,7 @@ class FolderPreferences(
                         id = id,
                         name = folderJson.optString(KEY_NAME),
                         memberKeys = memberKeys,
+                        color = if (folderJson.has(KEY_COLOR)) folderJson.optInt(KEY_COLOR) else null,
                     ),
                 )
             }
@@ -48,7 +49,8 @@ class FolderPreferences(
                 JSONObject()
                     .put(KEY_ID, folder.id)
                     .put(KEY_NAME, folder.name)
-                    .put(KEY_MEMBERS, JSONArray(folder.memberKeys)),
+                    .put(KEY_MEMBERS, JSONArray(folder.memberKeys))
+                    .apply { folder.color?.let { put(KEY_COLOR, it) } },
             )
         }
         prefs.edit().putString(BasePreferences.KEY_APP_FOLDERS, jsonArray.toString()).apply()
@@ -58,5 +60,6 @@ class FolderPreferences(
         const val KEY_ID = "id"
         const val KEY_NAME = "name"
         const val KEY_MEMBERS = "members"
+        const val KEY_COLOR = "color"
     }
 }

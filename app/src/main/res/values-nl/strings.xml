@@ -151,6 +151,7 @@
     <string name="notification_pinned_item_type_note">Notitie</string>
     <string name="action_remove">Verwijderen</string>
     <string name="folder_name_placeholder">Mapnaam toevoegen</string>
+    <string name="folder_color_title">Mapkleur</string>
     <string name="folder_remove_from_folder">Uit map verwijderen</string>
     <string name="app_swipe_current_action">Huidige actie</string>
     <string name="app_swipe_up_picker_title">Kies actie bij omhoog vegen voor %1$s</string>
@@ -194,6 +195,7 @@
     <string name="dialog_alias_info_tool">Typ deze alias aan het begin van je zoekopdracht om de %1$s-modus te openen.</string>
     <string name="dialog_app_shortcut_icon_message">Kies een afbeelding voor \"%1$s\". Dit verandert alleen hoe de snelkoppeling wordt weergegeven in Quick Search.</string>
     <string name="dialog_cancel">Annuleren</string>
+    <string name="dialog_reset">Resetten</string>
     <string name="dialog_choose_contact_action_title">Kies een actie om %1$s te vervangen</string>
     <string name="dialog_clear_all_history_message">Weet je zeker dat je je hele zoekgeschiedenis wilt wissen? Deze actie kan niet ongedaan worden gemaakt.</string>
     <string name="dialog_clear_all_history_title">Hele geschiedenis wissen?</string>
@@ -316,6 +318,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Enter/Gereed-toets opent het beste resultaat</string>
     <string name="include_non_launchable_apps_toggle_title">Niet-startbare apps</string>
     <string name="include_non_launchable_apps_toggle_desc">Apps zonder startactiviteit opnemen in zoekresultaten.</string>
+    <string name="include_archived_apps_toggle_title">Gearchiveerde apps</string>
+    <string name="include_archived_apps_toggle_desc">Gearchiveerde apps opnemen in zoekresultaten</string>
     <string name="notification_dots_toggle_title">Meldingsstippen</string>
     <string name="notification_dots_toggle_desc">Meldingsstippen tonen op apps met meldingen</string>
     <string name="desc_notification_dot">Heeft meldingen</string>
@@ -412,9 +416,15 @@
     <string name="settings_app_shortcuts_delete_success">Snelkoppeling verwijderd.</string>
     <string name="settings_app_shortcuts_description_with_count">Tik op een app om de bijbehorende snelkoppelingen te bekijken. Schakel snelkoppelingen in, uit of voeg aangepaste snelkoppelingen toe.
 
-Beschikbare snelkoppelingen: %1$s</string>
+%1$s snelkoppelingen</string>
+    <string name="settings_app_shortcuts_description_with_enabled_count">Tik op een app om de bijbehorende snelkoppelingen te bekijken. Schakel snelkoppelingen in, uit of voeg aangepaste snelkoppelingen toe.
+
+%1$s snelkoppelingen · %2$s ingeschakeld</string>
     <string name="settings_app_shortcuts_edit_dialog_title">Snelkoppeling bewerken</string>
     <string name="settings_app_shortcuts_empty">Geen app-snelkoppelingen gevonden.</string>
+    <string name="settings_app_shortcuts_loading">Snelkoppelingen laden…</string>
+    <string name="settings_app_shortcuts_disable_all">Alle snelkoppelingen uitschakelen</string>
+    <string name="settings_app_shortcuts_card_all_disabled">Alle snelkoppelingen uitgeschakeld</string>
     <string name="settings_app_shortcuts_expand_all">Alles uitvouwen</string>
     <string name="settings_app_shortcuts_filter_all_apps">Alle apps</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Apps met snelkoppelingen</string>
@@ -842,10 +852,27 @@ Beschikbare snelkoppelingen: %1$s</string>
     <string name="settings_at_a_glance_alarms_title">Wekkers</string>
     <string name="settings_upcoming_alarm_desc">Je volgende wekker als die binnen 45 minuten afgaat</string>
     <string name="settings_hidden_alarm_apps_title">Verborgen wekker-apps</string>
-    <string name="settings_at_a_glance_events_desc">Agenda-items van vandaag</string>
+    <string name="settings_at_a_glance_events_desc">Agenda-items van vandaag, en \'s avonds de hele-dag-items van morgen</string>
     <string name="settings_upcoming_reminders_desc">Herinneringen die binnen 30 minuten verlopen of achterstallig zijn</string>
     <string name="settings_at_a_glance_low_battery_title">Batterij bijna leeg</string>
     <string name="settings_low_battery_desc">Je batterij wanneer deze op %1$d%% of lager staat</string>
+    <string name="settings_at_a_glance_timers_title">Timers &amp; stopwatch</string>
+    <string name="settings_at_a_glance_timers_desc">Lopende timers en stopwatches uit je klok-app</string>
+    <string name="settings_at_a_glance_birthdays_title">Verjaardagen</string>
+    <string name="settings_at_a_glance_birthdays_desc">Contacten die vandaag jarig zijn</string>
+    <string name="settings_at_a_glance_progress_title">Live voortgang</string>
+    <string name="settings_at_a_glance_progress_desc">Lopende meldingen met een voortgangsbalk, zoals bezorgingen en downloads</string>
+    <string name="settings_at_a_glance_charging_title">Opladen</string>
+    <string name="settings_at_a_glance_charging_desc">Batterijniveau en tijd tot vol terwijl het apparaat is aangesloten</string>
+    <string name="settings_at_a_glance_storage_title">Weinig opslagruimte</string>
+    <string name="settings_at_a_glance_storage_desc">Je opslag wanneer %1$d%% of minder vrij is</string>
+    <string name="settings_at_a_glance_missed_calls_title">Gemiste oproepen</string>
+    <string name="settings_at_a_glance_missed_calls_desc">Gemiste oproepen uit je telefoonapp</string>
+    <string name="settings_at_a_glance_ongoing_call_title">Lopende oproepen</string>
+    <string name="settings_at_a_glance_ongoing_call_desc">De beller en gespreksduur tijdens een oproep</string>
+    <string name="settings_at_a_glance_dnd_desc">Als Niet storen aan staat</string>
+    <string name="settings_at_a_glance_airplane_desc">Als vliegtuigmodus aan staat</string>
+    <string name="settings_at_a_glance_hotspot_desc">Als je hotspot aan staat</string>
     <string name="settings_now_playing_desc">Afspeelbediening voor wat er nu wordt afgespeeld</string>
     <string name="settings_use_system_font_desc">Het lettertype van je apparaat volgen</string>
     <string name="settings_use_system_font_title">Systeemlettertype gebruiken</string>
@@ -978,6 +1005,8 @@ www.google.com/search?q={{query}}</string>
 
     <string name="calculator_enter_math_expression_hint">Voer een wiskundige berekening in</string>
     <string name="calculator_invalid_or_unsupported_expression">Ongeldige of niet-ondersteunde berekening</string>
+    <string name="calculator_copy_result">Kopiëren</string>
+    <string name="calculator_use_result">Toevoegen aan zoekopdracht</string>
     <string name="calculator_toggle_desc">Resultaten voor eenvoudige wiskundige berekeningen</string>
     <string name="calculator_toggle_title">Rekenmachine</string>
     <string name="currency_converter_invalid_input">Ongeldige valuta-invoer</string>
@@ -1205,6 +1234,7 @@ www.google.com/search?q={{query}}</string>
     <string name="excluded_item_type_app_shortcut">App-snelkoppeling</string>
     <string name="excluded_item_type_app_suggestions">App (Suggesties)</string>
     <string name="excluded_item_type_setting">Instelling</string>
+    <string name="excluded_item_type_search_result">Zoekresultaat</string>
     <string name="permission_required_title">Machtiging vereist</string>
     <string name="settings_action_clear_all">Alles wissen</string>
     <string name="settings_action_move_down">Naar beneden verplaatsen</string>
@@ -1279,6 +1309,24 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="home_upcoming_alarm_hide_app">Wekkers van %1$s verbergen</string>
     <string name="home_low_battery_saver_off">Tik om Batterijbesparing aan te zetten</string>
     <string name="home_low_battery_saver_on">Batterijbesparing staat aan</string>
+    <string name="home_charged">Volledig opgeladen</string>
+    <string name="home_charging_full_in">Vol over %1$s</string>
+    <string name="home_charging_paused">Opladen gepauzeerd</string>
+    <string name="home_timer">Timer</string>
+    <string name="home_stopwatch">Stopwatch</string>
+    <string name="home_storage_almost_full">Opslag bijna vol</string>
+    <string name="home_storage_free">%1$s vrij van %2$s</string>
+    <string name="home_birthday_today">Vandaag jarig</string>
+    <string name="home_birthday_turns">Wordt vandaag %1$d</string>
+    <string name="home_missed_call">Gemiste oproep</string>
+    <string name="home_missed_calls_count">Gemiste oproepen (%1$s)</string>
+    <string name="home_missed_call_from_app">%1$s (%2$s)</string>
+    <string name="home_dnd_on">Niet storen staat aan</string>
+    <string name="home_ongoing_call">Lopende oproep</string>
+    <string name="home_ongoing_call_hang_up">Ophangen</string>
+    <string name="home_airplane_mode_on">Vliegtuigmodus staat aan</string>
+    <string name="home_hotspot_on">Hotspot staat aan</string>
+    <string name="home_turn_off">Uitzetten</string>
     <string name="settings_tavily_title">Tavily voor webzoeken</string>
     <string name="settings_tavily_desc">Voeg een Tavily API-sleutel toe om webzoeken toe te voegen aan modellen die dit niet ondersteunen.</string>
     <string name="settings_tavily_mode_always">Altijd Tavily gebruiken voor webzoekopdrachten</string>

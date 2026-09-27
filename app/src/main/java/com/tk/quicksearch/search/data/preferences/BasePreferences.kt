@@ -388,9 +388,7 @@ abstract class BasePreferences(
                     System.currentTimeMillis() - currentInstallTime <
                     FRESH_INSTALL_THRESHOLD_MS
 
-            // If this looks like a fresh install, default to true even if legacy prefs
-            // say
-            // otherwise.
+            // A fresh install defaults to true even if legacy prefs say otherwise.
             val legacyValue = prefs.getBoolean(KEY_FIRST_LAUNCH, true)
             val initialValue = if (isFreshInstall) true else legacyValue
             setFirstLaunchFlag(initialValue)
@@ -445,6 +443,7 @@ abstract class BasePreferences(
         const val KEY_APP_ICON_OVERRIDE_PREFIX = "app_icon_override_"
         const val KEY_RECENT_APP_LAUNCHES = "recent_app_launches"
         const val KEY_PINNED_NON_APP_ITEM_ORDER = "pinned_non_app_item_order"
+        const val KEY_EXCLUDED_OTHER_ITEMS = "excluded_other_items"
         const val KEY_APP_FOLDERS = "app_folders"
 
         // Contact preferences keys

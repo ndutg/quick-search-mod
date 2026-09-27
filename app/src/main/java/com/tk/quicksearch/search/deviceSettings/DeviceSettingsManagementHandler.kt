@@ -4,7 +4,7 @@ import com.tk.quicksearch.search.core.GenericManagementHandler
 import com.tk.quicksearch.search.core.ManagementHandler
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SettingsManagementConfig
-import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -22,7 +22,6 @@ class DeviceSettingsManagementHandler(
         onStateChanged,
         onUiStateUpdate,
     ) {
-    // Convenience methods that delegate to the interface
     fun pinSetting(setting: DeviceSetting) = pinItem(setting)
 
     fun unpinSetting(setting: DeviceSetting) = unpinItem(setting)

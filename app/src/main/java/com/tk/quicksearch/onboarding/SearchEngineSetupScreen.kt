@@ -32,7 +32,7 @@ import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.settings.searchEnginesScreen.SearchEngines
+import com.tk.quicksearch.settings.searchEngineSettings.SearchEngines
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import kotlinx.coroutines.delay
 
@@ -134,9 +134,9 @@ fun SearchEngineSetupScreen(
                 },
                 showTitle = false, // We have our own title
                 showAddSearchEngineButton = false,
-                geminiModel = uiState.geminiModel,
-                geminiGroundingEnabled = uiState.geminiGroundingEnabled,
-                availableGeminiModels = uiState.availableGeminiModels,
+                activeLlmModel = uiState.activeLlmModel,
+                activeLlmGroundingEnabled = uiState.activeLlmGroundingEnabled,
+                activeLlmAvailableModels = uiState.activeLlmAvailableModels,
                 modifier = Modifier.fillMaxWidth(),
             )
 

@@ -1,4 +1,4 @@
-package com.tk.quicksearch.widgets.WidgetConfigScreen.components
+package com.tk.quicksearch.widgets.widgetConfigScreen.components
 
 import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.Canvas
@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,6 +54,8 @@ fun WidgetColorPickerDialog(
     onDismiss: () -> Unit,
     onConfirm: (Color) -> Unit,
     title: String = stringResource(R.string.widget_background_color_custom_dialog_title),
+    /** When set, Reset replaces Cancel and a close icon dismisses the dialog. */
+    onReset: (() -> Unit)? = null,
 ) {
     val initialHsv = remember(initialColor) { initialColor.toHsv() }
     var hue by rememberSaveable(initialColor.toArgb()) { mutableFloatStateOf(initialHsv[0]) }
@@ -59,7 +65,21 @@ fun WidgetColorPickerDialog(
 
     AppAlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = title) },
+        title = {
+            if (onReset == null) {
+                Text(text = title)
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = title, modifier = Modifier.weight(1f))
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = stringResource(R.string.common_close),
+                        )
+                    }
+                }
+            }
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge)) {
                 SaturationBrightnessPicker(
@@ -104,8 +124,14 @@ fun WidgetColorPickerDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
+            if (onReset == null) {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.dialog_cancel))
+                }
+            } else {
+                TextButton(onClick = onReset) {
+                    Text(stringResource(R.string.dialog_reset))
+                }
             }
         },
     )

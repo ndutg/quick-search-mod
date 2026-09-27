@@ -103,6 +103,7 @@ fun AppBottomPopup(
     val offsetY = remember { Animatable(0f) }
     val coroutineScope = rememberCoroutineScope()
     val dismissThresholdPx = with(LocalDensity.current) { 150.dp.toPx() }
+    PreserveHostKeyboardStateEffect()
 
     Dialog(
         onDismissRequest = onDismiss,

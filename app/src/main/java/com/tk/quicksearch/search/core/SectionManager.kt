@@ -1,6 +1,6 @@
 package com.tk.quicksearch.search.core
 
-import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,10 +36,6 @@ class SectionManager(
                 } else {
                     permissionManager.disableSection(section, disabledSections)
                 }
-
-            if (!enabled) {
-                // Note: Permission refresh logic would be handled by the caller
-            }
 
             onStateUpdate { state -> state.copy(disabledSections = disabledSections) }
         }
