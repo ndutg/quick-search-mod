@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,9 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.reminders.ReminderEditorRequests
+import com.tk.quicksearch.search.appSettings.AppSettingsDestination
+import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
+import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
@@ -21,7 +26,9 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
  * One row of the home At a Glance card. Today's calendar events are hosted by the calendar card
- * itself; every other glanceable source (low battery, media, alarm, reminders, and future ones) contributes rows here.
+ * itself; every other glanceable source (ongoing calls, battery, missed calls, Do Not Disturb,
+ * airplane mode, hotspot, timers, progress notifications, alarm, reminders, birthdays, tomorrow's
+ * events, storage, and future ones) contributes rows here.
  * Rows sit inside the card's inset and follow CalendarEventRow: 7dp before a 24dp icon, then 12dp
  * to the text.
  */
@@ -39,13 +46,39 @@ internal class AtAGlanceItem(
 internal fun rememberAtAGlanceItems(
     enabled: Boolean,
     reversed: Boolean,
+    onShowContactMethods: (ContactInfo) -> Unit,
 ): List<AtAGlanceItem> {
-    val lowBattery = rememberLowBatteryGlance(enabled)
+    val battery = rememberBatteryGlances(enabled)
+    val notifications = rememberNotificationGlances(enabled)
     val alarm = rememberUpcomingAlarmGlance(enabled)
     val reminders = rememberUpcomingRemindersGlance(enabled)
+    val birthdays = rememberBirthdaysGlance(enabled, onShowContactMethods)
+    val lowStorage = rememberLowStorageGlance(enabled)
+    val doNotDisturb = rememberDoNotDisturbGlance(enabled)
+    val airplaneMode = rememberAirplaneModeGlance(enabled)
+    val hotspot = rememberHotspotGlance(enabled)
+    val tomorrowEvents = rememberTomorrowEventsGlance(enabled)
     val groups =
         listOf(
-            listOfNotNull(lowBattery?.let { AtAGlanceItem(key = "low-battery") { LowBatteryRow(it) } }),
+            notifications.ongoingCalls.map { call ->
+                AtAGlanceItem(key = "ongoing-call-${call.key}") { OngoingCallRow(call, notifications.nowMillis) }
+            },
+            listOfNotNull(battery.lowBattery?.let { AtAGlanceItem(key = "low-battery") { LowBatteryRow(it) } }),
+            listOfNotNull(battery.charging?.let { AtAGlanceItem(key = "charging") { ChargingRow(it) } }),
+            listOfNotNull(
+                notifications.missedCalls.takeIf { it.isNotEmpty() }?.let { calls ->
+                    AtAGlanceItem(key = "missed-calls") { MissedCallsRow(calls, notifications.dismissMissedCalls) }
+                },
+            ),
+            listOfNotNull(doNotDisturb?.let { AtAGlanceItem(key = "do-not-disturb") { DoNotDisturbRow(it) } }),
+            listOfNotNull(airplaneMode?.let { AtAGlanceItem(key = "airplane-mode") { AirplaneModeRow(it) } }),
+            listOfNotNull(hotspot?.let { AtAGlanceItem(key = "hotspot") { HotspotRow(it) } }),
+            notifications.timers.map { timer ->
+                AtAGlanceItem(key = "timer-${timer.key}") { TimerRow(timer, notifications.nowMillis) }
+            },
+            notifications.progress.map { progress ->
+                AtAGlanceItem(key = "progress-${progress.key}") { ProgressNotificationRow(progress) }
+            },
             listOfNotNull(alarm?.let { AtAGlanceItem(key = "alarm") { UpcomingAlarmRow(it) } }),
             reminders.reminders.map { reminder ->
                 AtAGlanceItem(key = "reminder-${reminder.reminderId}") {
@@ -59,6 +92,25 @@ internal fun rememberAtAGlanceItems(
                     )
                 }
             },
+            birthdays.birthdays.map { birthday ->
+                AtAGlanceItem(key = "birthday-${birthday.contactId}") {
+                    BirthdayRow(
+                        birthday = birthday,
+                        onClick = { birthdays.open(birthday) },
+                        onDismiss = { birthdays.dismiss(birthday) },
+                    )
+                }
+            },
+            tomorrowEvents.events.map { event ->
+                AtAGlanceItem(key = "tomorrow-event-${event.eventId}") {
+                    TomorrowEventRow(
+                        event = event,
+                        onClick = { tomorrowEvents.open(event) },
+                        onDismiss = { tomorrowEvents.dismiss(event) },
+                    )
+                }
+            },
+            listOfNotNull(lowStorage?.let { AtAGlanceItem(key = "low-storage") { LowStorageRow(it) } }),
         )
     return (if (reversed) groups.asReversed() else groups).flatten()
 }
@@ -88,13 +140,20 @@ internal fun AtAGlanceRows(
     }
 }
 
+/** Tapping the title opens the At a Glance settings. */
 @Composable
 internal fun AtAGlanceTitle() {
+    val openAppSettingDestination = LocalOpenAppSettingDestination.current
     Text(
         text = stringResource(R.string.settings_at_a_glance_title),
         style = MaterialTheme.typography.titleSmall,
         color = homeTextColor(),
-        modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+        modifier =
+            Modifier
+                .padding(horizontal = DesignTokens.SpacingLarge)
+                .clickable(enabled = openAppSettingDestination != null, role = Role.Button) {
+                    openAppSettingDestination?.invoke(AppSettingsDestination.AT_A_GLANCE)
+                },
     )
 }
 

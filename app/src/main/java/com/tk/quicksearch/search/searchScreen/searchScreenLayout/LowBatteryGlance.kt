@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.os.Build
 import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.Settings
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -56,42 +58,110 @@ internal class LowBatteryGlance(
     val open: () -> Unit,
 )
 
+/** The low battery and charging rows share one battery listener; each is null while it has nothing to show. */
+internal class BatteryGlances(
+    val lowBattery: LowBatteryGlance?,
+    val charging: ChargingGlance?,
+)
+
 private data class BatteryStatus(
     val percent: Int,
     val isCharging: Boolean,
+    val isPlugged: Boolean,
+    val isFull: Boolean,
+    /** Plugged in but held below full, such as by a charge limit or while the battery is hot. */
+    val isPaused: Boolean,
+    /** Estimated time to a full charge, or null when unknown or not charging. */
+    val chargeTimeRemainingMillis: Long?,
 ) {
     val isLow: Boolean get() = !isCharging && percent <= LOW_BATTERY_THRESHOLD_PERCENT
 
     companion object {
-        fun from(intent: Intent?): BatteryStatus? {
+        fun from(
+            intent: Intent?,
+            batteryManager: BatteryManager?,
+        ): BatteryStatus? {
             intent ?: return null
             val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
             val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
             if (level < 0 || scale <= 0) return null
             val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
             val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
+            val percent = level * 100 / scale
+            val systemEstimate =
+                if (plugged != 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    runCatching { batteryManager?.computeChargeTimeRemaining() }.getOrNull()?.takeIf { it > 0L }
+                } else {
+                    null
+                }
+            val observedEstimate = ChargeRateEstimator.update(percent = percent, isPlugged = plugged != 0)
+            val remaining = systemEstimate ?: observedEstimate
             return BatteryStatus(
-                percent = level * 100 / scale,
+                percent = percent,
                 isCharging =
                     plugged != 0 ||
                         status == BatteryManager.BATTERY_STATUS_CHARGING ||
                         status == BatteryManager.BATTERY_STATUS_FULL,
+                isPlugged = plugged != 0,
+                isFull = status == BatteryManager.BATTERY_STATUS_FULL || percent >= 100,
+                isPaused = plugged != 0 && status == BatteryManager.BATTERY_STATUS_NOT_CHARGING && percent < 100,
+                chargeTimeRemainingMillis = remaining,
             )
         }
     }
 }
 
-/** Listens to the battery broadcast while [enabled] and the toggle is on. */
+/**
+ * Estimates time to full from the charge rate seen so far, for devices where
+ * [BatteryManager.computeChargeTimeRemaining] never returns an estimate. The rate is measured from
+ * the first percent step seen while plugged in, so it needs at least two steps. It lives for the
+ * process rather than the composition, which is torn down whenever home is left.
+ */
+private object ChargeRateEstimator {
+    private var lastPercent = -1
+    private var anchorPercent = -1
+    private var anchorMillis = 0L
+
+    fun update(
+        percent: Int,
+        isPlugged: Boolean,
+    ): Long? {
+        if (!isPlugged || percent >= 100) {
+            lastPercent = -1
+            anchorPercent = -1
+            return null
+        }
+        val now = SystemClock.elapsedRealtime()
+        when {
+            lastPercent < 0 -> Unit
+            percent < lastPercent -> anchorPercent = -1
+            percent > lastPercent && anchorPercent < 0 -> {
+                anchorPercent = percent
+                anchorMillis = now
+            }
+        }
+        lastPercent = percent
+        if (anchorPercent < 0 || percent <= anchorPercent) return null
+        val millisPerPercent = (now - anchorMillis) / (percent - anchorPercent)
+        return millisPerPercent * (100 - percent)
+    }
+}
+
+/** Listens to the battery broadcast while [enabled] and either battery row is turned on. */
 @Composable
-internal fun rememberLowBatteryGlance(enabled: Boolean): LowBatteryGlance? {
+internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
     val context = LocalContext.current
     val appContext = context.applicationContext
     val lifecycleOwner = LocalLifecycleOwner.current
     val preferences = remember(appContext) { BatteryPreferences(appContext) }
     val powerManager = remember(appContext) { appContext.getSystemService(PowerManager::class.java) }
+    val batteryManager = remember(appContext) { appContext.getSystemService(BatteryManager::class.java) }
     var refreshKey by remember { mutableIntStateOf(0) }
     var battery by remember { mutableStateOf<BatteryStatus?>(null) }
     var isPowerSaveOn by remember { mutableStateOf(false) }
+    var showLowBattery by remember { mutableStateOf(false) }
+    var showCharging by remember { mutableStateOf(false) }
+    var chargingDismissedPercent by remember { mutableStateOf<Int?>(null) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -102,12 +172,25 @@ internal fun rememberLowBatteryGlance(enabled: Boolean): LowBatteryGlance? {
     }
 
     DisposableEffect(appContext, enabled, refreshKey) {
-        if (!enabled || !preferences.isShowLowBatteryEnabled()) {
+        showLowBattery = preferences.isShowLowBatteryEnabled()
+        showCharging = preferences.isShowChargingEnabled()
+        if (!enabled || (!showLowBattery && !showCharging)) {
             battery = null
             return@DisposableEffect onDispose {}
         }
         fun updateBattery(intent: Intent?) {
-            battery = BatteryStatus.from(intent) ?: return
+            val status = BatteryStatus.from(intent, batteryManager) ?: return
+            battery = status
+            // A dismissed charging row stays hidden until the phone is unplugged. A lower level
+            // than at dismissal means it was unplugged while home was not showing.
+            val dismissedPercent = preferences.getChargingDismissedPercent()
+            chargingDismissedPercent =
+                if (dismissedPercent != null && (!status.isPlugged || status.percent < dismissedPercent)) {
+                    preferences.clearChargingDismissal()
+                    null
+                } else {
+                    dismissedPercent
+                }
         }
         fun updatePowerSave() {
             isPowerSaveOn = runCatching { powerManager?.isPowerSaveMode }.getOrNull() == true
@@ -135,21 +218,51 @@ internal fun rememberLowBatteryGlance(enabled: Boolean): LowBatteryGlance? {
         onDispose { runCatching { appContext.unregisterReceiver(receiver) } }
     }
 
-    val current = battery?.takeIf { it.isLow } ?: return null
-    return LowBatteryGlance(
-        percent = current.percent,
-        isPowerSaveOn = isPowerSaveOn,
-        open = { openBatterySettings(context) },
+    val current = battery
+    return BatteryGlances(
+        lowBattery =
+            current?.takeIf { showLowBattery && it.isLow }?.let {
+                LowBatteryGlance(
+                    percent = it.percent,
+                    isPowerSaveOn = isPowerSaveOn,
+                    open = { openBatterySettings(context) },
+                )
+            },
+        charging =
+            current?.takeIf { showCharging && it.isPlugged && chargingDismissedPercent == null }?.let {
+                ChargingGlance(
+                    percent = it.percent,
+                    isFull = it.isFull,
+                    isPaused = it.isPaused,
+                    timeToFullMillis = it.chargeTimeRemainingMillis,
+                    open = { openBatteryUsage(context) },
+                    dismiss = {
+                        preferences.dismissCharging(it.percent)
+                        chargingDismissedPercent = it.percent
+                    },
+                )
+            },
     )
 }
 
 private fun openBatterySettings(context: Context) {
-    val intents =
-        listOf(
-            Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS),
-            Intent(Intent.ACTION_POWER_USAGE_SUMMARY),
-            Intent(Settings.ACTION_SETTINGS),
-        )
+    openFirstAvailable(
+        context,
+        Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS),
+        Intent(Intent.ACTION_POWER_USAGE_SUMMARY),
+        Intent(Settings.ACTION_SETTINGS),
+    )
+}
+
+private fun openBatteryUsage(context: Context) {
+    openFirstAvailable(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY), Intent(Settings.ACTION_SETTINGS))
+}
+
+/** Starts the first of [intents] that resolves, for settings screens that vary by device. */
+internal fun openFirstAvailable(
+    context: Context,
+    vararg intents: Intent,
+) {
     intents.firstOrNull { intent ->
         runCatching { context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess
     }

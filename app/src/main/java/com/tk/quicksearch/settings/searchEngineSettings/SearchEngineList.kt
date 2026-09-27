@@ -1,4 +1,4 @@
-package com.tk.quicksearch.settings.searchEnginesScreen
+package com.tk.quicksearch.settings.searchEngineSettings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -52,6 +52,9 @@ import com.tk.quicksearch.searchEngines.getDisplayName
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.searchEngines.shared.IconRenderStyle
 import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
+import com.tk.quicksearch.settings.searchEngineSettings.dialogs.AddSearchEngineCard
+import com.tk.quicksearch.settings.searchEngineSettings.dialogs.EditAmazonDomainDialog
+import com.tk.quicksearch.settings.searchEngineSettings.dialogs.EditCustomSearchEngineDialog
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -467,7 +470,6 @@ private fun SearchEngineRowContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
     ) {
-        // Drag handle - long press to drag
         if (showToggle && allowDrag && dragHandleModifier != null) {
             Icon(
                 imageVector = Icons.Rounded.DragHandle,
@@ -486,7 +488,6 @@ private fun SearchEngineRowContent(
             style = IconRenderStyle.ADVANCED,
         )
 
-        // Engine name and details
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.TextColumnSpacing),
@@ -526,7 +527,6 @@ private fun SearchEngineRowContent(
             }
         }
 
-        // Context menu for move actions
         if (onMoveToTop != null || onMoveToBottom != null) {
             Box {
                 DropdownMenu(
@@ -574,7 +574,6 @@ private fun SearchEngineRowContent(
             }
         }
 
-        // Toggle switch
         if (showToggle) {
             Switch(
                 checked = isEnabled,

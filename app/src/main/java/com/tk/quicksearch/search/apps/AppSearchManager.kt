@@ -5,7 +5,7 @@ import android.os.SystemClock
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.AppCatalogChange
 import com.tk.quicksearch.search.data.AppsRepository
-import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.applyCatalogRemoval
 import com.tk.quicksearch.search.fuzzy.FuzzySearchConfig
 import com.tk.quicksearch.search.models.AppInfo
@@ -105,6 +105,7 @@ class AppSearchManager(
         runCatching {
             repository.loadLaunchableApps(
                 includeNonLaunchableApps = userPreferences.shouldIncludeNonLaunchableAppsInSearch(),
+                includeArchivedApps = userPreferences.shouldIncludeArchivedAppsInSearch(),
                 launchCounts = launchCounts,
             )
         }
@@ -271,6 +272,7 @@ class AppSearchManager(
             hidden.contains(app.launchCountKey()) ||
                 hidden.contains(app.packageName) ||
                 !app.hasLaunchIntent ||
+                app.isArchived ||
                 app.packageName == currentPackageName ||
                 app.packageName == defaultLauncherPackageName
         }

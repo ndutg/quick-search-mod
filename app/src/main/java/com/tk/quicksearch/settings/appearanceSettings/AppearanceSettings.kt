@@ -1,4 +1,4 @@
-package com.tk.quicksearch.settings.settingsDetailScreen
+package com.tk.quicksearch.settings.appearanceSettings
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -25,20 +25,15 @@ import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.AppTheme
-import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
-import com.tk.quicksearch.settings.AppearanceSettings.FontSizeCard
-import com.tk.quicksearch.settings.AppearanceSettings.IconPackPickerDialog
-import com.tk.quicksearch.settings.AppearanceSettings.AppIconCard
-import com.tk.quicksearch.settings.AppearanceSettings.AppLauncherIconCard
-import com.tk.quicksearch.settings.AppearanceSettings.AppThemeCard
-import com.tk.quicksearch.settings.AppearanceSettings.WallpaperCard
+import com.tk.quicksearch.settings.settingsDetailScreen.PriorityReorderDialog
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
-import com.tk.quicksearch.settings.searchEnginesScreen.SearchEngineAppearanceCard
+import com.tk.quicksearch.settings.searchEngineSettings.SearchEngineAppearanceCard
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -220,7 +215,6 @@ fun AppearanceSettingsSection(
         Spacer(modifier = Modifier.height(16.dp))
 
         if (hasEnabledSearchEngines) {
-            // Search Engine Style Card
             SearchEngineAppearanceCard(
                     isSearchEngineCompactMode = isSearchEngineCompactMode,
                     onToggleSearchEngineCompactMode = onToggleSearchEngineCompactMode,
@@ -231,7 +225,6 @@ fun AppearanceSettingsSection(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // One-Handed Mode and Search Bar Card
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             Column {
                 SettingsToggleRow(
@@ -277,7 +270,6 @@ fun AppearanceSettingsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Pinned Items Card
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             Column {
                 SettingsToggleRow(
@@ -317,7 +309,6 @@ fun AppearanceSettingsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // App Grid Columns, App Labels, and Icon Pack Card
         AppIconCard(
                 showAppLabels = showAppLabels,
                 onToggleAppLabels = onToggleAppLabels,
@@ -361,7 +352,6 @@ fun AppearanceSettingsSection(
         )
     }
 
-    // Icon Pack Picker Dialog
     if (showIconPackDialog) {
         IconPackPickerDialog(
                 availableIconPacks = availableIconPacks,

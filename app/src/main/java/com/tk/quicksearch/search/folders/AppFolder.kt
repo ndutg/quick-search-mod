@@ -1,7 +1,8 @@
 package com.tk.quicksearch.search.folders
 
-import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
+import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.appShortcutRepository.isShortcutDisabled
+import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.models.AppInfo
 
 private const val APP_MEMBER_PREFIX = "APP:"
@@ -15,6 +16,8 @@ data class AppFolder(
     val id: String,
     val name: String = "",
     val memberKeys: List<String> = emptyList(),
+    /** User-picked ARGB color, or null for the default backdrop. Shown as a theme-adjusted tone. */
+    val color: Int? = null,
 ) {
     val gridKey: String get() = folderGridKey(id)
 }
@@ -39,6 +42,7 @@ data class ResolvedAppFolder(
 ) {
     val id: String get() = folder.id
     val name: String get() = folder.name
+    val color: Int? get() = folder.color
 }
 
 fun appFolderMemberKey(app: AppInfo): String = "$APP_MEMBER_PREFIX${app.launchCountKey()}"
@@ -106,7 +110,7 @@ fun resolveAppFolders(
     val appsByKey = apps.associateBy { appFolderMemberKey(it) }
     val shortcutsByKey =
         shortcuts
-            .filterNot { disabledShortcutIds.contains(shortcutKey(it)) }
+            .filterNot { isShortcutDisabled(it, disabledShortcutIds) }
             .associateBy { appFolderMemberKey(it) }
     return folders.mapNotNull { folder ->
         val members =

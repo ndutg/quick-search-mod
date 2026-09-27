@@ -81,6 +81,12 @@ object PermissionHelper {
             Manifest.permission.CALL_PHONE,
         ) == PackageManager.PERMISSION_GRANTED
 
+    fun checkContactsPermission(context: Context): Boolean =
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.READ_CONTACTS,
+        ) == PackageManager.PERMISSION_GRANTED
+
     fun checkCalendarPermission(context: Context): Boolean =
         ContextCompat.checkSelfPermission(
             context,

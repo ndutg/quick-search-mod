@@ -1,12 +1,13 @@
-package com.tk.quicksearch.settings.shared
+package com.tk.quicksearch.settings.shared.settingsRoute
 
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SearchViewModel
-import com.tk.quicksearch.search.data.AppShortcutRepository.SearchTargetShortcutMode
+import com.tk.quicksearch.search.data.appShortcutRepository.SearchTargetShortcutMode
 import com.tk.quicksearch.searchEngines.AliasHandler
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
-import com.tk.quicksearch.settings.AppShortcutsSettings.AppShortcutSource
+import com.tk.quicksearch.settings.appShortcutsSettings.AppShortcutSource
+import com.tk.quicksearch.settings.shared.applySettingsCommand
 
 internal data class SettingsRouteHandlers(
     val onBack: () -> Unit,
@@ -47,6 +48,7 @@ internal fun buildSettingsScreenCallbacks(
         onRemoveExcludedFile = viewModel::removeExcludedFile,
         onRemoveExcludedSetting = viewModel::removeExcludedSetting,
         onRemoveExcludedAppShortcut = viewModel::removeExcludedAppShortcut,
+        onRemoveExcludedOtherItem = viewModel::removeExcludedOtherSearchItem,
         onClearAllExclusions = viewModel::clearAllExclusions,
         onToggleSearchEngine = viewModel::setSearchTargetEnabled,
         onReorderSearchEngines = viewModel::reorderSearchTargets,
@@ -147,19 +149,20 @@ internal fun buildSettingsScreenCallbacks(
         onSetAccentColorMode = viewModel::setAccentColorMode,
         onSetCustomAccentColor = viewModel::setCustomAccentColorArgb,
         onToggleRecentQueries = viewModel::setRecentQueriesEnabled,
-        onSetGeminiApiKey = viewModel::setGeminiApiKey,
+        onSetLlmApiKeyForDetectedProvider = viewModel::setLlmApiKeyForDetectedProvider,
         onSetLlmApiKey = viewModel::setLlmApiKey,
         onAddCustomLlmProvider = viewModel::addCustomLlmProvider,
         onSetPersonalContext = viewModel::setPersonalContext,
-        onSetGeminiModel = viewModel::setGeminiModel,
+        onSetActiveLlmModel = viewModel::setActiveLlmModel,
         onSetLlmModel = viewModel::setLlmModel,
         onSetCustomLlmAdvancedPayload = viewModel::setCustomLlmAdvancedPayload,
         onSetAiToolSettings = viewModel::setAiBackedToolSettings,
-        onSetGeminiGroundingEnabled = viewModel::setGeminiGroundingEnabled,
-        onSetGeminiThinkingEnabled = viewModel::setGeminiThinkingEnabled,
-        onRefreshAvailableGeminiModels = viewModel::refreshAvailableGeminiModels,
+        onSetActiveLlmGroundingEnabled = viewModel::setActiveLlmGroundingEnabled,
+        onSetActiveLlmThinkingEnabled = viewModel::setActiveLlmThinkingEnabled,
+        onRefreshAvailableLlmModels = viewModel::refreshAvailableLlmModels,
         onOpenAiSearchConfigure = handlers.onOpenAiSearchConfigure,
         onToggleAppShortcutEnabled = viewModel::setAppShortcutEnabled,
+        onToggleAllAppShortcutsEnabled = viewModel::setAllAppShortcutsEnabled,
         onLaunchAppShortcut = viewModel::launchAppShortcut,
         onOpenAddAppShortcutDialog = handlers.onOpenAddAppShortcutDialog,
         onAddAppShortcutFromSource = handlers.onAddAppShortcutFromSource,

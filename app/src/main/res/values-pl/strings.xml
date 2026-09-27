@@ -148,6 +148,7 @@
     <string name="notification_pinned_item_type_note">Notatka</string>
     <string name="action_remove">Usuń</string>
     <string name="folder_name_placeholder">Dodaj nazwę folderu</string>
+    <string name="folder_color_title">Kolor folderu</string>
     <string name="folder_remove_from_folder">Usuń z folderu</string>
     <string name="app_swipe_current_action">Bieżące działanie</string>
     <string name="app_swipe_up_picker_title">Wybierz działanie gestu w górę dla %1$s</string>
@@ -191,6 +192,7 @@
     <string name="dialog_alias_info_tool">Wpisz ten alias na początku zapytania, aby przejść do trybu %1$s.</string>
     <string name="dialog_app_shortcut_icon_message">Wybierz obraz dla "%1$s". Zmienia to tylko wygląd skrótu w Quick Search.</string>
     <string name="dialog_cancel">Anuluj</string>
+    <string name="dialog_reset">Resetuj</string>
     <string name="dialog_choose_contact_action_title">Wybierz działanie zastępujące %1$s</string>
     <string name="dialog_clear_all_history_message">Czy na pewno chcesz wyczyścić całą historię wyszukiwania? Tej operacji nie można cofnąć.</string>
     <string name="dialog_clear_all_history_title">Wyczyścić całą historię?</string>
@@ -309,6 +311,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">Klawisz Enter/Gotowe na klawiaturze otworzy najlepszy wynik</string>
     <string name="include_non_launchable_apps_toggle_title">Aplikacje bez widoku uruchamiania</string>
     <string name="include_non_launchable_apps_toggle_desc">Uwzględniaj w wynikach wyszukiwania aplikacje, które nie mają aktywności uruchamiania.</string>
+    <string name="include_archived_apps_toggle_title">Zarchiwizowane aplikacje</string>
+    <string name="include_archived_apps_toggle_desc">Uwzględniaj zarchiwizowane aplikacje w wynikach wyszukiwania</string>
     <string name="notification_dots_toggle_title">Kropki powiadomień</string>
     <string name="notification_dots_toggle_desc">Pokazuj kropki powiadomień na aplikacjach, które mają powiadomienia</string>
     <string name="desc_notification_dot">Ma powiadomienia</string>
@@ -403,9 +407,15 @@
     <string name="settings_app_shortcuts_delete_success">Usunięto skrót.</string>
     <string name="settings_app_shortcuts_description_with_count">Dotknij dowolnej aplikacji, aby wyświetlić jej skróty. Włączaj, wyłączaj lub dodawaj własne skróty.
 
-Dostępne skróty: %1$s</string>
+%1$s skrótów</string>
+    <string name="settings_app_shortcuts_description_with_enabled_count">Dotknij dowolnej aplikacji, aby wyświetlić jej skróty. Włączaj, wyłączaj lub dodawaj własne skróty.
+
+%1$s skrótów · %2$s włączonych</string>
     <string name="settings_app_shortcuts_edit_dialog_title">Edytuj skrót</string>
     <string name="settings_app_shortcuts_empty">Nie znaleziono skrótów aplikacji.</string>
+    <string name="settings_app_shortcuts_loading">Wczytywanie skrótów…</string>
+    <string name="settings_app_shortcuts_disable_all">Wyłącz wszystkie skróty</string>
+    <string name="settings_app_shortcuts_card_all_disabled">Wszystkie skróty wyłączone</string>
     <string name="settings_app_shortcuts_expand_all">Rozwiń wszystko</string>
     <string name="settings_app_shortcuts_filter_all_apps">Wszystkie aplikacje</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Aplikacje ze skrótami</string>
@@ -837,10 +847,27 @@ Dostępne skróty: %1$s</string>
     <string name="settings_at_a_glance_alarms_title">Alarmy</string>
     <string name="settings_upcoming_alarm_desc">Następny alarm, gdy zadzwoni w ciągu 45 minut</string>
     <string name="settings_hidden_alarm_apps_title">Ukryte aplikacje z alarmami</string>
-    <string name="settings_at_a_glance_events_desc">Dzisiejsze wydarzenia w kalendarzu</string>
+    <string name="settings_at_a_glance_events_desc">Dzisiejsze wydarzenia w kalendarzu, a wieczorem jutrzejsze wydarzenia całodniowe</string>
     <string name="settings_upcoming_reminders_desc">Przypomnienia przypadające w ciągu 30 minut lub zaległe</string>
     <string name="settings_at_a_glance_low_battery_title">Niski poziom baterii</string>
     <string name="settings_low_battery_desc">Bateria, gdy ma %1$d%% lub mniej</string>
+    <string name="settings_at_a_glance_timers_title">Minutniki i stoper</string>
+    <string name="settings_at_a_glance_timers_desc">Uruchomione minutniki i stopery z aplikacji zegara</string>
+    <string name="settings_at_a_glance_birthdays_title">Urodziny</string>
+    <string name="settings_at_a_glance_birthdays_desc">Kontakty, które mają dziś urodziny</string>
+    <string name="settings_at_a_glance_progress_title">Postęp na żywo</string>
+    <string name="settings_at_a_glance_progress_desc">Bieżące powiadomienia z paskiem postępu, np. dostawy i pobierania</string>
+    <string name="settings_at_a_glance_charging_title">Ładowanie</string>
+    <string name="settings_at_a_glance_charging_desc">Poziom baterii i czas do pełnego naładowania podczas ładowania</string>
+    <string name="settings_at_a_glance_storage_title">Mało miejsca</string>
+    <string name="settings_at_a_glance_storage_desc">Pamięć, gdy wolne jest %1$d%% lub mniej</string>
+    <string name="settings_at_a_glance_missed_calls_title">Nieodebrane połączenia</string>
+    <string name="settings_at_a_glance_missed_calls_desc">Nieodebrane połączenia z aplikacji Telefon</string>
+    <string name="settings_at_a_glance_ongoing_call_title">Trwające połączenia</string>
+    <string name="settings_at_a_glance_ongoing_call_desc">Rozmówca i czas trwania podczas połączenia</string>
+    <string name="settings_at_a_glance_dnd_desc">Gdy tryb Nie przeszkadzać jest włączony</string>
+    <string name="settings_at_a_glance_airplane_desc">Gdy tryb samolotowy jest włączony</string>
+    <string name="settings_at_a_glance_hotspot_desc">Gdy hotspot jest włączony</string>
     <string name="settings_now_playing_desc">Sterowanie odtwarzaniem tego, co jest aktualnie odtwarzane</string>
     <string name="settings_use_system_font_desc">Używaj czcionki systemowej urządzenia</string>
     <string name="settings_use_system_font_title">Użyj czcionki systemowej</string>
@@ -967,6 +994,8 @@ www.google.com/search?q={{query}}</string>
          ============================================================================ -->
     <string name="calculator_enter_math_expression_hint">Wpisz wyrażenie matematyczne</string>
     <string name="calculator_invalid_or_unsupported_expression">Nieprawidłowe lub nieobsługiwane wyrażenie</string>
+    <string name="calculator_copy_result">Kopiuj</string>
+    <string name="calculator_use_result">Dodaj do wyszukiwania</string>
     <string name="calculator_toggle_desc">Wyniki dla podstawowych wyrażeń matematycznych</string>
     <string name="calculator_toggle_title">Kalkulator</string>
     <string name="currency_converter_invalid_input">Nieprawidłowe dane przeliczania walut</string>
@@ -1186,6 +1215,7 @@ www.google.com/search?q={{query}}</string>
     <string name="excluded_item_type_app_shortcut">Skrót aplikacji</string>
     <string name="excluded_item_type_app_suggestions">Aplikacja (Sugestie)</string>
     <string name="excluded_item_type_setting">Ustawienie</string>
+    <string name="excluded_item_type_search_result">Wynik wyszukiwania</string>
     <string name="permission_required_title">Wymagane uprawnienie</string>
     <string name="settings_action_clear_all">Wyczyść wszystko</string>
     <string name="settings_action_move_down">Przenieś na dół</string>
@@ -1251,6 +1281,24 @@ www.google.com/search?q={{query}}</string>
     <string name="home_upcoming_alarm_hide_app">Ukryj alarmy z %1$s</string>
     <string name="home_low_battery_saver_off">Kliknij, aby włączyć Oszczędzanie baterii</string>
     <string name="home_low_battery_saver_on">Oszczędzanie baterii jest włączone</string>
+    <string name="home_charged">W pełni naładowana</string>
+    <string name="home_charging_full_in">Pełna za %1$s</string>
+    <string name="home_charging_paused">Ładowanie wstrzymane</string>
+    <string name="home_timer">Minutnik</string>
+    <string name="home_stopwatch">Stoper</string>
+    <string name="home_storage_almost_full">Pamięć prawie pełna</string>
+    <string name="home_storage_free">Wolne: %1$s z %2$s</string>
+    <string name="home_birthday_today">Urodziny dzisiaj</string>
+    <string name="home_birthday_turns">Dziś kończy %1$d</string>
+    <string name="home_missed_call">Nieodebrane połączenie</string>
+    <string name="home_missed_calls_count">Nieodebrane połączenia (%1$s)</string>
+    <string name="home_missed_call_from_app">%1$s (%2$s)</string>
+    <string name="home_dnd_on">Tryb Nie przeszkadzać jest włączony</string>
+    <string name="home_ongoing_call">Trwające połączenie</string>
+    <string name="home_ongoing_call_hang_up">Rozłącz</string>
+    <string name="home_airplane_mode_on">Tryb samolotowy jest włączony</string>
+    <string name="home_hotspot_on">Hotspot jest włączony</string>
+    <string name="home_turn_off">Wyłącz</string>
     <string name="settings_tavily_title">Tavily do wyszukiwania w sieci</string>
     <string name="settings_tavily_desc">Dodaj klucz API Tavily, aby dodać wyszukiwanie w sieci do modeli, które go nie obsługują.</string>
     <string name="settings_tavily_mode_always">Zawsze używaj Tavily do wyszukiwania w sieci</string>

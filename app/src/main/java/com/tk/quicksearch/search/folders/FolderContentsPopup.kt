@@ -3,6 +3,16 @@ package com.tk.quicksearch.search.folders
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetColorPickerDialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -59,6 +69,14 @@ private val RemoveZoneHeight = RemoveZoneSpace + GridBottomPadding + PopupBottom
 private const val RemoveZoneFadeMillis = 150
 private const val RemoveZoneGlowAlpha = 0.16f
 private const val RemoveZoneHoveredGlowAlpha = 0.32f
+private const val NameHintAlpha = 0.28f
+private const val UnsetSwatchAlpha = 0.6f
+private val ColorSwatchSize = 24.dp
+private val ColorSwatchTouchSize = 40.dp
+private val DefaultFolderPickerColor = Color(0xFF5B8DEF)
+// Muted pastel hues, so the unset swatch hints at color without shouting.
+private val UnsetSwatchHues =
+        listOf(0f, 60f, 120f, 180f, 240f, 300f, 0f).map { Color.hsv(it, 0.3f, 0.85f) }
 
 /** The popup's "Remove from folder" drop zone, shown while a member is held or dragged. */
 @Stable
@@ -78,17 +96,18 @@ internal class FolderRemoveZoneState {
 @Composable
 internal fun FolderContentsPopup(
         folder: ResolvedAppFolder,
-        onRename: (String) -> Unit,
+        actions: AppGridFolderActions,
         onDismiss: () -> Unit,
         content: @Composable (removeZone: FolderRemoveZoneState, dismiss: () -> Unit) -> Unit,
 ) {
     val removeZone = remember(folder.id) { FolderRemoveZoneState() }
     var name by rememberSaveable(folder.id) { mutableStateOf(folder.name) }
     val currentName by rememberUpdatedState(name)
-    val currentOnRename by rememberUpdatedState(onRename)
+    val currentOnRename by rememberUpdatedState<(String) -> Unit> { actions.onRenameFolder(folder.id, it) }
     val focusManager = LocalFocusManager.current
     DisposableEffect(folder.id) { onDispose { currentOnRename(currentName) } }
-    val dialogBackground = AppColors.DialogBackground
+    var showColorPicker by remember { mutableStateOf(false) }
+    val dialogBackground = folder.color?.let { folderColorPopupBackground(it) } ?: AppColors.DialogBackground
 
     AppBottomPopup(
             onDismiss = onDismiss,
@@ -109,52 +128,24 @@ internal fun FolderContentsPopup(
                 )
             },
             title = {
-                // A bare name field: just the hint, with no background or border.
-                val textStyle =
-                        MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                textAlign = TextAlign.Center,
-                        )
-                BasicTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        textStyle = textStyle,
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        keyboardOptions =
-                                KeyboardOptions(
-                                        capitalization = KeyboardCapitalization.Words,
-                                        imeAction = ImeAction.Done,
-                                ),
-                        keyboardActions =
-                                KeyboardActions(
-                                        onDone = {
-                                            currentOnRename(name)
-                                            focusManager.clearFocus()
-                                        },
-                                ),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center,
-                            ) {
-                                if (name.isEmpty()) {
-                                    Text(
-                                            text = stringResource(R.string.folder_name_placeholder),
-                                            style =
-                                                    textStyle.copy(
-                                                            color =
-                                                                    MaterialTheme.colorScheme
-                                                                            .onSurfaceVariant,
-                                                    ),
-                                    )
-                                }
-                                innerTextField()
-                            }
-                        },
-                )
+                Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = DesignTokens.SpacingSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FolderNameField(
+                            name = name,
+                            onNameChange = { name = it },
+                            onDone = {
+                                currentOnRename(name)
+                                focusManager.clearFocus()
+                            },
+                            modifier = Modifier.weight(1f),
+                    )
+                    FolderColorSwatch(
+                            color = folder.color,
+                            onClick = { showColorPicker = true },
+                    )
+                }
             },
     ) {
         // Labels sit on the popup, not on the wallpaper.
@@ -171,6 +162,108 @@ internal fun FolderContentsPopup(
                 Spacer(Modifier.height(RemoveZoneSpace))
             }
         }
+    }
+
+    if (showColorPicker) {
+        WidgetColorPickerDialog(
+                initialColor = folder.color?.let(::Color) ?: DefaultFolderPickerColor,
+                onDismiss = { showColorPicker = false },
+                onConfirm = { color ->
+                    actions.onSetFolderColor(folder.id, color.toArgb())
+                    showColorPicker = false
+                },
+                title = stringResource(R.string.folder_color_title),
+                onReset = {
+                    actions.onSetFolderColor(folder.id, null)
+                    showColorPicker = false
+                },
+        )
+    }
+}
+
+/** A bare, left-aligned name field: just a faint hint, with no background or border. */
+@Composable
+private fun FolderNameField(
+        name: String,
+        onNameChange: (String) -> Unit,
+        onDone: () -> Unit,
+        modifier: Modifier = Modifier,
+) {
+    val textStyle =
+            MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Start,
+            )
+    BasicTextField(
+            value = name,
+            onValueChange = onNameChange,
+            modifier = modifier,
+            singleLine = true,
+            textStyle = textStyle,
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            keyboardOptions =
+                    KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Words,
+                            imeAction = ImeAction.Done,
+                    ),
+            keyboardActions = KeyboardActions(onDone = { onDone() }),
+            decorationBox = { innerTextField ->
+                Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterStart,
+                ) {
+                    if (name.isEmpty()) {
+                        Text(
+                                text = stringResource(R.string.folder_name_placeholder),
+                                style =
+                                        textStyle.copy(
+                                                fontWeight = FontWeight.Normal,
+                                                color =
+                                                        MaterialTheme.colorScheme.onSurface
+                                                                .copy(alpha = NameHintAlpha),
+                                        ),
+                        )
+                    }
+                    innerTextField()
+                }
+            },
+    )
+}
+
+/** Circular swatch opening the color picker: the picked color, or a hue ring when unset. */
+@Composable
+private fun FolderColorSwatch(
+        color: Int?,
+        onClick: () -> Unit,
+) {
+    val description = stringResource(R.string.folder_color_title)
+    Box(
+            modifier =
+                    Modifier.size(ColorSwatchTouchSize)
+                            .clip(CircleShape)
+                            .clickable(onClick = onClick)
+                            .semantics { contentDescription = description },
+            contentAlignment = Alignment.Center,
+    ) {
+        Box(
+                modifier =
+                        Modifier.size(ColorSwatchSize)
+                                .clip(CircleShape)
+                                .background(
+                                        if (color != null) {
+                                            SolidColor(Color(color))
+                                        } else {
+                                            Brush.sweepGradient(UnsetSwatchHues)
+                                        },
+                                        alpha = if (color != null) 1f else UnsetSwatchAlpha,
+                                )
+                                .border(
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                                        shape = CircleShape,
+                                ),
+        )
     }
 }
 

@@ -4,8 +4,9 @@ import com.tk.quicksearch.search.core.SearchFeatureState
 import com.tk.quicksearch.search.core.SearchResultsState
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.StartupPhase
-import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.UserAppPreferences
+import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.appShortcutRepository.isShortcutDisabled
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
@@ -162,6 +163,15 @@ class FolderManager(
         saveFolders(folders.map { if (it.id == folderId) it.copy(name = trimmedName) else it })
     }
 
+    fun setFolderColor(
+        folderId: String,
+        color: Int?,
+    ) {
+        val folders = userPreferences.getAppFolders()
+        if (folders.none { it.id == folderId && it.color != color }) return
+        saveFolders(folders.map { if (it.id == folderId) it.copy(color = color) else it })
+    }
+
     /**
      * Prunes uninstalled apps and removed or disabled shortcuts from folders whenever the app or
      * shortcut catalog changes, dissolving folders left with fewer than two members.
@@ -187,7 +197,9 @@ class FolderManager(
                     val shortcutKeys =
                         availability.shortcuts.mapTo(HashSet()) { appFolderMemberKey(it) }
                     val disabledShortcutKeys =
-                        availability.disabledShortcutIds.mapTo(HashSet(), ::shortcutMemberKey)
+                        availability.shortcuts
+                            .filter { isShortcutDisabled(it, availability.disabledShortcutIds) }
+                            .mapTo(HashSet()) { appFolderMemberKey(it) }
                     withContext(Dispatchers.Main.immediate) {
                         pruneUnavailableMembers(appKeys, shortcutKeys, disabledShortcutKeys)
                     }

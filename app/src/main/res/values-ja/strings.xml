@@ -148,6 +148,7 @@
     <string name="notification_pinned_item_type_note">メモ</string>
     <string name="action_remove">削除</string>
     <string name="folder_name_placeholder">フォルダ名を追加</string>
+    <string name="folder_color_title">フォルダの色</string>
     <string name="folder_remove_from_folder">フォルダから削除</string>
     <string name="app_swipe_current_action">現在のアクション</string>
     <string name="app_swipe_up_picker_title">「%1$s」の上スワイプ操作を選択</string>
@@ -191,6 +192,7 @@
     <string name="dialog_alias_info_tool">検索キーワードの先頭にこのエイリアスを入力すると、%1$sモードに入ります。</string>
     <string name="dialog_app_shortcut_icon_message">「%1$s」の画像を選択してください。これはQuick Search内での表示のみを変更します。</string>
     <string name="dialog_cancel">キャンセル</string>
+    <string name="dialog_reset">リセット</string>
     <string name="dialog_choose_contact_action_title">「%1$s」の代わりとなる操作を選択</string>
     <string name="dialog_clear_all_history_message">すべての検索履歴を消去してもよろしいですか？この操作は元に戻せません。</string>
     <string name="dialog_clear_all_history_title">すべての履歴を消去しますか？</string>
@@ -309,6 +311,8 @@
     <string name="open_top_result_using_keyboard_toggle_desc">キーボードのEnter/完了キーで最上位の結果を開きます</string>
     <string name="include_non_launchable_apps_toggle_title">起動アクティビティのないアプリ</string>
     <string name="include_non_launchable_apps_toggle_desc">起動アクティビティを持たないアプリを検索結果に含めます。</string>
+    <string name="include_archived_apps_toggle_title">アーカイブ済みのアプリ</string>
+    <string name="include_archived_apps_toggle_desc">アーカイブ済みのアプリを検索結果に含めます</string>
     <string name="notification_dots_toggle_title">通知ドット</string>
     <string name="notification_dots_toggle_desc">通知のあるアプリに通知ドットを表示</string>
     <string name="desc_notification_dot">通知あり</string>
@@ -401,9 +405,15 @@
     <string name="settings_app_shortcuts_delete_success">ショートカットを削除しました。</string>
     <string name="settings_app_shortcuts_description_with_count">アプリをタップしてショートカットを表示します。カスタムショートカットの有効化、無効化、追加が可能です。
 
-利用可能なショートカット: %1$s</string>
+%1$s 件のショートカット</string>
+    <string name="settings_app_shortcuts_description_with_enabled_count">アプリをタップしてショートカットを表示します。カスタムショートカットの有効化、無効化、追加が可能です。
+
+%1$s 件のショートカット · %2$s 件が有効</string>
     <string name="settings_app_shortcuts_edit_dialog_title">ショートカットを編集</string>
     <string name="settings_app_shortcuts_empty">アプリのショートカットが見つかりません。</string>
+    <string name="settings_app_shortcuts_loading">ショートカットを読み込み中…</string>
+    <string name="settings_app_shortcuts_disable_all">すべてのショートカットを無効にする</string>
+    <string name="settings_app_shortcuts_card_all_disabled">すべてのショートカットが無効</string>
     <string name="settings_app_shortcuts_expand_all">すべて展開</string>
     <string name="settings_app_shortcuts_filter_all_apps">すべてのアプリ</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">ショートカット付きアプリ</string>
@@ -817,10 +827,27 @@
     <string name="settings_at_a_glance_alarms_title">アラーム</string>
     <string name="settings_upcoming_alarm_desc">45分以内に鳴る次のアラーム</string>
     <string name="settings_hidden_alarm_apps_title">非表示のアラームアプリ</string>
-    <string name="settings_at_a_glance_events_desc">今日のカレンダーの予定</string>
+    <string name="settings_at_a_glance_events_desc">今日のカレンダーの予定と、夜には明日の終日の予定</string>
     <string name="settings_upcoming_reminders_desc">30分以内に期限が来る、または期限切れのリマインダー</string>
     <string name="settings_at_a_glance_low_battery_title">バッテリー残量低下</string>
     <string name="settings_low_battery_desc">バッテリー残量が %1$d%% 以下のとき</string>
+    <string name="settings_at_a_glance_timers_title">タイマーとストップウォッチ</string>
+    <string name="settings_at_a_glance_timers_desc">時計アプリで動作中のタイマーとストップウォッチ</string>
+    <string name="settings_at_a_glance_birthdays_title">誕生日</string>
+    <string name="settings_at_a_glance_birthdays_desc">今日が誕生日の連絡先</string>
+    <string name="settings_at_a_glance_progress_title">ライブ進行状況</string>
+    <string name="settings_at_a_glance_progress_desc">配達やダウンロードなど、進行状況バー付きの継続中の通知</string>
+    <string name="settings_at_a_glance_charging_title">充電中</string>
+    <string name="settings_at_a_glance_charging_desc">充電中のバッテリー残量とフル充電までの時間</string>
+    <string name="settings_at_a_glance_storage_title">ストレージ容量不足</string>
+    <string name="settings_at_a_glance_storage_desc">空き容量が %1$d%% 以下のとき</string>
+    <string name="settings_at_a_glance_missed_calls_title">不在着信</string>
+    <string name="settings_at_a_glance_missed_calls_desc">電話アプリの不在着信</string>
+    <string name="settings_at_a_glance_ongoing_call_title">通話中</string>
+    <string name="settings_at_a_glance_ongoing_call_desc">通話中の相手と通話時間</string>
+    <string name="settings_at_a_glance_dnd_desc">サイレントモードがオンのとき</string>
+    <string name="settings_at_a_glance_airplane_desc">機内モードがオンのとき</string>
+    <string name="settings_at_a_glance_hotspot_desc">アクセスポイントがオンのとき</string>
     <string name="settings_now_playing_desc">現在再生中のコンテンツの再生操作</string>
     <string name="settings_use_system_font_desc">端末のフォントスタイルに従う</string>
     <string name="settings_use_system_font_title">システムフォントを使用</string>
@@ -947,6 +974,8 @@ www.google.com/search?q={{query}}</string>
          ============================================================================ -->
     <string name="calculator_enter_math_expression_hint">数式を入力</string>
     <string name="calculator_invalid_or_unsupported_expression">無効またはサポートされていない数式です</string>
+    <string name="calculator_copy_result">コピー</string>
+    <string name="calculator_use_result">検索に追加</string>
     <string name="calculator_toggle_desc">基本的な計算結果を表示</string>
     <string name="calculator_toggle_title">電卓</string>
     <string name="currency_converter_invalid_input">無効な通貨換算の入力です</string>
@@ -1166,6 +1195,7 @@ www.google.com/search?q={{query}}</string>
     <string name="excluded_item_type_app_shortcut">アプリのショートカット</string>
     <string name="excluded_item_type_app_suggestions">アプリ（候補）</string>
     <string name="excluded_item_type_setting">設定</string>
+    <string name="excluded_item_type_search_result">検索結果</string>
     <string name="permission_required_title">権限が必要です</string>
     <string name="settings_action_clear_all">すべて消去</string>
     <string name="settings_action_move_down">一番下に移動</string>
@@ -1231,6 +1261,24 @@ www.google.com/search?q={{query}}</string>
     <string name="home_upcoming_alarm_hide_app">%1$s のアラームを非表示</string>
     <string name="home_low_battery_saver_off">タップしてバッテリー セーバーをオン</string>
     <string name="home_low_battery_saver_on">バッテリー セーバーはオンです</string>
+    <string name="home_charged">充電完了</string>
+    <string name="home_charging_full_in">あと %1$s でフル充電</string>
+    <string name="home_charging_paused">充電を一時停止中</string>
+    <string name="home_timer">タイマー</string>
+    <string name="home_stopwatch">ストップウォッチ</string>
+    <string name="home_storage_almost_full">ストレージの空き容量がわずかです</string>
+    <string name="home_storage_free">%2$s 中 %1$s 空き</string>
+    <string name="home_birthday_today">今日が誕生日</string>
+    <string name="home_birthday_turns">今日で %1$d 歳</string>
+    <string name="home_missed_call">不在着信</string>
+    <string name="home_missed_calls_count">不在着信（%1$s）</string>
+    <string name="home_missed_call_from_app">%1$s（%2$s）</string>
+    <string name="home_dnd_on">サイレントモードがオン</string>
+    <string name="home_ongoing_call">通話中</string>
+    <string name="home_ongoing_call_hang_up">通話を終了</string>
+    <string name="home_airplane_mode_on">機内モードがオン</string>
+    <string name="home_hotspot_on">アクセスポイントがオン</string>
+    <string name="home_turn_off">オフにする</string>
     <string name="settings_tavily_title">ウェブ検索用 Tavily</string>
     <string name="settings_tavily_desc">Tavily API キーを追加すると、ウェブ検索に対応していないモデルでもウェブ検索を利用できます。</string>
     <string name="settings_tavily_mode_always">ウェブ検索には常に Tavily を使用</string>

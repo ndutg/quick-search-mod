@@ -38,21 +38,14 @@ import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
-import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
-import com.tk.quicksearch.search.other.OtherSearchItemId
-// import com.tk.quicksearch.search.searchScreen.SearchEngineOnboardingOverlay
-import com.tk.quicksearch.search.searchScreen.SearchScreenBackground
-import com.tk.quicksearch.search.searchScreen.SearchScreenContent
-import com.tk.quicksearch.search.searchScreen.SectionParams
-import com.tk.quicksearch.search.searchScreen.DerivedState
-
-// Import the extracted components
-import com.tk.quicksearch.search.searchScreen.SearchRoute
-import com.tk.quicksearch.search.searchScreen.SearchScreenStateManagement
-import com.tk.quicksearch.search.searchScreen.SearchScreenDialogLogic
+import com.tk.quicksearch.search.other.OtherSearchItemActionHandler
+import com.tk.quicksearch.search.searchScreen.searchRoute.SearchRoute
+import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenStateManagement
+import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenDialogLogic
 import com.tk.quicksearch.shared.ui.theme.ThemeModeFallbackBackgroundAlpha
 import com.tk.quicksearch.shared.util.ImageAppearanceUtils
 
@@ -70,7 +63,7 @@ fun SearchScreen(
     onVoiceClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onRequestUsagePermission: () -> Unit,
-    onToggleOtherSearchItemPin: (OtherSearchItemId) -> Unit,
+    onOtherSearchItemAction: OtherSearchItemActionHandler,
     onAppClick: (AppInfo) -> Unit,
     onOpenInSplitScreen: (AppInfo) -> Unit,
     onAppInfoClick: (AppInfo) -> Unit,
@@ -142,9 +135,9 @@ fun SearchScreen(
     onAiSearchEmailClick: (String) -> Unit,
     onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
     onSetPersonalContext: (String?) -> Unit = {},
-    onSetGeminiModel: (String?) -> Unit = {},
-    onSetGeminiGroundingEnabled: (Boolean) -> Unit = {},
-    onRefreshAvailableGeminiModels: () -> Unit = {},
+    onSetActiveLlmModel: (String?) -> Unit = {},
+    onSetActiveLlmGroundingEnabled: (Boolean) -> Unit = {},
+    onRefreshAvailableLlmModels: () -> Unit = {},
     onWelcomeAnimationCompleted: (() -> Unit)? = null,
     onWallpaperLoaded: (() -> Unit)? = null,
     onWallpaperUnavailable: (() -> Unit)? = null,
@@ -327,9 +320,9 @@ fun SearchScreen(
         onSearchEngineLongPress = onSearchEngineLongPress,
         onAiSearchEmailClick = onAiSearchEmailClick,
         onSetPersonalContext = onSetPersonalContext,
-        onSetGeminiModel = onSetGeminiModel,
-        onSetGeminiGroundingEnabled = onSetGeminiGroundingEnabled,
-        onRefreshAvailableGeminiModels = onRefreshAvailableGeminiModels,
+        onSetActiveLlmModel = onSetActiveLlmModel,
+        onSetActiveLlmGroundingEnabled = onSetActiveLlmGroundingEnabled,
+        onRefreshAvailableLlmModels = onRefreshAvailableLlmModels,
         onOpenAppSettings = onOpenAppSettings,
         onOpenCalendarPermissionSettings = onOpenCalendarPermissionSettings,
         onOpenStorageAccessSettings = onOpenStorageAccessSettings,
@@ -535,7 +528,7 @@ fun SearchScreen(
             onSettingsClick = onSettingsClick,
             onAppClick = onAppClick,
             onRequestUsagePermission = onRequestUsagePermission,
-            onToggleOtherSearchItemPin = onToggleOtherSearchItemPin,
+            onOtherSearchItemAction = onOtherSearchItemAction,
             onSearchTargetClick = onSearchTargetClick,
             onSearchEngineLongPress = onSearchEngineLongPress,
             onAiSearchEmailClick = onAiSearchEmailClick,
@@ -706,13 +699,13 @@ fun SearchScreen(
         getLastShownPhoneNumber = getLastShownPhoneNumber,
         setLastShownPhoneNumber = setLastShownPhoneNumber,
         onSetPersonalContext = onSetPersonalContext,
-        onSetGeminiModel = onSetGeminiModel,
-        onSetGeminiGroundingEnabled = onSetGeminiGroundingEnabled,
-        onRefreshAvailableGeminiModels = onRefreshAvailableGeminiModels,
+        onSetActiveLlmModel = onSetActiveLlmModel,
+        onSetActiveLlmGroundingEnabled = onSetActiveLlmGroundingEnabled,
+        onRefreshAvailableLlmModels = onRefreshAvailableLlmModels,
         showPersonalContextDialog = stateResult.showPersonalContextDialog,
         setShowPersonalContextDialog = stateResult.setShowPersonalContextDialog,
-        showGeminiModelDialog = stateResult.showGeminiModelDialog,
-        setShowGeminiModelDialog = stateResult.setShowGeminiModelDialog,
+        showLlmModelDialog = stateResult.showLlmModelDialog,
+        setShowLlmModelDialog = stateResult.setShowLlmModelDialog,
         personalContextInput = stateResult.personalContextInput,
         setPersonalContextInput = stateResult.setPersonalContextInput,
         getPrimaryContactCardAction = getPrimaryContactCardAction,

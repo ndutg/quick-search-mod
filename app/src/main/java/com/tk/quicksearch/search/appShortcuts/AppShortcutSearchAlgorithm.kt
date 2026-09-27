@@ -1,9 +1,10 @@
 package com.tk.quicksearch.search.appShortcuts
 
 import com.tk.quicksearch.search.core.SearchSection
-import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutDisplayName
-import com.tk.quicksearch.search.data.AppShortcutRepository.shortcutKey
+import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.appShortcutRepository.isShortcutDisabled
+import com.tk.quicksearch.search.data.appShortcutRepository.shortcutDisplayName
+import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPerformanceLogger
 import com.tk.quicksearch.search.fuzzy.FuzzySearchPolicyResolver
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
@@ -75,7 +76,7 @@ object AppShortcutSearchAlgorithm {
             fullList
             .asSequence()
             .filterNot { excludedIds.contains(shortcutKey(it)) }
-            .filterNot { disabledIds.contains(shortcutKey(it)) }
+            .filterNot { isShortcutDisabled(it, disabledIds) }
             .mapNotNull { shortcut ->
                 val shortcutId = shortcutKey(shortcut)
                 val displayName = shortcutDisplayName(shortcut)
@@ -121,7 +122,7 @@ object AppShortcutSearchAlgorithm {
             fullList
                 .asSequence()
                 .filterNot { excludedIds.contains(shortcutKey(it)) }
-                .filterNot { disabledIds.contains(shortcutKey(it)) }
+                .filterNot { isShortcutDisabled(it, disabledIds) }
                 .toList()
 
         val remainingSlots = (resultLimit - exactMatches.size).coerceAtLeast(0)

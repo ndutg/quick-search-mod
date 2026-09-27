@@ -1,4 +1,4 @@
-package com.tk.quicksearch.widgets.WidgetConfigScreen.components
+package com.tk.quicksearch.widgets.widgetConfigScreen.components
 
 import android.content.Intent
 import android.widget.Toast
@@ -19,8 +19,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.widgets.WidgetConfigScreen.components.MicActionChoiceSegmentedButtonRow
-import com.tk.quicksearch.widgets.WidgetConfigScreen.components.SearchIconChoiceSegmentedButtonRow
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.utils.SearchIconDisplay
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
@@ -94,8 +92,7 @@ fun WidgetMicIconSection(
                     fullText = limitationText,
                     linkText = linkText,
                     onClick = {
-                        // Open voice input settings (contains digital
-                        // assistant settings)
+                        // Voice input settings hold the digital assistant choice.
                         try {
                             val intent =
                                 Intent(
@@ -104,9 +101,6 @@ fun WidgetMicIconSection(
                                 )
                             context.startActivity(intent)
                         } catch (e: Exception) {
-                            // Fallback to general settings if voice
-                            // input settings not
-                            // available
                             try {
                                 val intent =
                                     Intent(
@@ -116,8 +110,6 @@ fun WidgetMicIconSection(
                                     )
                                 context.startActivity(intent)
                             } catch (e: Exception) {
-                                // Ignore if settings can't be
-                                // opened
                             }
                         }
                     },
@@ -145,10 +137,8 @@ private fun createClickableText(
         if (linkStartIndex >= 0) {
             val linkEndIndex = linkStartIndex + linkText.length
 
-            // Add text before the link
             append(fullText.substring(0, linkStartIndex))
 
-            // Add the clickable link
             pushLink(
                 LinkAnnotation.Clickable(
                     tag = "LINK",
@@ -171,10 +161,8 @@ private fun createClickableText(
             append(linkText)
             pop()
 
-            // Add text after the link
             append(fullText.substring(linkEndIndex))
         } else {
-            // Fallback: just add the whole text normally
             append(fullText)
         }
     }

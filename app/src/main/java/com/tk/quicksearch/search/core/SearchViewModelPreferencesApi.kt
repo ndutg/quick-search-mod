@@ -68,6 +68,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) =
         preferencesApiDelegate.setIncludeNonLaunchableAppsInSearch(enabled)
 
+    fun setIncludeArchivedAppsInSearch(enabled: Boolean) =
+        preferencesApiDelegate.setIncludeArchivedAppsInSearch(enabled)
+
     fun setShowInRecents(enabled: Boolean) = preferencesApiDelegate.setShowInRecents(enabled)
 
     fun setNotificationDotsEnabled(enabled: Boolean) =
@@ -240,7 +243,7 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setAmazonDomain(domain: String?) = preferencesApiDelegate.setAmazonDomain(domain)
 
-    fun setGeminiApiKey(apiKey: String?) = preferencesApiDelegate.setGeminiApiKey(apiKey)
+    fun setLlmApiKeyForDetectedProvider(apiKey: String?) = preferencesApiDelegate.setLlmApiKeyForDetectedProvider(apiKey)
 
     fun setLlmApiKey(
         providerId: AiSearchLlmProviderId,
@@ -254,7 +257,7 @@ internal interface SearchViewModelPreferencesApi {
 
     fun setPersonalContext(context: String?) = preferencesApiDelegate.setPersonalContext(context)
 
-    fun setGeminiModel(modelId: String?) = preferencesApiDelegate.setGeminiModel(modelId)
+    fun setActiveLlmModel(modelId: String?) = preferencesApiDelegate.setActiveLlmModel(modelId)
 
     fun setLlmModel(
         providerId: AiSearchLlmProviderId,
@@ -295,13 +298,13 @@ internal interface SearchViewModelPreferencesApi {
         windSpeedUnit,
     )
 
-    fun setGeminiGroundingEnabled(enabled: Boolean) =
-        preferencesApiDelegate.setGeminiGroundingEnabled(enabled)
+    fun setActiveLlmGroundingEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setActiveLlmGroundingEnabled(enabled)
 
-    fun setGeminiThinkingEnabled(enabled: Boolean) =
-        preferencesApiDelegate.setGeminiThinkingEnabled(enabled)
+    fun setActiveLlmThinkingEnabled(enabled: Boolean) =
+        preferencesApiDelegate.setActiveLlmThinkingEnabled(enabled)
 
-    fun refreshAvailableGeminiModels() = preferencesApiDelegate.refreshAvailableGeminiModels()
+    fun refreshAvailableLlmModels() = preferencesApiDelegate.refreshAvailableLlmModels()
 
     fun archiveTodayCalendarEvent(eventId: Long) = preferencesApiDelegate.archiveTodayCalendarEvent(eventId)
 }
@@ -370,6 +373,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setIncludeNonLaunchableAppsInSearch(enabled: Boolean) =
         preferencesDelegate.setIncludeNonLaunchableAppsInSearch(enabled)
+
+    fun setIncludeArchivedAppsInSearch(enabled: Boolean) =
+        preferencesDelegate.setIncludeArchivedAppsInSearch(enabled)
 
     fun setShowInRecents(enabled: Boolean) = preferencesDelegate.setShowInRecents(enabled)
 
@@ -540,7 +546,7 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setAmazonDomain(domain: String?) = preferencesDelegate.setAmazonDomain(domain)
 
-    fun setGeminiApiKey(apiKey: String?) = preferencesDelegate.setGeminiApiKey(apiKey)
+    fun setLlmApiKeyForDetectedProvider(apiKey: String?) = preferencesDelegate.setLlmApiKeyForDetectedProvider(apiKey)
 
     fun setLlmApiKey(
         providerId: AiSearchLlmProviderId,
@@ -554,7 +560,7 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setPersonalContext(context: String?) = preferencesDelegate.setPersonalContext(context)
 
-    fun setGeminiModel(modelId: String?) = preferencesDelegate.setGeminiModel(modelId)
+    fun setActiveLlmModel(modelId: String?) = preferencesDelegate.setActiveLlmModel(modelId)
 
     fun setLlmModel(
         providerId: AiSearchLlmProviderId,
@@ -595,11 +601,11 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
         windSpeedUnit,
     )
 
-    fun setGeminiGroundingEnabled(enabled: Boolean) =
-        preferencesDelegate.setGeminiGroundingEnabled(enabled)
+    fun setActiveLlmGroundingEnabled(enabled: Boolean) =
+        preferencesDelegate.setActiveLlmGroundingEnabled(enabled)
 
-    fun setGeminiThinkingEnabled(enabled: Boolean) =
-        preferencesDelegate.setGeminiThinkingEnabled(enabled)
+    fun setActiveLlmThinkingEnabled(enabled: Boolean) =
+        preferencesDelegate.setActiveLlmThinkingEnabled(enabled)
 
-    fun refreshAvailableGeminiModels() = preferencesDelegate.refreshAvailableGeminiModels()
+    fun refreshAvailableLlmModels() = preferencesDelegate.refreshAvailableLlmModels()
 }

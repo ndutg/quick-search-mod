@@ -71,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlin.math.sin
+import com.tk.quicksearch.shared.ui.components.PreserveHostKeyboardStateEffect
 
 private const val BreathCycleMillis = 3_400
 private const val TickMillis = 16L
@@ -155,6 +156,8 @@ fun SpeedBumpOverlay(
             userHandleId = appInfo.userHandleId,
             forceCircularMask = appIconShape == AppIconShape.CIRCLE,
         )
+
+    PreserveHostKeyboardStateEffect()
 
     Dialog(
         onDismissRequest = onCancel,

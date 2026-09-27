@@ -23,7 +23,7 @@ internal class SearchDerivedStateDelegate(
     private val appContext: Context,
     private val applicationProvider: () -> Application,
     private val startupSurfaceStore: StartupSurfaceStore,
-    private val userPreferences: com.tk.quicksearch.search.data.UserAppPreferences,
+    private val userPreferences: com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences,
     private val handlersProvider: () -> SearchHandlerContainer,
     private val appSuggestionSelector: AppSuggestionSelector,
     private val instantStartupSurfaceEnabled: Boolean,
@@ -193,12 +193,13 @@ internal class SearchDerivedStateDelegate(
                 appSearchManager.deriveMatches(trimmedQuery, allSearchableApps, getGridItemCount())
             }
         val searchResultsDerivedAtElapsedMs = SystemClock.elapsedRealtime()
+        // Archived apps stay hidden but aren't listed until they're restored.
         val suggestionHiddenAppList =
-            apps.filter { suggestionHiddenPackages.contains(it.launchCountKey()) }.sortedBy {
+            apps.filter { !it.isArchived && suggestionHiddenPackages.contains(it.launchCountKey()) }.sortedBy {
                 it.appName.lowercase(Locale.getDefault())
             }
         val resultHiddenAppList =
-            apps.filter { resultHiddenPackages.contains(it.launchCountKey()) }.sortedBy {
+            apps.filter { !it.isArchived && resultHiddenPackages.contains(it.launchCountKey()) }.sortedBy {
                 it.appName.lowercase(Locale.getDefault())
             }
 

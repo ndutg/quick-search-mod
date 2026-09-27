@@ -12,5 +12,6 @@ data class AppGridFolderActions(
     val onUnpinFromFolder: (folderId: String, memberKey: String, orderKeys: List<String>) -> Unit,
     val onReorderFolder: (folderId: String, memberKeys: List<String>) -> Unit,
     val onRenameFolder: (folderId: String, name: String) -> Unit,
+    val onSetFolderColor: (folderId: String, color: Int?) -> Unit,
     val onDeleteFolder: (folderId: String, orderKeys: List<String>) -> Unit,
 )

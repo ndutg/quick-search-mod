@@ -42,17 +42,17 @@ import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
-import com.tk.quicksearch.search.data.UserAppPreferences
-import com.tk.quicksearch.search.searchScreen.SearchRoute
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
+import com.tk.quicksearch.search.searchScreen.searchRoute.SearchRoute
 import com.tk.quicksearch.settings.settingsDetailScreen.level
 import com.tk.quicksearch.settings.settingsDetailScreen.resolveBackDestination
-import com.tk.quicksearch.settings.navigation.SettingsDetailRoute
+import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailRoute
 import com.tk.quicksearch.R
 import com.tk.quicksearch.app.ReviewHelper
 import com.tk.quicksearch.app.UpdateHelper
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomToolNavigationMemory
-import com.tk.quicksearch.settings.shared.SettingsRoute
+import com.tk.quicksearch.settings.shared.settingsRoute.SettingsRoute
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.util.FeedbackUtils
 import com.tk.quicksearch.widgetsPanel.WidgetsPanelScreen
@@ -92,31 +92,6 @@ private fun directionalNavigationTransition(
                 targetOffsetX = { it },
             )
 }
-
-private fun findQuicksearchFilesOnDevice(context: Context): List<File> {
-    val searchDirs = listOfNotNull(
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-        context.getExternalFilesDir(null),
-    )
-    return searchDirs
-        .filter { it.exists() && it.canRead() }
-        .flatMap { dir ->
-            dir.walkTopDown()
-                .maxDepth(3)
-                .filter { it.isFile && it.extension == "quicksearch" }
-                .toList()
-        }
-        .distinctBy { it.absolutePath }
-}
-
-private fun hasFilesPermission(context: Context): Boolean =
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-        Environment.isExternalStorageManager()
-    } else {
-        context.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
-            android.content.pm.PackageManager.PERMISSION_GRANTED
-    }
 
 data class NavigationRequest(
     val destination: RootDestination,

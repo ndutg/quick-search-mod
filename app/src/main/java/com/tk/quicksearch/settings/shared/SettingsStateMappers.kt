@@ -2,6 +2,8 @@ package com.tk.quicksearch.settings.shared
 
 import com.tk.quicksearch.search.core.CustomTool
 import com.tk.quicksearch.search.core.SearchUiState
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.settings.shared.settingsRoute.SettingsScreenState
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 
 internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
@@ -19,6 +21,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         excludedFiles = searchResults.excludedFiles,
         excludedSettings = searchResults.excludedSettings,
         excludedAppShortcuts = searchResults.excludedAppShortcuts,
+        excludedOtherItems = OtherSearchItemRegistry.excludedItems(excludedOtherItemIds),
         disabledSections = searchResults.disabledSections,
         appSuggestionsEnabled = searchResults.appSuggestionsEnabled,
         enabledAppSuggestionTabs = searchResults.enabledAppSuggestionTabs,
@@ -45,17 +48,17 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         isAliasTriggerAfterSpaceEnabled = searchEngines.isAliasTriggerAfterSpaceEnabled,
         amazonDomain = searchEngines.amazonDomain,
         hasApiKey = searchEngines.hasApiKey,
-        geminiApiKeyLast4 = searchEngines.geminiApiKeyLast4,
+        activeLlmApiKeyLast4 = searchEngines.activeLlmApiKeyLast4,
         llmApiKeyLast4ByProvider = searchEngines.llmApiKeyLast4ByProvider,
         customLlmBaseUrlByProvider = searchEngines.customLlmBaseUrlByProvider,
         customLlmAdvancedPayloadByProvider = searchEngines.customLlmAdvancedPayloadByProvider,
         aiSearchLlmProviderId = searchEngines.aiSearchLlmProviderId,
-        isSavingGeminiApiKey = searchEngines.isSavingGeminiApiKey,
+        isSavingLlmApiKey = searchEngines.isSavingLlmApiKey,
         personalContext = searchEngines.personalContext,
-        geminiModel = searchEngines.geminiModel,
-        geminiGroundingEnabled = searchEngines.geminiGroundingEnabled,
-        geminiThinkingEnabled = searchEngines.geminiThinkingEnabled,
-        availableGeminiModels = searchEngines.availableGeminiModels,
+        activeLlmModel = searchEngines.activeLlmModel,
+        activeLlmGroundingEnabled = searchEngines.activeLlmGroundingEnabled,
+        activeLlmThinkingEnabled = searchEngines.activeLlmThinkingEnabled,
+        activeLlmAvailableModels = searchEngines.activeLlmAvailableModels,
         availableLlmModelsByProvider = searchEngines.availableLlmModelsByProvider,
         enabledFileTypes = fileSearch.enabledFileTypes,
         showFolders = fileSearch.showFolders,
@@ -134,7 +137,7 @@ private data class SearchResultsMapperState(
     val excludedContacts: List<com.tk.quicksearch.search.models.ContactInfo>,
     val excludedFiles: List<com.tk.quicksearch.search.models.DeviceFile>,
     val excludedSettings: List<com.tk.quicksearch.search.deviceSettings.DeviceSetting>,
-    val excludedAppShortcuts: List<com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut>,
+    val excludedAppShortcuts: List<com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut>,
     val disabledSections: Set<com.tk.quicksearch.search.core.SearchSection>,
     val appSuggestionsEnabled: Boolean,
     val enabledAppSuggestionTabs: Set<com.tk.quicksearch.search.core.AppSuggestionTabType>,
@@ -190,18 +193,18 @@ private data class SearchEngineMapperState(
     val isAliasTriggerAfterSpaceEnabled: Boolean,
     val amazonDomain: String?,
     val hasApiKey: Boolean,
-    val geminiApiKeyLast4: String?,
+    val activeLlmApiKeyLast4: String?,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String>,
     val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String>,
     val customLlmAdvancedPayloadByProvider: Map<AiSearchLlmProviderId, Pair<Boolean, String>>,
     val aiSearchLlmProviderId: AiSearchLlmProviderId,
-    val isSavingGeminiApiKey: Boolean,
+    val isSavingLlmApiKey: Boolean,
     val personalContext: String,
-    val geminiModel: String,
-    val geminiGroundingEnabled: Boolean,
-    val geminiThinkingEnabled: Boolean,
-    val availableGeminiModels: List<com.tk.quicksearch.tools.aiSearch.GeminiTextModel>,
-    val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<com.tk.quicksearch.tools.aiSearch.GeminiTextModel>>,
+    val activeLlmModel: String,
+    val activeLlmGroundingEnabled: Boolean,
+    val activeLlmThinkingEnabled: Boolean,
+    val activeLlmAvailableModels: List<com.tk.quicksearch.tools.aiSearch.LlmTextModel>,
+    val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<com.tk.quicksearch.tools.aiSearch.LlmTextModel>>,
 )
 
 private fun SearchUiState.toSearchEngineSettingsState() =
@@ -216,17 +219,17 @@ private fun SearchUiState.toSearchEngineSettingsState() =
         isAliasTriggerAfterSpaceEnabled = isAliasTriggerAfterSpaceEnabled,
         amazonDomain = amazonDomain,
         hasApiKey = hasApiKey,
-        geminiApiKeyLast4 = geminiApiKeyLast4,
+        activeLlmApiKeyLast4 = activeLlmApiKeyLast4,
         llmApiKeyLast4ByProvider = llmApiKeyLast4ByProvider,
         customLlmBaseUrlByProvider = customLlmBaseUrlByProvider,
         customLlmAdvancedPayloadByProvider = customLlmAdvancedPayloadByProvider,
         aiSearchLlmProviderId = aiSearchLlmProviderId,
-        isSavingGeminiApiKey = isSavingGeminiApiKey,
+        isSavingLlmApiKey = isSavingLlmApiKey,
         personalContext = personalContext,
-        geminiModel = geminiModel,
-        geminiGroundingEnabled = geminiGroundingEnabled,
-        geminiThinkingEnabled = geminiThinkingEnabled,
-        availableGeminiModels = availableGeminiModels,
+        activeLlmModel = activeLlmModel,
+        activeLlmGroundingEnabled = activeLlmGroundingEnabled,
+        activeLlmThinkingEnabled = activeLlmThinkingEnabled,
+        activeLlmAvailableModels = activeLlmAvailableModels,
         availableLlmModelsByProvider = availableLlmModelsByProvider,
     )
 
@@ -358,7 +361,7 @@ private fun SearchUiState.toToolsSettingsState() =
     )
 
 private data class AppShortcutsMapperState(
-    val allAppShortcuts: List<com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut>,
+    val allAppShortcuts: List<com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut>,
     val allDeviceSettings: List<com.tk.quicksearch.search.deviceSettings.DeviceSetting>,
     val allApps: List<com.tk.quicksearch.search.models.AppInfo>,
     val disabledAppShortcutIds: Set<String>,

@@ -118,14 +118,24 @@ class CalendarRepository(
             .take(limit)
     }
 
-    fun getTodayEvents(limit: Int = 50): List<CalendarEventInfo> {
+    fun getTodayEvents(limit: Int = 50): List<CalendarEventInfo> = getEventsOn(LocalDate.now(), limit)
+
+    /** [day]'s all-day events, such as tomorrow's for the evening At a Glance rows. */
+    fun getAllDayEventsOn(
+        day: LocalDate,
+        limit: Int = 50,
+    ): List<CalendarEventInfo> = getEventsOn(day, limit).filter { it.allDay }
+
+    private fun getEventsOn(
+        day: LocalDate,
+        limit: Int,
+    ): List<CalendarEventInfo> {
         if (limit <= 0 || !hasPermission()) return emptyList()
-        val today = LocalDate.now()
         val zoneId = ZoneId.systemDefault()
-        val startOfDay = today.atStartOfDay(zoneId).toInstant().toEpochMilli()
-        val startOfTomorrow = today.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
-        val utcStartOfDay = today.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
-        val utcStartOfTomorrow = today.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+        val startOfDay = day.atStartOfDay(zoneId).toInstant().toEpochMilli()
+        val startOfTomorrow = day.plusDays(1).atStartOfDay(zoneId).toInstant().toEpochMilli()
+        val utcStartOfDay = day.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+        val utcStartOfTomorrow = day.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
         // CalendarContract stores all-day instances at UTC midnight. Query both the local-day
         // and UTC-day boundaries, then use the normalized local timestamps for final filtering.
         val queryStart = minOf(startOfDay, utcStartOfDay)

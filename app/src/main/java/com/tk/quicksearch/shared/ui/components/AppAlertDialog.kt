@@ -32,6 +32,7 @@ fun AppAlertDialog(
     tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
     properties: DialogProperties = DialogProperties(),
 ) {
+    PreserveHostKeyboardStateEffect()
     AlertDialog(
         onDismissRequest = onDismissRequest,
         confirmButton = confirmButton,

@@ -1,4 +1,4 @@
-package com.tk.quicksearch.search.data.AppShortcutRepository
+package com.tk.quicksearch.search.data.appShortcutRepository
 
 import android.content.ComponentName
 import android.content.Intent
@@ -105,6 +105,26 @@ internal fun shortcutDisplayName(shortcut: StaticShortcut): String =
         ?: shortcut.longLabel?.takeIf { it.isNotBlank() } ?: shortcut.id
 
 internal fun shortcutKey(shortcut: StaticShortcut): String = "${shortcut.packageName}:${shortcut.id}"
+
+private const val ALL_APP_SHORTCUTS_ID = "*"
+
+/**
+ * Stored in the disabled shortcut set to disable every shortcut of an app, including shortcuts
+ * the app adds later.
+ */
+internal fun allAppShortcutsKey(packageName: String): String = "$packageName:$ALL_APP_SHORTCUTS_ID"
+
+internal fun areAllAppShortcutsDisabled(
+    packageName: String,
+    disabledIds: Set<String>,
+): Boolean = allAppShortcutsKey(packageName) in disabledIds
+
+internal fun isShortcutDisabled(
+    shortcut: StaticShortcut,
+    disabledIds: Set<String>,
+): Boolean =
+    shortcutKey(shortcut) in disabledIds ||
+        areAllAppShortcutsDisabled(shortcut.packageName, disabledIds)
 
 internal fun isUserCreatedShortcut(shortcut: StaticShortcut): Boolean =
     shortcut.id.startsWith(CUSTOM_SHORTCUT_ID_PREFIX)

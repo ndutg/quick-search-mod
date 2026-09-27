@@ -23,9 +23,8 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
-import com.tk.quicksearch.search.common.UserHandleUtils
-import com.tk.quicksearch.search.data.UserAppPreferences
-import com.tk.quicksearch.search.managers.IconPackManager
+import com.tk.quicksearch.search.utils.UserHandleUtils
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -141,6 +140,7 @@ data class AppIconResult(
  * When [userHandleId] is set (work profile), uses a themed icon only when the pack explicitly
  * supports the app; otherwise it preserves the system-badged fallback icon.
  * Returns bitmap and whether the icon is legacy (non-adaptive); legacy icons may need circular clip.
+ * Set [includeArchived] to false to treat an archived app (Android 15+) as not installed.
  */
 @Composable
 fun rememberAppIcon(
@@ -148,6 +148,7 @@ fun rememberAppIcon(
     iconPackPackage: String? = null,
     userHandleId: Int? = null,
     forceCircularMask: Boolean = false,
+    includeArchived: Boolean = true,
 ): AppIconResult {
     val context = LocalContext.current
     val densityDpi = context.resources.displayMetrics.densityDpi
@@ -165,6 +166,7 @@ fun rememberAppIcon(
             userHandleId = userHandleId,
             cacheEpoch = cacheEpoch,
             forceCircularMask = forceCircularMask,
+            includeArchived = includeArchived,
         )
     val cachedInitial = AppIconCache.get(cacheKey)
 
@@ -196,6 +198,7 @@ fun rememberAppIcon(
                         userHandleId = userHandleId,
                         densityDpi = densityDpi,
                         forceCircularMask = forceCircularMask,
+                        includeArchived = includeArchived,
                     )
                 }
 
@@ -216,6 +219,7 @@ private fun loadAppIconEntry(
     userHandleId: Int?,
     densityDpi: Int,
     forceCircularMask: Boolean,
+    includeArchived: Boolean = true,
 ): AppIconEntry? {
     val targetSize = appIconBitmapSize(context)
     val iconPackBitmap =
@@ -262,7 +266,15 @@ private fun loadAppIconEntry(
                 targetSize = targetSize,
                 forceCircularMask = forceCircularMask,
             )
-        else -> loadSystemAppIcon(context, packageName, targetSize, forceCircularMask)
+        else ->
+            loadSystemAppIcon(
+                context = context,
+                packageName = packageName,
+                densityDpi = densityDpi,
+                targetSize = targetSize,
+                forceCircularMask = forceCircularMask,
+                includeArchived = includeArchived,
+            )
     }
 }
 
@@ -300,11 +312,20 @@ private fun addWorkProfileBadge(
 private fun loadSystemAppIcon(
     context: Context,
     packageName: String,
+    densityDpi: Int,
     targetSize: Int,
     forceCircularMask: Boolean,
+    includeArchived: Boolean,
 ): AppIconEntry? =
     runCatching {
-        val drawable = context.packageManager.getApplicationIcon(packageName)
+        val drawable =
+            runCatching { context.packageManager.getApplicationIcon(packageName) }
+                .getOrElse { error ->
+                    // Archived apps (Android 15+) are invisible to getApplicationIcon, but their
+                    // launcher activity still loads the icon the system kept at archive time.
+                    if (!includeArchived) throw error
+                    loadLauncherActivityIcon(context, packageName, densityDpi) ?: throw error
+                }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
             val bitmap =
                 adaptiveToBitmap(
@@ -321,6 +342,20 @@ private fun loadSystemAppIcon(
             AppIconEntry(bitmap, isLegacy = Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
         }
     }.getOrNull()
+
+private fun loadLauncherActivityIcon(
+    context: Context,
+    packageName: String,
+    densityDpi: Int,
+): android.graphics.drawable.Drawable? {
+    val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as? LauncherApps ?: return null
+    return runCatching {
+        launcherApps
+            .getActivityList(packageName, android.os.Process.myUserHandle())
+            .firstOrNull()
+            ?.getIcon(densityDpi)
+    }.getOrNull()
+}
 
 private fun loadWorkProfileBadgedIcon(
     context: Context,
@@ -437,6 +472,7 @@ suspend fun prefetchAppIcons(
     iconPackPackage: String?,
     maxCount: Int = 30,
     forceCircularMask: Boolean = false,
+    includeArchived: Boolean = true,
 ) {
     prefetchAppIconRequests(
         context = context,
@@ -444,6 +480,7 @@ suspend fun prefetchAppIcons(
         iconPackPackage = iconPackPackage,
         maxCount = maxCount,
         forceCircularMask = forceCircularMask,
+        includeArchived = includeArchived,
     )
 }
 
@@ -458,6 +495,7 @@ suspend fun prefetchAppIconRequests(
     maxCount: Int = requests.size,
     forceCircularMask: Boolean = false,
     parallelism: Int = 1,
+    includeArchived: Boolean = true,
 ) {
     if (requests.isEmpty()) return
     val userPreferences = UserAppPreferences(context)
@@ -482,6 +520,7 @@ suspend fun prefetchAppIconRequests(
                         maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons,
                         userHandleId = request.userHandleId,
                         forceCircularMask = forceCircularMask,
+                        includeArchived = includeArchived,
                     ),
                     iconOverride,
                 )
@@ -509,6 +548,7 @@ suspend fun prefetchAppIconRequests(
                                 userHandleId = request.userHandleId,
                                 densityDpi = densityDpi,
                                 forceCircularMask = forceCircularMask,
+                                includeArchived = includeArchived,
                             )
                         if (entry != null) {
                             AppIconCache.put(cacheKey, entry)
@@ -527,11 +567,13 @@ private fun buildCacheKey(
     userHandleId: Int? = null,
     cacheEpoch: Long = appIconCacheEpoch.value,
     forceCircularMask: Boolean = false,
+    includeArchived: Boolean = true,
 ): String {
     val prefix = iconPackPackage ?: "system"
     val maskSuffix = if (iconPackPackage != null) ":mask:$maskUnsupportedIconPackIcons" else ""
     val suffix = userHandleId?.let { ":work:$it" } ?: ""
     val shapeSuffix = if (forceCircularMask) ":circle" else ""
     val overrideSuffix = iconOverride?.let { ":override:${it.iconPackPackage}:${it.drawableName}" }.orEmpty()
-    return "$cacheEpoch:$prefix$maskSuffix:$packageName$suffix$shapeSuffix$overrideSuffix"
+    val archivedSuffix = if (includeArchived) "" else ":installedOnly"
+    return "$cacheEpoch:$prefix$maskSuffix:$packageName$suffix$shapeSuffix$overrideSuffix$archivedSuffix"
 }

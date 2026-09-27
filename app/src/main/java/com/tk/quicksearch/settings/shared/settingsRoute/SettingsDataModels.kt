@@ -1,4 +1,4 @@
-package com.tk.quicksearch.settings.shared
+package com.tk.quicksearch.settings.shared.settingsRoute
 
 import com.tk.quicksearch.search.core.CustomTool
 import com.tk.quicksearch.search.core.SearchTarget
@@ -11,8 +11,8 @@ import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchSection
-import com.tk.quicksearch.search.data.AppShortcutRepository.SearchTargetShortcutMode
-import com.tk.quicksearch.search.data.AppShortcutRepository.StaticShortcut
+import com.tk.quicksearch.search.data.appShortcutRepository.SearchTargetShortcutMode
+import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
@@ -21,10 +21,12 @@ import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
-import com.tk.quicksearch.settings.AppShortcutsSettings.AppShortcutSource
+import com.tk.quicksearch.search.other.OtherSearchItemId
+import com.tk.quicksearch.settings.appShortcutsSettings.AppShortcutSource
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
+import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
-import com.tk.quicksearch.tools.aiSearch.GeminiTextModel
+import com.tk.quicksearch.tools.aiSearch.LlmTextModel
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
 /**
@@ -38,6 +40,7 @@ data class SettingsScreenState(
     val excludedFiles: List<DeviceFile>,
     val excludedSettings: List<DeviceSetting>,
     val excludedAppShortcuts: List<StaticShortcut>,
+    val excludedOtherItems: List<OtherSearchItemId> = emptyList(),
     val searchEngineOrder: List<SearchTarget>,
     val disabledSearchEngines: Set<String>,
     val enabledFileTypes: Set<FileType>,
@@ -133,18 +136,18 @@ data class SettingsScreenState(
     val fuzzySearchAvailable: Boolean,
     val secondaryRankingSignal: SecondaryRankingSignal,
     val hasApiKey: Boolean = false,
-    val geminiApiKeyLast4: String? = null,
+    val activeLlmApiKeyLast4: String? = null,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
     val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String> = emptyMap(),
     val customLlmAdvancedPayloadByProvider: Map<AiSearchLlmProviderId, Pair<Boolean, String>> = emptyMap(),
     val aiSearchLlmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
-    val isSavingGeminiApiKey: Boolean = false,
+    val isSavingLlmApiKey: Boolean = false,
     val personalContext: String = "",
-    val geminiModel: String,
-    val geminiGroundingEnabled: Boolean,
-    val geminiThinkingEnabled: Boolean = false,
-    val availableGeminiModels: List<GeminiTextModel>,
-    val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>> = emptyMap(),
+    val activeLlmModel: String,
+    val activeLlmGroundingEnabled: Boolean,
+    val activeLlmThinkingEnabled: Boolean = false,
+    val activeLlmAvailableModels: List<LlmTextModel>,
+    val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<LlmTextModel>> = emptyMap(),
 ) {
     val searchResults: SearchResultsSettingsState
         get() =
@@ -186,17 +189,17 @@ data class SettingsScreenState(
                 isAliasTriggerAfterSpaceEnabled = isAliasTriggerAfterSpaceEnabled,
                 amazonDomain = amazonDomain,
                 hasApiKey = hasApiKey,
-                geminiApiKeyLast4 = geminiApiKeyLast4,
+                activeLlmApiKeyLast4 = activeLlmApiKeyLast4,
                 llmApiKeyLast4ByProvider = llmApiKeyLast4ByProvider,
                 customLlmBaseUrlByProvider = customLlmBaseUrlByProvider,
                 customLlmAdvancedPayloadByProvider = customLlmAdvancedPayloadByProvider,
                 aiSearchLlmProviderId = aiSearchLlmProviderId,
-                isSavingGeminiApiKey = isSavingGeminiApiKey,
+                isSavingLlmApiKey = isSavingLlmApiKey,
                 personalContext = personalContext,
-                geminiModel = geminiModel,
-                geminiGroundingEnabled = geminiGroundingEnabled,
-                geminiThinkingEnabled = geminiThinkingEnabled,
-                availableGeminiModels = availableGeminiModels,
+                activeLlmModel = activeLlmModel,
+                activeLlmGroundingEnabled = activeLlmGroundingEnabled,
+                activeLlmThinkingEnabled = activeLlmThinkingEnabled,
+                activeLlmAvailableModels = activeLlmAvailableModels,
                 availableLlmModelsByProvider = availableLlmModelsByProvider,
             )
 
@@ -296,6 +299,7 @@ data class SettingsScreenCallbacks(
     val onRemoveExcludedFile: (DeviceFile) -> Unit,
     val onRemoveExcludedSetting: (DeviceSetting) -> Unit,
     val onRemoveExcludedAppShortcut: (StaticShortcut) -> Unit,
+    val onRemoveExcludedOtherItem: (OtherSearchItemId) -> Unit,
     val onClearAllExclusions: () -> Unit,
     val onToggleSearchEngine: (SearchTarget, Boolean) -> Unit,
     val onReorderSearchEngines: (List<SearchTarget>) -> Unit,
@@ -378,19 +382,20 @@ data class SettingsScreenCallbacks(
     val onSetAccentColorMode: (AccentColorMode) -> Unit,
     val onSetCustomAccentColor: (Int) -> Unit,
     val onToggleRecentQueries: (Boolean) -> Unit,
-    val onSetGeminiApiKey: (String?) -> Unit,
+    val onSetLlmApiKeyForDetectedProvider: (String?) -> Unit,
     val onSetLlmApiKey: (AiSearchLlmProviderId, String?) -> Unit,
     val onAddCustomLlmProvider: (baseUrl: String, apiKey: String) -> Unit,
     val onSetPersonalContext: (String?) -> Unit,
-    val onSetGeminiModel: (String?) -> Unit,
+    val onSetActiveLlmModel: (String?) -> Unit,
     val onSetLlmModel: (AiSearchLlmProviderId, String?) -> Unit,
     val onSetCustomLlmAdvancedPayload: (AiSearchLlmProviderId, String?, Boolean) -> Unit,
     val onSetAiToolSettings: (AiBackedToolConfigId, AiSearchLlmProviderId, String, Boolean, Boolean, String?, Boolean, String, String, com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit, com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit) -> Unit,
-    val onSetGeminiGroundingEnabled: (Boolean) -> Unit,
-    val onSetGeminiThinkingEnabled: (Boolean) -> Unit,
-    val onRefreshAvailableGeminiModels: () -> Unit,
+    val onSetActiveLlmGroundingEnabled: (Boolean) -> Unit,
+    val onSetActiveLlmThinkingEnabled: (Boolean) -> Unit,
+    val onRefreshAvailableLlmModels: () -> Unit,
     val onOpenAiSearchConfigure: () -> Unit,
     val onToggleAppShortcutEnabled: (StaticShortcut, Boolean) -> Unit,
+    val onToggleAllAppShortcutsEnabled: (String, Boolean) -> Unit,
     val onLaunchAppShortcut: (StaticShortcut) -> Unit,
     val onOpenAddAppShortcutDialog: () -> Unit,
     val onAddAppShortcutFromSource: (AppShortcutSource) -> Unit,
@@ -464,16 +469,16 @@ data class SettingsScreenCallbacks(
                 onToggleAliasTriggerAfterSpaceEnabled = onToggleAliasTriggerAfterSpaceEnabled,
                 onSetAmazonDomain = onSetAmazonDomain,
                 onSetSearchSectionAlias = onSetSearchSectionAlias,
-                onSetGeminiApiKey = onSetGeminiApiKey,
+                onSetLlmApiKeyForDetectedProvider = onSetLlmApiKeyForDetectedProvider,
                 onSetLlmApiKey = onSetLlmApiKey,
                 onAddCustomLlmProvider = onAddCustomLlmProvider,
                 onSetPersonalContext = onSetPersonalContext,
-                onSetGeminiModel = onSetGeminiModel,
+                onSetActiveLlmModel = onSetActiveLlmModel,
                 onSetLlmModel = onSetLlmModel,
                 onSetCustomLlmAdvancedPayload = onSetCustomLlmAdvancedPayload,
-                onSetGeminiGroundingEnabled = onSetGeminiGroundingEnabled,
-                onSetGeminiThinkingEnabled = onSetGeminiThinkingEnabled,
-                onRefreshAvailableGeminiModels = onRefreshAvailableGeminiModels,
+                onSetActiveLlmGroundingEnabled = onSetActiveLlmGroundingEnabled,
+                onSetActiveLlmThinkingEnabled = onSetActiveLlmThinkingEnabled,
+                onRefreshAvailableLlmModels = onRefreshAvailableLlmModels,
                 onOpenAiSearchConfigure = onOpenAiSearchConfigure,
             )
 
@@ -551,18 +556,18 @@ data class SearchEngineSettingsState(
     val isAliasTriggerAfterSpaceEnabled: Boolean,
     val amazonDomain: String?,
     val hasApiKey: Boolean,
-    val geminiApiKeyLast4: String?,
+    val activeLlmApiKeyLast4: String?,
     val llmApiKeyLast4ByProvider: Map<AiSearchLlmProviderId, String>,
     val customLlmBaseUrlByProvider: Map<AiSearchLlmProviderId, String>,
     val customLlmAdvancedPayloadByProvider: Map<AiSearchLlmProviderId, Pair<Boolean, String>>,
     val aiSearchLlmProviderId: AiSearchLlmProviderId,
-    val isSavingGeminiApiKey: Boolean,
+    val isSavingLlmApiKey: Boolean,
     val personalContext: String,
-    val geminiModel: String,
-    val geminiGroundingEnabled: Boolean,
-    val geminiThinkingEnabled: Boolean,
-    val availableGeminiModels: List<GeminiTextModel>,
-    val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<GeminiTextModel>>,
+    val activeLlmModel: String,
+    val activeLlmGroundingEnabled: Boolean,
+    val activeLlmThinkingEnabled: Boolean,
+    val activeLlmAvailableModels: List<LlmTextModel>,
+    val availableLlmModelsByProvider: Map<AiSearchLlmProviderId, List<LlmTextModel>>,
 )
 
 data class FileSearchSettingsState(
@@ -676,16 +681,16 @@ data class SearchEngineSettingsCallbacks(
     val onToggleAliasTriggerAfterSpaceEnabled: (Boolean) -> Unit,
     val onSetAmazonDomain: (String?) -> Unit,
     val onSetSearchSectionAlias: (String, String) -> Unit,
-    val onSetGeminiApiKey: (String?) -> Unit,
+    val onSetLlmApiKeyForDetectedProvider: (String?) -> Unit,
     val onSetLlmApiKey: (AiSearchLlmProviderId, String?) -> Unit,
     val onAddCustomLlmProvider: (baseUrl: String, apiKey: String) -> Unit,
     val onSetPersonalContext: (String?) -> Unit,
-    val onSetGeminiModel: (String?) -> Unit,
+    val onSetActiveLlmModel: (String?) -> Unit,
     val onSetLlmModel: (AiSearchLlmProviderId, String?) -> Unit,
     val onSetCustomLlmAdvancedPayload: (AiSearchLlmProviderId, String?, Boolean) -> Unit,
-    val onSetGeminiGroundingEnabled: (Boolean) -> Unit,
-    val onSetGeminiThinkingEnabled: (Boolean) -> Unit,
-    val onRefreshAvailableGeminiModels: () -> Unit,
+    val onSetActiveLlmGroundingEnabled: (Boolean) -> Unit,
+    val onSetActiveLlmThinkingEnabled: (Boolean) -> Unit,
+    val onRefreshAvailableLlmModels: () -> Unit,
     val onOpenAiSearchConfigure: () -> Unit,
 )
 
