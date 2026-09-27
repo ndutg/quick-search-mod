@@ -10,6 +10,7 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
+import com.tk.quicksearch.tools.aiSearch.QuickSearchHelp
 
 internal interface SearchViewModelNavigationApi {
     val navigationApiDelegate: SearchViewModelNavigationApiDelegate
@@ -197,6 +198,7 @@ class SearchViewModelNavigationApiDelegate internal constructor(
                             activeQuery = trimmedQuery,
                             usedModelId = entry.aiUsedModelId,
                             llmProviderId = entry.aiLlmProviderId,
+                            isQuickSearchHelp = QuickSearchHelp.questionOrNull(trimmedQuery) != null,
                         )
                     } else {
                         AiSearchState()

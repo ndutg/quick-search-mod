@@ -70,6 +70,8 @@ internal fun rememberWidgetAddFlow(
             val request = pendingRequest ?: return@rememberLauncherForActivityResult
             if (
                 result.resultCode == Activity.RESULT_OK ||
+                // Keep widgets whose configure screen can't be opened at all rather than dropping them.
+                result.resultCode == WidgetConfigureTrampolineActivity.RESULT_LAUNCH_FAILED ||
                 isWidgetConfigurationOptional(request.provider)
             ) {
                 finalizeAddWidget(request)
@@ -80,29 +82,13 @@ internal fun rememberWidgetAddFlow(
         }
 
     fun launchConfigureIfNeeded(request: PendingWidgetRequest) {
-        val configure = request.provider.configure
-        if (configure == null) {
+        if (request.provider.configure == null) {
             finalizeAddWidget(request)
             return
         }
-        val (columnSpan, rowSpan) = initialSpanFor(request.provider)
-        val intent =
-            Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
-                .setComponent(configure)
-                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, request.appWidgetId)
-                .putExtra(
-                    AppWidgetManager.EXTRA_APPWIDGET_OPTIONS,
-                    widgetOptionsFactory.create(columnSpan, rowSpan),
-                )
         pendingRequest = request
-        val launchFailed =
-            runCatching { configureLauncher.launch(intent) }
-                .exceptionOrNull()
-                ?.let { it is SecurityException || it is ActivityNotFoundException }
-                ?: false
-
-        if (launchFailed) {
-            // Some widgets expose configure components that are not exported to third-party launchers.
+        val intent = WidgetConfigureTrampolineActivity.intent(context, request.appWidgetId)
+        if (runCatching { configureLauncher.launch(intent) }.isFailure) {
             finalizeAddWidget(request)
         }
     }

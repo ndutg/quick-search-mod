@@ -10,6 +10,7 @@ import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.data.notes.NotesRoomStore
+import com.tk.quicksearch.widgets.utils.requestNoteWidgetsRefresh
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
@@ -269,6 +270,7 @@ object SettingsBackupManager {
                             .getString(BasePreferences.KEY_NOTES_DATA, null).orEmpty(),
                     )
             notesStore.replaceFromBackup(notes)
+            requestNoteWidgetsRefresh(context)
         }
 
         val importsCalendarEvents =

@@ -4,10 +4,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AirplanemodeActive
+import androidx.compose.material.icons.rounded.WifiPassword
 import androidx.compose.material.icons.rounded.WifiTethering
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +37,14 @@ internal class AirplaneModeGlance(
 
 /** The Wi-Fi hotspot while it is on; apps can't turn it off, so a tap opens its settings. */
 internal class HotspotGlance(
+    val onClick: () -> Unit,
+)
+
+/**
+ * The default Wi-Fi network has a sign-in page (hotel, airport, café). Apps can't open the system
+ * captive portal sign-in, so a tap opens the Wi-Fi panel, where the system offers it.
+ */
+internal class WifiSignInGlance(
     val onClick: () -> Unit,
 )
 
@@ -125,6 +140,87 @@ internal fun rememberHotspotGlance(enabled: Boolean): HotspotGlance? {
     )
 }
 
+/**
+ * Follows whether the default network is Wi-Fi behind a captive portal while [enabled] and the
+ * toggle is on. Reads the current state up front, then follows the default network callback, which
+ * reports capability changes, loss and switches of the default network. Needs only
+ * ACCESS_NETWORK_STATE, an install-time permission; the network name would need location, so it is
+ * not shown.
+ */
+@Composable
+internal fun rememberWifiSignInGlance(enabled: Boolean): WifiSignInGlance? {
+    val context = LocalContext.current
+    val preferences = remember(context) { GlancePreferences(context.applicationContext) }
+    val refreshKey = rememberResumeRefreshKey()
+    val show = remember(enabled, refreshKey) { enabled && preferences.isShowWifiSignInEnabled() }
+    var needsSignIn by remember { mutableStateOf(false) }
+
+    DisposableEffect(show, refreshKey) {
+        val connectivityManager =
+            if (show) {
+                runCatching { context.applicationContext.getSystemService(ConnectivityManager::class.java) }.getOrNull()
+            } else {
+                null
+            }
+        needsSignIn =
+            connectivityManager != null &&
+            runCatching {
+                needsCaptivePortalSignIn(connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork))
+            }.getOrDefault(false)
+
+        // Callbacks arrive on a system thread; state is only written on the main thread.
+        val mainHandler = Handler(Looper.getMainLooper())
+        var disposed = false
+        val post = { value: Boolean -> mainHandler.post { if (!disposed) needsSignIn = value } }
+        val callback =
+            object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    post(
+                        runCatching {
+                            needsCaptivePortalSignIn(connectivityManager?.getNetworkCapabilities(network))
+                        }.getOrDefault(false),
+                    )
+                }
+
+                override fun onCapabilitiesChanged(
+                    network: Network,
+                    networkCapabilities: NetworkCapabilities,
+                ) {
+                    post(needsCaptivePortalSignIn(networkCapabilities))
+                }
+
+                override fun onLost(network: Network) {
+                    post(false)
+                }
+            }
+        val registered =
+            connectivityManager != null &&
+                runCatching { connectivityManager.registerDefaultNetworkCallback(callback) }.isSuccess
+        onDispose {
+            disposed = true
+            mainHandler.removeCallbacksAndMessages(null)
+            if (registered) runCatching { connectivityManager?.unregisterNetworkCallback(callback) }
+        }
+    }
+
+    if (!needsSignIn) return null
+    return WifiSignInGlance(
+        onClick = {
+            val wifiIntents =
+                listOfNotNull(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Intent(Settings.Panel.ACTION_WIFI) else null,
+                    Intent(Settings.ACTION_WIFI_SETTINGS),
+                )
+            openFirstAvailable(context, *wifiIntents.toTypedArray())
+        },
+    )
+}
+
+private fun needsCaptivePortalSignIn(capabilities: NetworkCapabilities?): Boolean =
+    capabilities != null &&
+        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
+        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)
+
 private fun isHotspotOn(
     context: Context,
     stateIntent: Intent?,
@@ -182,6 +278,22 @@ internal fun HotspotRow(glance: HotspotGlance) {
         },
         title = stringResource(R.string.home_hotspot_on),
         pillText = stringResource(R.string.home_turn_off),
+        onClick = glance.onClick,
+    )
+}
+
+@Composable
+internal fun WifiSignInRow(glance: WifiSignInGlance) {
+    GlanceStatusRow(
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.WifiPassword,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+        title = stringResource(R.string.home_wifi_sign_in),
+        pillText = stringResource(R.string.home_sign_in),
         onClick = glance.onClick,
     )
 }

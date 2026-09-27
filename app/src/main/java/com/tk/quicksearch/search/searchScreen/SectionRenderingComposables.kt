@@ -15,9 +15,8 @@ import com.tk.quicksearch.search.appShortcuts.AppShortcutResultsSection
 import com.tk.quicksearch.search.apps.AppGridView
 import com.tk.quicksearch.search.calendar.CalendarEventsSection
 import com.tk.quicksearch.search.contacts.ContactResultsSection
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.AppSuggestionTabType
-import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SectionRenderContext
 import com.tk.quicksearch.search.core.SectionRenderParams
@@ -120,8 +119,8 @@ private fun renderContactsSection(
             hasPermission = contactsParams.hasPermission,
             contacts = contactsParams.contacts,
             isExpanded = contactsParams.isExpanded,
-            callingApp = contactsParams.callingApp ?: CallingApp.CALL,
-            messagingApp = contactsParams.messagingApp ?: MessagingApp.MESSAGES,
+            primaryContactButton = contactsParams.primaryContactButton ?: ContactButtonAction.CALL,
+            secondaryContactButton = contactsParams.secondaryContactButton ?: ContactButtonAction.SMS,
             onContactClick = contactsParams.onContactClick,
             onShowContactMethods = contactsParams.onShowContactMethods,
             onCallContact = contactsParams.onCallContact,

@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -22,7 +23,6 @@ import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.core.isLikelyWebUrl
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
-import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
 import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.search.searchScreen.ExpandedSection
@@ -71,6 +71,7 @@ fun ContentLayout(
     minContentHeight: Dp,
     expandedCardMaxHeight: Dp,
     isReversed: Boolean,
+    resultCardBottomGap: Dp = 0.dp,
     hideResults: Boolean,
     showCalculator: Boolean = false,
     showCurrencyConverter: Boolean = false,
@@ -264,19 +265,7 @@ fun ContentLayout(
                 suggestionsEnabled &&
                 !suggestionWasSelected
 
-    // Recent Queries Logic (for App Open State mainly, but CONFIG has RECENT_QUERIES item)
-    // Suppress regular history in alias mode — alias recent items are shown in the section slot instead.
-    val showRecentItems =
-            !hasQuery &&
-            state.detectedAliasSearchSection == null &&
-            !state.isCurrencyConverterAliasMode &&
-            !state.isWorldClockAliasMode &&
-            !state.isDictionaryAliasMode &&
-            !state.isWeatherAliasMode &&
-            state.recentQueriesEnabled &&
-            // The collapsed home history starts on the Searches tab. Recently opened
-            // results alone must not create an empty Search History section.
-            state.recentItems.any { it is RecentSearchItem.Query }
+    val showRecentItems = shouldShowHomeSearchHistory(state)
 
     // Hoisted to the screen so the screen-level layout (bottom alignment, one-handed mode) flips
     // in the same frame as this content. Mirroring a local flag upward through an effect lagged
@@ -749,6 +738,18 @@ fun ContentLayout(
         }
     }
 
+    val bottomGap =
+        bottomAnchoredResultsGap(
+            resultCardGap = if (isExpanded) 0.dp else resultCardBottomGap,
+            state = state,
+            showTopMatchesSection = showTopMatchesSection,
+            topMatches = displayedTopMatches,
+            rendersAppsSection =
+                shouldRenderSection(SearchSection.APPS) && !isUrlQuery && !holdRegularSectionsForTopMatches &&
+                    sectionContext.shouldRenderApps && regularAppsParams.hasAppResults,
+        )
+    val contentModifier = modifier.padding(bottom = bottomGap)
+
     val homeWidgets = rememberHomePinnedWidgets(enabled = !isOverlayPresentation)
     // The container only depends on whether any widget is pinned, so typing a query keeps the same
     // layout tree instead of rebuilding every section.
@@ -771,7 +772,7 @@ fun ContentLayout(
             host = homeWidgetHost,
             spacing = 14.dp,
             isScrollInProgress = isScrollInProgress,
-            modifier = modifier,
+            modifier = contentModifier,
             leadingContent = {
                 if (showTopMatchesSection && !isReversed) renderTopMatches()
             },
@@ -784,7 +785,7 @@ fun ContentLayout(
         return
     }
 
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(modifier = contentModifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
         if (showTopMatchesSection && !isReversed) {
             renderTopMatches()
         }

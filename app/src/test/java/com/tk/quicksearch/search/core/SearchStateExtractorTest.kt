@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 import org.junit.Assert.assertEquals
@@ -49,8 +50,8 @@ class SearchStateExtractorTest {
     fun permissionStateRoundTripPreservesSelectedApps() {
         val permissions =
             SearchPermissionState(
-                messagingApp = MessagingApp.SIGNAL,
-                callingApp = CallingApp.TELEGRAM,
+                secondaryContactButton = ContactButtonAction.SIGNAL_MESSAGE,
+                primaryContactButton = ContactButtonAction.TELEGRAM_CALL,
             )
 
         assertEquals(

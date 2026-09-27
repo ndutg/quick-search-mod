@@ -68,6 +68,7 @@ import com.tk.quicksearch.tools.aiTools.WorldClockHandler
 import com.tk.quicksearch.tools.calculator.CalculatorHandler
 import com.tk.quicksearch.tools.dateCalculator.DateCalculatorHandler
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
+import com.tk.quicksearch.tools.aiSearch.QuickSearchHelp
 import com.tk.quicksearch.tools.unitConverter.UnitConverterHandler
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
@@ -483,8 +484,8 @@ class SearchViewModel(
     }
     private fun initializeServices() {
         handlers.initializeServices(
-            getCallingApp = { _permissionState.value.callingApp },
-            getMessagingApp = { handlers.messagingHandler.messagingApp },
+            getPrimaryContactButton = { handlers.messagingHandler.primaryContactButton },
+            getSecondaryContactButton = { handlers.messagingHandler.secondaryContactButton },
             getDirectDialEnabled = { directDialEnabled },
             getHasSeenDirectDialChoice = { hasSeenDirectDialChoice },
             getCurrentState = { uiState.value },
@@ -652,7 +653,13 @@ class SearchViewModel(
             query = trimmedQuestion,
             previousQuestion = previousQuestion,
             previousAnswer = previousAnswer,
+            isQuickSearchHelp = currentAiState.isQuickSearchHelp,
         )
+    }
+    fun askQuickSearch() {
+        val query = _resultsState.value.query.trim()
+        if (QuickSearchHelp.questionOrNull(query) == null) return
+        handlers.aiSearchHandler.requestQuickSearchHelp(query)
     }
     fun executeCurrencyConversion() = toolCoordinator.executeCurrencyConversion()
     fun executeWorldClockLookup() = toolCoordinator.executeWorldClockLookup()

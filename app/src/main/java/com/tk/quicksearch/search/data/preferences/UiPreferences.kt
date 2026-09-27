@@ -420,6 +420,8 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_OVERLAY_MODE_ENABLED = "overlay_mode_enabled"
         const val KEY_MESSAGING_APP = "messaging_app"
         const val KEY_CALLING_APP = "calling_app"
+        const val KEY_PRIMARY_CONTACT_BUTTON = "primary_contact_button"
+        const val KEY_SECONDARY_CONTACT_BUTTON = "secondary_contact_button"
         const val KEY_FIRST_LAUNCH = "first_launch"
         const val KEY_INSTALL_TIME = "install_time"
         const val KEY_WALLPAPER_BACKGROUND_ALPHA = "wallpaper_background_alpha"

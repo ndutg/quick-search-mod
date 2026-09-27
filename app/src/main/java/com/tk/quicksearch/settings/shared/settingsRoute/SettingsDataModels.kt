@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.shared.settingsRoute
 
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.CustomTool
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.AppIconShape
@@ -7,8 +8,6 @@ import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
-import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.data.appShortcutRepository.SearchTargetShortcutMode
@@ -66,8 +65,8 @@ data class SettingsScreenState(
     val allDeviceSettings: List<DeviceSetting>,
     val allApps: List<AppInfo>,
     val disabledAppShortcutIds: Set<String>,
-    val messagingApp: MessagingApp,
-    val callingApp: CallingApp,
+    val primaryContactButton: ContactButtonAction,
+    val secondaryContactButton: ContactButtonAction,
     val isWhatsAppInstalled: Boolean,
     val isWhatsAppBusinessInstalled: Boolean,
     val isTelegramInstalled: Boolean,
@@ -278,8 +277,8 @@ data class SettingsScreenState(
                 allDeviceSettings = allDeviceSettings,
                 allApps = allApps,
                 disabledAppShortcutIds = disabledAppShortcutIds,
-                messagingApp = messagingApp,
-                callingApp = callingApp,
+                primaryContactButton = primaryContactButton,
+                secondaryContactButton = secondaryContactButton,
                 isWhatsAppInstalled = isWhatsAppInstalled,
                 isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
                 isTelegramInstalled = isTelegramInstalled,
@@ -321,8 +320,8 @@ data class SettingsScreenCallbacks(
     val onDismissOverlayAssistantTip: () -> Unit,
     val setAliasCode: (SearchTarget, String) -> Unit,
     val setAliasEnabled: (SearchTarget, Boolean) -> Unit,
-    val onSetMessagingApp: (MessagingApp) -> Unit,
-    val onSetCallingApp: (CallingApp) -> Unit,
+    val onSetPrimaryContactButton: (ContactButtonAction) -> Unit,
+    val onSetSecondaryContactButton: (ContactButtonAction) -> Unit,
     val onWallpaperBackgroundAlphaChange: (Float) -> Unit,
     val onWallpaperBlurRadiusChange: (Float) -> Unit,
     val onSetAppTheme: (AppTheme) -> Unit,
@@ -637,8 +636,8 @@ data class AppShortcutsSettingsState(
     val allDeviceSettings: List<DeviceSetting>,
     val allApps: List<AppInfo>,
     val disabledAppShortcutIds: Set<String>,
-    val messagingApp: MessagingApp,
-    val callingApp: CallingApp,
+    val primaryContactButton: ContactButtonAction,
+    val secondaryContactButton: ContactButtonAction,
     val isWhatsAppInstalled: Boolean,
     val isWhatsAppBusinessInstalled: Boolean,
     val isTelegramInstalled: Boolean,

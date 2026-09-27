@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -89,6 +88,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -158,9 +158,12 @@ fun WidgetsPanelScreen(
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
     val appContext = context.applicationContext
-    val packageManager = context.packageManager
     val density = LocalDensity.current
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    // Only the swipe from search hides the keyboard on its way out; the app shortcut and the
+    // overlay hand-off switch here directly, sometimes right after resume re-raised it for search.
+    LaunchedEffect(Unit) { keyboardController?.hide() }
     val appWidgetManager = remember(appContext) { AppWidgetManager.getInstance(appContext) }
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, QUICK_SEARCH_WIDGET_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
@@ -500,7 +503,6 @@ fun WidgetsPanelScreen(
                                     editingWidgetId = null
                                 },
                                 onPinWidgetToHome = ::pinWidgetToHome,
-                                packageManager = packageManager,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         } else {

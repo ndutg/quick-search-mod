@@ -45,8 +45,6 @@ import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.calendar.CalendarEventRow
 import com.tk.quicksearch.search.common.AddToHomeHandler
 import com.tk.quicksearch.search.contacts.components.ContactResultRow
-import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SectionRenderContext
 import com.tk.quicksearch.search.core.SectionRenderParams

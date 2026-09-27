@@ -581,8 +581,8 @@ internal class SearchStartupLifecycleDelegate(
             }
             updatePermissionState { state ->
                 state.copy(
-                    messagingApp = messagingInfo.messagingApp,
-                    callingApp = messagingInfo.callingApp,
+                    primaryContactButton = messagingInfo.primaryContactButton,
+                    secondaryContactButton = messagingInfo.secondaryContactButton,
                     isWhatsAppInstalled = messagingInfo.isWhatsAppInstalled,
                     isWhatsAppBusinessInstalled = messagingInfo.isWhatsAppBusinessInstalled,
                     isTelegramInstalled = messagingInfo.isTelegramInstalled,

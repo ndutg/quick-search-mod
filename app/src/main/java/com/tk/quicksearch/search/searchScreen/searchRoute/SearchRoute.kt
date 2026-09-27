@@ -59,6 +59,7 @@ import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.WeatherIntentParser
+import com.tk.quicksearch.tools.aiSearch.QuickSearchHelp
 import com.tk.quicksearch.search.apps.appLock.LocalAppLockAuthenticator
 import com.tk.quicksearch.search.apps.appLock.LocalAppLockCredentialAuthenticator
 import com.tk.quicksearch.search.apps.speedBump.SpeedBump
@@ -553,6 +554,8 @@ fun SearchRoute(
                 val trimmedQuery = query.trim()
                 if (target is SearchTarget.Engine && target.engine == SearchEngine.DIRECT_SEARCH) {
                     when {
+                        QuickSearchHelp.questionOrNull(trimmedQuery) != null ->
+                            viewModel.askQuickSearch()
                         uiState.currencyConverterEnabled &&
                                 uiState.calculatorState.result == null &&
                                 CurrencyConversionIntentParser.parseConfirmed(trimmedQuery) != null ->
@@ -663,6 +666,7 @@ fun SearchRoute(
             onDictionarySearchClick = viewModel::executeDictionaryLookup,
             onWeatherSearchClick = viewModel::executeWeatherLookup,
             onWorldClockSearchClick = viewModel::executeWorldClockLookup,
+            onQuickSearchHelpClick = viewModel::askQuickSearch,
             onCustomToolSearchClick = viewModel::executeCustomToolSearch,
             onTaskerIntentClick = viewModel::executeTaskerIntent,
             onOpenToolsSettings = onOpenToolsSettings,

@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.preferences.DEFAULT_WEB_SUGGESTIONS_ENABLED
@@ -261,8 +262,8 @@ data class SearchUiState(
         val shortcutEnabled: Map<String, Boolean> = emptyMap(),
         val disabledAppShortcutIds: Set<String> = emptySet(),
         // Messaging / calling
-        val messagingApp: MessagingApp = MessagingApp.MESSAGES,
-        val callingApp: CallingApp = CallingApp.CALL,
+        val primaryContactButton: ContactButtonAction = ContactButtonAction.CALL,
+        val secondaryContactButton: ContactButtonAction = ContactButtonAction.SMS,
         val isWhatsAppInstalled: Boolean = false,
         val isWhatsAppBusinessInstalled: Boolean = false,
         val isTelegramInstalled: Boolean = false,
@@ -500,8 +501,8 @@ fun SearchUiState(
                 hasCallPermission = permissions.hasCallPermission,
                 hasWallpaperPermission = permissions.hasWallpaperPermission,
                 wallpaperAvailable = permissions.wallpaperAvailable,
-                messagingApp = permissions.messagingApp,
-                callingApp = permissions.callingApp,
+                primaryContactButton = permissions.primaryContactButton,
+                secondaryContactButton = permissions.secondaryContactButton,
                 isWhatsAppInstalled = permissions.isWhatsAppInstalled,
                 isWhatsAppBusinessInstalled = permissions.isWhatsAppBusinessInstalled,
                 isTelegramInstalled = permissions.isTelegramInstalled,

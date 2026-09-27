@@ -1,10 +1,9 @@
 package com.tk.quicksearch.search.data.userAppPreferences
 
 import android.content.Context
-import com.tk.quicksearch.search.core.CallingApp
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.CustomSearchEngine
 import com.tk.quicksearch.search.core.CustomTool
-import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppSuggestionTabType
@@ -488,13 +487,13 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
 
     fun setOverlayModeEnabled(enabled: Boolean) = uiPreferences.setOverlayModeEnabled(enabled)
 
-    fun getMessagingApp(): MessagingApp = uiPreferences.getMessagingApp()
+    fun getPrimaryContactButton(): ContactButtonAction = uiPreferences.getPrimaryContactButton()
 
-    fun setMessagingApp(app: MessagingApp) = uiPreferences.setMessagingApp(app)
+    fun setPrimaryContactButton(action: ContactButtonAction) = uiPreferences.setPrimaryContactButton(action)
 
-    fun getCallingApp(): CallingApp = uiPreferences.getCallingApp()
+    fun getSecondaryContactButton(): ContactButtonAction = uiPreferences.getSecondaryContactButton()
 
-    fun setCallingApp(app: CallingApp) = uiPreferences.setCallingApp(app)
+    fun setSecondaryContactButton(action: ContactButtonAction) = uiPreferences.setSecondaryContactButton(action)
 
     fun isFirstLaunch(): Boolean = uiPreferences.isFirstLaunch()
 

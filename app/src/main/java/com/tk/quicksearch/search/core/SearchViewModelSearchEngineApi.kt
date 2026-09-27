@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +29,11 @@ internal interface SearchViewModelSearchEngineApi {
 
     fun setMessagingApp(app: MessagingApp) = searchEngineApiDelegate.setMessagingApp(app)
 
-    fun setCallingApp(app: CallingApp) = searchEngineApiDelegate.setCallingApp(app)
+    fun setPrimaryContactButton(action: ContactButtonAction) =
+        searchEngineApiDelegate.setPrimaryContactButton(action)
+
+    fun setSecondaryContactButton(action: ContactButtonAction) =
+        searchEngineApiDelegate.setSecondaryContactButton(action)
 
     fun acknowledgeReleaseNotes() = searchEngineApiDelegate.acknowledgeReleaseNotes()
 
@@ -119,23 +124,11 @@ class SearchViewModelSearchEngineApiDelegate internal constructor(
 
     fun setMessagingApp(app: MessagingApp) = messagingHandler().setMessagingApp(app)
 
-    fun setCallingApp(app: CallingApp) {
-        userPreferences.setCallingApp(app)
-        val permState = permissionStateProvider()
-        val resolvedCallingApp =
-            resolveCallingApp(
-                app = app,
-                isWhatsAppInstalled = permState.isWhatsAppInstalled,
-                isWhatsAppBusinessInstalled = permState.isWhatsAppBusinessInstalled,
-                isTelegramInstalled = permState.isTelegramInstalled,
-                isSignalInstalled = permState.isSignalInstalled,
-                isGoogleMeetInstalled = permState.isGoogleMeetInstalled,
-            )
-        if (resolvedCallingApp != app) {
-            userPreferences.setCallingApp(resolvedCallingApp)
-        }
-        updatePermissionState { it.copy(callingApp = resolvedCallingApp) }
-    }
+    fun setPrimaryContactButton(action: ContactButtonAction) =
+        messagingHandler().setPrimaryContactButton(action)
+
+    fun setSecondaryContactButton(action: ContactButtonAction) =
+        messagingHandler().setSecondaryContactButton(action)
 
     fun acknowledgeReleaseNotes() {
         releaseNotesHandler().acknowledgeReleaseNotes(configStateProvider().releaseNotesVersionName)
@@ -206,21 +199,3 @@ class SearchViewModelSearchEngineApiDelegate internal constructor(
     fun setSearchEngineCompactRowCount(rowCount: Int) =
         searchEngineManager().setSearchEngineCompactRowCount(rowCount)
 }
-
-internal fun resolveCallingApp(
-    app: CallingApp,
-    isWhatsAppInstalled: Boolean,
-    isWhatsAppBusinessInstalled: Boolean,
-    isTelegramInstalled: Boolean,
-    isSignalInstalled: Boolean,
-    isGoogleMeetInstalled: Boolean,
-): CallingApp =
-    when (app) {
-        CallingApp.WHATSAPP -> if (isWhatsAppInstalled) CallingApp.WHATSAPP else CallingApp.CALL
-        CallingApp.WHATSAPP_BUSINESS -> if (isWhatsAppBusinessInstalled) CallingApp.WHATSAPP_BUSINESS else CallingApp.CALL
-        CallingApp.TELEGRAM -> if (isTelegramInstalled) CallingApp.TELEGRAM else CallingApp.CALL
-        CallingApp.SIGNAL -> if (isSignalInstalled) CallingApp.SIGNAL else CallingApp.CALL
-        CallingApp.GOOGLE_MEET ->
-            if (isGoogleMeetInstalled) CallingApp.GOOGLE_MEET else CallingApp.CALL
-        CallingApp.CALL -> CallingApp.CALL
-    }

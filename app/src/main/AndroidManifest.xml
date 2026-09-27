@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- At a Glance hotspot row: the hotspot state broadcast and getter require it -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- At a Glance Wi-Fi sign-in row: reads the default network's captive portal capability -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Haptic Feedback -->
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -385,6 +387,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Opens hosted widgets' configure screens through the system (see the class doc). -->
+        <activity
+            android:name=".widgetsPanel.WidgetConfigureTrampolineActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <!-- Own empty task affinity so finishing it returns to the launcher, not to Quick Search. -->
         <activity
             android:name=".widgets.mediaControlsWidget.MediaControlsOpenPlayerActivity"
@@ -488,6 +497,19 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/media_controls_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.noteWidget.NoteWidgetReceiver"
+            android:exported="false"
+            android:label="@string/widget_note_widget_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/note_widget_info" />
         </receiver>
 
         <!-- Quick Settings Tile Service -->

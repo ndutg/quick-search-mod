@@ -50,9 +50,8 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.search.contacts.contactInitials
-import com.tk.quicksearch.search.core.CallingApp
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.LocalItemCustomizationRemover
-import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
@@ -73,8 +72,8 @@ import kotlinx.coroutines.withContext
 @Composable
 internal fun ContactResultRow(
         contactInfo: ContactInfo,
-        callingApp: CallingApp,
-        messagingApp: MessagingApp,
+        primaryContactButton: ContactButtonAction,
+        secondaryContactButton: ContactButtonAction,
         primaryAction: com.tk.quicksearch.search.contacts.models.ContactCardAction? = null,
         secondaryAction: com.tk.quicksearch.search.contacts.models.ContactCardAction? = null,
         onContactClick: (ContactInfo) -> Unit,
@@ -190,8 +189,8 @@ internal fun ContactResultRow(
                                 // Always show call and message action buttons
                                 ContactActionButtons(
                                         hasNumber = hasNumber,
-                                        callingApp = callingApp,
-                                        messagingApp = messagingApp,
+                                        primaryContactButton = primaryContactButton,
+                                        secondaryContactButton = secondaryContactButton,
                                         primaryAction = primaryAction,
                                         secondaryAction = secondaryAction,
                                         onCallClick = { onCallContact(contactInfo) },
@@ -325,8 +324,8 @@ internal fun ContactAvatar(
 @Composable
 private fun ContactActionButtons(
         hasNumber: Boolean,
-        callingApp: CallingApp,
-        messagingApp: MessagingApp,
+        primaryContactButton: ContactButtonAction,
+        secondaryContactButton: ContactButtonAction,
         primaryAction: com.tk.quicksearch.search.contacts.models.ContactCardAction?,
         secondaryAction: com.tk.quicksearch.search.contacts.models.ContactCardAction?,
         onCallClick: () -> Unit,
@@ -336,6 +335,11 @@ private fun ContactActionButtons(
         onCustomAction: (com.tk.quicksearch.search.contacts.models.ContactCardAction) -> Unit,
 ) {
         val view = LocalView.current
+        // A resolved Email action means the contact has an email address, even without a number.
+        val primaryEnabled =
+                hasNumber || (primaryAction == null && primaryContactButton == ContactButtonAction.EMAIL)
+        val secondaryEnabled =
+                hasNumber || (secondaryAction == null && secondaryContactButton == ContactButtonAction.EMAIL)
 
         // Helper to render action button with consistent styling and long press support
         @Composable
@@ -379,64 +383,10 @@ private fun ContactActionButtons(
                                         enabled = hasNumber,
                                 )
                         } else {
-                                when (callingApp) {
-                                        CallingApp.CALL -> {
-                                                Icon(
-                                                        imageVector = Icons.Rounded.Call,
-                                                        contentDescription =
-                                                                stringResource(
-                                                                        R.string.contacts_action_call,
-                                                                ),
-                                                        tint =
-                                                                if (hasNumber) AppColors.CallIconTint
-                                                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        modifier =
-                                                                Modifier.size(
-                                                                        ContactUiConstants
-                                                                                .ACTION_ICON_SIZE
-                                                                                .dp,
-                                                                ),
-                                                )
-                                        }
-                                        CallingApp.GOOGLE_MEET -> {
-                                                Icon(
-                                                        painter = painterResource(id = R.drawable.google_meet),
-                                                        contentDescription = null,
-                                                        tint =
-                                                                if (hasNumber) Color.Unspecified
-                                                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        modifier = Modifier.size(ContactUiConstants.ACTION_ICON_SIZE.dp),
-                                                )
-                                        }
-                                        CallingApp.WHATSAPP -> {
-                                                AppVoiceCallIcon(
-                                                        logoPainterRes = R.drawable.whatsapp_call,
-                                                        size = ContactUiConstants.ACTION_ICON_SIZE.dp,
-                                                        enabled = hasNumber,
-                                                )
-                                        }
-                                        CallingApp.WHATSAPP_BUSINESS -> {
-                                                AppVoiceCallIcon(
-                                                        logoPainterRes = R.drawable.whatsapp_call,
-                                                        size = ContactUiConstants.ACTION_ICON_SIZE.dp,
-                                                        enabled = hasNumber,
-                                                )
-                                        }
-                                        CallingApp.TELEGRAM -> {
-                                                AppVoiceCallIcon(
-                                                        logoPainterRes = R.drawable.telegram_call,
-                                                        size = ContactUiConstants.ACTION_ICON_SIZE.dp,
-                                                        enabled = hasNumber,
-                                                )
-                                        }
-                                        CallingApp.SIGNAL -> {
-                                                AppVoiceCallIcon(
-                                                        logoPainterRes = R.drawable.signal_call,
-                                                        size = ContactUiConstants.ACTION_ICON_SIZE.dp,
-                                                        enabled = hasNumber,
-                                                )
-                                        }
-                                }
+                                ContactButtonActionIcon(
+                                        action = primaryContactButton,
+                                        enabled = primaryEnabled,
+                                )
                         }
                 },
                 contentDescription = stringResource(R.string.contacts_action_call),
@@ -448,7 +398,7 @@ private fun ContactActionButtons(
                         }
                 },
                 onLongClick = onPrimaryLongPress,
-                enabled = hasNumber,
+                enabled = primaryEnabled,
         )
 
         // --- Secondary Action (Right) ---
@@ -461,114 +411,10 @@ private fun ContactActionButtons(
                                         enabled = hasNumber,
                                 )
                         } else {
-                                // Default messaging logic
-                                when (messagingApp) {
-                                        MessagingApp.MESSAGES -> {
-                                                Icon(
-                                                        imageVector = Icons.Rounded.Sms,
-                                                        contentDescription =
-                                                                stringResource(
-                                                                        R.string
-                                                                                .contacts_action_sms,
-                                                                ),
-                                                        tint =
-                                                                if (hasNumber) AppColors.CallIconTint
-                                                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        modifier =
-                                                                Modifier.size(
-                                                                        (ContactUiConstants
-                                                                                        .ACTION_ICON_SIZE *
-                                                                                        0.9f)
-                                                                                .dp,
-                                                                ),
-                                                )
-                                        }
-                                        MessagingApp.WHATSAPP -> {
-                                                Icon(
-                                                        painter =
-                                                                painterResource(
-                                                                        id = R.drawable.whatsapp,
-                                                                ),
-                                                        contentDescription =
-                                                                stringResource(
-                                                                        R.string
-                                                                                .contacts_action_whatsapp,
-                                                                ),
-                                                        tint =
-                                                                if (hasNumber) {
-                                                                        Color.Unspecified
-                                                                } else {
-                                                                        MaterialTheme.colorScheme
-                                                                                .onSurfaceVariant
-                                                                },
-                                                        modifier =
-                                                                Modifier.size(
-                                                                        ContactUiConstants
-                                                                                .ACTION_ICON_SIZE
-                                                                                .dp,
-                                                                ),
-                                                )
-                                        }
-                                        MessagingApp.WHATSAPP_BUSINESS -> {
-                                                Icon(
-                                                        painter = painterResource(id = R.drawable.whatsapp),
-                                                        contentDescription = null,
-                                                        tint = if (hasNumber) Color.Unspecified else MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        modifier = Modifier.size(ContactUiConstants.ACTION_ICON_SIZE.dp),
-                                                )
-                                        }
-                                        MessagingApp.TELEGRAM -> {
-                                                Icon(
-                                                        painter =
-                                                                painterResource(
-                                                                        id = R.drawable.telegram,
-                                                                ),
-                                                        contentDescription =
-                                                                stringResource(
-                                                                        R.string
-                                                                                .contacts_action_telegram,
-                                                                ),
-                                                        tint =
-                                                                if (hasNumber) {
-                                                                        Color.Unspecified
-                                                                } else {
-                                                                        MaterialTheme.colorScheme
-                                                                                .onSurfaceVariant
-                                                                },
-                                                        modifier =
-                                                                Modifier.size(
-                                                                        ContactUiConstants
-                                                                                .ACTION_ICON_SIZE
-                                                                                .dp,
-                                                                ),
-                                                )
-                                        }
-                                        MessagingApp.SIGNAL -> {
-                                                Icon(
-                                                        painter =
-                                                                painterResource(
-                                                                        id = R.drawable.signal,
-                                                                ),
-                                                        contentDescription =
-                                                                stringResource(
-                                                                        R.string
-                                                                                .contacts_action_signal,
-                                                                ),
-                                                        tint =
-                                                                if (hasNumber) {
-                                                                        AppColors.ActionSignal
-                                                                } else {
-                                                                        MaterialTheme.colorScheme
-                                                                                .onSurfaceVariant
-                                                                },
-                                                        modifier =
-                                                                Modifier.size(
-                                                                        DesignTokens
-                                                                                .SignalMessageIconSize,
-                                                                ),
-                                                )
-                                        }
-                                }
+                                ContactButtonActionIcon(
+                                        action = secondaryContactButton,
+                                        enabled = secondaryEnabled,
+                                )
                         }
                 },
                 contentDescription = stringResource(R.string.contacts_action_sms),
@@ -580,7 +426,7 @@ private fun ContactActionButtons(
                         }
                 },
                 onLongClick = onSecondaryLongPress,
-                enabled = hasNumber,
+                enabled = secondaryEnabled,
         )
 }
 

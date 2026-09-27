@@ -1,10 +1,17 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.search.core.ScreenVisibilityState
+import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SectionRenderParams
 
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.ItemPriorityConfig
 import com.tk.quicksearch.search.core.SearchSectionRegistry
+import com.tk.quicksearch.search.other.OtherSearchItemRegistry
+import com.tk.quicksearch.search.searchHistory.RecentSearchItem
+import com.tk.quicksearch.search.searchScreen.TopMatchItem
 
 internal fun homeLayoutOrder(
     baseLayoutOrder: List<ItemPriorityConfig.ItemType>,
@@ -32,6 +39,54 @@ internal fun homeLayoutOrder(
         }
     return if (isReversed) logicalOrder.reversed() else logicalOrder
 }
+
+/**
+ * Space under bottom-anchored search results. The app grid's labels already clear the search bar,
+ * so only a result card in the bottom slot gets [resultCardGap].
+ */
+internal fun bottomAnchoredResultsGap(
+    resultCardGap: Dp,
+    state: SearchUiState,
+    showTopMatchesSection: Boolean,
+    topMatches: List<TopMatchItem>,
+    rendersAppsSection: Boolean,
+): Dp {
+    if (resultCardGap == 0.dp) return 0.dp
+    val endsWithAppGrid =
+        if (showTopMatchesSection) {
+            // Reversed top matches place their first match last.
+            topMatches.firstOrNull() is TopMatchItem.AppGrid
+        } else {
+            // The error banner and other-result cards are the only items below the apps section.
+            rendersAppsSection &&
+                state.screenState !is ScreenVisibilityState.Error &&
+                (
+                    state.topMatchesEnabled ||
+                        !OtherSearchItemRegistry.hasVisibleResult(
+                            query = state.query,
+                            pinnedItemOrder = state.pinnedNonAppItemOrder,
+                            screenTimeState = state.screenTimeState,
+                        )
+                )
+        }
+    return if (endsWithAppGrid) 0.dp else resultCardGap
+}
+
+/**
+ * Whether Home shows its Search History section (the RECENT_QUERIES layout item). Alias modes
+ * suppress it because their recent items render in the section slot instead.
+ */
+internal fun shouldShowHomeSearchHistory(state: SearchUiState): Boolean =
+    state.query.isBlank() &&
+        state.detectedAliasSearchSection == null &&
+        !state.isCurrencyConverterAliasMode &&
+        !state.isWorldClockAliasMode &&
+        !state.isDictionaryAliasMode &&
+        !state.isWeatherAliasMode &&
+        state.recentQueriesEnabled &&
+        // The collapsed home history starts on the Searches tab. Recently opened
+        // results alone must not create an empty Search History section.
+        state.recentItems.any { it is RecentSearchItem.Query }
 
 internal fun shouldRenderStandaloneTodayAgendaBeforeApps(isReversed: Boolean): Boolean = isReversed
 

@@ -114,6 +114,7 @@ internal fun SearchScreenContent(
         onDictionarySearchClick: () -> Unit = {},
         onWeatherSearchClick: () -> Unit = {},
         onWorldClockSearchClick: () -> Unit = {},
+        onQuickSearchHelpClick: () -> Unit = {},
         onCustomToolSearchClick: () -> Unit = {},
         onTaskerIntentClick: () -> Unit = {},
         onKeyboardSwitchToggle: () -> Unit,
@@ -272,6 +273,7 @@ internal fun SearchScreenContent(
                     isWeatherAliasMode ||
                     activeCustomTool != null
                     || activeTaskerIntent != null
+                    || cardVisibility.isQuickSearchHelpQuery
     val shouldShowNumberKeyboardOperators =
             isImeVisible && (manuallySwitchedToNumberKeyboard || isCalculatorMode)
     val showBottomSearchBar = showSearchField && state.bottomSearchBarEnabled
@@ -356,6 +358,7 @@ internal fun SearchScreenContent(
         enabledTargets = enabledTargets,
         isImeVisible = isImeVisible,
         isPhysicalKeyboardConnected = isPhysicalKeyboardConnected,
+        isQuickSearchHelpQuery = cardVisibility.isQuickSearchHelpQuery,
         showCurrencyConverterSearchCard = showCurrencyConverterSearchCard,
         showDictionarySearchCard = showDictionarySearchCard,
         showWeatherSearchCard = showWeatherSearchCard,
@@ -395,6 +398,8 @@ internal fun SearchScreenContent(
         isSearchHistoryExpanded = isSearchHistoryExpanded,
         showAiFollowUpAction = showAiFollowUpAction,
         onShowAiFollowUpInput = { isAiFollowUpInputVisible = true },
+        showQuickSearchHelpCard = cardVisibility.showQuickSearchHelpCard,
+        onQuickSearchHelpClick = onQuickSearchHelpClick,
         showCurrencyConverterSearchCard = showCurrencyConverterSearchCard,
         onCurrencyConversionClick = onCurrencyConversionClick,
         showDictionarySearchCard = showDictionarySearchCard,
@@ -576,6 +581,8 @@ internal fun SearchScreenContent(
                         isOtherSearchResultVisible = isOtherSearchResultVisible,
                         enabledTargets = enabledTargets,
                         onSearchTargetClick = onSearchTargetClick,
+                        isQuickSearchHelpQuery = cardVisibility.isQuickSearchHelpQuery,
+                        onQuickSearchHelpClick = onQuickSearchHelpClick,
                         showCurrencyConverterSearchCard = showCurrencyConverterSearchCard,
                         onCurrencyConversionClick = onCurrencyConversionClick,
                         showDictionarySearchCard = showDictionarySearchCard,

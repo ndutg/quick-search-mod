@@ -45,8 +45,7 @@ import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.calendar.CalendarEventRow
 import com.tk.quicksearch.search.common.AddToHomeHandler
 import com.tk.quicksearch.search.contacts.components.ContactResultRow
-import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.MessagingApp
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SectionRenderContext
 import com.tk.quicksearch.search.core.SectionRenderParams
@@ -284,8 +283,8 @@ private fun TopMatchRow(
 
         is TopMatchItem.Contact -> ContactResultRow(
             contactInfo = item.contact,
-            callingApp = params.contactsParams.callingApp ?: CallingApp.CALL,
-            messagingApp = params.contactsParams.messagingApp ?: MessagingApp.MESSAGES,
+            primaryContactButton = params.contactsParams.primaryContactButton ?: ContactButtonAction.CALL,
+            secondaryContactButton = params.contactsParams.secondaryContactButton ?: ContactButtonAction.SMS,
             primaryAction = params.contactsParams.getPrimaryContactCardAction(item.contact.contactId),
             secondaryAction = params.contactsParams.getSecondaryContactCardAction(item.contact.contactId),
             onContactClick = params.contactsParams.onContactClick,

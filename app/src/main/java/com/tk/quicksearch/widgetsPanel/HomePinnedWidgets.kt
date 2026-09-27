@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -338,7 +337,6 @@ internal fun HomePinnedWidgetItem(
     showHostedWidget: Boolean,
     appWidgetManager: AppWidgetManager,
     appWidgetHost: WidgetPanelHost,
-    packageManager: PackageManager,
     isEditing: Boolean,
     onWidgetBoundsChanged: (Rect) -> Unit,
     modifier: Modifier,
@@ -349,20 +347,17 @@ internal fun HomePinnedWidgetItem(
     onRemove: () -> Unit,
     onConfigure: (Intent) -> Unit,
 ) {
+    val context = LocalContext.current
     val home = widget.home ?: return
     val providerInfo =
         remember(widget.appWidgetId, appWidgetManager) {
             appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
         } ?: return
     val configureIntent =
-        remember(providerInfo, widget.appWidgetId, packageManager) {
-            providerInfo.configure
-                ?.takeIf { isWidgetConfigureActivityAccessible(packageManager, it) }
-                ?.let { configure ->
-                    Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
-                        .setComponent(configure)
-                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.appWidgetId)
-                }
+        remember(providerInfo, widget.appWidgetId) {
+            providerInfo.configure?.let {
+                WidgetConfigureTrampolineActivity.intent(context, widget.appWidgetId)
+            }
         }
     val density = LocalDensity.current
     val rowHeight = WidgetPanelGridRowHeight

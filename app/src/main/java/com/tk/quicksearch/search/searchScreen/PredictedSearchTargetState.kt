@@ -28,6 +28,7 @@ internal fun rememberPredictedSearchTargetState(
     enabledTargets: List<SearchTarget>,
     isImeVisible: Boolean,
     isPhysicalKeyboardConnected: Boolean,
+    isQuickSearchHelpQuery: Boolean,
     showCurrencyConverterSearchCard: Boolean,
     showDictionarySearchCard: Boolean,
     showWeatherSearchCard: Boolean,
@@ -120,6 +121,7 @@ internal fun rememberPredictedSearchTargetState(
             if (shouldShowTopResultIndicator &&
                     !isNonSubmittableSuggestionsTab &&
                     !isOtherSearchResultVisible &&
+                    !isQuickSearchHelpQuery &&
                     !showCurrencyConverterSearchCard &&
                     !showDictionarySearchCard &&
                     !showWeatherSearchCard &&
@@ -129,6 +131,7 @@ internal fun rememberPredictedSearchTargetState(
             } else null
     val hideResultsForTopMatchSubmit =
             state.AiSearchState.status != AiSearchStatus.Idle ||
+                    isQuickSearchHelpQuery ||
                     state.calculatorState.isToolMode ||
                     state.calculatorState.result != null ||
                     state.calculatorState.parsedDateMillis != null ||

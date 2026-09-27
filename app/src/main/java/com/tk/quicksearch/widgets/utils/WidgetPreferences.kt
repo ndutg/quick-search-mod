@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.search.data.assets.ManagedAssetStore
@@ -58,6 +59,7 @@ enum class WidgetVariant {
     STANDARD,
     CUSTOM_BUTTONS_ONLY,
     MEDIA_CONTROLS,
+    NOTE,
 }
 
 internal object WidgetButtonSlotConfig {
@@ -135,7 +137,7 @@ private object WidgetKeys {
     val CUSTOM_BUTTON_3 = stringPreferencesKey("quick_search_widget_custom_button_3")
     val CUSTOM_BUTTON_4 = stringPreferencesKey("quick_search_widget_custom_button_4")
     val CUSTOM_BUTTON_5 = stringPreferencesKey("quick_search_widget_custom_button_5")
-
+    val NOTE_ID = longPreferencesKey("quick_search_widget_note_id")
 }
 
 /** Preferences for the Quick Search widget appearance and behavior. */
@@ -162,6 +164,8 @@ data class WidgetPreferences(
     /** Keeps this widget's surface in sync with the selected Home appearance. */
     val useHomeScreenAppearance: Boolean = false,
     val customButtons: List<CustomWidgetButtonAction?> = WidgetDefaults.CUSTOM_BUTTONS,
+    /** The note shown by the Note widget; null until one is picked. */
+    val noteId: Long? = null,
 ) : Parcelable {
     companion object {
         /** Default widget preferences instance. */
@@ -305,6 +309,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
                 ?: WidgetDefaults.USE_DEVICE_THEME_BACKGROUND,
         useHomeScreenAppearance = this[WidgetKeys.USE_HOME_SCREEN_APPEARANCE] ?: false,
         customButtons = customButtons,
+        noteId = this[WidgetKeys.NOTE_ID],
     ).coerceToValidRanges()
 }
 
@@ -346,6 +351,7 @@ fun MutablePreferences.applyWidgetPreferences(
         ?: remove(WidgetKeys.CUSTOM_BUTTON_4)
     customButtons.getOrNull(5)?.let { action -> this[WidgetKeys.CUSTOM_BUTTON_5] = action.toManagedJson(context) }
         ?: remove(WidgetKeys.CUSTOM_BUTTON_5)
+    validated.noteId?.let { this[WidgetKeys.NOTE_ID] = it } ?: remove(WidgetKeys.NOTE_ID)
 }
 
 private fun CustomWidgetButtonAction.toManagedJson(context: Context): String {
@@ -431,6 +437,21 @@ fun WidgetPreferences.enforceVariantConstraints(variant: WidgetVariant): WidgetP
                     } else {
                         TextIconColorOverride.WHITE
                     },
+                borderWidthDp = 0f,
+                showLabel = false,
+                searchIconDisplay = SearchIconDisplay.OFF,
+                micAction = OFF,
+                internalHorizontalPaddingDp = 0f,
+                internalVerticalPaddingDp = 0f,
+                customButtons = emptyList(),
+            )
+        // The note, background (system, light, dark or a custom color), text color (automatic,
+        // white or black), corner radius and background transparency are configurable.
+        WidgetVariant.NOTE ->
+            normalized.copy(
+                useDeviceThemeBackground = false,
+                useHomeScreenAppearance = false,
+                customTextIconColor = null,
                 borderWidthDp = 0f,
                 showLabel = false,
                 searchIconDisplay = SearchIconDisplay.OFF,

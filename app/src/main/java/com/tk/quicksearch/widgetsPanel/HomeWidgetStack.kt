@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -161,7 +160,6 @@ internal fun HomeWidgetStack(
     val context = LocalContext.current
     val density = LocalDensity.current
     val appWidgetManager = remember(context) { AppWidgetManager.getInstance(context.applicationContext) }
-    val packageManager = context.packageManager
 
     var editingWidgetId by remember { mutableStateOf<Int?>(null) }
     // Preview of placements while dragging or resizing; persisted when the gesture ends.
@@ -501,7 +499,6 @@ internal fun HomeWidgetStack(
                                 showHostedWidget = showHostedWidgets,
                                 appWidgetManager = appWidgetManager,
                                 appWidgetHost = host,
-                                packageManager = packageManager,
                                 isEditing = editingWidgetId == appWidgetId,
                                 onWidgetBoundsChanged = { boundsInWindow ->
                                     windowBounds[appWidgetId] = boundsInWindow

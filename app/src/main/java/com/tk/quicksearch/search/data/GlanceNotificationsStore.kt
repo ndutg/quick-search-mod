@@ -32,18 +32,6 @@ internal class TimerNotification(
     val pausedMillis: Long? = null,
 )
 
-/** An ongoing notification with a determinate progress bar, such as a delivery or a download. */
-internal class ProgressNotification(
-    val key: String,
-    val packageName: String,
-    val title: String?,
-    val text: String?,
-    val progress: Int,
-    val progressMax: Int,
-    val postTime: Long,
-    val contentIntent: PendingIntent?,
-)
-
 /** A missed call notification; [caller] is usually the name or number. */
 internal class MissedCallNotification(
     val key: String,
@@ -76,8 +64,13 @@ internal class OngoingCallNotification(
 internal object GlanceNotificationsStore {
     private val timersState = MutableStateFlow<List<TimerNotification>>(emptyList())
     private val progressState = MutableStateFlow<List<ProgressNotification>>(emptyList())
+    private val finishedProgressState = MutableStateFlow<List<FinishedProgressNotification>>(emptyList())
+    private val progressTracker = ProgressNotificationTracker()
     private val missedCallsState = MutableStateFlow<List<MissedCallNotification>>(emptyList())
     private val ongoingCallsState = MutableStateFlow<List<OngoingCallNotification>>(emptyList())
+    private val workoutsState = MutableStateFlow<List<WorkoutNotification>>(emptyList())
+    private val otpsState = MutableStateFlow<List<OtpNotification>>(emptyList())
+    private val weatherState = MutableStateFlow<List<WeatherNotification>>(emptyList())
     private var clockPackages: Set<String>? = null
 
     /** Timers read from custom chronometer views, by notification key, reused until the notification changes. */
@@ -88,8 +81,12 @@ internal object GlanceNotificationsStore {
 
     val timers: StateFlow<List<TimerNotification>> = timersState.asStateFlow()
     val progress: StateFlow<List<ProgressNotification>> = progressState.asStateFlow()
+    val finishedProgress: StateFlow<List<FinishedProgressNotification>> = finishedProgressState.asStateFlow()
     val missedCalls: StateFlow<List<MissedCallNotification>> = missedCallsState.asStateFlow()
     val ongoingCalls: StateFlow<List<OngoingCallNotification>> = ongoingCallsState.asStateFlow()
+    val workouts: StateFlow<List<WorkoutNotification>> = workoutsState.asStateFlow()
+    val otps: StateFlow<List<OtpNotification>> = otpsState.asStateFlow()
+    val weather: StateFlow<List<WeatherNotification>> = weatherState.asStateFlow()
 
     fun update(
         context: Context,
@@ -109,20 +106,20 @@ internal object GlanceNotificationsStore {
         val timerNotifications = posted.mapNotNull { it.toTimer(context, clocks) }
         val timerKeys = timerNotifications.map { it.key }.toSet()
         timersState.value = timerNotifications.sortedBy { it.chronometerBase }
-        progressState.value =
-            posted
-                .filter { sbn ->
-                    sbn.key !in timerKeys &&
-                        sbn.notification.flags and
-                        (Notification.FLAG_ONGOING_EVENT or Notification.FLAG_FOREGROUND_SERVICE) != 0
-                }
-                .mapNotNull { it.toProgress() }
-                .sortedByDescending { it.postTime }
         val dialerPackage = defaultDialerPackage(context)
         missedCallsState.value =
             posted.mapNotNull { it.toMissedCall(dialerPackage) }.sortedByDescending { it.callTime }
         ongoingCallsState.value =
             posted.mapNotNull { it.toOngoingCall(context) }.sortedByDescending { it.startTime ?: 0L }
+        val workouts = WorkoutNotifications.parse(context, posted)
+        workoutsState.value = workouts
+        // Workouts can be Live Updates too; they keep their own row.
+        val workoutKeys = workouts.map { it.key }.toSet()
+        progressTracker.update(posted.filter { it.key !in timerKeys && it.key !in workoutKeys })
+        progressState.value = progressTracker.progress
+        finishedProgressState.value = progressTracker.finished
+        otpsState.value = OtpNotifications.parse(posted)
+        weatherState.value = WeatherNotifications.parse(context, posted)
     }
 
     /** Drops cached state when notification access is lost; clock apps are resolved again on reconnect. */
@@ -130,10 +127,30 @@ internal object GlanceNotificationsStore {
         clockPackages = null
         remoteTimerCache.clear()
         remoteCallStartCache.clear()
+        WorkoutNotifications.clear()
+        OtpNotifications.clear()
+        WeatherNotifications.clear()
         timersState.value = emptyList()
+        progressTracker.clear()
         progressState.value = emptyList()
+        finishedProgressState.value = emptyList()
         missedCallsState.value = emptyList()
         ongoingCallsState.value = emptyList()
+        workoutsState.value = emptyList()
+        otpsState.value = emptyList()
+        weatherState.value = emptyList()
+    }
+
+    /** Hides a one-time code and any older ones from At a Glance, leaving their notifications posted. */
+    fun dismissOtp(otp: OtpNotification) {
+        OtpNotifications.dismiss(otp)
+        otpsState.value = otpsState.value.filter { it.postTime > otp.postTime }
+    }
+
+    /** Hides a finished progress notification from At a Glance, leaving it posted. */
+    fun dismissFinishedProgress(key: String) {
+        progressTracker.dismiss(key)
+        finishedProgressState.value = progressTracker.finished
     }
 
     private fun defaultDialerPackage(context: Context): String? =
@@ -187,8 +204,10 @@ internal object GlanceNotificationsStore {
      */
     private fun StatusBarNotification.toOngoingCall(context: Context): OngoingCallNotification? {
         if (notification.flags and Notification.FLAG_ONGOING_EVENT == 0) return null
-        if (notification.category != Notification.CATEGORY_CALL) return toTelegramCall()
         val extras = notification.extras ?: return null
+        // Google Meet posts a call style notification without the call category.
+        val isCallStyle = extras.getString(Notification.EXTRA_TEMPLATE) == CALL_STYLE_TEMPLATE
+        if (notification.category != Notification.CATEGORY_CALL && !isCallStyle) return toTelegramCall()
         val callType = extras.getInt(EXTRA_CALL_TYPE, CALL_TYPE_UNKNOWN)
         val isConnected =
             if (callType != CALL_TYPE_UNKNOWN) callType == CALL_TYPE_ONGOING else notification.fullScreenIntent == null
@@ -272,6 +291,7 @@ internal object GlanceNotificationsStore {
     private const val EXTRA_CALL_TYPE = "android.callType"
     private const val EXTRA_CALL_PERSON = "android.callPerson"
     private const val EXTRA_HANG_UP_INTENT = "android.hangUpIntent"
+    private const val CALL_STYLE_TEMPLATE = "android.app.Notification\$CallStyle"
 
     /** Telegram's package (and its official builds' prefix) and its VoIPService ongoing call notification id. */
     private const val TELEGRAM_PACKAGE_PREFIX = "org.telegram.messenger"
@@ -387,23 +407,4 @@ internal object GlanceNotificationsStore {
 
     private const val EXTRA_SAMSUNG_CHRONOMETER_VIEW = "android.ongoingActivityNoti.chronometerRemoteView"
     private const val EXTRA_SAMSUNG_CHRONOMETER_TAG = "android.ongoingActivityNoti.chronometerRemoteViewTag"
-
-    private fun StatusBarNotification.toProgress(): ProgressNotification? {
-        val extras = notification.extras ?: return null
-        if (notification.category == Notification.CATEGORY_TRANSPORT) return null
-        if (extras.containsKey(Notification.EXTRA_MEDIA_SESSION)) return null
-        if (extras.getBoolean(Notification.EXTRA_PROGRESS_INDETERMINATE)) return null
-        val max = extras.getInt(Notification.EXTRA_PROGRESS_MAX, 0)
-        if (max <= 0) return null
-        return ProgressNotification(
-            key = key,
-            packageName = packageName,
-            title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString()?.takeIf { it.isNotBlank() },
-            text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()?.takeIf { it.isNotBlank() },
-            progress = extras.getInt(Notification.EXTRA_PROGRESS, 0).coerceIn(0, max),
-            progressMax = max,
-            postTime = postTime,
-            contentIntent = notification.contentIntent,
-        )
-    }
 }

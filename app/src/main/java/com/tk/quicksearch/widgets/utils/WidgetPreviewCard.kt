@@ -41,6 +41,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetPreview
+import com.tk.quicksearch.widgets.noteWidget.NoteWidgetPreview
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import kotlin.math.floor
 
@@ -72,6 +73,10 @@ fun WidgetPreviewCard(
         }
     if (widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
         MediaControlsWidgetPreview(state = previewState, wallpaperBitmap = wallpaperBitmap)
+        return
+    }
+    if (widgetVariant == WidgetVariant.NOTE) {
+        NoteWidgetPreview(state = previewState, wallpaperBitmap = wallpaperBitmap)
         return
     }
     val colors = calculatePreviewColors(previewState)
@@ -311,7 +316,9 @@ fun WidgetPreviewCard(
                         }
                     }
                 }
-                WidgetVariant.MEDIA_CONTROLS -> Unit
+                WidgetVariant.MEDIA_CONTROLS,
+                WidgetVariant.NOTE,
+                -> Unit
             }
         }
     }

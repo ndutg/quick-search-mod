@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.searchScreen
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SectionRenderParams
@@ -19,6 +20,8 @@ internal fun submitSearchBarAction(
     isOtherSearchResultVisible: Boolean,
     enabledTargets: List<SearchTarget>,
     onSearchTargetClick: (String, SearchTarget) -> Unit,
+    isQuickSearchHelpQuery: Boolean,
+    onQuickSearchHelpClick: () -> Unit,
     showCurrencyConverterSearchCard: Boolean,
     onCurrencyConversionClick: () -> Unit,
     showDictionarySearchCard: Boolean,
@@ -55,6 +58,11 @@ internal fun submitSearchBarAction(
                     }
                     if (isOtherSearchResultVisible && !state.topMatchesEnabled) {
                         return true
+                    }
+                    // An explicit @help question is never meant for a web search engine.
+                    if (isQuickSearchHelpQuery) {
+                        if (state.AiSearchState.status == AiSearchStatus.Idle) onQuickSearchHelpClick()
+                        return true // keep keyboard open
                     }
 
                     if (!state.openTopResultUsingKeyboardEnabled) {

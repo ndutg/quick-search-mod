@@ -26,8 +26,8 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
  * One row of the home At a Glance card. Today's calendar events are hosted by the calendar card
- * itself; every other glanceable source (ongoing calls, battery, missed calls, Do Not Disturb,
- * airplane mode, hotspot, timers, progress notifications, alarm, reminders, birthdays, tomorrow's
+ * itself; every other glanceable source (ongoing calls, one-time codes, battery, missed calls, flashlight, Wi-Fi sign-in, Do Not Disturb,
+ * airplane mode, hotspot, weather, workouts, timers, progress notifications, alarm, reminders, birthdays, tomorrow's
  * events, storage, and future ones) contributes rows here.
  * Rows sit inside the card's inset and follow CalendarEventRow: 7dp before a 24dp icon, then 12dp
  * to the text.
@@ -55,6 +55,8 @@ internal fun rememberAtAGlanceItems(
     val birthdays = rememberBirthdaysGlance(enabled, onShowContactMethods)
     val lowStorage = rememberLowStorageGlance(enabled)
     val doNotDisturb = rememberDoNotDisturbGlance(enabled)
+    val wifiSignIn = rememberWifiSignInGlance(enabled)
+    val flashlight = rememberFlashlightGlance(enabled)
     val airplaneMode = rememberAirplaneModeGlance(enabled)
     val hotspot = rememberHotspotGlance(enabled)
     val tomorrowEvents = rememberTomorrowEventsGlance(enabled)
@@ -63,6 +65,11 @@ internal fun rememberAtAGlanceItems(
             notifications.ongoingCalls.map { call ->
                 AtAGlanceItem(key = "ongoing-call-${call.key}") { OngoingCallRow(call, notifications.nowMillis) }
             },
+            listOfNotNull(
+                notifications.otp?.let { otp ->
+                    AtAGlanceItem(key = "otp-${otp.key}") { OtpCodeRow(otp) { notifications.dismissOtp(otp) } }
+                },
+            ),
             listOfNotNull(battery.lowBattery?.let { AtAGlanceItem(key = "low-battery") { LowBatteryRow(it) } }),
             listOfNotNull(battery.charging?.let { AtAGlanceItem(key = "charging") { ChargingRow(it) } }),
             listOfNotNull(
@@ -70,15 +77,28 @@ internal fun rememberAtAGlanceItems(
                     AtAGlanceItem(key = "missed-calls") { MissedCallsRow(calls, notifications.dismissMissedCalls) }
                 },
             ),
+            listOfNotNull(flashlight?.let { AtAGlanceItem(key = "flashlight") { FlashlightRow(it) } }),
+            listOfNotNull(wifiSignIn?.let { AtAGlanceItem(key = "wifi-sign-in") { WifiSignInRow(it) } }),
             listOfNotNull(doNotDisturb?.let { AtAGlanceItem(key = "do-not-disturb") { DoNotDisturbRow(it) } }),
             listOfNotNull(airplaneMode?.let { AtAGlanceItem(key = "airplane-mode") { AirplaneModeRow(it) } }),
             listOfNotNull(hotspot?.let { AtAGlanceItem(key = "hotspot") { HotspotRow(it) } }),
+            notifications.weather.map { weather ->
+                AtAGlanceItem(key = "weather-${weather.key}") { WeatherRow(weather) }
+            },
+            notifications.workouts.map { workout ->
+                AtAGlanceItem(key = "workout-${workout.key}") { WorkoutRow(workout) }
+            },
             notifications.timers.map { timer ->
                 AtAGlanceItem(key = "timer-${timer.key}") { TimerRow(timer, notifications.nowMillis) }
             },
             notifications.progress.map { progress ->
                 AtAGlanceItem(key = "progress-${progress.key}") { ProgressNotificationRow(progress) }
-            },
+            } +
+                notifications.finishedProgress.map { finished ->
+                    AtAGlanceItem(key = "finished-progress-${finished.key}") {
+                        FinishedProgressNotificationRow(finished) { notifications.dismissFinishedProgress(finished) }
+                    }
+                },
             listOfNotNull(alarm?.let { AtAGlanceItem(key = "alarm") { UpcomingAlarmRow(it) } }),
             reminders.reminders.map { reminder ->
                 AtAGlanceItem(key = "reminder-${reminder.reminderId}") {

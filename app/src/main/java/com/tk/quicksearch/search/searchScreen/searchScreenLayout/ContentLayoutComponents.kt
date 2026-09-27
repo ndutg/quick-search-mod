@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
@@ -266,8 +267,8 @@ internal fun AliasRecentItemsSection(
 ) {
     SearchHistorySection(
         items = items,
-        callingApp = contactsParams.callingApp ?: CallingApp.CALL,
-        messagingApp = contactsParams.messagingApp ?: MessagingApp.MESSAGES,
+        primaryContactButton = contactsParams.primaryContactButton ?: ContactButtonAction.CALL,
+        secondaryContactButton = contactsParams.secondaryContactButton ?: ContactButtonAction.SMS,
         onRecentQueryClick = onRecentQueryClick,
         onContactClick = contactsParams.onContactClick,
         onShowContactMethods = contactsParams.onShowContactMethods,

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,6 +33,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.search.data.notes.NotesRoomStore
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
@@ -43,10 +45,15 @@ import com.tk.quicksearch.widgets.utils.WidgetVariant
 import com.tk.quicksearch.widgets.utils.applyWidgetPreferences
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceiver
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
+import com.tk.quicksearch.widgets.noteWidget.NoteWidgetPickerScreen
+import com.tk.quicksearch.widgets.noteWidget.NoteWidgetReceiver
+import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.glanceWidgetFor
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
 import com.tk.quicksearch.widgets.utils.toWidgetPreferences
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
 
 /** Activity for configuring widget preferences when a widget is added or reconfigured. */
@@ -186,6 +193,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
         return when (providerClassName) {
             CustomButtonsWidgetReceiver::class.java.name -> WidgetVariant.CUSTOM_BUTTONS_ONLY
             MediaControlsWidgetReceiver::class.java.name -> WidgetVariant.MEDIA_CONTROLS
+            NoteWidgetReceiver::class.java.name -> WidgetVariant.NOTE
             else -> WidgetVariant.STANDARD
         }
     }
@@ -219,12 +227,23 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
             mutableStateOf(WidgetPreferences.Default.enforceVariantConstraints(widgetVariant))
         }
         var isLoaded by rememberSaveable { mutableStateOf(false) }
+        var showNotePicker by rememberSaveable { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(appWidgetId, deviceThemeEnabled, useDarkThemeForDeviceTheme) {
+            // The note widget ignores the app theme, so reloading on a theme change would only
+            // discard the note the user just picked.
+            if (widgetVariant == WidgetVariant.NOTE && isLoaded) return@LaunchedEffect
             val loaded = loadWidgetPreferences(appWidgetId)
             config = loaded.preferences
-            if (!loaded.hasStoredConfig && widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
+            if (widgetVariant == WidgetVariant.NOTE) {
+                val noteId = config.noteId
+                if (noteId == null) config = config.withNoteWidgetDefaults()
+                // A new widget, or one whose note was deleted, starts at the note picker.
+                showNotePicker =
+                    noteId == null ||
+                    withContext(Dispatchers.IO) { NotesRoomStore(this@SearchWidgetConfigureActivity).getById(noteId) } == null
+            } else if (!loaded.hasStoredConfig && widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
                 config = config.copy(theme = WidgetTheme.DARK, backgroundColor = null)
             } else if (!loaded.hasStoredConfig && deviceThemeEnabled) {
                 config =
@@ -234,6 +253,21 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                     )
             }
             isLoaded = true
+        }
+
+        if (showNotePicker) {
+            // Closing the picker before any note is chosen leaves nothing to configure.
+            val closePicker = { if (config.noteId == null) onConfigurationComplete() else showNotePicker = false }
+            BackHandler(onBack = closePicker)
+            NoteWidgetPickerScreen(
+                selectedNoteId = config.noteId,
+                onSelect = { note ->
+                    config = config.copy(noteId = note.noteId)
+                    showNotePicker = false
+                },
+                onClose = closePicker,
+            )
+            return
         }
 
         // Media Controls cannot show anything without notification access, so it is required.
@@ -249,6 +283,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                         widgetVariant != WidgetVariant.CUSTOM_BUTTONS_ONLY ||
                             config.hasCustomButtons
                     ) &&
+                    (widgetVariant != WidgetVariant.NOTE || config.noteId != null) &&
                     hasMediaAccess,
             showNotificationAccessBanner = !hasMediaAccess,
             saveLabelResId =
@@ -268,8 +303,10 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                 when (widgetVariant) {
                     WidgetVariant.CUSTOM_BUTTONS_ONLY -> R.string.widget_custom_buttons_widget_title
                     WidgetVariant.MEDIA_CONTROLS -> R.string.widget_media_controls_widget_title
+                    WidgetVariant.NOTE -> R.string.widget_note_widget_title
                     WidgetVariant.STANDARD -> R.string.widget_settings_title
                 },
+            onChangeNote = { showNotePicker = true },
         )
     }
 }

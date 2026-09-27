@@ -9,6 +9,7 @@ import com.tk.quicksearch.search.data.preferences.TriggerPreferences
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.search.notes.NotesTextUtils
+import com.tk.quicksearch.widgets.utils.requestNoteWidgetsRefresh
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
@@ -201,6 +202,7 @@ class NotesRepository(
             )
         }
         notesPreferences.setNotesJson(jsonArray.toString())
+        requestNoteWidgetsRefresh(appContext)
     }
 
     private fun ensureQuickNoteExists(): NoteInfo {

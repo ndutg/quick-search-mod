@@ -4,7 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.MailOutline
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import com.tk.quicksearch.R
@@ -23,6 +35,8 @@ import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.ui.graphics.Color
+import com.tk.quicksearch.shared.util.FeedbackUtils
+import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.shared.util.PhoneEmailLinkifiedText
 
 /** Composable that displays AI search results with loading, success, and error states. */
@@ -42,7 +56,10 @@ fun AiSearchResult(
     val clipboardManager = LocalClipboardManager.current
     val showAttribution =
             aiSearchState.status == AiSearchStatus.Success &&
-                    !aiSearchState.answer.isNullOrBlank()
+                    !aiSearchState.answer.isNullOrBlank() &&
+                    !aiSearchState.isQuickSearchHelp
+    val showHelpContact =
+            aiSearchState.isQuickSearchHelp && aiSearchState.status != AiSearchStatus.Loading
     val effectiveProviderId = aiSearchState.llmProviderId ?: aiSearchLlmProviderId
     var fallbackTipDismissed by remember(aiSearchState.activeQuery) {
         mutableStateOf(false)
@@ -76,43 +93,97 @@ fun AiSearchResult(
             copyText = aiSearchState.answer,
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
+                // Help cards fill the card's minimum height so Contact Developer sits at the bottom.
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(DesignTokens.SpacingLarge),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .then(
+                                if (showHelpContact) Modifier.heightIn(min = AiResultCardMinHeight) else Modifier,
+                            ).padding(DesignTokens.SpacingLarge),
+                    verticalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    when (aiSearchState.status) {
-                        AiSearchStatus.Loading -> {
-                            GeminiLoadingAnimation()
-                        }
-                        AiSearchStatus.Success -> {
-                            aiSearchState.answer?.let { answer ->
-                                Box(modifier = Modifier.fillMaxWidth()) {
-                                    ClickableAiSearchText(
-                                        text = answer,
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        when (aiSearchState.status) {
+                            AiSearchStatus.Loading -> {
+                                GeminiLoadingAnimation()
+                            }
+                            AiSearchStatus.Success -> {
+                                if (aiSearchState.isQuickSearchHelp && aiSearchState.answer == null) {
+                                    Text(
+                                        text = stringResource(R.string.quick_search_help_intro),
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onSurface,
-                                        onPhoneNumberClick = onPhoneNumberClick,
-                                        onEmailClick = onEmailClick,
-                                        onLongClick = {
-                                            clipboardManager.setText(AnnotatedString(answer))
-                                        },
                                     )
                                 }
+                                aiSearchState.answer?.let { answer ->
+                                    Box(modifier = Modifier.fillMaxWidth()) {
+                                        ClickableAiSearchText(
+                                            text = answer,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            onPhoneNumberClick = onPhoneNumberClick,
+                                            onEmailClick = onEmailClick,
+                                            onLongClick = {
+                                                clipboardManager.setText(AnnotatedString(answer))
+                                            },
+                                        )
+                                    }
+                                }
                             }
+                            AiSearchStatus.Error -> {
+                                Text(
+                                    text = aiSearchState.errorMessage
+                                        ?: stringResource(R.string.direct_search_error_generic),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
+                            AiSearchStatus.Idle -> {}
                         }
-                        AiSearchStatus.Error -> {
-                            Text(
-                                text = aiSearchState.errorMessage
-                                    ?: stringResource(R.string.direct_search_error_generic),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        }
-                        AiSearchStatus.Idle -> {}
+                    }
+                    if (showHelpContact) {
+                        QuickSearchHelpContactButton(
+                            question = aiSearchState.activeQuery.orEmpty(),
+                            modifier = Modifier.padding(top = DesignTokens.SpacingMedium),
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+/** Opens the feedback email prefilled with the `@help` question, minus the alias. */
+@Composable
+private fun QuickSearchHelpContactButton(
+    question: String,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    FilledTonalButton(
+        onClick = {
+            FeedbackUtils.launchFeedbackEmail(context, QuickSearchHelp.stripAlias(question))
+        },
+        modifier = modifier.height(32.dp),
+        colors =
+            ButtonDefaults.filledTonalButtonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
+            ),
+        contentPadding = PaddingValues(horizontal = DesignTokens.SpacingMedium, vertical = 0.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.MailOutline,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = stringResource(R.string.quick_search_help_contact_developer),
+            style = MaterialTheme.typography.labelMedium,
+        )
     }
 }
 

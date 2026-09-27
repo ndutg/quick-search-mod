@@ -59,11 +59,9 @@ import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultRow
 import com.tk.quicksearch.search.appShortcuts.AppShortcutRow
 import com.tk.quicksearch.search.contacts.components.ContactResultRow
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
-import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
-import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
-import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.MessagingApp
+import com.tk.quicksearch.search.contacts.utils.ContactButtonResolver
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.deviceSettings.SettingResultRow
@@ -90,8 +88,8 @@ internal fun RecentSearchItemRow(
     item: RecentSearchItem,
     textColor: Color,
     iconColor: Color,
-    callingApp: CallingApp,
-    messagingApp: MessagingApp,
+    primaryContactButton: ContactButtonAction,
+    secondaryContactButton: ContactButtonAction,
     onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
     onContactClick: (ContactInfo) -> Unit,
     onShowContactMethods: (ContactInfo) -> Unit,
@@ -141,16 +139,10 @@ internal fun RecentSearchItemRow(
                 Box(modifier = Modifier.padding(contactRowPadding())) {
                     ContactResultRow(
                         contactInfo = item.contact,
-                        callingApp =
-                            ContactCallingAppResolver.resolveCallingAppForContact(
-                                item.contact,
-                                callingApp,
-                            ),
-                        messagingApp =
-                            ContactMessagingAppResolver.resolveMessagingAppForContact(
-                                item.contact,
-                                messagingApp,
-                            ),
+                        primaryContactButton =
+                            ContactButtonResolver.resolveForContact(item.contact, primaryContactButton, isPrimary = true),
+                        secondaryContactButton =
+                            ContactButtonResolver.resolveForContact(item.contact, secondaryContactButton, isPrimary = false),
                         primaryAction = getPrimaryContactCardAction(item.contact.contactId),
                         secondaryAction =
                             getSecondaryContactCardAction(item.contact.contactId),

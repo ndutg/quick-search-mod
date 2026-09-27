@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -181,7 +180,6 @@ internal fun WidgetPanelGrid(
     onRemoveWidget: (PanelWidgetInfo) -> Unit,
     onConfigureWidget: (PanelWidgetInfo, Intent) -> Unit,
     onPinWidgetToHome: (PanelWidgetInfo) -> Unit,
-    packageManager: PackageManager,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier = modifier) {
@@ -411,7 +409,6 @@ internal fun WidgetPanelGrid(
                         onRemove = { onRemoveWidget(widget) },
                         onConfigure = { intent -> onConfigureWidget(widget, intent) },
                         onPinToHome = { onPinWidgetToHome(widget) },
-                        packageManager = packageManager,
                         onQuickNoteDragStart = {
                             quickNoteDragStart = widget
                             onSetEditingWidgetId(widget.appWidgetId)
@@ -452,12 +449,12 @@ private fun BoxScope.WidgetPanelGridItem(
     onRemove: () -> Unit,
     onConfigure: (Intent) -> Unit,
     onPinToHome: () -> Unit,
-    packageManager: PackageManager,
     onQuickNoteDragStart: () -> Unit,
     onQuickNoteDrag: (totalDragX: Float, totalDragY: Float) -> Unit,
     onQuickNoteDragEnd: () -> Unit,
     onQuickNoteFocusChanged: (Boolean) -> Unit,
 ) {
+    val context = LocalContext.current
     val density = LocalDensity.current
     val column = widget.column ?: 0
     val row = widget.row ?: 0
@@ -507,14 +504,10 @@ private fun BoxScope.WidgetPanelGridItem(
     if (providerInfo == null) return
 
     val configureIntent =
-        remember(providerInfo, widget.appWidgetId, packageManager) {
-            providerInfo.configure
-                ?.takeIf { isWidgetConfigureActivityAccessible(packageManager, it) }
-                ?.let { configure ->
-                Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
-                    .setComponent(configure)
-                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widget.appWidgetId)
-                }
+        remember(providerInfo, widget.appWidgetId) {
+            providerInfo.configure?.let {
+                WidgetConfigureTrampolineActivity.intent(context, widget.appWidgetId)
+            }
         }
 
     Box(

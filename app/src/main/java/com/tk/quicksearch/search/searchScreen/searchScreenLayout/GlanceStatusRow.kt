@@ -25,9 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -70,7 +73,8 @@ internal fun glanceNeutralPillColors() =
 /**
  * The common At a Glance row layout, matching [LowBatteryRow]: a 24dp icon, a title with an
  * optional subtitle and extra content below it, an optional value pill, and an optional [trailing]
- * action or dismiss button outside the row's tap target.
+ * action or dismiss button outside the row's tap target. [pillWidthText] is the widest value the
+ * pill can show; the pill always reserves its width, so a changing value doesn't shift the row.
  */
 @Composable
 internal fun GlanceStatusRow(
@@ -78,8 +82,10 @@ internal fun GlanceStatusRow(
     title: String,
     onClick: () -> Unit,
     subtitle: String? = null,
+    subtitleStyle: TextStyle = MaterialTheme.typography.bodySmall,
     pillText: String? = null,
     pillColors: GlancePillColors = glanceNeutralPillColors(),
+    pillWidthText: String? = null,
     onDismiss: (() -> Unit)? = null,
     belowText: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
@@ -114,7 +120,7 @@ internal fun GlanceStatusRow(
                 if (subtitle != null) {
                     Text(
                         text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = subtitleStyle,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -129,7 +135,17 @@ internal fun GlanceStatusRow(
                             .clip(CircleShape)
                             .background(pillColors.container)
                             .padding(horizontal = 10.dp, vertical = 4.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
+                    if (pillWidthText != null) {
+                        Text(
+                            text = pillWidthText,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            modifier = Modifier.alpha(0f).clearAndSetSemantics {},
+                        )
+                    }
                     Text(
                         text = pillText,
                         style = MaterialTheme.typography.labelMedium,

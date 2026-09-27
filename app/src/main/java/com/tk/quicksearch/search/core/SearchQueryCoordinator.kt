@@ -6,6 +6,7 @@ import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import com.tk.quicksearch.searchEngines.AliasHandler
 import com.tk.quicksearch.searchEngines.AliasTarget
+import com.tk.quicksearch.tools.aiSearch.QuickSearchHelp
 import java.util.concurrent.atomic.AtomicLong
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -184,6 +185,7 @@ internal class SearchQueryCoordinator(
     private fun resolveAliasQueryResolution(
         newQuery: String,
     ): AliasQueryResolution {
+        if (QuickSearchHelp.questionOrNull(newQuery) != null) return AliasQueryResolution.None
         val leadingAliasMatch = aliasHandler.detectAliasAtStart(newQuery)
         if (leadingAliasMatch != null) {
             val (queryWithoutAlias, aliasTarget) = leadingAliasMatch
@@ -554,7 +556,8 @@ internal class SearchQueryCoordinator(
                         aliasState.lockedDictionaryAlias ||
                         aliasState.lockedWeatherAlias ||
                         aliasState.lockedCustomToolId != null ||
-                        aliasState.lockedTaskerIntentId != null,
+                        aliasState.lockedTaskerIntentId != null ||
+                        QuickSearchHelp.questionOrNull(trimmedQuery) != null,
             )
 
         val normalizedQuery = SearchTextNormalizer.normalizeForSearch(trimmedQuery)

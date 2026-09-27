@@ -308,31 +308,18 @@ internal class SearchDerivedStateDelegate(
         val isTelegramInstalled = packageNames.contains(PackageConstants.TELEGRAM_PACKAGE)
         val isSignalInstalled = packageNames.contains(PackageConstants.SIGNAL_PACKAGE)
         val isGoogleMeetInstalled = packageNames.contains(PackageConstants.GOOGLE_MEET_PACKAGE)
-        val resolvedMessagingApp =
-            messagingHandler.updateMessagingAvailability(
-                whatsappInstalled = isWhatsAppInstalled,
-                whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
-                telegramInstalled = isTelegramInstalled,
-                signalInstalled = isSignalInstalled,
-                updateState = false,
-            )
-        val selectedCallingApp = userPreferences.getCallingApp()
-        val resolvedCallingApp =
-            resolveCallingApp(
-                app = selectedCallingApp,
-                isWhatsAppInstalled = isWhatsAppInstalled,
-                isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
-                isTelegramInstalled = isTelegramInstalled,
-                isSignalInstalled = isSignalInstalled,
-                isGoogleMeetInstalled = isGoogleMeetInstalled,
-            )
-        if (resolvedCallingApp != selectedCallingApp) {
-            userPreferences.setCallingApp(resolvedCallingApp)
-        }
+        messagingHandler.updateMessagingAvailability(
+            whatsappInstalled = isWhatsAppInstalled,
+            whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
+            telegramInstalled = isTelegramInstalled,
+            signalInstalled = isSignalInstalled,
+            googleMeetInstalled = isGoogleMeetInstalled,
+            updateState = false,
+        )
         updatePermissionState {
             it.copy(
-                messagingApp = resolvedMessagingApp,
-                callingApp = resolvedCallingApp,
+                primaryContactButton = messagingHandler.primaryContactButton,
+                secondaryContactButton = messagingHandler.secondaryContactButton,
                 isWhatsAppInstalled = isWhatsAppInstalled,
                 isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
                 isTelegramInstalled = isTelegramInstalled,
@@ -499,22 +486,4 @@ internal class SearchDerivedStateDelegate(
             )
             .toList()
     }
-
-    private fun resolveCallingApp(
-        app: CallingApp,
-        isWhatsAppInstalled: Boolean,
-        isWhatsAppBusinessInstalled: Boolean,
-        isTelegramInstalled: Boolean,
-        isSignalInstalled: Boolean,
-        isGoogleMeetInstalled: Boolean,
-    ): CallingApp =
-        when (app) {
-            CallingApp.WHATSAPP -> if (isWhatsAppInstalled) CallingApp.WHATSAPP else CallingApp.CALL
-            CallingApp.WHATSAPP_BUSINESS -> if (isWhatsAppBusinessInstalled) CallingApp.WHATSAPP_BUSINESS else CallingApp.CALL
-            CallingApp.TELEGRAM -> if (isTelegramInstalled) CallingApp.TELEGRAM else CallingApp.CALL
-            CallingApp.SIGNAL -> if (isSignalInstalled) CallingApp.SIGNAL else CallingApp.CALL
-            CallingApp.GOOGLE_MEET ->
-                if (isGoogleMeetInstalled) CallingApp.GOOGLE_MEET else CallingApp.CALL
-            CallingApp.CALL -> CallingApp.CALL
-        }
 }
