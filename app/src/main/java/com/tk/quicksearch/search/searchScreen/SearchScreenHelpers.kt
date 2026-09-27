@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.Dp
 import com.tk.quicksearch.search.appSettings.AppSettingResult
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutDisplayName
@@ -293,8 +294,8 @@ data class ContactsSectionParams(
     val contacts: List<ContactInfo>,
     val hasPermission: Boolean,
     val isExpanded: Boolean,
-    val callingApp: CallingApp?,
-    val messagingApp: MessagingApp?,
+    val primaryContactButton: ContactButtonAction?,
+    val secondaryContactButton: ContactButtonAction?,
     val pinnedContactIds: Set<Long>,
     val onContactClick: (ContactInfo) -> Unit,
     val onShowContactMethods: (ContactInfo) -> Unit,

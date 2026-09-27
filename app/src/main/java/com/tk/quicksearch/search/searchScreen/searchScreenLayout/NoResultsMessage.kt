@@ -47,6 +47,7 @@ internal fun computeShouldShowNoResults(state: SearchUiState): Boolean {
         !state.isWeatherAliasMode &&
         state.detectedCustomToolId == null &&
         state.detectedTaskerIntentId == null &&
+        com.tk.quicksearch.tools.aiSearch.QuickSearchHelp.questionOrNull(state.query) == null &&
         (
             !state.webSuggestionsEnabled ||
                 (queryLength >= 2 && state.webSuggestions.isEmpty())

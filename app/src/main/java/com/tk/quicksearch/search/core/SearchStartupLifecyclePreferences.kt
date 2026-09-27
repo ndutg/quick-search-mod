@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.core
 
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.isUserCreatedShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
@@ -251,56 +252,25 @@ internal fun SearchStartupLifecycleDelegate.getMessagingAppInfo(packageNames: Se
             } else {
                 messagingHandler.isPackageInstalled(PackageConstants.GOOGLE_MEET_PACKAGE)
             }
-        val resolvedMessagingApp =
-            messagingHandler.updateMessagingAvailability(
-                whatsappInstalled = isWhatsAppInstalled,
-                whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
-                telegramInstalled = isTelegramInstalled,
-                signalInstalled = isSignalInstalled,
-                updateState = false,
-            )
-        val selectedCallingApp = userPreferences.getCallingApp()
-        val resolvedCallingApp =
-            resolveCallingApp(
-                app = selectedCallingApp,
-                isWhatsAppInstalled = isWhatsAppInstalled,
-                isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
-                isTelegramInstalled = isTelegramInstalled,
-                isSignalInstalled = isSignalInstalled,
-                isGoogleMeetInstalled = isGoogleMeetInstalled,
-            )
-        if (resolvedCallingApp != selectedCallingApp) {
-            userPreferences.setCallingApp(resolvedCallingApp)
-        }
+        messagingHandler.updateMessagingAvailability(
+            whatsappInstalled = isWhatsAppInstalled,
+            whatsappBusinessInstalled = isWhatsAppBusinessInstalled,
+            telegramInstalled = isTelegramInstalled,
+            signalInstalled = isSignalInstalled,
+            googleMeetInstalled = isGoogleMeetInstalled,
+            updateState = false,
+        )
 
         return MessagingAppInfo(
             isWhatsAppInstalled,
             isWhatsAppBusinessInstalled,
             isTelegramInstalled,
             isSignalInstalled,
-            resolvedMessagingApp,
             isGoogleMeetInstalled,
-            resolvedCallingApp,
+            messagingHandler.primaryContactButton,
+            messagingHandler.secondaryContactButton,
         )
     }
-
-internal fun SearchStartupLifecycleDelegate.resolveCallingApp(
-        app: CallingApp,
-        isWhatsAppInstalled: Boolean,
-        isWhatsAppBusinessInstalled: Boolean,
-        isTelegramInstalled: Boolean,
-        isSignalInstalled: Boolean,
-        isGoogleMeetInstalled: Boolean,
-    ): CallingApp =
-        when (app) {
-            CallingApp.WHATSAPP -> if (isWhatsAppInstalled) CallingApp.WHATSAPP else CallingApp.CALL
-            CallingApp.WHATSAPP_BUSINESS -> if (isWhatsAppBusinessInstalled) CallingApp.WHATSAPP_BUSINESS else CallingApp.CALL
-            CallingApp.TELEGRAM -> if (isTelegramInstalled) CallingApp.TELEGRAM else CallingApp.CALL
-            CallingApp.SIGNAL -> if (isSignalInstalled) CallingApp.SIGNAL else CallingApp.CALL
-            CallingApp.GOOGLE_MEET ->
-                if (isGoogleMeetInstalled) CallingApp.GOOGLE_MEET else CallingApp.CALL
-            CallingApp.CALL -> CallingApp.CALL
-        }
 
 internal fun SearchStartupLifecycleDelegate.applyAppShortcutIconOverrides(
         shortcuts: List<StaticShortcut>,
@@ -340,9 +310,9 @@ internal data class MessagingAppInfo(
         val isWhatsAppBusinessInstalled: Boolean,
         val isTelegramInstalled: Boolean,
         val isSignalInstalled: Boolean,
-        val messagingApp: MessagingApp,
         val isGoogleMeetInstalled: Boolean,
-        val callingApp: CallingApp,
+        val primaryContactButton: ContactButtonAction,
+        val secondaryContactButton: ContactButtonAction,
     )
 
 internal const val BROWSER_REFRESH_INTERVAL_MS = 5 * 60 * 1_000L

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher picker preview and initial layout; mirrors NoteWidget's default look (a 60% opaque card
+     that follows the system theme) with grey bars standing in for the note's text. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_note_placeholder_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_widget_note"
+            android:tint="@color/widget_note_placeholder_content" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/widget_note_widget_title"
+            android:textColor="@color/widget_note_placeholder_content"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="14dp"
+        android:alpha="0.25"
+        android:background="@drawable/widget_note_placeholder_line" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="10dp"
+        android:alpha="0.25"
+        android:background="@drawable/widget_note_placeholder_line" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="40dp"
+        android:alpha="0.25"
+        android:background="@drawable/widget_note_placeholder_line" />
+
+</LinearLayout>

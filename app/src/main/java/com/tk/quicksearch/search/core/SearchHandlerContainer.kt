@@ -16,6 +16,7 @@ import com.tk.quicksearch.search.common.PinningHandler
 import com.tk.quicksearch.search.contacts.actions.ContactActionHandler
 import com.tk.quicksearch.search.contacts.ContactManagementHandler
 import com.tk.quicksearch.search.contacts.MessagingHandler
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.data.appShortcutRepository.AppShortcutRepository
 import com.tk.quicksearch.search.data.AppsRepository
 import com.tk.quicksearch.search.data.CalendarRepository
@@ -306,8 +307,8 @@ internal class SearchHandlerContainer(
         private set
 
     fun initializeServices(
-        getCallingApp: () -> CallingApp,
-        getMessagingApp: () -> MessagingApp,
+        getPrimaryContactButton: () -> ContactButtonAction,
+        getSecondaryContactButton: () -> ContactButtonAction,
         getDirectDialEnabled: () -> Boolean,
         getHasSeenDirectDialChoice: () -> Boolean,
         getCurrentState: () -> SearchUiState,
@@ -334,8 +335,8 @@ internal class SearchHandlerContainer(
             ContactActionHandler(
                 context = application,
                 userPreferences = userPreferences,
-                getCallingApp = getCallingApp,
-                getMessagingApp = getMessagingApp,
+                getPrimaryContactButton = getPrimaryContactButton,
+                getSecondaryContactButton = getSecondaryContactButton,
                 getDirectDialEnabled = getDirectDialEnabled,
                 getHasSeenDirectDialChoice = getHasSeenDirectDialChoice,
                 getCurrentState = getCurrentState,

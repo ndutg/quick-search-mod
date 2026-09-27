@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.searchScreen
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.CurrencyExchange
@@ -16,6 +17,8 @@ internal fun toolCardConfig(
     isSearchHistoryExpanded: Boolean,
     showAiFollowUpAction: Boolean,
     onShowAiFollowUpInput: () -> Unit,
+    showQuickSearchHelpCard: Boolean,
+    onQuickSearchHelpClick: () -> Unit,
     showCurrencyConverterSearchCard: Boolean,
     onCurrencyConversionClick: () -> Unit,
     showDictionarySearchCard: Boolean,
@@ -43,6 +46,12 @@ internal fun toolCardConfig(
                                     label = stringResource(R.string.direct_search_ask_follow_up),
                                     icon = Icons.Rounded.QuestionAnswer,
                                     onClick = { onShowAiFollowUpInput() },
+                            )
+                    showQuickSearchHelpCard ->
+                            ToolCardConfig(
+                                    label = stringResource(R.string.quick_search_help_action),
+                                    icon = Icons.AutoMirrored.Rounded.HelpOutline,
+                                    onClick = onQuickSearchHelpClick,
                             )
                     showCurrencyConverterSearchCard ->
                             ToolCardConfig(

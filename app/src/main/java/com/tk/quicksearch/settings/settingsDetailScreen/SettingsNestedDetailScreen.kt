@@ -485,10 +485,10 @@ internal fun SettingsNestedDetailScreen(
 
                         SettingsDetailType.CALLS_TEXTS -> {
                             CallsTextsSettingsSection(
-                                messagingApp = state.messagingApp,
-                                callingApp = state.callingApp,
-                                onSetMessagingApp = callbacks.onSetMessagingApp,
-                                onSetCallingApp = callbacks.onSetCallingApp,
+                                primaryContactButton = state.primaryContactButton,
+                                secondaryContactButton = state.secondaryContactButton,
+                                onSetPrimaryContactButton = callbacks.onSetPrimaryContactButton,
+                                onSetSecondaryContactButton = callbacks.onSetSecondaryContactButton,
                                 directDialEnabled = state.directDialEnabled,
                                 onToggleDirectDial = callbacks.onToggleDirectDial,
                                 numberSearchEnabled = state.numberSearchEnabled,

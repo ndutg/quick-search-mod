@@ -3,13 +3,12 @@ package com.tk.quicksearch.search.contacts.actions
 import android.app.Application
 import android.util.Log
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
+import com.tk.quicksearch.search.contacts.utils.ContactButtonResolver
 import com.tk.quicksearch.search.contacts.utils.ContactIntentHelpers
-import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
-import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.DirectDialChoice
 import com.tk.quicksearch.search.core.DirectDialOption
-import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.PendingThirdPartyCall
 import com.tk.quicksearch.search.core.PhoneNumberSelection
 import com.tk.quicksearch.search.core.SearchUiState
@@ -26,8 +25,8 @@ import com.tk.quicksearch.shared.permissions.PermissionHelper
 class ContactActionHandler(
     private val context: Application,
     private val userPreferences: UserAppPreferences,
-    private val getCallingApp: () -> CallingApp,
-    private val getMessagingApp: () -> MessagingApp,
+    private val getPrimaryContactButton: () -> ContactButtonAction,
+    private val getSecondaryContactButton: () -> ContactButtonAction,
     private val getDirectDialEnabled: () -> Boolean,
     private val getHasSeenDirectDialChoice: () -> Boolean,
     private val getCurrentState: () -> SearchUiState,
@@ -35,28 +34,32 @@ class ContactActionHandler(
     private val clearQuery: () -> Unit,
     private val showToastCallback: (Int) -> Unit,
 ) {
+    /** Runs the contact's first button action (Call unless changed in settings). */
     fun callContact(contactInfo: ContactInfo, trackHistory: Boolean = true) {
-        if (contactInfo.phoneNumbers.isEmpty()) {
-            showToastCallback(R.string.error_missing_phone_number)
-            return
-        }
-        if (trackHistory) trackRecentContactAction(contactInfo)
-
-        val preferredNumber = userPreferences.getPreferredPhoneNumber(contactInfo.contactId)
-        if (preferredNumber != null && contactInfo.phoneNumbers.contains(preferredNumber)) {
-            performCalling(contactInfo, preferredNumber)
-            return
-        }
-
-        if (contactInfo.phoneNumbers.size > 1) {
-            uiStateUpdater { it.copy(phoneNumberSelection = PhoneNumberSelection(contactInfo, isCall = true)) }
-            return
-        }
-
-        performCalling(contactInfo, contactInfo.phoneNumbers.first())
+        performContactButton(contactInfo, getPrimaryContactButton(), isPrimary = true, trackHistory = trackHistory)
     }
 
+    /** Runs the contact's second button action (SMS unless changed in settings). */
     fun smsContact(contactInfo: ContactInfo, trackHistory: Boolean = true) {
+        performContactButton(contactInfo, getSecondaryContactButton(), isPrimary = false, trackHistory = trackHistory)
+    }
+
+    /**
+     * Runs [action] for the contact, falling back to Call ([isPrimary]) or SMS when the contact
+     * can't use it.
+     */
+    fun performContactButton(
+        contactInfo: ContactInfo,
+        action: ContactButtonAction,
+        isPrimary: Boolean,
+        trackHistory: Boolean = true,
+    ) {
+        val resolvedAction = ContactButtonResolver.resolveForContact(contactInfo, action, isPrimary)
+        if (resolvedAction == ContactButtonAction.EMAIL) {
+            val emailMethod = ContactButtonResolver.findMethod(contactInfo, resolvedAction) ?: return
+            handleContactMethod(contactInfo, emailMethod, trackHistory = trackHistory)
+            return
+        }
         if (contactInfo.phoneNumbers.isEmpty()) {
             showToastCallback(R.string.error_missing_phone_number)
             return
@@ -65,16 +68,21 @@ class ContactActionHandler(
 
         val preferredNumber = userPreferences.getPreferredPhoneNumber(contactInfo.contactId)
         if (preferredNumber != null && contactInfo.phoneNumbers.contains(preferredNumber)) {
-            performMessaging(contactInfo, preferredNumber)
+            performButtonAction(contactInfo, preferredNumber, resolvedAction, isPrimary)
             return
         }
 
         if (contactInfo.phoneNumbers.size > 1) {
-            uiStateUpdater { it.copy(phoneNumberSelection = PhoneNumberSelection(contactInfo, isCall = false)) }
+            uiStateUpdater {
+                it.copy(
+                    phoneNumberSelection =
+                        PhoneNumberSelection(contactInfo, action = resolvedAction, isPrimary = isPrimary),
+                )
+            }
             return
         }
 
-        performMessaging(contactInfo, contactInfo.phoneNumbers.first())
+        performButtonAction(contactInfo, contactInfo.phoneNumbers.first(), resolvedAction, isPrimary)
     }
 
     fun onPhoneNumberSelected(
@@ -88,11 +96,7 @@ class ContactActionHandler(
             userPreferences.setPreferredPhoneNumber(contactInfo.contactId, phoneNumber)
         }
 
-        if (selection.isCall) {
-            performCalling(contactInfo, phoneNumber)
-        } else {
-            performMessaging(contactInfo, phoneNumber)
-        }
+        performButtonAction(contactInfo, phoneNumber, selection.action, selection.isPrimary)
 
         uiStateUpdater { it.copy(phoneNumberSelection = null) }
     }
@@ -337,72 +341,22 @@ class ContactActionHandler(
         ContactIntentHelpers.performSms(context, number)
     }
 
-    private fun performMessaging(
+    private fun performButtonAction(
         contactInfo: ContactInfo,
         number: String,
+        action: ContactButtonAction,
+        isPrimary: Boolean,
     ) {
-        when (
-            ContactMessagingAppResolver.resolveMessagingAppForContact(
-                contactInfo,
-                getMessagingApp(),
-            )
-        ) {
-            MessagingApp.MESSAGES -> performSms(number)
-            MessagingApp.WHATSAPP -> ContactIntentHelpers.openWhatsAppChat(context, number) { resId -> showToastCallback(resId) }
-            MessagingApp.WHATSAPP_BUSINESS -> {
-                val method =
-                    contactInfo.contactMethods
-                        .filterIsInstance<ContactMethod.CustomApp>()
-                        .firstOrNull {
-                            it.packageName == com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
-                                it.mimeType == com.tk.quicksearch.search.models.ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE &&
-                                (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number))
-                        }
-                if (method != null) handleContactMethod(contactInfo, method) else performSms(number)
-            }
-            MessagingApp.TELEGRAM -> ContactIntentHelpers.openTelegramChat(context, number) { resId -> showToastCallback(resId) }
-            MessagingApp.SIGNAL -> ContactIntentHelpers.openSignalChat(context, number) { resId -> showToastCallback(resId) }
-        }
-    }
-
-    private fun performCalling(
-        contactInfo: ContactInfo,
-        number: String,
-    ) {
-        when (
-            ContactCallingAppResolver.resolveCallingAppForContact(
-                contactInfo = contactInfo,
-                defaultApp = getCallingApp(),
-                phoneNumber = number,
-            )
-        ) {
-            CallingApp.CALL -> beginRegularCallFlow(contactInfo.displayName, number)
-            CallingApp.WHATSAPP -> {
-                val method =
-                    contactInfo.contactMethods.firstOrNull { it is ContactMethod.WhatsAppCall && it.dataId != null && (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number)) } as? ContactMethod.WhatsAppCall
-                if (method?.dataId != null) {
-                    handleWhatsAppCallWithPermission(method.dataId)
-                } else {
-                    beginRegularCallFlow(contactInfo.displayName, number)
-                }
-            }
-            CallingApp.WHATSAPP_BUSINESS -> {
-                val method =
-                    contactInfo.contactMethods
-                        .filterIsInstance<ContactMethod.CustomApp>()
-                        .firstOrNull {
-                            it.packageName == com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
-                                it.mimeType == com.tk.quicksearch.search.models.ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL &&
-                                it.dataId != null &&
-                                (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number))
-                        }
-                if (method != null) {
-                    handleContactMethod(contactInfo, method)
-                } else {
-                    beginRegularCallFlow(contactInfo.displayName, number)
-                }
-            }
-            CallingApp.TELEGRAM -> {
+        when (val resolvedAction = ContactButtonResolver.resolveForContact(contactInfo, action, isPrimary, number)) {
+            ContactButtonAction.CALL -> beginRegularCallFlow(contactInfo.displayName, number)
+            ContactButtonAction.SMS -> performSms(number)
+            ContactButtonAction.WHATSAPP_MESSAGE ->
+                ContactIntentHelpers.openWhatsAppChat(context, number) { resId -> showToastCallback(resId) }
+            ContactButtonAction.TELEGRAM_MESSAGE ->
+                ContactIntentHelpers.openTelegramChat(context, number) { resId -> showToastCallback(resId) }
+            ContactButtonAction.SIGNAL_MESSAGE ->
+                ContactIntentHelpers.openSignalChat(context, number) { resId -> showToastCallback(resId) }
+            ContactButtonAction.TELEGRAM_CALL -> {
                 val preferredMethod =
                     contactInfo.contactMethods
                         .firstOrNull { it is ContactMethod.TelegramCall && it.dataId != null } as? ContactMethod.TelegramCall
@@ -412,25 +366,15 @@ class ContactActionHandler(
                     handleTelegramCallWithPermission(phoneNumber = number)
                 }
             }
-            CallingApp.SIGNAL -> {
+            else -> {
                 val method =
-                    contactInfo.contactMethods.firstOrNull { it is ContactMethod.SignalCall && it.dataId != null && (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number)) } as? ContactMethod.SignalCall
-                if (method?.dataId != null) {
-                    handleSignalCallWithPermission(method.dataId)
-                } else {
-                    beginRegularCallFlow(contactInfo.displayName, number)
-                }
-            }
-            CallingApp.GOOGLE_MEET -> {
-                val method =
-                    contactInfo.contactMethods.firstOrNull { it is ContactMethod.GoogleMeet && it.dataId != null && (it.data.isBlank() || com.tk.quicksearch.search.utils.PhoneNumberUtils.isSameNumber(it.data, number)) } as? ContactMethod.GoogleMeet
-                if (method?.dataId != null) {
-                    val success = ContactIntentHelpers.openGoogleMeet(context, method.dataId) { resId -> showToastCallback(resId) }
-                    if (success) {
-                        clearQueryIfEnabled()
-                    }
-                } else {
-                    beginRegularCallFlow(contactInfo.displayName, number)
+                    ContactButtonResolver
+                        .findMethod(contactInfo, resolvedAction, number)
+                        ?.takeIf { it.dataId != null || resolvedAction in ACTIONS_WITHOUT_DATA_ID }
+                when {
+                    method != null -> handleContactMethod(contactInfo, method, trackHistory = false)
+                    isPrimary -> beginRegularCallFlow(contactInfo.displayName, number)
+                    else -> performSms(number)
                 }
             }
         }
@@ -616,5 +560,15 @@ class ContactActionHandler(
             }
             else -> Unit
         }
+    }
+
+    private companion object {
+        // Actions whose contact method can be opened from its data (address, number) without a data row ID.
+        val ACTIONS_WITHOUT_DATA_ID =
+            setOf(
+                ContactButtonAction.EMAIL,
+                ContactButtonAction.WHATSAPP_BUSINESS_MESSAGE,
+                ContactButtonAction.TELEGRAM_VIDEO_CALL,
+            )
     }
 }

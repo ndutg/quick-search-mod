@@ -27,13 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonsSection
 import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
+import com.tk.quicksearch.widgets.noteWidget.NoteWidgetBackgroundSection
+import com.tk.quicksearch.widgets.noteWidget.NoteWidgetSelectedNoteSection
+import com.tk.quicksearch.widgets.noteWidget.NoteWidgetTextColorSection
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetPreviewCard
@@ -66,6 +68,7 @@ fun WidgetConfigScreen(
     searchViewModel: SearchViewModel,
     widgetVariant: WidgetVariant = WidgetVariant.STANDARD,
     titleResId: Int = R.string.widget_settings_title,
+    onChangeNote: () -> Unit = {},
 ) {
     val constrainedState = state.enforceVariantConstraints(widgetVariant)
     val onConstrainedStateChange: (WidgetPreferences) -> Unit = { updated ->
@@ -166,6 +169,8 @@ fun WidgetConfigScreen(
 
             // The media controls widget only offers a background, corner radius and transparency.
             val isMediaControls = widgetVariant == WidgetVariant.MEDIA_CONTROLS
+            // The note widget offers the note, background, text color, corner radius and transparency.
+            val isNote = widgetVariant == WidgetVariant.NOTE
 
             // Scrollable preferences section
             Column(
@@ -179,7 +184,7 @@ fun WidgetConfigScreen(
                                 WidgetConfigConstants
                                     .HORIZONTAL_PADDING,
                             // Its first setting sits right under the preview otherwise.
-                            top = if (isMediaControls) WidgetConfigConstants.SECTION_SPACING else 0.dp,
+                            top = WidgetConfigConstants.SECTION_SPACING,
                             end =
                                 WidgetConfigConstants
                                     .HORIZONTAL_PADDING,
@@ -217,7 +222,11 @@ fun WidgetConfigScreen(
                     )
                 }
 
-                if (isMediaControls) {
+                if (isNote) {
+                    NoteWidgetSelectedNoteSection(noteId = constrainedState.noteId, onChangeNote = onChangeNote)
+                    NoteWidgetBackgroundSection(state = constrainedState, onStateChange = onConstrainedStateChange)
+                    NoteWidgetTextColorSection(state = constrainedState, onStateChange = onConstrainedStateChange)
+                } else if (isMediaControls) {
                     MediaControlsThemeSection(
                         state = constrainedState,
                         onStateChange = onConstrainedStateChange,
@@ -236,7 +245,7 @@ fun WidgetConfigScreen(
 
                 WidgetSlidersSection(
                     state = constrainedState,
-                    showBorderControls = !isMediaControls,
+                    showBorderControls = !isMediaControls && !isNote,
                     onStateChange = onConstrainedStateChange,
                 )
                 if (widgetVariant == WidgetVariant.STANDARD) {
@@ -259,7 +268,7 @@ fun WidgetConfigScreen(
                         onStateChange = onConstrainedStateChange,
                     )
                 }
-                if (!isMediaControls) {
+                if (!isMediaControls && !isNote) {
                     WidgetInternalPaddingSection(
                         state = constrainedState,
                         onStateChange = onConstrainedStateChange,

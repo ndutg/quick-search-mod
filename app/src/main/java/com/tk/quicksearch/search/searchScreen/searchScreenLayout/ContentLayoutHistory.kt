@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
@@ -86,13 +87,10 @@ internal fun HomeSearchHistoryBlock(
                 }
                 SearchHistorySection(
                     items = state.recentItems,
-                    callingApp =
-                        effectiveContactsParams.callingApp
-                            ?: CallingApp.CALL,
-                    messagingApp =
-                        effectiveContactsParams.messagingApp
-                            ?: MessagingApp
-                                .MESSAGES,
+                    primaryContactButton =
+                        effectiveContactsParams.primaryContactButton ?: ContactButtonAction.CALL,
+                    secondaryContactButton =
+                        effectiveContactsParams.secondaryContactButton ?: ContactButtonAction.SMS,
                     onRecentQueryClick =
                     onRecentQueryClick,
                     onContactClick =

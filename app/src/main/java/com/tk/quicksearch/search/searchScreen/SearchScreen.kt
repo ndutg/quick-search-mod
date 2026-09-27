@@ -208,6 +208,7 @@ fun SearchScreen(
     onDictionarySearchClick: () -> Unit = {},
     onWeatherSearchClick: () -> Unit = {},
     onWorldClockSearchClick: () -> Unit = {},
+    onQuickSearchHelpClick: () -> Unit = {},
     onCustomToolSearchClick: () -> Unit = {},
     onTaskerIntentClick: () -> Unit = {},
     onCustomAction: (ContactInfo, ContactCardAction) -> Unit,
@@ -568,6 +569,7 @@ fun SearchScreen(
             onDictionarySearchClick = onDictionarySearchClick,
             onWeatherSearchClick = onWeatherSearchClick,
             onWorldClockSearchClick = onWorldClockSearchClick,
+            onQuickSearchHelpClick = onQuickSearchHelpClick,
             onCustomToolSearchClick = onCustomToolSearchClick,
             onTaskerIntentClick = onTaskerIntentClick,
             onKeyboardSwitchToggle = {

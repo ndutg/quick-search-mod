@@ -11,6 +11,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.getId
+import com.tk.quicksearch.tools.aiSearch.QuickSearchHelp
 import java.util.Locale
 
 @Composable
@@ -92,6 +93,8 @@ private class AliasHighlightVisualTransformation(
 
     private fun resolveHighlightRange(query: String): IntRange? {
         if (query.isBlank()) return null
+        // The built-in @help alias wins; no other alias is highlighted alongside it.
+        QuickSearchHelp.aliasRange(query)?.let { return it }
         val trimmedStartQuery = query.trimStart()
         val leadingWhitespace = query.length - trimmedStartQuery.length
         val prefixMatch =

@@ -38,6 +38,8 @@ import com.tk.quicksearch.search.searchScreen.shared.InformationCard
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
+internal val AiResultCardMinHeight = 175.dp
+
 @Composable
 internal fun GeminiResultCard(
         showWallpaperBackground: Boolean,
@@ -79,7 +81,7 @@ private fun ColumnWithContent(
     val clipboardManager = LocalClipboardManager.current
     val cardModifier =
             Modifier.fillMaxWidth()
-                    .heightIn(min = 175.dp)
+                    .heightIn(min = AiResultCardMinHeight)
                     .let { baseModifier ->
                         if (copyText.isNullOrBlank()) {
                             baseModifier

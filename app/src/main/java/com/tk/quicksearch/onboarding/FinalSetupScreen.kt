@@ -70,7 +70,6 @@ fun FinalSetupScreen(
     viewModel: SearchViewModel,
     hasContactsPermission: Boolean,
     hasFilesPermission: Boolean,
-    hasCallPermission: Boolean,
     currentStep: Int,
     totalSteps: Int,
     onShowToast: (String) -> Unit = {},
@@ -113,21 +112,11 @@ fun FinalSetupScreen(
                     verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
                 ) {
                     MessagingSection(
-                        messagingApp = uiState.messagingApp,
-                        onSetMessagingApp = viewModel::setMessagingApp,
-                        directDialEnabled = uiState.directDialEnabled,
-                        onToggleDirectDial = viewModel::setDirectDialEnabled,
-                        numberSearchEnabled = uiState.numberSearchEnabled,
-                        onToggleNumberSearch = viewModel::setNumberSearchEnabled,
-                        hasCallPermission = hasCallPermission,
-                        contactsSectionEnabled = true,
+                        messagingApp = uiState.secondaryContactButton.toMessagingApp(),
                         isWhatsAppInstalled = uiState.isWhatsAppInstalled,
                         isWhatsAppBusinessInstalled = uiState.isWhatsAppBusinessInstalled,
                         isTelegramInstalled = uiState.isTelegramInstalled,
                         isSignalInstalled = uiState.isSignalInstalled,
-                        showCallingApp = false,
-                        showDirectDial = false,
-                        showTitle = false,
                         onMessagingAppSelected = @Suppress("LocalContextGetResourceValueCall") { app ->
                             val isInstalled =
                                 when (app) {

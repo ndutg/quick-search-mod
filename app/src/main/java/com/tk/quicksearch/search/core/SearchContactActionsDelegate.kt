@@ -3,18 +3,16 @@ package com.tk.quicksearch.search.core
 import android.content.Context
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.contacts.actions.ContactActionHandler
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
-import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
-import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
+import com.tk.quicksearch.search.contacts.utils.ContactButtonResolver
 import com.tk.quicksearch.search.contacts.utils.TelegramContactUtils
 import com.tk.quicksearch.search.data.ContactRepository
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
-import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
-import com.tk.quicksearch.shared.util.PackageConstants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -95,11 +93,21 @@ internal class SearchContactActionsDelegate(
 
         when (action) {
             is ContactCardAction.Phone -> {
-                contactActionHandler.callContact(contactInfo, trackHistory = trackHistory)
+                contactActionHandler.performContactButton(
+                    contactInfo,
+                    ContactButtonAction.CALL,
+                    isPrimary = true,
+                    trackHistory = trackHistory,
+                )
                 return
             }
             is ContactCardAction.Sms -> {
-                contactActionHandler.smsContact(contactInfo, trackHistory = trackHistory)
+                contactActionHandler.performContactButton(
+                    contactInfo,
+                    ContactButtonAction.SMS,
+                    isPrimary = false,
+                    trackHistory = trackHistory,
+                )
                 return
             }
             else -> Unit
@@ -350,60 +358,16 @@ internal class SearchContactActionsDelegate(
         contact: ContactInfo,
         isPrimary: Boolean,
     ): ContactCardAction? {
-        val phoneNumber = contact.phoneNumbers.firstOrNull() ?: return null
-        return if (isPrimary) {
-            when (
-                ContactCallingAppResolver.resolveCallingAppForContact(
-                    contactInfo = contact,
-                    defaultApp = permissionStateProvider().callingApp,
-                )
-            ) {
-                CallingApp.CALL -> ContactCardAction.Phone(phoneNumber)
-                CallingApp.WHATSAPP -> ContactCardAction.WhatsAppCall(phoneNumber)
-                CallingApp.WHATSAPP_BUSINESS -> contact.whatsAppBusinessAction(
-                    phoneNumber,
-                    ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL,
-                )
-                CallingApp.TELEGRAM -> ContactCardAction.TelegramCall(phoneNumber)
-                CallingApp.SIGNAL -> ContactCardAction.SignalCall(phoneNumber)
-                CallingApp.GOOGLE_MEET -> ContactCardAction.GoogleMeet(phoneNumber)
-            }
-        } else {
-            when (
-                ContactMessagingAppResolver.resolveMessagingAppForContact(
-                    contactInfo = contact,
-                    defaultApp = permissionStateProvider().messagingApp,
-                )
-            ) {
-                MessagingApp.MESSAGES -> ContactCardAction.Sms(phoneNumber)
-                MessagingApp.WHATSAPP -> ContactCardAction.WhatsAppMessage(phoneNumber)
-                MessagingApp.WHATSAPP_BUSINESS -> contact.whatsAppBusinessAction(
-                    phoneNumber,
-                    ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE,
-                )
-                MessagingApp.TELEGRAM -> ContactCardAction.TelegramMessage(phoneNumber)
-                MessagingApp.SIGNAL -> ContactCardAction.SignalMessage(phoneNumber)
-            }
-        }
+        val permissionState = permissionStateProvider()
+        return ContactButtonResolver.defaultCardAction(
+            contactInfo = contact,
+            action =
+                if (isPrimary) {
+                    permissionState.primaryContactButton
+                } else {
+                    permissionState.secondaryContactButton
+                },
+            isPrimary = isPrimary,
+        )
     }
-
-    private fun ContactInfo.whatsAppBusinessAction(
-        phoneNumber: String,
-        mimeType: String,
-    ): ContactCardAction? =
-        contactMethods
-            .filterIsInstance<ContactMethod.CustomApp>()
-            .firstOrNull { method ->
-                method.packageName == PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
-                    method.mimeType == mimeType &&
-                    (method.data.isBlank() || PhoneNumberUtils.isSameNumber(method.data, phoneNumber))
-            }?.let { method ->
-                ContactCardAction.CustomApp(
-                    phoneNumber = phoneNumber,
-                    mimeType = method.mimeType,
-                    packageName = method.packageName,
-                    dataId = method.dataId,
-                    displayLabel = method.displayLabel,
-                )
-            }
 }

@@ -153,8 +153,13 @@ fun AtAGlanceSettingsSection(
     var showMissedCalls by remember { mutableStateOf(glancePreferences.isShowMissedCallsEnabled()) }
     var showDoNotDisturb by remember { mutableStateOf(glancePreferences.isShowDoNotDisturbEnabled()) }
     var showOngoingCall by remember { mutableStateOf(glancePreferences.isShowOngoingCallEnabled()) }
+    var showWorkouts by remember { mutableStateOf(glancePreferences.isShowWorkoutsEnabled()) }
+    var showOtpCodes by remember { mutableStateOf(glancePreferences.isShowOtpCodesEnabled()) }
+    var showWeather by remember { mutableStateOf(glancePreferences.isShowWeatherEnabled()) }
     var showAirplaneMode by remember { mutableStateOf(glancePreferences.isShowAirplaneModeEnabled()) }
     var showHotspot by remember { mutableStateOf(glancePreferences.isShowHotspotEnabled()) }
+    var showWifiSignIn by remember { mutableStateOf(glancePreferences.isShowWifiSignInEnabled()) }
+    var showFlashlight by remember { mutableStateOf(glancePreferences.isShowFlashlightEnabled()) }
     var hasNotificationAccess by remember {
         mutableStateOf(NotificationDotsPermission.hasNotificationListenerAccess(context))
     }
@@ -210,6 +215,21 @@ fun AtAGlanceSettingsSection(
         rememberNotificationDotsCheckedChange { enabled ->
             showOngoingCall = enabled
             glancePreferences.setShowOngoingCallEnabled(enabled)
+        }
+    val onShowWorkoutsCheckedChange =
+        rememberNotificationDotsCheckedChange { enabled ->
+            showWorkouts = enabled
+            glancePreferences.setShowWorkoutsEnabled(enabled)
+        }
+    val onShowOtpCodesCheckedChange =
+        rememberNotificationDotsCheckedChange { enabled ->
+            showOtpCodes = enabled
+            glancePreferences.setShowOtpCodesEnabled(enabled)
+        }
+    val onShowWeatherCheckedChange =
+        rememberNotificationDotsCheckedChange { enabled ->
+            showWeather = enabled
+            glancePreferences.setShowWeatherEnabled(enabled)
         }
 
     /** A toggle that needs notification access; its description gives way to the permission hint. */
@@ -295,6 +315,12 @@ fun AtAGlanceSettingsSection(
                 onCheckedChange = onShowOngoingCallCheckedChange,
             ),
             notificationToggle(
+                title = stringResource(R.string.settings_at_a_glance_otp_title),
+                description = stringResource(R.string.settings_at_a_glance_otp_desc),
+                checked = showOtpCodes,
+                onCheckedChange = onShowOtpCodesCheckedChange,
+            ),
+            notificationToggle(
                 title = stringResource(R.string.settings_at_a_glance_missed_calls_title),
                 description = stringResource(R.string.settings_at_a_glance_missed_calls_desc),
                 checked = showMissedCalls,
@@ -324,6 +350,22 @@ fun AtAGlanceSettingsSection(
                 showHotspot = enabled
                 glancePreferences.setShowHotspotEnabled(enabled)
             },
+            simpleToggle(
+                title = stringResource(R.string.settings_at_a_glance_wifi_sign_in_title),
+                description = stringResource(R.string.settings_at_a_glance_wifi_sign_in_desc),
+                checked = showWifiSignIn,
+            ) { enabled ->
+                showWifiSignIn = enabled
+                glancePreferences.setShowWifiSignInEnabled(enabled)
+            },
+            simpleToggle(
+                title = stringResource(R.string.settings_at_a_glance_flashlight_title),
+                description = stringResource(R.string.settings_at_a_glance_flashlight_desc),
+                checked = showFlashlight,
+            ) { enabled ->
+                showFlashlight = enabled
+                glancePreferences.setShowFlashlightEnabled(enabled)
+            },
             GlanceToggle("$alarmsTitle $alarmsDescription") { isFirst, isLast ->
                 SettingsToggleRow(
                     title = alarmsTitle,
@@ -350,6 +392,18 @@ fun AtAGlanceSettingsSection(
                     isLastItem = isLast,
                 )
             },
+            notificationToggle(
+                title = stringResource(R.string.weather_toggle_title),
+                description = stringResource(R.string.settings_at_a_glance_weather_desc),
+                checked = showWeather,
+                onCheckedChange = onShowWeatherCheckedChange,
+            ),
+            notificationToggle(
+                title = stringResource(R.string.settings_at_a_glance_workouts_title),
+                description = stringResource(R.string.settings_at_a_glance_workouts_desc),
+                checked = showWorkouts,
+                onCheckedChange = onShowWorkoutsCheckedChange,
+            ),
             notificationToggle(
                 title = stringResource(R.string.settings_at_a_glance_timers_title),
                 description = stringResource(R.string.settings_at_a_glance_timers_desc),

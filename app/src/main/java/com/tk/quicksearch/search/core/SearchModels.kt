@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.core
 
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.preferences.DEFAULT_WEB_SUGGESTIONS_ENABLED
@@ -226,6 +227,9 @@ data class AiSearchState(
         val activeQuery: String? = null,
         val usedModelId: String? = null,
         val llmProviderId: AiSearchLlmProviderId? = null,
+        val isQuickSearchHelp: Boolean = false,
+        /** False for setup errors (missing key or model) where retrying the request can't help. */
+        val canRetry: Boolean = true,
 )
 
 data class CurrencyConverterState(
@@ -309,8 +313,13 @@ data class CalculatorState(
 
 data class PhoneNumberSelection(
         val contactInfo: com.tk.quicksearch.search.models.ContactInfo,
-        val isCall: Boolean, // true for call, false for SMS
-)
+        // Contact button action to run with the chosen number, already resolved for this contact
+        val action: ContactButtonAction,
+        val isPrimary: Boolean,
+) {
+        val isCall: Boolean
+                get() = !action.isMessage
+}
 
 data class DirectDialChoice(
         val contactName: String,

@@ -1,7 +1,6 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
 import android.Manifest
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,14 +35,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.shared.permissions.PermissionSettingsDialog
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
-import com.tk.quicksearch.shared.ui.components.AppVoiceCallIcon
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -55,8 +52,6 @@ private object MessagingSpacing {
     val cardTopPadding = DesignTokens.CardTopPadding
     val cardBottomPadding = DesignTokens.CardBottomPadding
     val optionSpacing = DesignTokens.ItemRowSpacing
-    val toggleSpacing = DesignTokens.ToggleSpacing
-    val directDialColumnSpacing = DesignTokens.TextColumnSpacing
     val messagingTitleBottomPadding = DesignTokens.SectionTitleBottomPadding
     val chipVerticalPadding = DesignTokens.ChipVerticalPadding
     val chipHorizontalPadding = DesignTokens.ChipHorizontalPadding
@@ -70,64 +65,48 @@ private data class MessagingOption(
     val labelRes: Int,
 )
 
-private data class CallingOption(
-    val app: CallingApp,
-    val labelRes: Int,
+/** A contact button choice waiting on the CALL_PHONE permission. */
+private data class PendingContactButton(
+    val action: ContactButtonAction,
+    val isPrimary: Boolean,
 )
 
+/** Third-party app calls go through CALL_PHONE, so choosing one asks for it up front. */
+private val ContactButtonAction.requiresCallPermission: Boolean
+    get() =
+        when (this) {
+            ContactButtonAction.WHATSAPP_CALL,
+            ContactButtonAction.WHATSAPP_VIDEO_CALL,
+            ContactButtonAction.WHATSAPP_BUSINESS_CALL,
+            ContactButtonAction.WHATSAPP_BUSINESS_VIDEO_CALL,
+            ContactButtonAction.TELEGRAM_CALL,
+            ContactButtonAction.TELEGRAM_VIDEO_CALL,
+            ContactButtonAction.SIGNAL_CALL,
+            ContactButtonAction.SIGNAL_VIDEO_CALL,
+            -> true
+            else -> false
+        }
+
 /**
- * Calls & Texts section.
- * Lets users choose direct dial behavior and default messaging app.
+ * Default messaging app picker used during onboarding. Hidden when no third-party messaging app
+ * is installed.
  *
- * @param messagingApp Currently selected messaging app
- * @param onSetMessagingApp Callback when the messaging option changes
- * @param directDialEnabled Whether direct dial is enabled
- * @param onToggleDirectDial Callback when the direct dial option changes
- * @param hasCallPermission Whether the CALL_PHONE permission is granted
- * @param contactsSectionEnabled Whether the contacts section is enabled. If false, this section is not displayed.
- * @param isWhatsAppInstalled Whether WhatsApp is available on the device
- * @param isTelegramInstalled Whether Telegram is available on the device
- * @param isSignalInstalled Whether Signal is available on the device
+ * @param messagingApp Currently selected messaging app, or null when the second contact button
+ * isn't a messaging action
  * @param onMessagingAppSelected Callback when a messaging option is selected, handles installation check
- * @param showDirectDial Whether to show the direct dial toggle (e.g. hidden in onboarding)
- * @param modifier Modifier to be applied to the section title
  */
 @Composable
 fun MessagingSection(
-    messagingApp: MessagingApp,
-    onSetMessagingApp: (MessagingApp) -> Unit,
-    callingApp: CallingApp = CallingApp.CALL,
-    onSetCallingApp: (CallingApp) -> Unit = {},
-    directDialEnabled: Boolean,
-    onToggleDirectDial: (Boolean) -> Unit,
-    numberSearchEnabled: Boolean,
-    onToggleNumberSearch: (Boolean) -> Unit,
-    hasCallPermission: Boolean,
-    contactsSectionEnabled: Boolean = true,
+    messagingApp: MessagingApp?,
+    onMessagingAppSelected: (MessagingApp) -> Unit,
     isWhatsAppInstalled: Boolean = false,
     isWhatsAppBusinessInstalled: Boolean = false,
     isTelegramInstalled: Boolean = false,
     isSignalInstalled: Boolean = false,
-    isGoogleMeetInstalled: Boolean = false,
-    onCallingAppSelected: ((CallingApp) -> Unit)? = null,
-    onMessagingAppSelected: ((MessagingApp) -> Unit)? = null,
-    showTitle: Boolean = true,
-    showCallingApp: Boolean = true,
-    showDirectDial: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    if (!contactsSectionEnabled) {
-        return
-    }
-
     val hasAnyThirdPartyMessagingApp = isWhatsAppInstalled || isWhatsAppBusinessInstalled || isTelegramInstalled || isSignalInstalled
-    val hasAnyThirdPartyCallingApp =
-        isGoogleMeetInstalled || isWhatsAppInstalled || isWhatsAppBusinessInstalled || isTelegramInstalled || isSignalInstalled
-    val shouldShowCallingCard = showCallingApp && hasAnyThirdPartyCallingApp
-    val shouldShowMessagingCard = hasAnyThirdPartyMessagingApp
-    val shouldShowDirectDialCard = showDirectDial
-
-    if (!showTitle && !shouldShowDirectDialCard && !shouldShowCallingCard && !shouldShowMessagingCard) {
+    if (!hasAnyThirdPartyMessagingApp) {
         return
     }
 
@@ -147,77 +126,13 @@ fun MessagingSection(
                 add(MessagingOption(MessagingApp.SIGNAL, R.string.contact_method_signal_message_label))
             }
         }
-    val callingOptions =
-        buildList {
-            add(CallingOption(CallingApp.CALL, R.string.contact_method_call_label))
-            if (isGoogleMeetInstalled) {
-                add(CallingOption(CallingApp.GOOGLE_MEET, R.string.contact_method_google_meet_label))
-            }
-            if (isWhatsAppInstalled) {
-                add(CallingOption(CallingApp.WHATSAPP, R.string.contact_method_whatsapp_message_label))
-            }
-            if (isWhatsAppBusinessInstalled) {
-                add(CallingOption(CallingApp.WHATSAPP_BUSINESS, R.string.contact_method_whatsapp_business_label))
-            }
-            if (isTelegramInstalled) {
-                add(CallingOption(CallingApp.TELEGRAM, R.string.contact_method_telegram_message_label))
-            }
-            if (isSignalInstalled) {
-                add(CallingOption(CallingApp.SIGNAL, R.string.contact_method_signal_message_label))
-            }
-        }
 
-    Column(modifier = modifier) {
-        if (showTitle) {
-            Column {
-                Text(
-                    text = stringResource(R.string.settings_calls_texts_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = DesignTokens.SectionTitleBottomPadding),
-                )
-            }
-        }
-
-        if (shouldShowDirectDialCard) {
-            DirectDialCard(
-                directDialEnabled = directDialEnabled,
-                onToggleDirectDial = onToggleDirectDial,
-                numberSearchEnabled = numberSearchEnabled,
-                onToggleNumberSearch = onToggleNumberSearch,
-                hasCallPermission = hasCallPermission,
-            )
-        }
-
-        if (shouldShowCallingCard) {
-            val callingCardModifier =
-                if (shouldShowDirectDialCard) {
-                    Modifier.padding(top = DesignTokens.SpacingMedium)
-                } else {
-                    Modifier
-                }
-            DefaultCallingAppCard(
-                callingOptions = callingOptions,
-                selectedApp = callingApp,
-                onCallingAppSelected = onCallingAppSelected ?: onSetCallingApp,
-                modifier = callingCardModifier,
-            )
-        }
-
-        if (shouldShowMessagingCard) {
-            DefaultMessagingAppCard(
-                messagingOptions = messagingOptions,
-                selectedApp = messagingApp,
-                onMessagingAppSelected = onMessagingAppSelected ?: onSetMessagingApp,
-                modifier =
-                    if (shouldShowCallingCard) {
-                        Modifier.padding(top = DesignTokens.SpacingMedium)
-                    } else {
-                        Modifier
-                    },
-            )
-        }
-    }
+    DefaultMessagingAppCard(
+        messagingOptions = messagingOptions,
+        selectedApp = messagingApp,
+        onMessagingAppSelected = onMessagingAppSelected,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -294,7 +209,7 @@ private fun DirectDialCard(
 @Composable
 private fun DefaultMessagingAppCard(
     messagingOptions: List<MessagingOption>,
-    selectedApp: MessagingApp,
+    selectedApp: MessagingApp?,
     onMessagingAppSelected: (MessagingApp) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -351,159 +266,6 @@ private fun DefaultMessagingAppCard(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun DefaultCallingAppCard(
-    callingOptions: List<CallingOption>,
-    selectedApp: CallingApp,
-    onCallingAppSelected: (CallingApp) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    if (callingOptions.isEmpty()) return
-
-    SettingsCard(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = MessagingSpacing.cardHorizontalPadding,
-                        end = MessagingSpacing.cardHorizontalPadding,
-                        top = MessagingSpacing.cardTopPadding,
-                        bottom = MessagingSpacing.cardBottomPadding,
-                    ),
-            verticalArrangement = Arrangement.spacedBy(MessagingSpacing.optionSpacing),
-        ) {
-            Text(
-                text = stringResource(R.string.settings_calling_card_title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = MessagingSpacing.messagingTitleBottomPadding),
-            )
-
-            val rowSize = 2
-            Column(
-                modifier = Modifier.fillMaxWidth().selectableGroup(),
-                verticalArrangement = Arrangement.spacedBy(MessagingSpacing.optionSpacing),
-            ) {
-                callingOptions.chunked(rowSize).forEach { rowOptions ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(MessagingSpacing.optionSpacing),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        rowOptions.forEach { option ->
-                            CallingOptionChip(
-                                option = option,
-                                selected = selectedApp == option.app,
-                                onClick = { onCallingAppSelected(option.app) },
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                        repeat(rowSize - rowOptions.size) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CallingOptionChip(
-    option: CallingOption,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val view = LocalView.current
-    val borderColor =
-        if (selected) {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
-        } else {
-            AppColors.SettingsDivider
-        }
-    val backgroundColor =
-        if (selected) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f) else Color.Transparent
-
-    Column(
-        modifier =
-            modifier
-                .clip(MaterialTheme.shapes.large)
-                .background(backgroundColor)
-                .border(
-                    width = MessagingSpacing.borderWidth,
-                    color = borderColor,
-                    shape = MaterialTheme.shapes.large,
-                ).selectable(
-                    selected = selected,
-                    onClick = {
-                        hapticConfirm(view)()
-                        onClick()
-                    },
-                    role = Role.RadioButton,
-                ).padding(vertical = MessagingSpacing.chipVerticalPadding, horizontal = MessagingSpacing.chipHorizontalPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MessagingSpacing.chipIconSpacing),
-    ) {
-        CallingOptionIcon(app = option.app)
-        Text(
-            text = stringResource(option.labelRes),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-@Composable
-private fun CallingOptionIcon(app: CallingApp) {
-    when (app) {
-        CallingApp.CALL -> {
-            Icon(
-                imageVector = Icons.Rounded.Call,
-                contentDescription = null,
-                tint = AppColors.SecondaryIconTint,
-                modifier = Modifier.size(MessagingSpacing.iconSize),
-            )
-        }
-        CallingApp.GOOGLE_MEET -> {
-            Image(
-                painter = painterResource(id = R.drawable.google_meet),
-                contentDescription = null,
-                modifier = Modifier.size(MessagingSpacing.iconSize),
-            )
-        }
-        CallingApp.WHATSAPP -> {
-            AppVoiceCallIcon(
-                logoPainterRes = R.drawable.whatsapp_call,
-                size = MessagingSpacing.iconSize,
-            )
-        }
-        CallingApp.WHATSAPP_BUSINESS -> {
-            AppVoiceCallIcon(
-                logoPainterRes = R.drawable.whatsapp_call,
-                size = MessagingSpacing.iconSize,
-            )
-        }
-        CallingApp.TELEGRAM -> {
-            AppVoiceCallIcon(
-                logoPainterRes = R.drawable.telegram_call,
-                size = MessagingSpacing.iconSize,
-            )
-        }
-        CallingApp.SIGNAL -> {
-            AppVoiceCallIcon(
-                logoPainterRes = R.drawable.signal_call,
-                size = MessagingSpacing.iconSize,
-            )
         }
     }
 }
@@ -602,15 +364,15 @@ private fun MessagingOptionIcon(app: MessagingApp) {
 }
 
 /**
- * Consolidated Calls & Texts settings section that includes all messaging-related logic.
- * This combines the UI components with the business logic for messaging app selection and direct dial.
+ * Calls & Texts settings: direct dial and number search, plus the default actions of the first
+ * and second contact card buttons.
  */
 @Composable
 fun CallsTextsSettingsSection(
-    messagingApp: MessagingApp,
-    callingApp: CallingApp,
-    onSetMessagingApp: (MessagingApp) -> Unit,
-    onSetCallingApp: (CallingApp) -> Unit,
+    primaryContactButton: ContactButtonAction,
+    secondaryContactButton: ContactButtonAction,
+    onSetPrimaryContactButton: (ContactButtonAction) -> Unit,
+    onSetSecondaryContactButton: (ContactButtonAction) -> Unit,
     directDialEnabled: Boolean,
     onToggleDirectDial: (Boolean) -> Unit,
     numberSearchEnabled: Boolean,
@@ -629,16 +391,24 @@ fun CallsTextsSettingsSection(
     }
 
     val context = LocalContext.current
-    var pendingCallingAppSelection by remember { mutableStateOf<CallingApp?>(null) }
+    var pendingContactButton by remember { mutableStateOf<PendingContactButton?>(null) }
     var showCallPermissionSettingsDialog by remember { mutableStateOf(false) }
+
+    fun applyContactButton(
+        action: ContactButtonAction,
+        isPrimary: Boolean,
+    ) {
+        if (isPrimary) onSetPrimaryContactButton(action) else onSetSecondaryContactButton(action)
+    }
+
     val callPermissionLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),
         ) { isGranted ->
-            val pendingApp = pendingCallingAppSelection
-            pendingCallingAppSelection = null
-            if (isGranted && pendingApp != null) {
-                onSetCallingApp(pendingApp)
+            val pending = pendingContactButton
+            pendingContactButton = null
+            if (isGranted && pending != null) {
+                applyContactButton(pending.action, pending.isPrimary)
                 return@rememberLauncherForActivityResult
             }
             if (!isGranted) {
@@ -651,127 +421,55 @@ fun CallsTextsSettingsSection(
             }
         }
 
-    // Callback for calling app selection with installation check
-    @Suppress("LocalContextGetResourceValueCall")
-    val onCallingAppSelected: (CallingApp) -> Unit = { app ->
-        val isInstalled =
-            when (app) {
-                CallingApp.CALL -> true
-                CallingApp.GOOGLE_MEET -> isGoogleMeetInstalled
-                CallingApp.WHATSAPP -> isWhatsAppInstalled
-                CallingApp.WHATSAPP_BUSINESS -> isWhatsAppBusinessInstalled
-                CallingApp.TELEGRAM -> isTelegramInstalled
-                CallingApp.SIGNAL -> isSignalInstalled
-            }
-
-        if (isInstalled) {
-            val requiresCallPermission =
-                app == CallingApp.WHATSAPP ||
-                    app == CallingApp.WHATSAPP_BUSINESS ||
-                    app == CallingApp.TELEGRAM ||
-                    app == CallingApp.SIGNAL
-            if (requiresCallPermission && !PermissionHelper.checkCallPermission(context)) {
-                pendingCallingAppSelection = app
-                callPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
-            } else {
-                onSetCallingApp(app)
-            }
+    fun onContactButtonSelected(
+        action: ContactButtonAction,
+        isPrimary: Boolean,
+    ) {
+        if (action.requiresCallPermission && !PermissionHelper.checkCallPermission(context)) {
+            pendingContactButton = PendingContactButton(action, isPrimary)
+            callPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
         } else {
-            val appName =
-                when (app) {
-                    CallingApp.CALL -> context.getString(R.string.contact_method_call_label)
-                    CallingApp.GOOGLE_MEET -> context.getString(R.string.contact_method_google_meet_label)
-                    CallingApp.WHATSAPP -> context.getString(R.string.contact_method_whatsapp_message_label)
-                    CallingApp.WHATSAPP_BUSINESS -> context.getString(R.string.contact_method_whatsapp_business_label)
-                    CallingApp.TELEGRAM -> context.getString(R.string.contact_method_telegram_message_label)
-                    CallingApp.SIGNAL -> context.getString(R.string.contact_method_signal_message_label)
-                }
-            Toast
-                .makeText(
-                    context,
-                    context.getString(
-                        R.string.settings_messaging_app_not_installed,
-                        appName,
-                    ),
-                    Toast.LENGTH_SHORT,
-                ).show()
+            applyContactButton(action, isPrimary)
         }
     }
 
-    // Callback for messaging app selection with installation check
-    @Suppress("LocalContextGetResourceValueCall")
-    val onMessagingAppSelected: (MessagingApp) -> Unit = { app ->
-        val isInstalled =
-            when (app) {
-                MessagingApp.MESSAGES -> true
-
-                // Messages is always available
-                MessagingApp.WHATSAPP -> isWhatsAppInstalled
-                MessagingApp.WHATSAPP_BUSINESS -> isWhatsAppBusinessInstalled
-
-                MessagingApp.TELEGRAM -> isTelegramInstalled
-
-                MessagingApp.SIGNAL -> isSignalInstalled
+    val availableActions =
+        remember(
+            isWhatsAppInstalled,
+            isWhatsAppBusinessInstalled,
+            isTelegramInstalled,
+            isSignalInstalled,
+            isGoogleMeetInstalled,
+        ) {
+            ContactButtonAction.entries.filter { action ->
+                action.isAppInstalled(
+                    isWhatsAppInstalled = isWhatsAppInstalled,
+                    isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
+                    isTelegramInstalled = isTelegramInstalled,
+                    isSignalInstalled = isSignalInstalled,
+                    isGoogleMeetInstalled = isGoogleMeetInstalled,
+                )
             }
-
-        if (isInstalled) {
-            onSetMessagingApp(app)
-        } else {
-            val appName =
-                when (app) {
-                    MessagingApp.WHATSAPP -> {
-                        context.getString(R.string.contact_method_whatsapp_message_label)
-                    }
-
-                    MessagingApp.WHATSAPP_BUSINESS -> {
-                        context.getString(R.string.contact_method_whatsapp_business_label)
-                    }
-
-                    MessagingApp.TELEGRAM -> {
-                        context.getString(R.string.contact_method_telegram_message_label)
-                    }
-
-                    MessagingApp.SIGNAL -> {
-                        context.getString(R.string.contact_method_signal_message_label)
-                    }
-
-                    MessagingApp.MESSAGES -> {
-                        context.getString(R.string.settings_messaging_option_messages)
-                    }
-                }
-            Toast
-                .makeText(
-                    context,
-                    context.getString(
-                        R.string.settings_messaging_app_not_installed,
-                        appName,
-                    ),
-                    Toast.LENGTH_SHORT,
-                ).show()
         }
-    }
 
-    MessagingSection(
-        messagingApp = messagingApp,
-        callingApp = callingApp,
-        onSetMessagingApp = onSetMessagingApp,
-        onSetCallingApp = onSetCallingApp,
-        directDialEnabled = directDialEnabled,
-        onToggleDirectDial = onToggleDirectDial,
-        numberSearchEnabled = numberSearchEnabled,
-        onToggleNumberSearch = onToggleNumberSearch,
-        hasCallPermission = hasCallPermission,
-        contactsSectionEnabled = contactsSectionEnabled,
-        isWhatsAppInstalled = isWhatsAppInstalled,
-        isWhatsAppBusinessInstalled = isWhatsAppBusinessInstalled,
-        isTelegramInstalled = isTelegramInstalled,
-        isSignalInstalled = isSignalInstalled,
-        isGoogleMeetInstalled = isGoogleMeetInstalled,
-        onCallingAppSelected = onCallingAppSelected,
-        onMessagingAppSelected = onMessagingAppSelected,
-        showTitle = false,
-        modifier = modifier,
-    )
+    Column(modifier = modifier) {
+        DirectDialCard(
+            directDialEnabled = directDialEnabled,
+            onToggleDirectDial = onToggleDirectDial,
+            numberSearchEnabled = numberSearchEnabled,
+            onToggleNumberSearch = onToggleNumberSearch,
+            hasCallPermission = hasCallPermission,
+        )
+
+        ContactButtonsSettings(
+            primaryContactButton = primaryContactButton,
+            secondaryContactButton = secondaryContactButton,
+            availableActions = availableActions,
+            onPrimaryContactButtonSelected = { action -> onContactButtonSelected(action, isPrimary = true) },
+            onSecondaryContactButtonSelected = { action -> onContactButtonSelected(action, isPrimary = false) },
+            modifier = Modifier.padding(top = DesignTokens.SpacingMedium),
+        )
+    }
 
     if (showCallPermissionSettingsDialog) {
         PermissionSettingsDialog(

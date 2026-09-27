@@ -33,10 +33,8 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.contacts.components.ContactResultRow
 import com.tk.quicksearch.search.contacts.components.ContactUiConstants
-import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
-import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
-import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.MessagingApp
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
+import com.tk.quicksearch.search.contacts.utils.ContactButtonResolver
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
@@ -58,8 +56,8 @@ fun ContactResultsSection(
     hasPermission: Boolean,
     contacts: List<ContactInfo>,
     isExpanded: Boolean,
-    callingApp: CallingApp,
-    messagingApp: MessagingApp,
+    primaryContactButton: ContactButtonAction,
+    secondaryContactButton: ContactButtonAction,
     onContactClick: (ContactInfo) -> Unit,
     onShowContactMethods: (ContactInfo) -> Unit = {},
     onCallContact: (ContactInfo) -> Unit,
@@ -113,8 +111,8 @@ fun ContactResultsSection(
                     isExpanded = isExpanded,
                     showAllResults = showAllResults,
                     showExpandControls = showExpandControls,
-                    callingApp = callingApp,
-                    messagingApp = messagingApp,
+                    primaryContactButton = primaryContactButton,
+                    secondaryContactButton = secondaryContactButton,
                     onContactClick = onContactClick,
                     onShowContactMethods = onShowContactMethods,
                     onCallContact = onCallContact,
@@ -167,8 +165,8 @@ private fun ContactsResultCard(
     isExpanded: Boolean,
     showAllResults: Boolean,
     showExpandControls: Boolean,
-    callingApp: CallingApp,
-    messagingApp: MessagingApp,
+    primaryContactButton: ContactButtonAction,
+    secondaryContactButton: ContactButtonAction,
     onContactClick: (ContactInfo) -> Unit,
     onShowContactMethods: (ContactInfo) -> Unit,
     onCallContact: (ContactInfo) -> Unit,
@@ -244,8 +242,8 @@ private fun ContactsResultCard(
                     displayContacts = displayContacts,
                     overlayDividerColor = overlayDividerColor,
                     showWallpaperBackground = showWallpaperBackground,
-                    callingApp = callingApp,
-                    messagingApp = messagingApp,
+                    primaryContactButton = primaryContactButton,
+                    secondaryContactButton = secondaryContactButton,
                     onContactClick = onContactClick,
                     onShowContactMethods = onShowContactMethods,
                     onCallContact = onCallContact,
@@ -296,8 +294,8 @@ private fun ContactList(
     displayContacts: List<ContactInfo>,
     overlayDividerColor: Color?,
     showWallpaperBackground: Boolean = false,
-    callingApp: CallingApp,
-    messagingApp: MessagingApp,
+    primaryContactButton: ContactButtonAction,
+    secondaryContactButton: ContactButtonAction,
     onContactClick: (ContactInfo) -> Unit,
     onShowContactMethods: (ContactInfo) -> Unit,
     onCallContact: (ContactInfo) -> Unit,
@@ -340,18 +338,10 @@ private fun ContactList(
             key(contactInfo.contactId) {
                 ContactResultRow(
                     contactInfo = contactInfo,
-                    callingApp =
-                        ContactCallingAppResolver
-                            .resolveCallingAppForContact(
-                                contactInfo,
-                                callingApp,
-                            ),
-                    messagingApp =
-                        ContactMessagingAppResolver
-                            .resolveMessagingAppForContact(
-                                contactInfo,
-                                messagingApp,
-                            ),
+                    primaryContactButton =
+                        ContactButtonResolver.resolveForContact(contactInfo, primaryContactButton, isPrimary = true),
+                    secondaryContactButton =
+                        ContactButtonResolver.resolveForContact(contactInfo, secondaryContactButton, isPrimary = false),
                     onContactClick = onContactClick,
                     onShowContactMethods = onShowContactMethods,
                     onCallContact = onCallContact,

@@ -5,6 +5,7 @@ import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.AccentColorMode
 import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.search.core.CallingApp
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.MessagingApp
@@ -339,39 +340,39 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
         setBooleanPref(UiPreferences.KEY_OVERLAY_MODE_ENABLED, enabled)
     }
 
-    fun getMessagingApp(): MessagingApp {
-        val appName = prefs.getString(UiPreferences.KEY_MESSAGING_APP, null)
-        return if (appName != null) {
-            try {
-                MessagingApp.valueOf(appName)
-            } catch (e: IllegalArgumentException) {
-                MessagingApp.MESSAGES
-            }
-        } else {
-            MessagingApp.MESSAGES
+    fun getPrimaryContactButton(): ContactButtonAction =
+        readContactButton(UiPreferences.KEY_PRIMARY_CONTACT_BUTTON)
+            ?: readLegacyCallingApp()?.let(ContactButtonAction::fromCallingApp)
+            ?: ContactButtonAction.CALL
+
+    fun setPrimaryContactButton(action: ContactButtonAction) {
+        prefs.edit().putString(UiPreferences.KEY_PRIMARY_CONTACT_BUTTON, action.name).apply()
+    }
+
+    fun getSecondaryContactButton(): ContactButtonAction =
+        readContactButton(UiPreferences.KEY_SECONDARY_CONTACT_BUTTON)
+            ?: readLegacyMessagingApp()?.let(ContactButtonAction::fromMessagingApp)
+            ?: ContactButtonAction.SMS
+
+    fun setSecondaryContactButton(action: ContactButtonAction) {
+        prefs.edit().putString(UiPreferences.KEY_SECONDARY_CONTACT_BUTTON, action.name).apply()
+    }
+
+    private fun readContactButton(key: String): ContactButtonAction? =
+        prefs.getString(key, null)?.let { name ->
+            ContactButtonAction.entries.firstOrNull { it.name == name }
         }
-    }
 
-    fun setMessagingApp(app: MessagingApp) {
-        prefs.edit().putString(UiPreferences.KEY_MESSAGING_APP, app.name).apply()
-    }
-
-    fun getCallingApp(): CallingApp {
-        val appName = prefs.getString(UiPreferences.KEY_CALLING_APP, null)
-        return if (appName != null) {
-            try {
-                CallingApp.valueOf(appName)
-            } catch (e: IllegalArgumentException) {
-                CallingApp.CALL
-            }
-        } else {
-            CallingApp.CALL
+    // Values saved before the first/second button settings replaced the calling and messaging app choices.
+    private fun readLegacyCallingApp(): CallingApp? =
+        prefs.getString(UiPreferences.KEY_CALLING_APP, null)?.let { name ->
+            CallingApp.entries.firstOrNull { it.name == name }
         }
-    }
 
-    fun setCallingApp(app: CallingApp) {
-        prefs.edit().putString(UiPreferences.KEY_CALLING_APP, app.name).apply()
-    }
+    private fun readLegacyMessagingApp(): MessagingApp? =
+        prefs.getString(UiPreferences.KEY_MESSAGING_APP, null)?.let { name ->
+            MessagingApp.entries.firstOrNull { it.name == name }
+        }
 
     fun isFirstLaunch(): Boolean {
         syncInstallTimeWithBackup()

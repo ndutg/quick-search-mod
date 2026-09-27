@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_note_placeholder"
+    android:previewLayout="@layout/widget_note_placeholder"
+    android:configure="com.tk.quicksearch.widgets.searchWidget.SearchWidgetConfigureActivity"
+    android:widgetCategory="home_screen"
+    android:resizeMode="horizontal|vertical"
+    android:widgetFeatures="reconfigurable"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:description="@string/widget_note_widget_title" />

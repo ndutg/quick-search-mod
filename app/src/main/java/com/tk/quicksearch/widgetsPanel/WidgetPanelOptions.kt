@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -238,24 +237,4 @@ internal fun isWidgetConfigurationOptional(provider: AppWidgetProviderInfo): Boo
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false
     return provider.widgetFeatures and
         AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL != 0
-}
-
-internal fun isWidgetConfigureActivityAccessible(
-    packageManager: PackageManager,
-    componentName: android.content.ComponentName,
-): Boolean {
-    val activityInfo =
-        runCatching {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                packageManager.getActivityInfo(
-                    componentName,
-                    PackageManager.ComponentInfoFlags.of(0),
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                packageManager.getActivityInfo(componentName, 0)
-            }
-        }.getOrNull() ?: return false
-
-    return activityInfo.enabled && activityInfo.exported
 }

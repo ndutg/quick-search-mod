@@ -20,8 +20,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import com.tk.quicksearch.search.contacts.models.ContactCardAction
-import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
-import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
+import com.tk.quicksearch.search.contacts.utils.ContactButtonResolver
 import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.core.*
 import com.tk.quicksearch.search.models.AppInfo
@@ -30,9 +29,6 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ContactMethod
-import com.tk.quicksearch.search.models.ContactMethodMimeTypes
-import com.tk.quicksearch.search.utils.PhoneNumberUtils
-import com.tk.quicksearch.shared.util.PackageConstants
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.dialogs.NicknameDialogState
@@ -214,39 +210,11 @@ internal fun SearchScreenStateManagement(
             }
         if (currentAction != null) return currentAction
 
-        val phoneNumber = contact.phoneNumbers.firstOrNull() ?: return null
-        return if (isPrimary) {
-            when (
-                ContactCallingAppResolver.resolveCallingAppForContact(
-                    contactInfo = contact,
-                    defaultApp = state.callingApp,
-                )
-            ) {
-                CallingApp.CALL -> ContactCardAction.Phone(phoneNumber)
-                CallingApp.WHATSAPP -> ContactCardAction.WhatsAppCall(phoneNumber)
-                CallingApp.WHATSAPP_BUSINESS ->
-                    contact.whatsAppBusinessAction(phoneNumber, ContactMethodMimeTypes.WHATSAPP_BUSINESS_VOICE_CALL)
-                        ?: ContactCardAction.Phone(phoneNumber)
-                CallingApp.TELEGRAM -> ContactCardAction.TelegramCall(phoneNumber)
-                CallingApp.SIGNAL -> ContactCardAction.SignalCall(phoneNumber)
-                CallingApp.GOOGLE_MEET -> ContactCardAction.GoogleMeet(phoneNumber)
-            }
-        } else {
-            when (
-                ContactMessagingAppResolver.resolveMessagingAppForContact(
-                    contactInfo = contact,
-                    defaultApp = state.messagingApp,
-                )
-            ) {
-                MessagingApp.MESSAGES -> ContactCardAction.Sms(phoneNumber)
-                MessagingApp.WHATSAPP -> ContactCardAction.WhatsAppMessage(phoneNumber)
-                MessagingApp.WHATSAPP_BUSINESS ->
-                    contact.whatsAppBusinessAction(phoneNumber, ContactMethodMimeTypes.WHATSAPP_BUSINESS_MESSAGE)
-                        ?: ContactCardAction.Sms(phoneNumber)
-                MessagingApp.TELEGRAM -> ContactCardAction.TelegramMessage(phoneNumber)
-                MessagingApp.SIGNAL -> ContactCardAction.SignalMessage(phoneNumber)
-            }
-        }
+        return ContactButtonResolver.defaultCardAction(
+            contactInfo = contact,
+            action = if (isPrimary) state.primaryContactButton else state.secondaryContactButton,
+            isPrimary = isPrimary,
+        )
     }
 
     // Section expansion state
@@ -665,23 +633,3 @@ internal data class SearchScreenStateResult(
     val setShowLlmModelDialog: (Boolean) -> Unit,
     val setPersonalContextInput: (TextFieldValue) -> Unit,
 )
-
-private fun ContactInfo.whatsAppBusinessAction(
-    phoneNumber: String,
-    mimeType: String,
-): ContactCardAction? =
-    contactMethods
-        .filterIsInstance<ContactMethod.CustomApp>()
-        .firstOrNull { method ->
-            method.packageName == PackageConstants.WHATSAPP_BUSINESS_PACKAGE &&
-                method.mimeType == mimeType &&
-                (method.data.isBlank() || PhoneNumberUtils.isSameNumber(method.data, phoneNumber))
-        }?.let { method ->
-            ContactCardAction.CustomApp(
-                phoneNumber = phoneNumber,
-                mimeType = method.mimeType,
-                packageName = method.packageName,
-                dataId = method.dataId,
-                displayLabel = method.displayLabel,
-            )
-        }

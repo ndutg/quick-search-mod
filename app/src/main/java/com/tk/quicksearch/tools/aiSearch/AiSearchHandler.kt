@@ -61,6 +61,7 @@ class AiSearchHandler(
     @Volatile private var isInitialized = false
     private var aiSearchJob: Job? = null
     private val conversationTurns = mutableListOf<AiConversationTurn>()
+    private var isQuickSearchHelpConversation = false
 
     private fun ensureInitialized() {
         if (!isInitialized) {
@@ -279,6 +280,25 @@ class AiSearchHandler(
     }
 
     fun requestAiSearch(query: String) {
+        isQuickSearchHelpConversation = false
+        requestAiSearchInternal(query = query, isFollowUp = false)
+    }
+
+    /** Answers a `@help` question from the bundled feature docs, without web search. */
+    fun requestQuickSearchHelp(query: String) {
+        if (QuickSearchHelp.stripAlias(query).isEmpty()) {
+            // Bare `@help`: show the intro card (Success with no answer) without calling the model.
+            clearAiSearchState()
+            _aiSearchState.update {
+                AiSearchState(
+                    status = AiSearchStatus.Success,
+                    activeQuery = query.trim(),
+                    isQuickSearchHelp = true,
+                )
+            }
+            return
+        }
+        isQuickSearchHelpConversation = true
         requestAiSearchInternal(query = query, isFollowUp = false)
     }
 
@@ -286,9 +306,16 @@ class AiSearchHandler(
         query: String,
         previousQuestion: String,
         previousAnswer: String,
+        isQuickSearchHelp: Boolean = false,
     ) {
+        isQuickSearchHelpConversation = isQuickSearchHelp
         if (conversationTurns.isEmpty()) {
-            val seedQuestion = previousQuestion.trim()
+            val seedQuestion =
+                if (isQuickSearchHelp) {
+                    QuickSearchHelp.stripAlias(previousQuestion)
+                } else {
+                    previousQuestion.trim()
+                }
             val seedAnswer = previousAnswer.trim()
             if (seedQuestion.isNotEmpty() && seedAnswer.isNotEmpty()) {
                 conversationTurns.add(AiConversationTurn(seedQuestion, seedAnswer))
@@ -312,6 +339,9 @@ class AiSearchHandler(
         if (!isFollowUp) {
             conversationTurns.clear()
         }
+        val isHelp = isQuickSearchHelpConversation
+        // activeQuery keeps the typed `@help` text so query-change clearing and history still match.
+        val questionText = if (isHelp) QuickSearchHelp.stripAlias(trimmedQuery) else trimmedQuery
 
         val apiKey = llmApiKey
         if (apiKey.isNullOrBlank()) {
@@ -319,9 +349,18 @@ class AiSearchHandler(
                 AiSearchState(
                     status = AiSearchStatus.Error,
                     isFollowUp = isFollowUp,
-                    errorMessage = context.getString(R.string.direct_search_error_no_key),
+                    errorMessage =
+                        context.getString(
+                            if (isHelp) {
+                                R.string.quick_search_help_no_api_key
+                            } else {
+                                R.string.direct_search_error_no_key
+                            },
+                        ),
                     activeQuery = trimmedQuery,
+                    canRetry = false,
                     llmProviderId = activeProviderId,
+                    isQuickSearchHelp = isHelp,
                 )
             }
             return
@@ -333,7 +372,9 @@ class AiSearchHandler(
                     isFollowUp = isFollowUp,
                     errorMessage = context.getString(R.string.ai_error_selected_model_unavailable),
                     activeQuery = trimmedQuery,
+                    canRetry = false,
                     llmProviderId = activeProviderId,
+                    isQuickSearchHelp = isHelp,
                 )
             }
             return
@@ -349,26 +390,32 @@ class AiSearchHandler(
                         isFollowUp = isFollowUp,
                         activeQuery = trimmedQuery,
                         llmProviderId = activeProviderId,
+                        isQuickSearchHelp = isHelp,
                     )
                 }
 
                 val selectedModel = availableModels.find { it.id == selectedModelId }
+                val prompt =
+                    if (isFollowUp) {
+                        buildAiFollowUpPrompt(previousTurns, questionText)
+                    } else {
+                        questionText
+                    }
                 val webSearch =
-                    prepareWebSearch(
-                        userPreferences = userPreferences,
-                        searchQuery = trimmedQuery,
-                        prompt =
-                            if (isFollowUp) {
-                                buildAiFollowUpPrompt(previousTurns, trimmedQuery)
-                            } else {
-                                trimmedQuery
-                            },
-                        nativeSearchSupported =
-                            providerSupportsNativeSearch(activeProviderId) &&
-                                selectedModel?.supportsGrounding != false,
-                        nativeSearchRequested = groundingEnabled,
-                        onTavilyFailure = { showToastCallback(R.string.tavily_search_failed_toast) },
-                    )
+                    if (isHelp) {
+                        PreparedWebSearch(prompt = prompt, useNativeSearch = false)
+                    } else {
+                        prepareWebSearch(
+                            userPreferences = userPreferences,
+                            searchQuery = trimmedQuery,
+                            prompt = prompt,
+                            nativeSearchSupported =
+                                providerSupportsNativeSearch(activeProviderId) &&
+                                    selectedModel?.supportsGrounding != false,
+                            nativeSearchRequested = groundingEnabled,
+                            onTavilyFailure = { showToastCallback(R.string.tavily_search_failed_toast) },
+                        )
+                    }
                 val result =
                     activeProvider.fetchAnswer(
                         apiKey = apiKey,
@@ -377,7 +424,7 @@ class AiSearchHandler(
                             LlmRequest(
                                 query = webSearch.prompt,
                                 personalContext =
-                                    if (selectedModel?.supportsSystemInstructions == false) {
+                                    if (isHelp || selectedModel?.supportsSystemInstructions == false) {
                                         null
                                     } else {
                                         personalContext.takeIf { it.isNotBlank() }
@@ -390,16 +437,18 @@ class AiSearchHandler(
                                         !activeProviderId.isCustom,
                                 useSystemInstruction =
                                     selectedModel?.supportsSystemInstructions != false,
+                                systemInstruction =
+                                    if (isHelp) QuickSearchHelp.systemInstruction(context) else null,
                             ),
                     )
 
                 result
                     .onSuccess { response ->
                         if (isFollowUp) {
-                            conversationTurns.add(AiConversationTurn(trimmedQuery, response.text))
+                            conversationTurns.add(AiConversationTurn(questionText, response.text))
                         } else {
                             conversationTurns.clear()
-                            conversationTurns.add(AiConversationTurn(trimmedQuery, response.text))
+                            conversationTurns.add(AiConversationTurn(questionText, response.text))
                         }
                         val showWebSearchFallbackTip =
                             response.webSearchDisabledForRequest &&
@@ -418,6 +467,7 @@ class AiSearchHandler(
                                 activeQuery = trimmedQuery,
                                 usedModelId = selectedModelId,
                                 llmProviderId = activeProviderId,
+                                isQuickSearchHelp = isHelp,
                             )
                         }
                     }
@@ -451,6 +501,7 @@ class AiSearchHandler(
                                 errorMessage = message,
                                 activeQuery = trimmedQuery,
                                 llmProviderId = activeProviderId,
+                                isQuickSearchHelp = isHelp,
                             )
                         }
                     }
@@ -479,6 +530,7 @@ class AiSearchHandler(
                     status = AiSearchStatus.Error,
                     errorMessage = context.getString(R.string.direct_search_error_no_key),
                     activeQuery = trimmedQuery,
+                    canRetry = false,
                     llmProviderId = providerId,
                 )
             }
@@ -490,6 +542,7 @@ class AiSearchHandler(
                     status = AiSearchStatus.Error,
                     errorMessage = context.getString(R.string.ai_error_selected_model_unavailable),
                     activeQuery = trimmedQuery,
+                    canRetry = false,
                     llmProviderId = providerId,
                 )
             }
@@ -603,6 +656,7 @@ class AiSearchHandler(
         aiSearchJob?.cancel()
         aiSearchJob = null
         conversationTurns.clear()
+        isQuickSearchHelpConversation = false
         _aiSearchState.update { AiSearchState() }
     }
 

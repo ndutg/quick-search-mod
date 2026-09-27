@@ -6,6 +6,7 @@ import com.tk.quicksearch.search.core.WeatherStatus
 import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.core.WorldClockStatus
 import com.tk.quicksearch.search.core.SearchUiState
+import com.tk.quicksearch.tools.aiSearch.QuickSearchHelp
 import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
 import com.tk.quicksearch.tools.aiTools.ConfirmedWeatherQuery
@@ -23,6 +24,8 @@ internal data class SearchCardVisibility(
     val showWeatherSearchCard: Boolean,
     val showCustomToolSearchCard: Boolean,
     val showAiFollowUpAction: Boolean,
+    val isQuickSearchHelpQuery: Boolean,
+    val showQuickSearchHelpCard: Boolean,
 )
 
 internal fun searchCardVisibility(
@@ -128,6 +131,20 @@ internal fun searchCardVisibility(
             state.AiSearchState.status == AiSearchStatus.Success &&
                     !state.AiSearchState.answer.isNullOrBlank() &&
                     state.detectedCustomToolId == null
+    // Built-in `@help` alias; it doesn't lock the query, so any alias chip takes precedence.
+    val isQuickSearchHelpQuery =
+            state.detectedShortcutTarget == null &&
+                    state.detectedAliasSearchSection == null &&
+                    !state.calculatorState.isToolMode &&
+                    !isCurrencyConverterAliasMode &&
+                    !isWorldClockAliasMode &&
+                    !isDictionaryAliasMode &&
+                    !isWeatherAliasMode &&
+                    state.detectedCustomToolId == null &&
+                    state.detectedTaskerIntentId == null &&
+                    QuickSearchHelp.questionOrNull(trimmedQuery) != null
+    val showQuickSearchHelpCard =
+            isQuickSearchHelpQuery && state.AiSearchState.status == AiSearchStatus.Idle
 
     return SearchCardVisibility(
         showCurrencyConverter = showCurrencyConverter,
@@ -140,5 +157,7 @@ internal fun searchCardVisibility(
         showWeatherSearchCard = showWeatherSearchCard,
         showCustomToolSearchCard = showCustomToolSearchCard,
         showAiFollowUpAction = showAiFollowUpAction,
+        isQuickSearchHelpQuery = isQuickSearchHelpQuery,
+        showQuickSearchHelpCard = showQuickSearchHelpCard,
     )
 }

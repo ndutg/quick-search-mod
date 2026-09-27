@@ -12,10 +12,8 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.search.appShortcuts.AppShortcutRow
 import com.tk.quicksearch.search.calendar.CalendarEventRow
 import com.tk.quicksearch.search.contacts.components.ContactResultRow
-import com.tk.quicksearch.search.contacts.utils.ContactCallingAppResolver
-import com.tk.quicksearch.search.contacts.utils.ContactMessagingAppResolver
-import com.tk.quicksearch.search.core.CallingApp
-import com.tk.quicksearch.search.core.MessagingApp
+import com.tk.quicksearch.search.contacts.models.ContactButtonAction
+import com.tk.quicksearch.search.contacts.utils.ContactButtonResolver
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
@@ -123,14 +121,18 @@ internal fun PinnedNonAppItemsSection(
                         val contact = item.contact
                         ContactResultRow(
                             contactInfo = contact,
-                            callingApp = ContactCallingAppResolver.resolveCallingAppForContact(
-                                contact,
-                                contactsParams.callingApp ?: CallingApp.CALL,
-                            ),
-                            messagingApp = ContactMessagingAppResolver.resolveMessagingAppForContact(
-                                contact,
-                                contactsParams.messagingApp ?: MessagingApp.MESSAGES,
-                            ),
+                            primaryContactButton =
+                                ContactButtonResolver.resolveForContact(
+                                    contact,
+                                    contactsParams.primaryContactButton ?: ContactButtonAction.CALL,
+                                    isPrimary = true,
+                                ),
+                            secondaryContactButton =
+                                ContactButtonResolver.resolveForContact(
+                                    contact,
+                                    contactsParams.secondaryContactButton ?: ContactButtonAction.SMS,
+                                    isPrimary = false,
+                                ),
                             primaryAction = contactsParams.getPrimaryContactCardAction(contact.contactId),
                             secondaryAction = contactsParams.getSecondaryContactCardAction(contact.contactId),
                             onContactClick = contactsParams.onContactClick,

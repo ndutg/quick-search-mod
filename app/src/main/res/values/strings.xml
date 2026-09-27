@@ -10,6 +10,10 @@
     <string name="direct_search_follow_up_hint">Ask a follow-up question</string>
     <string name="direct_search_error_generic">Couldn\u2019t fetch AI answer. Try again.</string>
     <string name="direct_search_error_no_key">Add an API key in settings (AI Provider) to fetch AI answers.</string>
+    <string name="quick_search_help_action">Ask Quick Search</string>
+    <string name="quick_search_help_no_api_key">You need API Key Setup to get answers</string>
+    <string name="quick_search_help_contact_developer">Contact Developer</string>
+    <string name="quick_search_help_intro">Type a question after @help to get answers about Quick Search features and settings.</string>
     <string name="gemini_web_search_quota_fallback_tip">Gemini\u2019s web search quota was reached, so this answer was generated without web search.</string>
     <string name="direct_search_powered_by">Powered by</string>
     <string name="empty_state_subtitle">Launch an app or refine your search to see suggestions.</string>
@@ -436,6 +440,13 @@
     <string name="contact_method_whatsapp_business_label">WhatsApp Business</string>
     <string name="contact_method_whatsapp_video_call_label">WhatsApp video call</string>
     <string name="contact_method_whatsapp_voice_call_label">WhatsApp voice call</string>
+    <string name="contact_button_sms">SMS</string>
+    <string name="contact_button_whatsapp_message">WhatsApp message</string>
+    <string name="contact_button_whatsapp_business_message">WhatsApp Business message</string>
+    <string name="contact_button_whatsapp_business_voice_call">WhatsApp Business voice call</string>
+    <string name="contact_button_whatsapp_business_video_call">WhatsApp Business video call</string>
+    <string name="contact_button_telegram_message">Telegram message</string>
+    <string name="contact_button_signal_message">Signal message</string>
     <string name="contacts_action_button_chat">Chat</string>
     <string name="contacts_action_button_contacts">Contacts</string>
     <string name="contacts_action_button_meet">Meet</string>
@@ -475,8 +486,11 @@
     <string name="settings_call_permission_title">Phone</string>
     <string name="permissions_background_usage_title">Allow Background Usage</string>
     <string name="permissions_background_usage_desc">Allow background usage for faster app startup.</string>
-    <string name="settings_calling_card_title">Default Calling App</string>
     <string name="settings_calls_texts_title">Calls &amp; Texts</string>
+    <string name="settings_contact_first_button_title">First Button</string>
+    <string name="settings_contact_second_button_title">Second Button</string>
+    <string name="settings_contact_buttons_fallback_note">When a contact can\'t use the selected action, the first button falls back to Call and the second to SMS.</string>
+    <string name="settings_contact_buttons_preview_name" translatable="false">John Doe</string>
     <string name="settings_direct_dial_desc">Place calls directly without opening the dialer. </string>
     <string name="settings_direct_dial_title">Direct Dial</string>
     <string name="settings_number_search_title">Number Search</string>
@@ -825,8 +839,8 @@
     <string name="settings_at_a_glance_timers_desc">Running timers and stopwatches from your clock app</string>
     <string name="settings_at_a_glance_birthdays_title">Birthdays</string>
     <string name="settings_at_a_glance_birthdays_desc">Contacts with a birthday today</string>
-    <string name="settings_at_a_glance_progress_title">Live Progress</string>
-    <string name="settings_at_a_glance_progress_desc">Ongoing notifications with a progress bar, like deliveries and downloads</string>
+    <string name="settings_at_a_glance_progress_title">Ongoing Notifications</string>
+    <string name="settings_at_a_glance_progress_desc">Live updates like rides, deliveries and downloads</string>
     <string name="settings_at_a_glance_charging_title">Charging</string>
     <string name="settings_at_a_glance_charging_desc">Battery level and time until full while plugged in</string>
     <string name="settings_at_a_glance_storage_title">Low Storage</string>
@@ -835,9 +849,18 @@
     <string name="settings_at_a_glance_missed_calls_desc">Missed calls from your phone app</string>
     <string name="settings_at_a_glance_ongoing_call_title">Ongoing Calls</string>
     <string name="settings_at_a_glance_ongoing_call_desc">The caller and call duration while you\'re on a call</string>
+    <string name="settings_at_a_glance_otp_title">OTP Codes</string>
+    <string name="settings_at_a_glance_otp_desc">One-time codes from messages and emails, ready to copy</string>
+    <string name="settings_at_a_glance_workouts_title">Workouts</string>
+    <string name="settings_at_a_glance_workouts_desc">Workout live status from Google Health and Samsung Health</string>
+    <string name="settings_at_a_glance_weather_desc">Current conditions and alerts from your weather app\'s notifications</string>
     <string name="settings_at_a_glance_dnd_desc">When Do Not Disturb is on</string>
     <string name="settings_at_a_glance_airplane_desc">When airplane mode is on</string>
     <string name="settings_at_a_glance_hotspot_desc">When your hotspot is on</string>
+    <string name="settings_at_a_glance_flashlight_title">Flashlight</string>
+    <string name="settings_at_a_glance_flashlight_desc">When your flashlight is on</string>
+    <string name="settings_at_a_glance_wifi_sign_in_title">Wi-Fi sign-in</string>
+    <string name="settings_at_a_glance_wifi_sign_in_desc">When a Wi-Fi network needs you to sign in</string>
     <string name="settings_now_playing_desc">Playback controls for whatever\'s currently playing</string>
     <string name="settings_use_system_font_desc">Follow your device font style</string>
     <string name="settings_use_system_font_title">Use System Font</string>
@@ -1067,6 +1090,9 @@
     <string name="widget_media_controls_nothing_playing">Nothing playing</string>
     <string name="widget_media_controls_grant_access">Tap to allow notification access</string>
     <string name="widget_media_controls_permission_hint">This widget needs notification access to show and control what\'s playing. Tap to allow.</string>
+    <string name="widget_note_widget_title">Note Widget</string>
+    <string name="widget_note_picker_title">Select Note</string>
+    <string name="widget_note_deleted">Note not found. Tap to choose another.</string>
     <string name="widget_icon_center">Center</string>
     <string name="widget_icon_left">Left</string>
     <string name="widget_icon_off">Off</string>
@@ -1089,6 +1115,7 @@
     <string name="widget_text_icon_color">Text &amp; Icon Color</string>
     <string name="widget_text_icon_color_black">Black</string>
     <string name="widget_text_icon_color_white">White</string>
+    <string name="widget_text_color">Text Color</string>
     <string name="widget_toggle_show_label">Quick Search Text</string>
     <string name="widgets_panel_title">Widgets</string>
     <string name="widgets_picker_empty">No widgets found.</string>
@@ -1269,6 +1296,9 @@
     <string name="home_ongoing_call_hang_up">Hang up</string>
     <string name="home_airplane_mode_on">Airplane mode is ON</string>
     <string name="home_hotspot_on">Hotspot is ON</string>
+    <string name="home_flashlight_on">Flashlight is ON</string>
+    <string name="home_wifi_sign_in">Sign in to Wi-Fi network</string>
+    <string name="home_sign_in">Sign in</string>
     <string name="home_turn_off">Turn off</string>
     <!-- Reminders -->
     <string name="section_reminders">Reminders</string>

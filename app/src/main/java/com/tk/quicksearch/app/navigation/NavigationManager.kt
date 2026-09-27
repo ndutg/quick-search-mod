@@ -378,10 +378,6 @@ fun MainContent(
                         ) == android.content.pm.PackageManager.PERMISSION_GRANTED
                     }
 
-                val hasCallPermission =
-                    context.checkSelfPermission(android.Manifest.permission.CALL_PHONE) ==
-                        android.content.pm.PackageManager.PERMISSION_GRANTED
-
                 val showToast: (String) -> Unit = { message ->
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
@@ -407,7 +403,6 @@ fun MainContent(
                     viewModel = searchViewModel,
                     hasContactsPermission = hasContactsPermission,
                     hasFilesPermission = hasFilesPermission,
-                    hasCallPermission = hasCallPermission,
                     onShowToast = showToast,
                 )
                 }
