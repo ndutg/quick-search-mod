@@ -15,6 +15,8 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceiver
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidget
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
+import com.tk.quicksearch.widgets.countdownWidget.CountdownWidget
+import com.tk.quicksearch.widgets.countdownWidget.CountdownWidgetReceiver
 import com.tk.quicksearch.widgets.noteWidget.NoteWidget
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetReceiver
 import com.tk.quicksearch.widgets.searchWidget.SearchWidget
@@ -89,6 +91,11 @@ suspend fun refreshMediaControlsWidgets(context: Context) {
 /** Redraws placed Note widgets, e.g. after a note is edited, deleted or restored from a backup. */
 suspend fun refreshNoteWidgets(context: Context) {
     refreshWidgets(context, NoteWidgetReceiver::class.java, NoteWidget())
+}
+
+/** Redraws placed Countdown widgets, e.g. when the day changes. */
+suspend fun refreshCountdownWidgets(context: Context) {
+    refreshWidgets(context, CountdownWidgetReceiver::class.java, CountdownWidget())
 }
 
 /** Fire-and-forget [refreshNoteWidgets] for callers outside a coroutine. */

@@ -499,7 +499,7 @@ private fun AppResultRowsSelector(
 }
 
 @Composable
-private fun PinnedNotificationItemsDialog(
+internal fun PinnedNotificationItemsDialog(
     items: List<CustomWidgetButtonAction>,
     onRemove: (CustomWidgetButtonAction) -> Unit,
     onReorder: (List<CustomWidgetButtonAction>) -> Unit,

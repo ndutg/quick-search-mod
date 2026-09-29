@@ -176,9 +176,9 @@ private fun AppColumnsSelector(
                             .fillMaxWidth()
                             .padding(
                                     start = DesignTokens.SpacingXXLarge,
-                                    top = DesignTokens.SpacingXLarge,
+                                    top = DesignTokens.SpacingLarge,
                                     end = DesignTokens.SpacingXXLarge,
-                                    bottom = DesignTokens.SpacingMedium,
+                                    bottom = DesignTokens.SpacingLarge,
                             ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

@@ -270,6 +270,7 @@
 <string name="clear_query_toggle_title">Очищать запрос</string>
 <string name="more_results_title">Другие результаты</string>
 <string name="open_keyboard_toggle_desc">Автоматически открывать клавиатуру при запуске приложения</string>
+<string name="open_keyboard_toggle_title">Открывать клавиатуру при запуске</string>
     <string name="recent_queries_toggle_desc">Кол-во элементов, показываемых до разворачивания</string>
     <string name="fuzzy_search_toggle_title">Нечёткий поиск</string>
     <string name="fuzzy_search_toggle_desc">Находить результаты, даже если поисковый запрос содержит опечатку.</string>
@@ -625,8 +626,6 @@
 <string name="settings_calendar_include_past_events_desc">Включать прошедшие события в результаты поиска.</string>
 <string name="settings_calendar_include_past_events_title">Прошедшие события</string>
 <string name="settings_calendar_permission_title">Календарь</string>
-<string name="settings_calendar_show_today_events_desc">Показывать сегодняшние события на главном экране.</string>
-<string name="settings_calendar_show_today_events_title">Показывать события на сегодня</string>
     <string name="settings_calendar_default_title">Открывать события в...</string>
     <string name="settings_calendar_view_all_events_desc">Просмотреть все события</string>
 
@@ -803,7 +802,7 @@
 <string name="settings_app_language_picker_title">Выберите язык приложения</string>
 <string name="settings_app_language_system_default">Системный язык</string>
 <string name="settings_launcher_icon_reset_default">Сбросить по умолчанию</string>
-<string name="settings_launcher_icon_title">Значок приложения в лаунчере</string>
+<string name="settings_launcher_icon_title">Изменить значок приложения</string>
 <string name="settings_layout_option_bottom_desc">Наиболее важные элементы отображаются внизу для удобного доступа</string>
 <string name="settings_layout_option_bottom_title">Режим управления одной рукой</string>
 <string name="settings_unified_pinned_items_title">Объединенные закрепленные элементы</string>
@@ -897,6 +896,36 @@
     <string name="settings_at_a_glance_workouts_title">Тренировки</string>
     <string name="settings_at_a_glance_workouts_desc">Статус тренировки в реальном времени из Google Health и Samsung Health</string>
     <string name="settings_at_a_glance_weather_desc">Текущая погода и предупреждения из уведомлений приложения погоды</string>
+    <string name="settings_at_a_glance_app_notifications_title">Уведомления приложений</string>
+    <string name="settings_at_a_glance_app_notifications_desc">Уведомления по выбранным приложениям или ключевым словам</string>
+    <string name="settings_at_a_glance_app_notifications_summary">Приложения: %1$d · Ключевые слова: %2$d</string>
+    <string name="app_notifications_intro">Подходящие уведомления будут показываться в разделе «Кратко», пока вы их не закроете</string>
+    <string name="app_notifications_any_app">Любое приложение</string>
+    <string name="app_notifications_add_app">Добавить приложение</string>
+    <string name="app_notifications_all_from_app">Все уведомления</string>
+    <string name="app_notifications_no_matches">Нет недавних уведомлений, соответствующих вашим условиям</string>
+    <string name="app_notifications_remove_app">Удалить %1$s</string>
+    <string name="app_notifications_keyword_placeholder">Добавьте любое слово или фразу</string>
+    <string name="app_notifications_keywords_intro">Уведомления с этими словами или фразами появятся на главном экране</string>
+    <string name="app_notifications_keywords_intro_app">Уведомления от %1$s с этими словами или фразами появятся на главном экране</string>
+    <string name="app_notifications_want_all">Показывать все уведомления</string>
+    <string name="app_notifications_add_keyword">Добавить «%1$s»</string>
+    <string name="app_notifications_recent_matches">Недавние совпадения</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="one">%d мин</item>
+        <item quantity="few">%d мин</item>
+        <item quantity="many">%d мин</item>
+        <item quantity="other">%d мин</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="one">%d ч</item>
+        <item quantity="few">%d ч</item>
+        <item quantity="many">%d ч</item>
+        <item quantity="other">%d ч</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">Выберите приложение</string>
+    <string name="app_notifications_search_apps">Поиск приложений</string>
+    <string name="home_app_notifications_more">Показать ещё %1$d</string>
     <string name="settings_at_a_glance_dnd_desc">Когда включен режим «Не беспокоить»</string>
     <string name="settings_at_a_glance_airplane_desc">Когда включен режим полета</string>
     <string name="settings_at_a_glance_hotspot_desc">Когда включена точка доступа</string>
@@ -969,6 +998,7 @@
 <string name="settings_gemini_api_key_saving">Сохранение...</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
 <string name="settings_model_picker_search_hint">Поиск моделей</string>
+<string name="settings_model_picker_more_models_hint">Показаны новейшие модели. Используйте поиск, чтобы найти другие.</string>
 <string name="settings_search_engine_alias_suffix_desc">Активирует поисковую систему, если добавить алиас в конце запроса. Алиасы в начале запроса работают всегда.</string>
 <string name="settings_search_engine_alias_suffix_title">Алиас после запроса</string>
 <string name="settings_search_engine_browser_default">Браузер по умолчанию</string>
@@ -1131,6 +1161,15 @@
 <string name="widget_note_widget_title">Виджет заметки</string>
 <string name="widget_note_picker_title">Выберите заметку</string>
 <string name="widget_note_deleted">Заметка не найдена. Нажмите, чтобы выбрать другую.</string>
+<string name="widget_countdown_widget_title">Виджет обратного отсчёта</string>
+<string name="widget_countdown_date">Дата</string>
+<string name="widget_countdown_format_days">Дни</string>
+<string name="widget_countdown_format_weeks">Недели</string>
+<string name="widget_countdown_format_months">Месяцы</string>
+<string name="widget_countdown_format_years">Годы</string>
+<string name="widget_countdown_format_detailed">Подробно</string>
+<string name="widget_countdown_format_progress">Прогресс %</string>
+<string name="widget_countdown_progress_hint">Показывает, какая часть времени прошла с момента выбора даты.</string>
 <string name="widget_icon_center">По центру</string>
 <string name="widget_icon_left">Слева</string>
 <string name="widget_icon_off">Выкл.</string>
@@ -1339,7 +1378,7 @@
     <string name="home_anniversary_title_ordinal">Годовщина: %1$s (%2$s)</string>
     <string name="home_birthday_wish">Нажмите, чтобы поздравить</string>
     <string name="home_missed_call">Пропущенный вызов</string>
-    <string name="home_otp_from">Код от %1$s</string>
+    <string name="home_otp_from">От %1$s</string>
     <string name="home_copied">Скопировано</string>
     <string name="home_reminder_marked_done">Напоминание отмечено как выполненное</string>
     <string name="home_reminder_snoozed">Напоминание отложено на 30 минут</string>
@@ -1353,7 +1392,6 @@
     <string name="home_hotspot_on">Точка доступа включена</string>
     <string name="home_flashlight_on">Фонарик включен</string>
     <string name="home_wifi_sign_in">Войдите в сеть Wi-Fi</string>
-    <string name="home_sign_in">Войти</string>
     <string name="home_turn_off">Выключить</string>
     <string name="settings_tavily_title">Tavily для веб-поиска</string>
     <string name="settings_tavily_desc">Добавьте API-ключ Tavily, чтобы добавить веб-поиск моделям, которые его не поддерживают.</string>

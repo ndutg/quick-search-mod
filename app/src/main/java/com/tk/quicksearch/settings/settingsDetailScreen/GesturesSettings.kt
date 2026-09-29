@@ -162,20 +162,27 @@ fun GesturesSettingsSection(
             }
         }
 
-        Text(
-            text = stringResource(R.string.settings_keyboard_gestures_title),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(bottom = DesignTokens.SectionTitleBottomPadding),
-        )
-        Text(
-            text = stringResource(R.string.settings_keyboard_gestures_desc),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = DesignTokens.SectionDescriptionBottomPadding),
-        )
         SettingsCard(modifier = Modifier.fillMaxWidth()) {
             Column {
+                Column(
+                    modifier = Modifier.padding(
+                        horizontal = DesignTokens.CardHorizontalPadding,
+                        vertical = DesignTokens.CardVerticalPadding,
+                    ),
+                ) {
+                    Text(
+                        text = stringResource(R.string.settings_keyboard_gestures_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_keyboard_gestures_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
+                    )
+                }
+                HorizontalDivider(color = AppColors.SettingsDivider)
                 SettingsNavigationRow(
                     item = SettingsCardItem(
                         title = stringResource(R.string.action_open_keyboard),

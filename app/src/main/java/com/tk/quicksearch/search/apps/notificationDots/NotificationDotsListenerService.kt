@@ -47,7 +47,7 @@ class NotificationDotsListenerService : NotificationListenerService() {
         NotificationDotsStore.updateFromNotifications(active)
         GlanceNotificationsStore.update(this, active)
         NotificationHistoryAccess.set(true)
-        NotificationHistoryStore.seed(this, active)
+        NotificationHistoryStore.seed(this, active, ::isAppNotificationCandidate)
         startMediaPlaybackMonitoring()
         if (!isPowerReceiverRegistered) {
             isPowerReceiverRegistered =
@@ -87,12 +87,16 @@ class NotificationDotsListenerService : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         updateActiveNotificationStores()
-        NotificationHistoryStore.record(this, sbn)
+        NotificationHistoryStore.record(this, sbn, ::isAppNotificationCandidate)
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         updateActiveNotificationStores()
     }
+
+    // Asked after the stores update, so notifications other At a Glance rows show are known.
+    private fun isAppNotificationCandidate(sbn: StatusBarNotification): Boolean =
+        GlanceNotificationsStore.isAppNotificationCandidate(this, sbn)
 
     private fun updateActiveNotificationStores() {
         val active = runCatching { activeNotifications }.getOrNull()

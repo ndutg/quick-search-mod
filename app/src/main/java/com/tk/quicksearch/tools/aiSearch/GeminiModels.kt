@@ -27,6 +27,33 @@ object GeminiModelCatalog {
                         .distinctBy { it.id }
                         .filter { isLikelyTextModel(it.id) }
 
+        private val pickerAliasIds =
+                setOf("gemini-flash-latest", "gemini-pro-latest", "gemini-flash-lite-latest")
+        private val versionedFamilyRegex =
+                Regex("^gemini-(\\d+(?:\\.\\d+)*)-(flash-lite|flash|pro)(?:-preview)?$")
+        private val gemmaVersionRegex = Regex("^gemma-(\\d+(?:\\.\\d+)*)-")
+
+        /**
+         * Picker list: the `-latest` aliases, every model of the newest Gemma generation, and the
+         * newest versioned Flash, Pro, and Flash Lite.
+         */
+        fun pickerModels(models: List<LlmTextModel>): List<LlmTextModel> {
+                val latestGemmaIds =
+                        LlmModelVersions.allOfLatestVersion(models) { id ->
+                                gemmaVersionRegex.find(id)?.groupValues?.get(1)?.split('.')?.map {
+                                        it.toIntOrNull() ?: return@allOfLatestVersion null
+                                }
+                        }
+                return LlmModelVersions.filterLatest(
+                        models,
+                        alwaysKeep = { id -> id in pickerAliasIds || id in latestGemmaIds },
+                ) { id ->
+                        versionedFamilyRegex.find(id)?.groupValues?.let {
+                                LlmModelVersions.familyVersion(it[2], it[1].split('.'))
+                        }
+                }
+        }
+
         /** Heuristic filter for text-first Gemini models. */
         fun isLikelyTextModel(modelId: String): Boolean {
                 val lowerId = modelId.lowercase()

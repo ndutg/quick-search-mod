@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tk.quicksearch.R
+import com.tk.quicksearch.appNotifications.openAppNotificationsSettings
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,12 +16,17 @@ import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.overlay.OverlayModeController
+import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
+import com.tk.quicksearch.search.data.AppNotificationsSettings
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.rememberAppNotificationsConfig
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.rememberResumeRefreshKey
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.settings.settingsDetailScreen.GestureSettingTarget
 import com.tk.quicksearch.settings.settingsDetailScreen.ToolSettingsRegistry
 import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.settings.shared.applySettingsCommand
+import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 
 internal const val RATE_QUICK_SEARCH_SETTING_ID = "app_settings_rate_quick_search"
 
@@ -34,6 +40,27 @@ internal fun rememberRateQuickSearchSetting(): AppSettingResult =
             destination = AppSettingsDestination.RATE_QUICK_SEARCH,
         )
     }
+
+/**
+ * Whether an app setting toggle row is on. App notifications keeps its state in
+ * [AppNotificationsSettings] rather than [SearchUiState], and shows off without notification access,
+ * which is checked again each time the screen resumes rather than on every read.
+ */
+@Composable
+internal fun rememberAppSettingToggleChecked(uiState: SearchUiState): (AppSettingResult) -> Boolean {
+    val context = LocalContext.current
+    val refreshKey = rememberResumeRefreshKey()
+    val hasNotificationAccess =
+        remember(context, refreshKey) { NotificationDotsPermission.hasNotificationListenerAccess(context) }
+    val appNotificationsChecked = rememberAppNotificationsConfig()?.enabled == true && hasNotificationAccess
+    return { setting ->
+        when (val toggleKey = setting.toggleKey) {
+            null -> false
+            AppSettingsToggleKey.APP_NOTIFICATIONS -> appNotificationsChecked
+            else -> uiState.isAppSettingToggleEnabled(toggleKey)
+        }
+    }
+}
 
 internal data class RouteSettingActions(
     val onAppSettingToggle: (AppSettingResult, Boolean) -> Unit,
@@ -69,6 +96,9 @@ internal fun rememberRouteSettingActions(
             )
         }
 
+    val onAppNotificationsCheckedChange =
+        rememberNotificationDotsCheckedChange { enabled -> AppNotificationsSettings.setEnabled(context, enabled) }
+
     val onAppSettingToggle: (AppSettingResult, Boolean) -> Unit = onAppSettingToggle@{ setting, enabled ->
         viewModel.trackRecentAppSettingTap(setting.id)
         val requiresLlmApiKey =
@@ -79,6 +109,7 @@ internal fun rememberRouteSettingActions(
         }
         when (val toggleKey = setting.toggleKey) {
             AppSettingsToggleKey.NOTIFICATION_DOTS -> onNotificationDotsCheckedChange(enabled)
+            AppSettingsToggleKey.APP_NOTIFICATIONS -> onAppNotificationsCheckedChange(enabled)
             AppSettingsToggleKey.OVERLAY_MODE -> {
                 val isDefaultHomeApp = context.isDefaultHomeApp()
                 val shouldEnableOverlay = enabled && !isDefaultHomeApp
@@ -137,6 +168,10 @@ internal fun rememberRouteSettingActions(
                 activeDialog.value = AppSettingRouteDialog.APP_SUGGESTION_TABS
                 return@appSettingClick
             }
+            if (destination == AppSettingsDestination.PINNED_NOTIFICATION_ITEMS) {
+                activeDialog.value = AppSettingRouteDialog.PINNED_NOTIFICATION_ITEMS
+                return@appSettingClick
+            }
             if (destination == AppSettingsDestination.AI_MODEL) {
                 activeDialog.value = AppSettingRouteDialog.AI_MODEL
                 return@appSettingClick
@@ -151,6 +186,10 @@ internal fun rememberRouteSettingActions(
             }
             if (destination == AppSettingsDestination.APP_LANGUAGE) {
                 activeDialog.value = AppSettingRouteDialog.APP_LANGUAGE
+                return@appSettingClick
+            }
+            if (destination == AppSettingsDestination.APP_NOTIFICATIONS) {
+                openAppNotificationsSettings(context)
                 return@appSettingClick
             }
             if (destination == AppSettingsDestination.RELEASE_NOTES) {

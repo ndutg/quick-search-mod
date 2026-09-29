@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
@@ -50,7 +50,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.lazy.itemsIndexed
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerLeadingSize
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerIconBadge
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRow
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.getId
@@ -537,33 +543,20 @@ internal fun GestureToolPickerDialog(
     } +
         state.customTools.filterNot { it.id in state.disabledCustomToolIds }.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) } +
         state.taskerIntentTools.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) }
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_tools_title)) },
-        text = {
-            LazyColumn(modifier = Modifier.height(300.dp)) {
-                items(tools, key = { it.id }) { tool ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(56.dp).clickable { onSelect(tool.id) },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = tool.icon,
-                            contentDescription = null,
-                            modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
-                        )
-                        Text(
-                            text = tool.label,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f).padding(start = DesignTokens.SpacingMedium),
-                        )
-                    }
-                    HorizontalDivider(color = AppColors.SettingsDivider)
-                }
+    AppPickerDrawer(
+        title = stringResource(R.string.settings_tools_title),
+        onDismiss = onDismiss,
+    ) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(AppPickerDrawerRowSpacing)) {
+            itemsIndexed(tools, key = { _, tool -> tool.id }) { _, tool ->
+                AppPickerDrawerRow(
+                    title = tool.label,
+                    onClick = { onSelect(tool.id) },
+                    leading = { AppPickerDrawerIconBadge(icon = tool.icon) },
+                )
             }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
-    )
+        }
+    }
 }
 
 internal data class GestureToolItem(
@@ -578,33 +571,20 @@ internal fun GestureSearchEnginePickerDialog(
     onDismiss: () -> Unit,
     onSelect: (SearchTarget) -> Unit,
 ) {
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_app_shortcuts_filter_search_engines)) },
-        text = {
-            LazyColumn(modifier = Modifier.height(300.dp)) {
-                items(targets, key = { it.getId() }) { target ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(56.dp).clickable { onSelect(target) },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        SearchTargetIcon(
-                            target = target,
-                            iconSize = 28.dp,
-                            modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
-                        )
-                        Text(
-                            text = target.getDisplayName(),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f).padding(start = DesignTokens.SpacingMedium),
-                        )
-                    }
-                    HorizontalDivider(color = AppColors.SettingsDivider)
-                }
+    AppPickerDrawer(
+        title = stringResource(R.string.settings_app_shortcuts_filter_search_engines),
+        onDismiss = onDismiss,
+    ) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(AppPickerDrawerRowSpacing)) {
+            itemsIndexed(targets, key = { _, target -> target.getId() }) { _, target ->
+                AppPickerDrawerRow(
+                    title = target.getDisplayName(),
+                    onClick = { onSelect(target) },
+                    leading = { SearchTargetIcon(target = target, iconSize = AppPickerDrawerLeadingSize) },
+                )
             }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
-    )
+        }
+    }
 }
 
 internal data class GestureAliasItem(

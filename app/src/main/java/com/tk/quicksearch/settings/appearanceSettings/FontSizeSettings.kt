@@ -64,11 +64,9 @@ fun FontSizeCard(
                     modifier = Modifier.padding(start = 4.dp, top = 1.dp, end = 4.dp, bottom = 4.dp),
             )
 
-            HomeTextColorOptions(
-                    selectedColor = homeTextColorOverride,
-                    onColorSelected = onHomeTextColorChange,
-                    backgroundSource = backgroundSource,
-                    customImageUri = customImageUri,
+            FontSizeSlider(
+                    fontScaleMultiplier = fontScaleMultiplier,
+                    onFontScaleMultiplierChange = onFontScaleMultiplierChange,
             )
 
             HorizontalDivider(
@@ -76,9 +74,11 @@ fun FontSizeCard(
                     modifier = Modifier.padding(start = 4.dp, top = 1.dp, end = 4.dp, bottom = 4.dp),
             )
 
-            FontSizeSlider(
-                    fontScaleMultiplier = fontScaleMultiplier,
-                    onFontScaleMultiplierChange = onFontScaleMultiplierChange,
+            HomeTextColorOptions(
+                    selectedColor = homeTextColorOverride,
+                    onColorSelected = onHomeTextColorChange,
+                    backgroundSource = backgroundSource,
+                    customImageUri = customImageUri,
             )
         }
     }
@@ -86,14 +86,14 @@ fun FontSizeCard(
 
 internal val FONT_SIZE_STEPS =
         listOf(
-                FontSizeStep(0.90f, R.string.settings_font_size_extra_small, R.string.settings_font_size_tick_xs),
-                FontSizeStep(0.95f, R.string.settings_font_size_small, R.string.settings_font_size_tick_s),
-                FontSizeStep(1.00f, R.string.settings_font_size_medium, R.string.settings_font_size_tick_m),
-                FontSizeStep(1.05f, R.string.settings_font_size_big, R.string.settings_font_size_tick_l),
-                FontSizeStep(1.10f, R.string.settings_font_size_extra_big, R.string.settings_font_size_tick_xl),
+                FontSizeStep(0.90f, R.string.settings_font_size_extra_small),
+                FontSizeStep(0.95f, R.string.settings_font_size_small),
+                FontSizeStep(1.00f, R.string.settings_font_size_medium),
+                FontSizeStep(1.05f, R.string.settings_font_size_big),
+                FontSizeStep(1.10f, R.string.settings_font_size_extra_big),
         )
 
-internal data class FontSizeStep(val scale: Float, val labelRes: Int, val tickRes: Int)
+internal data class FontSizeStep(val scale: Float, val labelRes: Int)
 
 @Composable
 private fun FontSizeSlider(
@@ -137,11 +137,14 @@ private fun FontSizeSlider(
             Slider(
                     value = sliderValue,
                     onValueChange = { value ->
-                        sliderValue = value
                         val index = value.roundToInt().coerceIn(0, FONT_SIZE_STEPS.lastIndex)
-                        if (index != committedIndex) {
-                            hapticToggle(view)()
-                            onFontScaleMultiplierChange(FONT_SIZE_STEPS[index].scale)
+                        if (index != activeIndex) hapticToggle(view)()
+                        sliderValue = value
+                    },
+                    // Apply the scale only on release: changing it mid-drag changes density and cancels the drag.
+                    onValueChangeFinished = {
+                        if (activeIndex != committedIndex) {
+                            onFontScaleMultiplierChange(FONT_SIZE_STEPS[activeIndex].scale)
                         }
                     },
                     valueRange = 0f..FONT_SIZE_STEPS.lastIndex.toFloat(),
@@ -153,24 +156,6 @@ private fun FontSizeSlider(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
             )
-        }
-
-        Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            FONT_SIZE_STEPS.forEachIndexed { index, step ->
-                Text(
-                        text = stringResource(step.tickRes),
-                        style = MaterialTheme.typography.labelMedium,
-                        color =
-                                if (index == activeIndex) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                },
-                )
-            }
         }
     }
 }

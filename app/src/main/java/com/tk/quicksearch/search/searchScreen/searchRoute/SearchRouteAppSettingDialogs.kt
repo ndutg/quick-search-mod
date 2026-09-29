@@ -2,15 +2,20 @@ package com.tk.quicksearch.search.searchScreen.searchRoute
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.settings.settingsDetailScreen.AiApiKeyRequiredDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.AppSuggestionTabsDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.GestureSettingsDialogs
+import com.tk.quicksearch.settings.settingsDetailScreen.PinnedNotificationItemsDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.PriorityReorderDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.rememberGestureSettingsState
 import com.tk.quicksearch.settings.shared.SettingsCommand
@@ -26,6 +31,7 @@ import com.tk.quicksearch.tools.aiSearch.ModelPickerDialog
 internal enum class AppSettingRouteDialog {
     TOP_MATCHES_PRIORITY,
     APP_SUGGESTION_TABS,
+    PINNED_NOTIFICATION_ITEMS,
     API_KEY_REQUIRED,
     AI_MODEL,
     APP_LANGUAGE,
@@ -67,6 +73,23 @@ internal fun AppSettingRouteDialogs(
                 },
                 onDismiss = onDismiss,
             )
+        AppSettingRouteDialog.PINNED_NOTIFICATION_ITEMS -> {
+            val context = LocalContext.current
+            var items by remember(context) { mutableStateOf(PinnedNotifications.pinnedItems(context)) }
+            PinnedNotificationItemsDialog(
+                items = items,
+                onRemove = { action ->
+                    PinnedNotifications.remove(context, action)
+                    items = items.filterNot { it.toJson() == action.toJson() }
+                    if (items.isEmpty()) onDismiss()
+                },
+                onReorder = { reorderedItems ->
+                    PinnedNotifications.reorder(context, reorderedItems)
+                    items = reorderedItems
+                },
+                onDismiss = onDismiss,
+            )
+        }
         AppSettingRouteDialog.API_KEY_REQUIRED ->
             AiApiKeyRequiredDialog(
                 onDismiss = onDismiss,

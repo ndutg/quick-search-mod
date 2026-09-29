@@ -269,6 +269,7 @@
 <string name="clear_query_toggle_title">Sorguyu temizle</string>
 <string name="more_results_title">Daha fazla sonuç</string>
 <string name="open_keyboard_toggle_desc">Uygulama başlatıldığında klavyeyi otomatik olarak aç</string>
+<string name="open_keyboard_toggle_title">Açılışta klavyeyi aç</string>
 <string name="recent_queries_toggle_desc">Genişletmeden önce gösterilen öğe sayısı</string>
 <string name="fuzzy_search_toggle_title">Bulanık arama</string>
 <string name="fuzzy_search_toggle_desc">Aramanızda yazım hatası olsa bile sonuçları bulun.</string>
@@ -604,8 +605,6 @@
 <string name="settings_calendar_include_past_events_desc">Geçmiş etkinlikleri arama sonuçlarına dahil et.</string>
 <string name="settings_calendar_include_past_events_title">Geçmiş etkinlikler</string>
 <string name="settings_calendar_permission_title">Takvim</string>
-<string name="settings_calendar_show_today_events_desc">Bugünün etkinliklerini ana ekranda göster.</string>
-<string name="settings_calendar_show_today_events_title">Bugünün etkinliklerini göster</string>
     <string name="settings_calendar_default_title">Etkinlikleri şurada aç...</string>
 <string name="settings_calendar_view_all_events_desc">Tüm etkinlikleri görüntüle</string>
 
@@ -782,7 +781,7 @@
 <string name="settings_app_language_picker_title">Uygulama dilini seçin</string>
 <string name="settings_app_language_system_default">Sistem varsayılanı</string>
 <string name="settings_launcher_icon_reset_default">Varsayılana sıfırla</string>
-<string name="settings_launcher_icon_title">Başlatıcı uygulama simgesi</string>
+<string name="settings_launcher_icon_title">Uygulama simgesini değiştir</string>
 <string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>
 <string name="settings_layout_option_bottom_title">Tek el modu</string>
 <string name="settings_unified_pinned_items_title">Birleştirilmiş Sabitlenen Öğeler</string>
@@ -876,6 +875,32 @@
     <string name="settings_at_a_glance_workouts_title">Antrenmanlar</string>
     <string name="settings_at_a_glance_workouts_desc">Google Health ve Samsung Health\'ten canlı antrenman durumu</string>
     <string name="settings_at_a_glance_weather_desc">Hava durumu uygulamanızın bildirimlerinden anlık durum ve uyarılar</string>
+    <string name="settings_at_a_glance_app_notifications_title">Uygulama bildirimleri</string>
+    <string name="settings_at_a_glance_app_notifications_desc">Seçili uygulamalara veya anahtar kelimelere göre bildirimler</string>
+    <string name="settings_at_a_glance_app_notifications_summary">Uygulamalar: %1$d · Anahtar kelimeler: %2$d</string>
+    <string name="app_notifications_intro">Eşleşen bildirimler siz kapatana kadar Bir Bakışta bölümünde görünür</string>
+    <string name="app_notifications_any_app">Herhangi bir uygulama</string>
+    <string name="app_notifications_add_app">Uygulama ekle</string>
+    <string name="app_notifications_all_from_app">Tüm bildirimler</string>
+    <string name="app_notifications_no_matches">Ölçütlerinize uyan yakın tarihli bildirim yok</string>
+    <string name="app_notifications_remove_app">%1$s kaldır</string>
+    <string name="app_notifications_keyword_placeholder">Herhangi bir kelime veya ifade ekleyin</string>
+    <string name="app_notifications_keywords_intro">Bu kelimeleri veya ifadeleri içeren bildirimler ana ekranda görünür</string>
+    <string name="app_notifications_keywords_intro_app">%1$s uygulamasından bu kelimeleri veya ifadeleri içeren bildirimler ana ekranda görünür</string>
+    <string name="app_notifications_want_all">Tüm bildirimleri istiyorum</string>
+    <string name="app_notifications_add_keyword">“%1$s” ekle</string>
+    <string name="app_notifications_recent_matches">Son eşleşmeler</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="one">%d dk</item>
+        <item quantity="other">%d dk</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="one">%d sa</item>
+        <item quantity="other">%d sa</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">Uygulama seç</string>
+    <string name="app_notifications_search_apps">Uygulama ara</string>
+    <string name="home_app_notifications_more">%1$d tane daha göster</string>
     <string name="settings_at_a_glance_dnd_desc">Rahatsız etmeyin açıkken</string>
     <string name="settings_at_a_glance_airplane_desc">Uçak modu açıkken</string>
     <string name="settings_at_a_glance_hotspot_desc">Hotspot açıkken</string>
@@ -948,6 +973,7 @@
 <string name="settings_gemini_api_key_saving">Kaydediliyor...</string>
 <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
 <string name="settings_model_picker_search_hint">Modelleri ara</string>
+<string name="settings_model_picker_more_models_hint">En yeni modeller gösteriliyor. Diğerlerini bulmak için arayın.</string>
 <string name="settings_search_engine_alias_suffix_desc">Sorgunun sonuna bir kısaltma eklediğinde arama motorunu tetikler. Kısaltmalar sorgunun başında da her zaman çalışır.</string>
 <string name="settings_search_engine_alias_suffix_title">Sorgudan sonra kısaltma</string>
 <string name="settings_search_engine_browser_default">Varsayılan tarayıcı</string>
@@ -1110,6 +1136,15 @@
 <string name="widget_note_widget_title">Not Widget\'ı</string>
 <string name="widget_note_picker_title">Not Seç</string>
 <string name="widget_note_deleted">Not bulunamadı. Başka birini seçmek için dokun.</string>
+<string name="widget_countdown_widget_title">Geri Sayım Widget\'ı</string>
+<string name="widget_countdown_date">Tarih</string>
+<string name="widget_countdown_format_days">Gün</string>
+<string name="widget_countdown_format_weeks">Hafta</string>
+<string name="widget_countdown_format_months">Ay</string>
+<string name="widget_countdown_format_years">Yıl</string>
+<string name="widget_countdown_format_detailed">Ayrıntılı</string>
+<string name="widget_countdown_format_progress">İlerleme %</string>
+<string name="widget_countdown_progress_hint">Tarihi belirlediğinizden bu yana geçen sürenin oranını gösterir.</string>
 <string name="widget_icon_center">Ortala</string>
 <string name="widget_icon_left">Sola hizala</string>
 <string name="widget_icon_off">Kapalı</string>
@@ -1318,7 +1353,7 @@
     <string name="home_anniversary_title_ordinal">%1$s yıl dönümü (%2$s)</string>
     <string name="home_birthday_wish">Kutlamak için dokunun</string>
     <string name="home_missed_call">Cevapsız arama</string>
-    <string name="home_otp_from">%1$s kodu</string>
+    <string name="home_otp_from">Gönderen: %1$s</string>
     <string name="home_copied">Kopyalandı</string>
     <string name="home_reminder_marked_done">Anımsatıcı tamamlandı olarak işaretlendi</string>
     <string name="home_reminder_snoozed">Anımsatıcı 30 dakika ertelendi</string>
@@ -1332,7 +1367,6 @@
     <string name="home_hotspot_on">Hotspot açık</string>
     <string name="home_flashlight_on">El feneri açık</string>
     <string name="home_wifi_sign_in">Wi-Fi ağında oturum açın</string>
-    <string name="home_sign_in">Oturum aç</string>
     <string name="home_turn_off">Kapat</string>
     <string name="settings_tavily_title">Web Araması için Tavily</string>
     <string name="settings_tavily_desc">Web aramasını desteklemeyen modellere web araması eklemek için Tavily API anahtarı ekleyin.</string>

@@ -87,7 +87,19 @@ internal object GlanceNotificationsStore {
     private val workoutsState = MutableStateFlow<List<WorkoutNotification>>(emptyList())
     private val otpsState = MutableStateFlow<List<OtpNotification>>(emptyList())
     private val weatherState = MutableStateFlow<List<WeatherNotification>>(emptyList())
+    private val appNotificationsState = MutableStateFlow<List<AppNotification>>(emptyList())
     private var clockPackages: Set<String>? = null
+
+    /** The last posted notifications and the keys other rows show, to re-match when App notifications' settings change. */
+    private class AppNotificationInputs(
+        val posted: List<StatusBarNotification>,
+        val coveredKeys: Set<String>,
+    )
+
+    /** Written with [appNotificationsState] under [appNotificationsLock]; read alone by [isAppNotificationCandidate]. */
+    @Volatile
+    private var appNotificationInputs = AppNotificationInputs(emptyList(), emptySet())
+    private val appNotificationsLock = Any()
 
     /** Timers read from custom chronometer views, by notification key, reused until the notification changes. */
     private val remoteTimerCache = mutableMapOf<String, Pair<Long, TimerNotification?>>()
@@ -103,6 +115,9 @@ internal object GlanceNotificationsStore {
     val workouts: StateFlow<List<WorkoutNotification>> = workoutsState.asStateFlow()
     val otps: StateFlow<List<OtpNotification>> = otpsState.asStateFlow()
     val weather: StateFlow<List<WeatherNotification>> = weatherState.asStateFlow()
+
+    /** What App notifications shows, newest first; the rows other sources show are left out. */
+    val appNotifications: StateFlow<List<AppNotification>> = appNotificationsState.asStateFlow()
 
     fun update(
         context: Context,
@@ -123,10 +138,10 @@ internal object GlanceNotificationsStore {
         val timerKeys = timerNotifications.map { it.key }.toSet()
         timersState.value = timerNotifications.sortedBy { it.chronometerBase }
         val dialerPackage = defaultDialerPackage(context)
-        missedCallsState.value =
-            posted.mapNotNull { it.toMissedCall(dialerPackage) }.sortedByDescending { it.callTime }
-        ongoingCallsState.value =
-            posted.mapNotNull { it.toOngoingCall(context) }.sortedByDescending { it.startTime ?: 0L }
+        val missedCalls = posted.mapNotNull { it.toMissedCall(dialerPackage) }
+        missedCallsState.value = missedCalls.sortedByDescending { it.callTime }
+        val ongoingCalls = posted.mapNotNull { it.toOngoingCall(context) }
+        ongoingCallsState.value = ongoingCalls.sortedByDescending { it.startTime ?: 0L }
         val workouts = WorkoutNotifications.parse(context, posted)
         workoutsState.value = workouts
         // Workouts can be Live Updates too; they keep their own row.
@@ -135,8 +150,40 @@ internal object GlanceNotificationsStore {
         progressState.value = progressTracker.progress
         finishedProgressState.value = progressTracker.finished
         otpsState.value = OtpNotifications.parse(posted)
-        weatherState.value = WeatherNotifications.parse(context, posted)
+        val weather = WeatherNotifications.parse(context, posted)
+        weatherState.value = weather
+        val coveredKeys =
+            timerKeys + workoutKeys + missedCalls.map { it.key } + ongoingCalls.map { it.key } +
+                progressTracker.progress.map { it.key } + progressTracker.finished.map { it.key } + weather.map { it.key }
+        val config = AppNotificationsSettings.load(context)
+        synchronized(appNotificationsLock) {
+            val inputs = AppNotificationInputs(posted, coveredKeys)
+            appNotificationInputs = inputs
+            appNotificationsState.value = AppNotifications.parse(inputs.posted, inputs.coveredKeys, config)
+        }
     }
+
+    /** Re-matches the posted notifications after App notifications' settings change, from any thread. */
+    fun refreshAppNotifications() {
+        val config = AppNotificationsSettings.config.value ?: return
+        synchronized(appNotificationsLock) {
+            val inputs = appNotificationInputs
+            appNotificationsState.value = AppNotifications.parse(inputs.posted, inputs.coveredKeys, config)
+        }
+    }
+
+    /**
+     * Whether App notifications could ever show [sbn], whatever the apps and keywords, for Recent
+     * matches in its settings. Call after [update] so rows that other sources show are known.
+     */
+    fun isAppNotificationCandidate(
+        context: Context,
+        sbn: StatusBarNotification,
+    ): Boolean =
+        sbn.packageName != context.packageName &&
+            sbn.notification.flags and Notification.FLAG_GROUP_SUMMARY == 0 &&
+            sbn.key !in appNotificationInputs.coveredKeys &&
+            AppNotifications.isCandidate(sbn)
 
     /** Drops cached state when notification access is lost; clock apps are resolved again on reconnect. */
     fun clear() {
@@ -146,6 +193,11 @@ internal object GlanceNotificationsStore {
         WorkoutNotifications.clear()
         OtpNotifications.clear()
         WeatherNotifications.clear()
+        AppNotifications.clear()
+        synchronized(appNotificationsLock) {
+            appNotificationInputs = AppNotificationInputs(emptyList(), emptySet())
+            appNotificationsState.value = emptyList()
+        }
         timersState.value = emptyList()
         progressTracker.clear()
         progressState.value = emptyList()
@@ -161,6 +213,18 @@ internal object GlanceNotificationsStore {
     fun dismissOtp(otp: OtpNotification) {
         OtpNotifications.dismiss(otp)
         otpsState.value = otpsState.value.filter { it.postTime > otp.postTime }
+    }
+
+    /**
+     * Clears one App notifications notification from the shade and hides it from At a Glance; the
+     * app's other matches stay. Hiding covers notifications the app won't let us clear.
+     */
+    fun dismissAppNotification(notification: AppNotification) {
+        NotificationDotsListenerService.cancelNotification(notification.key)
+        synchronized(appNotificationsLock) {
+            AppNotifications.dismiss(notification)
+            appNotificationsState.value = appNotificationsState.value.filter { it.key != notification.key }
+        }
     }
 
     /** Clears the missed call notifications from the shade when the app allows. */

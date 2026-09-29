@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss. Sections from **Overlay Mode** onward follow the order of the Settings screen (Tools settings are covered in the **Tools** section above).
 
-**Version**: 4.6 (Updated September 21, 2026)
+**Version**: 4.6 (Updated September 29, 2026)
 
 ### Search
 
@@ -134,6 +134,8 @@ Available when Quick Search is set as your launcher.
 - **Search Widget** - Tap to open Quick Search. Supports a mic button and up to 2 custom buttons.
 - **Custom Buttons Widget** - A row of buttons for apps, app shortcuts, contacts, files, device settings, and notes, with customizable layouts and actions.
 - **Media Controls Widget** - Shows the current track and album art, with play/pause, previous/next, and rewind/forward controls. Requires notification access.
+- **Note Widget** - Show any note on your home screen. 
+- **Countdown Widget** - Count down to (or up from) any date, with an optional title. Show the time in days, weeks, months, years, a detailed format (e.g. `6 months 5 days`), or as a progress bar. Adjust text size, colors, and transparency. Tap the widget to change its settings.
 
 ---
 
@@ -177,6 +179,7 @@ Available when Quick Search is set as your launcher.
 - **Beta Features** - Tap the version number 5 times to unlock beta features. They aren't fully tested, so expect bugs. Tap it 5 times again to turn them off.
 - **Send Crash Log** - Long-press the version number to send feedback with the crash log attached.
 - **Copy Results** - Long-press an AI Search, calculator, or other tool result to copy it.
+- **Ask for Help** - Type `@help` followed by a question in the search bar to get answers about Quick Search features and settings. Requires an AI provider API key.
 - **Send Text to Quick Search** - Choose Quick Search from the text-selection menu or share sheet to search the selected text.
 
 ---
@@ -255,6 +258,7 @@ The following pages open from Search Results settings.
 
 - **Number Search** - Find contacts by phone number.
 - **Direct Dial** - Tap a phone result to call immediately instead of opening the dialer.
+- **Contact Buttons** - Choose any contact action for the first and second buttons on contact cards. If a contact can't use the selected action, the first button falls back to Call and the second to SMS.
 - **Default Calling & Messaging Apps** - Choose which app contact cards use for calls and messages. Supported when installed: Google Meet, WhatsApp, WhatsApp Business, Telegram, and Signal.
 
 #### Files & Folders
@@ -285,10 +289,22 @@ The following pages open from Search Results settings.
 An optional Home section that shows useful information when it matters.
 
 - **Today's Calendar Events** - See your events for today.
-- **Upcoming Reminders & Timers** - See reminders and timers due within 30 minutes or overdue.
+- **Upcoming Reminders** - See reminders due within 30 minutes or overdue.
+- **Timers & Stopwatch** - See running timers and stopwatches from your clock app.
 - **Media Controls** - Control currently playing media.
 - **Low Battery Warnings** - See a warning when your battery is at 15% or lower.
+- **Charging Status** - See your battery level and time until full while plugged in.
+- **Low Storage Warnings** - See a warning when 10% or less of your storage is free.
 - **Upcoming Alarms** - Your next alarm appears on Home when it is within 45 minutes of going off. Hide alarms from specific apps with **Hidden Alarm Apps**.
+- **Contact Birthdays** - See contacts with a birthday or anniversary today.
+- **Missed Calls** - See missed calls from your phone app.
+- **Ongoing Call** - See the caller and call duration while you're on a call.
+- **OTP Codes** - See one-time codes from messages and emails, ready to copy.
+- **Ongoing Notifications** - See live updates like rides, deliveries, and downloads.
+- **App Notifications** - Choose apps or keywords, and matching notifications stay in At a Glance until you dismiss them.
+- **Weather** - See current conditions and alerts from your weather app's notifications.
+- **Device Status** - See when Do Not Disturb, airplane mode, hotspot, or the flashlight is on, or when a Wi-Fi network needs you to sign in.
+- **Custom Info** - Get AI answers to your own prompts on Home at the times you choose. Requires an AI provider API key.
 
 ---
 

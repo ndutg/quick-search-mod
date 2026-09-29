@@ -15,6 +15,16 @@ object MetaModelCatalog {
             ),
         )
 
+    private val museSparkRegex = Regex("^muse-spark-(\\d+(?:\\.\\d+)*)(-contributor)?$")
+
+    /** Picker list: the latest Muse Spark version, regular and contributor. */
+    fun pickerModels(models: List<LlmTextModel>): List<LlmTextModel> =
+        LlmModelVersions.filterLatest(models) { id ->
+            museSparkRegex.find(id)?.groupValues?.let {
+                LlmModelVersions.familyVersion(it[2].ifEmpty { "regular" }, it[1].split('.'))
+            }
+        }
+
     fun isTextModel(modelId: String): Boolean =
         modelId.trim().startsWith("muse-spark-", ignoreCase = true)
 

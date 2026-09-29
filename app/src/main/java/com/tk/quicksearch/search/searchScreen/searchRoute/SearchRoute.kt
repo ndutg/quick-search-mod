@@ -46,7 +46,6 @@ import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
-import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
@@ -67,7 +66,6 @@ import com.tk.quicksearch.search.apps.swipeGestures.AppSwipeGestures
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
-import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 import com.tk.quicksearch.settings.settingsDetailScreen.NotesNavigationMemory
 import com.tk.quicksearch.search.data.preferences.CalendarPreferences
 import com.tk.quicksearch.search.searchScreen.SearchScreen as SearchScreenComposable
@@ -283,9 +281,7 @@ fun SearchRoute(
             null
         }
 
-    val isAppSettingToggleChecked: (AppSettingResult) -> Boolean = { setting ->
-        setting.toggleKey?.let { toggleKey -> uiState.isAppSettingToggleEnabled(toggleKey) } ?: false
-    }
+    val isAppSettingToggleChecked = rememberAppSettingToggleChecked(uiState)
 
     val rateQuickSearchSetting = rememberRateQuickSearchSetting()
 

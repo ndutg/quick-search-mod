@@ -19,6 +19,7 @@ enum class AppSettingsDestination {
     SEARCH_ENGINES,
     TOOLS,
     AT_A_GLANCE,
+    APP_NOTIFICATIONS,
     TASKER_INTEGRATION,
     LAUNCH_OPTIONS,
     EDGE_GESTURE,
@@ -56,6 +57,7 @@ enum class AppSettingsDestination {
     CREATE_REMINDER,
     NICKNAMES,
     TRIGGERS,
+    PINNED_NOTIFICATION_ITEMS,
     GESTURES,
     GESTURE_SWIPE_LEFT,
     GESTURE_SWIPE_RIGHT,
@@ -80,7 +82,6 @@ enum class AppSettingsToggleKey {
     SEARCH_HINTS,
     SETTINGS_ICON,
     APP_LABELS,
-    SHOW_TODAY_EVENTS,
     SEARCH_ENGINE_COMPACT_MODE,
     SEARCH_ENGINE_ALIAS_SUFFIX,
     CALCULATOR,
@@ -131,6 +132,7 @@ enum class AppSettingsToggleKey {
     WORLD_CLOCK,
     DICTIONARY,
     WEATHER,
+    APP_NOTIFICATIONS,
 }
 
 data class AppSettingResult(

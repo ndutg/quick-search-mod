@@ -270,6 +270,7 @@
     <string name="clear_query_toggle_title">Limpar busca</string>
     <string name="more_results_title">Mais resultados</string>
     <string name="open_keyboard_toggle_desc">Abrir o teclado automaticamente quando o app for iniciado</string>
+    <string name="open_keyboard_toggle_title">Abrir teclado ao iniciar</string>
     <string name="recent_queries_toggle_desc">Nº de itens mostrados antes da expansão</string>
     <string name="fuzzy_search_toggle_title">Pesquisa aproximada</string>
     <string name="fuzzy_search_toggle_desc">Encontre resultados mesmo quando sua busca contém um erro de digitação.</string>
@@ -605,8 +606,6 @@
     <string name="settings_calendar_include_past_events_desc">Incluir eventos passados nos resultados da pesquisa.</string>
     <string name="settings_calendar_include_past_events_title">Eventos passados</string>
     <string name="settings_calendar_permission_title">Calendário</string>
-    <string name="settings_calendar_show_today_events_desc">Mostrar os eventos de hoje na tela inicial.</string>
-    <string name="settings_calendar_show_today_events_title">Mostrar eventos de hoje</string>
     <string name="settings_calendar_default_title">Abrir eventos em...</string>
     <string name="settings_calendar_view_all_events_desc">Ver todos os eventos</string>
 
@@ -783,7 +782,7 @@
     <string name="settings_app_language_picker_title">Escolher idioma do app</string>
     <string name="settings_app_language_system_default">Padrão do sistema</string>
     <string name="settings_launcher_icon_reset_default">Restaurar padrão</string>
-    <string name="settings_launcher_icon_title">Ícone do app no Launcher</string>
+    <string name="settings_launcher_icon_title">Alterar ícone do app</string>
     <string name="settings_layout_option_bottom_desc">Os itens mais relevantes aparecem na parte inferior para facilitar o acesso</string>
     <string name="settings_layout_option_bottom_title">Modo de uma mão</string>
     <string name="settings_unified_pinned_items_title">Itens fixados unificados</string>
@@ -877,6 +876,32 @@
     <string name="settings_at_a_glance_workouts_title">Treinos</string>
     <string name="settings_at_a_glance_workouts_desc">Status ao vivo do treino no Google Health e no Samsung Health</string>
     <string name="settings_at_a_glance_weather_desc">Condições atuais e alertas das notificações do seu app de clima</string>
+    <string name="settings_at_a_glance_app_notifications_title">Notificações de apps</string>
+    <string name="settings_at_a_glance_app_notifications_desc">Notificações com base em apps ou palavras-chave selecionados</string>
+    <string name="settings_at_a_glance_app_notifications_summary">Apps: %1$d · Palavras-chave: %2$d</string>
+    <string name="app_notifications_intro">Notificações correspondentes aparecerão em Visão rápida até você dispensá-las</string>
+    <string name="app_notifications_any_app">Qualquer app</string>
+    <string name="app_notifications_add_app">Adicionar app</string>
+    <string name="app_notifications_all_from_app">Todas as notificações</string>
+    <string name="app_notifications_no_matches">Nenhuma notificação recente corresponde aos seus critérios</string>
+    <string name="app_notifications_remove_app">Remover %1$s</string>
+    <string name="app_notifications_keyword_placeholder">Adicione qualquer palavra ou frase</string>
+    <string name="app_notifications_keywords_intro">Notificações com estas palavras ou frases aparecerão na tela inicial</string>
+    <string name="app_notifications_keywords_intro_app">Notificações de %1$s com estas palavras ou frases aparecerão na tela inicial</string>
+    <string name="app_notifications_want_all">Quero todas as notificações</string>
+    <string name="app_notifications_add_keyword">Adicionar “%1$s”</string>
+    <string name="app_notifications_recent_matches">Correspondências recentes</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d min</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="one">%d h</item>
+        <item quantity="other">%d h</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">Escolher app</string>
+    <string name="app_notifications_search_apps">Pesquisar apps</string>
+    <string name="home_app_notifications_more">Mostrar mais %1$d</string>
     <string name="settings_at_a_glance_dnd_desc">Quando o Não perturbe estiver ativado</string>
     <string name="settings_at_a_glance_airplane_desc">Quando o modo avião estiver ativado</string>
     <string name="settings_at_a_glance_hotspot_desc">Quando o roteador Wi-Fi estiver ativado</string>
@@ -949,6 +974,7 @@
     <string name="settings_gemini_api_key_saving">Salvando...</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">Pesquisar modelos</string>
+    <string name="settings_model_picker_more_models_hint">Mostrando os modelos mais recentes. Pesquise para encontrar outros.</string>
     <string name="settings_search_engine_alias_suffix_desc">Ativa o mecanismo de busca quando você adiciona um alias no final da busca. Os aliases sempre funcionarão no início.</string>
     <string name="settings_search_engine_alias_suffix_title">Alias após a busca</string>
     <string name="settings_search_engine_browser_default">Navegador padrão</string>
@@ -1111,6 +1137,15 @@
     <string name="widget_note_widget_title">Widget de nota</string>
     <string name="widget_note_picker_title">Selecionar nota</string>
     <string name="widget_note_deleted">Nota não encontrada. Toque para escolher outra.</string>
+    <string name="widget_countdown_widget_title">Widget de contagem regressiva</string>
+    <string name="widget_countdown_date">Data</string>
+    <string name="widget_countdown_format_days">Dias</string>
+    <string name="widget_countdown_format_weeks">Semanas</string>
+    <string name="widget_countdown_format_months">Meses</string>
+    <string name="widget_countdown_format_years">Anos</string>
+    <string name="widget_countdown_format_detailed">Detalhado</string>
+    <string name="widget_countdown_format_progress">Progresso %</string>
+    <string name="widget_countdown_progress_hint">Mostra quanto do tempo desde que você definiu a data já passou.</string>
     <string name="widget_icon_center">Centro</string>
     <string name="widget_icon_left">Esquerda</string>
     <string name="widget_icon_off">Desativado</string>
@@ -1319,7 +1354,7 @@
     <string name="home_anniversary_title_ordinal">Aniversário de casamento de %1$s (%2$s)</string>
     <string name="home_birthday_wish">Toque para dar os parabéns</string>
     <string name="home_missed_call">Chamada perdida</string>
-    <string name="home_otp_from">Código de %1$s</string>
+    <string name="home_otp_from">De %1$s</string>
     <string name="home_copied">Copiado</string>
     <string name="home_reminder_marked_done">Lembrete marcado como concluído</string>
     <string name="home_reminder_snoozed">Lembrete adiado por 30 minutos</string>
@@ -1333,7 +1368,6 @@
     <string name="home_hotspot_on">O roteador Wi-Fi está ativado</string>
     <string name="home_flashlight_on">A lanterna está acesa</string>
     <string name="home_wifi_sign_in">Faça login na rede Wi-Fi</string>
-    <string name="home_sign_in">Fazer login</string>
     <string name="home_turn_off">Desativar</string>
     <string name="settings_tavily_title">Tavily para pesquisa na web</string>
     <string name="settings_tavily_desc">Adicione uma chave de API do Tavily para dar pesquisa na web aos modelos que não oferecem suporte.</string>

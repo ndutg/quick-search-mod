@@ -1,11 +1,14 @@
 package com.tk.quicksearch.search.data.preferences
 
 import android.content.Context
+import android.content.SharedPreferences
+import com.tk.quicksearch.search.data.AppNotificationFilters
+import com.tk.quicksearch.search.data.AppNotificationFiltersCodec
 
 /**
  * Stores the home At a Glance toggles for contact birthdays, low storage, running timers, live
  * ongoing (progress and Live Update) notifications, missed calls, ongoing calls, workouts, one-time codes, weather, Do Not Disturb, airplane mode, hotspot,
- * Wi-Fi sign-in and flashlight, plus the birthdays dismissed for the current day, tomorrow's events dismissed tonight and the low storage row's dismissal.
+ * Wi-Fi sign-in, flashlight and App notifications (with its apps and keywords), plus the birthdays dismissed for the current day, tomorrow's events dismissed tonight and the low storage row's dismissal.
  */
 class GlancePreferences(context: Context) : BasePreferences(context) {
     fun isShowBirthdaysEnabled(): Boolean = getBooleanPref(KEY_SHOW_BIRTHDAYS, true)
@@ -64,6 +67,27 @@ class GlancePreferences(context: Context) : BasePreferences(context) {
     fun isShowFlashlightEnabled(): Boolean = getBooleanPref(KEY_SHOW_FLASHLIGHT, true)
 
     fun setShowFlashlightEnabled(enabled: Boolean) = setBooleanPref(KEY_SHOW_FLASHLIGHT, enabled)
+
+    fun isShowAppNotificationsEnabled(): Boolean = getBooleanPref(KEY_SHOW_APP_NOTIFICATIONS, false)
+
+    fun setShowAppNotificationsEnabled(enabled: Boolean) = setBooleanPref(KEY_SHOW_APP_NOTIFICATIONS, enabled)
+
+    /** The apps and keywords App notifications shows, in the order the user added them. */
+    fun getAppNotificationFilters(): AppNotificationFilters =
+        AppNotificationFiltersCodec.decode(prefs.getString(KEY_APP_NOTIFICATION_FILTERS, null))
+
+    fun setAppNotificationFilters(filters: AppNotificationFilters) =
+        prefs.edit().putString(KEY_APP_NOTIFICATION_FILTERS, AppNotificationFiltersCodec.encode(filters)).apply()
+
+    /**
+     * Calls [onChange] on the main thread whenever the App notifications toggle, apps or keywords
+     * change, including through a settings import. Preferences hold the listener weakly, so keep
+     * the returned one referenced.
+     */
+    fun observeAppNotifications(onChange: () -> Unit): SharedPreferences.OnSharedPreferenceChangeListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == null || key == KEY_SHOW_APP_NOTIFICATIONS || key == KEY_APP_NOTIFICATION_FILTERS) onChange()
+        }.also(prefs::registerOnSharedPreferenceChangeListener)
 
     /** Tomorrow's all-day events and first morning event in the evening, under the calendar toggle. */
     fun isShowTomorrowEventsEnabled(): Boolean = getBooleanPref(KEY_SHOW_TOMORROW_EVENTS, true)
@@ -146,6 +170,8 @@ class GlancePreferences(context: Context) : BasePreferences(context) {
         private const val KEY_SHOW_HOTSPOT = "home_show_hotspot"
         private const val KEY_SHOW_WIFI_SIGN_IN = "home_show_wifi_sign_in"
         private const val KEY_SHOW_FLASHLIGHT = "home_show_flashlight"
+        private const val KEY_SHOW_APP_NOTIFICATIONS = "home_show_app_notifications"
+        private const val KEY_APP_NOTIFICATION_FILTERS = "home_app_notification_filters"
         private const val KEY_SHOW_TOMORROW_EVENTS = "home_show_tomorrow_events"
         private const val KEY_DISMISSED_TOMORROW_EVENTS_DAY = "home_dismissed_tomorrow_events_day"
         private const val KEY_DISMISSED_TOMORROW_EVENTS = "home_dismissed_tomorrow_events"

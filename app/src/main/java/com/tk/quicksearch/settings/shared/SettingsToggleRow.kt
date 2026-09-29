@@ -5,10 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,12 +20,14 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -29,6 +35,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -49,6 +56,9 @@ data class SettingsToggleSliderDetails(
 /**
  * Reusable toggle row component for settings cards.
  * Provides consistent styling and layout across all toggle rows.
+ *
+ * @param showNavigationChevron With [onRowClick], marks the text as a link to a detail page with a
+ *   chevron and divider before the switch, like [SettingsNavigationToggleRow].
  */
 @Composable
 fun SettingsToggleRow(
@@ -65,6 +75,7 @@ fun SettingsToggleRow(
     subtitleContent: (@Composable () -> Unit)? = null,
     sliderDetails: SettingsToggleSliderDetails? = null,
     showSwitch: Boolean = true,
+    showNavigationChevron: Boolean = false,
     trailingAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
@@ -211,6 +222,22 @@ fun SettingsToggleRow(
                 }
             }
 
+            if (showNavigationChevron && onRowClick != null && enabled) {
+                Row(
+                    modifier = Modifier.offset(x = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = stringResource(R.string.desc_navigate_forward),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    VerticalDivider(
+                        modifier = Modifier.height(24.dp).padding(horizontal = 8.dp),
+                        color = AppColors.SettingsDivider,
+                    )
+                }
+            }
             if (showSwitch) {
                 Switch(
                     checked = checked,

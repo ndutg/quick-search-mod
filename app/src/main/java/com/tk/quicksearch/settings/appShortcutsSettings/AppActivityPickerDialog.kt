@@ -1,32 +1,25 @@
 package com.tk.quicksearch.settings.appShortcutsSettings
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerLeadingSize
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerIconBadge
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerMessage
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRow
 
 @Composable
 fun AppActivityPickerDialog(
@@ -34,50 +27,35 @@ fun AppActivityPickerDialog(
     onDismiss: () -> Unit,
     onActivitySelected: (AppActivitySource) -> Unit,
 ) {
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(text = stringResource(R.string.settings_app_shortcuts_activity_dialog_title))
-        },
-        text = {
-            if (activities.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.settings_app_shortcuts_activity_empty),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            } else {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 420.dp),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                ) {
+    AppPickerDrawer(
+        title = stringResource(R.string.settings_app_shortcuts_activity_dialog_title),
+        onDismiss = onDismiss,
+        header =
+            if (activities.isNotEmpty()) {
+                {
                     Text(
                         text = stringResource(R.string.settings_app_shortcuts_activity_warning),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(2.dp),
-                    ) {
-                        items(items = activities, key = { it.className }) { activity ->
-                            AppActivityRow(
-                                activity = activity,
-                                onClick = { onActivitySelected(activity) },
-                            )
-                        }
-                    }
+                }
+            } else {
+                null
+            },
+    ) {
+        if (activities.isEmpty()) {
+            AppPickerDrawerMessage(text = stringResource(R.string.settings_app_shortcuts_activity_empty))
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(AppPickerDrawerRowSpacing)) {
+                itemsIndexed(items = activities, key = { _, activity -> activity.className }) { _, activity ->
+                    AppActivityRow(
+                        activity = activity,
+                        onClick = { onActivitySelected(activity) },
+                    )
                 }
             }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.dialog_cancel))
-            }
-        },
-    )
+        }
+    }
 }
 
 @Composable
@@ -85,49 +63,22 @@ private fun AppActivityRow(
     activity: AppActivitySource,
     onClick: () -> Unit,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-                .padding(
-                    horizontal = DesignTokens.SpacingXSmall,
-                    vertical = DesignTokens.SpacingSmall,
-                ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
-    ) {
-        if (activity.icon != null) {
-            Image(
-                bitmap = activity.icon,
-                contentDescription = activity.label,
-                modifier = Modifier.size(DesignTokens.IconSize),
-                contentScale = ContentScale.Fit,
-            )
-        } else {
-            Icon(
-                imageVector = Icons.Rounded.Android,
-                contentDescription = activity.label,
-                modifier = Modifier.size(DesignTokens.IconSize),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = activity.label,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = activity.details,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-    }
+    AppPickerDrawerRow(
+        title = activity.label,
+        subtitle = activity.details,
+        titleMaxLines = 1,
+        onClick = onClick,
+        leading = {
+            if (activity.icon != null) {
+                Image(
+                    bitmap = activity.icon,
+                    contentDescription = activity.label,
+                    modifier = Modifier.size(AppPickerDrawerLeadingSize),
+                    contentScale = ContentScale.Fit,
+                )
+            } else {
+                AppPickerDrawerIconBadge(icon = Icons.Rounded.Android)
+            }
+        },
+    )
 }

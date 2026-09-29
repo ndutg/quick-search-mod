@@ -103,7 +103,6 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.SEARCH_HINTS -> setSearchHintsEnabled(command.enabled)
                 AppSettingsToggleKey.SETTINGS_ICON -> setSettingsIconEnabled(command.enabled)
                 AppSettingsToggleKey.APP_LABELS -> setShowAppLabels(command.enabled)
-                AppSettingsToggleKey.SHOW_TODAY_EVENTS -> setShowTodayEvents(command.enabled)
                 AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE ->
                     setSearchEngineCompactMode(command.enabled)
                 AppSettingsToggleKey.SEARCH_ENGINE_ALIAS_SUFFIX ->
@@ -155,6 +154,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.WORLD_CLOCK -> setWorldClockEnabled(command.enabled)
                 AppSettingsToggleKey.DICTIONARY -> setDictionaryEnabled(command.enabled)
                 AppSettingsToggleKey.WEATHER -> setWeatherEnabled(command.enabled)
+                // Needs notification access and lives outside SearchUiState; see SearchRouteSettingActions.
+                AppSettingsToggleKey.APP_NOTIFICATIONS -> Unit
                 AppSettingsToggleKey.APPS_PER_ROW,
                 AppSettingsToggleKey.APP_RESULT_ROWS,
                 AppSettingsToggleKey.FONT_SIZE,
@@ -221,7 +222,6 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.SEARCH_HINTS -> searchHintsEnabled
         AppSettingsToggleKey.SETTINGS_ICON -> settingsIconEnabled
         AppSettingsToggleKey.APP_LABELS -> showAppLabels
-        AppSettingsToggleKey.SHOW_TODAY_EVENTS -> showTodayEvents
         AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE -> isSearchEngineCompactMode
         AppSettingsToggleKey.SEARCH_ENGINE_ALIAS_SUFFIX -> isSearchEngineAliasSuffixEnabled
         AppSettingsToggleKey.CALCULATOR -> calculatorEnabled
@@ -260,6 +260,8 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.WORLD_CLOCK -> worldClockEnabled && hasApiKey
         AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled && hasApiKey
         AppSettingsToggleKey.WEATHER -> weatherEnabled && hasApiKey
+        // Read by rememberAppSettingToggleChecked, which follows AppNotificationsSettings.
+        AppSettingsToggleKey.APP_NOTIFICATIONS -> false
         AppSettingsToggleKey.APPS_PER_ROW,
         AppSettingsToggleKey.APP_RESULT_ROWS,
         AppSettingsToggleKey.FONT_SIZE,

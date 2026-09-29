@@ -3,11 +3,11 @@ package com.tk.quicksearch.search.appSettings
 import android.content.Context
 import android.os.Build
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.data.preferences.RATE_QUICK_SEARCH_ENABLED
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.shared.util.isTablet
-import com.tk.quicksearch.tools.tasker.TaskerIntegration
 
 internal const val PINNED_SECTIONS_ORDER_SETTING_ID = "app_settings_pinned_sections_order"
 
@@ -54,6 +54,12 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_app_icon_size_title,
                 toggleKey = AppSettingsToggleKey.APP_ICON_SIZE,
                 keywords = listOf("icons", "size", "bigger", "smaller"),
+            )
+            addNavigation(
+                id = "app_settings_launcher_icon",
+                titleRes = R.string.settings_launcher_icon_title,
+                destination = AppSettingsDestination.APPEARANCE,
+                keywords = listOf("app icon", "launcher icon", "change icon", "home screen icon"),
             )
             addNavigation(
                 id = "app_settings_icon_packs",
@@ -121,7 +127,15 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.AT_A_GLANCE,
                 keywords = listOf("today", "calendar", "events", "alarm", "reminders", "home", "media", "music", "playback", "birthday", "charging", "battery", "low battery", "timer", "stopwatch", "storage", "low storage", "disk space", "progress", "ongoing notifications", "live updates", "ride", "delivery", "download", "missed", "calls", "ongoing call", "otp", "one-time password", "verification code", "2fa", "sms code", "do not disturb", "dnd", "airplane", "flight", "hotspot", "tethering", "wifi", "wi-fi", "sign in", "captive portal", "hotel wifi", "flashlight", "torch", "weather", "temperature", "forecast", "weather alerts", "workout", "exercise", "fitness", "google health", "fitbit", "samsung health", "tomorrow", "custom info", "ai", "prompt", "scheduled", "daily", "briefing", "recurring"),
             )
-            if (isTaskerInstalled()) {
+            addToggle(
+                id = "app_toggle_app_notifications",
+                titleRes = R.string.settings_at_a_glance_app_notifications_title,
+                descriptionRes = R.string.settings_at_a_glance_app_notifications_desc,
+                toggleKey = AppSettingsToggleKey.APP_NOTIFICATIONS,
+                destination = AppSettingsDestination.APP_NOTIFICATIONS,
+                keywords = listOf("at a glance", "notification rules", "notification filter", "keywords"),
+            )
+            if (context.isTaskerInstalled()) {
                 addNavigation(
                     id = "app_settings_tasker_integration",
                     titleRes = R.string.tasker_integration_title,
@@ -246,12 +260,7 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_file_types_title,
                 descriptionRes = R.string.settings_manage_files_desc,
                 destination = AppSettingsDestination.FILES,
-                keywords =
-                    listOf(
-                        "filters",
-                        "whitelist",
-                        "blacklist",
-                    ),
+                keywords = listOf("filters", "whitelist", "blacklist"),
             )
             addToggle(
                 id = "app_toggle_file_previews",
@@ -290,6 +299,13 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_excluded_items_title,
                 descriptionRes = R.string.settings_excluded_items_desc,
                 destination = AppSettingsDestination.EXCLUDED_ITEMS,
+            )
+            addNavigation(
+                id = "app_settings_pinned_notification_items",
+                titleRes = R.string.notification_pinned_items_title,
+                descriptionRes = R.string.notification_pinned_items_description,
+                destination = AppSettingsDestination.PINNED_NOTIFICATION_ITEMS,
+                keywords = listOf("pinned", "notification", "notification panel", "unpin", "reorder"),
             )
             addNavigation(
                 id = "app_settings_nicknames",
@@ -331,13 +347,6 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_calendar_default_title,
                 destination = AppSettingsDestination.OPEN_EVENTS_IN,
                 keywords = listOf("calendar app", "open calendar", "event app"),
-            )
-            addToggle(
-                id = "app_toggle_calendar_today_events",
-                titleRes = R.string.settings_calendar_show_today_events_title,
-                descriptionRes = R.string.settings_calendar_show_today_events_desc,
-                toggleKey = AppSettingsToggleKey.SHOW_TODAY_EVENTS,
-                keywords = listOf("today"),
             )
             addNavigation(
                 id = "app_settings_send_feedback",
@@ -654,7 +663,7 @@ class AppSettingsRepository(
             )
             addToggle(
                 id = "app_toggle_open_keyboard",
-                titleRes = R.string.action_open_keyboard,
+                titleRes = R.string.open_keyboard_toggle_title,
                 descriptionRes = R.string.open_keyboard_toggle_desc,
                 toggleKey = AppSettingsToggleKey.OPEN_KEYBOARD,
             )
@@ -746,10 +755,7 @@ class AppSettingsRepository(
         )
     }
 
-    private fun isTaskerInstalled(): Boolean =
-        runCatching {
-            context.packageManager.getPackageInfo(TaskerIntegration.PACKAGE_NAME, 0)
-        }.isSuccess
+    fun hasPinnedNotificationItems(): Boolean = PinnedNotifications.pinnedItems(context).isNotEmpty()
 
     private fun MutableList<AppSettingResult>.addToggle(
         id: String,

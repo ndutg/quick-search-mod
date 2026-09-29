@@ -271,6 +271,7 @@
     <string name="clear_query_toggle_title">مسح عبارة البحث</string>
     <string name="more_results_title">المزيد من النتائج</string>
     <string name="open_keyboard_toggle_desc">فتح لوحة المفاتيح تلقائياً عند تشغيل التطبيق</string>
+    <string name="open_keyboard_toggle_title">فتح لوحة المفاتيح عند التشغيل</string>
     <string name="recent_queries_toggle_desc">عدد العناصر المعروضة قبل التوسيع</string>
     <string name="fuzzy_search_toggle_title">البحث التقريبي</string>
     <string name="fuzzy_search_toggle_desc">اعثر على النتائج حتى عندما يحتوي بحثك على خطأ إملائي.</string>
@@ -606,8 +607,6 @@
     <string name="settings_calendar_include_past_events_desc">تضمين الأحداث الماضية في نتائج البحث.</string>
     <string name="settings_calendar_include_past_events_title">الأحداث الماضية</string>
     <string name="settings_calendar_permission_title">التقويم</string>
-    <string name="settings_calendar_show_today_events_desc">عرض أحداث اليوم على الشاشة الرئيسية.</string>
-    <string name="settings_calendar_show_today_events_title">عرض أحداث اليوم</string>
     <string name="settings_calendar_default_title">فتح الأحداث في...</string>
     <string name="settings_calendar_view_all_events_desc">عرض جميع الأحداث</string>
 
@@ -784,7 +783,7 @@
     <string name="settings_app_language_picker_title">اختيار لغة التطبيق</string>
     <string name="settings_app_language_system_default">الإعداد الافتراضي للنظام</string>
     <string name="settings_launcher_icon_reset_default">إعادة تعيين للأيقونة الافتراضية</string>
-    <string name="settings_launcher_icon_title">أيقونة مشغل التطبيقات</string>
+    <string name="settings_launcher_icon_title">تغيير أيقونة التطبيق</string>
     <string name="settings_layout_option_bottom_desc">عرض العناصر الهامة بالأسفل لسهولة الوصول إليها</string>
     <string name="settings_layout_option_bottom_title">الوضع بيد واحدة</string>
     <string name="settings_unified_pinned_items_title">العناصر المثبتة الموحدة</string>
@@ -878,6 +877,32 @@
     <string name="settings_at_a_glance_workouts_title">التمارين</string>
     <string name="settings_at_a_glance_workouts_desc">الحالة المباشرة للتمرين من Google Health وSamsung Health</string>
     <string name="settings_at_a_glance_weather_desc">الأحوال الحالية والتنبيهات من إشعارات تطبيق الطقس</string>
+    <string name="settings_at_a_glance_app_notifications_title">إشعارات التطبيقات</string>
+    <string name="settings_at_a_glance_app_notifications_desc">إشعارات حسب التطبيقات أو الكلمات المفتاحية المحددة</string>
+    <string name="settings_at_a_glance_app_notifications_summary">التطبيقات: %1$d · الكلمات المفتاحية: %2$d</string>
+    <string name="app_notifications_intro">ستظهر الإشعارات المطابقة في «نظرة سريعة» حتى تتجاهلها</string>
+    <string name="app_notifications_any_app">أي تطبيق</string>
+    <string name="app_notifications_add_app">إضافة تطبيق</string>
+    <string name="app_notifications_all_from_app">كل الإشعارات</string>
+    <string name="app_notifications_no_matches">لا توجد إشعارات حديثة تطابق معاييرك</string>
+    <string name="app_notifications_remove_app">إزالة %1$s</string>
+    <string name="app_notifications_keyword_placeholder">أضف أي كلمة أو عبارة</string>
+    <string name="app_notifications_keywords_intro">ستظهر الإشعارات التي تحتوي على هذه الكلمات أو العبارات في الشاشة الرئيسية</string>
+    <string name="app_notifications_keywords_intro_app">ستظهر إشعارات %1$s التي تحتوي على هذه الكلمات أو العبارات في الشاشة الرئيسية</string>
+    <string name="app_notifications_want_all">أريد كل الإشعارات</string>
+    <string name="app_notifications_add_keyword">إضافة “%1$s”</string>
+    <string name="app_notifications_recent_matches">المطابقات الأخيرة</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="one">%d د</item>
+        <item quantity="other">%d د</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="one">%d س</item>
+        <item quantity="other">%d س</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">اختيار تطبيق</string>
+    <string name="app_notifications_search_apps">البحث في التطبيقات</string>
+    <string name="home_app_notifications_more">عرض %1$d أخرى</string>
     <string name="settings_at_a_glance_dnd_desc">عند تفعيل عدم الإزعاج</string>
     <string name="settings_at_a_glance_airplane_desc">عند تفعيل وضع الطائرة</string>
     <string name="settings_at_a_glance_hotspot_desc">عند تفعيل نقطة الاتصال</string>
@@ -950,6 +975,7 @@
     <string name="settings_gemini_api_key_saving">جارٍ الحفظ…</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">ابحث عن النماذج</string>
+    <string name="settings_model_picker_more_models_hint">يتم عرض أحدث النماذج. ابحث للعثور على غيرها.</string>
     <string name="settings_search_engine_alias_suffix_desc">تفعيل محرك البحث عند إضافة الاسم المستعار في نهاية عبارة البحث. سيعمل الاسم المستعار دائماً في بداية العبارة.</string>
     <string name="settings_search_engine_alias_suffix_title">الاسم المستعار بعد عبارة البحث</string>
     <string name="settings_search_engine_browser_default">المتصفح الافتراضي</string>
@@ -1112,6 +1138,15 @@
     <string name="widget_note_widget_title">أداة الملاحظة</string>
     <string name="widget_note_picker_title">اختر ملاحظة</string>
     <string name="widget_note_deleted">لم يتم العثور على الملاحظة. انقر لاختيار ملاحظة أخرى.</string>
+    <string name="widget_countdown_widget_title">أداة العد التنازلي</string>
+    <string name="widget_countdown_date">التاريخ</string>
+    <string name="widget_countdown_format_days">أيام</string>
+    <string name="widget_countdown_format_weeks">أسابيع</string>
+    <string name="widget_countdown_format_months">أشهر</string>
+    <string name="widget_countdown_format_years">سنوات</string>
+    <string name="widget_countdown_format_detailed">مفصّل</string>
+    <string name="widget_countdown_format_progress">التقدّم %</string>
+    <string name="widget_countdown_progress_hint">يعرض مقدار ما مضى من الوقت منذ تعيين التاريخ.</string>
     <string name="widget_icon_center">توسيط</string>
     <string name="widget_icon_left">يسار</string>
     <string name="widget_icon_off">إيقاف</string>
@@ -1321,7 +1356,7 @@
     <string name="home_anniversary_title_ordinal">ذكرى زواج %1$s (%2$s)</string>
     <string name="home_birthday_wish">انقر لتهنئته</string>
     <string name="home_missed_call">مكالمة فائتة</string>
-    <string name="home_otp_from">رمز من %1$s</string>
+    <string name="home_otp_from">من %1$s</string>
     <string name="home_copied">تم النسخ</string>
     <string name="home_reminder_marked_done">تم وضع علامة منجز على التذكير</string>
     <string name="home_reminder_snoozed">تم تأجيل التذكير 30 دقيقة</string>
@@ -1335,7 +1370,6 @@
     <string name="home_hotspot_on">نقطة الاتصال مفعّلة</string>
     <string name="home_flashlight_on">المصباح مُضاء</string>
     <string name="home_wifi_sign_in">سجّل الدخول إلى شبكة Wi-Fi</string>
-    <string name="home_sign_in">تسجيل الدخول</string>
     <string name="home_turn_off">إيقاف</string>
     <string name="settings_tavily_title">Tavily للبحث على الويب</string>
     <string name="settings_tavily_desc">أضف مفتاح Tavily API لإضافة دعم البحث على الويب للنماذج التي لا تدعمه.</string>

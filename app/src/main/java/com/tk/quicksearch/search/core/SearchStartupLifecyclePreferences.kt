@@ -92,7 +92,8 @@ internal fun SearchStartupLifecycleDelegate.onSettingsImported(
                         activeLlmGroundingEnabled = activeLlmGroundingEnabled,
                         activeLlmThinkingEnabled = activeLlmThinkingEnabled,
                         activeLlmAvailableModels = activeLlmAvailableModels,
-                        availableLlmModelsByProvider = emptyMap(),
+                        // Keep loaded catalogs so open model pickers don't fall back to "Loading Models...".
+                        availableLlmModelsByProvider = state.availableLlmModelsByProvider,
                     )
                 }
                 updateConfigState { state ->

@@ -43,7 +43,7 @@ internal fun NonSectionLayoutItem(
     appearedHomeContentKeys: MutableSet<String>,
     sectionContextForRecentHistoryExpansion: SectionRenderContext,
     atAGlanceContent: (@Composable (Boolean, Boolean) -> Unit)?,
-    atAGlanceItems: List<AtAGlanceItem>,
+    atAGlanceItems: AtAGlanceItems,
     showCalculator: Boolean,
     showCurrencyConverter: Boolean,
     showWorldClock: Boolean,

@@ -45,12 +45,9 @@ import com.tk.quicksearch.widgets.noteWidget.NoteWidgetPreview
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import kotlin.math.floor
 
+/** The home screen wallpaper to draw widget previews on, or null without wallpaper access. */
 @Composable
-fun WidgetPreviewCard(
-    state: WidgetPreferences,
-    widgetVariant: WidgetVariant = WidgetVariant.STANDARD,
-) {
-    val previewState = state.enforceVariantConstraints(widgetVariant)
+fun rememberWidgetPreviewWallpaper(): ImageBitmap? {
     val context = LocalContext.current
     val hasWallpaperAccess = remember(context) { WallpaperUtils.hasWallpaperAccessPermission(context) }
     val wallpaperBitmap by
@@ -71,6 +68,17 @@ fun WidgetPreviewCard(
                     null
                 }
         }
+    return wallpaperBitmap
+}
+
+@Composable
+fun WidgetPreviewCard(
+    state: WidgetPreferences,
+    widgetVariant: WidgetVariant = WidgetVariant.STANDARD,
+) {
+    val previewState = state.enforceVariantConstraints(widgetVariant)
+    val context = LocalContext.current
+    val wallpaperBitmap = rememberWidgetPreviewWallpaper()
     if (widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
         MediaControlsWidgetPreview(state = previewState, wallpaperBitmap = wallpaperBitmap)
         return
