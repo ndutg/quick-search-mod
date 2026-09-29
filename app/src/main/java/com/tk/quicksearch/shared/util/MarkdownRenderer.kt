@@ -61,7 +61,7 @@ internal fun RenderMarkdownDocument(
     scrollState: ScrollState? = null,
     modifier: Modifier = Modifier,
 ) {
-    val blocks = parseMarkdown(markdown)
+    val blocks = remember(markdown) { parseMarkdown(markdown) }
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
     val sectionLinks = remember(blocks) { extractSectionLinks(blocks) }

@@ -29,37 +29,67 @@ private const val FEATURES_ASSET_FILE_NAME = "FEATURES.md"
 private const val FEATURES_EXPORT_FILE_NAME = "Quick Search Features.md"
 private const val MARKDOWN_MIME_TYPE = "text/markdown"
 
+private sealed interface FeaturesMarkdownState {
+    data object Loading : FeaturesMarkdownState
+
+    data class Loaded(val markdown: String) : FeaturesMarkdownState
+
+    data object Failed : FeaturesMarkdownState
+}
+
+@Volatile
+private var cachedFeaturesMarkdown: String? = null
+
+/**
+ * Reads FEATURES.md once per process so the Features page can render its full content on the
+ * first frame instead of swapping it in mid-way through the navigation slide.
+ */
+internal suspend fun preloadFeaturesMarkdown(context: Context): String? {
+    cachedFeaturesMarkdown?.let { return it }
+    return withContext(Dispatchers.IO) {
+        runCatching {
+            context.assets.open(FEATURES_ASSET_FILE_NAME).bufferedReader().use { it.readText() }
+        }.getOrNull()
+            ?.takeIf { it.isNotBlank() }
+            ?.also { cachedFeaturesMarkdown = it }
+    }
+}
+
 @Composable
 internal fun FeaturesList(
     scrollState: ScrollState? = null,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val markdown by
-        produceState<String?>(initialValue = null, context) {
+    val state by
+        produceState<FeaturesMarkdownState>(
+            initialValue =
+                cachedFeaturesMarkdown?.let(FeaturesMarkdownState::Loaded)
+                    ?: FeaturesMarkdownState.Loading,
+            context,
+        ) {
+            if (value is FeaturesMarkdownState.Loaded) return@produceState
             value =
-                withContext(Dispatchers.IO) {
-                    runCatching {
-                        context.assets.open(FEATURES_ASSET_FILE_NAME).bufferedReader().use { it.readText() }
-                    }.getOrNull()
-                }
+                preloadFeaturesMarkdown(context)?.let(FeaturesMarkdownState::Loaded)
+                    ?: FeaturesMarkdownState.Failed
         }
 
-    if (markdown.isNullOrBlank()) {
-        Text(
-            text = stringResource(R.string.settings_features_load_failed),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = modifier,
-        )
-        return
+    when (val current = state) {
+        FeaturesMarkdownState.Loading -> Unit
+        FeaturesMarkdownState.Failed ->
+            Text(
+                text = stringResource(R.string.settings_features_load_failed),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = modifier,
+            )
+        is FeaturesMarkdownState.Loaded ->
+            RenderMarkdownDocument(
+                markdown = current.markdown,
+                scrollState = scrollState,
+                modifier = modifier,
+            )
     }
-
-    RenderMarkdownDocument(
-        markdown = markdown.orEmpty(),
-        scrollState = scrollState,
-        modifier = modifier,
-    )
 }
 
 internal suspend fun downloadAndShareFeatures(context: Context) {

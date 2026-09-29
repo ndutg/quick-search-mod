@@ -1163,7 +1163,7 @@
     <string name="permissions_screen_subtitle">Alle Berechtigungen sind optional. Sie schalten nur zusätzliche Funktionen frei und deine Daten bleiben auf deinem Gerät.</string>
     <string name="permissions_open_source_title">Open Source</string>
     <string name="permissions_open_source_desc">Sieh genau, wie diese Berechtigungen verwendet werden.</string>
-    <string name="permissions_open_source_action">Code ansehen</string>
+    <string name="permissions_open_source_action">Tippe, um den Code anzusehen.</string>
     <string name="permissions_screen_optional_emphasis">optional</string>
     <string name="permissions_usage_desc">Erforderlich, um zuletzt verwendete Apps in Vorschlägen anzuzeigen.</string>
     <string name="setup_action_next">Weiter</string>

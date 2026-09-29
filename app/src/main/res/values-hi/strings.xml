@@ -1163,7 +1163,7 @@
     <string name="permissions_screen_subtitle">सभी अनुमतियाँ वैकल्पिक हैं। ये केवल अतिरिक्त सुविधाएँ अनलॉक करती हैं और आपका डेटा आपके डिवाइस पर ही रहता है।</string>
     <string name="permissions_open_source_title">ओपन सोर्स</string>
     <string name="permissions_open_source_desc">देखें कि इन अनुमतियों का उपयोग कैसे किया जाता है।</string>
-    <string name="permissions_open_source_action">कोड देखें</string>
+    <string name="permissions_open_source_action">कोड देखने के लिए टैप करें।</string>
     <string name="permissions_screen_optional_emphasis">वैकल्पिक</string>
     <string name="permissions_usage_desc">सुझावों में हाल ही में उपयोग किए गए ऐप्स दिखाने के लिए आवश्यक।</string>
     <string name="setup_action_next">आगे</string>

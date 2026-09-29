@@ -1169,7 +1169,7 @@
     <string name="permissions_screen_subtitle">Semua izin bersifat opsional. Izin hanya membuka fitur tambahan dan data Anda tetap di perangkat Anda.</string>
     <string name="permissions_open_source_title">Sumber terbuka</string>
     <string name="permissions_open_source_desc">Lihat persis bagaimana izin ini digunakan.</string>
-    <string name="permissions_open_source_action">Lihat kode</string>
+    <string name="permissions_open_source_action">Ketuk untuk melihat kode.</string>
     <string name="permissions_screen_optional_emphasis">opsional</string>
     <string name="permissions_usage_desc">Diperlukan untuk menampilkan aplikasi yang baru saja digunakan dalam saran.</string>
     <string name="setup_action_next">Berikutnya</string>

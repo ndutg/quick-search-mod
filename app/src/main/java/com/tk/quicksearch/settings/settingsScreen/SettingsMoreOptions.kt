@@ -49,6 +49,7 @@ import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.Upload
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.ButtonDefaults
+import com.tk.quicksearch.settings.preloadFeaturesMarkdown
 import com.tk.quicksearch.settings.shared.SettingsCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -109,6 +110,8 @@ fun SettingsMoreOptions(
     onOpenOssLicenses: () -> Unit = {},
 ) {
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) { preloadFeaturesMarkdown(context) }
 
     val onSendFeedback = {
         FeedbackUtils.launchFeedbackEmail(context, null)
@@ -384,16 +387,18 @@ internal fun BackupRestoreRow(
                 ),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
     ) {
-        Text(
-            text = stringResource(R.string.settings_backup_restore_title),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Text(
-            text = stringResource(R.string.settings_backup_restore_desc),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall)) {
+            Text(
+                text = stringResource(R.string.settings_backup_restore_title),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = stringResource(R.string.settings_backup_restore_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),

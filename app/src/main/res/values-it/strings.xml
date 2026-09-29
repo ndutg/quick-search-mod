@@ -1162,7 +1162,7 @@
     <string name="permissions_screen_subtitle">Tutte le autorizzazioni sono facoltative. Sbloccano solo funzionalità aggiuntive e i tuoi dati rimangono sul tuo dispositivo.</string>
     <string name="permissions_open_source_title">Open source</string>
     <string name="permissions_open_source_desc">Scopri esattamente come vengono usate queste autorizzazioni.</string>
-    <string name="permissions_open_source_action">Vedi codice</string>
+    <string name="permissions_open_source_action">Tocca per vedere il codice.</string>
     <string name="permissions_screen_optional_emphasis">facoltative</string>
     <string name="permissions_usage_desc">Richiesta per mostrare le app usate di recente nei suggerimenti.</string>
     <string name="setup_action_next">Avanti</string>

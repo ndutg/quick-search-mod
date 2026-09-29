@@ -1162,7 +1162,7 @@
 <string name="permissions_screen_subtitle">Tüm izinler isteğe bağlıdır. Yalnızca ek özelliklerin kilidini açarlar ve verilerin cihazında kalır.</string>
 <string name="permissions_open_source_title">Açık kaynak</string>
 <string name="permissions_open_source_desc">Bu izinlerin tam olarak nasıl kullanıldığını görün.</string>
-<string name="permissions_open_source_action">Kodu görüntüle</string>
+<string name="permissions_open_source_action">Kodu görüntülemek için dokunun.</string>
 <string name="permissions_screen_optional_emphasis">isteğe bağlıdır</string>
 <string name="permissions_usage_desc">Son kullandığın uygulamaları önerilerde göstermek için gereklidir.</string>
 <string name="setup_action_next">Sonraki</string>
