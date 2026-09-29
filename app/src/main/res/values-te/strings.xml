@@ -1163,7 +1163,7 @@
     <string name="permissions_screen_subtitle">అన్ని అనుమతులు ఐచ్ఛికం. అవి అదనపు ఫీచర్‌లను మాత్రమే అన్‌లాక్ చేస్తాయి, మీ డేటా మీ పరికరంలోనే ఉంటుంది.</string>
     <string name="permissions_open_source_title">ఓపెన్ సోర్స్</string>
     <string name="permissions_open_source_desc">ఈ అనుమతులు ఎలా ఉపయోగించబడుతున్నాయో చూడండి.</string>
-    <string name="permissions_open_source_action">కోడ్ చూడండి</string>
+    <string name="permissions_open_source_action">కోడ్ చూడటానికి నొక్కండి.</string>
     <string name="permissions_screen_optional_emphasis">ఐచ్ఛికం</string>
     <string name="permissions_usage_desc">మీరు ఇటీవల ఉపయోగించిన యాప్‌లను సూచనలలో చూపించడానికి అవసరం.</string>
     <string name="setup_action_next">తదుపరి</string>

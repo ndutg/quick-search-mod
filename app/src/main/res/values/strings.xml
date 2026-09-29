@@ -522,14 +522,14 @@
     <string name="files_section_permission_subtitle">Files permission is required to perform file search</string>
     <string name="settings_excluded_extensions_title">Hidden File Extensions</string>
     <string name="settings_file_types_title">Files &amp; Folders</string>
-    <string name="settings_folder_blacklist_add">Add blocked folder</string>
+    <string name="settings_folder_blacklist_add">Add Blocked Folder</string>
     <string name="settings_folder_blacklist_helper">These folders will be ignored when searching</string>
     <string name="settings_folder_blacklist_title">Blacklist</string>
     <string name="settings_folder_filter_helper">Search for folders and add them to control where file and folder results appear.</string>
     <string name="settings_folder_filters_title">Folder Path Filters</string>
     <string name="settings_folder_search_hint">Search for a folder to add</string>
     <string name="settings_folder_search_no_results">No folders found</string>
-    <string name="settings_folder_whitelist_add">Add allowed folder</string>
+    <string name="settings_folder_whitelist_add">Add Allowed Folder</string>
     <string name="settings_folder_whitelist_helper">Only these folders will be searched for file &amp; folder searches</string>
     <string name="settings_folder_whitelist_title">Whitelist</string>
     <string name="settings_folders_toggle">Folders</string>
@@ -1177,7 +1177,7 @@
     <string name="permissions_screen_subtitle">All permissions are optional and only unlock extra features. Your data stays on-device.</string>
     <string name="permissions_open_source_title">Open Source</string>
     <string name="permissions_open_source_desc">See exactly how these permissions are used.</string>
-    <string name="permissions_open_source_action">View Code</string>
+    <string name="permissions_open_source_action">Tap to view code.</string>
     <string name="permissions_screen_optional_emphasis">optional</string>
     <string name="permissions_usage_desc">Needed to show your recently used apps in suggestions.</string>
     <string name="setup_action_next">Next</string>

@@ -1163,7 +1163,7 @@
 <string name="permissions_screen_subtitle">Toutes les autorisations sont facultatives. Elles débloquent uniquement des fonctionnalités supplémentaires et vos données restent sur votre appareil.</string>
 <string name="permissions_open_source_title">Open source</string>
 <string name="permissions_open_source_desc">Voyez exactement comment ces autorisations sont utilisées.</string>
-<string name="permissions_open_source_action">Voir le code</string>
+<string name="permissions_open_source_action">Appuyez pour voir le code.</string>
 <string name="permissions_screen_optional_emphasis">facultatives</string>
 <string name="permissions_usage_desc">Requis pour afficher vos applications récemment utilisées dans les suggestions.</string>
 <string name="setup_action_next">Suivant</string>

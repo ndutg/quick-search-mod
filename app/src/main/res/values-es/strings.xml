@@ -1163,7 +1163,7 @@
     <string name="permissions_screen_subtitle">Todos los permisos son opcionales. Solo desbloquean funciones adicionales y tus datos permanecen en tu dispositivo.</string>
     <string name="permissions_open_source_title">Código abierto</string>
     <string name="permissions_open_source_desc">Mira exactamente cómo se usan estos permisos.</string>
-    <string name="permissions_open_source_action">Ver código</string>
+    <string name="permissions_open_source_action">Toca para ver el código.</string>
     <string name="permissions_screen_optional_emphasis">opcionales</string>
     <string name="permissions_usage_desc">Necesario para mostrar tus apps usadas recientemente en las sugerencias.</string>
     <string name="setup_action_next">Siguiente</string>

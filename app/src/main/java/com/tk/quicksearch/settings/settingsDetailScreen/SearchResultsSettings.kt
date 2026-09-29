@@ -28,7 +28,7 @@ import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Contacts
 import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Label
 import androidx.compose.material.icons.rounded.Language
@@ -479,14 +479,17 @@ private fun AppResultRowsSelector(
                     },
                     label = { Text(rowCount.toString()) },
                     shape = DesignTokens.ShapeFull,
-                    border = if (selected) null else BorderStroke(1.dp, AppColors.SettingsDivider),
+                    border =
+                        BorderStroke(
+                            if (selected) 1.5.dp else 1.dp,
+                            if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else AppColors.SettingsDivider,
+                        ),
                     colors =
                         AssistChipDefaults.assistChipColors(
-                            containerColor =
-                                if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                            containerColor = Color.Transparent,
                             labelColor =
-                                if (selected) MaterialTheme.colorScheme.onPrimary
-                                else MaterialTheme.colorScheme.primary,
+                                if (selected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurface,
                         ),
                 )
             }
@@ -696,7 +699,7 @@ private fun AppSuggestionTabsPickerRow(
             )
         }
         Icon(
-            imageVector = Icons.Rounded.ExpandMore,
+            imageVector = Icons.Rounded.UnfoldMore,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )

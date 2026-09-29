@@ -1183,7 +1183,7 @@
 <string name="permissions_screen_subtitle">Все разрешения необязательны. Они лишь открывают дополнительные функции, а ваши данные остаются на устройстве.</string>
 <string name="permissions_open_source_title">Открытый исходный код</string>
 <string name="permissions_open_source_desc">Посмотрите, как именно используются эти разрешения.</string>
-<string name="permissions_open_source_action">Смотреть код</string>
+<string name="permissions_open_source_action">Нажмите, чтобы посмотреть код.</string>
 <string name="permissions_screen_optional_emphasis">необязательны</string>
 <string name="permissions_usage_desc">Требуется для отображения недавно использованных приложений в подсказках.</string>
 <string name="setup_action_next">Далее</string>

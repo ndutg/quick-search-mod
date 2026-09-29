@@ -3,16 +3,13 @@ package com.tk.quicksearch.shared.permissions
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
@@ -29,10 +26,12 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
-import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 private const val SOURCE_CODE_URL = "https://github.com/teja2495/quick-search"
@@ -62,28 +61,18 @@ fun OpenSourceTrustCard(modifier: Modifier = Modifier) {
         modifier =
             modifier
                 .clip(shape)
-                .background(AppColors.getSettingsCardContainerColor())
-                .border(1.dp, accent.copy(alpha = 0.35f), shape)
+                .background(accent.copy(alpha = if (isDark) 0.12f else 0.1f))
                 .clickable(role = Role.Button, onClick = openSource)
                 .padding(horizontal = DesignTokens.SpacingLarge, vertical = DesignTokens.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(accent.copy(alpha = 0.16f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.VerifiedUser,
-                contentDescription = null,
-                tint = accent,
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        Icon(
+            imageVector = Icons.Rounded.VerifiedUser,
+            contentDescription = null,
+            tint = accent,
+            modifier = Modifier.size(24.dp),
+        )
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -92,35 +81,27 @@ fun OpenSourceTrustCard(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            val description = stringResource(R.string.permissions_open_source_desc)
+            val action = stringResource(R.string.permissions_open_source_action)
             Text(
-                text = stringResource(R.string.permissions_open_source_desc),
+                text =
+                    buildAnnotatedString {
+                        append(description)
+                        append(" ")
+                        withStyle(SpanStyle(color = accent, fontWeight = FontWeight.Medium)) {
+                            append(action)
+                        }
+                    },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
-        Row(
-            modifier =
-                Modifier
-                    .clip(CircleShape)
-                    .border(1.dp, accent.copy(alpha = 0.45f), CircleShape)
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.permissions_open_source_action),
-                style = MaterialTheme.typography.labelMedium,
-                maxLines = 1,
-                fontWeight = FontWeight.SemiBold,
-                color = accent,
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
-                contentDescription = null,
-                tint = accent,
-                modifier = Modifier.size(12.dp),
-            )
-        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
+            contentDescription = null,
+            tint = accent,
+            modifier = Modifier.size(20.dp),
+        )
     }
 }
