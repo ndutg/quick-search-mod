@@ -79,7 +79,7 @@ internal fun FlashlightRow(glance: FlashlightGlance) {
             Icon(
                 imageVector = Icons.Rounded.FlashlightOn,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
         title = stringResource(R.string.home_flashlight_on),

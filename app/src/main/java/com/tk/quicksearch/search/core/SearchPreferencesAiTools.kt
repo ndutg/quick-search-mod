@@ -11,8 +11,9 @@ import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
+import com.tk.quicksearch.tools.aiSearch.LlmModelCatalogCache
 import com.tk.quicksearch.tools.aiSearch.LlmTextModel
-import com.tk.quicksearch.tools.aiSearch.resolveModelSelection
+import com.tk.quicksearch.tools.aiSearch.resolveModelSelectionOrDefault
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
@@ -157,7 +158,14 @@ internal fun SearchPreferencesDelegate.refreshAvailableLlmModels() {
         scope.launch(Dispatchers.IO) {
             val configuredProviderIds = userPreferences.getLlmApiKeyLast4ByProvider().keys
             val now = System.currentTimeMillis()
-            if (configuredProviderIds == lastModelRefreshProviderIds &&
+            // Refetch despite the throttle when a catalog was dropped from state (e.g. by a reload).
+            var hasAllCatalogs = false
+            updateFeatureState { state ->
+                hasAllCatalogs = configuredProviderIds.all { it in state.availableLlmModelsByProvider }
+                state
+            }
+            if (hasAllCatalogs &&
+                configuredProviderIds == lastModelRefreshProviderIds &&
                 now - lastModelRefreshAtMillis < MODEL_REFRESH_MIN_INTERVAL_MS
             ) {
                 return@launch
@@ -181,11 +189,13 @@ internal fun SearchPreferencesDelegate.refreshAvailableLlmModels() {
                 }
             results.forEach { (providerId, result) ->
                 result.getOrNull()?.let { models ->
+                    LlmModelCatalogCache.put(providerId, models)
                     val selectedModelId = userPreferences.getLlmModel(providerId)
-                    if (resolveModelSelection(selectedModelId, models) != selectedModelId) {
-                        userPreferences.setLlmModel(providerId, null)
+                    val resolvedModelId = resolveModelSelectionOrDefault(providerId, selectedModelId, models)
+                    if (resolvedModelId != selectedModelId) {
+                        userPreferences.setLlmModel(providerId, resolvedModelId)
                         if (providerId == activeProviderId) {
-                            aiSearchHandler.setSelectedModelId(null)
+                            aiSearchHandler.setSelectedModelId(resolvedModelId)
                         }
                     }
                     if (userPreferences.getCurrencyConverterProviderId() == providerId &&

@@ -10,11 +10,9 @@ import android.service.notification.StatusBarNotification
 internal class WeatherNotification(
     val key: String,
     val packageName: String,
-    /** Such as "Partly cloudy" or "Rain starting in 15 min"; never just the temperature. */
+    /** Such as "72° Partly cloudy" or "Rain starting in 15 min". */
     val title: String?,
     val text: String?,
-    /** The temperature the notification shows, such as "72°" or "-3°C". */
-    val temperature: String?,
     /** A persistent current conditions notification rather than a one-off alert. */
     val isOngoing: Boolean,
     val postTime: Long,
@@ -32,14 +30,19 @@ internal object WeatherNotifications {
     /** Parsed notifications by key, reused until the notification is posted again. */
     private val cache = mutableMapOf<String, Pair<Long, WeatherNotification?>>()
 
+    /** Keys hidden from At a Glance, kept while the notification stays posted (ongoing ones can't be cleared). */
+    private val dismissedKeys = mutableSetOf<String>()
+
     /** Current conditions first, then alerts, newest first within each. */
     fun parse(
         context: Context,
         posted: List<StatusBarNotification>,
     ): List<WeatherNotification> {
-        cache.keys.retainAll(posted.map { it.key }.toSet())
+        val postedKeys = posted.map { it.key }.toSet()
+        cache.keys.retainAll(postedKeys)
+        dismissedKeys.retainAll(postedKeys)
         return posted
-            .filter { it.isWeather() }
+            .filter { it.key !in dismissedKeys && it.isWeather() }
             .mapNotNull { sbn ->
                 val cached = cache[sbn.key]
                 if (cached != null && cached.first == sbn.postTime) {
@@ -50,16 +53,18 @@ internal object WeatherNotifications {
             }.sortedWith(compareByDescending<WeatherNotification> { it.isOngoing }.thenByDescending { it.postTime })
     }
 
+    fun dismiss(key: String) {
+        dismissedKeys += key
+    }
+
     fun clear() {
         cache.clear()
+        dismissedKeys.clear()
     }
 
     /** The first temperature in [text], such as "72°", "-3 °C" or "18.5°F", with its spacing removed. */
     fun temperatureIn(text: String): String? =
         TEMPERATURE_PATTERN.find(text)?.value?.replace(" ", "")?.replace('−', '-')
-
-    private fun isOnlyTemperature(line: String): Boolean =
-        TEMPERATURE_PATTERN.find(line)?.let { match -> line.removeRange(match.range).isBlank() } == true
 
     private fun StatusBarNotification.isWeather(): Boolean {
         val extras = notification.extras
@@ -92,18 +97,16 @@ internal object WeatherNotifications {
                     }.orEmpty()
         }
         if (texts.isEmpty()) return null
-        val temperature = texts.firstNotNullOfOrNull { temperatureIn(it) }
+        val hasTemperature = texts.any { temperatureIn(it) != null }
         val isOngoing = notification.flags and (Notification.FLAG_ONGOING_EVENT or Notification.FLAG_NO_CLEAR) != 0
         // An ongoing notification without a temperature is a service notice, such as location updates.
-        if (isOngoing && temperature == null) return null
-        // A line that is only the temperature (Samsung Weather's title, say) goes in the pill instead.
-        val lines = texts.filterNot { isOnlyTemperature(it) }.distinct()
+        if (isOngoing && !hasTemperature) return null
+        val lines = texts.distinct()
         return WeatherNotification(
             key = key,
             packageName = packageName,
             title = lines.getOrNull(0),
             text = lines.getOrNull(1),
-            temperature = temperature,
             isOngoing = isOngoing,
             postTime = postTime,
             contentIntent = notification.contentIntent,

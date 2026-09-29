@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.core
 
 import android.content.Context
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.filterAvailableStartupApps
@@ -140,13 +141,43 @@ internal object SearchViewModelInitialStateFactory {
                 }
             } == true
 
+        val initialQuery = if (clearQueryOnLaunch) "" else inMemoryRetainedQuery
+        val cachedPinnedApps =
+            cachedHome?.pinnedApps.orEmpty().filter { it.launchCountKey() in pinnedAppKeys }
+        val selectedAppSuggestionTab = startupPreferencesReader.getSelectedAppSuggestionTab()
+        val enabledAppSuggestionTabs = startupPreferencesReader.getEnabledAppSuggestionTabs()
+        val appFolders = startupPreferencesReader.getAppFolders()
+        // Pinned apps don't depend on usage metadata, so when the Pinned tab is the one on screen
+        // it shows straight from the snapshot instead of waiting for startup to publish recents.
+        // Folders need the full app catalog to resolve, so a grid with folders waits for it.
+        val showCachedPinnedTab =
+            initialQuery.isBlank() &&
+                cachedPinnedApps.isNotEmpty() &&
+                appFolders.isEmpty() &&
+                selectedAppSuggestionTab == AppSuggestionTabType.PINNED &&
+                AppSuggestionTabType.PINNED in enabledAppSuggestionTabs
+        AppSearchPerformanceLogger.log {
+            "startupPinned initialState showCachedPinnedTab=$showCachedPinnedTab " +
+                "snapshot=${startupSnapshot != null} pinned=${cachedPinnedApps.size} " +
+                "folders=${appFolders.size} selectedTab=$selectedAppSuggestionTab"
+        }
+
         val initialResultsState =
             SearchResultsState(
-                query = if (clearQueryOnLaunch) "" else inMemoryRetainedQuery,
+                query = initialQuery,
                 recentApps = cachedHome?.recentApps.orEmpty(),
-                pinnedApps =
-                    cachedHome?.pinnedApps.orEmpty().filter {
-                        it.launchCountKey() in pinnedAppKeys
+                pinnedApps = cachedPinnedApps,
+                screenState =
+                    if (showCachedPinnedTab) {
+                        ScreenVisibilityState.Content
+                    } else {
+                        ScreenVisibilityState.Initializing
+                    },
+                appsSectionState =
+                    if (showCachedPinnedTab) {
+                        AppsSectionVisibility.ShowingResults(hasPinned = true)
+                    } else {
+                        AppsSectionVisibility.Hidden
                     },
                 pinnedNonAppItemOrder = startupPreferencesReader.getPinnedNonAppItemOrder(),
                 excludedOtherItemIds = startupPreferencesReader.getExcludedOtherItemIds(),
@@ -218,7 +249,7 @@ internal object SearchViewModelInitialStateFactory {
                 homePinnedSectionOrder = startupPreferencesReader.getHomePinnedSectionOrder(),
                 pinnedAppShortcutsInAppGrid = startupPreferencesReader.isPinnedAppShortcutsInAppGridEnabled(),
                 pinnedAppGridOrder = startupPreferencesReader.getPinnedAppGridOrder(),
-                appFolders = startupPreferencesReader.getAppFolders(),
+                appFolders = appFolders,
                 showRateQuickSearchCard = startupPreferencesReader.shouldShowRateQuickSearchCard(),
                 recentQueriesEnabled = startupPreferencesReader.areRecentQueriesEnabled(),
             )
@@ -306,8 +337,8 @@ internal object SearchViewModelInitialStateFactory {
                 notificationDotsEnabled =
                     startupPreferencesReader.areNotificationDotsEnabled() &&
                         NotificationDotsPermission.canEnableNotificationDots(appContext),
-                selectedAppSuggestionTab = startupPreferencesReader.getSelectedAppSuggestionTab(),
-                enabledAppSuggestionTabs = startupPreferencesReader.getEnabledAppSuggestionTabs(),
+                selectedAppSuggestionTab = selectedAppSuggestionTab,
+                enabledAppSuggestionTabs = enabledAppSuggestionTabs,
                 selectRetainedQuery = !clearQueryOnLaunch && inMemoryRetainedQuery.isNotEmpty(),
             )
 

@@ -50,7 +50,7 @@ import com.tk.quicksearch.search.appSettings.AppSettingResult
 import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
-import com.tk.quicksearch.search.appSettings.LocalOnSettingsImported
+import com.tk.quicksearch.search.appSettings.LocalAppSettingInlineControls
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.ContactInfo
@@ -385,8 +385,9 @@ fun SearchRoute(
             LocalAppLockAuthenticator provides requestBiometricAuthentication,
             LocalAppLockCredentialAuthenticator provides requestDeviceCredentialAuthentication,
             LocalOpenAppSettingDestination provides onOpenAppSettingDestination,
-            LocalOnSettingsImported provides viewModel::onSettingsImported,
+            LocalAppSettingInlineControls provides appSettingInlineControls(uiState, viewModel),
             LocalPopupOverlayContent provides popupUndoSnackbar,
+            LocalShowUndoSnackbar provides undoActions.showUndoSnackbarWithIcon,
         ) {
             SearchScreenComposable(
                 modifier =
@@ -791,6 +792,7 @@ fun SearchRoute(
                 previewFile = null
                 com.tk.quicksearch.search.core.intentHelpers.FileIntents.shareFile(context, file)
             },
+            appSettingActions = settingActions,
         )
     }
 }

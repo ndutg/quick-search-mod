@@ -69,7 +69,7 @@ class StartupPreferencesFacade(
             val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
             val customAccentColorArgb: Int =
                     com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
-            val maskUnsupportedIconPackIcons: Boolean = false,
+            val maskUnsupportedIconPackIcons: Boolean = true,
             val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
             val appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
     )
@@ -490,7 +490,7 @@ class StartupPreferencesFacade(
                                         .KEY_ICON_PACK_UNSUPPORTED_ICON_MASK_ENABLED,
                         ] as?
                                 Boolean
-                                ?: false,
+                                ?: true,
                 phoneAppGridColumns =
                         allPrefs[
                                 com.tk.quicksearch.search.data.preferences.UiPreferences

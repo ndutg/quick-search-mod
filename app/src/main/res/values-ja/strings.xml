@@ -64,6 +64,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >Weather in New York</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Quick Searchでアプリ、連絡先、ファイル、設定などを検索します。</string>
 
@@ -136,7 +139,7 @@
     <string name="settings_gesture_none">なし</string>
     <string name="settings_gesture_custom">カスタム（アプリ、ファイルなど）</string>
     <string name="settings_keyboard_gestures_title">キーボードジェスチャー（ホーム）</string>
-    <string name="settings_keyboard_gestures_desc">ホーム画面にスクロール可能なコンテンツがない場合のみ利用可能</string>
+    <string name="settings_keyboard_gestures_desc">ホーム画面にスクロール可能なコンテンツがない場合のみ動作します</string>
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">通知に固定</string>
     <string name="action_unpin_from_notifications">通知から固定解除</string>
@@ -367,7 +370,7 @@
     <string name="settings_manage_apps_desc">アプリを管理</string>
     <string name="settings_manage_apps_title">アプリの管理</string>
     <string name="settings_refresh_apps_disabled">アプリ検索が無効になっているため、アプリデータを更新できません</string>
-    <string name="settings_refresh_apps_title">アプリを再読み込み</string>
+    <string name="settings_refresh_apps_title">アプリを更新</string>
     <string name="usage_permission_subtitle">候補に最近使用したアプリを表示する場合は、使用状況へのアクセスを許可してください。</string>
     <string name="usage_permission_title">使用状況へのアクセスを許可</string>
 
@@ -542,7 +545,7 @@
     <string name="settings_file_previews_toggle">ファイルのプレビュー</string>
     <string name="settings_file_previews_description">画像やPDFを開く前にプレビューします。</string>
     <string name="settings_refresh_files_disabled">ファイル検索が無効になっているため、ファイルデータを更新できません</string>
-    <string name="settings_refresh_files_title">ファイルを再読み込み</string>
+    <string name="settings_refresh_files_title">ファイルを更新</string>
     <string name="settings_system_files_toggle">システムファイル</string>
 
     <!-- ============================================================================
@@ -746,6 +749,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">編集</string>
     <string name="settings_font_size_big">大</string>
+    <string name="settings_font_size_extra_small">特小</string>
+    <string name="settings_font_size_extra_big">特大</string>
     <string name="settings_font_size_medium">中</string>
     <string name="settings_font_size_small">小</string>
     <string name="settings_font_size_title">フォントサイズ</string>
@@ -815,7 +820,7 @@
     <string name="settings_quick_settings_tile_desc">クイック設定パネルにQuick Searchのタイルを追加します。</string>
     <string name="settings_quick_settings_tile_title">クイック設定タイル</string>
     <string name="settings_refresh_contacts_disabled">連絡先検索が無効になっているため、連絡先データを更新できません</string>
-    <string name="settings_refresh_contacts_title">連絡先を再読み込み</string>
+    <string name="settings_refresh_contacts_title">連絡先を更新</string>
     <string name="settings_refresh_data_note">データは自動的に更新されます。手動で強制更新するにはこれらのボタンを使用してください。</string>
     <string name="settings_refresh_data_title">データを更新</string>
     <string name="settings_refresh_icon_packs">アイコンパックを更新</string>
@@ -836,18 +841,35 @@
     <string name="settings_tools_info_examples_header">検索バーに入力できる質問の例です</string>
     <string name="settings_tools_title">ツール</string>
     <string name="settings_at_a_glance_title">ひと目で確認</string>
+    <string name="custom_info_title">カスタム情報</string>
+    <string name="custom_info_edit_title">詳細を編集</string>
+    <string name="custom_info_prompt">プロンプト</string>
+    <string name="custom_info_set_date_time">日時を設定</string>
+    <string name="custom_info_desc">選んだ時刻に、プロンプトへのAIの回答をホームに表示</string>
+    <string name="settings_ai_api_key_required_message">この機能にはAIプロバイダーのAPIキーが必要です。</string>
+    <string name="settings_ai_api_key_required_title">APIキーが必要です</string>
+    <string name="settings_ai_api_key_setup_action">キーを設定</string>
+    <string name="custom_info_repeat_never">繰り返さない</string>
+    <string name="custom_info_repeat_every">繰り返し間隔</string>
+    <string name="custom_info_send_notification">通知を送信</string>
+    <string name="custom_info_preview">プレビュー</string>
+    <string name="custom_info_saved">保存しました</string>
+    <string name="custom_info_delete_confirm_title">%1$sを削除しますか？</string>
+    <string name="custom_info_delete_confirm_message">このカスタム情報とそのスケジュールは完全に削除されます。</string>
     <string name="settings_at_a_glance_desc">適切なタイミングでホーム画面に表示される便利な情報</string>
     <string name="settings_at_a_glance_alarms_title">アラーム</string>
     <string name="settings_upcoming_alarm_desc">45分以内に鳴る次のアラーム</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">明日の最初のアラームを前夜に表示</string>
     <string name="settings_hidden_alarm_apps_title">非表示のアラームアプリ</string>
-    <string name="settings_at_a_glance_events_desc">今日のカレンダーの予定と、夜には明日の終日の予定</string>
+    <string name="settings_at_a_glance_events_desc">今日のカレンダーの予定</string>
+    <string name="settings_at_a_glance_tomorrow_events">明日の予定を前夜に表示</string>
     <string name="settings_upcoming_reminders_desc">30分以内に期限が来る、または期限切れのリマインダー</string>
     <string name="settings_at_a_glance_low_battery_title">バッテリー残量低下</string>
     <string name="settings_low_battery_desc">バッテリー残量が %1$d%% 以下のとき</string>
     <string name="settings_at_a_glance_timers_title">タイマーとストップウォッチ</string>
     <string name="settings_at_a_glance_timers_desc">時計アプリで動作中のタイマーとストップウォッチ</string>
     <string name="settings_at_a_glance_birthdays_title">誕生日</string>
-    <string name="settings_at_a_glance_birthdays_desc">今日が誕生日の連絡先</string>
+    <string name="settings_at_a_glance_birthdays_desc">今日が誕生日または記念日の連絡先</string>
     <string name="settings_at_a_glance_progress_title">継続中の通知</string>
     <string name="settings_at_a_glance_progress_desc">配車、配達、ダウンロードなどのライブアップデート</string>
     <string name="settings_at_a_glance_charging_title">充電中</string>
@@ -921,6 +943,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_direct_search_how_to">無料APIキーを取得</string>
     <string name="settings_direct_search_model_label">モデル</string>
     <string name="settings_select_model">モデルを選択</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">選択したモデルは利用できません。設定で別のモデルを選択してください。</string>
     <string name="settings_loading_models">モデルを読み込み中…</string>
     <string name="settings_direct_search_personal_context">個人コンテキスト</string>
@@ -965,6 +988,8 @@ www.google.com/search?q={{query}}</string>
     <string name="release_notes_title_no_version">Quick Search リリースノート</string>
     <string name="settings_backup_export_api_key_warning_message">自己責任で続行してください。エクスポートされたAPIキーは暗号化されず、バックアップファイルにアクセスできるすべての人が閲覧できます。</string>
     <string name="settings_backup_export_button">エクスポート</string>
+    <string name="settings_backup_export_title">設定をエクスポート</string>
+    <string name="settings_backup_export_desc">設定をバックアップファイルに保存</string>
     <string name="settings_backup_export_failed">設定をエクスポートできません。</string>
     <string name="settings_backup_export_option_pinned_items_title">固定アイテム</string>
     <string name="settings_backup_export_option_api_keys">APIキー</string>
@@ -1292,11 +1317,20 @@ www.google.com/search?q={{query}}</string>
     <string name="home_charging_paused">充電を一時停止中</string>
     <string name="home_timer">タイマー</string>
     <string name="home_stopwatch">ストップウォッチ</string>
+    <string name="home_timer_paused">一時停止中</string>
     <string name="home_storage_almost_full">ストレージの空き容量がわずかです</string>
     <string name="home_storage_free">%2$s 中 %1$s 空き</string>
-    <string name="home_birthday_today">今日が誕生日</string>
-    <string name="home_birthday_turns">今日で %1$d 歳</string>
+    <string name="home_birthday_title">%1$sさんの誕生日</string>
+    <string name="home_anniversary_title">%1$sさんの記念日</string>
+    <string name="home_birthday_title_ordinal">%1$sさんの誕生日（%2$s）</string>
+    <string name="home_anniversary_title_ordinal">%1$sさんの記念日（%2$s）</string>
+    <string name="home_birthday_wish">タップしてお祝いを伝える</string>
     <string name="home_missed_call">不在着信</string>
+    <string name="home_otp_from">%1$sからのコード</string>
+    <string name="home_copied">コピーしました</string>
+    <string name="home_reminder_marked_done">リマインダーを完了にしました</string>
+    <string name="home_reminder_snoozed">リマインダーを30分スヌーズしました</string>
+    <string name="home_reminder_deleted">リマインダーを削除しました</string>
     <string name="home_missed_calls_count">不在着信（%1$s）</string>
     <string name="home_missed_call_from_app">%1$s（%2$s）</string>
     <string name="home_dnd_on">サイレントモードがオン</string>
@@ -1310,8 +1344,10 @@ www.google.com/search?q={{query}}</string>
     <string name="home_turn_off">オフにする</string>
     <string name="settings_tavily_title">ウェブ検索用 Tavily</string>
     <string name="settings_tavily_desc">Tavily API キーを追加すると、ウェブ検索に対応していないモデルでもウェブ検索を利用できます。</string>
-    <string name="settings_tavily_mode_always">ウェブ検索には常に Tavily を使用</string>
-    <string name="settings_tavily_mode_when_unsupported">モデルがウェブ検索に対応していない場合のみ使用</string>
+    <string name="settings_tavily_mode_always">常に</string>
+    <string name="settings_tavily_mode_when_unsupported">代替として</string>
+    <string name="settings_tavily_mode_always_desc">すべてのモデルでウェブ検索に使用します。</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">選択したモデルがウェブ検索できない場合のみ使用します。</string>
     <string name="settings_weather_no_web_search_warning">天気にはウェブの検索結果が必要です。ウェブ検索に対応したモデルを選ぶか、APIキーの設定でTavily APIキーを追加してください。</string>
     <string name="tavily_search_failed_toast">Tavily のウェブ検索に失敗しました。ウェブ結果なしで回答します。</string>
     <string name="search_hint_reminders">リマインダーを検索…</string>

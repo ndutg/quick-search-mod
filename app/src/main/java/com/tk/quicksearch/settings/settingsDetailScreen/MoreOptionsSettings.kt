@@ -11,6 +11,7 @@ import androidx.compose.material.icons.rounded.Archive
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.runtime.Composable
@@ -81,6 +82,12 @@ fun MoreOptionsSettings(
                 titleRes = R.string.show_in_recents_toggle_title,
                 subtitleRes = R.string.show_in_recents_toggle_desc,
                 leadingIcon = Icons.Rounded.Apps,
+            ),
+            ToggleItem(
+                key = AppSettingsToggleKey.SEARCH_HINTS,
+                titleRes = R.string.settings_search_hints_title,
+                subtitleRes = R.string.settings_search_hints_desc,
+                leadingIcon = Icons.Rounded.Lightbulb,
             ),
             ToggleItem(
                 key = AppSettingsToggleKey.OPEN_TOP_RESULT_USING_KEYBOARD,

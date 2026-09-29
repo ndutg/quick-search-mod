@@ -419,11 +419,25 @@ private fun SearchEngineContent(
     appIconShape: AppIconShape,
     iconPackPackage: String?,
 ) {
+    val view = LocalView.current
+    val singleEngine = enabledEngines.singleOrNull()
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(
+                .then(
+                    if (singleEngine != null) {
+                        Modifier.combinedClickable(
+                            onClick = {
+                                hapticConfirm(view)()
+                                onSearchEngineClick(query, singleEngine)
+                            },
+                            onLongClick = onSearchEngineLongPress,
+                        )
+                    } else {
+                        Modifier
+                    },
+                ).padding(
                     horizontal =
                         if (useInsetContainer) {
                             SearchEngineSectionConstants.INSET_HORIZONTAL_PADDING
@@ -582,6 +596,27 @@ private fun ScrollableEngineIcons(
     appIconShape: AppIconShape,
     iconPackPackage: String?,
 ) {
+    enabledEngines.singleOrNull()?.let { engine ->
+        SingleEngineLabel(
+            engine = engine,
+            query = query,
+            appIconShape = appIconShape,
+            iconPackPackage = iconPackPackage,
+        )
+        return
+    }
+    if (enabledEngines.size <= EVENLY_SPACED_ENGINE_MAX_COUNT) {
+        EvenlySpacedEngineRow(
+            query = query,
+            enabledEngines = enabledEngines,
+            onSearchEngineClick = onSearchEngineClick,
+            onSearchEngineLongPress = onSearchEngineLongPress,
+            predictedTarget = predictedTarget,
+            appIconShape = appIconShape,
+            iconPackPackage = iconPackPackage,
+        )
+        return
+    }
     val resolvedRowCount = compactRowCount.coerceIn(1, 2)
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val itemsPerRow = calculateItemsPerRow()

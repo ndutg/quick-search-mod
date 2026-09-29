@@ -96,6 +96,18 @@ class AppSettingsSearchHandler(
             val shouldHidePinnedSectionsOrder =
                 setting.id == PINNED_SECTIONS_ORDER_SETTING_ID &&
                     userPreferences.isUnifiedPinnedItemsEnabled()
+            val shouldHideTopMatchesOptions =
+                (setting.destination == AppSettingsDestination.TOP_MATCHES_PRIORITY ||
+                    setting.id == TOP_MATCHES_COUNT_SETTING_ID) &&
+                    !userPreferences.isTopMatchesEnabled()
+            val shouldHideAppSuggestionTabs =
+                setting.destination == AppSettingsDestination.APP_SUGGESTION_TABS &&
+                    !userPreferences.areAppSuggestionsEnabled()
+            // AI provider settings (model, personal context) only exist once a key is set up.
+            val shouldHideAiProvider =
+                (setting.destination == AppSettingsDestination.GEMINI_API ||
+                    setting.destination == AppSettingsDestination.AI_MODEL) &&
+                    !userPreferences.hasConfiguredAiProviderHint()
             val shouldHideFuzzySearch =
                 setting.toggleKey == AppSettingsToggleKey.FUZZY_SEARCH &&
                     isLowRamDevice
@@ -121,6 +133,9 @@ class AppSettingsSearchHandler(
                 !shouldHideTriggers &&
                 !shouldHideTopResultIndicator &&
                 !shouldHidePinnedSectionsOrder &&
+                !shouldHideTopMatchesOptions &&
+                !shouldHideAiProvider &&
+                !shouldHideAppSuggestionTabs &&
                 !shouldHideFuzzySearch &&
                 !shouldHideAppResultRows &&
                 !shouldHideArchivedApps &&

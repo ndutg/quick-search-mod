@@ -66,6 +66,9 @@
         <item>Time in UK</item>
         <item>Define Serendipity</item>
         <item>الطقس في نيويورك</item>
+        <item>Set alarm at 8am</item>
+        <item>Start timer for 20min</item>
+        <item>Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">ابحث في التطبيقات وجهات الاتصال والملفات والإعدادات والمزيد باستخدام Quick Search.</string>
 
@@ -136,7 +139,7 @@
     <string name="settings_gesture_none">بلا</string>
     <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
     <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح (الرئيسية)</string>
-    <string name="settings_keyboard_gestures_desc">متاح فقط عندما لا يوجد محتوى قابل للتمرير على الشاشة الرئيسية</string>
+    <string name="settings_keyboard_gestures_desc">يعمل فقط عندما لا يوجد محتوى قابل للتمرير على الشاشة الرئيسية</string>
     <string name="action_pin_app">تثبيت</string>
     <string name="action_pin_to_notifications">تثبيت في الإشعارات</string>
     <string name="action_unpin_from_notifications">إلغاء التثبيت من الإشعارات</string>
@@ -367,7 +370,7 @@
     <string name="settings_manage_apps_desc">إدارة تطبيقاتك</string>
     <string name="settings_manage_apps_title">إدارة التطبيقات</string>
     <string name="settings_refresh_apps_disabled">البحث في التطبيقات معطل، لا يمكن تحديث بيانات التطبيقات</string>
-    <string name="settings_refresh_apps_title">إعادة تحميل التطبيقات</string>
+    <string name="settings_refresh_apps_title">تحديث التطبيقات</string>
     <string name="usage_permission_subtitle">لرؤية تطبيقاتك المستخدمة مؤخراً في الاقتراحات، يرجى منح إذن الوصول إلى بيانات الاستخدام.</string>
     <string name="usage_permission_title">منح إذن الوصول إلى بيانات الاستخدام</string>
 
@@ -536,7 +539,7 @@
     <string name="settings_file_previews_toggle">معاينة الملفات</string>
     <string name="settings_file_previews_description">معاينة الصور وملفات PDF قبل فتحها.</string>
     <string name="settings_refresh_files_disabled">البحث عن الملفات معطل، لا يمكن تحديث بيانات الملفات</string>
-    <string name="settings_refresh_files_title">إعادة تحميل الملفات</string>
+    <string name="settings_refresh_files_title">تحديث الملفات</string>
     <string name="settings_system_files_toggle">ملفات النظام</string>
 
     <!-- ============================================================================
@@ -739,6 +742,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">تعديل</string>
     <string name="settings_font_size_big">كبير</string>
+    <string name="settings_font_size_extra_small">صغير جدًا</string>
+    <string name="settings_font_size_extra_big">كبير جدًا</string>
     <string name="settings_font_size_medium">متوسط</string>
     <string name="settings_font_size_small">صغير</string>
     <string name="settings_font_size_title">حجم الخط</string>
@@ -808,7 +813,7 @@
     <string name="settings_quick_settings_tile_desc">أضف Quick Search إلى مربعات الإعدادات السريعة.</string>
     <string name="settings_quick_settings_tile_title">مربع الإعدادات السريعة</string>
     <string name="settings_refresh_contacts_disabled">البحث في جهات الاتصال معطل، لا يمكن تحديث البيانات</string>
-    <string name="settings_refresh_contacts_title">إعادة تحميل جهات الاتصال</string>
+    <string name="settings_refresh_contacts_title">تحديث جهات الاتصال</string>
     <string name="settings_refresh_data_note">يتم تحديث البيانات تلقائياً. يمكنك استخدام هذه الأزرار للتحديث اليدوي الفوري.</string>
     <string name="settings_refresh_data_title">تحديث البيانات</string>
     <string name="settings_refresh_icon_packs">تحديث حزم الأيقونات</string>
@@ -829,18 +834,35 @@
     <string name="settings_tools_info_examples_header">أمثلة للبحث السريع في شريط البحث</string>
     <string name="settings_tools_title">الأدوات</string>
     <string name="settings_at_a_glance_title">نظرة سريعة</string>
+    <string name="custom_info_title">معلومات مخصصة</string>
+    <string name="custom_info_edit_title">تعديل التفاصيل</string>
+    <string name="custom_info_prompt">المطالبة</string>
+    <string name="custom_info_set_date_time">تحديد التاريخ والوقت</string>
+    <string name="custom_info_desc">إجابات الذكاء الاصطناعي على مطالباتك في الشاشة الرئيسية، في الأوقات التي تختارها</string>
+    <string name="settings_ai_api_key_required_message">تتطلب هذه الميزة مفتاح API لمزود AI.</string>
+    <string name="settings_ai_api_key_required_title">مفتاح API مطلوب</string>
+    <string name="settings_ai_api_key_setup_action">إعداد المفتاح</string>
+    <string name="custom_info_repeat_never">لا يتكرر</string>
+    <string name="custom_info_repeat_every">التكرار كل</string>
+    <string name="custom_info_send_notification">إرسال إشعار</string>
+    <string name="custom_info_preview">معاينة</string>
+    <string name="custom_info_saved">تم الحفظ</string>
+    <string name="custom_info_delete_confirm_title">هل تريد حذف %1$s؟</string>
+    <string name="custom_info_delete_confirm_message">سيتم حذف هذه المعلومات المخصصة وجدولها نهائياً.</string>
     <string name="settings_at_a_glance_desc">معلومات مفيدة تظهر على شاشتك الرئيسية في الأوقات المناسبة</string>
     <string name="settings_at_a_glance_alarms_title">المنبهات</string>
     <string name="settings_upcoming_alarm_desc">المنبه التالي عندما يكون خلال 45 دقيقة</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">عرض أول منبه ليوم غد في الليلة السابقة</string>
     <string name="settings_hidden_alarm_apps_title">تطبيقات المنبهات المخفية</string>
-    <string name="settings_at_a_glance_events_desc">أحداث تقويم اليوم، بالإضافة إلى أحداث الغد التي تستمر طوال اليوم في المساء</string>
+    <string name="settings_at_a_glance_events_desc">أحداث تقويم اليوم</string>
+    <string name="settings_at_a_glance_tomorrow_events">عرض أحداث الغد في الليلة السابقة</string>
     <string name="settings_upcoming_reminders_desc">التذكيرات المستحقة خلال 30 دقيقة أو المتأخرة</string>
     <string name="settings_at_a_glance_low_battery_title">البطارية منخفضة</string>
     <string name="settings_low_battery_desc">البطارية عندما تكون %1$d%% أو أقل</string>
     <string name="settings_at_a_glance_timers_title">المؤقتات وساعة الإيقاف</string>
     <string name="settings_at_a_glance_timers_desc">المؤقتات وساعات الإيقاف قيد التشغيل من تطبيق الساعة</string>
     <string name="settings_at_a_glance_birthdays_title">أعياد الميلاد</string>
-    <string name="settings_at_a_glance_birthdays_desc">جهات الاتصال التي يصادف عيد ميلادها اليوم</string>
+    <string name="settings_at_a_glance_birthdays_desc">جهات الاتصال التي يصادف عيد ميلادها أو ذكرى زواجها اليوم</string>
     <string name="settings_at_a_glance_progress_title">الإشعارات الجارية</string>
     <string name="settings_at_a_glance_progress_desc">تحديثات مباشرة مثل الرحلات والتوصيلات والتنزيلات</string>
     <string name="settings_at_a_glance_charging_title">الشحن</string>
@@ -911,6 +933,7 @@
     <string name="settings_direct_search_how_to">احصل على مفتاح API مجاناً</string>
     <string name="settings_direct_search_model_label">النموذج</string>
     <string name="settings_select_model">اختيار نموذج</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">النموذج المحدد غير متاح. يُرجى اختيار نموذج آخر من الإعدادات.</string>
     <string name="settings_loading_models">جارٍ تحميل النماذج…</string>
     <string name="settings_direct_search_personal_context">السياق الشخصي</string>
@@ -955,6 +978,8 @@
     <string name="release_notes_title_no_version">ملاحظات إصدار Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">المضي قدماً على مسؤوليتك الخاصة. مفاتيح API المصدرة لن تكون مشفرة ويمكن لأي شخص لديه وصول لملف النسخ الاحتياطي رؤيتها.</string>
     <string name="settings_backup_export_button">تصدير</string>
+    <string name="settings_backup_export_title">تصدير الإعدادات</string>
+    <string name="settings_backup_export_desc">احفظ إعداداتك في ملف نسخة احتياطية</string>
     <string name="settings_backup_export_failed">تعذر تصدير الإعدادات.</string>
     <string name="settings_backup_export_option_pinned_items_title">العناصر المثبتة</string>
     <string name="settings_backup_export_option_api_keys">مفاتيح API</string>
@@ -1287,11 +1312,20 @@
     <string name="home_charging_paused">تم إيقاف الشحن مؤقتًا</string>
     <string name="home_timer">مؤقت</string>
     <string name="home_stopwatch">ساعة الإيقاف</string>
+    <string name="home_timer_paused">متوقف مؤقتاً</string>
     <string name="home_storage_almost_full">مساحة التخزين ممتلئة تقريبًا</string>
     <string name="home_storage_free">%1$s متاحة من أصل %2$s</string>
-    <string name="home_birthday_today">عيد الميلاد اليوم</string>
-    <string name="home_birthday_turns">العمر اليوم: %1$d</string>
+    <string name="home_birthday_title">عيد ميلاد %1$s</string>
+    <string name="home_anniversary_title">ذكرى زواج %1$s</string>
+    <string name="home_birthday_title_ordinal">عيد ميلاد %1$s (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">ذكرى زواج %1$s (%2$s)</string>
+    <string name="home_birthday_wish">انقر لتهنئته</string>
     <string name="home_missed_call">مكالمة فائتة</string>
+    <string name="home_otp_from">رمز من %1$s</string>
+    <string name="home_copied">تم النسخ</string>
+    <string name="home_reminder_marked_done">تم وضع علامة منجز على التذكير</string>
+    <string name="home_reminder_snoozed">تم تأجيل التذكير 30 دقيقة</string>
+    <string name="home_reminder_deleted">تم حذف التذكير</string>
     <string name="home_missed_calls_count">مكالمات فائتة (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">عدم الإزعاج مفعّل</string>
@@ -1305,8 +1339,10 @@
     <string name="home_turn_off">إيقاف</string>
     <string name="settings_tavily_title">Tavily للبحث على الويب</string>
     <string name="settings_tavily_desc">أضف مفتاح Tavily API لإضافة دعم البحث على الويب للنماذج التي لا تدعمه.</string>
-    <string name="settings_tavily_mode_always">استخدم Tavily دائمًا للبحث على الويب</string>
-    <string name="settings_tavily_mode_when_unsupported">استخدمه فقط عندما لا يدعم النموذج البحث على الويب</string>
+    <string name="settings_tavily_mode_always">دائمًا</string>
+    <string name="settings_tavily_mode_when_unsupported">كبديل احتياطي</string>
+    <string name="settings_tavily_mode_always_desc">يُستخدم للبحث على الويب مع كل النماذج.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">يُستخدم فقط عندما لا يستطيع النموذج المحدد البحث على الويب.</string>
     <string name="settings_weather_no_web_search_warning">يحتاج الطقس إلى نتائج من الويب. اختر نموذجًا يدعم البحث على الويب، أو أضف مفتاح Tavily API في إعداد مفتاح API.</string>
     <string name="tavily_search_failed_toast">فشل البحث على الويب عبر Tavily. تتم الإجابة بدون نتائج الويب.</string>
     <string name="search_hint_reminders">البحث في التذكيرات…</string>

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PhoneMissed
 import androidx.compose.material3.Icon
@@ -36,13 +37,14 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import com.tk.quicksearch.search.data.MissedCallNotification
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.sendFromUserTap
 import java.text.NumberFormat
 
 /**
  * One summary row for missed call notifications, [calls] newest first. It names the callers, with
  * the app in brackets for calls from apps other than the phone app, and counts them in the title
  * when there is more than one. Tapping the row opens the newest call's app; when the calls come from more than
- * one app, a chip for each app opens that app's calls.
+ * one app, a chip for each app opens that app's calls. A single phone app call gets a call back button.
  */
 @Composable
 internal fun MissedCallsRow(
@@ -98,7 +100,7 @@ internal fun MissedCallsRow(
                             text = subtitle,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
+                            maxLines = GlanceTextMaxLines,
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
@@ -115,9 +117,31 @@ internal fun MissedCallsRow(
                 }
             }
         }
+        // A single phone call gets the notification's call back action as a pill beside the dismiss button.
+        val callBackIntent = calls.singleOrNull()?.takeIf { it.fromPhoneApp }?.callBackIntent
+        if (callBackIntent != null) {
+            Box(
+                modifier = Modifier.align(Alignment.CenterVertically).padding(start = DesignTokens.SpacingSmall),
+            ) {
+                GlanceActionChip(
+                    label = stringResource(R.string.contact_method_call_label),
+                    onClick = { callBackIntent.sendFromUserTap() },
+                    icon = Icons.Rounded.Call,
+                    colors =
+                        GlancePillColors(
+                            container = MaterialTheme.colorScheme.primaryContainer,
+                            content = MaterialTheme.colorScheme.onPrimaryContainer,
+                        ),
+                )
+            }
+        }
         IconButton(
             onClick = onDismiss,
-            modifier = Modifier.padding(start = DesignTokens.SpacingSmall).size(GlanceDismissButtonSize),
+            modifier =
+                Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(start = DesignTokens.SpacingSmall)
+                    .size(GlanceDismissButtonSize),
         ) {
             Icon(
                 imageVector = Icons.Rounded.Close,

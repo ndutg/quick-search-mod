@@ -42,6 +42,7 @@ class NotificationDotsListenerService : NotificationListenerService() {
 
     override fun onListenerConnected() {
         super.onListenerConnected()
+        connected = this
         val active = runCatching { activeNotifications }.getOrNull()
         NotificationDotsStore.updateFromNotifications(active)
         GlanceNotificationsStore.update(this, active)
@@ -69,6 +70,7 @@ class NotificationDotsListenerService : NotificationListenerService() {
 
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
+        if (connected === this) connected = null
         NotificationDotsStore.clear()
         GlanceNotificationsStore.clear()
         NotificationHistoryAccess.set(false)
@@ -77,6 +79,7 @@ class NotificationDotsListenerService : NotificationListenerService() {
     }
 
     override fun onDestroy() {
+        if (connected === this) connected = null
         widgetRefreshScope.cancel()
         unregisterPowerReceiver()
         super.onDestroy()
@@ -169,6 +172,16 @@ class NotificationDotsListenerService : NotificationListenerService() {
     private fun refreshWidgets() {
         widgetRefreshScope.launch {
             refreshAllWidgets(this@NotificationDotsListenerService)
+        }
+    }
+
+    companion object {
+        @Volatile
+        private var connected: NotificationDotsListenerService? = null
+
+        /** Clears a posted notification from the shade; the system ignores ongoing ones. */
+        fun cancelNotification(key: String) {
+            connected?.let { service -> runCatching { service.cancelNotification(key) } }
         }
     }
 }

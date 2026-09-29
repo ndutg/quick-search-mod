@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 internal data class RouteUndoActions(
     val snackbarHostState: SnackbarHostState,
     val popupUndoSnackbar: @Composable BoxScope.() -> Unit,
+    val showUndoSnackbarWithIcon: (String, androidx.compose.ui.graphics.vector.ImageVector?, () -> Unit) -> Unit,
     val onHideAppWithUndo: (AppInfo) -> Unit,
     val onExcludeContactWithUndo: (ContactInfo) -> Unit,
     val onExcludeFileWithUndo: (DeviceFile) -> Unit,
@@ -92,6 +93,22 @@ internal fun rememberRouteUndoActions(
     val showUndoSnackbar: (String, () -> Unit) -> Unit = { message, onUndo ->
         showUndoSnackbarVisuals(UndoSnackbarVisuals(message = message, actionLabel = undoLabel), onUndo)
     }
+
+    // Remembered so providing it through LocalShowUndoSnackbar doesn't invalidate readers every recomposition.
+    val showUndoSnackbarWithIcon: (String, androidx.compose.ui.graphics.vector.ImageVector?, () -> Unit) -> Unit =
+        remember(effectiveSnackbarHostState, undoLabel) {
+            { message, icon, onUndo ->
+                undoSnackbarJob.value?.cancel()
+                undoSnackbarJob.value =
+                    snackbarScope.launch {
+                        val visuals = UndoSnackbarVisuals(message = message, actionLabel = undoLabel, icon = icon)
+                        val result = effectiveSnackbarHostState.showSnackbar(visuals)
+                        if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                            onUndo()
+                        }
+                    }
+            }
+        }
 
     val showAppShortcutDisabledSnackbar: (() -> Unit) -> Unit = @Suppress("LocalContextGetResourceValueCall") { onUndo ->
         showUndoSnackbarVisuals(
@@ -239,6 +256,7 @@ internal fun rememberRouteUndoActions(
     return RouteUndoActions(
         snackbarHostState = snackbarHostState,
         popupUndoSnackbar = popupUndoSnackbar,
+        showUndoSnackbarWithIcon = showUndoSnackbarWithIcon,
         onHideAppWithUndo = onHideAppWithUndo,
         onExcludeContactWithUndo = onExcludeContactWithUndo,
         onExcludeFileWithUndo = onExcludeFileWithUndo,

@@ -2,6 +2,8 @@ package com.tk.quicksearch.settings.settingsScreen
 
 import android.content.Context
 import android.net.Uri
+import com.tk.quicksearch.customInfo.CustomInfoRepository
+import com.tk.quicksearch.customInfo.CustomInfoScheduler
 import com.tk.quicksearch.reminders.ReminderScheduler
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.search.data.preferences.CustomLlmProviderPreferences
@@ -200,6 +202,11 @@ object SettingsBackupManager {
             } else {
                 collectEligiblePreferenceNames(context, importedNames)
             }
+        // Custom Info alarms are keyed by item id too, so clear them before the items are replaced.
+        val importsCustomInfo = CustomInfoRepository.PREFS_NAME in preferenceNames
+        if (importsCustomInfo) {
+            CustomInfoRepository(context).all().forEach { CustomInfoScheduler.cancel(context, it.id) }
+        }
 
         preferenceNames.forEach { prefName ->
             val sharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
@@ -278,6 +285,10 @@ object SettingsBackupManager {
         // Older backups can hold calendar events created in Quick Search; rescheduling moves them into reminders.
         if (importsReminders || importsCalendarEvents) {
             ReminderScheduler.rescheduleAll(context)
+        }
+        if (importsCustomInfo) {
+            CustomInfoScheduler.rescheduleAll(context)
+            CustomInfoRepository.notifyChanged()
         }
     }
 

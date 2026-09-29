@@ -285,7 +285,7 @@ data class SearchUiConfigState(
         val enabledAppSuggestionTabs: Set<AppSuggestionTabType> = AppSuggestionTabType.DefaultEnabledTabs,
         val selectedIconPackPackage: String? = null,
         val availableIconPacks: List<IconPackInfo> = emptyList(),
-        val maskUnsupportedIconPackIcons: Boolean = false,
+        val maskUnsupportedIconPackIcons: Boolean = true,
         // File display preferences
         val enabledFileTypes: Set<FileType> = FileType.values().toSet(),
         val showFolders: Boolean = false,

@@ -9,16 +9,20 @@ import com.tk.quicksearch.shared.permissions.PermissionHelper
 import java.time.LocalDate
 import java.time.MonthDay
 
-/** A contact whose birthday falls on the queried day. */
+/** A contact whose birthday or anniversary falls on the queried day. */
 internal class ContactBirthday(
     val contactId: Long,
     val lookupKey: String?,
     val name: String,
-    /** The age reached on the queried day, or null when the contact's birth year is unknown. */
-    val age: Int?,
+    val isAnniversary: Boolean,
+    /** The age turned or years married, when the contact's date has a plausible year. */
+    val years: Int? = null,
 )
 
-/** Reads contact birthdays for the At a Glance card. Callers run [birthdaysOn] off the main thread. */
+/**
+ * Reads contact birthdays and anniversaries for the At a Glance card. Callers run [birthdaysOn] off
+ * the main thread.
+ */
 internal class ContactBirthdaysRepository(private val context: Context) {
     fun hasPermission(): Boolean = PermissionHelper.checkContactsPermission(context)
 
@@ -30,31 +34,41 @@ internal class ContactBirthdaysRepository(private val context: Context) {
                 ContactsContract.Data.LOOKUP_KEY,
                 ContactsContract.Data.DISPLAY_NAME_PRIMARY,
                 Event.START_DATE,
+                Event.TYPE,
             )
-        val selection = "${ContactsContract.Data.MIMETYPE} = ? AND ${Event.TYPE} = ?"
-        val selectionArgs = arrayOf(Event.CONTENT_ITEM_TYPE, Event.TYPE_BIRTHDAY.toString())
-        val birthdays = linkedMapOf<Long, ContactBirthday>()
+        val selection = "${ContactsContract.Data.MIMETYPE} = ? AND ${Event.TYPE} IN (?, ?)"
+        val selectionArgs =
+            arrayOf(
+                Event.CONTENT_ITEM_TYPE,
+                Event.TYPE_BIRTHDAY.toString(),
+                Event.TYPE_ANNIVERSARY.toString(),
+            )
+        val birthdays = linkedMapOf<Pair<Long, Boolean>, ContactBirthday>()
         runCatching {
             context.contentResolver
                 .query(ContactsContract.Data.CONTENT_URI, projection, selection, selectionArgs, null)
                 ?.use { cursor ->
                     while (cursor.moveToNext()) {
                         val contactId = cursor.getLong(0)
-                        if (contactId in birthdays) continue
+                        val isAnniversary = cursor.getInt(4) == Event.TYPE_ANNIVERSARY
+                        val key = contactId to isAnniversary
+                        if (key in birthdays) continue
                         val name = cursor.getString(2)?.takeIf { it.isNotBlank() } ?: continue
-                        val date = parseBirthday(cursor.getString(3)) ?: continue
+                        val (date, year) = parseEventDate(cursor.getString(3)) ?: continue
                         if (!date.fallsOn(day)) continue
-                        birthdays[contactId] =
+                        birthdays[key] =
                             ContactBirthday(
                                 contactId = contactId,
                                 lookupKey = cursor.getString(1),
                                 name = name,
-                                age = date.year?.let { day.year - it }?.takeIf { it in 1..150 },
+                                isAnniversary = isAnniversary,
+                                // Some apps store a placeholder year (iOS uses 1604) for dates without one.
+                                years = year?.let { day.year - it }?.takeIf { it in 1..MAX_YEARS },
                             )
                     }
                 }
         }
-        return birthdays.values.sortedBy { it.name.lowercase() }
+        return birthdays.values.sortedWith(compareBy({ it.isAnniversary }, { it.name.lowercase() }))
     }
 
     fun open(birthday: ContactBirthday) {
@@ -66,44 +80,26 @@ internal class ContactBirthdaysRepository(private val context: Context) {
         }
     }
 
-    private class BirthdayDate(
-        val monthDay: MonthDay,
-        val year: Int?,
-    ) {
-        /** Feb 29 birthdays show on Feb 28 in non-leap years. */
-        fun fallsOn(day: LocalDate): Boolean {
-            val today = MonthDay.from(day)
-            return today == monthDay || (monthDay == LEAP_DAY && !day.isLeapYear && today == FEB_28)
-        }
+    /** Feb 29 dates show on Feb 28 in non-leap years. */
+    private fun MonthDay.fallsOn(day: LocalDate): Boolean {
+        val today = MonthDay.from(day)
+        return today == this || (this == LEAP_DAY && !day.isLeapYear && today == FEB_28)
     }
 
     /**
-     * Contacts store birthdays as `yyyy-MM-dd`, or `--MM-dd` without a year; some sync adapters
-     * add a time part or drop the dashes.
+     * Contacts store event dates as `yyyy-MM-dd`, or `--MM-dd` without a year; some sync adapters
+     * add a time part or drop the dashes. Returns the month and day, with the year when there is one.
      */
-    private fun parseBirthday(raw: String?): BirthdayDate? {
+    private fun parseEventDate(raw: String?): Pair<MonthDay, Int?>? {
         val value = raw?.trim()?.take(10) ?: return null
-        FULL_DATE.matchEntire(value)?.let { match ->
-            val (year, month, day) = match.destructured
-            return birthdayDate(month.toInt(), day.toInt(), year.toInt())
-        }
-        NO_YEAR.matchEntire(value)?.let { match ->
-            val (month, day) = match.destructured
-            return birthdayDate(month.toInt(), day.toInt(), null)
-        }
-        COMPACT.matchEntire(value)?.let { match ->
-            val (year, month, day) = match.destructured
-            return birthdayDate(month.toInt(), day.toInt(), year.toInt())
-        }
-        return null
+        val match =
+            FULL_DATE.matchEntire(value)?.destructured?.let { (year, month, day) -> Triple(year, month, day) }
+                ?: NO_YEAR.matchEntire(value)?.destructured?.let { (month, day) -> Triple(null, month, day) }
+                ?: COMPACT.matchEntire(value)?.destructured?.let { (year, month, day) -> Triple(year, month, day) }
+                ?: return null
+        val monthDay = runCatching { MonthDay.of(match.second.toInt(), match.third.toInt()) }.getOrNull() ?: return null
+        return monthDay to match.first?.toInt()
     }
-
-    private fun birthdayDate(
-        month: Int,
-        day: Int,
-        year: Int?,
-    ): BirthdayDate? =
-        runCatching { BirthdayDate(MonthDay.of(month, day), year?.takeIf { it > 1900 }) }.getOrNull()
 
     private companion object {
         val FULL_DATE = Regex("""(\d{4})-(\d{1,2})-(\d{1,2})""")
@@ -111,5 +107,6 @@ internal class ContactBirthdaysRepository(private val context: Context) {
         val COMPACT = Regex("""(\d{4})(\d{2})(\d{2})""")
         val LEAP_DAY: MonthDay = MonthDay.of(2, 29)
         val FEB_28: MonthDay = MonthDay.of(2, 28)
+        const val MAX_YEARS = 120
     }
 }

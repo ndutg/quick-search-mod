@@ -57,6 +57,7 @@ internal fun SearchRouteOverlays(
     onPreviewDismiss: () -> Unit,
     onPreviewOpen: (DeviceFile) -> Unit,
     onPreviewShare: (DeviceFile) -> Unit,
+    appSettingActions: RouteSettingActions,
 ) {
         if (showPermissionSettingsDialog) {
             PermissionSettingsDialog(
@@ -82,10 +83,7 @@ internal fun SearchRouteOverlays(
                 availableIconPacks = uiState.availableIconPacks,
                 selectedPackage = uiState.selectedIconPackPackage,
                 maskUnsupportedIcons = uiState.maskUnsupportedIconPackIcons,
-                onSelect = { packageName ->
-                    viewModel.setIconPackPackage(packageName)
-                    onIconPackDismiss()
-                },
+                onSelect = viewModel::setIconPackPackage,
                 onMaskUnsupportedIconsChange = viewModel::setIconPackUnsupportedIconMaskEnabled,
                 onDownloadIconPacks = viewModel::searchIconPacks,
                 onResetAllIcons = viewModel::resetAllAppIconsToDefault,
@@ -102,6 +100,8 @@ internal fun SearchRouteOverlays(
                 onDismiss = onDefaultCalendarDismiss,
             )
         }
+
+        AppSettingRouteDialogs(settingActions = appSettingActions, viewModel = viewModel, uiState = uiState)
 
         speedBumpApp?.let { app ->
             SpeedBumpOverlay(

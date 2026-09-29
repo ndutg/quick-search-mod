@@ -64,6 +64,9 @@
     <item>Time in UK</item>
     <item>Define Serendipity</item>
     <item>New York hava durumu</item>
+    <item>Set alarm at 8am</item>
+    <item>Start timer for 20min</item>
+    <item>Pickup food at 6pm</item>
 </string-array>
 <string name="search_provider_description">Quick Search ile uygulamaları, kişileri, dosyaları, ayarları ve daha fazlasını arayın.</string>
 
@@ -134,7 +137,7 @@
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
 <string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
-<string name="settings_keyboard_gestures_desc">Yalnızca ana ekranda kaydırılabilir içerik olmadığında kullanılabilir</string>
+<string name="settings_keyboard_gestures_desc">Yalnızca ana ekranda kaydırılabilir içerik olmadığında çalışır</string>
 <string name="action_pin_app">Sabitle</string>
     <string name="action_pin_to_notifications">Bildirimlere sabitle</string>
     <string name="action_unpin_from_notifications">Bildirimlerden kaldır</string>
@@ -365,7 +368,7 @@
 <string name="settings_manage_apps_desc">Uygulamalarını yönet</string>
 <string name="settings_manage_apps_title">Uygulamaları yönet</string>
 <string name="settings_refresh_apps_disabled">Uygulama araması devre dışı, uygulama verileri yenilenemiyor</string>
-<string name="settings_refresh_apps_title">Uygulamaları yeniden yükle</string>
+<string name="settings_refresh_apps_title">Uygulamaları yenile</string>
 <string name="usage_permission_subtitle">Son kullanılan uygulamalarını önerilerde görmek istiyorsan kullanım erişimi izni ver.</string>
 <string name="usage_permission_title">Kullanım erişimi izni ver</string>
 
@@ -534,7 +537,7 @@
 <string name="settings_file_previews_toggle">Dosya önizlemeleri</string>
 <string name="settings_file_previews_description">Açmadan önce görselleri ve PDF\'leri önizleyin.</string>
 <string name="settings_refresh_files_disabled">Dosya araması devre dışı, dosya verileri yenilenemiyor</string>
-<string name="settings_refresh_files_title">Dosyaları yeniden yükle</string>
+<string name="settings_refresh_files_title">Dosyaları yenile</string>
 <string name="settings_system_files_toggle">Sistem dosyaları</string>
 
 <!-- ============================================================================
@@ -737,6 +740,8 @@
 <string name="settings_device_theme_title">Material You</string>
 <string name="settings_edit_label">Düzenle</string>
 <string name="settings_font_size_big">Büyük</string>
+<string name="settings_font_size_extra_small">Çok küçük</string>
+<string name="settings_font_size_extra_big">Çok büyük</string>
 <string name="settings_font_size_medium">Orta</string>
 <string name="settings_font_size_small">Küçük</string>
 <string name="settings_font_size_title">Yazı tipi boyutu</string>
@@ -806,7 +811,7 @@
 <string name="settings_quick_settings_tile_desc">Hızlı Ayarlar paneline Quick Search ekle.</string>
 <string name="settings_quick_settings_tile_title">Hızlı ayarlar kutucuğu</string>
 <string name="settings_refresh_contacts_disabled">Kişi araması devre dışı, kişi verileri yenilenemiyor</string>
-<string name="settings_refresh_contacts_title">Kişileri yeniden yükle</string>
+<string name="settings_refresh_contacts_title">Kişileri yenile</string>
 <string name="settings_refresh_data_note">Veriler otomatik olarak yenilenir. Manuel olarak yenilemeye zorlamak için bu butonları kullan.</string>
 <string name="settings_refresh_data_title">Verileri yenile</string>
 <string name="settings_refresh_icon_packs">Simge paketlerini yenile</string>
@@ -827,18 +832,35 @@
 <string name="settings_tools_info_examples_header">Arama çubuğunda sorabileceğin şeylere dair some örnekler</string>
 <string name="settings_tools_title">Araçlar</string>
 <string name="settings_at_a_glance_title">Bir Bakışta</string>
+<string name="custom_info_title">Özel Bilgi</string>
+<string name="custom_info_edit_title">Ayrıntıları Düzenle</string>
+<string name="custom_info_prompt">İstem</string>
+<string name="custom_info_set_date_time">Tarih ve saat ayarla</string>
+<string name="custom_info_desc">İstemlerinize yapay zekâ yanıtları, seçtiğiniz saatlerde ana ekranda</string>
+<string name="settings_ai_api_key_required_message">Bu özellik bir AI sağlayıcı API anahtarı gerektirir.</string>
+<string name="settings_ai_api_key_required_title">API Anahtarı Gerekli</string>
+<string name="settings_ai_api_key_setup_action">Anahtarı ayarla</string>
+<string name="custom_info_repeat_never">Tekrarlanmaz</string>
+<string name="custom_info_repeat_every">Tekrarlama aralığı</string>
+<string name="custom_info_send_notification">Bildirim gönder</string>
+<string name="custom_info_preview">Önizle</string>
+<string name="custom_info_saved">Kaydedildi</string>
+<string name="custom_info_delete_confirm_title">%1$s silinsin mi?</string>
+<string name="custom_info_delete_confirm_message">Bu özel bilgi ve zamanlaması kalıcı olarak silinecek.</string>
 <string name="settings_at_a_glance_desc">Ana ekranınızda doğru zamanda görünen faydalı bilgiler</string>
 <string name="settings_at_a_glance_alarms_title">Alarmlar</string>
 <string name="settings_upcoming_alarm_desc">45 dakika içindeyse sonraki alarmınız</string>
+<string name="settings_at_a_glance_tomorrow_alarm">Yarının ilk alarmını bir önceki gece göster</string>
 <string name="settings_hidden_alarm_apps_title">Gizli Alarm Uygulamaları</string>
-<string name="settings_at_a_glance_events_desc">Bugünün takvim etkinlikleri ve akşamları yarının tüm gün süren etkinlikleri</string>
+<string name="settings_at_a_glance_events_desc">Bugünün takvim etkinlikleri</string>
+<string name="settings_at_a_glance_tomorrow_events">Yarının etkinliklerini bir önceki gece göster</string>
 <string name="settings_upcoming_reminders_desc">30 dakika içinde zamanı gelen veya gecikmiş hatırlatıcılar</string>
     <string name="settings_at_a_glance_low_battery_title">Düşük pil</string>
     <string name="settings_low_battery_desc">Piliniz %%%1$d veya altına düştüğünde</string>
     <string name="settings_at_a_glance_timers_title">Zamanlayıcılar ve kronometre</string>
     <string name="settings_at_a_glance_timers_desc">Saat uygulamanızda çalışan zamanlayıcılar ve kronometreler</string>
     <string name="settings_at_a_glance_birthdays_title">Doğum günleri</string>
-    <string name="settings_at_a_glance_birthdays_desc">Bugün doğum günü olan kişiler</string>
+    <string name="settings_at_a_glance_birthdays_desc">Bugün doğum günü veya yıl dönümü olan kişiler</string>
     <string name="settings_at_a_glance_progress_title">Devam eden bildirimler</string>
     <string name="settings_at_a_glance_progress_desc">Yolculuklar, teslimatlar ve indirmeler gibi canlı güncellemeler</string>
     <string name="settings_at_a_glance_charging_title">Şarj oluyor</string>
@@ -909,6 +931,7 @@
 <string name="settings_direct_search_how_to">Ücretsiz API anahtarı al</string>
 <string name="settings_direct_search_model_label">Model</string>
 <string name="settings_select_model">Model seç</string>
+<string name="settings_ai_model_with_provider">%1$s · %2$s</string>
 <string name="ai_error_selected_model_unavailable">Seçilen model kullanılamıyor. Lütfen ayarlardan başka bir model seçin.</string>
 <string name="settings_loading_models">Modeller yükleniyor…</string>
 <string name="settings_direct_search_personal_context">Kişisel bağlam</string>
@@ -953,6 +976,8 @@
 <string name="release_notes_title_no_version">Quick Search sürüm notları</string>
 <string name="settings_backup_export_api_key_warning_message">Sorumluluk sana aittir. Dışa aktarılan API anahtarları şifrelenmez ve yedek dosyana erişimi olan herkes tarafından görüntülenebilir.</string>
 <string name="settings_backup_export_button">Dışa aktar</string>
+<string name="settings_backup_export_title">Ayarları dışa aktar</string>
+<string name="settings_backup_export_desc">Ayarlarınızı bir yedek dosyasına kaydedin</string>
 <string name="settings_backup_export_failed">Ayarlar dışa aktarılamadı.</string>
 <string name="settings_backup_export_option_pinned_items_title">Sabitlenen öğeler</string>
 <string name="settings_backup_export_option_api_keys">API anahtarları</string>
@@ -1284,11 +1309,20 @@
     <string name="home_charging_paused">Şarj duraklatıldı</string>
     <string name="home_timer">Zamanlayıcı</string>
     <string name="home_stopwatch">Kronometre</string>
+    <string name="home_timer_paused">Duraklatıldı</string>
     <string name="home_storage_almost_full">Depolama alanı neredeyse dolu</string>
     <string name="home_storage_free">%2$s alanın %1$s kadarı boş</string>
-    <string name="home_birthday_today">Bugün doğum günü</string>
-    <string name="home_birthday_turns">Bugün %1$d yaşına giriyor</string>
+    <string name="home_birthday_title">%1$s doğum günü</string>
+    <string name="home_anniversary_title">%1$s yıl dönümü</string>
+    <string name="home_birthday_title_ordinal">%1$s doğum günü (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">%1$s yıl dönümü (%2$s)</string>
+    <string name="home_birthday_wish">Kutlamak için dokunun</string>
     <string name="home_missed_call">Cevapsız arama</string>
+    <string name="home_otp_from">%1$s kodu</string>
+    <string name="home_copied">Kopyalandı</string>
+    <string name="home_reminder_marked_done">Anımsatıcı tamamlandı olarak işaretlendi</string>
+    <string name="home_reminder_snoozed">Anımsatıcı 30 dakika ertelendi</string>
+    <string name="home_reminder_deleted">Anımsatıcı silindi</string>
     <string name="home_missed_calls_count">Cevapsız aramalar (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">Rahatsız etmeyin açık</string>
@@ -1302,8 +1336,10 @@
     <string name="home_turn_off">Kapat</string>
     <string name="settings_tavily_title">Web Araması için Tavily</string>
     <string name="settings_tavily_desc">Web aramasını desteklemeyen modellere web araması eklemek için Tavily API anahtarı ekleyin.</string>
-    <string name="settings_tavily_mode_always">Web araması için her zaman Tavily kullan</string>
-    <string name="settings_tavily_mode_when_unsupported">Yalnızca model web aramasını desteklemediğinde kullan</string>
+    <string name="settings_tavily_mode_always">Her zaman</string>
+    <string name="settings_tavily_mode_when_unsupported">Yedek olarak</string>
+    <string name="settings_tavily_mode_always_desc">Her modelde web araması için kullanılır.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Yalnızca seçili model web’de arama yapamadığında kullanılır.</string>
     <string name="settings_weather_no_web_search_warning">Hava Durumu web sonuçlarına ihtiyaç duyar. Web aramasını destekleyen bir model seçin veya API Anahtarı Kurulumu bölümünden Tavily API anahtarı ekleyin.</string>
     <string name="tavily_search_failed_toast">Tavily web araması başarısız oldu. Web sonuçları olmadan yanıtlanıyor.</string>
     <string name="search_hint_reminders">Hatırlatıcılarda ara…</string>

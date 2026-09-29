@@ -12,6 +12,21 @@ class ReminderPreferences(
     fun setShowUpcomingRemindersEnabled(enabled: Boolean) =
         setBooleanPref(BasePreferences.KEY_HOME_SHOW_UPCOMING_REMINDERS, enabled)
 
+    /** Reminder ids snoozed on the Home card, mapped to when they show again. */
+    fun getHomeSnoozedUntil(): Map<Long, Long> =
+        getStringSet(KEY_HOME_SNOOZED_UNTIL).mapNotNull { entry ->
+            val id = entry.substringBefore(':').toLongOrNull() ?: return@mapNotNull null
+            val until = entry.substringAfter(':').toLongOrNull() ?: return@mapNotNull null
+            id to until
+        }.toMap()
+
+    /** Sets or, with a null [untilMillis], clears the Home snooze; drops snoozes that have ended. */
+    fun setHomeSnoozedUntil(reminderId: Long, untilMillis: Long?, nowMillis: Long = System.currentTimeMillis()) {
+        val entries = getHomeSnoozedUntil().filter { (id, until) -> id != reminderId && until > nowMillis } +
+            listOfNotNull(untilMillis?.let { reminderId to it })
+        prefs.edit().putStringSet(KEY_HOME_SNOOZED_UNTIL, entries.map { (id, until) -> "$id:$until" }.toSet()).apply()
+    }
+
     fun getRemindersJson(): String = prefs.getString(BasePreferences.KEY_REMINDERS_DATA, null).orEmpty()
 
     fun setRemindersJson(json: String) {
@@ -57,4 +72,8 @@ class ReminderPreferences(
 
     fun setRequestedReminderPermissions() =
         setBooleanPref(BasePreferences.KEY_REMINDER_PERMISSIONS_REQUESTED, true)
+
+    private companion object {
+        const val KEY_HOME_SNOOZED_UNTIL = "home_snoozed_reminders"
+    }
 }

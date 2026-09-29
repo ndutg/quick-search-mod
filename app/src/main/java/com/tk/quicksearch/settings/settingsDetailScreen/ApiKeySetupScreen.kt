@@ -2,6 +2,7 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
@@ -25,10 +26,14 @@ import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,12 +66,8 @@ import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.semantics.Role
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.tools.aiSearch.TavilyWebSearchMode
 import kotlinx.coroutines.Dispatchers
@@ -269,15 +270,7 @@ private fun TavilyApiKeyCard(
             }
 
             if (hasSavedKey) {
-                Column(modifier = Modifier.selectableGroup()) {
-                    TavilyWebSearchMode.entries.forEach { option ->
-                        TavilyModeOption(
-                            label = stringResource(option.labelResId()),
-                            selected = option == mode,
-                            onClick = { onModeChange(option) },
-                        )
-                    }
-                }
+                TavilyModeSelector(mode = mode, onModeChange = onModeChange)
             } else {
                 OutlinedTextField(
                     value = apiKeyInput,
@@ -358,27 +351,36 @@ private fun TavilyApiKeyCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TavilyModeOption(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit,
+private fun TavilyModeSelector(
+    mode: TavilyWebSearchMode,
+    onModeChange: (TavilyWebSearchMode) -> Unit,
 ) {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
-                .padding(vertical = DesignTokens.SpacingSmall),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        RadioButton(selected = selected, onClick = null)
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(start = DesignTokens.SpacingMedium),
-        )
+    val context = LocalContext.current
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+        TavilyWebSearchMode.entries.forEachIndexed { index, option ->
+            SegmentedButton(
+                selected = option == mode,
+                onClick = {
+                    if (option != mode) {
+                        onModeChange(option)
+                        Toast.makeText(context, option.descriptionResId(), Toast.LENGTH_SHORT).show()
+                    }
+                },
+                shape =
+                    SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = TavilyWebSearchMode.entries.size,
+                    ),
+            ) {
+                Text(
+                    text = stringResource(option.labelResId()),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }
 
@@ -386,6 +388,12 @@ private fun TavilyWebSearchMode.labelResId(): Int =
     when (this) {
         TavilyWebSearchMode.ALWAYS -> R.string.settings_tavily_mode_always
         TavilyWebSearchMode.WHEN_MODEL_UNSUPPORTED -> R.string.settings_tavily_mode_when_unsupported
+    }
+
+private fun TavilyWebSearchMode.descriptionResId(): Int =
+    when (this) {
+        TavilyWebSearchMode.ALWAYS -> R.string.settings_tavily_mode_always_desc
+        TavilyWebSearchMode.WHEN_MODEL_UNSUPPORTED -> R.string.settings_tavily_mode_when_unsupported_desc
     }
 
 @Composable

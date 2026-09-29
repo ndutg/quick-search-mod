@@ -65,6 +65,9 @@
     <item >Time in UK</item>
     <item >Define Serendipity</item>
     <item >Météo à New York</item>
+    <item >Set alarm at 8am</item>
+    <item >Start timer for 20min</item>
+    <item >Pickup food at 6pm</item>
 </string-array>
 <string name="search_provider_description">Recherchez des applications, des contacts, des fichiers, des paramètres et plus encore avec Quick Search.</string>
 
@@ -135,7 +138,7 @@
 <string name="settings_gesture_none">Aucun</string>
 <string name="settings_gesture_custom">Personnalisé (Applications, fichiers, etc.)</string>
 <string name="settings_keyboard_gestures_title">Gestes du clavier (Accueil)</string>
-<string name="settings_keyboard_gestures_desc">Disponible uniquement lorsqu’il n’y a pas de contenu défilable sur l’écran d’accueil</string>
+<string name="settings_keyboard_gestures_desc">Fonctionne uniquement lorsqu’il n’y a pas de contenu défilable sur l’écran d’accueil</string>
 <string name="action_pin_app">Épingler</string>
     <string name="action_pin_to_notifications">Épingler aux notifications</string>
     <string name="action_unpin_from_notifications">Désépingler des notifications</string>
@@ -366,7 +369,7 @@
 <string name="settings_manage_apps_desc">Gérer vos applications</string>
 <string name="settings_manage_apps_title">Gérer les applications</string>
 <string name="settings_refresh_apps_disabled">La recherche d\'applications est désactivée, impossible d\'actualiser les données</string>
-<string name="settings_refresh_apps_title">Recharger les applications</string>
+<string name="settings_refresh_apps_title">Actualiser les applications</string>
 <string name="usage_permission_subtitle">Si vous souhaitez voir vos applications récemment utilisées dans les suggestions, accordez l\'accès aux données d\'utilisation.</string>
 <string name="usage_permission_title">Accorder l\'accès aux données d\'utilisation</string>
 
@@ -535,7 +538,7 @@
 <string name="settings_file_previews_toggle">Aperçu des fichiers</string>
 <string name="settings_file_previews_description">Afficher un aperçu des images et des fichiers PDF avant de les ouvrir.</string>
 <string name="settings_refresh_files_disabled">La recherche de fichiers est désactivée, impossible d\'actualiser les données</string>
-<string name="settings_refresh_files_title">Recharger les fichiers</string>
+<string name="settings_refresh_files_title">Actualiser les fichiers</string>
 <string name="settings_system_files_toggle">Fichiers système</string>
 
 <!-- ============================================================================
@@ -738,6 +741,8 @@
 <string name="settings_device_theme_title">Material You</string>
 <string name="settings_edit_label">Modifier</string>
 <string name="settings_font_size_big">Grande</string>
+<string name="settings_font_size_extra_small">Très petite</string>
+<string name="settings_font_size_extra_big">Très grande</string>
 <string name="settings_font_size_medium">Moyenne</string>
 <string name="settings_font_size_small">Petite</string>
 <string name="settings_font_size_title">Taille de la police</string>
@@ -807,7 +812,7 @@
 <string name="settings_quick_settings_tile_desc">Ajouter Quick Search aux tuiles des paramètres rapides.</string>
 <string name="settings_quick_settings_tile_title">Tuile des paramètres rapides</string>
 <string name="settings_refresh_contacts_disabled">La recherche de contacts est désactivée, impossible d\'actualiser les données</string>
-<string name="settings_refresh_contacts_title">Recharger les contacts</string>
+<string name="settings_refresh_contacts_title">Actualiser les contacts</string>
 <string name="settings_refresh_data_note">Les données sont actualisées automatiquement. Utilisez ces boutons pour forcer une actualisation manuelle.</string>
 <string name="settings_refresh_data_title">Actualiser les données</string>
 <string name="settings_refresh_icon_packs">Actualiser les packs d\'icônes</string>
@@ -828,18 +833,35 @@
 <string name="settings_tools_info_examples_header">Voici quelques exemples de requêtes que vous pouvez formuler dans la barre de recherche</string>
 <string name="settings_tools_title">Outils</string>
 <string name="settings_at_a_glance_title">En un coup d\'œil</string>
+<string name="custom_info_title">Infos personnalisées</string>
+<string name="custom_info_edit_title">Modifier les détails</string>
+<string name="custom_info_prompt">Consigne</string>
+<string name="custom_info_set_date_time">Définir la date et l’heure</string>
+<string name="custom_info_desc">Des réponses IA à vos consignes sur l’accueil, aux heures de votre choix</string>
+<string name="settings_ai_api_key_required_message">Cette fonctionnalité nécessite une clé API d\'un fournisseur AI.</string>
+<string name="settings_ai_api_key_required_title">Clé API requise</string>
+<string name="settings_ai_api_key_setup_action">Configurer la clé</string>
+<string name="custom_info_repeat_never">Ne se répète pas</string>
+<string name="custom_info_repeat_every">Répéter tous les</string>
+<string name="custom_info_send_notification">Envoyer une notification</string>
+<string name="custom_info_preview">Aperçu</string>
+<string name="custom_info_saved">Enregistré</string>
+<string name="custom_info_delete_confirm_title">Supprimer %1$s ?</string>
+<string name="custom_info_delete_confirm_message">Cette info personnalisée et sa planification seront définitivement supprimées.</string>
 <string name="settings_at_a_glance_desc">Des informations utiles qui apparaissent sur votre écran d\'accueil au bon moment</string>
 <string name="settings_at_a_glance_alarms_title">Alarmes</string>
 <string name="settings_upcoming_alarm_desc">Votre prochaine alarme lorsqu\'elle sonne dans moins de 45 minutes</string>
+<string name="settings_at_a_glance_tomorrow_alarm">Afficher la première alarme de demain la veille au soir</string>
 <string name="settings_hidden_alarm_apps_title">Apps d\'alarmes masquées</string>
-<string name="settings_at_a_glance_events_desc">Événements du calendrier d\'aujourd\'hui et, le soir, les événements de toute la journée de demain</string>
+<string name="settings_at_a_glance_events_desc">Événements du calendrier d\'aujourd\'hui</string>
+<string name="settings_at_a_glance_tomorrow_events">Afficher les événements de demain la veille au soir</string>
 <string name="settings_upcoming_reminders_desc">Rappels dus dans les 30 minutes ou en retard</string>
     <string name="settings_at_a_glance_low_battery_title">Batterie faible</string>
     <string name="settings_low_battery_desc">Votre batterie lorsqu\'elle est à %1$d%% ou moins</string>
     <string name="settings_at_a_glance_timers_title">Minuteurs et chronomètre</string>
     <string name="settings_at_a_glance_timers_desc">Minuteurs et chronomètres en cours de votre application Horloge</string>
     <string name="settings_at_a_glance_birthdays_title">Anniversaires</string>
-    <string name="settings_at_a_glance_birthdays_desc">Contacts dont c\'est l\'anniversaire aujourd\'hui</string>
+    <string name="settings_at_a_glance_birthdays_desc">Contacts dont c\'est l\'anniversaire ou l\'anniversaire de mariage aujourd\'hui</string>
     <string name="settings_at_a_glance_progress_title">Notifications en cours</string>
     <string name="settings_at_a_glance_progress_desc">Mises à jour en direct comme les trajets, les livraisons et les téléchargements</string>
     <string name="settings_at_a_glance_charging_title">En charge</string>
@@ -910,6 +932,7 @@
 <string name="settings_direct_search_how_to">Obtenir une clé API gratuite</string>
 <string name="settings_direct_search_model_label">Modèle</string>
 <string name="settings_select_model">Sélectionner un modèle</string>
+<string name="settings_ai_model_with_provider">%1$s · %2$s</string>
 <string name="ai_error_selected_model_unavailable">Le modèle sélectionné n’est pas disponible. Choisissez un autre modèle dans les paramètres.</string>
 <string name="settings_loading_models">Chargement des modèles…</string>
 <string name="settings_direct_search_personal_context">Contexte personnel</string>
@@ -954,6 +977,8 @@
 <string name="release_notes_title_no_version">Notes de version de Quick Search</string>
 <string name="settings_backup_export_api_key_warning_message">À utiliser à vos risques et périls. Les clés API exportées ne sont pas chiffrées et peuvent être consultées par toute personne ayant accès à votre fichier de sauvegarde.</string>
 <string name="settings_backup_export_button">Exporter</string>
+<string name="settings_backup_export_title">Exporter les paramètres</string>
+<string name="settings_backup_export_desc">Enregistrer vos paramètres dans un fichier de sauvegarde</string>
 <string name="settings_backup_export_failed">Impossible d\'exporter les paramètres.</string>
 <string name="settings_backup_export_option_pinned_items_title">Éléments épinglés</string>
 <string name="settings_backup_export_option_api_keys">Clés API</string>
@@ -1285,11 +1310,20 @@
     <string name="home_charging_paused">Recharge en pause</string>
     <string name="home_timer">Minuteur</string>
     <string name="home_stopwatch">Chronomètre</string>
+    <string name="home_timer_paused">En pause</string>
     <string name="home_storage_almost_full">Stockage presque plein</string>
     <string name="home_storage_free">%1$s libres sur %2$s</string>
-    <string name="home_birthday_today">Anniversaire aujourd\'hui</string>
-    <string name="home_birthday_turns">Fête ses %1$d ans aujourd\'hui</string>
+    <string name="home_birthday_title">Anniversaire de %1$s</string>
+    <string name="home_anniversary_title">Anniversaire de mariage de %1$s</string>
+    <string name="home_birthday_title_ordinal">Anniversaire de %1$s (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">Anniversaire de mariage de %1$s (%2$s)</string>
+    <string name="home_birthday_wish">Appuyez pour lui souhaiter</string>
     <string name="home_missed_call">Appel manqué</string>
+    <string name="home_otp_from">Code de %1$s</string>
+    <string name="home_copied">Copié</string>
+    <string name="home_reminder_marked_done">Rappel marqué comme terminé</string>
+    <string name="home_reminder_snoozed">Rappel reporté de 30 minutes</string>
+    <string name="home_reminder_deleted">Rappel supprimé</string>
     <string name="home_missed_calls_count">Appels manqués (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">Ne pas déranger est activé</string>
@@ -1303,8 +1337,10 @@
     <string name="home_turn_off">Désactiver</string>
     <string name="settings_tavily_title">Tavily pour la recherche web</string>
     <string name="settings_tavily_desc">Ajoutez une clé API Tavily pour activer la recherche web sur les modèles qui ne la prennent pas en charge.</string>
-    <string name="settings_tavily_mode_always">Toujours utiliser Tavily pour la recherche web</string>
-    <string name="settings_tavily_mode_when_unsupported">Utiliser uniquement si le modèle ne prend pas en charge la recherche web</string>
+    <string name="settings_tavily_mode_always">Toujours</string>
+    <string name="settings_tavily_mode_when_unsupported">En secours</string>
+    <string name="settings_tavily_mode_always_desc">Utilisé pour la recherche web avec tous les modèles.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Utilisé uniquement si le modèle sélectionné ne peut pas effectuer de recherche web.</string>
     <string name="settings_weather_no_web_search_warning">La météo a besoin de résultats web. Choisissez un modèle qui prend en charge la recherche web, ou ajoutez une clé API Tavily dans Configuration de la clé API.</string>
     <string name="tavily_search_failed_toast">La recherche web Tavily a échoué. Réponse sans résultats web.</string>
     <string name="search_hint_reminders">Rechercher des rappels…</string>

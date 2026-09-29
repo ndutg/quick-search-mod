@@ -736,17 +736,18 @@ internal fun SettingsNestedDetailScreen(
                 onClear = { remindersSearchQuery = "" },
                 onNewEvent = ReminderEditorRequests::openNew,
                 newItemLabelResId = R.string.reminder_new_title,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
+                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
             )
-        } else if (detailType == SettingsDetailType.CALENDAR_EVENTS || detailType == SettingsDetailType.AT_A_GLANCE) {
-            val isCalendar = detailType == SettingsDetailType.CALENDAR_EVENTS
+        } else if (detailType == SettingsDetailType.CALENDAR_EVENTS) {
             SettingsManagementSearchBar(
-                query = if (isCalendar) calendarEventsSearchQuery else atAGlanceSearchQuery,
-                onQueryChange = { if (isCalendar) calendarEventsSearchQuery = it else atAGlanceSearchQuery = it },
-                onClear = { if (isCalendar) calendarEventsSearchQuery = "" else atAGlanceSearchQuery = "" },
+                query = calendarEventsSearchQuery, onQueryChange = { calendarEventsSearchQuery = it },
+                onClear = { calendarEventsSearchQuery = "" },
                 modifier = Modifier.align(Alignment.BottomEnd),
+            )
+        } else if (detailType == SettingsDetailType.AT_A_GLANCE) {
+            AtAGlanceSettingsBottomBar(
+                query = atAGlanceSearchQuery, onQueryChange = { atAGlanceSearchQuery = it }, onClear = { atAGlanceSearchQuery = "" },
+                onNavigateToApiKeySetup = { onNavigateToDetail(SettingsDetailType.API_KEY_SETUP) }, modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
             )
         }
 

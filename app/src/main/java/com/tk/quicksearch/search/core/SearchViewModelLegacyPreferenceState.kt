@@ -38,7 +38,7 @@ internal class SearchViewModelLegacyPreferenceState(
     var themedIconsEnabled: Boolean = false
     var deviceThemeEnabled: Boolean = false
     var amoledThemeEnabled: Boolean = false
-    var maskUnsupportedIconPackIcons: Boolean = false
+    var maskUnsupportedIconPackIcons: Boolean = true
     var wallpaperBackgroundAlpha: Float = UiPreferences.DEFAULT_WALLPAPER_BACKGROUND_ALPHA
     var wallpaperBlurRadius: Float = UiPreferences.DEFAULT_WALLPAPER_BLUR_RADIUS
     var appTheme: AppTheme = AppTheme.MONOCHROME

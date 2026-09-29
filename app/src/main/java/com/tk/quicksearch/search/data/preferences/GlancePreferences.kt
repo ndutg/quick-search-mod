@@ -65,6 +65,11 @@ class GlancePreferences(context: Context) : BasePreferences(context) {
 
     fun setShowFlashlightEnabled(enabled: Boolean) = setBooleanPref(KEY_SHOW_FLASHLIGHT, enabled)
 
+    /** Tomorrow's all-day events and first morning event in the evening, under the calendar toggle. */
+    fun isShowTomorrowEventsEnabled(): Boolean = getBooleanPref(KEY_SHOW_TOMORROW_EVENTS, true)
+
+    fun setShowTomorrowEventsEnabled(enabled: Boolean) = setBooleanPref(KEY_SHOW_TOMORROW_EVENTS, enabled)
+
     /** Call time of the newest missed call when the row was dismissed; only later calls bring it back. */
     fun getMissedCallsDismissedAt(): Long = prefs.getLong(KEY_MISSED_CALLS_DISMISSED_AT, 0L)
 
@@ -77,7 +82,7 @@ class GlancePreferences(context: Context) : BasePreferences(context) {
     fun dismissBirthday(day: String, contactId: Long) =
         addDayScopedId(KEY_DISMISSED_BIRTHDAYS_DAY, KEY_DISMISSED_BIRTHDAYS, day, contactId)
 
-    /** Event ids of [day]'s (an ISO date) all-day events dismissed from the evening before. */
+    /** Event ids of [day]'s (an ISO date) events dismissed from the evening before. */
     fun getDismissedTomorrowEvents(day: String): Set<Long> =
         getDayScopedIds(KEY_DISMISSED_TOMORROW_EVENTS_DAY, KEY_DISMISSED_TOMORROW_EVENTS, day)
 
@@ -141,6 +146,7 @@ class GlancePreferences(context: Context) : BasePreferences(context) {
         private const val KEY_SHOW_HOTSPOT = "home_show_hotspot"
         private const val KEY_SHOW_WIFI_SIGN_IN = "home_show_wifi_sign_in"
         private const val KEY_SHOW_FLASHLIGHT = "home_show_flashlight"
+        private const val KEY_SHOW_TOMORROW_EVENTS = "home_show_tomorrow_events"
         private const val KEY_DISMISSED_TOMORROW_EVENTS_DAY = "home_dismissed_tomorrow_events_day"
         private const val KEY_DISMISSED_TOMORROW_EVENTS = "home_dismissed_tomorrow_events"
         private const val KEY_LOW_STORAGE_DISMISSED_FREE_PERCENT = "home_low_storage_dismissed_free_percent"

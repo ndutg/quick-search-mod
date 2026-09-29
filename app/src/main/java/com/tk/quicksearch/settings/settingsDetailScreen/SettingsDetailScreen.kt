@@ -358,15 +358,6 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
-                            searchHintsEnabled = state.searchHintsEnabled,
-                            onToggleSearchHints = { enabled ->
-                                callbacks.onApplySettingsCommand(
-                                    SettingsCommand.Toggle(
-                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.SEARCH_HINTS,
-                                        enabled = enabled,
-                                    ),
-                                )
-                            },
                             settingsIconEnabled = state.settingsIconEnabled,
                             onToggleSettingsIcon = { enabled ->
                                 callbacks.onApplySettingsCommand(

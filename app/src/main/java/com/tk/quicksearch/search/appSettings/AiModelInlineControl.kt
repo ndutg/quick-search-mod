@@ -1,0 +1,145 @@
+package com.tk.quicksearch.search.appSettings
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.R
+import com.tk.quicksearch.settings.shared.aiProviderDisplayName
+import com.tk.quicksearch.settings.shared.rememberTavilyKeyState
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.hapticToggle
+import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
+import com.tk.quicksearch.tools.aiSearch.LlmTextModel
+import com.tk.quicksearch.tools.aiSearch.isWebSearchAvailable
+import com.tk.quicksearch.tools.aiSearch.modelSupportsGrounding
+import com.tk.quicksearch.tools.aiSearch.supportsThinkingControl
+
+/** Active AI model state for the searchable model row; tapping the row opens the model picker. */
+data class AiModelInlineState(
+    val providerId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
+    val selectedModelId: String = "",
+    val availableModels: List<LlmTextModel> = emptyList(),
+    val modelsByProvider: Map<AiSearchLlmProviderId, List<LlmTextModel>> = emptyMap(),
+    val configuredProviderIds: Set<AiSearchLlmProviderId> = emptySet(),
+    val thinkingEnabled: Boolean = false,
+    val groundingEnabled: Boolean = false,
+    val onThinkingChange: (Boolean) -> Unit = {},
+    val onGroundingChange: (Boolean) -> Unit = {},
+    val onRefreshModels: () -> Unit = {},
+)
+
+/** Mirrors the model card in AI provider settings: selected model and provider, then Thinking / Web Search chips. */
+@Composable
+internal fun AiModelInlineContent(state: AiModelInlineState) {
+    LaunchedEffect(Unit) { state.onRefreshModels() }
+    val tavilyKeyState = rememberTavilyKeyState()
+    val selectedModel = state.availableModels.firstOrNull { it.id == state.selectedModelId }
+    val isLoadingModels = state.configuredProviderIds.any { it !in state.modelsByProvider }
+    val selectedModelLabel =
+        when {
+            selectedModel != null -> selectedModel.displayName
+            isLoadingModels -> stringResource(R.string.settings_loading_models)
+            else -> stringResource(R.string.settings_select_model)
+        }
+    Text(
+        text =
+            if (selectedModel != null) {
+                stringResource(
+                    R.string.settings_ai_model_with_provider,
+                    selectedModel.displayName,
+                    aiProviderDisplayName(state.providerId),
+                )
+            } else {
+                selectedModelLabel
+            },
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+
+    if (selectedModel == null) return
+    val showThinking = supportsThinkingControl(state.providerId, state.selectedModelId)
+    val showWebSearch =
+        isWebSearchAvailable(
+            providerId = state.providerId,
+            modelSupportsGrounding =
+                modelSupportsGrounding(state.selectedModelId, state.availableModels, state.providerId),
+            hasTavilyKey = tavilyKeyState.isPresent,
+        )
+    if (!showThinking && !showWebSearch) return
+    Row(
+        modifier = Modifier.padding(top = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (showThinking) {
+            CompactCheckChip(
+                label = stringResource(R.string.settings_direct_search_thinking_label),
+                checked = state.thinkingEnabled,
+                onCheckedChange = state.onThinkingChange,
+            )
+        }
+        if (showWebSearch) {
+            CompactCheckChip(
+                label = stringResource(R.string.settings_direct_search_grounding_label),
+                checked = state.groundingEnabled,
+                onCheckedChange = state.onGroundingChange,
+            )
+        }
+    }
+}
+
+/** Content-width checkbox chip, small enough to sit under a result row's subtitle. */
+@Composable
+private fun CompactCheckChip(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    val view = LocalView.current
+    Row(
+        modifier =
+            Modifier
+                .clip(DesignTokens.ShapeFull)
+                .background(AppSettingChipStyle.containerColor(checked))
+                .border(AppSettingChipStyle.border(checked), DesignTokens.ShapeFull).toggleable(value = checked, role = Role.Checkbox) { value ->
+                    hapticToggle(view)()
+                    onCheckedChange(value)
+                }.padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        if (checked) {
+            Icon(
+                imageVector = Icons.Rounded.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = AppSettingChipStyle.labelColor(checked),
+        )
+    }
+}

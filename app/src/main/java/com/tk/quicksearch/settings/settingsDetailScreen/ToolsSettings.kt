@@ -1,20 +1,25 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Construction
 import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material3.Button
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -53,153 +58,150 @@ fun ToolsSettingsSection(
                 androidx.compose.foundation.rememberScrollState(),
 ) {
     val taskerIcon = rememberAppIcon(TaskerIntegration.PACKAGE_NAME).bitmap
+    var showApiKeyRequiredDialog by remember { mutableStateOf(false) }
 
-    Column(
-            modifier =
-                    modifier.fillMaxSize()
-                            .verticalScroll(scrollState)
-                            .padding(bottom = DesignTokens.SpacingSmall),
-    ) {
-        Column(
-                modifier =
-                        Modifier.fillMaxWidth()
-                                .padding(horizontal = DesignTokens.SpacingSmall),
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-        ) {
-            SettingsCard(modifier = Modifier.fillMaxWidth()) {
-                SettingsNavigationRow(
-                        item =
-                                SettingsCardItem(
-                                        title = stringResource(R.string.settings_tools_gemini_api_title),
-                                        description =
-                                                stringResource(
-                                                        R.string.settings_tools_gemini_api_desc
-                                                ),
-                                        iconResId = R.drawable.direct_search,
-                                        actionOnPress = onNavigateToLlmApiSetup,
-                                ),
-                        contentPadding =
-                                PaddingValues(
-                                        horizontal = DesignTokens.CardHorizontalPadding,
-                                        vertical = DesignTokens.CardVerticalPadding,
-                                ),
-                )
-            }
-            if (showTaskerIntegration) {
-                SettingsCard(modifier = Modifier.fillMaxWidth()) {
-                    SettingsNavigationRow(
-                        item = SettingsCardItem(
-                            title = stringResource(R.string.tasker_integration_title),
-                            description = stringResource(R.string.tasker_integration_description),
-                            icon = Icons.Rounded.Bolt,
-                            iconBitmap = taskerIcon,
-                            actionOnPress = onNavigateToTaskerIntegration,
-                        ),
-                        contentPadding = PaddingValues(
-                            horizontal = DesignTokens.CardHorizontalPadding,
-                            vertical = DesignTokens.CardVerticalPadding,
-                        ),
-                    )
-                }
-            }
-            ToolToggleRows(
-                    tools =
-                            ToolSettingsRegistry.definitions.map { definition ->
-                                val toolState =
-                                        toolStates[definition.id]
-                                                ?: ToolSettingUiState(
-                                                        enabled = false,
-                                                        aliasCode = "",
-                                                )
-                                val isAvailable =
-                                        !definition.requiresLlmApiKey || hasApiKey
-                                val subtitleResId =
-                                        if (isAvailable) {
-                                            definition.defaultDescriptionResId
-                                        } else {
-                                            definition.requiresLlmApiKeyDescriptionResId
-                                                    ?: definition.defaultDescriptionResId
-                                        }
-
-                                ToolToggleCardModel(
-                                        title = stringResource(definition.titleResId),
-                                        subtitle = stringResource(subtitleResId),
-                                        enabled = true,
-                                        checked = toolState.enabled && isAvailable,
-                                        onCheckedChange = { enabled ->
-                                            onToolToggle(definition.id, enabled)
-                                        },
-                                        leadingIcon = definition.icon,
-                                        aliasCode =
-                                                if (isAvailable && definition.aliasFeatureId != null) {
-                                                    toolState.aliasCode
-                                                } else {
-                                                    null
-                                                },
-                                        onAliasCodeChange = { alias ->
-                                            if (definition.aliasFeatureId != null) {
-                                                onToolAliasChange(definition.id, alias)
-                                            }
-                                        },
-                                        existingShortcuts = existingShortcuts,
-                                        aliasFeatureId = definition.aliasFeatureId,
-                                        onRowClick =
-                                                if (definition.aiBackedModelConfigurable ||
-                                                                definition.infoDestination != null
-                                                ) {
-                                                    {
-                                                        if (definition.aiBackedModelConfigurable) {
-                                                            onToolConfigureClick(definition.id)
-                                                        } else {
-                                                            onToolInfoClick(definition.id)
-                                                        }
-                                                    }
-                                                } else {
-                                                    null
-                                                },
+    val builtInToolRows =
+            ToolSettingsRegistry.definitions.map { definition ->
+                val toolState =
+                        toolStates[definition.id]
+                                ?: ToolSettingUiState(
+                                        enabled = false,
+                                        aliasCode = "",
                                 )
-                            },
-            )
+                val isAvailable = !definition.requiresLlmApiKey || hasApiKey
+                val subtitleResId =
+                        if (isAvailable) {
+                            definition.defaultDescriptionResId
+                        } else {
+                            definition.requiresLlmApiKeyDescriptionResId
+                                    ?: definition.defaultDescriptionResId
+                        }
 
-            if (customTools.isNotEmpty()) {
-                ToolToggleRows(
-                        tools =
-                                customTools.map { tool ->
-                                    val isEnabled = tool.id !in disabledCustomToolIds
-                                    val aliasCode = customToolAliases[tool.id].orEmpty()
-                                    ToolToggleCardModel(
-                                            title = tool.name,
-                                            subtitle = stringResource(R.string.settings_edit_label),
-                                            enabled = true,
-                                            checked = isEnabled,
-                                            onCheckedChange = { enabled ->
-                                                onCustomToolToggle(tool.id, enabled)
-                                            },
-                                            leadingIcon = Icons.Rounded.Construction,
-                                            aliasCode = aliasCode,
-                                            onAliasCodeChange = { code ->
-                                                onCustomToolAliasChange(tool.id, code)
-                                            },
-                                            existingShortcuts = existingShortcuts,
-                                            aliasFeatureId = tool.id,
-                                            allowAliasClear = false,
-                                            onRowClick = { onCustomToolClick(tool.id) },
-                                    )
+                // Without an API key the row still looks normal; any press opens the key dialog.
+                val showKeyDialog = { showApiKeyRequiredDialog = true }
+                ToolToggleCardModel(
+                        title = stringResource(definition.titleResId),
+                        subtitle = stringResource(subtitleResId),
+                        enabled = true,
+                        checked = toolState.enabled && isAvailable,
+                        onCheckedChange = { enabled ->
+                            if (isAvailable) onToolToggle(definition.id, enabled) else showKeyDialog()
+                        },
+                        leadingIcon = definition.icon,
+                        aliasCode =
+                                if (isAvailable && definition.aliasFeatureId != null) {
+                                    toolState.aliasCode
+                                } else {
+                                    null
+                                },
+                        onAliasCodeChange = { alias ->
+                            if (definition.aliasFeatureId != null) {
+                                onToolAliasChange(definition.id, alias)
+                            }
+                        },
+                        existingShortcuts = existingShortcuts,
+                        aliasFeatureId = definition.aliasFeatureId,
+                        onRowClick =
+                                if (definition.aiBackedModelConfigurable ||
+                                                definition.infoDestination != null
+                                ) {
+                                    {
+                                        if (!isAvailable) {
+                                            showKeyDialog()
+                                        } else if (definition.aiBackedModelConfigurable) {
+                                            onToolConfigureClick(definition.id)
+                                        } else {
+                                            onToolInfoClick(definition.id)
+                                        }
+                                    }
+                                } else {
+                                    null
                                 },
                 )
             }
+    val customToolRows =
+            customTools.map { tool ->
+                ToolToggleCardModel(
+                        title = tool.name,
+                        subtitle = stringResource(R.string.settings_edit_label),
+                        enabled = true,
+                        checked = tool.id !in disabledCustomToolIds,
+                        onCheckedChange = { enabled ->
+                            onCustomToolToggle(tool.id, enabled)
+                        },
+                        leadingIcon = Icons.Rounded.Construction,
+                        aliasCode = customToolAliases[tool.id].orEmpty(),
+                        onAliasCodeChange = { code ->
+                            onCustomToolAliasChange(tool.id, code)
+                        },
+                        existingShortcuts = existingShortcuts,
+                        aliasFeatureId = tool.id,
+                        allowAliasClear = false,
+                        onRowClick = { onCustomToolClick(tool.id) },
+                )
+            }
 
-            Box(
-                    modifier =
-                            Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, bottom = 8.dp),
-                    contentAlignment = Alignment.Center,
-            ) {
-                Button(onClick = onCreateNewTool) {
-                    Text(text = stringResource(R.string.settings_create_new_tool_button))
-                }
+    // The page doesn't scroll: the tools card takes the height left above the Create button and
+    // scrolls its rows inside, shrinking to fit when they don't fill it.
+    Column(
+            modifier =
+                    modifier.fillMaxSize()
+                            .padding(
+                                    start = DesignTokens.SpacingSmall,
+                                    end = DesignTokens.SpacingSmall,
+                                    bottom = DesignTokens.SpacingSmall,
+                            ),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        if (showTaskerIntegration) {
+            SettingsCard(modifier = Modifier.fillMaxWidth()) {
+                SettingsNavigationRow(
+                    item = SettingsCardItem(
+                        title = stringResource(R.string.tasker_integration_title),
+                        description = stringResource(R.string.tasker_integration_description),
+                        icon = Icons.Rounded.Bolt,
+                        iconBitmap = taskerIcon,
+                        actionOnPress = onNavigateToTaskerIntegration,
+                    ),
+                    contentPadding = PaddingValues(
+                        horizontal = DesignTokens.CardHorizontalPadding,
+                        vertical = DesignTokens.CardVerticalPadding,
+                    ),
+                )
             }
         }
+
+        ToolToggleRows(
+                tools = builtInToolRows + customToolRows,
+                modifier = Modifier.weight(1f, fill = false),
+                scrollState = scrollState,
+        )
+
+        // Matches the Custom Info button in At a Glance settings.
+        ExtendedFloatingActionButton(
+                onClick = {
+                    if (hasApiKey) onCreateNewTool() else showApiKeyRequiredDialog = true
+                },
+                expanded = true,
+                modifier = Modifier.fillMaxWidth().padding(top = DesignTokens.SpacingSmall),
+                shape = CalendarSettingsBarCornerShape,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                text = { Text(text = stringResource(R.string.settings_create_new_tool_button)) },
+                icon = {
+                    Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                    )
+                },
+        )
+    }
+
+    if (showApiKeyRequiredDialog) {
+        AiApiKeyRequiredDialog(
+                onDismiss = { showApiKeyRequiredDialog = false },
+                onSetupKey = onNavigateToLlmApiSetup,
+        )
     }
 }

@@ -284,6 +284,16 @@ fun SettingsScreen(
                     )
                     add(
                         SettingsCardItem(
+                            title = stringResource(R.string.settings_at_a_glance_title),
+                            description = stringResource(R.string.settings_at_a_glance_desc),
+                            icon = Icons.Rounded.Today,
+                            actionOnPress = {
+                                onNavigateToDetail(SettingsDetailType.AT_A_GLANCE)
+                            },
+                        ),
+                    )
+                    add(
+                        SettingsCardItem(
                             title = stringResource(R.string.settings_search_results_title),
                             description = stringResource(R.string.settings_search_results_desc),
                             icon = Icons.Rounded.Search,
@@ -309,16 +319,6 @@ fun SettingsScreen(
                             icon = Icons.Rounded.Build,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.TOOLS)
-                            },
-                        ),
-                    )
-                    add(
-                        SettingsCardItem(
-                            title = stringResource(R.string.settings_at_a_glance_title),
-                            description = stringResource(R.string.settings_at_a_glance_desc),
-                            icon = Icons.Rounded.Today,
-                            actionOnPress = {
-                                onNavigateToDetail(SettingsDetailType.AT_A_GLANCE)
                             },
                         ),
                     )

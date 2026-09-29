@@ -51,8 +51,6 @@ fun AppearanceSettingsSection(
         onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit,
         pinnedAppShortcutsInAppGrid: Boolean,
         onTogglePinnedAppShortcutsInAppGrid: (Boolean) -> Unit,
-        searchHintsEnabled: Boolean,
-        onToggleSearchHints: (Boolean) -> Unit,
         settingsIconEnabled: Boolean,
         onToggleSettingsIcon: (Boolean) -> Unit,
         wallpaperBackgroundAlpha: Float,
@@ -243,13 +241,6 @@ fun AppearanceSettingsSection(
                         extraVerticalPadding = 8.dp,
                 )
                 SettingsToggleRow(
-                        title = stringResource(R.string.settings_search_hints_title),
-                        subtitle = stringResource(R.string.settings_search_hints_desc),
-                        checked = searchHintsEnabled,
-                        onCheckedChange = onToggleSearchHints,
-                        extraVerticalPadding = 8.dp,
-                )
-                SettingsToggleRow(
                         title = stringResource(R.string.settings_icon_title),
                         subtitle =
                             stringResource(
@@ -357,10 +348,7 @@ fun AppearanceSettingsSection(
                 availableIconPacks = availableIconPacks,
                 selectedPackage = selectedIconPackPackage,
                 maskUnsupportedIcons = maskUnsupportedIconPackIcons,
-                onSelect = { packageName: String? ->
-                    onSelectIconPack(packageName)
-                    showIconPackDialog = false
-                },
+                onSelect = { packageName: String? -> onSelectIconPack(packageName) },
                 onMaskUnsupportedIconsChange = onSetMaskUnsupportedIconPackIcons,
                 onDownloadIconPacks = onSearchIconPacks,
                 onResetAllIcons = onResetAllIcons,

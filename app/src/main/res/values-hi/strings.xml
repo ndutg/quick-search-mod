@@ -65,6 +65,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >न्यूयॉर्क का मौसम</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Quick Search के साथ ऐप्स, कॉन्टैक्ट्स, फाइलें, सेटिंग्स और बहुत कुछ खोजें।</string>
 
@@ -135,7 +138,7 @@
     <string name="settings_gesture_none">कोई नहीं</string>
     <string name="settings_gesture_custom">कस्टम (ऐप्स, फ़ाइलें आदि)</string>
     <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर (होम)</string>
-    <string name="settings_keyboard_gestures_desc">केवल तब उपलब्ध जब होम स्क्रीन पर स्क्रॉल करने योग्य सामग्री न हो</string>
+    <string name="settings_keyboard_gestures_desc">केवल तब काम करता है जब होम स्क्रीन पर स्क्रॉल करने योग्य सामग्री न हो</string>
     <string name="action_pin_app">पिन करें</string>
     <string name="action_pin_to_notifications">सूचनाओं में पिन करें</string>
     <string name="action_unpin_from_notifications">सूचनाओं से अनपिन करें</string>
@@ -366,7 +369,7 @@
     <string name="settings_manage_apps_desc">अपने ऐप्स प्रबंधित करें</string>
     <string name="settings_manage_apps_title">ऐप्स प्रबंधित करें</string>
     <string name="settings_refresh_apps_disabled">ऐप खोज बंद है, ऐप्स डेटा रिफ्रेश नहीं किया जा सकता</string>
-    <string name="settings_refresh_apps_title">ऐप्स फिर से लोड करें</string>
+    <string name="settings_refresh_apps_title">ऐप्स रिफ्रेश करें</string>
     <string name="usage_permission_subtitle">अगर आप सुझावों में हाल ही में उपयोग किए गए ऐप्स देखना चाहते हैं, तो उपयोग पहुंच दें।</string>
     <string name="usage_permission_title">उपयोग पहुंच दें</string>
 
@@ -535,7 +538,7 @@
     <string name="settings_file_previews_toggle">फाइल पूर्वावलोकन</string>
     <string name="settings_file_previews_description">खोलने से पहले छवियों और पीडीएफ का पूर्वावलोकन करें।</string>
     <string name="settings_refresh_files_disabled">फाइल खोज बंद है, फाइल डेटा रिफ्रेश नहीं किया जा सकता</string>
-    <string name="settings_refresh_files_title">फाइलें फिर से लोड करें</string>
+    <string name="settings_refresh_files_title">फाइलें रिफ्रेश करें</string>
     <string name="settings_system_files_toggle">सिस्टम फाइलें</string>
 
     <!-- ============================================================================
@@ -738,6 +741,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">संपादित करें</string>
     <string name="settings_font_size_big">बड़ा</string>
+    <string name="settings_font_size_extra_small">बहुत छोटा</string>
+    <string name="settings_font_size_extra_big">बहुत बड़ा</string>
     <string name="settings_font_size_medium">मध्यम</string>
     <string name="settings_font_size_small">छोटा</string>
     <string name="settings_font_size_title">फ़ॉन्ट आकार</string>
@@ -807,7 +812,7 @@
     <string name="settings_quick_settings_tile_desc">Quick Search को Quick Settings टाइल्स में जोड़ें।</string>
     <string name="settings_quick_settings_tile_title">Quick Settings टाइल</string>
     <string name="settings_refresh_contacts_disabled">कॉन्टैक्ट खोज बंद है, कॉन्टैक्ट डेटा रिफ्रेश नहीं किया जा सकता</string>
-    <string name="settings_refresh_contacts_title">कॉन्टैक्ट्स फिर से लोड करें</string>
+    <string name="settings_refresh_contacts_title">कॉन्टैक्ट्स रिफ्रेश करें</string>
     <string name="settings_refresh_data_note">डेटा अपने आप रिफ्रेश होता है। मैन्युअल रूप से तुरंत रिफ्रेश करने के लिए इन बटनों का उपयोग करें।</string>
     <string name="settings_refresh_data_title">डेटा रिफ्रेश करें</string>
     <string name="settings_refresh_icon_packs">आइकन पैक रिफ्रेश करें</string>
@@ -828,18 +833,35 @@
     <string name="settings_tools_info_examples_header">यहां कुछ उदाहरण हैं जिन्हें आप सर्च बार में पूछ सकते हैं</string>
     <string name="settings_tools_title">टूल्स</string>
     <string name="settings_at_a_glance_title">एक नज़र में</string>
+    <string name="custom_info_title">कस्टम जानकारी</string>
+    <string name="custom_info_edit_title">विवरण संपादित करें</string>
+    <string name="custom_info_prompt">प्रॉम्प्ट</string>
+    <string name="custom_info_set_date_time">तारीख और समय सेट करें</string>
+    <string name="custom_info_desc">आपके चुने समय पर होम पर आपके प्रॉम्प्ट के AI जवाब</string>
+    <string name="settings_ai_api_key_required_message">इस फ़ीचर के लिए AI provider API key आवश्यक है।</string>
+    <string name="settings_ai_api_key_required_title">API key आवश्यक है</string>
+    <string name="settings_ai_api_key_setup_action">Key सेट करें</string>
+    <string name="custom_info_repeat_never">दोहराया नहीं जाता</string>
+    <string name="custom_info_repeat_every">दोहराने का अंतराल</string>
+    <string name="custom_info_send_notification">सूचना भेजें</string>
+    <string name="custom_info_preview">पूर्वावलोकन</string>
+    <string name="custom_info_saved">सहेजा गया</string>
+    <string name="custom_info_delete_confirm_title">%1$s हटाएं?</string>
+    <string name="custom_info_delete_confirm_message">यह कस्टम जानकारी और इसका शेड्यूल स्थायी रूप से हटा दिया जाएगा।</string>
     <string name="settings_at_a_glance_desc">उपयोगी जानकारी जो सही समय पर आपकी होम स्क्रीन पर दिखती है</string>
     <string name="settings_at_a_glance_alarms_title">अलार्म</string>
     <string name="settings_upcoming_alarm_desc">45 मिनट के भीतर होने पर आपका अगला अलार्म</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">कल का पहला अलार्म एक रात पहले दिखाएं</string>
     <string name="settings_hidden_alarm_apps_title">छिपे हुए अलार्म ऐप्स</string>
-    <string name="settings_at_a_glance_events_desc">आज के कैलेंडर इवेंट्स, और शाम को कल के पूरे दिन वाले इवेंट्स</string>
+    <string name="settings_at_a_glance_events_desc">आज के कैलेंडर इवेंट्स</string>
+    <string name="settings_at_a_glance_tomorrow_events">कल के इवेंट एक रात पहले दिखाएं</string>
     <string name="settings_upcoming_reminders_desc">30 मिनट के भीतर देय या बकाया रिमाइंडर</string>
     <string name="settings_at_a_glance_low_battery_title">कम बैटरी</string>
     <string name="settings_low_battery_desc">जब आपकी बैटरी %1$d%% या उससे कम हो</string>
     <string name="settings_at_a_glance_timers_title">टाइमर और स्टॉपवॉच</string>
     <string name="settings_at_a_glance_timers_desc">आपके क्लॉक ऐप से चल रहे टाइमर और स्टॉपवॉच</string>
     <string name="settings_at_a_glance_birthdays_title">जन्मदिन</string>
-    <string name="settings_at_a_glance_birthdays_desc">जिन संपर्कों का आज जन्मदिन है</string>
+    <string name="settings_at_a_glance_birthdays_desc">जिन संपर्कों का आज जन्मदिन या सालगिरह है</string>
     <string name="settings_at_a_glance_progress_title">चालू सूचनाएं</string>
     <string name="settings_at_a_glance_progress_desc">राइड, डिलीवरी और डाउनलोड जैसे लाइव अपडेट</string>
     <string name="settings_at_a_glance_charging_title">चार्ज हो रहा है</string>
@@ -910,6 +932,7 @@
     <string name="settings_direct_search_how_to">मुफ्त API Key प्राप्त करें</string>
     <string name="settings_direct_search_model_label">मॉडल</string>
     <string name="settings_select_model">मॉडल चुनें</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">चुना गया मॉडल उपलब्ध नहीं है। कृपया सेटिंग में कोई दूसरा मॉडल चुनें।</string>
     <string name="settings_loading_models">मॉडल लोड हो रहे हैं…</string>
     <string name="settings_direct_search_personal_context">व्यक्तिगत संदर्भ</string>
@@ -954,6 +977,8 @@
     <string name="release_notes_title_no_version">Quick Search रिलीज़ नोट्स</string>
     <string name="settings_backup_export_api_key_warning_message">अपने जोखिम पर आगे बढ़ें। एक्सपोर्ट की गई API keys एन्क्रिप्टेड नहीं होतीं और आपकी बैकअप फाइल तक पहुंच रखने वाला कोई भी इन्हें देख सकता है।</string>
     <string name="settings_backup_export_button">एक्सपोर्ट</string>
+    <string name="settings_backup_export_title">सेटिंग्स एक्सपोर्ट करें</string>
+    <string name="settings_backup_export_desc">अपनी सेटिंग्स को बैकअप फ़ाइल में सहेजें</string>
     <string name="settings_backup_export_failed">सेटिंग्स एक्सपोर्ट नहीं हो सकीं।</string>
     <string name="settings_backup_export_option_pinned_items_title">पिन किए गए आइटम</string>
     <string name="settings_backup_export_option_api_keys">API keys</string>
@@ -1285,11 +1310,20 @@
     <string name="home_charging_paused">चार्जिंग रुकी हुई है</string>
     <string name="home_timer">टाइमर</string>
     <string name="home_stopwatch">स्टॉपवॉच</string>
+    <string name="home_timer_paused">रुका हुआ</string>
     <string name="home_storage_almost_full">स्टोरेज लगभग भर गया है</string>
     <string name="home_storage_free">%2$s में से %1$s खाली</string>
-    <string name="home_birthday_today">आज जन्मदिन है</string>
-    <string name="home_birthday_turns">आज %1$d वर्ष पूरे</string>
+    <string name="home_birthday_title">%1$s का जन्मदिन</string>
+    <string name="home_anniversary_title">%1$s की सालगिरह</string>
+    <string name="home_birthday_title_ordinal">%1$s का जन्मदिन (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">%1$s की सालगिरह (%2$s)</string>
+    <string name="home_birthday_wish">शुभकामनाएँ देने के लिए टैप करें</string>
     <string name="home_missed_call">मिस्ड कॉल</string>
+    <string name="home_otp_from">%1$s से OTP</string>
+    <string name="home_copied">कॉपी किया गया</string>
+    <string name="home_reminder_marked_done">रिमाइंडर पूरा हुआ के रूप में चिह्नित</string>
+    <string name="home_reminder_snoozed">रिमाइंडर 30 मिनट के लिए स्नूज़ किया गया</string>
+    <string name="home_reminder_deleted">रिमाइंडर हटाया गया</string>
     <string name="home_missed_calls_count">मिस्ड कॉल (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">डू नॉट डिस्टर्ब चालू है</string>
@@ -1303,8 +1337,10 @@
     <string name="home_turn_off">बंद करें</string>
     <string name="settings_tavily_title">वेब सर्च के लिए Tavily</string>
     <string name="settings_tavily_desc">जो मॉडल वेब सर्च सपोर्ट नहीं करते, उनमें वेब सर्च जोड़ने के लिए Tavily API कुंजी जोड़ें।</string>
-    <string name="settings_tavily_mode_always">वेब सर्च के लिए हमेशा Tavily का उपयोग करें</string>
-    <string name="settings_tavily_mode_when_unsupported">केवल तब उपयोग करें जब मॉडल वेब सर्च सपोर्ट न करे</string>
+    <string name="settings_tavily_mode_always">हमेशा</string>
+    <string name="settings_tavily_mode_when_unsupported">बैकअप के रूप में</string>
+    <string name="settings_tavily_mode_always_desc">हर मॉडल के साथ वेब सर्च के लिए उपयोग होता है।</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">केवल तब उपयोग होता है जब चुना गया मॉडल वेब सर्च नहीं कर सकता।</string>
     <string name="settings_weather_no_web_search_warning">मौसम के लिए वेब परिणाम ज़रूरी हैं। वेब सर्च सपोर्ट करने वाला मॉडल चुनें, या API Key Setup में Tavily API की जोड़ें।</string>
     <string name="tavily_search_failed_toast">Tavily वेब सर्च विफल रहा। वेब परिणामों के बिना उत्तर दिया जा रहा है।</string>
     <string name="search_hint_reminders">रिमाइंडर खोजें…</string>

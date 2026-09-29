@@ -49,7 +49,8 @@ Main `AppColors` groups:
 - **Accent:** `Accent`, `OnAccent`, `LinkColor` (stays blue in monochrome so links read as
   tappable), `ItemMenuActiveIconTint`, `IconTintPrimary`/`IconTintSecondary`.
 - **Search bar and chrome:** `getSearchBarBackground(...)`, `getSearchBarTextAndIconColor(...)`,
-  `SearchChromeOutlineBorder`, `KeyboardPill*`, `InlineEngineHighlight*`.
+  `SearchChromeOutlineBorder`, `KeyboardPill*`, `InlineEngineHighlight*`,
+  `InlineEngineDivider`.
 - **Wallpaper surfaces:** `ResultCardWallpaperBackground`, `CompactSectionBackground`,
   `WallpaperText*`, `WallpaperDivider`, `wallpaperAwareMutedSearchForeground(...)`.
 - **Settings and dialogs:** `SettingsCardBackground`, `SettingsText`, `SettingsIconTint`,
@@ -108,4 +109,8 @@ both flavors when changing typography.
 | `AppPill` | Small pill labels |
 | `AppVoiceCallIcon` | App logo plus phone icon for call actions |
 | `dialogTextFieldColors()` | Text fields inside dialogs |
-| `SettingsCard` and `Settings*Row` (`settings/shared/`) | Settings cards, toggle/checkbox/navigation rows |
+| `CardTextField`, `cardTextFieldColors()` | Borderless text fields stacked as rows of a `SettingsCard` (divided by `HorizontalDivider`); dimmed placeholder that shows before focus (label stays floated when a placeholder is set), and the floated label keeps a gap above the input |
+| `SettingsCard` and `Settings*Row` (`settings/shared/`) | Settings cards, toggle/checkbox/navigation rows. `SettingsToggleRow` takes `subtitleTextStyle` (default `bodySmall`) and a `trailingAction` placed after the switch, such as a delete button |
+| `GlanceStatusRow` (`searchScreenLayout/`) | Home At a Glance rows: icon, title, subtitle or `belowText`, optional pill, trailing action, dismiss |
+| `GlanceActionChip` (`searchScreenLayout/`) | Pill button for a Glance row's own actions: outlined by default, or filled with `GlancePillColors` and an optional icon (missed call Call) |
+| `MarkdownText` (`shared/util/MarkdownRenderer.kt`) | Short Markdown such as AI answers rendered as body text; `RenderMarkdownDocument` is for full documents |

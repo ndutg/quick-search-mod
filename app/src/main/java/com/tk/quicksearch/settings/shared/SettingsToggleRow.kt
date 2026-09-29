@@ -60,10 +60,12 @@ fun SettingsToggleRow(
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    subtitleTextStyle: TextStyle = MaterialTheme.typography.bodySmall,
     titleContent: (@Composable () -> Unit)? = null,
     subtitleContent: (@Composable () -> Unit)? = null,
     sliderDetails: SettingsToggleSliderDetails? = null,
     showSwitch: Boolean = true,
+    trailingAction: (@Composable () -> Unit)? = null,
     leadingIcon: ImageVector? = null,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
     horizontalPadding: Dp = DesignTokens.SpacingXXLarge,
@@ -162,7 +164,7 @@ fun SettingsToggleRow(
                     sliderDetails.description?.let { description ->
                         Text(
                             text = description,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = subtitleTextStyle,
                             color =
                                 if (enabled) {
                                     MaterialTheme.colorScheme.onSurfaceVariant
@@ -195,7 +197,7 @@ fun SettingsToggleRow(
                     if (subtitle != null) {
                         Text(
                             text = subtitle,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = subtitleTextStyle,
                             color =
                                 if (enabled) {
                                     MaterialTheme.colorScheme.onSurfaceVariant
@@ -223,6 +225,7 @@ fun SettingsToggleRow(
                         ),
                 )
             }
+            trailingAction?.invoke()
         }
 
         if (showTipBanner && !tipBannerText.isNullOrBlank()) {

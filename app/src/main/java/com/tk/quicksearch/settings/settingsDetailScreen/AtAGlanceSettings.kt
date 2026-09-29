@@ -1,6 +1,8 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,18 +14,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,15 +46,29 @@ import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermissio
 import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
 import com.tk.quicksearch.search.data.preferences.CalendarPreferences
+import com.tk.quicksearch.customInfo.CustomInfoActivity
+import com.tk.quicksearch.customInfo.CustomInfoItem
+import com.tk.quicksearch.customInfo.CustomInfoRepository
+import com.tk.quicksearch.customInfo.CustomInfoScheduler
+import com.tk.quicksearch.customInfo.customInfoRepeatLabel
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.data.preferences.MediaPreferences
 import com.tk.quicksearch.search.data.preferences.ReminderPreferences
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
+import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.settings.shared.AliasPill
+import com.tk.quicksearch.settings.shared.SettingsNestedCheckbox
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.DateFormat
+import java.util.Date
 
 /** One At a Glance toggle; [searchText] is what the page's search bar matches against. */
 private class GlanceToggle(
@@ -136,8 +159,17 @@ fun AtAGlanceSettingsSection(
     val mediaPreferences = remember(context) { MediaPreferences(appContext) }
     val batteryPreferences = remember(context) { BatteryPreferences(appContext) }
     val glancePreferences = remember(context) { GlancePreferences(appContext) }
+    val customInfoRepository = remember(context) { CustomInfoRepository(appContext) }
+    val customInfoChange by CustomInfoRepository.changes.collectAsState()
+    var customInfoItems by remember { mutableStateOf(emptyList<CustomInfoItem>()) }
+    var itemToDelete by remember { mutableStateOf<CustomInfoItem?>(null) }
+    LaunchedEffect(customInfoRepository, customInfoChange) {
+        customInfoItems = withContext(Dispatchers.IO) { customInfoRepository.all() }
+    }
     var showTodayEvents by remember { mutableStateOf(calendarPreferences.getShowTodayEvents()) }
     var showUpcomingAlarm by remember { mutableStateOf(alarmPreferences.isShowUpcomingAlarmEnabled()) }
+    var showTomorrowAlarm by remember { mutableStateOf(alarmPreferences.isShowTomorrowAlarmEnabled()) }
+    var showTomorrowEvents by remember { mutableStateOf(glancePreferences.isShowTomorrowEventsEnabled()) }
     var hiddenAlarmPackages by remember { mutableStateOf(alarmPreferences.getHiddenPackages()) }
     var showHiddenAlarmAppsDialog by remember { mutableStateOf(false) }
     var showUpcomingReminders by remember {
@@ -257,11 +289,13 @@ fun AtAGlanceSettingsSection(
         description: String,
         checked: Boolean,
         gate: PermissionGate,
+        subtitleContent: (@Composable () -> Unit)? = null,
         onCheckedChange: (Boolean) -> Unit,
     ) = GlanceToggle("$title $description") { isFirst, isLast ->
         SettingsToggleRow(
             title = title,
             subtitle = if (gate.hasAccess) description else needsPermissionText,
+            subtitleContent = subtitleContent?.takeIf { gate.hasAccess && checked },
             checked = checked && gate.hasAccess,
             onCheckedChange = onCheckedChange,
             enabled = gate.hasAccess,
@@ -291,8 +325,56 @@ fun AtAGlanceSettingsSection(
     val alarmsTitle = stringResource(R.string.settings_at_a_glance_alarms_title)
     val alarmsDescription = stringResource(R.string.settings_upcoming_alarm_desc)
     val hiddenAlarmAppsLabel = stringResource(R.string.settings_hidden_alarm_apps_title)
+    val customInfoToggles = customInfoItems.asReversed().map { item ->
+        // Next run, or the last one once a one-time item has run.
+        val scheduleText = listOfNotNull(
+            (item.dueMillis ?: item.lastRunMillis)?.let { millis ->
+                DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(millis))
+            },
+            customInfoRepeatLabel(item.repeat),
+        ).joinToString(" · ").ifBlank { null }
+        GlanceToggle("${item.title} ${scheduleText.orEmpty()}") { isFirst, isLast ->
+            SettingsToggleRow(
+                title = item.title,
+                subtitle = scheduleText,
+                checked = item.enabled,
+                onCheckedChange = { enabled -> CustomInfoScheduler.setEnabled(appContext, item.id, enabled) },
+                subtitleContent = {
+                    Row(
+                        modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ) {
+                        AliasPill(
+                            text = AnnotatedString(stringResource(R.string.settings_edit_label)),
+                            textColor = AppColors.LinkColor,
+                            leadingIcon = Icons.Rounded.Edit,
+                            onClick = {
+                                context.startActivity(
+                                    Intent(context, CustomInfoActivity::class.java)
+                                        .putExtra(CustomInfoActivity.EXTRA_ITEM_ID, item.id),
+                                )
+                                @Suppress("DEPRECATION")
+                                (context as? Activity)?.overridePendingTransition(
+                                    R.anim.custom_info_slide_in_right,
+                                    R.anim.custom_info_slide_out_left,
+                                )
+                            },
+                        )
+                        AliasPill(
+                            text = AnnotatedString(stringResource(R.string.dialog_delete)),
+                            textColor = MaterialTheme.colorScheme.error,
+                            leadingIcon = Icons.Rounded.Delete,
+                            onClick = { itemToDelete = item },
+                        )
+                    }
+                },
+                isFirstItem = isFirst,
+                isLastItem = isLast,
+            )
+        }
+    }
     val toggles =
-        listOf(
+        customInfoToggles + listOf(
             notificationToggle(
                 title = stringResource(R.string.section_media),
                 description = stringResource(R.string.settings_now_playing_desc),
@@ -304,6 +386,17 @@ fun AtAGlanceSettingsSection(
                 description = stringResource(R.string.settings_at_a_glance_events_desc),
                 checked = showTodayEvents,
                 gate = calendarGate,
+                subtitleContent = {
+                    SettingsNestedCheckbox(
+                        label = stringResource(R.string.settings_at_a_glance_tomorrow_events),
+                        checked = showTomorrowEvents,
+                        onCheckedChange = { enabled ->
+                            showTomorrowEvents = enabled
+                            glancePreferences.setShowTomorrowEventsEnabled(enabled)
+                        },
+                        modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
+                    )
+                },
             ) { enabled ->
                 showTodayEvents = enabled
                 calendarPreferences.setShowTodayEvents(enabled)
@@ -370,19 +463,27 @@ fun AtAGlanceSettingsSection(
                 SettingsToggleRow(
                     title = alarmsTitle,
                     subtitle = if (hiddenAlarmPackages.isEmpty()) alarmsDescription else null,
-                    subtitleContent =
-                        if (hiddenAlarmPackages.isEmpty()) {
-                            null
-                        } else {
-                            {
-                                Text(
-                                    text = hiddenAlarmAppsLabel,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.clickable { showHiddenAlarmAppsDialog = true },
-                                )
-                            }
-                        },
+                    subtitleContent = {
+                        if (hiddenAlarmPackages.isNotEmpty()) {
+                            Text(
+                                text = hiddenAlarmAppsLabel,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.clickable { showHiddenAlarmAppsDialog = true },
+                            )
+                        }
+                        if (showUpcomingAlarm) {
+                            SettingsNestedCheckbox(
+                                label = stringResource(R.string.settings_at_a_glance_tomorrow_alarm),
+                                checked = showTomorrowAlarm,
+                                onCheckedChange = { enabled ->
+                                    showTomorrowAlarm = enabled
+                                    alarmPreferences.setShowTomorrowAlarmEnabled(enabled)
+                                },
+                                modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
+                            )
+                        }
+                    },
                     checked = showUpcomingAlarm,
                     onCheckedChange = { enabled ->
                         showUpcomingAlarm = enabled
@@ -506,6 +607,83 @@ fun AtAGlanceSettingsSection(
                 if (hiddenAlarmPackages.isEmpty()) showHiddenAlarmAppsDialog = false
             },
             onDismiss = { showHiddenAlarmAppsDialog = false },
+        )
+    }
+    itemToDelete?.let { item ->
+        AppAlertDialog(
+            onDismissRequest = { itemToDelete = null },
+            title = { Text(stringResource(R.string.custom_info_delete_confirm_title, item.title)) },
+            text = { Text(stringResource(R.string.custom_info_delete_confirm_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    CustomInfoScheduler.cancel(context, item.id)
+                    customInfoRepository.delete(item.id)
+                    itemToDelete = null
+                }) {
+                    Text(stringResource(R.string.dialog_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { itemToDelete = null }) {
+                    Text(stringResource(R.string.dialog_cancel))
+                }
+            },
+        )
+    }
+}
+
+/** Uses the same compact search and add action layout as Notes settings. */
+@Composable
+fun AtAGlanceSettingsBottomBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClear: () -> Unit,
+    onNavigateToApiKeySetup: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val preferences = remember(context) { UserAppPreferences(context.applicationContext) }
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var hasAiKey by remember { mutableStateOf(false) }
+    var showApiKeyRequiredDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(preferences) {
+        hasAiKey = withContext(Dispatchers.IO) { preferences.hasAnyLlmApiKey() }
+    }
+    DisposableEffect(lifecycleOwner, preferences) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                scope.launch {
+                    hasAiKey = withContext(Dispatchers.IO) { preferences.hasAnyLlmApiKey() }
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    CalendarEventsBottomBar(
+        query = query,
+        onQueryChange = onQueryChange,
+        onClear = onClear,
+        onNewEvent = {
+            if (hasAiKey) {
+                context.startActivity(Intent(context, CustomInfoActivity::class.java))
+                @Suppress("DEPRECATION")
+                (context as? Activity)?.overridePendingTransition(R.anim.custom_info_slide_in_right, R.anim.custom_info_slide_out_left)
+            } else {
+                showApiKeyRequiredDialog = true
+            }
+        },
+        newItemLabelResId = R.string.custom_info_title,
+        modifier = modifier,
+    )
+
+    if (showApiKeyRequiredDialog) {
+        AiApiKeyRequiredDialog(
+            onDismiss = { showApiKeyRequiredDialog = false },
+            onSetupKey = onNavigateToApiKeySetup,
         )
     }
 }

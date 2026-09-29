@@ -65,6 +65,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >Weather in New York</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Doorzoek apps, contacten, bestanden, instellingen en meer met Quick Search.</string>
 
@@ -139,7 +142,7 @@
     <string name="settings_gesture_none">Geen</string>
     <string name="settings_gesture_custom">Aangepast (Apps, bestanden enz.)</string>
     <string name="settings_keyboard_gestures_title">Toetsenbordgebaren (Start)</string>
-    <string name="settings_keyboard_gestures_desc">Alleen beschikbaar als er geen scrollbare inhoud op het startscherm is</string>
+    <string name="settings_keyboard_gestures_desc">Werkt alleen als er geen scrollbare inhoud op het startscherm is</string>
     <string name="action_pin_app">Vastmaken</string>
     <string name="action_pin_to_notifications">Vastmaken aan meldingen</string>
     <string name="action_unpin_from_notifications">Losmaken van meldingen</string>
@@ -376,7 +379,7 @@
     <string name="settings_manage_apps_desc">Beheer je apps</string>
     <string name="settings_manage_apps_title">Apps beheren</string>
     <string name="settings_refresh_apps_disabled">App-zoeken is uitgeschakeld, kan app-gegevens niet vernieuwen</string>
-    <string name="settings_refresh_apps_title">Apps opnieuw laden</string>
+    <string name="settings_refresh_apps_title">Apps vernieuwen</string>
     <string name="usage_permission_subtitle">Als je je recent gebruikte apps in suggesties wilt zien, verleen dan toegang tot gebruiksstatistieken.</string>
     <string name="usage_permission_title">Toegang tot gebruiksstatistieken verlenen</string>
 
@@ -557,7 +560,7 @@
     <string name="settings_file_previews_toggle">Bestandsvoorbeelden</string>
     <string name="settings_file_previews_description">Bekijk een voorbeeld van afbeeldingen en pdf\'s voordat je ze opent.</string>
     <string name="settings_refresh_files_disabled">Bestanden zoeken is uitgeschakeld, kan bestandsgegevens niet vernieuwen</string>
-    <string name="settings_refresh_files_title">Bestanden opnieuw laden</string>
+    <string name="settings_refresh_files_title">Bestanden vernieuwen</string>
     <string name="settings_system_files_toggle">Systeembestanden</string>
 
     
@@ -771,6 +774,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">Bewerken</string>
     <string name="settings_font_size_big">Groot</string>
+    <string name="settings_font_size_extra_small">Extra klein</string>
+    <string name="settings_font_size_extra_big">Extra groot</string>
     <string name="settings_font_size_medium">Gemiddeld</string>
     <string name="settings_font_size_small">Klein</string>
     <string name="settings_font_size_title">Lettergrootte</string>
@@ -840,7 +845,7 @@
     <string name="settings_quick_settings_tile_desc">Voeg Quick Search toe aan de Snelle instellingen-tegels.</string>
     <string name="settings_quick_settings_tile_title">Snelle instellingen-tegel</string>
     <string name="settings_refresh_contacts_disabled">Contacten zoeken is uitgeschakeld, kan contactgegevens niet vernieuwen</string>
-    <string name="settings_refresh_contacts_title">Contacten opnieuw laden</string>
+    <string name="settings_refresh_contacts_title">Contacten vernieuwen</string>
     <string name="settings_refresh_data_note">Gegevens worden automatisch vernieuwd. Gebruik deze knoppen om handmatig opnieuw te laden.</string>
     <string name="settings_refresh_data_title">Gegevens vernieuwen</string>
     <string name="settings_refresh_icon_packs">Icoonpakketten vernieuwen</string>
@@ -861,18 +866,35 @@
     <string name="settings_tools_info_examples_header">Hier zijn enkele voorbeelden van wat je in de zoekbalk kunt vragen</string>
     <string name="settings_tools_title">Hulpmiddelen</string>
     <string name="settings_at_a_glance_title">In één oogopslag</string>
+    <string name="custom_info_title">Aangepaste info</string>
+    <string name="custom_info_edit_title">Details bewerken</string>
+    <string name="custom_info_prompt">Prompt</string>
+    <string name="custom_info_set_date_time">Datum en tijd instellen</string>
+    <string name="custom_info_desc">AI-antwoorden op je prompts op het startscherm, op tijden die jij kiest</string>
+    <string name="settings_ai_api_key_required_message">Deze functie vereist een API-sleutel van een AI-provider.</string>
+    <string name="settings_ai_api_key_required_title">API-sleutel vereist</string>
+    <string name="settings_ai_api_key_setup_action">Sleutel instellen</string>
+    <string name="custom_info_repeat_never">Niet herhalen</string>
+    <string name="custom_info_repeat_every">Herhalen elke</string>
+    <string name="custom_info_send_notification">Melding sturen</string>
+    <string name="custom_info_preview">Voorbeeld</string>
+    <string name="custom_info_saved">Opgeslagen</string>
+    <string name="custom_info_delete_confirm_title">%1$s verwijderen?</string>
+    <string name="custom_info_delete_confirm_message">Deze aangepaste info en de planning ervan worden permanent verwijderd.</string>
     <string name="settings_at_a_glance_desc">Nuttige informatie die op het juiste moment op je startscherm verschijnt</string>
     <string name="settings_at_a_glance_alarms_title">Wekkers</string>
     <string name="settings_upcoming_alarm_desc">Je volgende wekker als die binnen 45 minuten afgaat</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">Toon de eerste wekker van morgen de avond ervoor</string>
     <string name="settings_hidden_alarm_apps_title">Verborgen wekker-apps</string>
-    <string name="settings_at_a_glance_events_desc">Agenda-items van vandaag, en \'s avonds de hele-dag-items van morgen</string>
+    <string name="settings_at_a_glance_events_desc">Agenda-items van vandaag</string>
+    <string name="settings_at_a_glance_tomorrow_events">Toon de afspraken van morgen de avond ervoor</string>
     <string name="settings_upcoming_reminders_desc">Herinneringen die binnen 30 minuten verlopen of achterstallig zijn</string>
     <string name="settings_at_a_glance_low_battery_title">Batterij bijna leeg</string>
     <string name="settings_low_battery_desc">Je batterij wanneer deze op %1$d%% of lager staat</string>
     <string name="settings_at_a_glance_timers_title">Timers &amp; stopwatch</string>
     <string name="settings_at_a_glance_timers_desc">Lopende timers en stopwatches uit je klok-app</string>
     <string name="settings_at_a_glance_birthdays_title">Verjaardagen</string>
-    <string name="settings_at_a_glance_birthdays_desc">Contacten die vandaag jarig zijn</string>
+    <string name="settings_at_a_glance_birthdays_desc">Contacten die vandaag jarig zijn of een jubileum vieren</string>
     <string name="settings_at_a_glance_progress_title">Lopende meldingen</string>
     <string name="settings_at_a_glance_progress_desc">Live-updates zoals ritten, bezorgingen en downloads</string>
     <string name="settings_at_a_glance_charging_title">Opladen</string>
@@ -948,6 +970,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_direct_search_how_to">Gratis API-sleutel ophalen</string>
     <string name="settings_direct_search_model_label">Model</string>
     <string name="settings_select_model">Model selecteren</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">Het geselecteerde model is niet beschikbaar. Kies een ander model in de instellingen.</string>
     <string name="settings_loading_models">Modellen laden…</string>
     <string name="settings_direct_search_personal_context">Persoonlijke context</string>
@@ -994,6 +1017,8 @@ www.google.com/search?q={{query}}</string>
     <string name="release_notes_title_no_version">Quick Search Releaseopmerkingen</string>
     <string name="settings_backup_export_api_key_warning_message">Doorgaan op eigen risico. De geëxporteerde API-sleutels zijn niet versleuteld en kunnen worden bekeken door iedereen die toegang heeft tot je back-upbestand.</string>
     <string name="settings_backup_export_button">Exporteren</string>
+    <string name="settings_backup_export_title">Instellingen exporteren</string>
+    <string name="settings_backup_export_desc">Sla je instellingen op in een back-upbestand</string>
     <string name="settings_backup_export_failed">Kan instellingen niet exporteren.</string>
     <string name="settings_backup_export_option_pinned_items_title">Vastgemaakte items</string>
     <string name="settings_backup_export_option_api_keys">API-sleutels</string>
@@ -1340,11 +1365,20 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="home_charging_paused">Opladen gepauzeerd</string>
     <string name="home_timer">Timer</string>
     <string name="home_stopwatch">Stopwatch</string>
+    <string name="home_timer_paused">Gepauzeerd</string>
     <string name="home_storage_almost_full">Opslag bijna vol</string>
     <string name="home_storage_free">%1$s vrij van %2$s</string>
-    <string name="home_birthday_today">Vandaag jarig</string>
-    <string name="home_birthday_turns">Wordt vandaag %1$d</string>
+    <string name="home_birthday_title">Verjaardag van %1$s</string>
+    <string name="home_anniversary_title">Jubileum van %1$s</string>
+    <string name="home_birthday_title_ordinal">Verjaardag van %1$s (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">Jubileum van %1$s (%2$s)</string>
+    <string name="home_birthday_wish">Tik om te feliciteren</string>
     <string name="home_missed_call">Gemiste oproep</string>
+    <string name="home_otp_from">Code van %1$s</string>
+    <string name="home_copied">Gekopieerd</string>
+    <string name="home_reminder_marked_done">Herinnering gemarkeerd als klaar</string>
+    <string name="home_reminder_snoozed">Herinnering 30 minuten gesnoozed</string>
+    <string name="home_reminder_deleted">Herinnering verwijderd</string>
     <string name="home_missed_calls_count">Gemiste oproepen (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">Niet storen staat aan</string>
@@ -1358,8 +1392,10 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="home_turn_off">Uitzetten</string>
     <string name="settings_tavily_title">Tavily voor webzoeken</string>
     <string name="settings_tavily_desc">Voeg een Tavily API-sleutel toe om webzoeken toe te voegen aan modellen die dit niet ondersteunen.</string>
-    <string name="settings_tavily_mode_always">Altijd Tavily gebruiken voor webzoekopdrachten</string>
-    <string name="settings_tavily_mode_when_unsupported">Alleen gebruiken als het model geen webzoekfunctie ondersteunt</string>
+    <string name="settings_tavily_mode_always">Altijd</string>
+    <string name="settings_tavily_mode_when_unsupported">Als terugval</string>
+    <string name="settings_tavily_mode_always_desc">Wordt bij elk model gebruikt voor zoeken op het web.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Wordt alleen gebruikt als het gekozen model niet op het web kan zoeken.</string>
     <string name="settings_weather_no_web_search_warning">Weer heeft webresultaten nodig. Kies een model dat webzoekfunctie ondersteunt of voeg een Tavily-API-sleutel toe bij API-sleutel instellen.</string>
     <string name="tavily_search_failed_toast">Tavily-webzoekopdracht mislukt. Antwoord zonder webresultaten.</string>
     <string name="search_hint_reminders">Herinneringen zoeken…</string>

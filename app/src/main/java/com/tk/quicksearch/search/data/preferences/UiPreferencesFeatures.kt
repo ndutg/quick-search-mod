@@ -28,7 +28,7 @@ open class UiPreferencesFeatures(context: Context) : UiPreferencesCore(context) 
     }
 
     fun isIconPackUnsupportedIconMaskEnabled(): Boolean =
-            getBooleanPref(UiPreferences.KEY_ICON_PACK_UNSUPPORTED_ICON_MASK_ENABLED, false)
+            getBooleanPref(UiPreferences.KEY_ICON_PACK_UNSUPPORTED_ICON_MASK_ENABLED, true)
 
     fun setIconPackUnsupportedIconMaskEnabled(enabled: Boolean) {
         setBooleanPref(UiPreferences.KEY_ICON_PACK_UNSUPPORTED_ICON_MASK_ENABLED, enabled)

@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.Person
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
@@ -16,9 +17,20 @@ import android.view.ViewGroup
 import android.widget.Chronometer
 import android.widget.FrameLayout
 import android.widget.RemoteViews
+import android.widget.TextView
+import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsListenerService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.abs
+
+/** A notification's own button, such as a timer's Pause or Stop. */
+internal class GlanceNotificationAction(
+    val title: String,
+    val intent: PendingIntent,
+    /** The button's icon from the posting app, when it has one. */
+    val icon: Icon? = null,
+)
 
 /** A running timer or stopwatch posted by a clock app, counted from [chronometerBase]. */
 internal class TimerNotification(
@@ -30,6 +42,8 @@ internal class TimerNotification(
     val contentIntent: PendingIntent?,
     /** The frozen time left (or elapsed) while paused; null while it runs. */
     val pausedMillis: Long? = null,
+    /** The notification's buttons, such as Pause, Resume, Stop or +1:00. */
+    val actions: List<GlanceNotificationAction> = emptyList(),
 )
 
 /** A missed call notification; [caller] is usually the name or number. */
@@ -42,6 +56,8 @@ internal class MissedCallNotification(
     /** When the call came in, or when the notification was posted if the app does not say. */
     val callTime: Long,
     val contentIntent: PendingIntent?,
+    /** The notification's call back button, if it has one. */
+    val callBackIntent: PendingIntent? = null,
 )
 
 /** A call in progress; [caller] is usually the name or number. */
@@ -147,6 +163,18 @@ internal object GlanceNotificationsStore {
         otpsState.value = otpsState.value.filter { it.postTime > otp.postTime }
     }
 
+    /** Clears the missed call notifications from the shade when the app allows. */
+    fun dismissMissedCalls(keys: List<String>) {
+        keys.forEach(NotificationDotsListenerService::cancelNotification)
+    }
+
+    /** Hides a weather notification from At a Glance and clears it from the shade when the app allows. */
+    fun dismissWeather(key: String) {
+        WeatherNotifications.dismiss(key)
+        weatherState.value = weatherState.value.filter { it.key != key }
+        NotificationDotsListenerService.cancelNotification(key)
+    }
+
     /** Hides a finished progress notification from At a Glance, leaving it posted. */
     fun dismissFinishedProgress(key: String) {
         progressTracker.dismiss(key)
@@ -176,6 +204,7 @@ internal object GlanceNotificationsStore {
             caller = missedCallCaller(),
             callTime = notification.`when`.takeIf { it > 0L } ?: postTime,
             contentIntent = notification.contentIntent,
+            callBackIntent = callBackIntent(),
         )
     }
 
@@ -303,6 +332,34 @@ internal object GlanceNotificationsStore {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) channelId else null
 
 
+    /**
+     * Up to two of the timer's buttons, such as Pause and Stop, leaving out reply fields and
+     * time-adjust buttons like "+1:00" (the only ones with a digit in their label).
+     */
+    private fun StatusBarNotification.buttonActions(): List<GlanceNotificationAction> =
+        notification.actions.orEmpty()
+            .filter { it.remoteInputs.isNullOrEmpty() }
+            .mapNotNull { action ->
+                val title = action.title?.toString()?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                if (title.any { it.isDigit() }) return@mapNotNull null
+                val intent = action.actionIntent ?: return@mapNotNull null
+                GlanceNotificationAction(title, intent, action.getIcon())
+            }.take(MAX_BUTTON_ACTIONS)
+
+    /**
+     * The missed call's call back button: the action marked as a call (Android 10+), or else the
+     * first plain button that isn't the notification's tap target (Google's Call back precedes Message).
+     */
+    private fun StatusBarNotification.callBackIntent(): PendingIntent? {
+        val actions = notification.actions.orEmpty().filter { it.remoteInputs.isNullOrEmpty() && it.actionIntent != null }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            actions.firstOrNull { it.semanticAction == Notification.Action.SEMANTIC_ACTION_CALL }?.let { return it.actionIntent }
+        }
+        return actions.firstOrNull { it.actionIntent != notification.contentIntent }?.actionIntent
+    }
+
+    private const val MAX_BUTTON_ACTIONS = 2
+
     /** [Notification.CATEGORY_MISSED_CALL], which is only defined from Android 10. */
     private const val CATEGORY_MISSED_CALL = "missed_call"
 
@@ -325,7 +382,8 @@ internal object GlanceNotificationsStore {
         if (!extras.getBoolean(Notification.EXTRA_SHOW_CHRONOMETER)) {
             val cached = remoteTimerCache[key]
             if (cached != null && cached.first == postTime) return cached.second
-            return toRemoteViewTimer(context, extras).also { remoteTimerCache[key] = postTime to it }
+            return toRemoteViewTimer(context, extras, previous = cached?.second)
+                .also { remoteTimerCache[key] = postTime to it }
         }
         if (notification.`when` <= 0L) return null
         return TimerNotification(
@@ -334,6 +392,7 @@ internal object GlanceNotificationsStore {
             isCountDown = extras.getBoolean(Notification.EXTRA_CHRONOMETER_COUNT_DOWN),
             chronometerBase = notification.`when`,
             contentIntent = notification.contentIntent,
+            actions = buttonActions(),
         )
     }
 
@@ -346,10 +405,19 @@ internal object GlanceNotificationsStore {
     private fun StatusBarNotification.toRemoteViewTimer(
         context: Context,
         extras: Bundle,
+        previous: TimerNotification?,
     ): TimerNotification? {
-        val chronometer = findRemoteChronometer(context, extras) ?: return null
+        val chronometer =
+            findRemoteChronometer(context, extras) ?: return toFrozenTextTimer(context, previous)
         val elapsedNow = SystemClock.elapsedRealtime()
-        val isCountDown = chronometer.isCountDown
+        val frozenMillis = chronometer.frozenMillis(elapsedNow)
+        val isPaused = frozenMillis != null
+        val isCountDown =
+            if (isPaused) {
+                previous?.isCountDown ?: channelCountDown() ?: chronometer.isCountDown
+            } else {
+                chronometer.isCountDown
+            }
         val base = System.currentTimeMillis() - (elapsedNow - chronometer.base)
         return TimerNotification(
             key = key,
@@ -357,14 +425,84 @@ internal object GlanceNotificationsStore {
             isCountDown = isCountDown,
             chronometerBase = base,
             contentIntent = notification.contentIntent,
-            pausedMillis =
-                if (chronometer.isStarted() == false) {
-                    (if (isCountDown) chronometer.base - elapsedNow else elapsedNow - chronometer.base)
-                        .coerceAtLeast(0L)
-                } else {
-                    null
-                },
+            pausedMillis = frozenMillis,
+            actions = buttonActions(),
         )
+    }
+
+    /**
+     * A paused timer or stopwatch whose custom layout shows its time as plain text in a view named
+     * "chronometer" rather than in a chronometer view, as Google Clock's does.
+     */
+    private fun StatusBarNotification.toFrozenTextTimer(
+        context: Context,
+        previous: TimerNotification?,
+    ): TimerNotification? {
+        val shownSeconds =
+            listOfNotNull(notification.contentView, notification.bigContentView)
+                .firstNotNullOfOrNull { remoteViews ->
+                    runCatching {
+                        val view = remoteViews.apply(context, FrameLayout(context))
+                        view.findClockText()?.toString()?.parseClockSeconds()
+                    }.getOrNull()
+                } ?: return null
+        return TimerNotification(
+            key = key,
+            packageName = packageName,
+            isCountDown = previous?.isCountDown ?: channelCountDown() ?: false,
+            chronometerBase = previous?.chronometerBase ?: System.currentTimeMillis(),
+            contentIntent = notification.contentIntent,
+            pausedMillis = shownSeconds * 1_000L,
+            actions = buttonActions(),
+        )
+    }
+
+    /** The text of the first text view whose resource name contains "chronometer". */
+    private fun View.findClockText(): CharSequence? {
+        if (this is TextView && id != View.NO_ID) {
+            val name = runCatching { resources.getResourceEntryName(id) }.getOrNull()
+            if (name != null && "chronometer" in name.lowercase()) return text
+        }
+        if (this !is ViewGroup) return null
+        for (index in 0 until childCount) {
+            getChildAt(index).findClockText()?.let { return it }
+        }
+        return null
+    }
+
+    /**
+     * The time a paused chronometer shows, or null while it counts. Where the started flag cannot be
+     * read, a paused one is told apart by text that its base would not show: Samsung Clock sets a
+     * paused timer's base to now and writes the time left into it as text.
+     */
+    private fun Chronometer.frozenMillis(elapsedNow: Long): Long? {
+        val baseMillis = abs(base - elapsedNow)
+        return when (isStarted()) {
+            true -> null
+            false -> baseMillis
+            null -> {
+                val shownSeconds = text?.toString()?.parseClockSeconds() ?: return null
+                if (abs(shownSeconds - baseMillis / 1_000L) > 1L) shownSeconds * 1_000L else null
+            }
+        }
+    }
+
+    /** Seconds in "M:SS" or "H:MM:SS" text such as a chronometer shows, or null when it is not a time. */
+    private fun String.parseClockSeconds(): Long? {
+        val parts = CLOCK_TEXT.find(this)?.value?.split(':') ?: return null
+        return parts.fold(0L) { total, part -> total * 60L + part.toLong() }
+    }
+
+    private val CLOCK_TEXT = Regex("""\d+(?::\d{2}){1,2}""")
+
+    /** Whether the notification's channel names a timer or a stopwatch, or null when it names neither. */
+    private fun StatusBarNotification.channelCountDown(): Boolean? {
+        val channel = notification.channelId?.lowercase() ?: return null
+        return when {
+            "stopwatch" in channel -> false
+            "timer" in channel -> true
+            else -> null
+        }
     }
 
     /**

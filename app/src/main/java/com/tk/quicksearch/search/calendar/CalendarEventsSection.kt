@@ -290,7 +290,13 @@ internal fun CalendarEventRow(
         Icon(
             imageVector = Icons.Rounded.CalendarMonth,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            // At a Glance rows use the accent, like the other glance icons.
+            tint =
+                if (showDoneOnlyMenu) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
             modifier = Modifier.padding(start = 7.dp).size(24.dp),
         )
         Column(

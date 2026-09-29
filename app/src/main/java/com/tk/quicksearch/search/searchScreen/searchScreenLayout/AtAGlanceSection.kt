@@ -26,9 +26,9 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
  * One row of the home At a Glance card. Today's calendar events are hosted by the calendar card
- * itself; every other glanceable source (ongoing calls, one-time codes, battery, missed calls, flashlight, Wi-Fi sign-in, Do Not Disturb,
- * airplane mode, hotspot, weather, workouts, timers, progress notifications, alarm, reminders, birthdays, tomorrow's
- * events, storage, and future ones) contributes rows here.
+ * itself; every other glanceable source (ongoing calls, one-time codes, timers, alarm, reminders, missed calls,
+ * battery, Wi-Fi sign-in, progress notifications, workouts, weather, birthdays, tomorrow's events, Custom Info,
+ * Do Not Disturb, airplane mode, hotspot, flashlight, storage, and future ones) contributes rows here.
  * Rows sit inside the card's inset and follow CalendarEventRow: 7dp before a 24dp icon, then 12dp
  * to the text.
  */
@@ -38,9 +38,10 @@ internal class AtAGlanceItem(
 )
 
 /**
- * Collects the non-calendar At a Glance rows, top to bottom. In the [reversed] (bottom search bar)
- * layout the source groups swap places but rows within a group keep their order, matching how the
- * calendar card never reverses its own events.
+ * Collects the non-calendar At a Glance rows, most urgent at the top. In the [reversed] (bottom
+ * search bar) layout the source groups swap places, so the most urgent sits nearest the search bar,
+ * but rows within a group keep their order, matching how the calendar card never reverses its own
+ * events.
  */
 @Composable
 internal fun rememberAtAGlanceItems(
@@ -60,6 +61,9 @@ internal fun rememberAtAGlanceItems(
     val airplaneMode = rememberAirplaneModeGlance(enabled)
     val hotspot = rememberHotspotGlance(enabled)
     val tomorrowEvents = rememberTomorrowEventsGlance(enabled)
+    val customInfo = rememberCustomInfoGlance(enabled)
+    // Most time-critical first: live and expiring items, then things due soon, then what needs a
+    // look, then today's and tomorrow's context, and the passive device states last.
     val groups =
         listOf(
             notifications.ongoingCalls.map { call ->
@@ -70,35 +74,9 @@ internal fun rememberAtAGlanceItems(
                     AtAGlanceItem(key = "otp-${otp.key}") { OtpCodeRow(otp) { notifications.dismissOtp(otp) } }
                 },
             ),
-            listOfNotNull(battery.lowBattery?.let { AtAGlanceItem(key = "low-battery") { LowBatteryRow(it) } }),
-            listOfNotNull(battery.charging?.let { AtAGlanceItem(key = "charging") { ChargingRow(it) } }),
-            listOfNotNull(
-                notifications.missedCalls.takeIf { it.isNotEmpty() }?.let { calls ->
-                    AtAGlanceItem(key = "missed-calls") { MissedCallsRow(calls, notifications.dismissMissedCalls) }
-                },
-            ),
-            listOfNotNull(flashlight?.let { AtAGlanceItem(key = "flashlight") { FlashlightRow(it) } }),
-            listOfNotNull(wifiSignIn?.let { AtAGlanceItem(key = "wifi-sign-in") { WifiSignInRow(it) } }),
-            listOfNotNull(doNotDisturb?.let { AtAGlanceItem(key = "do-not-disturb") { DoNotDisturbRow(it) } }),
-            listOfNotNull(airplaneMode?.let { AtAGlanceItem(key = "airplane-mode") { AirplaneModeRow(it) } }),
-            listOfNotNull(hotspot?.let { AtAGlanceItem(key = "hotspot") { HotspotRow(it) } }),
-            notifications.weather.map { weather ->
-                AtAGlanceItem(key = "weather-${weather.key}") { WeatherRow(weather) }
-            },
-            notifications.workouts.map { workout ->
-                AtAGlanceItem(key = "workout-${workout.key}") { WorkoutRow(workout) }
-            },
             notifications.timers.map { timer ->
                 AtAGlanceItem(key = "timer-${timer.key}") { TimerRow(timer, notifications.nowMillis) }
             },
-            notifications.progress.map { progress ->
-                AtAGlanceItem(key = "progress-${progress.key}") { ProgressNotificationRow(progress) }
-            } +
-                notifications.finishedProgress.map { finished ->
-                    AtAGlanceItem(key = "finished-progress-${finished.key}") {
-                        FinishedProgressNotificationRow(finished) { notifications.dismissFinishedProgress(finished) }
-                    }
-                },
             listOfNotNull(alarm?.let { AtAGlanceItem(key = "alarm") { UpcomingAlarmRow(it) } }),
             reminders.reminders.map { reminder ->
                 AtAGlanceItem(key = "reminder-${reminder.reminderId}") {
@@ -107,13 +85,35 @@ internal fun rememberAtAGlanceItems(
                         nowMillis = reminders.nowMillis,
                         onClick = { ReminderEditorRequests.openEdit(reminder) },
                         onDone = { reminders.markDone(reminder) },
+                        onSnooze = { reminders.snooze(reminder) },
                         onDismiss = { reminders.dismiss(reminder) },
                         onDelete = { reminders.delete(reminder) },
                     )
                 }
             },
+            listOfNotNull(
+                notifications.missedCalls.takeIf { it.isNotEmpty() }?.let { calls ->
+                    AtAGlanceItem(key = "missed-calls") { MissedCallsRow(calls, notifications.dismissMissedCalls) }
+                },
+            ),
+            listOfNotNull(battery.lowBattery?.let { AtAGlanceItem(key = "low-battery") { LowBatteryRow(it) } }),
+            listOfNotNull(wifiSignIn?.let { AtAGlanceItem(key = "wifi-sign-in") { WifiSignInRow(it) } }),
+            notifications.progress.map { progress ->
+                AtAGlanceItem(key = "progress-${progress.key}") { ProgressNotificationRow(progress) }
+            } +
+                notifications.finishedProgress.map { finished ->
+                    AtAGlanceItem(key = "finished-progress-${finished.key}") {
+                        FinishedProgressNotificationRow(finished) { notifications.dismissFinishedProgress(finished) }
+                    }
+                },
+            notifications.workouts.map { workout ->
+                AtAGlanceItem(key = "workout-${workout.key}") { WorkoutRow(workout) }
+            },
+            notifications.weather.map { weather ->
+                AtAGlanceItem(key = "weather-${weather.key}") { WeatherRow(weather) { notifications.dismissWeather(weather) } }
+            },
             birthdays.birthdays.map { birthday ->
-                AtAGlanceItem(key = "birthday-${birthday.contactId}") {
+                AtAGlanceItem(key = "birthday-${birthday.contactId}-${birthday.isAnniversary}") {
                     BirthdayRow(
                         birthday = birthday,
                         onClick = { birthdays.open(birthday) },
@@ -130,6 +130,20 @@ internal fun rememberAtAGlanceItems(
                     )
                 }
             },
+            customInfo.items.map { item ->
+                AtAGlanceItem(key = "custom-info-${item.id}") {
+                    CustomInfoRow(
+                        item = item,
+                        onDismiss = { customInfo.dismiss(item) },
+                        onRetry = { customInfo.retry(item) },
+                    )
+                }
+            },
+            listOfNotNull(doNotDisturb?.let { AtAGlanceItem(key = "do-not-disturb") { DoNotDisturbRow(it) } }),
+            listOfNotNull(airplaneMode?.let { AtAGlanceItem(key = "airplane-mode") { AirplaneModeRow(it) } }),
+            listOfNotNull(hotspot?.let { AtAGlanceItem(key = "hotspot") { HotspotRow(it) } }),
+            listOfNotNull(flashlight?.let { AtAGlanceItem(key = "flashlight") { FlashlightRow(it) } }),
+            listOfNotNull(battery.charging?.let { AtAGlanceItem(key = "charging") { ChargingRow(it) } }),
             listOfNotNull(lowStorage?.let { AtAGlanceItem(key = "low-storage") { LowStorageRow(it) } }),
         )
     return (if (reversed) groups.asReversed() else groups).flatten()

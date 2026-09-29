@@ -1,8 +1,10 @@
 package com.tk.quicksearch.settings.shared
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -38,11 +40,13 @@ data class ToolToggleCardModel(
 fun ToolToggleRows(
     tools: List<ToolToggleCardModel>,
     modifier: Modifier = Modifier,
+    scrollState: ScrollState? = null,
 ) {
     SettingsCard(
         modifier = modifier.fillMaxWidth(),
     ) {
-        Column {
+        // With a [scrollState], the rows scroll inside the card; give [modifier] a bounded height.
+        Column(modifier = if (scrollState != null) Modifier.verticalScroll(scrollState) else Modifier) {
             tools.forEachIndexed { index, tool ->
                 ToolToggleRow(tool = tool)
                 if (index != tools.lastIndex) {

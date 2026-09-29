@@ -11,18 +11,15 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
@@ -31,7 +28,6 @@ import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.core.content.FileProvider
 import java.io.File
 import java.text.SimpleDateFormat
@@ -206,20 +202,25 @@ internal fun importSettingsFromUri(
     }
 }
 
+enum class SettingsBackupRequest {
+    IMPORT,
+    EXPORT,
+}
+
 /**
- * Self-contained Import / Export buttons with their own file pickers and dialogs,
- * for surfaces outside the Settings screen (e.g. app settings search results).
+ * Self-contained import / export flows with their own file picker and dialogs, for surfaces
+ * outside the Settings screen (e.g. app settings search results). Keep it composed while the
+ * file picker is open so the import result is still delivered.
  */
 @Composable
-fun SettingsBackupButtons(
+fun SettingsBackupFlow(
+    request: SettingsBackupRequest?,
+    onRequestHandled: () -> Unit,
     onSettingsImported: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var showImportWarningDialog by remember { mutableStateOf(false) }
-    var showExportSelectionDialog by remember { mutableStateOf(false) }
-    var exportSelectionState by remember { mutableStateOf(ExportSelectionState()) }
+    var exportSelectionState by remember { mutableStateOf<ExportSelectionState?>(null) }
 
     val importLauncher =
         rememberLauncherForActivityResult(
@@ -234,62 +235,50 @@ fun SettingsBackupButtons(
             )
         }
 
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-    ) {
-        OutlinedButton(
-            onClick = { showImportWarningDialog = true },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(text = stringResource(R.string.settings_backup_import_button))
-        }
-        OutlinedButton(
-            onClick = {
-                coroutineScope.launch {
-                    exportSelectionState =
-                        withContext(Dispatchers.IO) { loadExportSelectionState(context) }
-                    showExportSelectionDialog = true
-                }
-            },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(text = stringResource(R.string.settings_backup_export_button))
+    LaunchedEffect(request) {
+        if (request == SettingsBackupRequest.EXPORT) {
+            exportSelectionState = withContext(Dispatchers.IO) { loadExportSelectionState(context) }
         }
     }
 
-    if (showImportWarningDialog) {
-        AppAlertDialog(
-            onDismissRequest = { showImportWarningDialog = false },
-            title = { Text(text = stringResource(R.string.settings_backup_import_warning_title)) },
-            text = { Text(text = stringResource(R.string.settings_backup_import_warning_message)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showImportWarningDialog = false
-                        importLauncher.launch(arrayOf("*/*"))
+    when (request) {
+        SettingsBackupRequest.IMPORT ->
+            AppAlertDialog(
+                onDismissRequest = onRequestHandled,
+                title = { Text(text = stringResource(R.string.settings_backup_import_warning_title)) },
+                text = { Text(text = stringResource(R.string.settings_backup_import_warning_message)) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            onRequestHandled()
+                            importLauncher.launch(arrayOf("*/*"))
+                        },
+                    ) {
+                        Text(text = stringResource(R.string.dialog_ok))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onRequestHandled) {
+                        Text(text = stringResource(R.string.dialog_cancel))
+                    }
+                },
+            )
+        SettingsBackupRequest.EXPORT ->
+            exportSelectionState?.let { selectionState ->
+                val closeExport = {
+                    exportSelectionState = null
+                    onRequestHandled()
+                }
+                SettingsExportDialog(
+                    selectionState = selectionState,
+                    onSelectionStateChange = { exportSelectionState = it },
+                    onDismiss = closeExport,
+                    onExport = {
+                        closeExport()
+                        exportSettingsToDownloads(context, selectionState, coroutineScope)
                     },
-                ) {
-                    Text(text = stringResource(R.string.dialog_ok))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showImportWarningDialog = false }) {
-                    Text(text = stringResource(R.string.dialog_cancel))
-                }
-            },
-        )
-    }
-
-    if (showExportSelectionDialog) {
-        SettingsExportDialog(
-            selectionState = exportSelectionState,
-            onSelectionStateChange = { exportSelectionState = it },
-            onDismiss = { showExportSelectionDialog = false },
-            onExport = {
-                showExportSelectionDialog = false
-                exportSettingsToDownloads(context, exportSelectionState, coroutineScope)
-            },
-        )
+                )
+            }
+        null -> Unit
     }
 }

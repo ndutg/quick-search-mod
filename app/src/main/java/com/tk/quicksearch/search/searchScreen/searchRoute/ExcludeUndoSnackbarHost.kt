@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -163,3 +164,10 @@ private fun rememberHighlightedExcludeMessage(message: String): AnnotatedString 
         AnnotatedString(message)
     }
 }
+
+/**
+ * Shows the route's undo snackbar with [message] and an optional leading icon, running the callback on
+ * Undo. Null outside the search route.
+ */
+internal val LocalShowUndoSnackbar =
+    compositionLocalOf<((message: String, icon: ImageVector?, onUndo: () -> Unit) -> Unit)?> { null }

@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import android.app.Application
+import android.text.format.DateFormat
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material3.Icon
@@ -23,14 +24,21 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-/** Tomorrow's all-day events appear from this hour of the evening until midnight. */
+/** Tomorrow's events appear from this hour of the evening until midnight. */
 private const val TOMORROW_EVENTS_START_HOUR = 21
 
-/** Tomorrow's all-day calendar events for the home At a Glance card, shown in the evening. */
+/** Tomorrow's first timed event shows only when it starts before this hour. */
+private const val TOMORROW_MORNING_END_HOUR = 12
+
+/**
+ * Tomorrow's all-day calendar events, then its first timed event when that starts in the morning,
+ * for the home At a Glance card, shown in the evening.
+ */
 internal class TomorrowEventsGlance(
     val events: List<CalendarEventInfo>,
     val open: (CalendarEventInfo) -> Unit,
@@ -39,8 +47,9 @@ internal class TomorrowEventsGlance(
 )
 
 /**
- * Reads tomorrow's all-day events from [TOMORROW_EVENTS_START_HOUR] until midnight while [enabled],
- * today's events are on and calendar access is granted, skipping excluded and dismissed events. It
+ * Reads tomorrow's events from [TOMORROW_EVENTS_START_HOUR] until midnight while [enabled], today's
+ * and tomorrow's events are on and calendar access is granted, skipping excluded and dismissed
+ * events. Dismissing the morning event doesn't bring up the next one. It
  * reads again on resume and when the evening starts or ends while the screen stays open.
  */
 @Composable
@@ -62,13 +71,22 @@ internal fun rememberTomorrowEventsGlance(enabled: Boolean): TomorrowEventsGlanc
                     enabled &&
                     now.hour >= TOMORROW_EVENTS_START_HOUR &&
                     calendarPreferences.getShowTodayEvents() &&
+                    glancePreferences.isShowTomorrowEventsEnabled() &&
                     repository.hasPermission()
                 ) {
                     withContext(Dispatchers.IO) {
                         val excluded = calendarPreferences.getExcludedEventIds()
                         val dismissed = glancePreferences.getDismissedTomorrowEvents(tomorrow.toString())
-                        repository.getAllDayEventsOn(tomorrow)
-                            .filterNot { it.eventId in excluded || it.eventId in dismissed }
+                        val zoneId = ZoneId.systemDefault()
+                        val startOfTomorrow = tomorrow.atStartOfDay(zoneId).toInstant().toEpochMilli()
+                        val tomorrowNoon =
+                            tomorrow.atTime(TOMORROW_MORNING_END_HOUR, 0).atZone(zoneId).toInstant().toEpochMilli()
+                        val tomorrowEvents = repository.getEventsOn(tomorrow).filterNot { it.eventId in excluded }
+                        val morningEvent =
+                            tomorrowEvents.firstOrNull { !it.allDay && it.startMillis >= startOfTomorrow }
+                                ?.takeIf { it.startMillis < tomorrowNoon }
+                        (tomorrowEvents.filter { it.allDay } + listOfNotNull(morningEvent))
+                            .filterNot { it.eventId in dismissed }
                             .distinctBy { it.eventId }
                     }
                 } else {
@@ -108,22 +126,32 @@ private fun millisUntilNextBoundary(now: LocalDateTime): Long {
     return millis.coerceAtLeast(0L) + 1_000L
 }
 
+/** Timed events show their start time before "Tomorrow". */
 @Composable
 internal fun TomorrowEventRow(
     event: CalendarEventInfo,
     onClick: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val tomorrowLabel = stringResource(R.string.calendar_relative_tomorrow)
+    val subtitle =
+        if (event.allDay) {
+            tomorrowLabel
+        } else {
+            val time = remember(event.startMillis, context) { DateFormat.getTimeFormat(context).format(Date(event.startMillis)) }
+            "$time • $tomorrowLabel"
+        }
     GlanceStatusRow(
         icon = {
             Icon(
                 imageVector = Icons.Rounded.CalendarMonth,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
         title = event.title,
-        subtitle = stringResource(R.string.calendar_relative_tomorrow),
+        subtitle = subtitle,
         onClick = onClick,
         onDismiss = onDismiss,
     )

@@ -110,6 +110,7 @@ class AnthropicClient(
         thinkingEnabled: Boolean = false,
         useSystemInstruction: Boolean = true,
         systemInstruction: String? = null,
+        history: List<AiConversationTurn> = emptyList(),
     ): Result<String> =
         withContext(Dispatchers.IO) {
             var attempt = 1
@@ -126,6 +127,7 @@ class AnthropicClient(
                         thinkingEnabled = thinkingEnabled,
                         useSystemInstruction = useSystemInstruction,
                         systemInstruction = systemInstruction,
+                        history = history,
                     )
                 if (result.isSuccess) return@withContext result
 
@@ -148,6 +150,7 @@ class AnthropicClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
     ): Result<String> {
         var connection: HttpURLConnection? = null
         return try {
@@ -174,6 +177,7 @@ class AnthropicClient(
                 thinkingEnabled = thinkingEnabled,
                 useSystemInstruction = useSystemInstruction,
                 systemInstruction = systemInstruction,
+                history = history,
             )
 
             if (BuildConfig.DEBUG) {
@@ -214,6 +218,7 @@ class AnthropicClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
     ): String {
         val effectiveSystem =
             systemInstruction?.trim()?.takeIf { it.isNotBlank() } ?: SYSTEM_PROMPT
@@ -222,32 +227,33 @@ class AnthropicClient(
         root.put("model", modelId.trim().ifBlank { AnthropicModelCatalog.DEFAULT_MODEL_ID })
         root.put("max_tokens", MAX_TOKENS)
 
+        val systemContent = buildString {
+            append(effectiveSystem)
+            if (!personalContext.isNullOrBlank()) {
+                append("\n\nUser personal context:\n${personalContext.trim()}")
+            }
+        }
         if (useSystemInstruction) {
-            val systemContent = buildString {
-                append(effectiveSystem)
-                if (!personalContext.isNullOrBlank()) {
-                    append("\n\nUser personal context:\n${personalContext.trim()}")
-                }
-            }
-            root.put("system", systemContent)
+            // Cache breakpoint: the system prompt (e.g. the Quick Search help docs) is identical
+            // across questions, so repeat requests read it at the cached-token rate.
+            root.put("system", JSONArray().put(cachedTextBlock(systemContent)))
         }
 
-        val userContent = if (!useSystemInstruction) {
-            buildString {
-                append(effectiveSystem)
-                if (!personalContext.isNullOrBlank()) {
-                    append("\n\nUser personal context:\n${personalContext.trim()}")
-                }
-                append("\n\nUser query: $query")
-            }
-        } else {
-            query
+        val messages = JSONArray()
+        history.forEachIndexed { index, turn ->
+            val question =
+                if (index == 0 && !useSystemInstruction) "$systemContent\n\nUser query: ${turn.question}" else turn.question
+            messages.put(JSONObject().put("role", "user").put("content", question))
+            // Cache breakpoint on the newest earlier answer: the whole conversation up to here is
+            // what the next follow-up will repeat, and older breakpoints are found by lookback.
+            val answerContent: Any =
+                if (index == history.lastIndex) JSONArray().put(cachedTextBlock(turn.answer)) else turn.answer
+            messages.put(JSONObject().put("role", "assistant").put("content", answerContent))
         }
-
-        root.put(
-            "messages",
-            JSONArray().put(JSONObject().put("role", "user").put("content", userContent)),
-        )
+        val userContent =
+            if (history.isEmpty() && !useSystemInstruction) "$systemContent\n\nUser query: $query" else query
+        messages.put(JSONObject().put("role", "user").put("content", userContent))
+        root.put("messages", messages)
 
         if (useGrounding) {
             root.put(
@@ -272,6 +278,13 @@ class AnthropicClient(
 
         return root.toString()
     }
+
+    /** Text block marked as a prompt-cache breakpoint; prefixes below the model minimum are not cached. */
+    private fun cachedTextBlock(text: String): JSONObject =
+        JSONObject()
+            .put("type", "text")
+            .put("text", text)
+            .put("cache_control", JSONObject().put("type", "ephemeral"))
 
     private fun extractAnswer(raw: String): String? {
         if (raw.isBlank()) return null

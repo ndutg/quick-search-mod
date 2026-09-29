@@ -196,15 +196,17 @@ private fun AppColumnsSelector(
                     onClick = { onSelectColumns(4) },
                     label = { Text(stringResource(R.string.settings_app_columns_4)) },
                     shape = DesignTokens.ShapeFull,
-                    border = if (fourSelected) null else BorderStroke(1.dp, AppColors.SettingsDivider),
+                    border =
+                            BorderStroke(
+                                    if (fourSelected) 1.5.dp else 1.dp,
+                                    if (fourSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else AppColors.SettingsDivider,
+                            ),
                     colors =
                             AssistChipDefaults.assistChipColors(
-                                    containerColor =
-                                            if (fourSelected) MaterialTheme.colorScheme.primary
-                                            else Color.Transparent,
+                                    containerColor = Color.Transparent,
                                     labelColor =
-                                            if (fourSelected) MaterialTheme.colorScheme.onPrimary
-                                            else MaterialTheme.colorScheme.primary,
+                                            if (fourSelected) MaterialTheme.colorScheme.primary
+                                            else MaterialTheme.colorScheme.onSurface,
                             ),
             )
             val fiveSelected = selectedColumns != 4
@@ -212,15 +214,17 @@ private fun AppColumnsSelector(
                     onClick = { onSelectColumns(5) },
                     label = { Text(stringResource(R.string.settings_app_columns_5)) },
                     shape = DesignTokens.ShapeFull,
-                    border = if (fiveSelected) null else BorderStroke(1.dp, AppColors.SettingsDivider),
+                    border =
+                            BorderStroke(
+                                    if (fiveSelected) 1.5.dp else 1.dp,
+                                    if (fiveSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else AppColors.SettingsDivider,
+                            ),
                     colors =
                             AssistChipDefaults.assistChipColors(
-                                    containerColor =
-                                            if (fiveSelected) MaterialTheme.colorScheme.primary
-                                            else Color.Transparent,
+                                    containerColor = Color.Transparent,
                                     labelColor =
-                                            if (fiveSelected) MaterialTheme.colorScheme.onPrimary
-                                            else MaterialTheme.colorScheme.primary,
+                                            if (fiveSelected) MaterialTheme.colorScheme.primary
+                                            else MaterialTheme.colorScheme.onSurface,
                             ),
             )
         }

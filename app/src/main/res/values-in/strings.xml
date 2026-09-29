@@ -64,6 +64,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >Weather in New York</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Cari aplikasi, kontak, file, pengaturan, dan lainnya dengan Quick Search.</string>
 
@@ -136,7 +139,7 @@
     <string name="settings_gesture_none">Tidak ada</string>
     <string name="settings_gesture_custom">Kustom (Aplikasi, File, dll.)</string>
     <string name="settings_keyboard_gestures_title">Gestur Keyboard (Layar Utama)</string>
-    <string name="settings_keyboard_gestures_desc">Hanya tersedia jika tidak ada konten yang dapat digulir di layar utama</string>
+    <string name="settings_keyboard_gestures_desc">Hanya berfungsi jika tidak ada konten yang dapat digulir di layar utama</string>
     <string name="action_pin_app">Sematkan</string>
     <string name="action_pin_to_notifications">Sematkan ke Notifikasi</string>
     <string name="action_unpin_from_notifications">Lepas Sematan dari Notifikasi</string>
@@ -367,7 +370,7 @@
     <string name="settings_manage_apps_desc">Kelola aplikasi Anda</string>
     <string name="settings_manage_apps_title">Kelola Aplikasi</string>
     <string name="settings_refresh_apps_disabled">Pencarian aplikasi dinonaktifkan, tidak dapat memuat ulang data aplikasi</string>
-    <string name="settings_refresh_apps_title">Muat Ulang Aplikasi</string>
+    <string name="settings_refresh_apps_title">Segarkan Aplikasi</string>
     <string name="usage_permission_subtitle">Jika Anda ingin melihat aplikasi yang baru saja digunakan dalam saran, berikan akses penggunaan.</string>
     <string name="usage_permission_title">Berikan akses penggunaan</string>
 
@@ -538,7 +541,7 @@
     <string name="settings_file_previews_toggle">Pratinjau File</string>
     <string name="settings_file_previews_description">Pratinjau gambar dan PDF sebelum membukanya.</string>
     <string name="settings_refresh_files_disabled">Pencarian file dinonaktifkan, tidak dapat memuat ulang data file</string>
-    <string name="settings_refresh_files_title">Muat Ulang File</string>
+    <string name="settings_refresh_files_title">Segarkan File</string>
     <string name="settings_system_files_toggle">File Sistem</string>
 
     <!-- ============================================================================
@@ -742,6 +745,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">Edit</string>
     <string name="settings_font_size_big">Besar</string>
+    <string name="settings_font_size_extra_small">Sangat kecil</string>
+    <string name="settings_font_size_extra_big">Sangat besar</string>
     <string name="settings_font_size_medium">Sedang</string>
     <string name="settings_font_size_small">Kecil</string>
     <string name="settings_font_size_title">Ukuran Font</string>
@@ -811,7 +816,7 @@
     <string name="settings_quick_settings_tile_desc">Tambahkan Quick Search ke kartu Pengaturan Cepat.</string>
     <string name="settings_quick_settings_tile_title">Kartu Pengaturan Cepat</string>
     <string name="settings_refresh_contacts_disabled">Pencarian kontak dinonaktifkan, tidak dapat memuat ulang data kontak</string>
-    <string name="settings_refresh_contacts_title">Muat Ulang Kontak</string>
+    <string name="settings_refresh_contacts_title">Segarkan Kontak</string>
     <string name="settings_refresh_data_note">Data diperbarui secara otomatis. Gunakan tombol ini untuk memuat ulang secara manual.</string>
     <string name="settings_refresh_data_title">Muat Ulang Data</string>
     <string name="settings_refresh_icon_packs">Muat ulang paket ikon</string>
@@ -832,18 +837,35 @@
     <string name="settings_tools_info_examples_header">Berikut beberapa contoh yang dapat Anda tanyakan di bilah pencarian</string>
     <string name="settings_tools_title">Alat</string>
     <string name="settings_at_a_glance_title">Sekilas</string>
+    <string name="custom_info_title">Info Kustom</string>
+    <string name="custom_info_edit_title">Edit Detail</string>
+    <string name="custom_info_prompt">Prompt</string>
+    <string name="custom_info_set_date_time">Atur tanggal dan waktu</string>
+    <string name="custom_info_desc">Jawaban AI untuk prompt Anda di Beranda, pada waktu yang Anda pilih</string>
+    <string name="settings_ai_api_key_required_message">Fitur ini memerlukan kunci API penyedia AI.</string>
+    <string name="settings_ai_api_key_required_title">Kunci API Diperlukan</string>
+    <string name="settings_ai_api_key_setup_action">Atur Kunci</string>
+    <string name="custom_info_repeat_never">Tidak berulang</string>
+    <string name="custom_info_repeat_every">Ulangi setiap</string>
+    <string name="custom_info_send_notification">Kirim notifikasi</string>
+    <string name="custom_info_preview">Pratinjau</string>
+    <string name="custom_info_saved">Disimpan</string>
+    <string name="custom_info_delete_confirm_title">Hapus %1$s?</string>
+    <string name="custom_info_delete_confirm_message">Info kustom ini dan jadwalnya akan dihapus secara permanen.</string>
     <string name="settings_at_a_glance_desc">Informasi berguna yang muncul di layar utama pada waktu yang tepat</string>
     <string name="settings_at_a_glance_alarms_title">Alarm</string>
     <string name="settings_upcoming_alarm_desc">Alarm berikutnya jika dalam 45 menit</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">Tampilkan alarm pertama besok pada malam sebelumnya</string>
     <string name="settings_hidden_alarm_apps_title">Aplikasi Alarm Tersembunyi</string>
-    <string name="settings_at_a_glance_events_desc">Acara kalender hari ini, serta acara sepanjang hari untuk besok di malam hari</string>
+    <string name="settings_at_a_glance_events_desc">Acara kalender hari ini</string>
+    <string name="settings_at_a_glance_tomorrow_events">Tampilkan acara besok pada malam sebelumnya</string>
     <string name="settings_upcoming_reminders_desc">Pengingat yang jatuh tempo dalam 30 menit atau terlambat</string>
     <string name="settings_at_a_glance_low_battery_title">Baterai lemah</string>
     <string name="settings_low_battery_desc">Baterai Anda saat berada di %1$d%% atau lebih rendah</string>
     <string name="settings_at_a_glance_timers_title">Timer &amp; stopwatch</string>
     <string name="settings_at_a_glance_timers_desc">Timer dan stopwatch yang berjalan dari aplikasi jam Anda</string>
     <string name="settings_at_a_glance_birthdays_title">Ulang tahun</string>
-    <string name="settings_at_a_glance_birthdays_desc">Kontak yang berulang tahun hari ini</string>
+    <string name="settings_at_a_glance_birthdays_desc">Kontak yang berulang tahun atau berhari jadi hari ini</string>
     <string name="settings_at_a_glance_progress_title">Notifikasi berjalan</string>
     <string name="settings_at_a_glance_progress_desc">Pembaruan langsung seperti perjalanan, pengiriman, dan unduhan</string>
     <string name="settings_at_a_glance_charging_title">Mengisi daya</string>
@@ -914,6 +936,7 @@
     <string name="settings_direct_search_how_to">Dapatkan Kunci API Gratis</string>
     <string name="settings_direct_search_model_label">Model</string>
     <string name="settings_select_model">Pilih model</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">Model yang dipilih tidak tersedia. Pilih model lain di setelan.</string>
     <string name="settings_loading_models">Memuat model…</string>
     <string name="settings_direct_search_personal_context">Konteks Pribadi</string>
@@ -958,6 +981,8 @@
     <string name="release_notes_title_no_version">Catatan Rilis Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Lanjutkan dengan risiko Anda sendiri. Kunci-kunci API yang diekspor tidak dienkripsi dan dapat diakses oleh siapa saja yang memiliki akses ke file cadangan Anda.</string>
     <string name="settings_backup_export_button">Ekspor</string>
+    <string name="settings_backup_export_title">Ekspor Pengaturan</string>
+    <string name="settings_backup_export_desc">Simpan pengaturan Anda ke file cadangan</string>
     <string name="settings_backup_export_failed">Tidak dapat mengekspor pengaturan.</string>
     <string name="settings_backup_export_option_pinned_items_title">Item yang disematkan</string>
     <string name="settings_backup_export_option_api_keys">Kunci API</string>
@@ -1283,11 +1308,20 @@
     <string name="home_charging_paused">Pengisian dijeda</string>
     <string name="home_timer">Timer</string>
     <string name="home_stopwatch">Stopwatch</string>
+    <string name="home_timer_paused">Dijeda</string>
     <string name="home_storage_almost_full">Penyimpanan hampir penuh</string>
     <string name="home_storage_free">%1$s kosong dari %2$s</string>
-    <string name="home_birthday_today">Ulang tahun hari ini</string>
-    <string name="home_birthday_turns">Berusia %1$d hari ini</string>
+    <string name="home_birthday_title">Ulang tahun %1$s</string>
+    <string name="home_anniversary_title">Hari jadi %1$s</string>
+    <string name="home_birthday_title_ordinal">Ulang tahun %1$s (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">Hari jadi %1$s (%2$s)</string>
+    <string name="home_birthday_wish">Ketuk untuk mengucapkan selamat</string>
     <string name="home_missed_call">Panggilan tak terjawab</string>
+    <string name="home_otp_from">OTP dari %1$s</string>
+    <string name="home_copied">Disalin</string>
+    <string name="home_reminder_marked_done">Pengingat ditandai selesai</string>
+    <string name="home_reminder_snoozed">Pengingat ditunda 30 menit</string>
+    <string name="home_reminder_deleted">Pengingat dihapus</string>
     <string name="home_missed_calls_count">Panggilan tak terjawab (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">Jangan Ganggu aktif</string>
@@ -1301,8 +1335,10 @@
     <string name="home_turn_off">Nonaktifkan</string>
     <string name="settings_tavily_title">Tavily untuk Penelusuran Web</string>
     <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>
-    <string name="settings_tavily_mode_always">Selalu gunakan Tavily untuk penelusuran web</string>
-    <string name="settings_tavily_mode_when_unsupported">Gunakan hanya jika model tidak mendukung penelusuran web</string>
+    <string name="settings_tavily_mode_always">Selalu</string>
+    <string name="settings_tavily_mode_when_unsupported">Sebagai cadangan</string>
+    <string name="settings_tavily_mode_always_desc">Digunakan untuk penelusuran web dengan semua model.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Hanya digunakan jika model yang dipilih tidak dapat menelusuri web.</string>
     <string name="settings_weather_no_web_search_warning">Cuaca memerlukan hasil web. Pilih model yang mendukung penelusuran web, atau tambahkan kunci API Tavily di Penyiapan Kunci API.</string>
     <string name="tavily_search_failed_toast">Penelusuran web Tavily gagal. Menjawab tanpa hasil web.</string>
     <string name="search_hint_reminders">Cari pengingat…</string>

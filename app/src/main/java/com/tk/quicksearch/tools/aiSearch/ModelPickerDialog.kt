@@ -118,6 +118,10 @@ fun ModelPickerDialog(
         }
     }
 
+    // A wash of the dialog's own text color, so the field reads the same over any dialog surface
+    // (settings cards and search-screen cards use translucent colors that clash with it).
+    val searchFieldColor = AppColors.DialogText.copy(alpha = 0.08f)
+
     AppAlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.fillMaxWidth(0.94f),
@@ -142,9 +146,9 @@ fun ModelPickerDialog(
                     shape = MaterialTheme.shapes.extraLarge,
                     colors =
                         TextFieldDefaults.colors(
-                            focusedContainerColor = AppColors.getSettingsCardContainerColor(),
-                            unfocusedContainerColor = AppColors.getSettingsCardContainerColor(),
-                            disabledContainerColor = AppColors.getSettingsCardContainerColor(),
+                            focusedContainerColor = searchFieldColor,
+                            unfocusedContainerColor = searchFieldColor,
+                            disabledContainerColor = searchFieldColor,
                             focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                             unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                             disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,

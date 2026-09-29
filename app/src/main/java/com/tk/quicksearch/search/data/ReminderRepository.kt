@@ -102,13 +102,15 @@ class ReminderRepository(context: Context) {
             .toList()
     }
 
-    /** Reminders to surface on Home: due within 30 minutes or overdue, and not done or dismissed. */
+    /** Reminders to surface on Home: due within 30 minutes or overdue, and not done, dismissed or snoozed there. */
     fun getHomeCardReminders(nowMillis: Long = System.currentTimeMillis()): List<ReminderInfo> {
         if (!preferences.isShowUpcomingRemindersEnabled()) return emptyList()
+        val snoozedUntil = preferences.getHomeSnoozedUntil()
         return readReminders()
             .filter { reminder ->
                 !reminder.isDone &&
                     !reminder.isDismissedFromHomeToday(nowMillis) &&
+                    (snoozedUntil[reminder.reminderId] ?: 0L) <= nowMillis &&
                     reminder.dueMillis - HOME_CARD_LEAD_MILLIS <= nowMillis
             }
             .sortedBy { it.dueMillis }
@@ -145,6 +147,7 @@ class ReminderRepository(context: Context) {
         date: LocalDate,
         timeMinutes: Int?,
     ): ReminderInfo? {
+        val before = getReminderById(reminderId)
         val updated =
             updateOne(reminderId) { reminder ->
                 val scheduleChanged = reminder.date != date || reminder.timeMinutes != timeMinutes
@@ -157,8 +160,10 @@ class ReminderRepository(context: Context) {
                     dismissedFromHomeDate = reminder.dismissedFromHomeDate.takeUnless { scheduleChanged },
                 )
             } ?: return null
+        // A title-only edit keeps the snooze; a new time replaces it.
+        if (before?.date != date || before.timeMinutes != timeMinutes) clearSnooze(reminderId)
         ReminderScheduler.cancelNotification(appContext, reminderId)
-        ReminderScheduler.schedule(appContext, updated)
+        ReminderScheduler.schedule(appContext, updated, snoozedUntilMillis = getSnoozedUntil()[reminderId])
         return updated
     }
 
@@ -166,12 +171,14 @@ class ReminderRepository(context: Context) {
         mutate { reminders -> reminders.filterNot { it.reminderId == reminderId } }
         ReminderScheduler.cancel(appContext, reminderId)
         ReminderScheduler.cancelNotification(appContext, reminderId)
+        clearSnooze(reminderId)
         preferences.unpinReminder(reminderId)
     }
 
     fun setDone(reminderId: Long, isDone: Boolean): ReminderInfo? {
         val updated = updateOne(reminderId) { it.copy(isDone = isDone) } ?: return null
         if (isDone) {
+            clearSnooze(reminderId)
             ReminderScheduler.cancel(appContext, reminderId)
             ReminderScheduler.cancelNotification(appContext, reminderId)
         } else {
@@ -180,31 +187,68 @@ class ReminderRepository(context: Context) {
         return updated
     }
 
-    fun dismissFromHome(reminderId: Long, nowMillis: Long = System.currentTimeMillis()): ReminderInfo? {
-        val dismissalDate = Instant.ofEpochMilli(nowMillis).atZone(ZoneId.systemDefault()).toLocalDate()
-        return updateOne(reminderId) {
-            it.copy(isDismissedFromHome = true, dismissedFromHomeDate = dismissalDate)
-        }
+    fun getSnoozedUntil(): Map<Long, Long> = preferences.getHomeSnoozedUntil()
+
+    fun isNotificationShowing(reminderId: Long): Boolean =
+        ReminderScheduler.isNotificationShowing(appContext, reminderId)
+
+    /**
+     * Snoozes the reminder for 30 minutes from both the Home card and its notification, without
+     * changing its due time: it is hidden on Home and its notification is cleared until then, when it
+     * comes back overdue. The Home and notification Snooze buttons both land here.
+     */
+    fun snooze(reminderId: Long, nowMillis: Long = System.currentTimeMillis()) {
+        val reminder = getReminderById(reminderId) ?: return
+        val snoozedUntil = nowMillis + SNOOZE_MILLIS
+        preferences.setHomeSnoozedUntil(reminderId, snoozedUntil, nowMillis)
+        ReminderScheduler.cancelNotification(appContext, reminderId)
+        ReminderScheduler.schedule(appContext, reminder, nowMillis, snoozedUntil)
+        notifyChanged()
     }
 
-    /** Moves the reminder 30 minutes past its due time, or past now if it is already overdue. */
-    fun snooze(reminderId: Long, nowMillis: Long = System.currentTimeMillis()): ReminderInfo? {
-        val updated =
-            updateOne(reminderId) { reminder ->
-                val zoneId = ZoneId.systemDefault()
-                val snoozedUntil =
-                    Instant.ofEpochMilli(maxOf(reminder.dueMillis, nowMillis) + SNOOZE_MILLIS)
-                        .atZone(zoneId)
-                        .toLocalDateTime()
-                reminder.copy(
-                    date = snoozedUntil.toLocalDate(),
-                    timeMinutes = snoozedUntil.hour * 60 + snoozedUntil.minute,
-                    isDone = false,
-                )
-            } ?: return null
-        ReminderScheduler.cancelNotification(appContext, reminderId)
-        ReminderScheduler.schedule(appContext, updated)
-        return updated
+    /**
+     * Hides a reminder that isn't due yet from the Home card until its due time, when it comes back
+     * with its notification.
+     */
+    fun hideFromHomeUntilDue(reminderId: Long, nowMillis: Long = System.currentTimeMillis()) {
+        val reminder = getReminderById(reminderId) ?: return
+        preferences.setHomeSnoozedUntil(reminderId, reminder.dueMillis, nowMillis)
+        notifyChanged()
+    }
+
+    /** Undoes [snooze]; re-posts the notification when [restoreNotification] (it was showing before). */
+    fun unsnooze(reminderId: Long, restoreNotification: Boolean) {
+        clearSnooze(reminderId)
+        val reminder = getReminderById(reminderId) ?: return
+        ReminderScheduler.schedule(appContext, reminder)
+        if (restoreNotification && !reminder.isDone) ReminderScheduler.showNotification(appContext, reminder)
+        notifyChanged()
+    }
+
+    private fun clearSnooze(reminderId: Long) {
+        if (reminderId in preferences.getHomeSnoozedUntil()) preferences.setHomeSnoozedUntil(reminderId, null)
+    }
+
+    fun getPinnedReminderOrder(): List<Long> = preferences.getPinnedReminderOrder()
+
+    /**
+     * Puts back a reminder exactly as [snapshot] had it, to undo a Home card action. Re-pins it at its
+     * old place when [pinnedOrder] (read before a delete) contains it.
+     */
+    fun restore(snapshot: ReminderInfo, pinnedOrder: List<Long>? = null) {
+        mutate { reminders ->
+            if (reminders.any { it.reminderId == snapshot.reminderId }) {
+                reminders.map { if (it.reminderId == snapshot.reminderId) snapshot else it }
+            } else {
+                reminders + snapshot
+            }
+        }
+        ReminderScheduler.schedule(appContext, snapshot)
+        if (pinnedOrder != null && snapshot.reminderId in pinnedOrder) {
+            preferences.pinReminder(snapshot.reminderId)
+            val current = preferences.getPinnedReminderOrder()
+            preferences.setPinnedReminderOrder(pinnedOrder.filter { it in current } + current.filterNot { it in pinnedOrder })
+        }
     }
 
     fun getIncludePastReminders(): Boolean = preferences.getIncludePastReminders()

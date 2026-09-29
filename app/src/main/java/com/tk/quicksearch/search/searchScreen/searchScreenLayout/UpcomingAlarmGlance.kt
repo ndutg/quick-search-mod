@@ -52,10 +52,14 @@ import kotlinx.coroutines.delay
 
 private val UpcomingAlarmDismissSize = 28.dp
 
-/** The next clock-app alarm shown in the home At a Glance card, with its row actions. */
+/**
+ * The next clock-app alarm shown in the home At a Glance card, with its row actions. [isTomorrow]
+ * marks tomorrow's first alarm, shown the evening before.
+ */
 internal class UpcomingAlarmGlance(
     val alarm: AlarmManager.AlarmClockInfo,
     val nowMillis: Long,
+    val isTomorrow: Boolean,
     val open: () -> Boolean,
     val dismiss: () -> Unit,
     /** Label of the app that scheduled the alarm, or null when it cannot be identified. */
@@ -63,7 +67,10 @@ internal class UpcomingAlarmGlance(
     val hideAlarmsFromApp: () -> Unit,
 )
 
-/** Polls the next alarm within 45 minutes while [enabled]; refreshes on resume and every 10 seconds. */
+/**
+ * Polls the next alarm within 45 minutes, or else tomorrow's first alarm in the evening, while
+ * [enabled]; refreshes on resume and every 10 seconds.
+ */
 @Composable
 internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance? {
     val context = LocalContext.current
@@ -72,6 +79,7 @@ internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance?
     var refreshKey by remember { mutableIntStateOf(0) }
     var nowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var alarm by remember { mutableStateOf<AlarmManager.AlarmClockInfo?>(null) }
+    var isTomorrow by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -87,7 +95,9 @@ internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance?
         }
         while (true) {
             nowMillis = System.currentTimeMillis()
-            alarm = repository.nextWithinFortyFiveMinutes(nowMillis)
+            val soon = repository.nextWithinFortyFiveMinutes(nowMillis)
+            alarm = soon ?: repository.tomorrowsFirstAlarm(nowMillis)
+            isTomorrow = soon == null && alarm != null
             delay(10_000)
         }
     }
@@ -96,6 +106,7 @@ internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance?
     return UpcomingAlarmGlance(
         alarm = nextAlarm,
         nowMillis = nowMillis,
+        isTomorrow = isTomorrow,
         open = {
             val clockPackage = nextAlarm.showIntent?.creatorPackage
             if (clockPackage != null && AppLockGate.isProtected(context, clockPackage)) {
@@ -106,7 +117,7 @@ internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance?
             }
         },
         dismiss = {
-            repository.dismiss(nextAlarm)
+            if (isTomorrow) repository.dismissTomorrow(nextAlarm) else repository.dismiss(nextAlarm)
             alarm = null
         },
         appLabel = remember(nextAlarm) { repository.appLabel(nextAlarm) },
@@ -124,7 +135,13 @@ internal fun UpcomingAlarmRow(glance: UpcomingAlarmGlance) {
     val alarmTime = remember(glance.alarm.triggerTime, context) {
         DateFormat.getTimeFormat(context).format(Date(glance.alarm.triggerTime))
     }
-    val scheduleLabel = "$alarmTime • ${calendarRelativeTimeLabel(glance.alarm.triggerTime, glance.nowMillis)}"
+    val relativeLabel =
+        if (glance.isTomorrow) {
+            stringResource(R.string.calendar_relative_tomorrow)
+        } else {
+            calendarRelativeTimeLabel(glance.alarm.triggerTime, glance.nowMillis)
+        }
+    val scheduleLabel = "$alarmTime • $relativeLabel"
     val title = stringResource(R.string.home_upcoming_alarm)
     val failureMessage = stringResource(R.string.common_error_unable_to_open, title)
     val showFailure = { Toast.makeText(context, failureMessage, Toast.LENGTH_SHORT).show() }
@@ -149,7 +166,7 @@ internal fun UpcomingAlarmRow(glance: UpcomingAlarmGlance) {
             Icon(
                 imageVector = Icons.Rounded.AccessTime,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp),
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {

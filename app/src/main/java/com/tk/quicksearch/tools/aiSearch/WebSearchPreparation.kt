@@ -31,6 +31,10 @@ fun supportsThinkingControl(
         else -> true
     }
 
+/** Whether a request to this provider may carry the thinking flag at all. */
+fun isThinkingRequestSupported(providerId: AiSearchLlmProviderId): Boolean =
+    providerId != AiSearchLlmProviderId.OPENAI && !providerId.isCustom
+
 /** Whether web search can be requested for this provider/model combination. */
 fun isWebSearchAvailable(
     providerId: AiSearchLlmProviderId,

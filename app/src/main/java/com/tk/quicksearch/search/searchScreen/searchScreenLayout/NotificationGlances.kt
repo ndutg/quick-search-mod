@@ -4,9 +4,20 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.text.format.DateUtils
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -14,29 +25,46 @@ import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.AvTimer
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.CallEnd
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.data.FinishedProgressNotification
+import com.tk.quicksearch.search.data.GlanceNotificationAction
 import com.tk.quicksearch.search.data.GlanceNotificationsStore
 import com.tk.quicksearch.search.data.MissedCallNotification
 import com.tk.quicksearch.search.data.OngoingCallNotification
@@ -47,9 +75,12 @@ import com.tk.quicksearch.search.data.TimerNotification
 import com.tk.quicksearch.search.data.WeatherNotification
 import com.tk.quicksearch.search.data.WorkoutNotification
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.sendFromUserTap
 import java.text.NumberFormat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 /** At most this many ongoing (progress and Live Update) and finished ones show on home, running ones first. */
 private const val MAX_PROGRESS_ROWS = 3
@@ -66,15 +97,17 @@ internal class NotificationGlances(
     val dismissFinishedProgress: (FinishedProgressNotification) -> Unit,
     /** Newest first; shown as a single summary row. */
     val missedCalls: List<MissedCallNotification>,
-    /** Hides the missed calls row until a newer missed call comes in. */
+    /** Hides the missed calls row until a newer missed call comes in, and clears their notifications. */
     val dismissMissedCalls: () -> Unit,
     val ongoingCalls: List<OngoingCallNotification>,
     val workouts: List<WorkoutNotification>,
-    /** The newest one-time code, until its notification goes or it is [OtpNotifications.LIFETIME_MILLIS] old. */
+    /** The newest one-time code, until dismissed or it is [OtpNotifications.LIFETIME_MILLIS] old. */
     val otp: OtpNotification?,
     val dismissOtp: (OtpNotification) -> Unit,
     /** Read from weather apps' own notifications; no weather service is queried. */
     val weather: List<WeatherNotification>,
+    /** Hides the row and clears the notification from the shade when the app allows. */
+    val dismissWeather: (WeatherNotification) -> Unit,
     /** Wall clock the timer and call rows count from; ticks every second while one shows. */
     val nowMillis: Long,
 )
@@ -150,6 +183,7 @@ internal fun rememberNotificationGlances(enabled: Boolean): NotificationGlances 
         dismissFinishedProgress = { GlanceNotificationsStore.dismissFinishedProgress(it.key) },
         missedCalls = missedCalls,
         dismissMissedCalls = {
+            GlanceNotificationsStore.dismissMissedCalls(missedCalls.map { it.key })
             missedCalls.maxOfOrNull { it.callTime }?.let { newest ->
                 preferences.setMissedCallsDismissedAt(newest)
                 missedCallsDismissedAt = newest
@@ -160,6 +194,7 @@ internal fun rememberNotificationGlances(enabled: Boolean): NotificationGlances 
         otp = otp,
         dismissOtp = GlanceNotificationsStore::dismissOtp,
         weather = weather,
+        dismissWeather = { GlanceNotificationsStore.dismissWeather(it.key) },
         nowMillis = nowMillis,
     )
 }
@@ -197,6 +232,12 @@ internal fun rememberAppLabel(packageName: String): String {
     }
 }
 
+/**
+ * A running or paused timer or stopwatch: its time as the title, "Timer • <app>" (or "• Paused")
+ * below, and the clock app's own buttons (such as Pause and Stop) as round icon buttons on the right.
+ * A button without an icon (Google Clock's) gets a matching Material icon by its label, and only
+ * an unrecognized one falls back to a small text pill.
+ */
 @Composable
 internal fun TimerRow(
     timer: TimerNotification,
@@ -211,20 +252,97 @@ internal fun TimerRow(
         }
     // Round a countdown up so it reads 0:01 until the last second has fully passed, like the clock app.
     val seconds = if (timer.isCountDown) (elapsedMillis + 999L) / 1_000L else elapsedMillis / 1_000L
+    val kind = stringResource(if (timer.isCountDown) R.string.home_timer else R.string.home_stopwatch)
+    val state =
+        if (timer.pausedMillis != null) {
+            stringResource(R.string.home_timer_paused)
+        } else {
+            rememberAppLabel(timer.packageName)
+        }
     GlanceStatusRow(
         icon = {
             Icon(
                 imageVector = if (timer.isCountDown) Icons.Rounded.Timer else Icons.Rounded.AvTimer,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
-        title = stringResource(if (timer.isCountDown) R.string.home_timer else R.string.home_stopwatch),
-        subtitle = rememberAppLabel(timer.packageName),
-        pillText = DateUtils.formatElapsedTime(seconds),
+        title = DateUtils.formatElapsedTime(seconds),
+        titleStyle = MaterialTheme.typography.bodyLarge.copy(fontFeatureSettings = "tnum"),
+        subtitle = "$kind • $state",
         onClick = { openNotificationTarget(context, timer.packageName, timer.contentIntent) },
+        trailing =
+            timer.actions.takeIf { it.isNotEmpty() }?.let { actions ->
+                {
+                    Row(
+                        modifier = Modifier.animateContentSize(),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        // Each slot crossfades when its button changes, such as Pause turning into Resume.
+                        actions.forEachIndexed { index, action ->
+                            key(index) {
+                                AnimatedContent(
+                                    targetState = action,
+                                    contentKey = { it.title },
+                                    transitionSpec = {
+                                        (fadeIn(tween(220)) + scaleIn(tween(220), initialScale = 0.8f)) togetherWith
+                                            (fadeOut(tween(150)) + scaleOut(tween(150), targetScale = 0.8f)) using
+                                            SizeTransform(clip = false)
+                                    },
+                                    label = "timerAction",
+                                ) { TimerActionButton(it) }
+                            }
+                        }
+                    }
+                }
+            },
     )
 }
+
+private val TimerActionIconSize = 20.dp
+
+@Composable
+private fun TimerActionButton(action: GlanceNotificationAction) {
+    val context = LocalContext.current
+    // Rasterize at the exact on-screen size so the icon stays sharp.
+    val iconPx = with(LocalDensity.current) { TimerActionIconSize.roundToPx() }
+    val icon by produceState<ImageBitmap?>(initialValue = null, action.icon, iconPx) {
+        value =
+            withContext(Dispatchers.IO) {
+                runCatching { action.icon?.loadDrawable(context)?.toBitmap(iconPx, iconPx)?.asImageBitmap() }.getOrNull()
+            }
+    }
+    val bitmap = icon
+    val fallbackIcon = remember(action.title) { timerActionIcon(action.title) }
+    if (bitmap == null && fallbackIcon == null) {
+        GlanceActionChip(label = action.title, onClick = { action.intent.sendFromUserTap() })
+        return
+    }
+    FilledTonalIconButton(
+        onClick = { action.intent.sendFromUserTap() },
+        modifier = Modifier.size(36.dp),
+    ) {
+        if (bitmap != null) {
+            Icon(bitmap = bitmap, contentDescription = action.title, modifier = Modifier.size(TimerActionIconSize))
+        } else if (fallbackIcon != null) {
+            Icon(imageVector = fallbackIcon, contentDescription = action.title, modifier = Modifier.size(TimerActionIconSize))
+        }
+    }
+}
+
+/** A Material icon for a clock app button that has none, matched by its (English) label. */
+private fun timerActionIcon(title: String): ImageVector? =
+    when (title.trim().lowercase()) {
+        "pause" -> Icons.Rounded.Pause
+        "resume", "start", "play", "continue" -> Icons.Rounded.PlayArrow
+        "reset", "restart" -> Icons.Rounded.RestartAlt
+        "stop" -> Icons.Rounded.Stop
+        "delete", "remove" -> Icons.Rounded.Delete
+        "lap" -> Icons.Rounded.Flag
+        "dismiss", "cancel" -> Icons.Rounded.Close
+        else -> null
+    }
 
 /**
  * A connected call with the caller (or the calling app when it doesn't say), its duration, and a
@@ -290,17 +408,21 @@ internal fun WorkoutRow(workout: WorkoutNotification) {
     )
 }
 
-/** A weather app's current conditions or alert, with the temperature it shows in the pill. */
+/** A weather app's current conditions or alert, with a button at the top right to dismiss it. */
 @Composable
-internal fun WeatherRow(weather: WeatherNotification) {
+internal fun WeatherRow(
+    weather: WeatherNotification,
+    onDismiss: () -> Unit,
+) {
     val context = LocalContext.current
     val appLabel = rememberAppLabel(weather.packageName)
     GlanceStatusRow(
         icon = { NotificationAppIcon(weather.packageName) },
         title = weather.title ?: appLabel,
         subtitle = weather.text ?: appLabel.takeIf { weather.title != null },
-        pillText = weather.temperature,
         onClick = { openNotificationTarget(context, weather.packageName, weather.contentIntent) },
+        onDismiss = onDismiss,
+        dismissAtTop = true,
     )
 }
 

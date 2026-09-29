@@ -1,0 +1,259 @@
+package com.tk.quicksearch.search.appSettings
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.R
+import com.tk.quicksearch.search.core.AppThemeMode
+import com.tk.quicksearch.search.core.BackgroundSource
+import com.tk.quicksearch.search.core.HomeTextColor
+import com.tk.quicksearch.search.data.preferences.UiPreferences
+import com.tk.quicksearch.settings.appearanceSettings.FONT_SIZE_STEPS
+import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
+import com.tk.quicksearch.shared.util.WallpaperUtils
+import com.tk.quicksearch.shared.util.hapticToggle
+import kotlin.math.abs
+import kotlin.math.roundToInt
+
+internal const val THEME_MODE_SETTING_ID = "app_settings_theme_mode"
+internal const val TOP_MATCHES_COUNT_SETTING_ID = "app_settings_top_matches_count"
+
+/** State and callbacks for app-setting rows that edit their value inline instead of toggling. */
+data class AppSettingInlineControls(
+    val fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER,
+    val onFontScaleMultiplierChange: (Float) -> Unit = {},
+    val appIconSizeStep: Int = UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,
+    val onAppIconSizeStepChange: (Int) -> Unit = {},
+    val homeTextColorOverride: HomeTextColor? = null,
+    val onHomeTextColorChange: (HomeTextColor) -> Unit = {},
+    val backgroundSource: BackgroundSource = BackgroundSource.THEME,
+    val customImageUri: String? = null,
+    val appThemeMode: AppThemeMode = AppThemeMode.SYSTEM,
+    val onAppThemeModeChange: (AppThemeMode) -> Unit = {},
+    val topMatchesLimit: Int = UiPreferences.DEFAULT_TOP_MATCHES_LIMIT,
+    val onTopMatchesLimitChange: (Int) -> Unit = {},
+    val aiModel: AiModelInlineState = AiModelInlineState(),
+)
+
+val LocalAppSettingInlineControls = compositionLocalOf { AppSettingInlineControls() }
+
+internal val AppSettingResult.hasInlineControl: Boolean
+    get() =
+        toggleKey == AppSettingsToggleKey.FONT_SIZE ||
+            toggleKey == AppSettingsToggleKey.APP_ICON_SIZE ||
+            toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR ||
+            id == THEME_MODE_SETTING_ID ||
+            id == TOP_MATCHES_COUNT_SETTING_ID ||
+            destination == AppSettingsDestination.AI_MODEL
+
+@Composable
+internal fun AppSettingInlineControlContent(setting: AppSettingResult) {
+    val controls = LocalAppSettingInlineControls.current
+    when {
+        setting.toggleKey == AppSettingsToggleKey.FONT_SIZE ->
+            FontSizeInlineSlider(controls.fontScaleMultiplier, controls.onFontScaleMultiplierChange)
+        setting.toggleKey == AppSettingsToggleKey.APP_ICON_SIZE ->
+            IconSizeInlineSlider(controls.appIconSizeStep, controls.onAppIconSizeStepChange)
+        setting.toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR -> HomeTextColorInlineChips(controls)
+        setting.id == THEME_MODE_SETTING_ID ->
+            ThemeModeInlineChips(controls)
+        setting.id == TOP_MATCHES_COUNT_SETTING_ID ->
+            TopMatchesCountInlineSlider(controls.topMatchesLimit, controls.onTopMatchesLimitChange)
+        setting.destination == AppSettingsDestination.AI_MODEL -> AiModelInlineContent(controls.aiModel)
+    }
+}
+
+@Composable
+private fun FontSizeInlineSlider(
+    fontScaleMultiplier: Float,
+    onChange: (Float) -> Unit,
+) {
+    val view = LocalView.current
+    val committedIndex =
+        FONT_SIZE_STEPS.indices.minByOrNull { abs(FONT_SIZE_STEPS[it].scale - fontScaleMultiplier) } ?: 2
+    var sliderValue by remember(committedIndex) { mutableFloatStateOf(committedIndex.toFloat()) }
+    val activeIndex = sliderValue.roundToInt().coerceIn(0, FONT_SIZE_STEPS.lastIndex)
+
+    InlineSliderRow(
+        value = sliderValue,
+        onValueChange = { value ->
+            sliderValue = value
+            val index = value.roundToInt().coerceIn(0, FONT_SIZE_STEPS.lastIndex)
+            if (index != committedIndex) {
+                hapticToggle(view)()
+                onChange(FONT_SIZE_STEPS[index].scale)
+            }
+        },
+        valueRange = 0f..FONT_SIZE_STEPS.lastIndex.toFloat(),
+        steps = FONT_SIZE_STEPS.size - 2,
+        label = stringResource(FONT_SIZE_STEPS[activeIndex].labelRes),
+    )
+}
+
+@Composable
+private fun IconSizeInlineSlider(
+    appIconSizeStep: Int,
+    onChange: (Int) -> Unit,
+) {
+    val view = LocalView.current
+    InlineSliderRow(
+        value = appIconSizeStep.toFloat(),
+        onValueChange = { value ->
+            val step = value.roundToInt()
+            if (step != appIconSizeStep) {
+                hapticToggle(view)()
+                onChange(step)
+            }
+        },
+        valueRange =
+            UiPreferences.MIN_APP_ICON_SIZE_STEP.toFloat()..
+                UiPreferences.MAX_APP_ICON_SIZE_STEP.toFloat(),
+        steps = UiPreferences.MAX_APP_ICON_SIZE_STEP - UiPreferences.MIN_APP_ICON_SIZE_STEP - 1,
+        label =
+            stringResource(
+                R.string.settings_app_icon_size_percent,
+                UiPreferences.appIconSizePercent(appIconSizeStep),
+            ),
+    )
+}
+
+@Composable
+private fun TopMatchesCountInlineSlider(
+    topMatchesLimit: Int,
+    onChange: (Int) -> Unit,
+) {
+    val view = LocalView.current
+    val limitOptions = UiPreferences.TOP_MATCHES_LIMIT_OPTIONS
+    val currentIndex = limitOptions.indexOf(topMatchesLimit).coerceAtLeast(0)
+    InlineSliderRow(
+        value = currentIndex.toFloat(),
+        onValueChange = { value ->
+            val index = value.roundToInt().coerceIn(0, limitOptions.lastIndex)
+            if (index != currentIndex) {
+                hapticToggle(view)()
+                onChange(limitOptions[index])
+            }
+        },
+        valueRange = 0f..limitOptions.lastIndex.toFloat(),
+        steps = limitOptions.size - 2,
+        label = topMatchesLimit.toString(),
+    )
+}
+
+/** Full-width slider for inline app-setting rows, with a track that stays visible on result cards. */
+@Composable
+internal fun InlineSliderRow(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    label: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            steps = steps,
+            colors =
+                SliderDefaults.colors(
+                    inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.16f),
+                    inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
+            modifier = Modifier.weight(1f).height(36.dp),
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun HomeTextColorInlineChips(controls: AppSettingInlineControls) {
+    val context = LocalContext.current
+    val defaultColor = if (LocalAppIsDarkTheme.current) HomeTextColor.WHITE else HomeTextColor.BLACK
+    val wallpaperDefaultColor by produceState(
+        initialValue = defaultColor,
+        controls.backgroundSource,
+        controls.customImageUri,
+    ) {
+        value =
+            WallpaperUtils.getBackgroundAppearance(context, controls.backgroundSource, controls.customImageUri)
+                ?.isDark
+                ?.let { isDark -> if (isDark) HomeTextColor.WHITE else HomeTextColor.BLACK }
+                ?: defaultColor
+    }
+    val selected = controls.homeTextColorOverride ?: wallpaperDefaultColor
+    InlineChipRow {
+        AppSettingChoiceChip(
+            label = stringResource(R.string.widget_text_icon_color_white),
+            selected = selected == HomeTextColor.WHITE,
+            onClick = { controls.onHomeTextColorChange(HomeTextColor.WHITE) },
+            compact = true,
+            modifier = Modifier.weight(1f),
+        )
+        AppSettingChoiceChip(
+            label = stringResource(R.string.widget_text_icon_color_black),
+            selected = selected == HomeTextColor.BLACK,
+            onClick = { controls.onHomeTextColorChange(HomeTextColor.BLACK) },
+            compact = true,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun ThemeModeInlineChips(controls: AppSettingInlineControls) {
+    InlineChipRow {
+        listOf(
+            AppThemeMode.LIGHT to R.string.common_theme_light,
+            AppThemeMode.DARK to R.string.common_theme_dark,
+            AppThemeMode.SYSTEM to R.string.common_theme_system,
+        ).forEach { (mode, labelRes) ->
+            AppSettingChoiceChip(
+                label = stringResource(labelRes),
+                selected = controls.appThemeMode == mode,
+                onClick = { controls.onAppThemeModeChange(mode) },
+                compact = true,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+/** One line of equal-width compact chips. */
+@Composable
+private fun InlineChipRow(content: @Composable RowScope.() -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        content()
+    }
+}

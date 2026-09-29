@@ -65,6 +65,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >纽约天气</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">使用 Quick Search 搜索应用、联系人、文件、设置等更多内容。</string>
 
@@ -135,7 +138,7 @@
     <string name="settings_gesture_none">无</string>
     <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
     <string name="settings_keyboard_gestures_title">键盘手势 (主屏幕)</string>
-    <string name="settings_keyboard_gestures_desc">仅当主屏幕上没有可滚动内容时可用</string>
+    <string name="settings_keyboard_gestures_desc">仅当主屏幕上没有可滚动内容时有效</string>
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">固定到通知</string>
     <string name="action_unpin_from_notifications">从通知中取消固定</string>
@@ -366,7 +369,7 @@
     <string name="settings_manage_apps_desc">管理您的应用</string>
     <string name="settings_manage_apps_title">管理应用</string>
     <string name="settings_refresh_apps_disabled">应用搜索功能已被停用，无法刷新应用数据</string>
-    <string name="settings_refresh_apps_title">重新加载应用</string>
+    <string name="settings_refresh_apps_title">刷新应用</string>
     <string name="usage_permission_subtitle">如果您希望在建议中看到最近使用的应用，请授予使用情况访问权限。</string>
     <string name="usage_permission_title">授予使用情况访问权限</string>
 
@@ -534,7 +537,7 @@
     <string name="settings_file_previews_toggle">文件预览</string>
     <string name="settings_file_previews_description">打开图片和 PDF 文件前进行预览。</string>
     <string name="settings_refresh_files_disabled">文件搜索功能已被停用，无法刷新文件数据</string>
-    <string name="settings_refresh_files_title">重新加载文件</string>
+    <string name="settings_refresh_files_title">刷新文件</string>
     <string name="settings_system_files_toggle">系统文件</string>
 
     <!-- ============================================================================
@@ -728,6 +731,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">编辑</string>
     <string name="settings_font_size_big">大</string>
+    <string name="settings_font_size_extra_small">特小</string>
+    <string name="settings_font_size_extra_big">特大</string>
     <string name="settings_font_size_medium">中</string>
     <string name="settings_font_size_small">小</string>
     <string name="settings_font_size_title">字体大小</string>
@@ -797,7 +802,7 @@
     <string name="settings_quick_settings_tile_desc">将 Quick Search 添加到通知栏的快捷设置磁贴中。</string>
     <string name="settings_quick_settings_tile_title">快捷设置磁贴</string>
     <string name="settings_refresh_contacts_disabled">联系人搜索功能已被停用，无法刷新联系人数据</string>
-    <string name="settings_refresh_contacts_title">重新加载联系人</string>
+    <string name="settings_refresh_contacts_title">刷新联系人</string>
     <string name="settings_refresh_data_note">数据会自动刷新。您可以使用这些按钮执行手动强制刷新。</string>
     <string name="settings_refresh_data_title">刷新数据</string>
     <string name="settings_refresh_icon_packs">刷新图标包</string>
@@ -818,18 +823,35 @@
     <string name="settings_tools_info_examples_header">以下是您可以在搜索栏中尝试输入的一些示例</string>
     <string name="settings_tools_title">实用工具</string>
     <string name="settings_at_a_glance_title">一览</string>
+    <string name="custom_info_title">自定义信息</string>
+    <string name="custom_info_edit_title">编辑详情</string>
+    <string name="custom_info_prompt">提示词</string>
+    <string name="custom_info_set_date_time">设置日期和时间</string>
+    <string name="custom_info_desc">在你选择的时间，于主屏幕显示 AI 对提示词的回答</string>
+    <string name="settings_ai_api_key_required_message">此功能需要 AI 提供商的 API 密钥。</string>
+    <string name="settings_ai_api_key_required_title">需要 API 密钥</string>
+    <string name="settings_ai_api_key_setup_action">设置密钥</string>
+    <string name="custom_info_repeat_never">不重复</string>
+    <string name="custom_info_repeat_every">重复间隔</string>
+    <string name="custom_info_send_notification">发送通知</string>
+    <string name="custom_info_preview">预览</string>
+    <string name="custom_info_saved">已保存</string>
+    <string name="custom_info_delete_confirm_title">删除 %1$s 吗？</string>
+    <string name="custom_info_delete_confirm_message">此自定义信息及其计划将被永久删除。</string>
     <string name="settings_at_a_glance_desc">在合适的时间出现在主屏幕上的实用信息</string>
     <string name="settings_at_a_glance_alarms_title">闹钟</string>
     <string name="settings_upcoming_alarm_desc">45 分钟内响铃的下一个闹钟</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">在前一晚显示明天的第一个闹钟</string>
     <string name="settings_hidden_alarm_apps_title">已隐藏闹钟的应用</string>
-    <string name="settings_at_a_glance_events_desc">今天的日历活动，以及晚上显示明天的全天活动</string>
+    <string name="settings_at_a_glance_events_desc">今天的日历活动</string>
+    <string name="settings_at_a_glance_tomorrow_events">在前一晚显示明天的日程</string>
     <string name="settings_upcoming_reminders_desc">30 分钟内到期或已逾期的提醒</string>
     <string name="settings_at_a_glance_low_battery_title">电量低</string>
     <string name="settings_low_battery_desc">电池电量不高于 %1$d%% 时</string>
     <string name="settings_at_a_glance_timers_title">计时器和秒表</string>
     <string name="settings_at_a_glance_timers_desc">时钟应用中正在运行的计时器和秒表</string>
     <string name="settings_at_a_glance_birthdays_title">生日</string>
-    <string name="settings_at_a_glance_birthdays_desc">今天过生日的联系人</string>
+    <string name="settings_at_a_glance_birthdays_desc">今天过生日或纪念日的联系人</string>
     <string name="settings_at_a_glance_progress_title">持续通知</string>
     <string name="settings_at_a_glance_progress_desc">实时动态，例如乘车、配送和下载</string>
     <string name="settings_at_a_glance_charging_title">正在充电</string>
@@ -900,6 +922,7 @@
     <string name="settings_direct_search_how_to">获取免费 API 密钥</string>
     <string name="settings_direct_search_model_label">模型</string>
     <string name="settings_select_model">选择模型</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">所选模型不可用。请在设置中选择其他模型。</string>
     <string name="settings_loading_models">正在加载模型…</string>
     <string name="settings_direct_search_personal_context">个人背景信息</string>
@@ -944,6 +967,8 @@
     <string name="release_notes_title_no_version">Quick Search 版本更新日志</string>
     <string name="settings_backup_export_api_key_warning_message">继续操作需自行承担风险。导出的 API 密钥未经加密，任何能够访问您备份文件的人均可获取这些密钥。</string>
     <string name="settings_backup_export_button">导出</string>
+    <string name="settings_backup_export_title">导出配置设置</string>
+    <string name="settings_backup_export_desc">将您的配置设置保存到备份文件</string>
     <string name="settings_backup_export_failed">无法导出设置。</string>
     <string name="settings_backup_export_option_pinned_items_title">固定的项目</string>
     <string name="settings_backup_export_option_api_keys">API 密钥</string>
@@ -1275,11 +1300,20 @@
     <string name="home_charging_paused">已暂停充电</string>
     <string name="home_timer">计时器</string>
     <string name="home_stopwatch">秒表</string>
+    <string name="home_timer_paused">已暂停</string>
     <string name="home_storage_almost_full">存储空间即将用尽</string>
     <string name="home_storage_free">可用 %1$s，共 %2$s</string>
-    <string name="home_birthday_today">今天生日</string>
-    <string name="home_birthday_turns">今天满 %1$d 岁</string>
+    <string name="home_birthday_title">%1$s的生日</string>
+    <string name="home_anniversary_title">%1$s的纪念日</string>
+    <string name="home_birthday_title_ordinal">%1$s的生日（%2$s）</string>
+    <string name="home_anniversary_title_ordinal">%1$s的纪念日（%2$s）</string>
+    <string name="home_birthday_wish">点按送上祝福</string>
     <string name="home_missed_call">未接来电</string>
+    <string name="home_otp_from">来自%1$s的验证码</string>
+    <string name="home_copied">已复制</string>
+    <string name="home_reminder_marked_done">提醒已标记为完成</string>
+    <string name="home_reminder_snoozed">提醒已推迟 30 分钟</string>
+    <string name="home_reminder_deleted">提醒已删除</string>
     <string name="home_missed_calls_count">未接来电（%1$s）</string>
     <string name="home_missed_call_from_app">%1$s（%2$s）</string>
     <string name="home_dnd_on">请勿打扰已开启</string>
@@ -1293,8 +1327,10 @@
     <string name="home_turn_off">关闭</string>
     <string name="settings_tavily_title">用于网页搜索的 Tavily</string>
     <string name="settings_tavily_desc">添加 Tavily API 密钥，为不支持网页搜索的模型添加网页搜索功能。</string>
-    <string name="settings_tavily_mode_always">始终使用 Tavily 进行网页搜索</string>
-    <string name="settings_tavily_mode_when_unsupported">仅在模型不支持网页搜索时使用</string>
+    <string name="settings_tavily_mode_always">始终</string>
+    <string name="settings_tavily_mode_when_unsupported">作为备用</string>
+    <string name="settings_tavily_mode_always_desc">所有模型都使用它进行网页搜索。</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">仅在所选模型无法进行网页搜索时使用。</string>
     <string name="settings_weather_no_web_search_warning">天气需要网页结果。请选择支持网页搜索的模型，或在“API 密钥设置”中添加 Tavily API 密钥。</string>
     <string name="tavily_search_failed_toast">Tavily 网页搜索失败，将在没有网页结果的情况下回答。</string>
     <string name="search_hint_reminders">搜索提醒…</string>
