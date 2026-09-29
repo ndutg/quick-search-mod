@@ -110,7 +110,7 @@ internal fun DoNotDisturbRow(glance: DoNotDisturbGlance) {
             Icon(
                 imageVector = Icons.Rounded.DoNotDisturbOn,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
         title = stringResource(R.string.home_dnd_on),

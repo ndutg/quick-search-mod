@@ -12,7 +12,7 @@ import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderRegistry
 import com.tk.quicksearch.tools.aiSearch.LlmTextModel
-import com.tk.quicksearch.tools.aiSearch.resolveModelSelection
+import com.tk.quicksearch.tools.aiSearch.LlmDefaultModels
 import com.tk.quicksearch.settings.settingsDetailScreen.AiBackedToolConfigId
 import com.tk.quicksearch.shared.util.isLowRamDevice
 import kotlinx.coroutines.CoroutineScope
@@ -299,11 +299,12 @@ internal fun SearchPreferencesDelegate.setLlmApiKey(
                         emptyList()
                     }
                 if (isNewKey) {
-                    userPreferences.setLlmModel(providerId, null)
+                    val defaultModelId = LlmDefaultModels.pick(providerId, providerModels)
+                    userPreferences.setLlmModel(providerId, defaultModelId)
                     userPreferences.setLlmGroundingEnabled(providerId, true)
                     userPreferences.setLlmThinkingEnabled(providerId, false)
                     if (providerId == aiSearchHandler.getAiSearchProviderId()) {
-                        aiSearchHandler.setSelectedModelId(null)
+                        aiSearchHandler.setSelectedModelId(defaultModelId)
                         aiSearchHandler.setGroundingEnabled(true)
                         aiSearchHandler.setThinkingEnabled(false)
                     }
@@ -355,17 +356,23 @@ internal fun SearchPreferencesDelegate.addCustomLlmProvider(
                 val provider = userPreferences.addCustomLlmProvider(baseUrl, apiKey) ?: return@launch
                 val providerId = AiSearchLlmProviderId.custom(provider.id)
                 aiSearchHandler.setLlmApiKey(providerId, provider.apiKey)
-                aiSearchHandler.setAiSearchProviderId(providerId)
+                aiSearchHandler.activateIfPreferred(providerId)
 
                 val modelsResult = fetchAvailableModels(providerId, provider.apiKey)
                 modelsResult.exceptionOrNull()?.let { error ->
                     showCustomProviderModelsError(error)
                 }
                 val models = modelsResult.getOrDefault(emptyList())
-                aiSearchHandler.setSelectedModelId(null)
-                aiSearchHandler.setGroundingEnabled(true)
-                aiSearchHandler.setThinkingEnabled(false)
-                aiSearchHandler.updateAvailableModels(models)
+                val defaultModelId = LlmDefaultModels.pick(providerId, models)
+                userPreferences.setLlmModel(providerId, defaultModelId)
+                userPreferences.setLlmGroundingEnabled(providerId, true)
+                userPreferences.setLlmThinkingEnabled(providerId, false)
+                if (providerId == aiSearchHandler.getAiSearchProviderId()) {
+                    aiSearchHandler.setSelectedModelId(defaultModelId)
+                    aiSearchHandler.setGroundingEnabled(true)
+                    aiSearchHandler.setThinkingEnabled(false)
+                    aiSearchHandler.updateAvailableModels(models)
+                }
                 val hasAnyKey = userPreferences.hasAnyLlmApiKey()
                 searchEngineManager.updateSearchTargetsForLlmAvailability(hasAnyKey)
 
@@ -381,7 +388,7 @@ internal fun SearchPreferencesDelegate.addCustomLlmProvider(
                         activeLlmModel = aiSearchHandler.getSelectedModelId(),
                         activeLlmGroundingEnabled = aiSearchHandler.isGroundingEnabled(),
                         activeLlmThinkingEnabled = aiSearchHandler.isThinkingEnabled(),
-                        activeLlmAvailableModels = models,
+                        activeLlmAvailableModels = aiSearchHandler.getAvailableModels(),
                         availableLlmModelsByProvider =
                             it.availableLlmModelsByProvider + (providerId to models),
                     )

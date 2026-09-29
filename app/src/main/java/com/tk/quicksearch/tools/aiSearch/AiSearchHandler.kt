@@ -14,28 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal data class AiConversationTurn(
-    val question: String,
-    val answer: String,
-)
-
-internal fun buildAiFollowUpPrompt(
-    previousTurns: List<AiConversationTurn>,
-    followUpQuestion: String,
-): String =
-    buildString {
-        append("Use the complete conversation below as context for the final follow-up question.\n\n")
-        previousTurns.forEach { turn ->
-            append("User: ")
-            append(turn.question)
-            append("\nAssistant: ")
-            append(turn.answer)
-            append("\n\n")
-        }
-        append("User follow-up: ")
-        append(followUpQuestion)
-    }
-
 class AiSearchHandler(
     private val context: Context,
     private val userPreferences: UserAppPreferences,
@@ -130,19 +108,24 @@ class AiSearchHandler(
     ) {
         ensureInitialized()
         val normalized = apiKey?.trim().takeUnless { it.isNullOrBlank() }
+        val isNewKey = normalized != null && userPreferences.getLlmApiKey(providerId).isNullOrBlank()
         userPreferences.setLlmApiKey(providerId, normalized)
 
         when {
-            normalized != null && (providerId == activeProviderId || llmApiKey.isNullOrBlank()) -> {
+            normalized != null &&
+                (providerId == activeProviderId || llmApiKey.isNullOrBlank() ||
+                    (isNewKey && outranksActiveProvider(providerId))) -> {
                 setAiSearchProviderId(providerId)
                 llmApiKey = normalized
                 hasLoadedModelsFromApi = false
             }
             providerId == activeProviderId && normalized == null -> {
                 val nextProvider =
-                    userPreferences.getConfiguredLlmProviderIds().firstOrNull {
-                        !userPreferences.getLlmApiKey(it).isNullOrBlank()
-                    }
+                    AiSearchLlmProviderId.preferredOf(
+                        userPreferences.getConfiguredLlmProviderIds().filter {
+                            !userPreferences.getLlmApiKey(it).isNullOrBlank()
+                        },
+                    )
                 if (nextProvider != null) {
                     setAiSearchProviderId(nextProvider)
                 } else {
@@ -170,6 +153,18 @@ class AiSearchHandler(
         userPreferences.setLlmModel(activeProviderId, normalized)
         availableModels = ensureModelExists(availableModels)
     }
+
+    /** Makes [providerId] active when no provider is usable or it outranks the active one. */
+    fun activateIfPreferred(providerId: AiSearchLlmProviderId) {
+        ensureInitialized()
+        if (llmApiKey.isNullOrBlank() || outranksActiveProvider(providerId)) {
+            setAiSearchProviderId(providerId)
+        }
+    }
+
+    private fun outranksActiveProvider(providerId: AiSearchLlmProviderId): Boolean =
+        AiSearchLlmProviderId.defaultPriority(providerId) <
+            AiSearchLlmProviderId.defaultPriority(activeProviderId)
 
     fun setSelectedModelId(
         providerId: AiSearchLlmProviderId,
@@ -264,7 +259,7 @@ class AiSearchHandler(
         val result = activeProvider.fetchAvailableTextModels(apiKey, context)
         val fetched = result.getOrDefault(emptyList())
         if (result.isSuccess) {
-            val resolvedModelId = resolveModelSelection(selectedModelId, fetched)
+            val resolvedModelId = resolveModelSelectionOrDefault(activeProviderId, selectedModelId, fetched)
             if (resolvedModelId != selectedModelId) setSelectedModelId(resolvedModelId)
         }
         availableModels = ensureModelExists(fetched)
@@ -395,20 +390,14 @@ class AiSearchHandler(
                 }
 
                 val selectedModel = availableModels.find { it.id == selectedModelId }
-                val prompt =
-                    if (isFollowUp) {
-                        buildAiFollowUpPrompt(previousTurns, questionText)
-                    } else {
-                        questionText
-                    }
                 val webSearch =
                     if (isHelp) {
-                        PreparedWebSearch(prompt = prompt, useNativeSearch = false)
+                        PreparedWebSearch(prompt = questionText, useNativeSearch = false)
                     } else {
                         prepareWebSearch(
                             userPreferences = userPreferences,
                             searchQuery = trimmedQuery,
-                            prompt = prompt,
+                            prompt = questionText,
                             nativeSearchSupported =
                                 providerSupportsNativeSearch(activeProviderId) &&
                                     selectedModel?.supportsGrounding != false,
@@ -432,13 +421,15 @@ class AiSearchHandler(
                                 modelId = selectedModelId,
                                 useGroundingWithGoogleSearch = webSearch.useNativeSearch,
                                 thinkingEnabled =
-                                    thinkingEnabled &&
-                                        activeProviderId != AiSearchLlmProviderId.OPENAI &&
-                                        !activeProviderId.isCustom,
+                                    thinkingEnabled && isThinkingRequestSupported(activeProviderId),
                                 useSystemInstruction =
                                     selectedModel?.supportsSystemInstructions != false,
                                 systemInstruction =
                                     if (isHelp) QuickSearchHelp.systemInstruction(context) else null,
+                                // Sent as real messages (not folded into the prompt) so web search
+                                // results wrap only the new question and earlier turns stay a
+                                // stable prefix that providers can serve from their prompt cache.
+                                history = if (isFollowUp) previousTurns else emptyList(),
                             ),
                     )
 
@@ -587,9 +578,7 @@ class AiSearchHandler(
                                 modelId = modelId,
                                 useGroundingWithGoogleSearch = webSearch.useNativeSearch,
                                 thinkingEnabled =
-                                    thinkingEnabled &&
-                                        providerId != AiSearchLlmProviderId.OPENAI &&
-                                        !providerId.isCustom,
+                                    thinkingEnabled && isThinkingRequestSupported(providerId),
                                 useSystemInstruction = useSystemInstruction,
                                 systemInstruction = resolvedSystemInstruction,
                                 advancedPayloadJson = advancedPayloadJson,

@@ -126,9 +126,10 @@ class CalendarRepository(
         limit: Int = 50,
     ): List<CalendarEventInfo> = getEventsOn(day, limit).filter { it.allDay }
 
-    private fun getEventsOn(
+    /** Events on [day], all-day and timed, including ones that started earlier and run into it; earliest first. */
+    fun getEventsOn(
         day: LocalDate,
-        limit: Int,
+        limit: Int = 50,
     ): List<CalendarEventInfo> {
         if (limit <= 0 || !hasPermission()) return emptyList()
         val zoneId = ZoneId.systemDefault()

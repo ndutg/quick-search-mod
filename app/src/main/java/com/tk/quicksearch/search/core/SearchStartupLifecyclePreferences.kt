@@ -202,10 +202,26 @@ internal suspend fun SearchStartupLifecycleDelegate.publishCurrentStartupAppSugg
         }
     }
 
+private fun SearchStartupLifecycleDelegate.canShowStartupPinnedTab(state: SearchResultsState): Boolean {
+        val config = configStateProvider()
+        return state.query.isBlank() &&
+            state.pinnedApps.isNotEmpty() &&
+            config.selectedAppSuggestionTab == AppSuggestionTabType.PINNED &&
+            AppSuggestionTabType.PINNED in config.enabledAppSuggestionTabs
+    }
+
 internal suspend fun SearchStartupLifecycleDelegate.publishStartupAppSuggestions() {
         withContext(Dispatchers.Main.immediate) {
             updateResultsState { state ->
-                if (state.query.isNotBlank() || state.recentApps.isEmpty()) {
+                val skip =
+                    state.query.isNotBlank() ||
+                        (state.recentApps.isEmpty() && !canShowStartupPinnedTab(state))
+                AppSearchPerformanceLogger.log {
+                    "startupPinned suggestionsPublish published=${!skip} " +
+                        "appsSection=${state.appsSectionState::class.simpleName} " +
+                        "pinned=${state.pinnedApps.size} recents=${state.recentApps.size}"
+                }
+                if (skip) {
                     state
                 } else {
                     state.copy(

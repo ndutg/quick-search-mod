@@ -65,6 +65,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >న్యూయార్క్ వాతావరణం</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Quick Search ద్వారా యాప్‌లు, పరిచయాలు, ఫైళ్లు, సెట్టింగ్‌లు మరియు మరిన్నింటిని శోధించండి.</string>
 
@@ -135,7 +138,7 @@
     <string name="settings_gesture_none">ఏదీ లేదు</string>
     <string name="settings_gesture_custom">అనుకూలమైనవి (యాప్‌లు, ఫైల్‌లు మొదలైనవి)</string>
     <string name="settings_keyboard_gestures_title">కీబోర్డ్ హావభావాలు (హోమ్)</string>
-    <string name="settings_keyboard_gestures_desc">హోమ్ స్క్రీన్‌లో స్క్రోల్ చేయగల కంటెంట్ లేనప్పుడు మాత్రమే అందుబాటులో ఉంటుంది</string>
+    <string name="settings_keyboard_gestures_desc">హోమ్ స్క్రీన్‌లో స్క్రోల్ చేయగల కంటెంట్ లేనప్పుడు మాత్రమే పని చేస్తుంది</string>
     <string name="action_pin_app">పిన్ చేయి</string>
     <string name="action_pin_to_notifications">నోటిఫికేషన్‌లకు పిన్ చేయి</string>
     <string name="action_unpin_from_notifications">నోటిఫికేషన్‌ల నుండి అన్‌పిన్ చేయి</string>
@@ -366,7 +369,7 @@
     <string name="settings_manage_apps_desc">మీ యాప్‌లను నిర్వహించండి</string>
     <string name="settings_manage_apps_title">యాప్‌లను నిర్వహించండి</string>
     <string name="settings_refresh_apps_disabled">యాప్ శోధన నిలిపివేయబడింది, యాప్‌ల డేటాను రీఫ్రెష్ చేయడం సాధ్యపడదు</string>
-    <string name="settings_refresh_apps_title">యాప్‌లను రీలోడ్ చేయి</string>
+    <string name="settings_refresh_apps_title">యాప్‌లను రీఫ్రెష్ చేయి</string>
     <string name="usage_permission_subtitle">మీరు మీ ఇటీవల ఉపయోగించిన యాప్‌లను సూచనలలో చూడాలనుకుంటే, వినియోగ ప్రాప్యత అనుమతిని మంజూరు చేయండి.</string>
     <string name="usage_permission_title">వినియోగ ప్రాప్యతను మంజూరు చేయండి</string>
 
@@ -535,7 +538,7 @@
     <string name="settings_file_previews_toggle">ఫైల్ ప్రివ్యూలు</string>
     <string name="settings_file_previews_description">చిత్రాలు మరియు PDFలను తెరవడానికి ముందు వాటిని ప్రివ్యూ చేయండి.</string>
     <string name="settings_refresh_files_disabled">ఫైళ్ల శోధన నిలిపివేయబడింది, ఫైళ్ల డేటాను రీఫ్రెష్ చేయడం సాధ్యపడదు</string>
-    <string name="settings_refresh_files_title">ఫైళ్లను రీలోడ్ చేయి</string>
+    <string name="settings_refresh_files_title">ఫైళ్లను రీఫ్రెష్ చేయి</string>
     <string name="settings_system_files_toggle">సిస్టమ్ ఫైళ్లు</string>
 
     <!-- ============================================================================
@@ -738,6 +741,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">సవరించు</string>
     <string name="settings_font_size_big">పెద్దది</string>
+    <string name="settings_font_size_extra_small">చాలా చిన్నది</string>
+    <string name="settings_font_size_extra_big">చాలా పెద్దది</string>
     <string name="settings_font_size_medium">మధ్యస్థం</string>
     <string name="settings_font_size_small">చిన్నది</string>
     <string name="settings_font_size_title">ఫాంట్ పరిమాణం</string>
@@ -807,7 +812,7 @@
     <string name="settings_quick_settings_tile_desc">త్వరిత సెట్టింగ్‌ల (Quick Settings) టైల్స్‌కు Quick Searchని జోడించండి.</string>
     <string name="settings_quick_settings_tile_title">త్వరిత సెట్టింగ్‌ల టైల్</string>
     <string name="settings_refresh_contacts_disabled">పరిచయాల శోధన నిలిపివేయబడింది, పరిచయాల డేటాను రీఫ్రెష్ చేయడం సాధ్యపడదు</string>
-    <string name="settings_refresh_contacts_title">పరిచయాలను రీలోడ్ చేయి</string>
+    <string name="settings_refresh_contacts_title">పరిచయాలను రీఫ్రెష్ చేయి</string>
     <string name="settings_refresh_data_note">డేటా స్వయంచాలకంగా రీఫ్రెష్ చేయబడుతుంది. మాన్యువల్‌గా రీఫ్రెష్ చేయడానికి ఈ బటన్‌లను ఉపయోగించండి.</string>
     <string name="settings_refresh_data_title">డేటాను రీఫ్రెష్ చేయి</string>
     <string name="settings_refresh_icon_packs">ఐకాన్ ప్యాక్‌లను రీఫ్రెష్ చేయి</string>
@@ -828,18 +833,35 @@
     <string name="settings_tools_info_examples_header">శోధన పట్టీలో మీరు అడగగలిగే వాటికి కొన్ని ఉదాహరణలు ఇక్కడ ఉన్నాయి</string>
     <string name="settings_tools_title">సాధనాలు</string>
     <string name="settings_at_a_glance_title">ఒక్క చూపులో</string>
+    <string name="custom_info_title">అనుకూల సమాచారం</string>
+    <string name="custom_info_edit_title">వివరాలను సవరించండి</string>
+    <string name="custom_info_prompt">ప్రాంప్ట్</string>
+    <string name="custom_info_set_date_time">తేదీ మరియు సమయం సెట్ చేయండి</string>
+    <string name="custom_info_desc">మీరు ఎంచుకున్న సమయాల్లో హోమ్‌లో మీ ప్రాంప్ట్‌లకు AI సమాధానాలు</string>
+    <string name="settings_ai_api_key_required_message">ఈ ఫీచర్‌కు AI ప్రొవైడర్ API కీ అవసరం.</string>
+    <string name="settings_ai_api_key_required_title">API కీ అవసరం</string>
+    <string name="settings_ai_api_key_setup_action">కీని సెటప్ చేయండి</string>
+    <string name="custom_info_repeat_never">పునరావృతం కాదు</string>
+    <string name="custom_info_repeat_every">పునరావృత వ్యవధి</string>
+    <string name="custom_info_send_notification">నోటిఫికేషన్ పంపండి</string>
+    <string name="custom_info_preview">ప్రివ్యూ</string>
+    <string name="custom_info_saved">సేవ్ చేయబడింది</string>
+    <string name="custom_info_delete_confirm_title">%1$sను తొలగించాలా?</string>
+    <string name="custom_info_delete_confirm_message">ఈ అనుకూల సమాచారం మరియు దాని షెడ్యూల్ శాశ్వతంగా తొలగించబడతాయి.</string>
     <string name="settings_at_a_glance_desc">సరైన సమయంలో మీ హోమ్ స్క్రీన్‌లో కనిపించే ఉపయోగకరమైన సమాచారం</string>
     <string name="settings_at_a_glance_alarms_title">అలారాలు</string>
     <string name="settings_upcoming_alarm_desc">45 నిమిషాల్లోపు ఉన్నప్పుడు మీ తదుపరి అలారం</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">రేపటి మొదటి అలారాన్ని ముందు రాత్రి చూపించండి</string>
     <string name="settings_hidden_alarm_apps_title">దాచిన అలారం యాప్‌లు</string>
-    <string name="settings_at_a_glance_events_desc">ఈరోజు క్యాలెండర్ ఈవెంట్‌లు, సాయంత్రం రేపటి రోజంతా ఈవెంట్‌లు</string>
+    <string name="settings_at_a_glance_events_desc">ఈరోజు క్యాలెండర్ ఈవెంట్‌లు</string>
+    <string name="settings_at_a_glance_tomorrow_events">రేపటి ఈవెంట్‌లను ముందు రాత్రి చూపించండి</string>
     <string name="settings_upcoming_reminders_desc">30 నిమిషాల్లోపు గడువు ఉన్న లేదా గడువు దాటిన రిమైండర్‌లు</string>
     <string name="settings_at_a_glance_low_battery_title">తక్కువ బ్యాటరీ</string>
     <string name="settings_low_battery_desc">మీ బ్యాటరీ %1$d%% లేదా అంతకంటే తక్కువ ఉన్నప్పుడు</string>
     <string name="settings_at_a_glance_timers_title">టైమర్‌లు &amp; స్టాప్‌వాచ్</string>
     <string name="settings_at_a_glance_timers_desc">మీ క్లాక్ యాప్ నుండి నడుస్తున్న టైమర్‌లు మరియు స్టాప్‌వాచ్‌లు</string>
     <string name="settings_at_a_glance_birthdays_title">పుట్టినరోజులు</string>
-    <string name="settings_at_a_glance_birthdays_desc">ఈరోజు పుట్టినరోజు ఉన్న పరిచయాలు</string>
+    <string name="settings_at_a_glance_birthdays_desc">ఈరోజు పుట్టినరోజు లేదా వార్షికోత్సవం ఉన్న పరిచయాలు</string>
     <string name="settings_at_a_glance_progress_title">కొనసాగుతున్న నోటిఫికేషన్‌లు</string>
     <string name="settings_at_a_glance_progress_desc">రైడ్‌లు, డెలివరీలు, డౌన్‌లోడ్‌ల వంటి లైవ్ అప్‌డేట్‌లు</string>
     <string name="settings_at_a_glance_charging_title">ఛార్జ్ అవుతోంది</string>
@@ -910,6 +932,7 @@
     <string name="settings_direct_search_how_to">ఉచిత API కీని పొందండి</string>
     <string name="settings_direct_search_model_label">మోడల్</string>
     <string name="settings_select_model">మోడల్‌ను ఎంచుకోండి</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">ఎంచుకున్న మోడల్ అందుబాటులో లేదు. సెట్టింగ్‌లలో మరొక మోడల్‌ను ఎంచుకోండి.</string>
     <string name="settings_loading_models">మోడల్‌లు లోడ్ అవుతున్నాయి…</string>
     <string name="settings_direct_search_personal_context">వ్యక్తిగత సందర్భం (Personal Context)</string>
@@ -954,6 +977,8 @@
     <string name="release_notes_title_no_version">Quick Search రిలీజ్ నోట్స్</string>
     <string name="settings_backup_export_api_key_warning_message">మీ స్వంత రిస్క్‌తోనే కొనసాగండి. ఎగుమతి చేసిన API కీలు ఎన్‌క్రిప్ట్ చేయబడవు మరియు మీ బ్యాకప్ ఫైల్‌కు యాక్సెస్ ఉన్న ఎవరైనా వాటిని యాక్సెస్ చేయవచ్చు.</string>
     <string name="settings_backup_export_button">ఎగుమతి చేయి</string>
+    <string name="settings_backup_export_title">సెట్టింగ్‌లను ఎగుమతి చేయండి</string>
+    <string name="settings_backup_export_desc">మీ సెట్టింగ్‌లను బ్యాకప్ ఫైల్‌లో సేవ్ చేయండి</string>
     <string name="settings_backup_export_failed">సెట్టింగ్‌లను ఎగుమతి చేయడం సాధ్యపడలేదు.</string>
     <string name="settings_backup_export_option_pinned_items_title">పిన్ చేసిన అంశాలు</string>
     <string name="settings_backup_export_option_api_keys">API కీలు</string>
@@ -1285,11 +1310,20 @@
     <string name="home_charging_paused">ఛార్జింగ్ పాజ్ చేయబడింది</string>
     <string name="home_timer">టైమర్</string>
     <string name="home_stopwatch">స్టాప్‌వాచ్</string>
+    <string name="home_timer_paused">పాజ్ చేయబడింది</string>
     <string name="home_storage_almost_full">స్టోరేజ్ దాదాపు నిండిపోయింది</string>
     <string name="home_storage_free">%2$sలో %1$s ఖాళీ</string>
-    <string name="home_birthday_today">ఈరోజు పుట్టినరోజు</string>
-    <string name="home_birthday_turns">ఈరోజు %1$d ఏళ్లు నిండుతాయి</string>
+    <string name="home_birthday_title">%1$s పుట్టినరోజు</string>
+    <string name="home_anniversary_title">%1$s వార్షికోత్సవం</string>
+    <string name="home_birthday_title_ordinal">%1$s పుట్టినరోజు (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">%1$s వార్షికోత్సవం (%2$s)</string>
+    <string name="home_birthday_wish">శుభాకాంక్షలు చెప్పడానికి నొక్కండి</string>
     <string name="home_missed_call">మిస్డ్ కాల్</string>
+    <string name="home_otp_from">%1$s నుండి OTP</string>
+    <string name="home_copied">కాపీ చేయబడింది</string>
+    <string name="home_reminder_marked_done">రిమైండర్ పూర్తయినట్లు గుర్తించబడింది</string>
+    <string name="home_reminder_snoozed">రిమైండర్ 30 నిమిషాలు స్నూజ్ చేయబడింది</string>
+    <string name="home_reminder_deleted">రిమైండర్ తొలగించబడింది</string>
     <string name="home_missed_calls_count">మిస్డ్ కాల్‌లు (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">అభ్యంతర పెట్టవద్దు ఆన్‌లో ఉంది</string>
@@ -1303,8 +1337,10 @@
     <string name="home_turn_off">ఆఫ్ చేయండి</string>
     <string name="settings_tavily_title">వెబ్ సెర్చ్ కోసం Tavily</string>
     <string name="settings_tavily_desc">వెబ్ సెర్చ్‌కు మద్దతు లేని మోడల్‌లకు వెబ్ సెర్చ్ జోడించడానికి Tavily API కీని జోడించండి.</string>
-    <string name="settings_tavily_mode_always">వెబ్ సెర్చ్ కోసం ఎల్లప్పుడూ Tavily ఉపయోగించండి</string>
-    <string name="settings_tavily_mode_when_unsupported">మోడల్ వెబ్ సెర్చ్‌కు మద్దతు ఇవ్వనప్పుడు మాత్రమే ఉపయోగించండి</string>
+    <string name="settings_tavily_mode_always">ఎల్లప్పుడూ</string>
+    <string name="settings_tavily_mode_when_unsupported">బ్యాకప్‌గా</string>
+    <string name="settings_tavily_mode_always_desc">ప్రతి మోడల్‌తో వెబ్ సెర్చ్ కోసం ఉపయోగించబడుతుంది.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">ఎంచుకున్న మోడల్ వెబ్ సెర్చ్ చేయలేనప్పుడు మాత్రమే ఉపయోగించబడుతుంది.</string>
     <string name="settings_weather_no_web_search_warning">వాతావరణానికి వెబ్ ఫలితాలు అవసరం. వెబ్ సెర్చ్‌కు మద్దతు ఇచ్చే మోడల్‌ను ఎంచుకోండి, లేదా API కీ సెటప్‌లో Tavily API కీని జోడించండి.</string>
     <string name="tavily_search_failed_toast">Tavily వెబ్ సెర్చ్ విఫలమైంది. వెబ్ ఫలితాలు లేకుండా సమాధానం ఇస్తోంది.</string>
     <string name="search_hint_reminders">రిమైండర్‌లను వెతకండి…</string>

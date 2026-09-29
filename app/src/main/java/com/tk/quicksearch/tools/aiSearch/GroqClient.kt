@@ -104,6 +104,7 @@ class GroqClient(
         thinkingEnabled: Boolean = false,
         useSystemInstruction: Boolean = true,
         systemInstruction: String? = null,
+        history: List<AiConversationTurn> = emptyList(),
         responseMimeType: String = "text/plain",
         advancedPayloadJson: String? = null,
     ): Result<String> =
@@ -121,6 +122,7 @@ class GroqClient(
                         thinkingEnabled = thinkingEnabled,
                         useSystemInstruction = useSystemInstruction,
                         systemInstruction = systemInstruction,
+                        history = history,
                         responseMimeType = responseMimeType,
                         advancedPayloadJson = advancedPayloadJson,
                     )
@@ -144,6 +146,7 @@ class GroqClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
         responseMimeType: String,
         advancedPayloadJson: String?,
     ): Result<String> {
@@ -167,6 +170,7 @@ class GroqClient(
                 thinkingEnabled = thinkingEnabled,
                 useSystemInstruction = useSystemInstruction,
                 systemInstruction = systemInstruction,
+                history = history,
                 responseMimeType = responseMimeType,
                 advancedPayloadJson = advancedPayloadJson,
             )
@@ -208,6 +212,7 @@ class GroqClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
         responseMimeType: String,
         advancedPayloadJson: String?,
     ): String {
@@ -226,6 +231,7 @@ class GroqClient(
             messages.put(JSONObject().put("role", "system").put("content", systemContent))
         }
 
+        messages.putChatHistory(history)
         messages.put(JSONObject().put("role", "user").put("content", query))
 
         val root = JSONObject()

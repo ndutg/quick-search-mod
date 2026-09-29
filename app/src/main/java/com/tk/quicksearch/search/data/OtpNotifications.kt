@@ -25,7 +25,7 @@ internal class OtpNotification(
  */
 internal object OtpNotifications {
     /** A code stops showing this long after its notification was posted. */
-    const val LIFETIME_MILLIS = 2 * 60 * 1000L
+    const val LIFETIME_MILLIS = 5 * 60 * 1000L
 
     /** Parsed codes by notification key, reused until the notification is posted again. */
     private val cache = mutableMapOf<String, Pair<Long, OtpNotification?>>()
@@ -33,28 +33,38 @@ internal object OtpNotifications {
     /** Post time of the last dismissed code; it and every older code stay hidden. */
     private var dismissedThrough = 0L
 
-    /** Newest first; only notifications posted within [LIFETIME_MILLIS] and after the last dismissed code. */
+    /** The newest code seen, kept after its notification is removed until it is dismissed or [LIFETIME_MILLIS] old. */
+    private var latest: OtpNotification? = null
+
+    /** At most one code: the newest, replacing an older one when a newer code is posted. */
     fun parse(posted: List<StatusBarNotification>): List<OtpNotification> {
         cache.keys.retainAll(posted.map { it.key }.toSet())
-        val since = maxOf(System.currentTimeMillis() - LIFETIME_MILLIS, dismissedThrough)
-        return posted
-            .filter { it.postTime > since && it.canHoldOtp() }
-            .mapNotNull { sbn ->
-                val cached = cache[sbn.key]
-                if (cached != null && cached.first == sbn.postTime) {
-                    cached.second
-                } else {
-                    sbn.toOtp().also { cache[sbn.key] = sbn.postTime to it }
-                }
-            }.sortedByDescending { it.postTime }
+        val now = System.currentTimeMillis()
+        val since = maxOf(now - LIFETIME_MILLIS, dismissedThrough)
+        val newest =
+            posted
+                .filter { it.postTime > since && it.canHoldOtp() }
+                .mapNotNull { sbn ->
+                    val cached = cache[sbn.key]
+                    if (cached != null && cached.first == sbn.postTime) {
+                        cached.second
+                    } else {
+                        sbn.toOtp().also { cache[sbn.key] = sbn.postTime to it }
+                    }
+                }.maxByOrNull { it.postTime }
+        val kept = latest?.takeIf { it.postTime > since }
+        latest = if (newest != null && (kept == null || newest.postTime > kept.postTime)) newest else kept
+        return listOfNotNull(latest)
     }
 
     fun dismiss(otp: OtpNotification) {
         dismissedThrough = maxOf(dismissedThrough, otp.postTime)
+        latest = null
     }
 
     fun clear() {
         cache.clear()
+        latest = null
         dismissedThrough = 0L
     }
 

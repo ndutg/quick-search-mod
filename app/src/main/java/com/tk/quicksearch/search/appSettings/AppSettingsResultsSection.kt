@@ -1,6 +1,5 @@
 package com.tk.quicksearch.search.appSettings
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,16 +17,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.Alignment
@@ -50,12 +50,13 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
-import com.tk.quicksearch.settings.settingsScreen.SettingsBackupButtons
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.hapticConfirm
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.shared.util.hapticToggle
+import kotlin.math.roundToInt
 
 private const val QUICK_SEARCH_PACKAGE_NAME = "com.tk.quicksearch"
 private const val ROW_MIN_HEIGHT = 52
@@ -207,7 +208,6 @@ internal fun AppSettingResultRow(
     val isWebSuggestionsToggle = setting.toggleKey == AppSettingsToggleKey.WEB_SUGGESTIONS
     val isAppsPerRowSetting = setting.toggleKey == AppSettingsToggleKey.APPS_PER_ROW
     val isAppResultRowsSetting = setting.toggleKey == AppSettingsToggleKey.APP_RESULT_ROWS
-    val isBackupSetting = setting.destination == AppSettingsDestination.BACKUP_RESTORE
     val context = LocalContext.current
     val isDefaultLauncher = context.isDefaultHomeApp()
     val isOverlayBlockedByLauncher =
@@ -218,6 +218,10 @@ internal fun AppSettingResultRow(
     val effectiveDescription =
         if (isBlockedByLauncher) {
             stringResource(R.string.settings_overlay_mode_desc_launcher_blocked)
+        } else if (setting.destination == AppSettingsDestination.APP_LANGUAGE) {
+            val selectedLanguageLabel =
+                remember(context) { AppLanguageManager.getSelectedLanguageLabel(context) }
+            stringResource(R.string.settings_app_language_desc, selectedLanguageLabel)
         } else {
             setting.description
         }
@@ -229,17 +233,19 @@ internal fun AppSettingResultRow(
             .topPredictedRowContentPadding()
             .padding(vertical = DesignTokens.SpacingLarge)
             .combinedClickable(
-                enabled = !isBlockedByLauncher && !isBackupSetting,
+                interactionSource = null,
+                indication = null,
+                enabled = !isBlockedByLauncher,
                 onClick = {
-                    if (setting.isNavigateAction) {
+                    if (setting.isNavigateAction || setting.isNavigationToggle) {
                         hapticConfirm(view)()
                         onClick(setting)
-                    } else if (!isAppsPerRowSetting && !isAppResultRowsSetting) {
+                    } else if (!isAppsPerRowSetting && !isAppResultRowsSetting && !setting.hasInlineControl) {
                         hapticToggle(view)()
                         onToggle(setting, !checked)
                     }
                 },
-                role = if (setting.isToggleAction && !isAppsPerRowSetting && !isAppResultRowsSetting) Role.Switch else null,
+                role = if (setting.isToggleAction && !setting.isNavigationToggle && !isAppsPerRowSetting && !isAppResultRowsSetting && !setting.hasInlineControl) Role.Switch else null,
             )
 
     Row(
@@ -289,32 +295,18 @@ internal fun AppSettingResultRow(
                 )
             }
 
-            if (isBackupSetting) {
-                SettingsBackupButtons(
-                    onSettingsImported = LocalOnSettingsImported.current,
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp, end = 6.dp),
-                )
+            if (setting.hasInlineControl) {
+                AppSettingInlineControlContent(setting = setting)
             }
 
             if (isWebSuggestionsToggle && checked) {
-                Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Slider(
-                        value = webSuggestionsCount.toFloat(),
-                        onValueChange = { value -> onWebSuggestionsCountChange(value.toInt()) },
-                        valueRange = 1f..5f,
-                        steps = 3,
-                        modifier = Modifier.size(width = 140.dp, height = 22.dp),
-                    )
-                    Text(
-                        text = webSuggestionsCount.toString(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                InlineSliderRow(
+                    value = webSuggestionsCount.toFloat(),
+                    onValueChange = { value -> onWebSuggestionsCountChange(value.roundToInt()) },
+                    valueRange = 1f..5f,
+                    steps = 3,
+                    label = webSuggestionsCount.toString(),
+                )
             }
         }
 
@@ -324,32 +316,17 @@ internal fun AppSettingResultRow(
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                 modifier = Modifier.padding(end = 6.dp),
             ) {
-                AssistChip(
-                    onClick = {
-                        hapticToggle(view)()
-                        onAppSettingPhoneAppGridColumnsChange(4)
-                    },
-                    label = { Text(stringResource(R.string.settings_app_columns_4)) },
-                    shape = DesignTokens.ShapeFull,
-                    border = if (fourSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (fourSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                        labelColor = if (fourSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
-                    ),
+                AppSettingChoiceChip(
+                    label = stringResource(R.string.settings_app_columns_4),
+                    selected = fourSelected,
+                    onClick = { onAppSettingPhoneAppGridColumnsChange(4) },
+                    showCheck = false,
                 )
-                val fiveSelected = !fourSelected
-                AssistChip(
-                    onClick = {
-                        hapticToggle(view)()
-                        onAppSettingPhoneAppGridColumnsChange(5)
-                    },
-                    label = { Text(stringResource(R.string.settings_app_columns_5)) },
-                    shape = DesignTokens.ShapeFull,
-                    border = if (fiveSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (fiveSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                        labelColor = if (fiveSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
-                    ),
+                AppSettingChoiceChip(
+                    label = stringResource(R.string.settings_app_columns_5),
+                    selected = !fourSelected,
+                    onClick = { onAppSettingPhoneAppGridColumnsChange(5) },
+                    showCheck = false,
                 )
             }
         } else if (isAppResultRowsSetting) {
@@ -357,9 +334,36 @@ internal fun AppSettingResultRow(
                 selectedRowCount = appSettingAppResultRowCount,
                 onSelectRowCount = onAppSettingAppResultRowCountChange,
             )
-        } else if (isBackupSetting) {
+        } else if (setting.destination == AppSettingsDestination.AI_MODEL) {
+            Icon(
+                imageVector = Icons.Rounded.UnfoldMore,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(end = 6.dp),
+            )
+        } else if (setting.id == THEME_MODE_SETTING_ID) {
+            Icon(
+                imageVector = Icons.Rounded.ChevronRight,
+                contentDescription = stringResource(R.string.desc_navigate_forward),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(end = 6.dp),
+            )
+        } else if (setting.hasInlineControl) {
             Unit
         } else if (setting.isToggleAction) {
+            if (setting.isNavigationToggle) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = stringResource(R.string.desc_navigate_forward),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    VerticalDivider(
+                        modifier = Modifier.height(24.dp).padding(start = 8.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
+                }
+            }
             Switch(
                 checked = checked,
                 onCheckedChange = { enabled ->
@@ -368,8 +372,15 @@ internal fun AppSettingResultRow(
                 },
                 enabled = !isBlockedByLauncher,
                 modifier = Modifier.scale(TOGGLE_SCALE),
+                // Material's disabled colors are composited over the theme surface, which turns the
+                // thumb into an opaque blob on result cards; keep them translucent instead.
                 colors = SwitchDefaults.colors(
                     uncheckedTrackColor = Color.Transparent,
+                    disabledUncheckedTrackColor = Color.Transparent,
+                    disabledUncheckedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+                    disabledUncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+                    disabledCheckedTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    disabledCheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
                 ),
             )
         } else {
@@ -391,25 +402,16 @@ private fun AppResultRowsChips(
     selectedRowCount: Int,
     onSelectRowCount: (Int) -> Unit,
 ) {
-    val view = LocalView.current
     Row(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
         modifier = Modifier.padding(end = 6.dp),
     ) {
         listOf(1, 2).forEach { rowCount ->
-            val selected = selectedRowCount == rowCount
-            AssistChip(
-                onClick = {
-                    hapticToggle(view)()
-                    onSelectRowCount(rowCount)
-                },
-                label = { Text(rowCount.toString()) },
-                shape = DesignTokens.ShapeFull,
-                border = if (selected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                    labelColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
-                ),
+            AppSettingChoiceChip(
+                label = rowCount.toString(),
+                selected = selectedRowCount == rowCount,
+                onClick = { onSelectRowCount(rowCount) },
+                showCheck = false,
             )
         }
     }

@@ -77,7 +77,7 @@ internal fun ContactActionButton(
 
             is ContactMethod.GoogleMeet -> Color.Unspecified
 
-            is ContactMethod.Email -> AppColors.ActionEmail
+            is ContactMethod.Email -> callIconTint
 
             is ContactMethod.VideoCall -> callIconTint
 
@@ -152,7 +152,7 @@ internal fun ContactMethodIcon(
                 is ContactMethod.SignalVideoCall,
                 is ContactMethod.GoogleMeet,
                 -> Color.Unspecified
-                is ContactMethod.Email -> AppColors.ActionEmail
+                is ContactMethod.Email -> callIconTint
                 is ContactMethod.CustomApp -> AppColors.ActionCustom
                 is ContactMethod.ViewInContactsApp -> AppColors.ActionView
             }

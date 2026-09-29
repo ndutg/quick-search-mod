@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Today's contact birthdays for the home At a Glance card. */
+/** Today's contact birthdays and anniversaries for the home At a Glance card. */
 internal class BirthdaysGlance(
     val birthdays: List<ContactBirthday>,
     val open: (ContactBirthday) -> Unit,
@@ -96,11 +96,40 @@ internal fun BirthdayRow(
                 tint = MaterialTheme.colorScheme.primary,
             )
         },
-        title = birthday.name,
-        subtitle =
-            birthday.age?.let { stringResource(R.string.home_birthday_turns, it) }
-                ?: stringResource(R.string.home_birthday_today),
+        title = birthdayTitle(birthday),
+        subtitle = stringResource(R.string.home_birthday_wish),
         onClick = onClick,
         onDismiss = onDismiss,
     )
+}
+
+/** "Michael's birthday", or "Michael's 30th birthday" when the contact's date has a year. */
+@Composable
+private fun birthdayTitle(birthday: ContactBirthday): String {
+    val years = birthday.years ?: return stringResource(
+        if (birthday.isAnniversary) R.string.home_anniversary_title else R.string.home_birthday_title,
+        birthday.name,
+    )
+    // The ordinal stays in English ("30th") in every language, for simplicity.
+    val ordinal = englishOrdinal(years)
+    return stringResource(
+        if (birthday.isAnniversary) R.string.home_anniversary_title_ordinal else R.string.home_birthday_title_ordinal,
+        birthday.name,
+        ordinal,
+    )
+}
+
+private fun englishOrdinal(number: Int): String {
+    val suffix =
+        if (number % 100 in 11..13) {
+            "th"
+        } else {
+            when (number % 10) {
+                1 -> "st"
+                2 -> "nd"
+                3 -> "rd"
+                else -> "th"
+            }
+        }
+    return "$number$suffix"
 }

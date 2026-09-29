@@ -257,7 +257,7 @@ internal fun AirplaneModeRow(glance: AirplaneModeGlance) {
             Icon(
                 imageVector = Icons.Rounded.AirplanemodeActive,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
         title = stringResource(R.string.home_airplane_mode_on),
@@ -273,7 +273,7 @@ internal fun HotspotRow(glance: HotspotGlance) {
             Icon(
                 imageVector = Icons.Rounded.WifiTethering,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
         title = stringResource(R.string.home_hotspot_on),
@@ -289,7 +289,7 @@ internal fun WifiSignInRow(glance: WifiSignInGlance) {
             Icon(
                 imageVector = Icons.Rounded.WifiPassword,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
             )
         },
         title = stringResource(R.string.home_wifi_sign_in),

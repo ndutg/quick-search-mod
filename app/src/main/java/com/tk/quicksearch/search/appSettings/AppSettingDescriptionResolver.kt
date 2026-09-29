@@ -12,7 +12,12 @@ internal class AppSettingDescriptionResolver(private val context: Context) {
         setting: AppSettingResult,
         queryContext: SearchQueryContext,
     ): String? {
-        if (!setting.isNavigateAction || queryContext.tokens.isEmpty()) {
+        // The AI model row shows the selected model inline, so it keeps no keyword description.
+        if (
+            !setting.isNavigateAction ||
+            queryContext.tokens.isEmpty() ||
+            setting.destination == AppSettingsDestination.AI_MODEL
+        ) {
             return setting.description
         }
         if (setting.destination == AppSettingsDestination.APPEARANCE) {
@@ -29,14 +34,8 @@ internal class AppSettingDescriptionResolver(private val context: Context) {
     }
 
     private fun getAppearanceSearchDescription(queryTokens: Set<String>): String? {
-        if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_THEME_TOKENS) }) {
-            return context.getString(R.string.settings_search_description_change_app_theme)
-        }
         if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_WALLPAPER_TOKENS) }) {
             return context.getString(R.string.settings_search_description_change_wallpaper)
-        }
-        if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_FONT_TOKENS) }) {
-            return context.getString(R.string.settings_search_description_change_font_size)
         }
         if (queryTokens.any { tokenMatchesAny(it, APPEARANCE_LAYOUT_TOKENS) }) {
             return context.getString(R.string.settings_search_description_change_layout)
@@ -85,10 +84,8 @@ internal class AppSettingDescriptionResolver(private val context: Context) {
     }
 
     private companion object {
-        val APPEARANCE_THEME_TOKENS = setOf("themes", "dark", "light", "system", "background")
         val APPEARANCE_WALLPAPER_TOKENS =
             setOf("wallpaper", "blur", "transparency")
-        val APPEARANCE_FONT_TOKENS = setOf("fonts", "size", "text")
         val APPEARANCE_LAYOUT_TOKENS =
             setOf("layout", "one handed", "bottom", "searchbar")
     }

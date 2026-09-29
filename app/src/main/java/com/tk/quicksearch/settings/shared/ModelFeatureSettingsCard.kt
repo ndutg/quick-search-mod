@@ -1,13 +1,26 @@
 package com.tk.quicksearch.settings.shared
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.UnfoldMore
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -68,7 +81,6 @@ fun ModelFeatureSettingsCard(
     availableModelsByProvider: Map<AiSearchLlmProviderId, List<LlmTextModel>> =
         mapOf(selectedProviderId to availableModels),
     configuredProviderIds: Set<AiSearchLlmProviderId> = setOf(selectedProviderId),
-    modelLabel: String,
     thinkingLabel: String,
     webSearchLabel: String,
     thinkingEnabled: Boolean,
@@ -84,6 +96,7 @@ fun ModelFeatureSettingsCard(
     showGroundingCheckbox: Boolean = true,
     groundingCheckboxEnabled: Boolean = true,
     tavilyKeyState: TavilyKeyState = rememberTavilyKeyState(),
+    isLoading: Boolean = false,
 ) {
     var showModelDialog by remember { mutableStateOf(false) }
 
@@ -94,7 +107,8 @@ fun ModelFeatureSettingsCard(
 
     val selectedModel = modelOptions.firstOrNull { it.id == selectedModelId }
     val isLoadingModels =
-        configuredProviderIds.isNotEmpty() &&
+        isLoading ||
+            configuredProviderIds.isNotEmpty() &&
             configuredProviderIds.any { it !in availableModelsByProvider }
     val selectedModelLabel =
         when {
@@ -117,65 +131,63 @@ fun ModelFeatureSettingsCard(
                     horizontal = DesignTokens.CardHorizontalPadding,
                     vertical = DesignTokens.CardVerticalPadding,
                 ),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Row(
                 modifier =
                     Modifier.fillMaxWidth()
+                        .clip(DesignTokens.ShapeMedium)
                         .clickable(enabled = !isLoadingModels) { showModelDialog = true }
-                        .padding(horizontal = 12.dp, vertical = 12.dp),
+                        .padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                ProviderIconTile(providerId = selectedProviderId)
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
                     Text(
-                        text = modelLabel,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = selectedModelLabel,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        text = selectedModelLabel,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        text = aiProviderDisplayName(selectedProviderId),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 Icon(
-                    imageVector = Icons.Rounded.ExpandMore,
+                    imageVector = Icons.Rounded.UnfoldMore,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
-            val showGroundingPill = showGroundingCheckbox && webSearchAvailable
-            if (!isLoadingModels && selectedModel != null && (showThinkingCheckbox || showGroundingPill)) {
+            val showGroundingChip = showGroundingCheckbox && webSearchAvailable
+            if (!isLoadingModels && selectedModel != null && (showThinkingCheckbox || showGroundingChip)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     if (showThinkingCheckbox) {
-                        SettingsCheckboxPill(
+                        ModelFeatureChip(
                             label = thinkingLabel,
-                            checked = thinkingEnabled,
-                            onCheckedChange = onThinkingChange,
-                            modifier =
-                                if (showGroundingPill) {
-                                    Modifier.weight(0.9f)
-                                } else {
-                                    Modifier.fillMaxWidth()
-                                },
+                            selected = thinkingEnabled,
+                            onSelectedChange = onThinkingChange,
+                            modifier = Modifier.weight(1f),
                         )
                     }
-
-                    if (showGroundingPill) {
-                        SettingsCheckboxPill(
+                    if (showGroundingChip) {
+                        ModelFeatureChip(
                             label = webSearchLabel,
-                            checked = groundingEnabled,
-                            onCheckedChange = onGroundingChange,
-                            modifier = Modifier.weight(1.1f),
+                            selected = groundingEnabled,
+                            onSelectedChange = onGroundingChange,
                             enabled = groundingCheckboxEnabled,
+                            modifier = Modifier.weight(1f),
                         )
                     }
                 }
@@ -204,4 +216,103 @@ fun ModelFeatureSettingsCard(
             configuredProviderIds = configuredProviderIds,
         )
     }
+}
+
+@Composable
+private fun ProviderIconTile(providerId: AiSearchLlmProviderId) {
+    val logoResId =
+        when (providerId) {
+            AiSearchLlmProviderId.GEMINI -> R.drawable.ic_gemini_sparkle_search_engine
+            AiSearchLlmProviderId.ANTHROPIC -> R.drawable.claude
+            AiSearchLlmProviderId.META -> R.drawable.meta_logo
+            else -> null
+        }
+    Box(
+        modifier =
+            Modifier.size(40.dp)
+                .clip(DesignTokens.ShapeMedium)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (logoResId != null) {
+            Image(
+                painter = painterResource(logoResId),
+                contentDescription = null,
+                modifier = Modifier.size(22.dp),
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Rounded.AutoAwesome,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(22.dp),
+            )
+        }
+    }
+}
+
+/** Short provider name shown under the selected model. */
+@Composable
+fun aiProviderDisplayName(providerId: AiSearchLlmProviderId): String =
+    stringResource(
+        when (providerId) {
+            AiSearchLlmProviderId.GEMINI -> R.string.search_engine_gemini
+            AiSearchLlmProviderId.OPENAI -> R.string.settings_ai_provider_openai
+            AiSearchLlmProviderId.ANTHROPIC -> R.string.search_engine_claude
+            AiSearchLlmProviderId.GROQ -> R.string.settings_ai_provider_groq
+            AiSearchLlmProviderId.META -> R.string.settings_ai_provider_meta
+            else -> R.string.common_custom
+        },
+    )
+
+@Composable
+private fun ModelFeatureChip(
+    label: String,
+    selected: Boolean,
+    onSelectedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = { onSelectedChange(!selected) },
+        modifier = modifier,
+        label = {
+            Text(
+                text = label,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+            )
+        },
+        enabled = enabled,
+        shape = DesignTokens.ShapeFull,
+        colors =
+            FilterChipDefaults.filterChipColors(
+                containerColor = Color.Transparent,
+                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                selectedLabelColor = MaterialTheme.colorScheme.onSurface,
+                selectedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            ),
+        border =
+            FilterChipDefaults.filterChipBorder(
+                enabled = enabled,
+                selected = selected,
+                borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.7f),
+                selectedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                selectedBorderWidth = 1.dp,
+            ),
+        leadingIcon =
+            if (selected) {
+                {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(FilterChipDefaults.IconSize),
+                    )
+                }
+            } else {
+                null
+            },
+    )
 }

@@ -1,7 +1,9 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -28,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +45,9 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 internal val GlanceDismissButtonSize = 28.dp
+
+/** Descriptions wrap in full rather than cutting off. */
+internal const val GlanceTextMaxLines = Int.MAX_VALUE
 
 /** A counter that bumps every time the screen resumes, for glances that re-read their source then. */
 @Composable
@@ -73,20 +80,26 @@ internal fun glanceNeutralPillColors() =
 /**
  * The common At a Glance row layout, matching [LowBatteryRow]: a 24dp icon, a title with an
  * optional subtitle and extra content below it, an optional value pill, and an optional [trailing]
- * action or dismiss button outside the row's tap target. [pillWidthText] is the widest value the
+ * action or dismiss button outside the row's tap target, centered or, with [dismissAtTop], in the
+ * top right corner. [pillWidthText] is the widest value the
  * pill can show; the pill always reserves its width, so a changing value doesn't shift the row.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun GlanceStatusRow(
     icon: @Composable () -> Unit,
     title: String,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+    titleStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    titleMaxLines: Int = 1,
     subtitle: String? = null,
     subtitleStyle: TextStyle = MaterialTheme.typography.bodySmall,
     pillText: String? = null,
     pillColors: GlancePillColors = glanceNeutralPillColors(),
     pillWidthText: String? = null,
     onDismiss: (() -> Unit)? = null,
+    dismissAtTop: Boolean = false,
     belowText: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
@@ -101,7 +114,7 @@ internal fun GlanceStatusRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier.weight(1f).clickable(onClick = onClick),
+            modifier = Modifier.weight(1f).combinedClickable(onClick = onClick, onLongClick = onLongClick),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -112,9 +125,9 @@ internal fun GlanceStatusRow(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = titleStyle,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
+                    maxLines = titleMaxLines,
                     overflow = TextOverflow.Ellipsis,
                 )
                 if (subtitle != null) {
@@ -122,7 +135,7 @@ internal fun GlanceStatusRow(
                         text = subtitle,
                         style = subtitleStyle,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
+                        maxLines = GlanceTextMaxLines,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
@@ -162,7 +175,10 @@ internal fun GlanceStatusRow(
         if (onDismiss != null) {
             IconButton(
                 onClick = onDismiss,
-                modifier = Modifier.size(GlanceDismissButtonSize),
+                modifier =
+                    Modifier
+                        .then(if (dismissAtTop) Modifier.align(Alignment.Top) else Modifier)
+                        .size(GlanceDismissButtonSize),
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
@@ -171,6 +187,41 @@ internal fun GlanceStatusRow(
                     modifier = Modifier.size(16.dp),
                 )
             }
+        }
+    }
+}
+
+/**
+ * A pill button for a row's own actions, such as a timer notification's Pause or Stop. Outlined by
+ * default; with [colors] it is filled like a [GlanceStatusRow] value pill, with an optional [icon].
+ */
+@Composable
+internal fun GlanceActionChip(
+    label: String,
+    onClick: () -> Unit,
+    icon: ImageVector? = null,
+    colors: GlancePillColors? = null,
+) {
+    Surface(
+        onClick = onClick,
+        shape = CircleShape,
+        color = colors?.container ?: Color.Transparent,
+        contentColor = colors?.content ?: MaterialTheme.colorScheme.onSurface,
+        border = if (colors == null) BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant) else null,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (icon != null) Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(16.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }

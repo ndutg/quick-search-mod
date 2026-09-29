@@ -31,11 +31,19 @@ object ReminderScheduler {
     private const val REQUEST_OFFSET_SNOOZE = 2
     private const val REQUEST_OFFSET_CONTENT = 3
 
-    /** Schedules the reminder's alarm, replacing any existing one. Done or past reminders are skipped. */
-    fun schedule(context: Context, reminder: ReminderInfo, nowMillis: Long = System.currentTimeMillis()) {
+    /**
+     * Schedules the reminder's alarm, replacing any existing one. A snoozed reminder fires when its
+     * snooze ends ([snoozedUntilMillis]) instead of at its due time. Done or past reminders are skipped.
+     */
+    fun schedule(
+        context: Context,
+        reminder: ReminderInfo,
+        nowMillis: Long = System.currentTimeMillis(),
+        snoozedUntilMillis: Long? = null,
+    ) {
         cancel(context, reminder.reminderId)
         if (reminder.isDone) return
-        val triggerAtMillis = reminder.dueMillis
+        val triggerAtMillis = snoozedUntilMillis?.takeIf { it > nowMillis } ?: reminder.dueMillis
         if (triggerAtMillis <= nowMillis) return
         val alarmManager = context.getSystemService(AlarmManager::class.java) ?: return
         val pendingIntent = alarmPendingIntent(context, reminder.reminderId)
@@ -54,12 +62,20 @@ object ReminderScheduler {
 
     fun rescheduleAll(context: Context) {
         val now = System.currentTimeMillis()
-        ReminderRepository(context).getAllReminders().forEach { schedule(context, it, now) }
+        val repository = ReminderRepository(context)
+        val snoozedUntil = repository.getSnoozedUntil()
+        repository.getAllReminders().forEach { schedule(context, it, now, snoozedUntil[it.reminderId]) }
         ReminderRepository.notifyChanged()
     }
 
     fun cancelNotification(context: Context, reminderId: Long) {
         NotificationManagerCompat.from(context).cancel(notificationId(reminderId))
+    }
+
+    fun isNotificationShowing(context: Context, reminderId: Long): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return false
+        return runCatching { manager.activeNotifications.any { it.id == notificationId(reminderId) } }.getOrDefault(false)
     }
 
     fun showNotification(context: Context, reminder: ReminderInfo) {

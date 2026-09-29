@@ -84,6 +84,7 @@ class CustomOpenAiCompatibleLlmProvider(
             useGroundingWithGoogleSearch = false,
             useSystemInstruction = request.useSystemInstruction,
             systemInstruction = request.systemInstruction,
+            history = request.history,
             advancedPayloadJson =
                 request.advancedPayloadJson
                     ?: providerConfig

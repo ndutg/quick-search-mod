@@ -3,7 +3,6 @@ package com.tk.quicksearch.search.appSettings
 import android.content.Context
 import android.os.Build
 import com.tk.quicksearch.R
-import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.data.preferences.RATE_QUICK_SEARCH_ENABLED
 import com.tk.quicksearch.search.utils.SearchQueryContext
@@ -24,19 +23,37 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.APPEARANCE,
                 keywords =
                     listOf(
-                        "theme",
                         "wallpaper",
                         "style",
                         "search engines style",
-                        "font size",
-                        "system font",
-                        "text size",
-                        "color",
-                        "colour",
-                        "icon size",
                         "inline",
                         "compact"
                     ),
+            )
+            addNavigation(
+                id = THEME_MODE_SETTING_ID,
+                titleRes = R.string.settings_app_theme_title,
+                destination = AppSettingsDestination.APPEARANCE,
+                keywords = listOf("theme", "dark", "light", "system", "mode", "night"),
+            )
+            addToggle(
+                id = "app_setting_font_size",
+                titleRes = R.string.settings_font_size_title,
+                toggleKey = AppSettingsToggleKey.FONT_SIZE,
+                keywords = listOf("text size", "font", "bigger", "smaller"),
+            )
+            addToggle(
+                id = "app_setting_home_text_color",
+                titleRes = R.string.settings_home_text_color_title,
+                descriptionRes = R.string.settings_home_text_color_desc,
+                toggleKey = AppSettingsToggleKey.HOME_TEXT_COLOR,
+                keywords = listOf("text color", "colour", "color", "white", "black", "labels"),
+            )
+            addToggle(
+                id = "app_setting_app_icon_size",
+                titleRes = R.string.settings_app_icon_size_title,
+                toggleKey = AppSettingsToggleKey.APP_ICON_SIZE,
+                keywords = listOf("icons", "size", "bigger", "smaller"),
             )
             addNavigation(
                 id = "app_settings_icon_packs",
@@ -64,14 +81,31 @@ class AppSettingsRepository(
                 titleRes = R.string.common_ai_provider,
                 descriptionRes = R.string.settings_gemini_api_desc,
                 destination = AppSettingsDestination.GEMINI_API,
-                keywords = listOf("ai provider", "gemini", "openai", "groq", "claude"),
+                keywords =
+                    listOf(
+                        "ai provider",
+                        "personal context",
+                        "gemini",
+                        "openai",
+                        "groq",
+                        "claude",
+                        "meta ai",
+                        "tavily",
+                        "custom provider",
+                    ),
+            )
+            addNavigation(
+                id = AI_MODEL_SETTING_ID,
+                titleRes = R.string.settings_direct_search_model_label,
+                destination = AppSettingsDestination.AI_MODEL,
+                keywords = listOf("ai model", "llm", "thinking", "web search", "grounding"),
             )
             addNavigation(
                 id = "app_settings_api_key_setup",
                 titleRes = R.string.common_api_key_setup,
                 descriptionRes = R.string.settings_api_key_setup_nav_desc,
                 destination = AppSettingsDestination.API_KEY_SETUP,
-                keywords = listOf("api key", "token", "openai", "groq", "claude"),
+                keywords = listOf("api key", "token", "gemini", "openai", "groq", "claude", "meta ai", "tavily", "custom provider"),
             )
             addNavigation(
                 id = "app_settings_tools",
@@ -85,7 +119,7 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_at_a_glance_title,
                 descriptionRes = R.string.settings_at_a_glance_desc,
                 destination = AppSettingsDestination.AT_A_GLANCE,
-                keywords = listOf("today", "calendar", "events", "alarm", "reminders", "home", "media", "music", "playback", "birthday", "charging", "battery", "timer", "stopwatch", "storage", "progress", "ongoing notifications", "live updates", "ride", "delivery", "download", "missed", "calls", "ongoing call", "otp", "one-time password", "verification code", "2fa", "sms code", "do not disturb", "dnd", "airplane", "flight", "hotspot", "tethering", "wifi", "wi-fi", "sign in", "captive portal", "hotel wifi", "flashlight", "torch", "weather", "temperature", "forecast", "weather alerts", "workout", "exercise", "fitness", "google health", "fitbit", "samsung health", "tomorrow"),
+                keywords = listOf("today", "calendar", "events", "alarm", "reminders", "home", "media", "music", "playback", "birthday", "charging", "battery", "low battery", "timer", "stopwatch", "storage", "low storage", "disk space", "progress", "ongoing notifications", "live updates", "ride", "delivery", "download", "missed", "calls", "ongoing call", "otp", "one-time password", "verification code", "2fa", "sms code", "do not disturb", "dnd", "airplane", "flight", "hotspot", "tethering", "wifi", "wi-fi", "sign in", "captive portal", "hotel wifi", "flashlight", "torch", "weather", "temperature", "forecast", "weather alerts", "workout", "exercise", "fitness", "google health", "fitbit", "samsung health", "tomorrow", "custom info", "ai", "prompt", "scheduled", "daily", "briefing", "recurring"),
             )
             if (isTaskerInstalled()) {
                 addNavigation(
@@ -97,11 +131,18 @@ class AppSettingsRepository(
                 )
             }
             addNavigation(
-                id = "app_settings_backup_restore",
-                titleRes = R.string.settings_backup_restore_title,
-                descriptionRes = R.string.settings_backup_restore_desc,
-                destination = AppSettingsDestination.BACKUP_RESTORE,
-                keywords = listOf("Backup", "Import", "Export"),
+                id = "app_settings_export_settings",
+                titleRes = R.string.settings_backup_export_title,
+                descriptionRes = R.string.settings_backup_export_desc,
+                destination = AppSettingsDestination.EXPORT_SETTINGS,
+                keywords = listOf("backup", "save"),
+            )
+            addNavigation(
+                id = "app_settings_import_settings",
+                titleRes = R.string.setup_import_button,
+                descriptionRes = R.string.settings_backup_import_warning_message,
+                destination = AppSettingsDestination.IMPORT_SETTINGS,
+                keywords = listOf("backup", "restore"),
             )
             addNavigation(
                 id = "app_settings_launch_options",
@@ -187,19 +228,11 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_calls_texts_title,
                 descriptionRes = R.string.settings_manage_calls_texts_contacts_desc,
                 destination = AppSettingsDestination.CALLS_TEXTS,
-                keywords = listOf("contacts", "calling", "messaging", "whatsapp", "telegram", "signal"),
-            )
-            addNavigation(
-                id = "app_settings_default_calling_app",
-                titleRes = R.string.settings_contact_first_button_title,
-                destination = AppSettingsDestination.CALLS_TEXTS,
-                keywords = listOf("contact button", "calling app", "default calling app", "call"),
-            )
-            addNavigation(
-                id = "app_settings_default_messaging_app",
-                titleRes = R.string.settings_contact_second_button_title,
-                destination = AppSettingsDestination.CALLS_TEXTS,
-                keywords = listOf("contact button", "messaging app", "default messaging app", "texting", "sms"),
+                keywords =
+                    listOf(
+                        "contacts", "calling", "messaging", "whatsapp", "telegram", "signal", "contact button",
+                        "calling app", "default calling app", "messaging app", "default messaging app", "texting", "sms",
+                    ),
             )
             addToggle(
                 id = "app_toggle_number_search",
@@ -279,6 +312,14 @@ class AppSettingsRepository(
                 destination = AppSettingsDestination.GESTURES,
                 keywords = listOf("swipe", "quick note", "keyboard", "notifications"),
             )
+            GESTURE_APP_SETTINGS.forEach { (id, titleRes, destination) ->
+                addNavigation(
+                    id = id,
+                    titleRes = titleRes,
+                    descriptionRes = R.string.settings_gestures_title,
+                    destination = destination,
+                )
+            }
             addNavigation(
                 id = "app_settings_calendar_events",
                 titleRes = R.string.section_calendar,
@@ -326,6 +367,19 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_all_quick_search_features,
                 descriptionRes = R.string.settings_all_quick_search_features_desc,
                 destination = AppSettingsDestination.FEATURES_LIST,
+            )
+            addNavigation(
+                id = "app_settings_release_notes",
+                titleRes = R.string.settings_release_notes_title,
+                descriptionRes = R.string.settings_release_notes_desc,
+                destination = AppSettingsDestination.RELEASE_NOTES,
+                keywords = listOf("what's new", "changelog", "update", "version"),
+            )
+            addNavigation(
+                id = "app_settings_app_language",
+                titleRes = R.string.settings_app_language_title,
+                destination = AppSettingsDestination.APP_LANGUAGE,
+                keywords = listOf("locale", "translation", "translate"),
             )
             addNavigation(
                 id = "app_settings_create_note",
@@ -417,6 +471,7 @@ class AppSettingsRepository(
             addToggle(
                 id = "app_toggle_use_system_font",
                 titleRes = R.string.settings_use_system_font_title,
+                descriptionRes = R.string.settings_use_system_font_desc,
                 toggleKey = AppSettingsToggleKey.USE_SYSTEM_FONT,
                 keywords = listOf("font", "typeface"),
             )
@@ -436,29 +491,25 @@ class AppSettingsRepository(
             addToggle(
                 id = "app_toggle_unit_converter",
                 titleRes = R.string.unit_converter_info_title,
-                descriptionRes = R.string.unit_converter_toggle_action_desc,
-                toggleKey = AppSettingsToggleKey.UNIT_CONVERTER,
-                keywords = listOf("conversion"),
-            )
-            addNavigation(
-                id = "app_nav_unit_converter_info",
-                titleRes = R.string.unit_converter_info_title,
                 descriptionRes = R.string.date_calculator_toggle_desc,
+                toggleKey = AppSettingsToggleKey.UNIT_CONVERTER,
                 destination = AppSettingsDestination.UNIT_CONVERTER_INFO,
                 keywords = listOf("conversion", "examples"),
             )
             addToggle(
                 id = "app_toggle_date_calculator",
                 titleRes = R.string.date_calculator_info_title,
-                descriptionRes = R.string.date_calculator_toggle_action_desc,
-                toggleKey = AppSettingsToggleKey.DATE_CALCULATOR,
-            )
-            addNavigation(
-                id = "app_nav_date_calculator_info",
-                titleRes = R.string.date_calculator_info_title,
                 descriptionRes = R.string.date_calculator_toggle_desc,
+                toggleKey = AppSettingsToggleKey.DATE_CALCULATOR,
                 destination = AppSettingsDestination.DATE_CALCULATOR_INFO,
                 keywords = listOf("examples"),
+            )
+            addToggle(
+                id = "app_toggle_currency_converter",
+                titleRes = R.string.currency_converter_toggle_title,
+                descriptionRes = R.string.currency_converter_toggle_desc,
+                toggleKey = AppSettingsToggleKey.CURRENCY_CONVERTER,
+                keywords = listOf("currency", "exchange rate", "money"),
             )
             addToggle(
                 id = "app_toggle_color_visualizer",
@@ -466,6 +517,13 @@ class AppSettingsRepository(
                 descriptionRes = R.string.color_visualizer_toggle_desc,
                 toggleKey = AppSettingsToggleKey.COLOR_VISUALIZER,
                 keywords = listOf("color", "colour", "hex", "rgb"),
+            )
+            addToggle(
+                id = "app_toggle_world_clock",
+                titleRes = R.string.world_clock_toggle_title,
+                descriptionRes = R.string.world_clock_toggle_desc,
+                toggleKey = AppSettingsToggleKey.WORLD_CLOCK,
+                keywords = listOf("time zone", "timezone"),
             )
             addToggle(
                 id = "app_toggle_dictionary",
@@ -485,6 +543,13 @@ class AppSettingsRepository(
                 titleRes = R.string.app_suggestions_toggle_title,
                 descriptionRes = R.string.app_suggestions_toggle_desc,
                 toggleKey = AppSettingsToggleKey.APP_SUGGESTIONS,
+            )
+            addNavigation(
+                id = "app_settings_app_suggestion_tabs",
+                titleRes = R.string.app_suggestions_tabs_dialog_title,
+                descriptionRes = R.string.app_suggestions_tabs_dialog_message,
+                destination = AppSettingsDestination.APP_SUGGESTION_TABS,
+                keywords = listOf("app suggestions", "tabs", "recents", "most used", "new", "updated"),
             )
             addToggle(
                 id = "app_toggle_notification_dots",
@@ -533,12 +598,25 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.APP_RESULT_ROWS,
                 keywords = listOf("apps", "rows", "results"),
             )
-            addNavigation(
+            addToggle(
                 id = "app_settings_top_matches",
                 titleRes = R.string.top_matches_title,
                 descriptionRes = R.string.top_matches_toggle_desc,
-                destination = AppSettingsDestination.SEARCH_RESULTS,
+                toggleKey = AppSettingsToggleKey.TOP_MATCHES,
                 keywords = listOf("top matches", "best results", "searches"),
+            )
+            addNavigation(
+                id = "app_settings_top_matches_priority",
+                titleRes = R.string.top_matches_priority_title,
+                descriptionRes = R.string.top_matches_priority_desc,
+                destination = AppSettingsDestination.TOP_MATCHES_PRIORITY,
+                keywords = listOf("top matches", "priority", "order", "reorder"),
+            )
+            addNavigation(
+                id = TOP_MATCHES_COUNT_SETTING_ID,
+                titleRes = R.string.top_matches_count_label,
+                destination = AppSettingsDestination.SEARCH_RESULTS,
+                keywords = listOf("top matches", "count", "number", "limit"),
             )
             addToggle(
                 id = "app_toggle_recent_queries",
@@ -634,6 +712,7 @@ class AppSettingsRepository(
                 addToggle(
                     id = "app_toggle_themed_icons",
                     titleRes = R.string.settings_themed_icons_title,
+                    descriptionRes = R.string.settings_themed_icons_desc,
                     toggleKey = AppSettingsToggleKey.THEMED_ICONS,
                 )
             }
@@ -677,6 +756,7 @@ class AppSettingsRepository(
         titleRes: Int,
         descriptionRes: Int? = null,
         toggleKey: AppSettingsToggleKey,
+        destination: AppSettingsDestination? = null,
         keywords: List<String> = emptyList(),
     ) {
         add(
@@ -686,6 +766,7 @@ class AppSettingsRepository(
                 description = descriptionRes?.let(context::getString),
                 keywords = keywords,
                 action = AppSettingResultAction.TOGGLE,
+                destination = destination,
                 toggleKey = toggleKey,
             ),
         )
@@ -701,45 +782,6 @@ class AppSettingsRepository(
             )
         }
     }
-
-    private fun searchSectionToggleId(section: SearchSection): String =
-        when (section) {
-            SearchSection.APPS -> "app_toggle_search_apps"
-            SearchSection.APP_SHORTCUTS -> "app_toggle_search_app_shortcuts"
-            SearchSection.CONTACTS -> "app_toggle_search_contacts"
-            SearchSection.FILES -> "app_toggle_search_files"
-            SearchSection.SETTINGS -> "app_toggle_search_device_settings"
-            SearchSection.CALENDAR -> "app_toggle_search_calendar"
-            SearchSection.REMINDERS -> "app_toggle_search_reminders"
-            SearchSection.NOTES -> "app_toggle_search_notes"
-            SearchSection.APP_SETTINGS -> "app_toggle_search_app_settings"
-        }
-
-    private fun searchSectionToggleTitleRes(section: SearchSection): Int =
-        when (section) {
-            SearchSection.APPS -> R.string.search_section_apps_toggle_title
-            SearchSection.APP_SHORTCUTS -> R.string.search_section_app_shortcuts_toggle_title
-            SearchSection.CONTACTS -> R.string.search_section_contacts_toggle_title
-            SearchSection.FILES -> R.string.search_section_files_toggle_title
-            SearchSection.SETTINGS -> R.string.search_section_device_settings_toggle_title
-            SearchSection.CALENDAR -> R.string.search_section_calendar_toggle_title
-            SearchSection.REMINDERS -> R.string.search_section_reminders_toggle_title
-            SearchSection.NOTES -> R.string.search_section_notes_toggle_title
-            SearchSection.APP_SETTINGS -> R.string.search_section_app_settings_toggle_title
-        }
-
-    private fun searchSectionToggleDescriptionRes(section: SearchSection): Int =
-        when (section) {
-            SearchSection.APPS -> R.string.search_section_apps_toggle_desc
-            SearchSection.APP_SHORTCUTS -> R.string.search_section_app_shortcuts_toggle_desc
-            SearchSection.CONTACTS -> R.string.search_section_contacts_toggle_desc
-            SearchSection.FILES -> R.string.search_section_files_toggle_desc
-            SearchSection.SETTINGS -> R.string.search_section_device_settings_toggle_desc
-            SearchSection.CALENDAR -> R.string.search_section_calendar_toggle_desc
-            SearchSection.REMINDERS -> R.string.search_section_reminders_toggle_desc
-            SearchSection.NOTES -> R.string.search_section_notes_toggle_desc
-            SearchSection.APP_SETTINGS -> R.string.search_section_app_settings_toggle_desc
-        }
 
     private val descriptionResolver = AppSettingDescriptionResolver(context)
 

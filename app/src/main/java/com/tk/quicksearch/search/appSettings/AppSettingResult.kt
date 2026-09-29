@@ -14,6 +14,8 @@ enum class AppSettingsDestination {
     ICON_PACKS,
     SEARCH_RESULTS,
     SEARCH_RESULT_RANKING,
+    TOP_MATCHES_PRIORITY,
+    APP_SUGGESTION_TABS,
     SEARCH_ENGINES,
     TOOLS,
     AT_A_GLANCE,
@@ -55,7 +57,18 @@ enum class AppSettingsDestination {
     NICKNAMES,
     TRIGGERS,
     GESTURES,
-    BACKUP_RESTORE,
+    GESTURE_SWIPE_LEFT,
+    GESTURE_SWIPE_RIGHT,
+    GESTURE_SWIPE_UP,
+    GESTURE_SWIPE_DOWN,
+    GESTURE_DOUBLE_TAP,
+    GESTURE_OPEN_KEYBOARD,
+    GESTURE_CLOSE_KEYBOARD,
+    AI_MODEL,
+    EXPORT_SETTINGS,
+    IMPORT_SETTINGS,
+    APP_LANGUAGE,
+    RELEASE_NOTES,
 }
 
 enum class AppSettingsToggleKey {
@@ -109,8 +122,13 @@ enum class AppSettingsToggleKey {
     DEVICE_THEME,
     AMOLED_THEME,
     USE_SYSTEM_FONT,
+    FONT_SIZE,
+    APP_ICON_SIZE,
+    HOME_TEXT_COLOR,
     APPS_PER_ROW,
     APP_RESULT_ROWS,
+    CURRENCY_CONVERTER,
+    WORLD_CLOCK,
     DICTIONARY,
     WEATHER,
 }
@@ -125,10 +143,11 @@ data class AppSettingResult(
     val destination: AppSettingsDestination? = null,
     val toggleKey: AppSettingsToggleKey? = null,
 ) {
+    // TOGGLE rows may also carry a destination; see isNavigationToggle.
     init {
         require(
             (action == AppSettingResultAction.NAVIGATE && destination != null && toggleKey == null) ||
-                (action == AppSettingResultAction.TOGGLE && toggleKey != null && destination == null),
+                (action == AppSettingResultAction.TOGGLE && toggleKey != null),
         ) {
             "AppSettingResult action metadata is invalid for id=$id"
         }
@@ -139,4 +158,8 @@ data class AppSettingResult(
 
     val isNavigateAction: Boolean
         get() = action == AppSettingResultAction.NAVIGATE
+
+    /** A toggle row whose body opens [destination], like navigation+toggle rows in Settings. */
+    val isNavigationToggle: Boolean
+        get() = isToggleAction && destination != null
 }

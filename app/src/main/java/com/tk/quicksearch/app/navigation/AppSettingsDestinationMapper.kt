@@ -23,13 +23,21 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.DEVICE_SETTINGS -> SettingsDetailType.DEVICE_SETTINGS
         AppSettingsDestination.EXCLUDED_ITEMS -> SettingsDetailType.EXCLUDED_ITEMS
         AppSettingsDestination.AI_SEARCH_CONFIGURE,
-        AppSettingsDestination.GEMINI_API -> SettingsDetailType.GEMINI_API_CONFIG
+        AppSettingsDestination.GEMINI_API,
+        AppSettingsDestination.AI_MODEL -> SettingsDetailType.GEMINI_API_CONFIG
         AppSettingsDestination.API_KEY_SETUP -> SettingsDetailType.API_KEY_SETUP
         AppSettingsDestination.CALENDAR_EVENTS -> SettingsDetailType.CALENDAR_EVENTS
         AppSettingsDestination.REMINDERS_LIST -> SettingsDetailType.REMINDERS
         AppSettingsDestination.NICKNAMES -> SettingsDetailType.NICKNAMES
         AppSettingsDestination.TRIGGERS -> SettingsDetailType.TRIGGERS
-        AppSettingsDestination.GESTURES -> SettingsDetailType.GESTURES
+        AppSettingsDestination.GESTURES,
+        AppSettingsDestination.GESTURE_SWIPE_LEFT,
+        AppSettingsDestination.GESTURE_SWIPE_RIGHT,
+        AppSettingsDestination.GESTURE_SWIPE_UP,
+        AppSettingsDestination.GESTURE_SWIPE_DOWN,
+        AppSettingsDestination.GESTURE_DOUBLE_TAP,
+        AppSettingsDestination.GESTURE_OPEN_KEYBOARD,
+        AppSettingsDestination.GESTURE_CLOSE_KEYBOARD -> SettingsDetailType.GESTURES
         AppSettingsDestination.FEATURES_LIST -> SettingsDetailType.FEATURES_LIST
         AppSettingsDestination.OPEN_SOURCE_LICENSES -> SettingsDetailType.OPEN_SOURCE_LICENSES
         AppSettingsDestination.UNIT_CONVERTER_INFO -> SettingsDetailType.UNIT_CONVERTER_INFO
@@ -50,5 +58,10 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.NOTES_LIST,
         AppSettingsDestination.CREATE_REMINDER -> null
         AppSettingsDestination.OPEN_EVENTS_IN -> null
-        AppSettingsDestination.BACKUP_RESTORE -> null
+        AppSettingsDestination.TOP_MATCHES_PRIORITY -> null
+        AppSettingsDestination.APP_SUGGESTION_TABS -> null
+        AppSettingsDestination.EXPORT_SETTINGS -> null
+        AppSettingsDestination.IMPORT_SETTINGS -> null
+        AppSettingsDestination.APP_LANGUAGE -> null
+        AppSettingsDestination.RELEASE_NOTES -> null
     }

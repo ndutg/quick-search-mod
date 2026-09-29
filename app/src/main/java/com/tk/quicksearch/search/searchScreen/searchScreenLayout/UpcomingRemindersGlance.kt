@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -35,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,6 +56,7 @@ import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.reminders.reminderOverdueColor
 import com.tk.quicksearch.search.reminders.reminderScheduleLabel
+import com.tk.quicksearch.search.searchScreen.searchRoute.LocalShowUndoSnackbar
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Date
@@ -68,13 +71,15 @@ private const val REMINDER_NOW_WINDOW_MILLIS = 60L * 1000L
 
 /**
  * Reminders due within 30 minutes or already overdue, shown in the home At a Glance card. A
- * reminder stays until it is marked done or dismissed for the current day; dismissing it does not
- * cancel the notification.
+ * reminder that isn't due yet can be dismissed until its due time. Once due, it stays until it is
+ * marked done, snoozed (hidden here and from notifications for 30 minutes, due time unchanged) or
+ * deleted; those actions offer Undo, which restores the reminder as it was.
  */
 internal class UpcomingRemindersGlance(
     val reminders: List<ReminderInfo>,
     val nowMillis: Long,
     val markDone: (ReminderInfo) -> Unit,
+    val snooze: (ReminderInfo) -> Unit,
     val dismiss: (ReminderInfo) -> Unit,
     val delete: (ReminderInfo) -> Unit,
 )
@@ -110,23 +115,61 @@ internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingReminder
         }
     }
 
-    fun removeLocally(reminder: ReminderInfo) {
+    val showUndoSnackbar = LocalShowUndoSnackbar.current
+    val doneMessage = stringResource(R.string.home_reminder_marked_done)
+    val snoozedMessage = stringResource(R.string.home_reminder_snoozed)
+    val deletedMessage = stringResource(R.string.home_reminder_deleted)
+
+    /**
+     * Hides [reminder] right away, runs [action] off the main thread, then offers Undo. [readBefore]
+     * captures extra state the undo needs (the pinned order before a delete).
+     */
+    fun <T> act(
+        reminder: ReminderInfo,
+        message: String,
+        icon: ImageVector,
+        readBefore: ReminderRepository.() -> T,
+        action: ReminderRepository.() -> Unit,
+        undo: ReminderRepository.(T) -> Unit,
+    ) {
         reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
+        scope.launch {
+            val before = withContext(Dispatchers.IO) { repository.readBefore().also { repository.action() } }
+            showUndoSnackbar?.invoke(message, icon) {
+                scope.launch(Dispatchers.IO) { repository.undo(before) }
+            }
+        }
     }
     return UpcomingRemindersGlance(
         reminders = reminders,
         nowMillis = nowMillis,
         markDone = { reminder ->
-            removeLocally(reminder)
-            scope.launch(Dispatchers.IO) { repository.setDone(reminder.reminderId, true) }
+            act(
+                reminder, doneMessage, Icons.Rounded.Check,
+                readBefore = {}, action = { setDone(reminder.reminderId, true) }, undo = { restore(reminder) },
+            )
         },
+        snooze = { reminder ->
+            act(
+                reminder, snoozedMessage, Icons.Rounded.Snooze,
+                readBefore = { isNotificationShowing(reminder.reminderId) },
+                action = { snooze(reminder.reminderId) },
+                undo = { notificationWasShowing -> unsnooze(reminder.reminderId, notificationWasShowing) },
+            )
+        },
+        // Only a reminder that isn't due yet can be dismissed; it comes back at its due time, with its
+        // notification, so there is nothing to undo.
         dismiss = { reminder ->
-            removeLocally(reminder)
-            scope.launch(Dispatchers.IO) { repository.dismissFromHome(reminder.reminderId) }
+            reminders = reminders.filterNot { it.reminderId == reminder.reminderId }
+            scope.launch(Dispatchers.IO) { repository.hideFromHomeUntilDue(reminder.reminderId) }
         },
         delete = { reminder ->
-            removeLocally(reminder)
-            scope.launch(Dispatchers.IO) { repository.deleteReminder(reminder.reminderId) }
+            act(
+                reminder, deletedMessage, Icons.Rounded.Delete,
+                readBefore = { getPinnedReminderOrder() },
+                action = { deleteReminder(reminder.reminderId) },
+                undo = { pinnedOrder -> restore(reminder, pinnedOrder) },
+            )
         },
     )
 }
@@ -138,6 +181,7 @@ internal fun UpcomingReminderRow(
     nowMillis: Long,
     onClick: () -> Unit,
     onDone: () -> Unit,
+    onSnooze: () -> Unit,
     onDismiss: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -197,7 +241,7 @@ internal fun UpcomingReminderRow(
             Icon(
                 painter = painterResource(R.drawable.ic_reminder),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp),
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -205,14 +249,14 @@ internal fun UpcomingReminderRow(
                     text = reminder.title,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
+                    maxLines = GlanceTextMaxLines,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = scheduleLabel,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
+                    maxLines = GlanceTextMaxLines,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -231,15 +275,27 @@ internal fun UpcomingReminderRow(
                         onDone()
                     },
                 )
+                // A due reminder can be snoozed but not dismissed; before then, Dismiss hides it until it's due.
                 HorizontalDivider()
-                DropdownMenuItem(
-                    text = { Text(text = stringResource(R.string.reminders_home_card_dismiss_for_now)) },
-                    leadingIcon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
-                    onClick = {
-                        showMenu = false
-                        onDismiss()
-                    },
-                )
+                if (nowMillis >= reminder.dueMillis) {
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.reminder_notification_action_snooze)) },
+                        leadingIcon = { Icon(imageVector = Icons.Rounded.Snooze, contentDescription = null) },
+                        onClick = {
+                            showMenu = false
+                            onSnooze()
+                        },
+                    )
+                } else {
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.reminders_home_card_dismiss_for_now)) },
+                        leadingIcon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
+                        onClick = {
+                            showMenu = false
+                            onDismiss()
+                        },
+                    )
+                }
                 HorizontalDivider()
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.dialog_delete)) },

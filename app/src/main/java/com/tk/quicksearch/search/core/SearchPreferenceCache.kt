@@ -39,7 +39,7 @@ internal data class SearchPreferenceCache(
     val themedIconsEnabled: Boolean = false,
     val deviceThemeEnabled: Boolean = false,
     val amoledThemeEnabled: Boolean = false,
-    val maskUnsupportedIconPackIcons: Boolean = false,
+    val maskUnsupportedIconPackIcons: Boolean = true,
     val wallpaperBackgroundAlpha: Float = UiPreferences.DEFAULT_WALLPAPER_BACKGROUND_ALPHA,
     val wallpaperBlurRadius: Float = UiPreferences.DEFAULT_WALLPAPER_BLUR_RADIUS,
     val appTheme: AppTheme = AppTheme.MONOCHROME,

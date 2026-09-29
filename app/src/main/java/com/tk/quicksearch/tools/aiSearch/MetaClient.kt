@@ -99,6 +99,7 @@ class MetaClient(
         thinkingEnabled: Boolean = false,
         useSystemInstruction: Boolean = true,
         systemInstruction: String? = null,
+        history: List<AiConversationTurn> = emptyList(),
         responseMimeType: String = "text/plain",
     ): Result<String> =
         withContext(Dispatchers.IO) {
@@ -115,6 +116,7 @@ class MetaClient(
                         thinkingEnabled = thinkingEnabled,
                         useSystemInstruction = useSystemInstruction,
                         systemInstruction = systemInstruction,
+                        history = history,
                         responseMimeType = responseMimeType,
                     )
                 if (result.isSuccess) return@withContext result
@@ -137,6 +139,7 @@ class MetaClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
         responseMimeType: String,
     ): Result<String> {
         var connection: HttpURLConnection? = null
@@ -159,6 +162,7 @@ class MetaClient(
                     thinkingEnabled = thinkingEnabled,
                     useSystemInstruction = useSystemInstruction,
                     systemInstruction = systemInstruction,
+                    history = history,
                     responseMimeType = responseMimeType,
                 )
             if (BuildConfig.DEBUG) {
@@ -195,11 +199,21 @@ class MetaClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
         responseMimeType: String,
     ): String =
         JSONObject().apply {
             put("model", modelId.trim().ifBlank { MetaModelCatalog.DEFAULT_MODEL_ID })
-            put("input", query)
+            if (history.isEmpty()) {
+                put("input", query)
+            } else {
+                put(
+                    "input",
+                    JSONArray()
+                        .putChatHistory(history)
+                        .put(JSONObject().put("role", "user").put("content", query)),
+                )
+            }
             put("store", false)
             if (useSystemInstruction) {
                 val instructions =

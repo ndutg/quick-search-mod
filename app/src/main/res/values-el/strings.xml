@@ -65,6 +65,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >Καιρός στη Νέα Υόρκη</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Αναζητήστε εφαρμογές, επαφές, αρχεία, ρυθμίσεις και πολλά άλλα με το Quick Search.</string>
 
@@ -135,7 +138,7 @@
     <string name="settings_gesture_none">Κανένα</string>
     <string name="settings_gesture_custom">Προσαρμοσμένο (Εφαρμογές, Αρχεία κ.λπ.)</string>
     <string name="settings_keyboard_gestures_title">Χειρονομίες πληκτρολογίου (Αρχική)</string>
-    <string name="settings_keyboard_gestures_desc">Διαθέσιμο μόνο όταν δεν υπάρχει περιεχόμενο με δυνατότητα κύλισης στην αρχική οθόνη</string>
+    <string name="settings_keyboard_gestures_desc">Λειτουργεί μόνο όταν δεν υπάρχει περιεχόμενο με δυνατότητα κύλισης στην αρχική οθόνη</string>
     <string name="action_pin_app">Καρφίτσωμα</string>
     <string name="action_pin_to_notifications">Καρφίτσωμα στις ειδοποιήσεις</string>
     <string name="action_unpin_from_notifications">Ξεκαρφίτσωμα από τις ειδοποιήσεις</string>
@@ -366,7 +369,7 @@
     <string name="settings_manage_apps_desc">Διαχειριστείτε τις εφαρμογές σας</string>
     <string name="settings_manage_apps_title">Διαχείριση εφαρμογών</string>
     <string name="settings_refresh_apps_disabled">Η αναζήτηση εφαρμογών είναι απενεργοποιημένη, αδυναμία ανανέωσης δεδομένων</string>
-    <string name="settings_refresh_apps_title">Επαναφόρτωση εφαρμογών</string>
+    <string name="settings_refresh_apps_title">Ανανέωση εφαρμογών</string>
     <string name="usage_permission_subtitle">Αν θέλετε να βλέπετε τις πρόσφατα χρησιμοποιημένες εφαρμογές σας στις προτάσεις, χορηγήστε πρόσβαση στη χρήση.</string>
     <string name="usage_permission_title">Χορήγηση πρόσβασης στη χρήση</string>
 
@@ -535,7 +538,7 @@
     <string name="settings_file_previews_toggle">Προεπισκοπήσεις αρχείων</string>
     <string name="settings_file_previews_description">Προεπισκόπηση εικόνων και αρχείων PDF πριν από το άνοιγμά τους.</string>
     <string name="settings_refresh_files_disabled">Η αναζήτηση αρχείων είναι απενεργοποιημένη, αδυναμία ανανέωσης δεδομένων</string>
-    <string name="settings_refresh_files_title">Επαναφόρτωση αρχείων</string>
+    <string name="settings_refresh_files_title">Ανανέωση αρχείων</string>
     <string name="settings_system_files_toggle">Αρχεία συστήματος</string>
 
     <!-- ============================================================================
@@ -738,6 +741,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">Επεξεργασία</string>
     <string name="settings_font_size_big">Μεγάλο</string>
+    <string name="settings_font_size_extra_small">Πολύ μικρό</string>
+    <string name="settings_font_size_extra_big">Πολύ μεγάλο</string>
     <string name="settings_font_size_medium">Μεσαίο</string>
     <string name="settings_font_size_small">Μικρό</string>
     <string name="settings_font_size_title">Μέγεθος γραμματοσειράς</string>
@@ -807,7 +812,7 @@
     <string name="settings_quick_settings_tile_desc">Προσθήκη του Quick Search στα πλακίδια γρήγορων ρυθμίσεων.</string>
     <string name="settings_quick_settings_tile_title">Πλακίδιο γρήγορων ρυθμίσεων</string>
     <string name="settings_refresh_contacts_disabled">Η αναζήτηση επαφών είναι απενεργοποιημένη, αδυναμία ανανέωσης δεδομένων</string>
-    <string name="settings_refresh_contacts_title">Επαναφόρτωση επαφών</string>
+    <string name="settings_refresh_contacts_title">Ανανέωση επαφών</string>
     <string name="settings_refresh_data_note">Τα δεδομένα ανανεώνονται αυτόματα. Χρησιμοποιήστε αυτά τα κουμπιά για αναγκαστική χειροκίνητη ανανέωση.</string>
     <string name="settings_refresh_data_title">Ανανέωση δεδομένων</string>
     <string name="settings_refresh_icon_packs">Ανανέωση πακέτων εικονιδίων</string>
@@ -828,18 +833,35 @@
     <string name="settings_tools_info_examples_header">Ακολουθούν μερικά παραδείγματα για το τι μπορείτε να ζητήσετε στη γραμμή αναζήτησης</string>
     <string name="settings_tools_title">Εργαλεία</string>
     <string name="settings_at_a_glance_title">Με μια ματιά</string>
+    <string name="custom_info_title">Προσαρμοσμένες πληροφορίες</string>
+    <string name="custom_info_edit_title">Επεξεργασία λεπτομερειών</string>
+    <string name="custom_info_prompt">Προτροπή</string>
+    <string name="custom_info_set_date_time">Ορισμός ημερομηνίας και ώρας</string>
+    <string name="custom_info_desc">Απαντήσεις AI στις προτροπές σας στην αρχική οθόνη, τις ώρες που επιλέγετε</string>
+    <string name="settings_ai_api_key_required_message">Αυτή η λειτουργία απαιτεί κλειδί API παρόχου AI.</string>
+    <string name="settings_ai_api_key_required_title">Απαιτείται κλειδί API</string>
+    <string name="settings_ai_api_key_setup_action">Ρύθμιση κλειδιού</string>
+    <string name="custom_info_repeat_never">Χωρίς επανάληψη</string>
+    <string name="custom_info_repeat_every">Επανάληψη κάθε</string>
+    <string name="custom_info_send_notification">Αποστολή ειδοποίησης</string>
+    <string name="custom_info_preview">Προεπισκόπηση</string>
+    <string name="custom_info_saved">Αποθηκεύτηκε</string>
+    <string name="custom_info_delete_confirm_title">Διαγραφή %1$s;</string>
+    <string name="custom_info_delete_confirm_message">Αυτές οι προσαρμοσμένες πληροφορίες και το πρόγραμμά τους θα διαγραφούν μόνιμα.</string>
     <string name="settings_at_a_glance_desc">Χρήσιμες πληροφορίες που εμφανίζονται στην αρχική σας οθόνη τη σωστή στιγμή</string>
     <string name="settings_at_a_glance_alarms_title">Ξυπνητήρια</string>
     <string name="settings_upcoming_alarm_desc">Το επόμενο ξυπνητήρι όταν είναι εντός 45 λεπτών</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">Εμφάνιση του πρώτου ξυπνητηριού της αυριανής ημέρας το προηγούμενο βράδυ</string>
     <string name="settings_hidden_alarm_apps_title">Κρυφές εφαρμογές ξυπνητηριών</string>
-    <string name="settings_at_a_glance_events_desc">Τα σημερινά συμβάντα ημερολογίου και, το βράδυ, τα ολοήμερα συμβάντα της αυριανής ημέρας</string>
+    <string name="settings_at_a_glance_events_desc">Τα σημερινά συμβάντα ημερολογίου</string>
+    <string name="settings_at_a_glance_tomorrow_events">Εμφάνιση των εκδηλώσεων της αυριανής ημέρας το προηγούμενο βράδυ</string>
     <string name="settings_upcoming_reminders_desc">Υπενθυμίσεις που λήγουν εντός 30 λεπτών ή έχουν καθυστερήσει</string>
     <string name="settings_at_a_glance_low_battery_title">Χαμηλή μπαταρία</string>
     <string name="settings_low_battery_desc">Η μπαταρία σας όταν είναι στο %1$d%% ή χαμηλότερα</string>
     <string name="settings_at_a_glance_timers_title">Χρονοδιακόπτες &amp; χρονόμετρο</string>
     <string name="settings_at_a_glance_timers_desc">Χρονοδιακόπτες και χρονόμετρα σε λειτουργία από την εφαρμογή ρολογιού σας</string>
     <string name="settings_at_a_glance_birthdays_title">Γενέθλια</string>
-    <string name="settings_at_a_glance_birthdays_desc">Επαφές που έχουν γενέθλια σήμερα</string>
+    <string name="settings_at_a_glance_birthdays_desc">Επαφές που έχουν γενέθλια ή επέτειο σήμερα</string>
     <string name="settings_at_a_glance_progress_title">Συνεχείς ειδοποιήσεις</string>
     <string name="settings_at_a_glance_progress_desc">Ζωντανές ενημερώσεις όπως διαδρομές, παραδόσεις και λήψεις</string>
     <string name="settings_at_a_glance_charging_title">Φόρτιση</string>
@@ -910,6 +932,7 @@
     <string name="settings_direct_search_how_to">Λάβετε δωρεάν κλειδί API</string>
     <string name="settings_direct_search_model_label">Μοντέλο</string>
     <string name="settings_select_model">Επιλογή μοντέλου</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">Το επιλεγμένο μοντέλο δεν είναι διαθέσιμο. Επιλέξτε άλλο μοντέλο στις ρυθμίσεις.</string>
     <string name="settings_loading_models">Φόρτωση μοντέλων…</string>
     <string name="settings_direct_search_personal_context">Προσωπικό πλαίσιο</string>
@@ -954,6 +977,8 @@
     <string name="release_notes_title_no_version">Σημειώσεις έκδοσης Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Προχωρήστε με δική σας ευθύνη. Τα εξαγόμενα κλειδιά API δεν είναι κρυπτογραφημένα και μπορούν να προσπελαστούν από οποιονδήποτε έχει πρόσβαση στο αρχείο αντιγράφου ασφαλείας.</string>
     <string name="settings_backup_export_button">Εξαγωγή</string>
+    <string name="settings_backup_export_title">Εξαγωγή ρυθμίσεων</string>
+    <string name="settings_backup_export_desc">Αποθήκευση των ρυθμίσεών σας σε αρχείο αντιγράφου ασφαλείας</string>
     <string name="settings_backup_export_failed">Αδυναμία εξαγωγής ρυθμίσεων.</string>
     <string name="settings_backup_export_option_pinned_items_title">Καρφιτσωμένα στοιχεία</string>
     <string name="settings_backup_export_option_api_keys">Κλειδιά API</string>
@@ -1285,11 +1310,20 @@
     <string name="home_charging_paused">Η φόρτιση σε παύση</string>
     <string name="home_timer">Χρονοδιακόπτης</string>
     <string name="home_stopwatch">Χρονόμετρο</string>
+    <string name="home_timer_paused">Σε παύση</string>
     <string name="home_storage_almost_full">Ο χώρος αποθήκευσης σχεδόν γεμάτος</string>
     <string name="home_storage_free">%1$s ελεύθερα από %2$s</string>
-    <string name="home_birthday_today">Έχει γενέθλια σήμερα</string>
-    <string name="home_birthday_turns">Κλείνει σήμερα τα %1$d</string>
+    <string name="home_birthday_title">Γενέθλια: %1$s</string>
+    <string name="home_anniversary_title">Επέτειος: %1$s</string>
+    <string name="home_birthday_title_ordinal">Γενέθλια: %1$s (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">Επέτειος: %1$s (%2$s)</string>
+    <string name="home_birthday_wish">Πατήστε για να ευχηθείτε</string>
     <string name="home_missed_call">Αναπάντητη κλήση</string>
+    <string name="home_otp_from">Κωδικός από %1$s</string>
+    <string name="home_copied">Αντιγράφηκε</string>
+    <string name="home_reminder_marked_done">Η υπενθύμιση σημειώθηκε ως ολοκληρωμένη</string>
+    <string name="home_reminder_snoozed">Η υπενθύμιση αναβλήθηκε για 30 λεπτά</string>
+    <string name="home_reminder_deleted">Η υπενθύμιση διαγράφηκε</string>
     <string name="home_missed_calls_count">Αναπάντητες κλήσεις (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">Το Μην ενοχλείτε είναι ενεργό</string>
@@ -1303,8 +1337,10 @@
     <string name="home_turn_off">Απενεργοποίηση</string>
     <string name="settings_tavily_title">Tavily για αναζήτηση ιστού</string>
     <string name="settings_tavily_desc">Προσθέστε κλειδί API του Tavily για υποστήριξη αναζήτησης ιστού σε μοντέλα που δεν την υποστηρίζουν.</string>
-    <string name="settings_tavily_mode_always">Να χρησιμοποιείται πάντα το Tavily για αναζήτηση ιστού</string>
-    <string name="settings_tavily_mode_when_unsupported">Χρήση μόνο όταν το μοντέλο δεν υποστηρίζει αναζήτηση ιστού</string>
+    <string name="settings_tavily_mode_always">Πάντα</string>
+    <string name="settings_tavily_mode_when_unsupported">Ως εφεδρεία</string>
+    <string name="settings_tavily_mode_always_desc">Χρησιμοποιείται για αναζήτηση ιστού με κάθε μοντέλο.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Χρησιμοποιείται μόνο όταν το επιλεγμένο μοντέλο δεν μπορεί να κάνει αναζήτηση ιστού.</string>
     <string name="settings_weather_no_web_search_warning">Ο Καιρός χρειάζεται αποτελέσματα ιστού. Επίλεξε μοντέλο που υποστηρίζει αναζήτηση ιστού ή πρόσθεσε κλειδί API Tavily στη Ρύθμιση κλειδιού API.</string>
     <string name="tavily_search_failed_toast">Η αναζήτηση ιστού Tavily απέτυχε. Απάντηση χωρίς αποτελέσματα ιστού.</string>
     <string name="search_hint_reminders">Αναζήτηση υπενθυμίσεων…</string>

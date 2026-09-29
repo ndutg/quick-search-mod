@@ -19,6 +19,15 @@ fun resolveModelSelection(
         selected.isNotEmpty() && availableModels.any { it.id == selected }
     }.orEmpty()
 
+/** Keeps a still-available selection; otherwise picks the provider's default from the live catalog. */
+fun resolveModelSelectionOrDefault(
+    providerId: AiSearchLlmProviderId,
+    selectedModelId: String,
+    availableModels: List<LlmTextModel>,
+): String =
+    resolveModelSelection(selectedModelId, availableModels)
+        .ifEmpty { LlmDefaultModels.pick(providerId, availableModels) }
+
 /** Shared request contract so callers don't depend on provider-specific payload formats. */
 data class LlmRequest(
     val query: String,
@@ -30,6 +39,8 @@ data class LlmRequest(
     val systemInstruction: String? = null,
     val responseMimeType: String = "text/plain",
     val advancedPayloadJson: String? = null,
+    /** Earlier turns of the conversation, sent as real messages before [query]. */
+    val history: List<AiConversationTurn> = emptyList(),
 )
 
 /** Provider response plus request-level delivery details needed by the result UI. */
@@ -57,6 +68,25 @@ data class AiSearchLlmProviderId(
         val GROQ = AiSearchLlmProviderId("groq")
         val META = AiSearchLlmProviderId("meta")
         val entries = listOf(GEMINI, OPENAI, ANTHROPIC, GROQ, META)
+
+        /**
+         * Order used to pick the active provider when several have API keys: Gemini, custom
+         * providers (in the order added), Groq, Meta, OpenAI, then Anthropic.
+         */
+        fun defaultPriority(id: AiSearchLlmProviderId): Int =
+            when {
+                id == GEMINI -> 0
+                id.isCustom -> 1
+                id == GROQ -> 2
+                id == META -> 3
+                id == OPENAI -> 4
+                id == ANTHROPIC -> 5
+                else -> 6
+            }
+
+        /** Highest-priority provider in [ids]; ties keep the original order. */
+        fun preferredOf(ids: Iterable<AiSearchLlmProviderId>): AiSearchLlmProviderId? =
+            ids.minByOrNull(::defaultPriority)
 
         fun custom(id: String): AiSearchLlmProviderId =
             AiSearchLlmProviderId("$CUSTOM_PREFIX${id.trim()}")

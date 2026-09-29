@@ -27,6 +27,7 @@ object MetaAiSearchLlmProvider : AiSearchLlmProvider {
             thinkingEnabled = request.thinkingEnabled,
             useSystemInstruction = request.useSystemInstruction,
             systemInstruction = request.systemInstruction,
+            history = request.history,
             responseMimeType = request.responseMimeType,
         ).map(::LlmResponse)
 }

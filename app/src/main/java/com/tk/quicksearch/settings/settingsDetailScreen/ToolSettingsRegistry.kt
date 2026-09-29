@@ -78,6 +78,7 @@ object ToolSettingsRegistry {
                 titleResId = R.string.currency_converter_toggle_title,
                 defaultDescriptionResId = R.string.currency_converter_toggle_desc,
                 icon = Icons.Rounded.CurrencyExchange,
+                toggleKey = AppSettingsToggleKey.CURRENCY_CONVERTER,
             ),
             ToolSettingDefinition(
                 id = ToolSettingId.COLOR_VISUALIZER,
@@ -94,6 +95,7 @@ object ToolSettingsRegistry {
                 requiresLlmApiKey = true,
                 requiresLlmApiKeyDescriptionResId = R.string.currency_converter_requires_gemini_key,
                 icon = Icons.Rounded.AccessTime,
+                toggleKey = AppSettingsToggleKey.WORLD_CLOCK,
                 aiBackedModelConfigurable = true,
             ),
             ToolSettingDefinition(

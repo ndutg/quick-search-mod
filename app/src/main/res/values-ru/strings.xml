@@ -65,6 +65,9 @@
     <item>Time in UK</item>
     <item>Define Serendipity</item>
     <item>Погода в Нью-Йорке</item>
+    <item>Set alarm at 8am</item>
+    <item>Start timer for 20min</item>
+    <item>Pickup food at 6pm</item>
 </string-array>
 <string name="search_provider_description">Поиск приложений, контактов, файлов, настроек и многого другого с помощью Quick Search.</string>
 
@@ -135,7 +138,7 @@
 <string name="settings_gesture_none">Нет</string>
 <string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
 <string name="settings_keyboard_gestures_title">Жесты клавиатуры (Главный экран)</string>
-<string name="settings_keyboard_gestures_desc">Доступно, только когда на главном экране нет прокручиваемого содержимого</string>
+<string name="settings_keyboard_gestures_desc">Работает, только когда на главном экране нет прокручиваемого содержимого</string>
 <string name="action_pin_app">Закрепить</string>
 <string name="action_pin_to_notifications">Закрепить в уведомлениях</string>
 <string name="action_unpin_from_notifications">Открепить от уведомлений</string>
@@ -758,6 +761,8 @@
 <string name="settings_device_theme_title">Material You</string>
 <string name="settings_edit_label">Изменить</string>
 <string name="settings_font_size_big">Большой</string>
+<string name="settings_font_size_extra_small">Очень маленький</string>
+<string name="settings_font_size_extra_big">Очень большой</string>
 <string name="settings_font_size_medium">Средний</string>
 <string name="settings_font_size_small">Маленький</string>
 <string name="settings_font_size_title">Размер шрифта</string>
@@ -848,18 +853,35 @@
 <string name="settings_tools_info_examples_header">Вот несколько примеров того, что можно ввести в поисковой строке</string>
 <string name="settings_tools_title">Инструменты</string>
 <string name="settings_at_a_glance_title">Кратко</string>
+<string name="custom_info_title">Своя информация</string>
+<string name="custom_info_edit_title">Изменить данные</string>
+<string name="custom_info_prompt">Запрос</string>
+<string name="custom_info_set_date_time">Установить дату и время</string>
+<string name="custom_info_desc">Ответы ИИ на ваши запросы на главном экране в выбранное время</string>
+<string name="settings_ai_api_key_required_message">Для этой функции требуется API-ключ AI-провайдера.</string>
+<string name="settings_ai_api_key_required_title">Требуется API-ключ</string>
+<string name="settings_ai_api_key_setup_action">Настроить ключ</string>
+<string name="custom_info_repeat_never">Не повторять</string>
+<string name="custom_info_repeat_every">Повторять каждые</string>
+<string name="custom_info_send_notification">Отправить уведомление</string>
+<string name="custom_info_preview">Предпросмотр</string>
+<string name="custom_info_saved">Сохранено</string>
+<string name="custom_info_delete_confirm_title">Удалить %1$s?</string>
+<string name="custom_info_delete_confirm_message">Эта информация и её расписание будут удалены безвозвратно.</string>
 <string name="settings_at_a_glance_desc">Полезная информация, которая появляется на главном экране в нужное время</string>
 <string name="settings_at_a_glance_alarms_title">Будильники</string>
 <string name="settings_upcoming_alarm_desc">Следующий будильник, если он сработает в течение 45 минут</string>
+<string name="settings_at_a_glance_tomorrow_alarm">Показывать первый будильник на завтра накануне вечером</string>
 <string name="settings_hidden_alarm_apps_title">Скрытые приложения будильников</string>
-<string name="settings_at_a_glance_events_desc">Сегодняшние события календаря, а вечером — события на весь день завтра</string>
+<string name="settings_at_a_glance_events_desc">Сегодняшние события календаря</string>
+<string name="settings_at_a_glance_tomorrow_events">Показывать события на завтра накануне вечером</string>
 <string name="settings_upcoming_reminders_desc">Напоминания со сроком в течение 30 минут или просроченные</string>
     <string name="settings_at_a_glance_low_battery_title">Низкий заряд</string>
     <string name="settings_low_battery_desc">Батарея, когда заряд %1$d%% или меньше</string>
     <string name="settings_at_a_glance_timers_title">Таймеры и секундомер</string>
     <string name="settings_at_a_glance_timers_desc">Запущенные таймеры и секундомеры из приложения «Часы»</string>
     <string name="settings_at_a_glance_birthdays_title">Дни рождения</string>
-    <string name="settings_at_a_glance_birthdays_desc">Контакты, у которых сегодня день рождения</string>
+    <string name="settings_at_a_glance_birthdays_desc">Контакты, у которых сегодня день рождения или годовщина</string>
     <string name="settings_at_a_glance_progress_title">Текущие уведомления</string>
     <string name="settings_at_a_glance_progress_desc">Обновления в реальном времени, например поездки, доставки и загрузки</string>
     <string name="settings_at_a_glance_charging_title">Зарядка</string>
@@ -930,6 +952,7 @@
 <string name="settings_direct_search_how_to">Получить бесплатный API-ключ</string>
 <string name="settings_direct_search_model_label">Модель</string>
 <string name="settings_select_model">Выберите модель</string>
+<string name="settings_ai_model_with_provider">%1$s · %2$s</string>
 <string name="ai_error_selected_model_unavailable">Выбранная модель недоступна. Выберите другую модель в настройках.</string>
 <string name="settings_loading_models">Загрузка моделей…</string>
 <string name="settings_direct_search_personal_context">Персональный контекст</string>
@@ -974,6 +997,8 @@
 <string name="release_notes_title_no_version">Примечания к релизу Quick Search</string>
 <string name="settings_backup_export_api_key_warning_message">Вы действуете на свой страх и риск. Экспортируемые API-ключи не зашифрованы и могут быть доступны любому, у кого есть доступ к вашему файлу резервной копии.</string>
 <string name="settings_backup_export_button">Экспорт</string>
+<string name="settings_backup_export_title">Экспортировать настройки</string>
+<string name="settings_backup_export_desc">Сохранить настройки в файл резервной копии</string>
 <string name="settings_backup_export_failed">Не удалось экспортировать настройки.</string>
 <string name="settings_backup_export_option_pinned_items_title">Закрепленные элементы</string>
 <string name="settings_backup_export_option_api_keys">API-ключи</string>
@@ -1305,11 +1330,20 @@
     <string name="home_charging_paused">Зарядка приостановлена</string>
     <string name="home_timer">Таймер</string>
     <string name="home_stopwatch">Секундомер</string>
+    <string name="home_timer_paused">На паузе</string>
     <string name="home_storage_almost_full">Память почти заполнена</string>
     <string name="home_storage_free">Свободно %1$s из %2$s</string>
-    <string name="home_birthday_today">День рождения сегодня</string>
-    <string name="home_birthday_turns">Сегодня исполняется %1$d</string>
+    <string name="home_birthday_title">День рождения: %1$s</string>
+    <string name="home_anniversary_title">Годовщина: %1$s</string>
+    <string name="home_birthday_title_ordinal">День рождения: %1$s (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">Годовщина: %1$s (%2$s)</string>
+    <string name="home_birthday_wish">Нажмите, чтобы поздравить</string>
     <string name="home_missed_call">Пропущенный вызов</string>
+    <string name="home_otp_from">Код от %1$s</string>
+    <string name="home_copied">Скопировано</string>
+    <string name="home_reminder_marked_done">Напоминание отмечено как выполненное</string>
+    <string name="home_reminder_snoozed">Напоминание отложено на 30 минут</string>
+    <string name="home_reminder_deleted">Напоминание удалено</string>
     <string name="home_missed_calls_count">Пропущенные вызовы (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">Режим «Не беспокоить» включен</string>
@@ -1323,8 +1357,10 @@
     <string name="home_turn_off">Выключить</string>
     <string name="settings_tavily_title">Tavily для веб-поиска</string>
     <string name="settings_tavily_desc">Добавьте API-ключ Tavily, чтобы добавить веб-поиск моделям, которые его не поддерживают.</string>
-    <string name="settings_tavily_mode_always">Всегда использовать Tavily для веб-поиска</string>
-    <string name="settings_tavily_mode_when_unsupported">Использовать, только если модель не поддерживает веб-поиск</string>
+    <string name="settings_tavily_mode_always">Всегда</string>
+    <string name="settings_tavily_mode_when_unsupported">Как запасной</string>
+    <string name="settings_tavily_mode_always_desc">Используется для веб-поиска со всеми моделями.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Используется, только если выбранная модель не умеет искать в интернете.</string>
     <string name="settings_weather_no_web_search_warning">Погоде нужны результаты из интернета. Выберите модель с поддержкой веб-поиска или добавьте API-ключ Tavily в разделе «Настройка API-ключа».</string>
     <string name="tavily_search_failed_toast">Веб-поиск Tavily не удался. Ответ без результатов из интернета.</string>
     <string name="search_hint_reminders">Поиск напоминаний…</string>

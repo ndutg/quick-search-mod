@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.tools.aiSearch.LlmTextModel
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.settings.shared.ModelFeatureSettingsCard
+import com.tk.quicksearch.shared.ui.components.CardTextField
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import org.json.JSONObject
@@ -80,8 +82,6 @@ fun AiProviderSettingsSection(
                         availableModels = activeLlmAvailableModels,
                         availableModelsByProvider = availableLlmModelsByProvider,
                         configuredProviderIds = apiKeyLast4ByProvider.keys,
-                        modelLabel =
-                                stringResource(R.string.settings_direct_search_model_label),
                         thinkingLabel =
                                 stringResource(R.string.settings_direct_search_thinking_label),
                         webSearchLabel =
@@ -127,21 +127,8 @@ fun AiProviderSettingsSection(
                                         }
                                 ),
                 ) {
-                        Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                        ) {
-                                Text(
-                                        text =
-                                                stringResource(
-                                                        R.string
-                                                                .settings_direct_search_personal_context
-                                                ),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                )
-
-                                OutlinedTextField(
+                        SettingsCard(modifier = Modifier.fillMaxWidth()) {
+                                CardTextField(
                                         value = personalContextInput,
                                         onValueChange = {
                                                 personalContextInput = it
@@ -150,31 +137,21 @@ fun AiProviderSettingsSection(
                                                         trimmed.takeIf { value -> value.isNotEmpty() }
                                                 )
                                         },
-                                        enabled = supportsInstructions,
-                                        modifier = Modifier.fillMaxWidth().height(160.dp),
-                                        placeholder = {
-                                                Text(
-                                                        text =
-                                                                stringResource(
-                                                                        R.string
-                                                                                .settings_direct_search_personal_context_hint
-                                                                ),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                )
-                                        },
-                                        shape = MaterialTheme.shapes.extraLarge,
-                                        colors =
-                                                TextFieldDefaults.colors(
-                                                        focusedContainerColor = AppColors.getSettingsCardContainerColor(),
-                                                        unfocusedContainerColor = AppColors.getSettingsCardContainerColor(),
-                                                        disabledContainerColor = AppColors.getSettingsCardContainerColor(),
-                                                        focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                                                        unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                                                        disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                                        label = stringResource(R.string.settings_direct_search_personal_context),
+                                        placeholder =
+                                                stringResource(
+                                                        R.string.settings_direct_search_personal_context_hint
                                                 ),
-                                        singleLine = false,
-                                        minLines = 4,
+                                        enabled = supportsInstructions,
+                                        minLines = 3,
                                         maxLines = 8,
+                                        modifier =
+                                                Modifier.fillMaxWidth()
+                                                        .heightIn(min = 120.dp)
+                                                        .padding(
+                                                                horizontal = DesignTokens.SpacingSmall,
+                                                                vertical = DesignTokens.SpacingXSmall,
+                                                        ),
                                 )
                         }
                 }

@@ -56,6 +56,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >Weather in New York</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Search apps, contacts, files, settings, and more with Quick Search.</string>
 
@@ -128,7 +131,7 @@
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
     <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>
-    <string name="settings_keyboard_gestures_desc">Available only when there is no scrollable content in home</string>
+    <string name="settings_keyboard_gestures_desc">Works only when there is no scrollable content in home</string>
     <string name="action_pin_app">Pin</string>
     <string name="action_pin_to_notifications">Pin to Notifications</string>
     <string name="action_unpin_from_notifications">Unpin from Notifications</string>
@@ -361,7 +364,7 @@
     <string name="settings_manage_apps_desc">Manage your apps</string>
     <string name="settings_manage_apps_title">Manage Apps</string>
     <string name="settings_refresh_apps_disabled">App search is disabled, cannot refresh apps data</string>
-    <string name="settings_refresh_apps_title">Reload Apps</string>
+    <string name="settings_refresh_apps_title">Refresh Apps</string>
     <string name="usage_permission_subtitle">If you want to see your recently used apps in suggestions, grant usage access.</string>
     <string name="usage_permission_title">Grant usage access</string>
 
@@ -533,7 +536,7 @@
     <string name="settings_file_previews_toggle">File Previews</string>
     <string name="settings_file_previews_description">Preview images and PDFs before opening them.</string>
     <string name="settings_refresh_files_disabled">Files search is disabled, cannot refresh files data</string>
-    <string name="settings_refresh_files_title">Reload Files</string>
+    <string name="settings_refresh_files_title">Refresh Files</string>
     <string name="settings_system_files_toggle">System Files</string>
 
     <!-- ============================================================================
@@ -737,9 +740,16 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">Edit</string>
     <string name="settings_font_size_big">Big</string>
+    <string name="settings_font_size_extra_small">Extra small</string>
+    <string name="settings_font_size_extra_big">Extra big</string>
     <string name="settings_font_size_medium">Medium</string>
     <string name="settings_font_size_small">Small</string>
     <string name="settings_font_size_title">Font Size</string>
+    <string name="settings_font_size_tick_xs" translatable="false">XS</string>
+    <string name="settings_font_size_tick_s" translatable="false">S</string>
+    <string name="settings_font_size_tick_m" translatable="false">M</string>
+    <string name="settings_font_size_tick_l" translatable="false">L</string>
+    <string name="settings_font_size_tick_xl" translatable="false">XL</string>
     <string name="settings_home_screen_widget_confirm_message">You are about to add Quick Search widget to your home screen. Long press on the widget to access widget settings page that has many customization options.</string>
     <string name="settings_home_screen_widget_desc">Add Quick Search widget to your home screen.</string>
     <string name="settings_home_screen_widget_title">Home Screen Widget</string>
@@ -806,7 +816,7 @@
     <string name="settings_quick_settings_tile_desc">Add Quick Search to Quick Settings tiles.</string>
     <string name="settings_quick_settings_tile_title">Quick Settings Tile</string>
     <string name="settings_refresh_contacts_disabled">Contacts search is disabled, cannot refresh contacts data</string>
-    <string name="settings_refresh_contacts_title">Reload Contacts</string>
+    <string name="settings_refresh_contacts_title">Refresh Contacts</string>
     <string name="settings_refresh_data_note">Data is refreshed automatically. Use these buttons to force refresh manually.</string>
     <string name="settings_refresh_data_title">Refresh Data</string>
     <string name="settings_refresh_icon_packs">Refresh icon packs</string>
@@ -827,18 +837,35 @@
     <string name="settings_tools_info_examples_header">Here are some examples of things you can ask in the search bar</string>
     <string name="settings_tools_title">Tools</string>
     <string name="settings_at_a_glance_title">At a Glance</string>
+    <string name="custom_info_title">Custom Info</string>
+    <string name="custom_info_edit_title">Edit Details</string>
+    <string name="custom_info_prompt">Prompt</string>
+    <string name="custom_info_set_date_time">Set Date and Time</string>
+    <string name="custom_info_desc">AI answers to your prompts on Home, at the times you choose</string>
+    <string name="settings_ai_api_key_required_message">This feature requires an AI provider API key.</string>
+    <string name="settings_ai_api_key_required_title">API Key Required</string>
+    <string name="settings_ai_api_key_setup_action">Setup Key</string>
+    <string name="custom_info_repeat_never">Does Not Repeat</string>
+    <string name="custom_info_repeat_every">Repeat every</string>
+    <string name="custom_info_send_notification">Send Notification</string>
+    <string name="custom_info_preview">Preview</string>
+    <string name="custom_info_saved">Saved</string>
+    <string name="custom_info_delete_confirm_title">Delete %1$s?</string>
+    <string name="custom_info_delete_confirm_message">This custom info and its schedule will be permanently deleted.</string>
     <string name="settings_at_a_glance_desc">Useful information that appears on your home screen at relevant times</string>
     <string name="settings_at_a_glance_alarms_title">Alarms</string>
     <string name="settings_upcoming_alarm_desc">Your next alarm when it\'s within 45 minutes</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">Show tomorrow\'s first alarm the night before</string>
     <string name="settings_hidden_alarm_apps_title">Hidden Alarm Apps</string>
-    <string name="settings_at_a_glance_events_desc">Today\'s calendar events, plus tomorrow\'s all-day events in the evening</string>
+    <string name="settings_at_a_glance_events_desc">Today\'s calendar events</string>
+    <string name="settings_at_a_glance_tomorrow_events">Show tomorrow\'s events the night before</string>
     <string name="settings_upcoming_reminders_desc">Reminders due within 30 minutes or overdue</string>
     <string name="settings_at_a_glance_low_battery_title">Low Battery</string>
     <string name="settings_low_battery_desc">Your battery when it\'s at %1$d%% or lower</string>
     <string name="settings_at_a_glance_timers_title">Timers &amp; Stopwatch</string>
     <string name="settings_at_a_glance_timers_desc">Running timers and stopwatches from your clock app</string>
     <string name="settings_at_a_glance_birthdays_title">Birthdays</string>
-    <string name="settings_at_a_glance_birthdays_desc">Contacts with a birthday today</string>
+    <string name="settings_at_a_glance_birthdays_desc">Contacts with a birthday or anniversary today</string>
     <string name="settings_at_a_glance_progress_title">Ongoing Notifications</string>
     <string name="settings_at_a_glance_progress_desc">Live updates like rides, deliveries and downloads</string>
     <string name="settings_at_a_glance_charging_title">Charging</string>
@@ -909,6 +936,7 @@
     <string name="settings_direct_search_how_to">Get Free API Key</string>
     <string name="settings_direct_search_model_label">Model</string>
     <string name="settings_select_model">Select Model</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">Selected model isn\'t available. Please choose another model in settings.</string>
     <string name="settings_loading_models">Loading Models...</string>
     <string name="settings_direct_search_personal_context">Personal Context</string>
@@ -923,8 +951,10 @@
     <string name="settings_gemini_api_key_paste_hint">Tap to paste the key</string>
     <string name="settings_tavily_title">Tavily for Web Search</string>
     <string name="settings_tavily_desc">Add Tavily API key to add web search support for models that don\u2019t support it.</string>
-    <string name="settings_tavily_mode_always">Always use Tavily for web search</string>
-    <string name="settings_tavily_mode_when_unsupported">Use only when the model does not support web search</string>
+    <string name="settings_tavily_mode_always">Always</string>
+    <string name="settings_tavily_mode_when_unsupported">As fallback</string>
+    <string name="settings_tavily_mode_always_desc">Used for web search with every model.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Used only when the selected model can’t search the web.</string>
     <string name="settings_weather_no_web_search_warning">Weather needs web results. Pick a model that supports web search, or add a Tavily API key under API Key Setup.</string>
     <string name="tavily_search_failed_toast">Tavily web search failed. Answering without web results.</string>
     <string name="settings_gemini_api_key_reset">Reset Key</string>
@@ -959,6 +989,8 @@
     <string name="release_notes_title_no_version">Quick Search Release Notes</string>
     <string name="settings_backup_export_api_key_warning_message">Proceed at your own risk. Exported API keys are not encrypted and can be accessed by anyone who has access to your backup file.</string>
     <string name="settings_backup_export_button">Export</string>
+    <string name="settings_backup_export_title">Export Settings</string>
+    <string name="settings_backup_export_desc">Save your settings to a backup file</string>
     <string name="settings_backup_export_failed">Unable to export settings.</string>
     <string name="settings_backup_export_option_pinned_items_title">Pinned items</string>
     <string name="settings_backup_export_option_api_keys">API Keys</string>
@@ -1284,11 +1316,20 @@
     <string name="home_charging_paused">Charging Paused</string>
     <string name="home_timer">Timer</string>
     <string name="home_stopwatch">Stopwatch</string>
+    <string name="home_timer_paused">Paused</string>
     <string name="home_storage_almost_full">Storage Almost Full</string>
     <string name="home_storage_free">%1$s free of %2$s</string>
-    <string name="home_birthday_today">Birthday today</string>
-    <string name="home_birthday_turns">Turns %1$d today</string>
+    <string name="home_birthday_title">%1$s\'s birthday</string>
+    <string name="home_anniversary_title">%1$s\'s anniversary</string>
+    <string name="home_birthday_title_ordinal">%1$s\'s %2$s birthday</string>
+    <string name="home_anniversary_title_ordinal">%1$s\'s %2$s anniversary</string>
+    <string name="home_birthday_wish">Tap to wish them</string>
     <string name="home_missed_call">Missed Call</string>
+    <string name="home_otp_from">OTP from %1$s</string>
+    <string name="home_copied">Copied</string>
+    <string name="home_reminder_marked_done">Reminder marked as done</string>
+    <string name="home_reminder_snoozed">Reminder snoozed for 30 minutes</string>
+    <string name="home_reminder_deleted">Reminder deleted</string>
     <string name="home_missed_calls_count">Missed Calls (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">Do Not Disturb is ON</string>

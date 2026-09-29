@@ -12,7 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,11 +31,13 @@ import com.tk.quicksearch.search.core.CustomTool
 import com.tk.quicksearch.search.data.preferences.WeatherTemperatureUnit
 import com.tk.quicksearch.search.data.preferences.WeatherWindSpeedUnit
 import com.tk.quicksearch.settings.shared.ModelFeatureSettingsCard
+import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCheckboxPill
 import com.tk.quicksearch.settings.shared.TavilyKeyState
 import com.tk.quicksearch.settings.shared.rememberTavilyKeyState
 import com.tk.quicksearch.settings.settingsDetailScreen.AdvancedPayloadSettingsSection
-import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
+import com.tk.quicksearch.shared.ui.components.CardTextField
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.LlmTextModel
@@ -188,7 +190,7 @@ fun CustomToolEditorScreen(
                     end = DesignTokens.ContentHorizontalPadding,
                     bottom = DesignTokens.SpacingLarge,
                 ),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         ) {
             if (showWebSearchWarning) {
                 Surface(
@@ -209,69 +211,22 @@ fun CustomToolEditorScreen(
                 }
             }
 
-            if (showNameInput) {
-                OutlinedTextField(
-                    value = nameInput,
-                    onValueChange = { nameInput = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    label = { Text(text = stringResource(R.string.settings_custom_tool_name_label)) },
-                    singleLine = true,
-                    maxLines = 1,
-                    colors = dialogTextFieldColors(),
+            if (showNameInput || showPromptInput || showLocationInput || showAliasInput) {
+                CustomToolInputsCard(
+                    showNameInput = showNameInput,
+                    name = nameInput,
+                    onNameChange = { nameInput = it },
+                    nameFocusRequester = focusRequester,
+                    showPromptInput = showPromptInput,
+                    prompt = promptInput,
+                    onPromptChange = { promptInput = it },
+                    showLocationInput = showLocationInput,
+                    location = locationInput,
+                    onLocationChange = { locationInput = it },
+                    showAliasInput = showAliasInput,
+                    alias = aliasInput,
+                    onAliasChange = { aliasInput = it },
                 )
-            }
-
-            if (showPromptInput) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_custom_tool_prompt_label),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    OutlinedTextField(
-                        value = promptInput,
-                        onValueChange = { promptInput = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 160.dp),
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.settings_custom_tool_prompt_hint),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        },
-                        minLines = 4,
-                        maxLines = 8,
-                        colors = dialogTextFieldColors(),
-                    )
-                }
-            }
-
-            if (showLocationInput) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                ) {
-                    Text(
-                        text = stringResource(R.string.weather_location_label),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    OutlinedTextField(
-                        value = locationInput,
-                        onValueChange = { locationInput = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(stringResource(R.string.weather_location_hint)) },
-                        singleLine = true,
-                        maxLines = 1,
-                        colors = dialogTextFieldColors(),
-                    )
-                }
             }
 
             if (showWeatherUnitInputs) {
@@ -281,33 +236,6 @@ fun CustomToolEditorScreen(
                 )
             }
 
-            if (showAliasInput) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                ) {
-                    Text(
-                        text = stringResource(R.string.settings_custom_tool_alias_label),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    OutlinedTextField(
-                        value = aliasInput,
-                        onValueChange = { aliasInput = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                text = stringResource(R.string.settings_custom_tool_alias_hint),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        },
-                        singleLine = true,
-                        maxLines = 1,
-                        colors = dialogTextFieldColors(),
-                    )
-                }
-            }
-
             ModelFeatureSettingsCard(
                 modifier = Modifier.fillMaxWidth(),
                 selectedModelId = selectedModelId,
@@ -315,7 +243,6 @@ fun CustomToolEditorScreen(
                 availableModels = selectedProviderModels,
                 availableModelsByProvider = availableModelsByProvider,
                 configuredProviderIds = configuredProviderIds,
-                modelLabel = stringResource(R.string.settings_direct_search_model_label),
                 thinkingLabel = stringResource(R.string.settings_direct_search_thinking_label),
                 webSearchLabel = stringResource(R.string.settings_direct_search_grounding_label),
                 thinkingEnabled = thinkingEnabled,
@@ -356,10 +283,7 @@ fun CustomToolEditorScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = DesignTokens.ContentHorizontalPadding,
-                    vertical = DesignTokens.SpacingMedium,
-                ),
+                .padding(DesignTokens.ContentHorizontalPadding),
         ) {
             Button(
                 onClick = {
@@ -392,6 +316,86 @@ fun CustomToolEditorScreen(
         }
     }
 
+}
+
+/** Name, prompt, location, and alias as divided rows of one card, like the At a Glance editor. */
+@Composable
+private fun CustomToolInputsCard(
+    showNameInput: Boolean,
+    name: String,
+    onNameChange: (String) -> Unit,
+    nameFocusRequester: FocusRequester,
+    showPromptInput: Boolean,
+    prompt: String,
+    onPromptChange: (String) -> Unit,
+    showLocationInput: Boolean,
+    location: String,
+    onLocationChange: (String) -> Unit,
+    showAliasInput: Boolean,
+    alias: String,
+    onAliasChange: (String) -> Unit,
+) {
+    val rowModifier =
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = DesignTokens.SpacingSmall, vertical = DesignTokens.SpacingXSmall)
+    val rows =
+        buildList<@Composable () -> Unit> {
+            if (showNameInput) {
+                add {
+                    CardTextField(
+                        value = name,
+                        onValueChange = onNameChange,
+                        label = stringResource(R.string.settings_custom_tool_name_label),
+                        singleLine = true,
+                        modifier = rowModifier.focusRequester(nameFocusRequester),
+                    )
+                }
+            }
+            if (showPromptInput) {
+                add {
+                    CardTextField(
+                        value = prompt,
+                        onValueChange = onPromptChange,
+                        label = stringResource(R.string.settings_custom_tool_prompt_label),
+                        placeholder = stringResource(R.string.settings_custom_tool_prompt_hint),
+                        minLines = 3,
+                        maxLines = 10,
+                        modifier = rowModifier.heightIn(min = 120.dp),
+                    )
+                }
+            }
+            if (showLocationInput) {
+                add {
+                    CardTextField(
+                        value = location,
+                        onValueChange = onLocationChange,
+                        label = stringResource(R.string.weather_location_label),
+                        placeholder = stringResource(R.string.weather_location_hint),
+                        singleLine = true,
+                        modifier = rowModifier,
+                    )
+                }
+            }
+            if (showAliasInput) {
+                add {
+                    CardTextField(
+                        value = alias,
+                        onValueChange = onAliasChange,
+                        label = stringResource(R.string.settings_custom_tool_alias_label),
+                        placeholder = stringResource(R.string.settings_custom_tool_alias_hint),
+                        singleLine = true,
+                        modifier = rowModifier,
+                    )
+                }
+            }
+        }
+    SettingsCard(modifier = Modifier.fillMaxWidth()) {
+        rows.forEachIndexed { index, row ->
+            if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
+            row()
+        }
+    }
 }
 
 @Composable

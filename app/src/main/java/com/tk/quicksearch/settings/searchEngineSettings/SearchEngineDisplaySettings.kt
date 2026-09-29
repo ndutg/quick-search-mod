@@ -162,25 +162,15 @@ private fun CompactRowCountPills(
             label = { Text(stringResource(R.string.settings_compact_rows_one_row)) },
             shape = DesignTokens.ShapeFull,
             border =
-                if (oneRowSelected) {
-                    null
-                } else {
-                    BorderStroke(1.dp, AppColors.SettingsDivider)
-                },
+                BorderStroke(
+                    if (oneRowSelected) 1.5.dp else 1.dp,
+                    if (oneRowSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else AppColors.SettingsDivider,
+                ),
             colors =
                 AssistChipDefaults.assistChipColors(
-                    containerColor =
-                        if (oneRowSelected) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            Color.Transparent
-                        },
+                    containerColor = Color.Transparent,
                     labelColor =
-                        if (oneRowSelected) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        },
+                        if (oneRowSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                 ),
         )
 
@@ -189,25 +179,15 @@ private fun CompactRowCountPills(
             label = { Text(stringResource(R.string.settings_compact_rows_two_rows)) },
             shape = DesignTokens.ShapeFull,
             border =
-                if (twoRowsSelected) {
-                    null
-                } else {
-                    BorderStroke(1.dp, AppColors.SettingsDivider)
-                },
+                BorderStroke(
+                    if (twoRowsSelected) 1.5.dp else 1.dp,
+                    if (twoRowsSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else AppColors.SettingsDivider,
+                ),
             colors =
                 AssistChipDefaults.assistChipColors(
-                    containerColor =
-                        if (twoRowsSelected) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            Color.Transparent
-                        },
+                    containerColor = Color.Transparent,
                     labelColor =
-                        if (twoRowsSelected) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        },
+                        if (twoRowsSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                 ),
         )
     }

@@ -86,7 +86,7 @@ data class SettingsScreenState(
     val customImageUri: String?,
     val selectedIconPackPackage: String? = null,
     val availableIconPacks: List<IconPackInfo> = emptyList(),
-    val maskUnsupportedIconPackIcons: Boolean = false,
+    val maskUnsupportedIconPackIcons: Boolean = true,
     val showAppLabels: Boolean = true,
     val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,
     val appIconSizeStep: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_APP_ICON_SIZE_STEP,

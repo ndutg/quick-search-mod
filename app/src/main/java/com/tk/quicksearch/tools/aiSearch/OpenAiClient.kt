@@ -113,6 +113,7 @@ class OpenAiClient(
         useGroundingWithGoogleSearch: Boolean = OpenAiModelCatalog.DEFAULT_GROUNDING_ENABLED,
         useSystemInstruction: Boolean = true,
         systemInstruction: String? = null,
+        history: List<AiConversationTurn> = emptyList(),
         advancedPayloadJson: String? = null,
     ): Result<String> =
         withContext(Dispatchers.IO) {
@@ -129,6 +130,7 @@ class OpenAiClient(
                         useGrounding = useGroundingWithGoogleSearch && OpenAiModelCatalog.supportsWebSearch(modelId),
                         useSystemInstruction = useSystemInstruction,
                         systemInstruction = systemInstruction,
+                        history = history,
                         advancedPayloadJson = advancedPayloadJson,
                     )
                 if (result.isSuccess) return@withContext result
@@ -151,6 +153,7 @@ class OpenAiClient(
         useGrounding: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
         advancedPayloadJson: String?,
     ): Result<String> {
         var connection: HttpURLConnection? = null
@@ -174,6 +177,7 @@ class OpenAiClient(
                 useGrounding = useGrounding,
                 useSystemInstruction = useSystemInstruction,
                 systemInstruction = systemInstruction,
+                history = history,
                 advancedPayloadJson = advancedPayloadJson,
             )
 
@@ -214,6 +218,7 @@ class OpenAiClient(
         useGrounding: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String?,
+        history: List<AiConversationTurn>,
         advancedPayloadJson: String?,
     ): String {
         val effectiveSystem =
@@ -231,6 +236,7 @@ class OpenAiClient(
             messages.put(JSONObject().put("role", "system").put("content", systemContent))
         }
 
+        messages.putChatHistory(history)
         messages.put(JSONObject().put("role", "user").put("content", query))
 
         val root = JSONObject()

@@ -157,6 +157,7 @@ class GeminiClient(
         thinkingEnabled: Boolean = false,
         useSystemInstruction: Boolean = true,
         systemInstruction: String? = null,
+        history: List<AiConversationTurn> = emptyList(),
         responseMimeType: String = "text/plain",
     ): Result<LlmResponse> =
         withContext(Dispatchers.IO) {
@@ -175,6 +176,7 @@ class GeminiClient(
                         thinkingEnabled = thinkingEnabled,
                         useSystemInstruction = useSystemInstruction,
                         systemInstruction = systemInstruction,
+                        history = history,
                         responseMimeType = responseMimeType,
                     )
                 if (result.isSuccess) {
@@ -215,6 +217,7 @@ class GeminiClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstruction: String? = null,
+        history: List<AiConversationTurn> = emptyList(),
         responseMimeType: String = "text/plain",
     ): Result<String> {
         var connection: HttpURLConnection? = null
@@ -238,6 +241,7 @@ class GeminiClient(
                     thinkingEnabled = thinkingEnabled,
                     useSystemInstruction = useSystemInstruction,
                     systemInstructionOverride = systemInstruction,
+                    history = history,
                     responseMimeType = responseMimeType,
                 )
             logRequestDiagnostics(
@@ -319,6 +323,7 @@ class GeminiClient(
         thinkingEnabled: Boolean,
         useSystemInstruction: Boolean,
         systemInstructionOverride: String? = null,
+        history: List<AiConversationTurn> = emptyList(),
         responseMimeType: String = "text/plain",
     ): String {
         val effectiveSystemPrompt =
@@ -334,18 +339,21 @@ class GeminiClient(
                     append("\n\nUser query: ")
                 }
             }
-        val contentParts =
-            JSONArray().apply {
-                if (promptPrefix != null) {
-                    put(JSONObject().put("text", promptPrefix + query))
-                } else {
-                    put(JSONObject().put("text", query))
-                }
-            }
-        val content =
-            JSONObject().apply {
-                put("parts", contentParts)
-            }
+        // Earlier turns are real user/model messages so each follow-up request starts with the
+        // previous one unchanged (eligible for Gemini's implicit prompt caching). The prompt
+        // prefix stays on the first user message for the same reason.
+        val contents = JSONArray()
+        history.forEachIndexed { index, turn ->
+            val question = if (index == 0 && promptPrefix != null) promptPrefix + turn.question else turn.question
+            contents.put(textContent(role = "user", text = question))
+            contents.put(textContent(role = "model", text = turn.answer))
+        }
+        contents.put(
+            textContent(
+                role = "user",
+                text = if (history.isEmpty() && promptPrefix != null) promptPrefix + query else query,
+            ),
+        )
         val generationConfig =
             JSONObject().apply {
                 put("responseMimeType", responseMimeType)
@@ -376,7 +384,7 @@ class GeminiClient(
                 }
             root.put("systemInstruction", systemInstructionJson)
         }
-        root.put("contents", JSONArray().put(content))
+        root.put("contents", contents)
         if (useGroundingWithGoogleSearch) {
             root.put(
                 "tools",
@@ -388,6 +396,14 @@ class GeminiClient(
         root.put("generationConfig", generationConfig)
         return root.toString()
     }
+
+    private fun textContent(
+        role: String,
+        text: String,
+    ): JSONObject =
+        JSONObject()
+            .put("role", role)
+            .put("parts", JSONArray().put(JSONObject().put("text", text)))
 
     private fun stripInlineThinkingMarkers(text: String): String {
         var t = REDACTED_THINKING_BLOCK.replace(text, "")

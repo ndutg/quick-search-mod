@@ -317,6 +317,10 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
             !metaPreferences.getApiKey().isNullOrBlank() ||
             customLlmProviderPreferences.getProviders().any { it.apiKey.isNotBlank() }
 
+    /** Cheap cached hint of [hasAnyLlmApiKey]; does not open encrypted storage. */
+    fun hasConfiguredAiProviderHint(): Boolean =
+        aiStartupPreferences.getBoolean(KEY_HAS_CONFIGURED_AI_PROVIDER, false)
+
     /** Opens encrypted storage only from an AI/settings or long-idle path. */
     fun refreshConfiguredAiProviderHint(): Boolean =
         hasAnyLlmApiKey().also { configured ->

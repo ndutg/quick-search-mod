@@ -29,6 +29,7 @@ class AppShortcutSearchHandler(
     private val repository: AppShortcutRepository,
     private val userPreferences: UserAppPreferences,
     private val isLowRamDevice: Boolean = false,
+    private val isDefaultHomeApp: () -> Boolean = { false },
 ) {
     private var availableShortcuts: List<StaticShortcut> = emptyList()
     private val searchTextCache = SearchTextCache()
@@ -234,13 +235,16 @@ class AppShortcutSearchHandler(
             .buildRecencyIndex(emptyList(), userPreferences.getRecentResultOpenCounts())
             .appShortcutOpenCounts
 
-    private fun normalizeShortcuts(shortcuts: List<StaticShortcut>): List<StaticShortcut> =
-        shortcuts
+    private fun normalizeShortcuts(shortcuts: List<StaticShortcut>): List<StaticShortcut> {
+        // Chrome/Brave shortcuts are only reliable when served by LauncherApps as the default Home app.
+        val hideBrowserShortcuts = !isDefaultHomeApp()
+        return shortcuts
             .filterNot {
-                (it.packageName == CHROME_PACKAGE || it.packageName == BRAVE_PACKAGE) &&
+                hideBrowserShortcuts &&
+                    (it.packageName == CHROME_PACKAGE || it.packageName == BRAVE_PACKAGE) &&
                     !isUserCreatedShortcut(it)
-            }
-            .distinctBy { shortcutKey(it) }
+            }.distinctBy { shortcutKey(it) }
+    }
 }
 
 private fun <T, K> List<T>.sortedByPinnedOrder(

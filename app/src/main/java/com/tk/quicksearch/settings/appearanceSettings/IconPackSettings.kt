@@ -1,9 +1,9 @@
 package com.tk.quicksearch.settings.appearanceSettings
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,16 +17,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +39,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 @Composable
 fun IconPackPickerDialog(
@@ -59,7 +64,12 @@ fun IconPackPickerDialog(
             },
             text = {
                 Column(
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp, max = 400.dp),
+                        modifier =
+                                Modifier.fillMaxWidth()
+                                        .heightIn(
+                                                min = if (availableIconPacks.isEmpty()) 220.dp else 0.dp,
+                                                max = 400.dp,
+                                        ),
                         verticalArrangement =
                                 if (availableIconPacks.isEmpty()) {
                                     Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
@@ -114,11 +124,12 @@ fun IconPackPickerDialog(
                                 )
                             }
                         }
-                        HorizontalDivider(color = AppColors.SettingsDivider)
-                        IconPackMaskToggleRow(
-                                enabled = maskUnsupportedIcons,
-                                onEnabledChange = onMaskUnsupportedIconsChange,
-                        )
+                        if (selectedPackage != null) {
+                            IconPackMaskToggleRow(
+                                    enabled = maskUnsupportedIcons,
+                                    onEnabledChange = onMaskUnsupportedIconsChange,
+                            )
+                        }
                     }
                 }
             },
@@ -133,6 +144,10 @@ fun IconPackPickerDialog(
                             onResetAllIcons()
                             onDismiss()
                         },
+                        colors =
+                                ButtonDefaults.textButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                ),
                 ) {
                     Text(stringResource(R.string.settings_icon_pack_reset_all_icons))
                 }
@@ -147,24 +162,38 @@ private fun IconPackMaskToggleRow(
 ) {
     Row(
             modifier =
-                    Modifier.fillMaxWidth().clickable { onEnabledChange(!enabled) }
-                            .padding(vertical = 6.dp),
+                    Modifier.fillMaxWidth()
+                            .clip(DesignTokens.ShapeLarge)
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f))
+                            .clickable { onEnabledChange(!enabled) }
+                            .padding(
+                                    start = DesignTokens.SpacingLarge,
+                                    end = DesignTokens.SpacingSmall,
+                                    top = DesignTokens.SpacingMedium,
+                                    bottom = DesignTokens.SpacingMedium,
+                            ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
     ) {
-        Box(modifier = Modifier.offset(x = (-4).dp)) {
-            Checkbox(
-                    checked = enabled,
-                    onCheckedChange = { checked -> onEnabledChange(checked) },
-            )
-        }
         Text(
                 text = stringResource(R.string.settings_icon_pack_mask_unsupported_icons),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
+        )
+        Switch(
+                checked = enabled,
+                onCheckedChange = onEnabledChange,
+                modifier = Modifier.scale(0.7f),
+                colors =
+                        SwitchDefaults.colors(
+                                uncheckedTrackColor =
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                uncheckedBorderColor =
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                                uncheckedThumbColor =
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                        ),
         )
     }
 }

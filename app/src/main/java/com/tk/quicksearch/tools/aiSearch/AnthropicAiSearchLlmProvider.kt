@@ -28,6 +28,7 @@ object AnthropicAiSearchLlmProvider : AiSearchLlmProvider {
             thinkingEnabled = request.thinkingEnabled,
             useSystemInstruction = request.useSystemInstruction,
             systemInstruction = request.systemInstruction,
+            history = request.history,
         ).map(::LlmResponse)
     }
 }

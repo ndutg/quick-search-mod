@@ -563,7 +563,7 @@ private fun buildCacheKey(
     packageName: String,
     iconPackPackage: String?,
     iconOverride: com.tk.quicksearch.search.data.preferences.AppIconOverride? = null,
-    maskUnsupportedIconPackIcons: Boolean = false,
+    maskUnsupportedIconPackIcons: Boolean = true,
     userHandleId: Int? = null,
     cacheEpoch: Long = appIconCacheEpoch.value,
     forceCircularMask: Boolean = false,

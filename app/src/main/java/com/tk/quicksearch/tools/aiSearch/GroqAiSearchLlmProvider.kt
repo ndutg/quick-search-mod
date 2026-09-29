@@ -27,6 +27,7 @@ object GroqAiSearchLlmProvider : AiSearchLlmProvider {
             thinkingEnabled = request.thinkingEnabled,
             useSystemInstruction = request.useSystemInstruction,
             systemInstruction = request.systemInstruction,
+            history = request.history,
             responseMimeType = request.responseMimeType,
             advancedPayloadJson = request.advancedPayloadJson,
         ).map(::LlmResponse)

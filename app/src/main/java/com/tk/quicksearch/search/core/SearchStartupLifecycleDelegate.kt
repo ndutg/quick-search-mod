@@ -430,10 +430,16 @@ internal class SearchStartupLifecycleDelegate(
                 StartupTrace.mark("QS.Home.ShortcutsCacheAvailable")
             }
 
+            val usageRefreshStartedAtElapsedMs = SystemClock.elapsedRealtime()
             refreshAppsUsageAndPermissions()
             if (appSearchManager.cachedApps.isNotEmpty() && permissionStateProvider().hasUsagePermission) {
                 appSearchManager.refreshUsageMetadataNow()
             }
+            AppSearchPerformanceLogger.logTiming(
+                event = "startupPinned usageRefresh",
+                elapsedMs = SystemClock.elapsedRealtime() - usageRefreshStartedAtElapsedMs,
+                slowThresholdMs = 100L,
+            )
             // A persisted catalog is already safe to render. Publish its suggestions before any
             // required reconciliation so slow PackageManager metadata reads cannot hold the app
             // grid in its loading state. A missing catalog still has to be loaded first.
@@ -632,7 +638,9 @@ internal class SearchStartupLifecycleDelegate(
                         activeLlmGroundingEnabled = aiSearchHandler.isGroundingEnabled(),
                         activeLlmThinkingEnabled = aiSearchHandler.isThinkingEnabled(),
                         activeLlmAvailableModels = activeLlmAvailableModels,
-                        availableLlmModelsByProvider = emptyMap(),
+                        // Keep catalogs already loaded by settings; clearing them here leaves an
+                        // open model picker stuck on "Loading Models..." until the refresh throttle expires.
+                        availableLlmModelsByProvider = state.availableLlmModelsByProvider,
                     )
                 }
                 val pinnedAppShortcutsState = appShortcutSearchHandler.getPinnedAndExcludedOnly()

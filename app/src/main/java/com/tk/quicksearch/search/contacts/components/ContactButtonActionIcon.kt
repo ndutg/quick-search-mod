@@ -66,7 +66,7 @@ internal fun ContactButtonActionIcon(
             Icon(
                 imageVector = Icons.Rounded.Email,
                 contentDescription = label,
-                tint = if (enabled) AppColors.ActionEmail else disabledTint,
+                tint = callIconTint,
                 modifier = Modifier.size(iconSize),
             )
         ContactButtonAction.GOOGLE_MEET -> LogoIcon(R.drawable.google_meet)

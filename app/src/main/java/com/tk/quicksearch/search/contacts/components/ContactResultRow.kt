@@ -541,7 +541,7 @@ private fun ContactActionIconForButton(
                         Icon(
                                 imageVector = Icons.Rounded.Email,
                                 contentDescription = null,
-                                tint = if (enabled) AppColors.ActionEmail else MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = callIconTint,
                                 modifier = modifier,
                         )
                 }

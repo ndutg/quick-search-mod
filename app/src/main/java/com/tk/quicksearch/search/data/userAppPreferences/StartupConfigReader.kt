@@ -425,7 +425,7 @@ internal class StartupConfigReader(private val context: Context) {
                                                 .KEY_ICON_PACK_UNSUPPORTED_ICON_MASK_ENABLED,
                                 ] as?
                                         Boolean
-                                        ?: false,
+                                        ?: true,
                         phoneAppGridColumns =
                                 allPrefs[
                                         com.tk.quicksearch.search.data.preferences.UiPreferences

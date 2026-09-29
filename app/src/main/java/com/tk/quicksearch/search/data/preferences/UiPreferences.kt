@@ -556,7 +556,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
                 DEFAULT_OVERLAY_THEME_INTENSITY +
                         (OVERLAY_THEME_INTENSITY_STEP * OVERLAY_THEME_INTENSITY_DELTA_STEPS)
         const val MIN_FONT_SCALE_MULTIPLIER = 0.90f
-        const val MAX_FONT_SCALE_MULTIPLIER = 1.05f
+        const val MAX_FONT_SCALE_MULTIPLIER = 1.10f
         const val MAX_WALLPAPER_BLUR_RADIUS = 40f
 
         // Calculator preferences keys

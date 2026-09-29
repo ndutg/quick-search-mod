@@ -1,6 +1,8 @@
 package com.tk.quicksearch.search.core
 
+import android.os.SystemClock
 import android.os.Trace
+import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +36,8 @@ internal class SearchStartupCoordinator(
         if (!hasStartedStartupPhases.compareAndSet(false, true)) return
 
         scope.launch(Dispatchers.Main.immediate) {
+            val startedAtMs = SystemClock.elapsedRealtime()
+            AppSearchPerformanceLogger.log { "startupPinned phase1Start" }
             updateStartupPhase(StartupPhase.PHASE_1_CACHE_PREFS)
             Trace.beginSection("QS.Startup.Phase1.CachePrefs")
             try {
@@ -42,6 +46,9 @@ internal class SearchStartupCoordinator(
                 Trace.endSection()
             }
 
+            AppSearchPerformanceLogger.log {
+                "startupPinned phase1Done atMs=${SystemClock.elapsedRealtime() - startedAtMs}"
+            }
             kotlinx.coroutines.yield()
             if (shouldReserveKeyboardStartupWindow()) {
                 val keyboardBecameVisible =
@@ -54,6 +61,9 @@ internal class SearchStartupCoordinator(
                 }
             }
 
+            AppSearchPerformanceLogger.log {
+                "startupPinned keyboardWaitDone atMs=${SystemClock.elapsedRealtime() - startedAtMs}"
+            }
             updateStartupPhase(StartupPhase.PHASE_2_HEAVY_FEATURES)
             Trace.beginSection("QS.Startup.Phase2.HeavyInit")
             try {
@@ -62,6 +72,9 @@ internal class SearchStartupCoordinator(
                 Trace.endSection()
             }
 
+            AppSearchPerformanceLogger.log {
+                "startupPinned phase2Done atMs=${SystemClock.elapsedRealtime() - startedAtMs}"
+            }
             Trace.beginSection("QS.Startup.Phase3.DeferredInit")
             try {
                 launchDeferredInitialization()

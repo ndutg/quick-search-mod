@@ -30,6 +30,11 @@ internal data class SearchScreenWallpaperState(
     val usesMonoThemeFallback: Boolean,
 )
 
+private data class CustomBitmapState(
+    val imageBitmap: ImageBitmap?,
+    val isLoadFinished: Boolean,
+)
+
 private data class WallpaperBitmapState(
     val imageBitmap: ImageBitmap?,
     val loadResult: WallpaperUtils.WallpaperLoadResult?,
@@ -86,10 +91,18 @@ internal fun SearchScreenWallpaperLogic(
         if (state.backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
             onDispose { }
         } else {
+            // The first ON_RESUME is the launch itself (replayed when the observer is added). Counting
+            // it as a wallpaper change would drop the startup preview on the first frame and fall back
+            // to the theme background until the full wallpaper decodes, so only later resumes count.
+            var isInitialResume = true
             val observer =
                 LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_RESUME) {
-                        wallpaperChangeVersion++
+                        if (isInitialResume) {
+                            isInitialResume = false
+                        } else {
+                            wallpaperChangeVersion++
+                        }
                     }
                 }
             lifecycleOwner.lifecycle.addObserver(observer)
@@ -166,34 +179,50 @@ internal fun SearchScreenWallpaperLogic(
             }
         }
     val sourceCustomBitmap =
-        produceState<ImageBitmap?>(
-            initialValue = null,
+        produceState(
+            initialValue = CustomBitmapState(imageBitmap = null, isLoadFinished = false),
             key1 = state.backgroundSource,
             key2 = state.customImageUri,
             key3 = state.startupBackgroundPreviewPath,
         ) {
             if (state.backgroundSource != BackgroundSource.CUSTOM_IMAGE) {
-                value = null
+                value = CustomBitmapState(imageBitmap = null, isLoadFinished = true)
                 return@produceState
             }
 
             WallpaperUtils.loadStartupBackgroundPreviewBitmap(
                 previewPath = state.startupBackgroundPreviewPath,
-            )?.asImageBitmap()?.let { value = it }
+            )?.asImageBitmap()?.let { value = value.copy(imageBitmap = it) }
 
-            WallpaperUtils.getOverlayCustomImageBitmap(context, state.customImageUri)?.let {
-                value = it
-                if (!isOverlayPresentation) {
-                    onWallpaperLoaded?.invoke()
-                }
+            val customBitmap = WallpaperUtils.getOverlayCustomImageBitmap(context, state.customImageUri)
+            value =
+                CustomBitmapState(
+                    imageBitmap = customBitmap ?: value.imageBitmap,
+                    isLoadFinished = true,
+                )
+            if (customBitmap != null && !isOverlayPresentation) {
+                onWallpaperLoaded?.invoke()
             }
         }
     val imageBitmap =
         when (state.backgroundSource) {
             BackgroundSource.SYSTEM_WALLPAPER -> sourceWallpaperState.value.imageBitmap
-            BackgroundSource.CUSTOM_IMAGE -> sourceCustomBitmap.value
+            BackgroundSource.CUSTOM_IMAGE -> sourceCustomBitmap.value.imageBitmap
             BackgroundSource.THEME -> null
         }
+    // The cached startup preview decodes off the main thread and lands a few hundred ms after the
+    // first frame. Styling the screen for the theme fallback until then and switching when it
+    // arrives rebuilds the keyed result content (restarting the app grid's fade), so while the
+    // image background is still loading the screen is styled for it from the first frame.
+    val isAwaitingStartupImage =
+        shouldUseStartupPreview &&
+            imageBitmap == null &&
+            !state.startupBackgroundPreviewPath.isNullOrBlank() &&
+            when (state.backgroundSource) {
+                BackgroundSource.SYSTEM_WALLPAPER -> sourceWallpaperState.value.loadResult == null
+                BackgroundSource.CUSTOM_IMAGE -> !sourceCustomBitmap.value.isLoadFinished
+                BackgroundSource.THEME -> false
+            }
     val usesSystemWallpaperBackdrop =
         state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
             canShowSystemWallpaperBackdrop &&
@@ -208,7 +237,8 @@ internal fun SearchScreenWallpaperLogic(
             requireWallpaperAvailableForSystemSource =
                 !(shouldUseStartupPreview && sourceWallpaperState.value.imageBitmap != null),
         )
-    val usesWallpaperBackground = usesSystemWallpaperBackdrop || useBitmapBackground
+    val usesWallpaperBackground =
+        usesSystemWallpaperBackdrop || useBitmapBackground || isAwaitingStartupImage
     val useMonoThemeFallback =
         !isOverlayPresentation &&
             state.backgroundSource != BackgroundSource.THEME &&

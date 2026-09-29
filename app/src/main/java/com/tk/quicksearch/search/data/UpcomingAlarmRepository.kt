@@ -8,6 +8,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.AlarmClock
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
+import java.time.Instant
+import java.time.ZoneId
 
 /** Android exposes the next scheduled alarm clock, rather than a list of upcoming alarms. */
 class UpcomingAlarmRepository(private val context: Context) {
@@ -15,15 +17,37 @@ class UpcomingAlarmRepository(private val context: Context) {
     private val preferences = UpcomingAlarmPreferences(context)
 
     fun nextWithinFortyFiveMinutes(nowMillis: Long = System.currentTimeMillis()): AlarmManager.AlarmClockInfo? {
-        if (!preferences.isShowUpcomingAlarmEnabled()) return null
-        val alarm = alarmManager?.nextAlarmClock ?: return null
-        if (!isFromClockApp(alarm)) return null
-        if (alarm.showIntent?.creatorPackage?.let(preferences::isHiddenPackage) == true) return null
+        val alarm = nextClockAlarm() ?: return null
         val timeUntilAlarm = alarm.triggerTime - nowMillis
         return alarm.takeIf {
             timeUntilAlarm in 1..FORTY_FIVE_MINUTES_MILLIS &&
                 !preferences.isDismissed(it.triggerTime)
         }
+    }
+
+    /**
+     * From [TOMORROW_ALARM_START_HOUR] until midnight, the next clock alarm when it rings tomorrow.
+     * Android only exposes the next alarm, so an alarm still to ring tonight hides tomorrow's.
+     */
+    fun tomorrowsFirstAlarm(nowMillis: Long = System.currentTimeMillis()): AlarmManager.AlarmClockInfo? {
+        if (!preferences.isShowTomorrowAlarmEnabled()) return null
+        val zoneId = ZoneId.systemDefault()
+        val now = Instant.ofEpochMilli(nowMillis).atZone(zoneId)
+        if (now.hour < TOMORROW_ALARM_START_HOUR) return null
+        val alarm = nextClockAlarm() ?: return null
+        val alarmDay = Instant.ofEpochMilli(alarm.triggerTime).atZone(zoneId).toLocalDate()
+        return alarm.takeIf {
+            alarmDay == now.toLocalDate().plusDays(1) && !preferences.isTomorrowDismissed(it.triggerTime)
+        }
+    }
+
+    /** The next alarm when the home card shows alarms and a clock app not hidden by the user set it. */
+    private fun nextClockAlarm(): AlarmManager.AlarmClockInfo? {
+        if (!preferences.isShowUpcomingAlarmEnabled()) return null
+        val alarm = alarmManager?.nextAlarmClock ?: return null
+        if (!isFromClockApp(alarm)) return null
+        if (alarm.showIntent?.creatorPackage?.let(preferences::isHiddenPackage) == true) return null
+        return alarm
     }
 
     /**
@@ -55,6 +79,10 @@ class UpcomingAlarmRepository(private val context: Context) {
 
     fun dismiss(alarm: AlarmManager.AlarmClockInfo) {
         preferences.dismiss(alarm.triggerTime)
+    }
+
+    fun dismissTomorrow(alarm: AlarmManager.AlarmClockInfo) {
+        preferences.dismissTomorrow(alarm.triggerTime)
     }
 
     /** Hides this and future alarms scheduled by the app that created [alarm]. */
@@ -103,5 +131,8 @@ class UpcomingAlarmRepository(private val context: Context) {
         private val CLOCK_APP_ACTIONS =
             listOf(AlarmClock.ACTION_SHOW_ALARMS, AlarmClock.ACTION_SET_ALARM)
         private const val FORTY_FIVE_MINUTES_MILLIS = 45 * 60 * 1000L
+
+        /** Matches when tomorrow's calendar events start showing. */
+        const val TOMORROW_ALARM_START_HOUR = 21
     }
 }

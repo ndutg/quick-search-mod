@@ -65,6 +65,9 @@
         <item >Time in UK</item>
         <item >Define Serendipity</item>
         <item >Wetter in New York</item>
+        <item >Set alarm at 8am</item>
+        <item >Start timer for 20min</item>
+        <item >Pickup food at 6pm</item>
     </string-array>
     <string name="search_provider_description">Durchsuche Apps, Kontakte, Dateien, Einstellungen und mehr mit Quick Search.</string>
 
@@ -135,7 +138,7 @@
     <string name="settings_gesture_none">Keine</string>
     <string name="settings_gesture_custom">Benutzerdefiniert (Apps, Dateien usw.)</string>
     <string name="settings_keyboard_gestures_title">Tastaturgesten (Startseite)</string>
-    <string name="settings_keyboard_gestures_desc">Nur verfügbar, wenn auf dem Startbildschirm kein scrollbarer Inhalt vorhanden ist</string>
+    <string name="settings_keyboard_gestures_desc">Funktioniert nur, wenn auf dem Startbildschirm kein scrollbarer Inhalt vorhanden ist</string>
     <string name="action_pin_app">Anheften</string>
     <string name="action_pin_to_notifications">An Benachrichtigungen anheften</string>
     <string name="action_unpin_from_notifications">Von Benachrichtigungen lösen</string>
@@ -366,7 +369,7 @@
     <string name="settings_manage_apps_desc">Apps verwalten</string>
     <string name="settings_manage_apps_title">Apps verwalten</string>
     <string name="settings_refresh_apps_disabled">App-Suche ist deaktiviert, App-Daten können nicht aktualisiert werden</string>
-    <string name="settings_refresh_apps_title">Apps neu laden</string>
+    <string name="settings_refresh_apps_title">Apps aktualisieren</string>
     <string name="usage_permission_subtitle">Wenn du deine zuletzt verwendeten Apps in Vorschlägen sehen möchtest, erteile Nutzungszugriff.</string>
     <string name="usage_permission_title">Nutzungszugriff erteilen</string>
 
@@ -535,7 +538,7 @@
     <string name="settings_file_previews_toggle">Dateivorschau</string>
     <string name="settings_file_previews_description">Vorschau von Bildern und PDFs vor dem Öffnen anzeigen.</string>
     <string name="settings_refresh_files_disabled">Dateisuche ist deaktiviert, Dateidaten können nicht aktualisiert werden</string>
-    <string name="settings_refresh_files_title">Dateien neu laden</string>
+    <string name="settings_refresh_files_title">Dateien aktualisieren</string>
     <string name="settings_system_files_toggle">Systemdateien</string>
 
     <!-- ============================================================================
@@ -738,6 +741,8 @@
     <string name="settings_device_theme_title">Material You</string>
     <string name="settings_edit_label">Bearbeiten</string>
     <string name="settings_font_size_big">Groß</string>
+    <string name="settings_font_size_extra_small">Sehr klein</string>
+    <string name="settings_font_size_extra_big">Sehr groß</string>
     <string name="settings_font_size_medium">Mittel</string>
     <string name="settings_font_size_small">Klein</string>
     <string name="settings_font_size_title">Schriftgröße</string>
@@ -807,7 +812,7 @@
     <string name="settings_quick_settings_tile_desc">Quick Search zu den Schnelleinstellungs-Kacheln hinzufügen.</string>
     <string name="settings_quick_settings_tile_title">Schnelleinstellungs-Kachel</string>
     <string name="settings_refresh_contacts_disabled">Kontaktsuche ist deaktiviert, Kontaktdaten können nicht aktualisiert werden</string>
-    <string name="settings_refresh_contacts_title">Kontakte neu laden</string>
+    <string name="settings_refresh_contacts_title">Kontakte aktualisieren</string>
     <string name="settings_refresh_data_note">Daten werden automatisch aktualisiert. Mit diesen Schaltflächen kannst du die Aktualisierung manuell erzwingen.</string>
     <string name="settings_refresh_data_title">Daten aktualisieren</string>
     <string name="settings_refresh_icon_packs">Icon-Packs aktualisieren</string>
@@ -828,18 +833,35 @@
     <string name="settings_tools_info_examples_header">Hier sind einige Beispiele, was du in der Suchleiste eingeben kannst</string>
     <string name="settings_tools_title">Tools</string>
     <string name="settings_at_a_glance_title">Auf einen Blick</string>
+    <string name="custom_info_title">Eigene Infos</string>
+    <string name="custom_info_edit_title">Details bearbeiten</string>
+    <string name="custom_info_prompt">Prompt</string>
+    <string name="custom_info_set_date_time">Datum und Uhrzeit festlegen</string>
+    <string name="custom_info_desc">KI-Antworten auf deine Prompts auf dem Startbildschirm, zu den von dir gewählten Zeiten</string>
+    <string name="settings_ai_api_key_required_message">Diese Funktion erfordert einen AI-Anbieter-API-Schlüssel.</string>
+    <string name="settings_ai_api_key_required_title">API-Schlüssel erforderlich</string>
+    <string name="settings_ai_api_key_setup_action">Schlüssel einrichten</string>
+    <string name="custom_info_repeat_never">Keine Wiederholung</string>
+    <string name="custom_info_repeat_every">Wiederholen alle</string>
+    <string name="custom_info_send_notification">Benachrichtigung senden</string>
+    <string name="custom_info_preview">Vorschau</string>
+    <string name="custom_info_saved">Gespeichert</string>
+    <string name="custom_info_delete_confirm_title">%1$s löschen?</string>
+    <string name="custom_info_delete_confirm_message">Diese eigene Info und ihr Zeitplan werden dauerhaft gelöscht.</string>
     <string name="settings_at_a_glance_desc">Nützliche Infos, die zur passenden Zeit auf deinem Startbildschirm erscheinen</string>
     <string name="settings_at_a_glance_alarms_title">Wecker</string>
     <string name="settings_upcoming_alarm_desc">Dein nächster Wecker, wenn er innerhalb von 45 Minuten klingelt</string>
+    <string name="settings_at_a_glance_tomorrow_alarm">Ersten Wecker von morgen am Vorabend anzeigen</string>
     <string name="settings_hidden_alarm_apps_title">Ausgeblendete Wecker-Apps</string>
-    <string name="settings_at_a_glance_events_desc">Heutige Kalenderereignisse und abends die ganztägigen Ereignisse von morgen</string>
+    <string name="settings_at_a_glance_events_desc">Heutige Kalenderereignisse</string>
+    <string name="settings_at_a_glance_tomorrow_events">Termine von morgen am Vorabend anzeigen</string>
     <string name="settings_upcoming_reminders_desc">Erinnerungen, die innerhalb von 30 Minuten fällig oder überfällig sind</string>
     <string name="settings_at_a_glance_low_battery_title">Akku schwach</string>
     <string name="settings_low_battery_desc">Dein Akku, wenn er bei %1$d%% oder darunter ist</string>
     <string name="settings_at_a_glance_timers_title">Timer &amp; Stoppuhr</string>
     <string name="settings_at_a_glance_timers_desc">Laufende Timer und Stoppuhren aus deiner Uhr-App</string>
     <string name="settings_at_a_glance_birthdays_title">Geburtstage</string>
-    <string name="settings_at_a_glance_birthdays_desc">Kontakte, die heute Geburtstag haben</string>
+    <string name="settings_at_a_glance_birthdays_desc">Kontakte, die heute Geburtstag oder Jahrestag haben</string>
     <string name="settings_at_a_glance_progress_title">Laufende Benachrichtigungen</string>
     <string name="settings_at_a_glance_progress_desc">Live-Updates wie Fahrten, Lieferungen und Downloads</string>
     <string name="settings_at_a_glance_charging_title">Wird geladen</string>
@@ -910,6 +932,7 @@
     <string name="settings_direct_search_how_to">Kostenlosen API-Schlüssel erhalten</string>
     <string name="settings_direct_search_model_label">Modell</string>
     <string name="settings_select_model">Modell auswählen</string>
+    <string name="settings_ai_model_with_provider">%1$s · %2$s</string>
     <string name="ai_error_selected_model_unavailable">Das ausgewählte Modell ist nicht verfügbar. Bitte wähle in den Einstellungen ein anderes Modell aus.</string>
     <string name="settings_loading_models">Modelle werden geladen…</string>
     <string name="settings_direct_search_personal_context">Persönlicher Kontext</string>
@@ -954,6 +977,8 @@
     <string name="release_notes_title_no_version">Quick Search – Versionshinweise</string>
     <string name="settings_backup_export_api_key_warning_message">Fortfahren auf eigene Gefahr. Die exportierten API-Schlüssel sind nicht verschlüsselt und können von jedem eingesehen werden, der Zugriff auf die Sicherungsdatei hat.</string>
     <string name="settings_backup_export_button">Exportieren</string>
+    <string name="settings_backup_export_title">Einstellungen exportieren</string>
+    <string name="settings_backup_export_desc">Einstellungen in einer Sicherungsdatei speichern</string>
     <string name="settings_backup_export_failed">Einstellungen konnten nicht exportiert werden.</string>
     <string name="settings_backup_export_option_pinned_items_title">Angeheftete Elemente</string>
     <string name="settings_backup_export_option_api_keys">API-Schlüssel</string>
@@ -1285,11 +1310,20 @@
     <string name="home_charging_paused">Laden pausiert</string>
     <string name="home_timer">Timer</string>
     <string name="home_stopwatch">Stoppuhr</string>
+    <string name="home_timer_paused">Pausiert</string>
     <string name="home_storage_almost_full">Speicher fast voll</string>
     <string name="home_storage_free">%1$s von %2$s frei</string>
-    <string name="home_birthday_today">Hat heute Geburtstag</string>
-    <string name="home_birthday_turns">Wird heute %1$d</string>
+    <string name="home_birthday_title">Geburtstag von %1$s</string>
+    <string name="home_anniversary_title">Jahrestag von %1$s</string>
+    <string name="home_birthday_title_ordinal">Geburtstag von %1$s (%2$s)</string>
+    <string name="home_anniversary_title_ordinal">Jahrestag von %1$s (%2$s)</string>
+    <string name="home_birthday_wish">Tippe, um zu gratulieren</string>
     <string name="home_missed_call">Verpasster Anruf</string>
+    <string name="home_otp_from">Code von %1$s</string>
+    <string name="home_copied">Kopiert</string>
+    <string name="home_reminder_marked_done">Erinnerung als erledigt markiert</string>
+    <string name="home_reminder_snoozed">Erinnerung um 30 Minuten verschoben</string>
+    <string name="home_reminder_deleted">Erinnerung gelöscht</string>
     <string name="home_missed_calls_count">Verpasste Anrufe (%1$s)</string>
     <string name="home_missed_call_from_app">%1$s (%2$s)</string>
     <string name="home_dnd_on">„Nicht stören“ ist aktiv</string>
@@ -1303,8 +1337,10 @@
     <string name="home_turn_off">Ausschalten</string>
     <string name="settings_tavily_title">Tavily für die Websuche</string>
     <string name="settings_tavily_desc">Füge einen Tavily-API-Schlüssel hinzu, um Modellen ohne Websuche eine Websuche zu ermöglichen.</string>
-    <string name="settings_tavily_mode_always">Immer Tavily für die Websuche verwenden</string>
-    <string name="settings_tavily_mode_when_unsupported">Nur verwenden, wenn das Modell keine Websuche unterstützt</string>
+    <string name="settings_tavily_mode_always">Immer</string>
+    <string name="settings_tavily_mode_when_unsupported">Als Fallback</string>
+    <string name="settings_tavily_mode_always_desc">Wird bei jedem Modell für die Websuche verwendet.</string>
+    <string name="settings_tavily_mode_when_unsupported_desc">Wird nur verwendet, wenn das gewählte Modell keine Websuche unterstützt.</string>
     <string name="settings_weather_no_web_search_warning">Wetter benötigt Webergebnisse. Wähle ein Modell, das Websuche unterstützt, oder füge unter „API-Schlüssel einrichten“ einen Tavily-API-Schlüssel hinzu.</string>
     <string name="tavily_search_failed_toast">Tavily-Websuche fehlgeschlagen. Antwort ohne Webergebnisse.</string>
     <string name="search_hint_reminders">Erinnerungen durchsuchen…</string>

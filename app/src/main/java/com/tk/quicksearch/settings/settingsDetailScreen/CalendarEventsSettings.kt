@@ -111,7 +111,7 @@ private data class CalendarAppTarget(
     val label: String,
 )
 
-private val CalendarSettingsBarCornerShape = RoundedCornerShape(28.dp)
+internal val CalendarSettingsBarCornerShape = RoundedCornerShape(28.dp)
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -461,6 +461,7 @@ fun CalendarEventsBottomBar(
     onNewEvent: () -> Unit,
     modifier: Modifier = Modifier,
     newItemLabelResId: Int = R.string.reminder_new_title,
+    showNewItem: Boolean = true,
 ) {
     val searchFocusRequester = remember { FocusRequester() }
     var isSearchExpanded by remember { mutableStateOf(false) }
@@ -477,7 +478,7 @@ fun CalendarEventsBottomBar(
             .imePadding()
             .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = if (showNewItem) Arrangement.spacedBy(12.dp) else Arrangement.End,
     ) {
         if (isSearchExpanded) {
             SettingsManagementSearchBar(
@@ -490,18 +491,20 @@ fun CalendarEventsBottomBar(
                 fillMaxWidth = false,
                 focusRequester = searchFocusRequester,
             )
-            FloatingActionButton(
-                onClick = onNewEvent,
-                modifier = Modifier.size(48.dp),
-                shape = CalendarSettingsBarCornerShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = stringResource(newItemLabelResId),
-                    modifier = Modifier.size(24.dp),
-                )
+            if (showNewItem) {
+                FloatingActionButton(
+                    onClick = onNewEvent,
+                    modifier = Modifier.size(48.dp),
+                    shape = CalendarSettingsBarCornerShape,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = stringResource(newItemLabelResId),
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
             }
         } else {
             FloatingActionButton(
@@ -515,22 +518,24 @@ fun CalendarEventsBottomBar(
                     modifier = Modifier.size(22.dp),
                 )
             }
-            ExtendedFloatingActionButton(
-                onClick = onNewEvent,
-                expanded = true,
-                modifier = Modifier.weight(1f),
-                shape = CalendarSettingsBarCornerShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                text = { Text(text = stringResource(newItemLabelResId)) },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                },
-            )
+            if (showNewItem) {
+                ExtendedFloatingActionButton(
+                    onClick = onNewEvent,
+                    expanded = true,
+                    modifier = Modifier.weight(1f),
+                    shape = CalendarSettingsBarCornerShape,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    text = { Text(text = stringResource(newItemLabelResId)) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    },
+                )
+            }
         }
     }
 }

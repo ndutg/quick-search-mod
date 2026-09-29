@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -229,6 +230,46 @@ internal fun RenderMarkdownDocument(
                 }
             }
         }
+    }
+}
+
+/**
+ * Short Markdown (an AI answer, say) as plain body text: bold/italic/code spans, headings as bold
+ * lines, and bullet or numbered lists. Links are styled but not clickable, and rules are dropped.
+ */
+@Composable
+internal fun MarkdownText(
+    markdown: String,
+    style: TextStyle,
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    val blocks = remember(markdown) { parseMarkdown(markdown) }
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        blocks.forEach { block ->
+            when (block) {
+                is MarkdownBlock.Heading ->
+                    Text(parseInlineMarkdown(block.text), style = style, color = color, fontWeight = FontWeight.SemiBold)
+                is MarkdownBlock.Paragraph -> Text(parseInlineMarkdown(block.text), style = style, color = color)
+                is MarkdownBlock.UnorderedListItem -> CompactListItem("\u2022", block.text, block.indentLevel, style, color)
+                is MarkdownBlock.OrderedListItem -> CompactListItem("${block.index}.", block.text, block.indentLevel, style, color)
+                MarkdownBlock.HorizontalRule -> Unit
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompactListItem(
+    marker: String,
+    text: String,
+    indentLevel: Int,
+    style: TextStyle,
+    color: Color,
+) {
+    Row(modifier = Modifier.fillMaxWidth().padding(start = (indentLevel * 12).dp)) {
+        Text(marker, style = style, color = color, modifier = Modifier.padding(end = DesignTokens.SpacingSmall))
+        Text(parseInlineMarkdown(text), style = style, color = color, modifier = Modifier.weight(1f))
     }
 }
 
