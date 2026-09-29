@@ -19,25 +19,26 @@ data class AppLanguageOption(
 )
 
 object AppLanguageManager {
+    // Ordered by total speakers worldwide, so the language picker lists the most widely spoken first.
     internal val supportedLanguageTags =
         listOf(
             "en",
-            "ar",
-            "de",
-            "el",
-            "es",
-            "fr",
+            "zh-CN",
             "hi",
-            "id",
-            "it",
-            "ja",
-            "nl",
-            "pl",
+            "es",
+            "ar",
+            "fr",
             "pt-BR",
             "ru",
+            "id",
+            "de",
+            "ja",
             "te",
             "tr",
-            "zh-CN",
+            "it",
+            "pl",
+            "nl",
+            "el",
         )
 
     fun applySavedAppLanguage(context: Context) {

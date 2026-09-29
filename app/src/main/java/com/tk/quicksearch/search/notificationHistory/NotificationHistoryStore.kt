@@ -21,6 +21,8 @@ data class NotificationHistoryEntry(
     val title: String,
     val text: String,
     val postTime: Long,
+    /** Whether At a Glance's App notifications could show it, whatever its apps and keywords. */
+    val appNotificationCandidate: Boolean = true,
 ) {
     /** Identifies this exact posting, used to find its live tap action. */
     internal fun contentIntentKey(): String = "$key|$postTime"
@@ -121,12 +123,16 @@ object NotificationHistoryStore {
     fun contentIntentFor(entry: NotificationHistoryEntry): PendingIntent? =
         synchronized(contentIntents) { contentIntents[entry.contentIntentKey()]?.second }
 
-    /** Records a single newly posted notification. */
+    /**
+     * Records a single newly posted notification. [isAppNotificationCandidate] tells whether At a
+     * Glance's App notifications could show it, for its Recent matches.
+     */
     fun record(
         context: Context,
         notification: StatusBarNotification?,
+        isAppNotificationCandidate: (StatusBarNotification) -> Boolean,
     ) {
-        val entry = notification?.toHistoryEntry() ?: return
+        val entry = notification?.toHistoryEntry(isAppNotificationCandidate) ?: return
         ensureLoaded(context)
         if (entry.packageName in hiddenPackagesState.value) return
         rememberContentIntent(entry, notification)
@@ -140,12 +146,13 @@ object NotificationHistoryStore {
     fun seed(
         context: Context,
         notifications: Array<StatusBarNotification>?,
+        isAppNotificationCandidate: (StatusBarNotification) -> Boolean,
     ) {
         ensureLoaded(context)
         val hidden = hiddenPackagesState.value
         val seeded =
             notifications.orEmpty().mapNotNull { notification ->
-                notification.toHistoryEntry()
+                notification.toHistoryEntry(isAppNotificationCandidate)
                     ?.takeUnless { it.packageName in hidden }
                     ?.also { rememberContentIntent(it, notification) }
             }
@@ -198,7 +205,9 @@ object NotificationHistoryStore {
     private const val TAG = "NotificationHistory"
 }
 
-private fun StatusBarNotification.toHistoryEntry(): NotificationHistoryEntry? {
+private fun StatusBarNotification.toHistoryEntry(
+    isAppNotificationCandidate: (StatusBarNotification) -> Boolean,
+): NotificationHistoryEntry? {
     val posted = runCatching { notification }.getOrNull() ?: return null
     if (posted.flags and Notification.FLAG_GROUP_SUMMARY != 0) return null
 
@@ -224,5 +233,6 @@ private fun StatusBarNotification.toHistoryEntry(): NotificationHistoryEntry? {
         title = title,
         text = text,
         postTime = postTime,
+        appNotificationCandidate = runCatching { isAppNotificationCandidate(this) }.getOrDefault(false),
     )
 }

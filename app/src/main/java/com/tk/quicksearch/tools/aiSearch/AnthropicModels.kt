@@ -20,6 +20,17 @@ object AnthropicModelCatalog {
             LlmTextModel(id = "claude-3-5-haiku-20241022", displayName = "Claude 3.5 Haiku", supportsGrounding = true),
         )
 
+    private val familyModelRegex = Regex("^claude-(opus|sonnet|haiku|fable)-(\\d+(?:-\\d+)*)$")
+    private val datedSnapshotSuffixRegex = Regex("-\\d{8}$")
+
+    /** Picker list: the latest Opus, Sonnet, Haiku, and Fable. */
+    fun pickerModels(models: List<LlmTextModel>): List<LlmTextModel> =
+        LlmModelVersions.filterLatest(models) { id ->
+            familyModelRegex.find(id.replace(datedSnapshotSuffixRegex, ""))?.groupValues?.let {
+                LlmModelVersions.familyVersion(it[1], it[2].split('-'))
+            }
+        }
+
     /** All Claude models support system instructions and web search. */
     fun isLikelyTextModel(modelId: String): Boolean =
         modelId.lowercase().startsWith("claude-")

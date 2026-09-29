@@ -43,9 +43,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -75,6 +73,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
+import androidx.compose.material.icons.rounded.Android
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerIconBadge
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerAppIcon
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRow
 import com.tk.quicksearch.search.calendar.calendarRecurrenceLabel
 import com.tk.quicksearch.search.calendar.calendarRelativeDateLabel
 import com.tk.quicksearch.search.calendar.formatCalendarEventDate
@@ -87,7 +91,6 @@ import com.tk.quicksearch.settings.shared.SettingsCardItem
 import com.tk.quicksearch.settings.shared.SettingsManagementSearchBar
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.SimpleDateFormat
@@ -345,62 +348,28 @@ internal fun DefaultCalendarDialog(
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
-    val maxOptionsHeight = LocalConfiguration.current.screenHeightDp.dp * 0.5f
     val calendarApps by produceState(initialValue = emptyList(), context) {
         value = withContext(Dispatchers.IO) { discoverCalendarApps(context) }
     }
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_calendar_default_title)) },
-        text = {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth().heightIn(max = maxOptionsHeight),
-            ) {
-                item(key = "system") {
-                    CalendarAppOptionRow(
-                    label = stringResource(R.string.common_theme_system),
-                        selected = selectedPackageName == null,
-                        onClick = { onCalendarSelected(null) },
-                    )
-                }
-                items(calendarApps, key = CalendarAppTarget::packageName) { app ->
-                    CalendarAppOptionRow(
-                        label = app.label,
-                        packageName = app.packageName,
-                        selected = selectedPackageName == app.packageName,
-                        onClick = { onCalendarSelected(app.packageName) },
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_done)) }
-        },
-    )
-}
-
-@Composable
-private fun CalendarAppOptionRow(
-    label: String,
-    packageName: String? = null,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onClick),
-        verticalAlignment = Alignment.CenterVertically,
+    AppPickerDrawer(
+        title = stringResource(R.string.settings_calendar_default_title),
+        onDismiss = onDismiss,
     ) {
-        RadioButton(selected = selected, onClick = null)
-        Column(modifier = Modifier.padding(start = DesignTokens.SpacingMedium)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            packageName?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(AppPickerDrawerRowSpacing)) {
+            item(key = "system") {
+                AppPickerDrawerRow(
+                    title = stringResource(R.string.common_theme_system),
+                    selected = selectedPackageName == null,
+                    leading = { AppPickerDrawerIconBadge(icon = Icons.Rounded.Android) },
+                    onClick = { onCalendarSelected(null) },
+                )
+            }
+            items(calendarApps, key = CalendarAppTarget::packageName) { app ->
+                AppPickerDrawerRow(
+                    title = app.label,
+                    selected = selectedPackageName == app.packageName,
+                    leading = { AppPickerDrawerAppIcon(packageName = app.packageName) },
+                    onClick = { onCalendarSelected(app.packageName) },
                 )
             }
         }

@@ -270,6 +270,7 @@
     <string name="clear_query_toggle_title">क्वेरी साफ करें</string>
     <string name="more_results_title">और परिणाम</string>
     <string name="open_keyboard_toggle_desc">ऐप खुलने पर कीबोर्ड अपने आप खोलें</string>
+    <string name="open_keyboard_toggle_title">लॉन्च पर कीबोर्ड खोलें</string>
     <string name="recent_queries_toggle_desc">विस्तार से पहले दिखाए गए आइटम की संख्या</string>
     <string name="fuzzy_search_toggle_title">अनुमानित खोज</string>
     <string name="fuzzy_search_toggle_desc">खोज में टाइपिंग की गलती होने पर भी परिणाम ढूंढें।</string>
@@ -605,8 +606,6 @@
     <string name="settings_calendar_include_past_events_desc">खोज परिणामों में पिछले इवेंट्स शामिल करें।</string>
     <string name="settings_calendar_include_past_events_title">पिछले इवेंट्स</string>
     <string name="settings_calendar_permission_title">कैलेंडर</string>
-    <string name="settings_calendar_show_today_events_desc">होम स्क्रीन पर आज के इवेंट्स दिखाएं।</string>
-    <string name="settings_calendar_show_today_events_title">आज के इवेंट्स दिखाएं</string>
     <string name="settings_calendar_default_title">इवेंट्स इसमें खोलें...</string>
     <string name="settings_calendar_view_all_events_desc">सभी इवेंट्स देखें</string>
 
@@ -783,7 +782,7 @@
     <string name="settings_app_language_picker_title">ऐप की भाषा चुनें</string>
     <string name="settings_app_language_system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="settings_launcher_icon_reset_default">डिफ़ॉल्ट पर रीसेट करें</string>
-    <string name="settings_launcher_icon_title">लॉन्चर ऐप आइकन</string>
+    <string name="settings_launcher_icon_title">ऐप आइकन बदलें</string>
     <string name="settings_layout_option_bottom_desc">आसान पहुंच के लिए सबसे प्रासंगिक आइटम नीचे दिखते हैं</string>
     <string name="settings_layout_option_bottom_title">एक-हाथ मोड</string>
     <string name="settings_unified_pinned_items_title">एकीकृत पिन किए गए आइटम</string>
@@ -877,6 +876,32 @@
     <string name="settings_at_a_glance_workouts_title">वर्कआउट</string>
     <string name="settings_at_a_glance_workouts_desc">Google Health और Samsung Health से वर्कआउट की लाइव स्थिति</string>
     <string name="settings_at_a_glance_weather_desc">आपके मौसम ऐप की सूचनाओं से मौजूदा मौसम और अलर्ट</string>
+    <string name="settings_at_a_glance_app_notifications_title">ऐप सूचनाएं</string>
+    <string name="settings_at_a_glance_app_notifications_desc">चुने गए ऐप्स या कीवर्ड के आधार पर सूचनाएँ</string>
+    <string name="settings_at_a_glance_app_notifications_summary">ऐप्स: %1$d · कीवर्ड: %2$d</string>
+    <string name="app_notifications_intro">मेल खाने वाली सूचनाएँ एक नज़र में तब तक दिखेंगी जब तक आप उन्हें खारिज नहीं करते</string>
+    <string name="app_notifications_any_app">कोई भी ऐप</string>
+    <string name="app_notifications_add_app">ऐप जोड़ें</string>
+    <string name="app_notifications_all_from_app">सभी सूचनाएं</string>
+    <string name="app_notifications_no_matches">कोई भी हाल की सूचना आपके मानदंडों से मेल नहीं खाई</string>
+    <string name="app_notifications_remove_app">%1$s हटाएं</string>
+    <string name="app_notifications_keyword_placeholder">कोई भी शब्द या वाक्यांश जोड़ें</string>
+    <string name="app_notifications_keywords_intro">इन शब्दों या वाक्यांशों वाली सूचनाएँ होम स्क्रीन पर दिखेंगी</string>
+    <string name="app_notifications_keywords_intro_app">%1$s की इन शब्दों या वाक्यांशों वाली सूचनाएँ होम स्क्रीन पर दिखेंगी</string>
+    <string name="app_notifications_want_all">मुझे सभी सूचनाएं चाहिए</string>
+    <string name="app_notifications_add_keyword">“%1$s” जोड़ें</string>
+    <string name="app_notifications_recent_matches">हाल के मिलान</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="one">%d मिनट</item>
+        <item quantity="other">%d मिनट</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="one">%d घंटा</item>
+        <item quantity="other">%d घंटे</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">ऐप चुनें</string>
+    <string name="app_notifications_search_apps">ऐप्स खोजें</string>
+    <string name="home_app_notifications_more">%1$d और दिखाएं</string>
     <string name="settings_at_a_glance_dnd_desc">जब डू नॉट डिस्टर्ब चालू हो</string>
     <string name="settings_at_a_glance_airplane_desc">जब विमान मोड चालू हो</string>
     <string name="settings_at_a_glance_hotspot_desc">जब आपका हॉटस्पॉट चालू हो</string>
@@ -949,6 +974,7 @@
     <string name="settings_gemini_api_key_saving">सहेजा जा रहा है...</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">मॉडल खोजें</string>
+    <string name="settings_model_picker_more_models_hint">नवीनतम मॉडल दिखाए जा रहे हैं। अन्य मॉडल खोजने के लिए सर्च करें।</string>
     <string name="settings_search_engine_alias_suffix_desc">क्वेरी के अंत में उपनाम जोड़ने पर सर्च इंजन ट्रिगर होता है। उपनाम शुरुआत में हमेशा काम करेंगे।</string>
     <string name="settings_search_engine_alias_suffix_title">क्वेरी के बाद उपनाम</string>
     <string name="settings_search_engine_browser_default">डिफ़ॉल्ट ब्राउज़र</string>
@@ -1111,6 +1137,15 @@
     <string name="widget_note_widget_title">नोट विजेट</string>
     <string name="widget_note_picker_title">नोट चुनें</string>
     <string name="widget_note_deleted">नोट नहीं मिला। दूसरा चुनने के लिए टैप करें।</string>
+    <string name="widget_countdown_widget_title">काउंटडाउन विजेट</string>
+    <string name="widget_countdown_date">तारीख</string>
+    <string name="widget_countdown_format_days">दिन</string>
+    <string name="widget_countdown_format_weeks">सप्ताह</string>
+    <string name="widget_countdown_format_months">महीने</string>
+    <string name="widget_countdown_format_years">वर्ष</string>
+    <string name="widget_countdown_format_detailed">विस्तृत</string>
+    <string name="widget_countdown_format_progress">प्रगति %</string>
+    <string name="widget_countdown_progress_hint">दिखाता है कि तारीख सेट करने के बाद से कितना समय बीत चुका है।</string>
     <string name="widget_icon_center">मध्य</string>
     <string name="widget_icon_left">बाएं</string>
     <string name="widget_icon_off">बंद</string>
@@ -1319,7 +1354,7 @@
     <string name="home_anniversary_title_ordinal">%1$s की सालगिरह (%2$s)</string>
     <string name="home_birthday_wish">शुभकामनाएँ देने के लिए टैप करें</string>
     <string name="home_missed_call">मिस्ड कॉल</string>
-    <string name="home_otp_from">%1$s से OTP</string>
+    <string name="home_otp_from">%1$s से</string>
     <string name="home_copied">कॉपी किया गया</string>
     <string name="home_reminder_marked_done">रिमाइंडर पूरा हुआ के रूप में चिह्नित</string>
     <string name="home_reminder_snoozed">रिमाइंडर 30 मिनट के लिए स्नूज़ किया गया</string>
@@ -1333,7 +1368,6 @@
     <string name="home_hotspot_on">हॉटस्पॉट चालू है</string>
     <string name="home_flashlight_on">फ़्लैशलाइट चालू है</string>
     <string name="home_wifi_sign_in">Wi-Fi नेटवर्क में साइन इन करें</string>
-    <string name="home_sign_in">साइन इन करें</string>
     <string name="home_turn_off">बंद करें</string>
     <string name="settings_tavily_title">वेब सर्च के लिए Tavily</string>
     <string name="settings_tavily_desc">जो मॉडल वेब सर्च सपोर्ट नहीं करते, उनमें वेब सर्च जोड़ने के लिए Tavily API कुंजी जोड़ें।</string>

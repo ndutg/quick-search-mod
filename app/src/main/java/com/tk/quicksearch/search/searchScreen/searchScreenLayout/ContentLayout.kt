@@ -406,7 +406,7 @@ fun ContentLayout(
         if (atAGlanceItems.isNotEmpty()) {
             { dividerBefore, dividerAfter ->
                 AtAGlanceRows(
-                    items = atAGlanceItems,
+                    items = atAGlanceItems.live,
                     showWallpaperBackground = effectiveShowWallpaperBackground,
                     dividerBefore = dividerBefore,
                     dividerAfter = dividerAfter,

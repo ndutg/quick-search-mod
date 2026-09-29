@@ -20,10 +20,12 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PhoneMissed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
@@ -108,11 +111,14 @@ internal fun MissedCallsRow(
             }
             if (appCalls.size > 1) {
                 Row(
-                    modifier = Modifier.padding(start = 24.dp + DesignTokens.SpacingMedium),
+                    modifier = Modifier.padding(start = 24.dp + DesignTokens.SpacingMedium, top = DesignTokens.SpacingXSmall),
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                 ) {
-                    appCalls.forEach { call ->
-                        MissedCallAppChip(call = call, onClick = { openCallHistory(context, call) })
+                    // Without the 48dp minimum touch target, which pads the chips with empty space above and below.
+                    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                        appCalls.forEach { call ->
+                            MissedCallAppChip(call = call, onClick = { openCallHistory(context, call) })
+                        }
                     }
                 }
             }
@@ -139,7 +145,7 @@ internal fun MissedCallsRow(
             onClick = onDismiss,
             modifier =
                 Modifier
-                    .align(Alignment.CenterVertically)
+                    .align(Alignment.Top)
                     .padding(start = DesignTokens.SpacingSmall)
                     .size(GlanceDismissButtonSize),
         ) {
@@ -174,11 +180,11 @@ private fun MissedCallAppChip(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Row(
-            modifier = Modifier.padding(start = 6.dp, end = 10.dp, top = 4.dp, bottom = 4.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(modifier = Modifier.size(18.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(16.dp), contentAlignment = Alignment.Center) {
                 NotificationAppIcon(call.packageName)
             }
             Text(

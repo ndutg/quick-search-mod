@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import com.tk.quicksearch.BuildConfig
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
@@ -29,7 +30,10 @@ internal fun rememberSearchHint(state: SearchUiState, isDefaultLauncher: Boolean
     val hintSearchAnything = stringResource(R.string.search_hint)
     val staticSearchHint =
         stringResource(
-            if (isDefaultLauncher) {
+            if (BuildConfig.DEBUG) {
+                // Debug builds override app_name to "QS Debug"
+                R.string.app_name
+            } else if (isDefaultLauncher) {
                 R.string.common_search
             } else {
                 R.string.search_hint_static

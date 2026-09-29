@@ -43,6 +43,8 @@ import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetTheme
 import com.tk.quicksearch.widgets.utils.WidgetVariant
 import com.tk.quicksearch.widgets.utils.applyWidgetPreferences
+import com.tk.quicksearch.widgets.countdownWidget.CountdownWidgetConfigContent
+import com.tk.quicksearch.widgets.countdownWidget.CountdownWidgetReceiver
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceiver
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetPickerScreen
@@ -91,6 +93,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
             return
         }
         widgetVariant = resolveWidgetVariant(appWidgetId)
+        val isCountdownWidget = providerClassName(appWidgetId) == CountdownWidgetReceiver::class.java.name
 
         setContent {
             val uiState by searchViewModel.uiState.collectAsStateWithLifecycle()
@@ -127,13 +130,24 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                 appThemeMode = uiState.appThemeMode,
                 deviceThemeEnabled = uiState.deviceThemeEnabled,
             ) {
-                WidgetConfigurationContent(
-                    appWidgetId = appWidgetId,
-                    widgetVariant = widgetVariant,
-                    deviceThemeEnabled = uiState.deviceThemeEnabled,
-                    useDarkThemeForDeviceTheme = useDarkSystemBars,
-                    onConfigurationComplete = { finish() },
-                )
+                if (isCountdownWidget) {
+                    CountdownWidgetConfigContent(
+                        appWidgetId = appWidgetId,
+                        onSaved = {
+                            setResult(Activity.RESULT_OK, createResultIntent())
+                            finish()
+                        },
+                        onCancel = { finish() },
+                    )
+                } else {
+                    WidgetConfigurationContent(
+                        appWidgetId = appWidgetId,
+                        widgetVariant = widgetVariant,
+                        deviceThemeEnabled = uiState.deviceThemeEnabled,
+                        useDarkThemeForDeviceTheme = useDarkSystemBars,
+                        onConfigurationComplete = { finish() },
+                    )
+                }
             }
         }
 
@@ -183,14 +197,15 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
 
     private fun createResultIntent(): Intent = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
+    private fun providerClassName(appWidgetId: Int): String? =
+        AppWidgetManager
+            .getInstance(this)
+            .getAppWidgetInfo(appWidgetId)
+            ?.provider
+            ?.className
+
     private fun resolveWidgetVariant(appWidgetId: Int): WidgetVariant {
-        val providerClassName =
-            AppWidgetManager
-                .getInstance(this)
-                .getAppWidgetInfo(appWidgetId)
-                ?.provider
-                ?.className
-        return when (providerClassName) {
+        return when (providerClassName(appWidgetId)) {
             CustomButtonsWidgetReceiver::class.java.name -> WidgetVariant.CUSTOM_BUTTONS_ONLY
             MediaControlsWidgetReceiver::class.java.name -> WidgetVariant.MEDIA_CONTROLS
             NoteWidgetReceiver::class.java.name -> WidgetVariant.NOTE

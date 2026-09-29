@@ -52,6 +52,16 @@ object OpenAiModelCatalog {
     /** True when the given model supports web search in Chat Completions (via search-preview). */
     fun supportsWebSearch(modelId: String): Boolean = searchPreviewModelFor(modelId) != null
 
+    private val familyModelRegex = Regex("^gpt-(\\d+(?:\\.\\d+)*)-(luna|sol|astra)$")
+
+    /** Picker list: the latest version of each of the Luna, Sol, and Astra families. */
+    fun pickerModels(models: List<LlmTextModel>): List<LlmTextModel> =
+        LlmModelVersions.filterLatest(models) { id ->
+            familyModelRegex.find(id)?.groupValues?.let {
+                LlmModelVersions.familyVersion(it[2], it[1].split('.'))
+            }
+        }
+
     /**
      * Models eligible for the OpenAI model picker: `gpt-{major}` with major version 5 or higher
      * (e.g. gpt-5, gpt-6), excluding any ID containing "codex" or "chat", or ending with

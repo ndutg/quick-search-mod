@@ -89,6 +89,9 @@ class AppSettingsSearchHandler(
                 !userPreferences.hasAnyNicknameItems() && setting.destination == NICKNAMES
             val shouldHideTriggers =
                 !userPreferences.hasAnyTriggerItems() && setting.destination == TRIGGERS
+            val shouldHidePinnedNotificationItems =
+                setting.destination == AppSettingsDestination.PINNED_NOTIFICATION_ITEMS &&
+                    !repository.hasPinnedNotificationItems()
             val shouldHideTopResultIndicator =
                 setting.toggleKey == AppSettingsToggleKey.TOP_RESULT_INDICATOR &&
                     (userPreferences.isPhysicalKeyboardConnected() ||
@@ -131,6 +134,7 @@ class AppSettingsSearchHandler(
             !shouldHideExcludedItems &&
                 !shouldHideNicknames &&
                 !shouldHideTriggers &&
+                !shouldHidePinnedNotificationItems &&
                 !shouldHideTopResultIndicator &&
                 !shouldHidePinnedSectionsOrder &&
                 !shouldHideTopMatchesOptions &&

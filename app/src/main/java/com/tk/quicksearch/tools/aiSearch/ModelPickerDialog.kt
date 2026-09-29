@@ -1,30 +1,21 @@
 package com.tk.quicksearch.tools.aiSearch
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,20 +27,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.tk.quicksearch.R
-import com.tk.quicksearch.shared.ui.components.AppAlertDialog
-import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerMessage
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRow
+import com.tk.quicksearch.shared.ui.components.AppPickerDrawerSearch
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 data class LlmModelPickerOption(
     val providerId: AiSearchLlmProviderId,
     val model: LlmTextModel,
 )
 
+/** Bottom drawer for picking an AI model. */
 @Composable
 fun ModelPickerDialog(
     selectedModelId: String,
@@ -68,14 +64,9 @@ fun ModelPickerDialog(
     },
 ) {
     val listState = rememberLazyListState()
-    val density = LocalDensity.current
-    val imeBottom = WindowInsets.ime.getBottom(density)
-    val isKeyboardOpen = imeBottom > 0
-    val dialogContentMaxHeight = if (isKeyboardOpen) 420.dp else 560.dp
-    val modelListMaxHeight = if (isKeyboardOpen) 220.dp else 360.dp
     val selectedModel = models.firstOrNull { it.id == selectedModelId }
     val supportsGrounding = selectedModel?.supportsGrounding != false
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     val pickerOptions =
         remember(models, modelsByProvider, configuredProviderIds, selectedProviderId) {
             val configured = configuredProviderIds.takeIf { it.isNotEmpty() } ?: setOf(selectedProviderId)
@@ -94,11 +85,26 @@ fun ModelPickerDialog(
                         .thenBy { it.model.displayName.lowercase() },
                 )
         }
-    val filteredOptions =
-        remember(pickerOptions, searchQuery) {
-            val query = searchQuery.trim().lowercase()
-            if (query.isEmpty()) {
+    // Without a query, show only each provider's latest models (plus the selection); search covers all.
+    val featuredOptions =
+        remember(pickerOptions, selectedProviderId, selectedModelId) {
+            val featuredIds =
                 pickerOptions
+                    .groupBy { it.providerId }
+                    .flatMap { (providerId, options) ->
+                        featuredModels(providerId, options.map { it.model }).map { providerId to it.id }
+                    }.toSet()
+            pickerOptions.filter { option ->
+                (option.providerId to option.model.id) in featuredIds ||
+                    (option.providerId == selectedProviderId && option.model.id == selectedModelId)
+            }
+        }
+    val hasHiddenModels = featuredOptions.size < pickerOptions.size
+    val filteredOptions =
+        remember(pickerOptions, featuredOptions, searchQuery) {
+            val query = searchQuery.text.trim().lowercase()
+            if (query.isEmpty()) {
+                featuredOptions
             } else {
                 pickerOptions.filter { option ->
                     modelSearchText(option.model).contains(query) ||
@@ -110,7 +116,7 @@ fun ModelPickerDialog(
 
     LaunchedEffect(Unit) {
         val index =
-            pickerOptions.indexOfFirst {
+            featuredOptions.indexOfFirst {
                 it.providerId == selectedProviderId && it.model.id == selectedModelId
             }
         if (index >= 0) {
@@ -118,137 +124,104 @@ fun ModelPickerDialog(
         }
     }
 
-    // A wash of the dialog's own text color, so the field reads the same over any dialog surface
-    // (settings cards and search-screen cards use translucent colors that clash with it).
-    val searchFieldColor = AppColors.DialogText.copy(alpha = 0.08f)
-
-    AppAlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier.fillMaxWidth(0.94f),
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        title = { Text(text = stringResource(R.string.dialog_gemini_model_picker_title)) },
-        text = {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = dialogContentMaxHeight),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-                    placeholder = {
-                        Text(text = stringResource(R.string.settings_model_picker_search_hint))
-                    },
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.extraLarge,
-                    colors =
-                        TextFieldDefaults.colors(
-                            focusedContainerColor = searchFieldColor,
-                            unfocusedContainerColor = searchFieldColor,
-                            disabledContainerColor = searchFieldColor,
-                            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                            disabledIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                        ),
-                )
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxWidth().heightIn(max = modelListMaxHeight),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    if (filteredOptions.isEmpty()) {
-                        item {
-                            Text(
-                                text = stringResource(R.string.settings_select_model),
-                                modifier = Modifier.fillMaxWidth().padding(12.dp),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                    items(filteredOptions) { option ->
-                        val model = option.model
-                        val isSelected =
-                            option.providerId == selectedProviderId && model.id == selectedModelId
-                        Row(
-                            modifier =
-                                Modifier.fillMaxWidth()
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .clickable {
-                                        onProviderModelSelected(option.providerId, model.id)
-                                        onDismiss()
-                                    }
-                                    .padding(
-                                        horizontal = 8.dp,
-                                        vertical = 8.dp,
-                                    ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            RadioButton(
-                                selected = isSelected,
-                                onClick = {
-                                    onProviderModelSelected(option.providerId, model.id)
-                                    onDismiss()
-                                },
-                                modifier = Modifier.size(16.dp).padding(end = 8.dp),
-                            )
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = model.displayName,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
-                                if (showProviderLabels) {
-                                    Spacer(modifier = Modifier.size(4.dp))
-                                    ProviderWordmark(
-                                        providerId = option.providerId,
-                                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                if (showGroundingToggle && supportsGrounding) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                    )
+    AppPickerDrawer(
+        title = stringResource(R.string.dialog_gemini_model_picker_title),
+        onDismiss = onDismiss,
+        search =
+            AppPickerDrawerSearch(
+                query = searchQuery,
+                onQueryChange = { searchQuery = it },
+                placeholder = stringResource(R.string.settings_model_picker_search_hint),
+            ),
+        footer =
+            if (showGroundingToggle && supportsGrounding) {
+                {
                     Row(
                         modifier =
-                            Modifier.fillMaxWidth().clickable {
-                                onGroundingChange(!groundingEnabled)
-                            },
+                            Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(DesignTokens.SpacingMedium))
+                                .clickable { onGroundingChange(!groundingEnabled) },
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                     ) {
                         Checkbox(
                             checked = groundingEnabled,
                             onCheckedChange = onGroundingChange,
                         )
                         Text(
-                            text =
-                                stringResource(
-                                    R.string.settings_direct_search_grounding_label,
-                                ),
+                            text = stringResource(R.string.settings_direct_search_grounding_label),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
+            } else {
+                null
+            },
+    ) { dismiss ->
+        if (filteredOptions.isEmpty()) {
+            AppPickerDrawerMessage(text = stringResource(R.string.widget_custom_buttons_no_results))
+        } else {
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(AppPickerDrawerRowSpacing),
+            ) {
+                itemsIndexed(filteredOptions) { _, option ->
+                    AppPickerDrawerRow(
+                        title = option.model.displayName,
+                        selected = option.providerId == selectedProviderId && option.model.id == selectedModelId,
+                        supportingContent =
+                            if (showProviderLabels) {
+                                {
+                                    ProviderWordmark(
+                                        providerId = option.providerId,
+                                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                        onClick = {
+                            onProviderModelSelected(option.providerId, option.model.id)
+                            dismiss()
+                        },
+                    )
+                }
+                if (hasHiddenModels && searchQuery.text.isBlank()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.settings_model_picker_more_models_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        horizontal = DesignTokens.SpacingMedium,
+                                        vertical = DesignTokens.SpacingMedium,
+                                    ),
+                        )
+                    }
+                }
             }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.common_close))
-            }
-        },
-    )
+        }
+    }
 }
+
+/** The provider's latest models shown before the user searches. */
+private fun featuredModels(
+    providerId: AiSearchLlmProviderId,
+    models: List<LlmTextModel>,
+): List<LlmTextModel> =
+    when (providerId) {
+        AiSearchLlmProviderId.GEMINI -> GeminiModelCatalog.pickerModels(models)
+        AiSearchLlmProviderId.OPENAI -> OpenAiModelCatalog.pickerModels(models)
+        AiSearchLlmProviderId.ANTHROPIC -> AnthropicModelCatalog.pickerModels(models)
+        AiSearchLlmProviderId.META -> MetaModelCatalog.pickerModels(models)
+        else -> models
+    }
 
 private fun providerSortOrder(providerId: AiSearchLlmProviderId): Int =
     when (providerId) {

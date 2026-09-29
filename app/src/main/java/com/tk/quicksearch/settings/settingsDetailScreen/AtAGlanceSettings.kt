@@ -42,6 +42,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
+import com.tk.quicksearch.appNotifications.AppNotificationsSettingsRow
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
@@ -323,6 +324,8 @@ fun AtAGlanceSettingsSection(
     }
 
     val alarmsTitle = stringResource(R.string.settings_at_a_glance_alarms_title)
+    val appNotificationsTitle = stringResource(R.string.settings_at_a_glance_app_notifications_title)
+    val appNotificationsDescription = stringResource(R.string.settings_at_a_glance_app_notifications_desc)
     val alarmsDescription = stringResource(R.string.settings_upcoming_alarm_desc)
     val hiddenAlarmAppsLabel = stringResource(R.string.settings_hidden_alarm_apps_title)
     val customInfoToggles = customInfoItems.asReversed().map { item ->
@@ -413,6 +416,9 @@ fun AtAGlanceSettingsSection(
                 checked = showOtpCodes,
                 onCheckedChange = onShowOtpCodesCheckedChange,
             ),
+            GlanceToggle("$appNotificationsTitle $appNotificationsDescription") { isFirst, isLast ->
+                AppNotificationsSettingsRow(hasNotificationAccess, isFirst, isLast)
+            },
             notificationToggle(
                 title = stringResource(R.string.settings_at_a_glance_missed_calls_title),
                 description = stringResource(R.string.settings_at_a_glance_missed_calls_desc),

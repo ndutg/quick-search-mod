@@ -1,6 +1,13 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,7 +15,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -27,7 +37,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 /**
  * One row of the home At a Glance card. Today's calendar events are hosted by the calendar card
  * itself; every other glanceable source (ongoing calls, one-time codes, timers, alarm, reminders, missed calls,
- * battery, Wi-Fi sign-in, progress notifications, workouts, weather, birthdays, tomorrow's events, Custom Info,
+ * App notifications, battery, Wi-Fi sign-in, progress notifications, workouts, weather, birthdays, tomorrow's events, Custom Info,
  * Do Not Disturb, airplane mode, hotspot, flashlight, storage, and future ones) contributes rows here.
  * Rows sit inside the card's inset and follow CalendarEventRow: 7dp before a 24dp icon, then 12dp
  * to the text.
@@ -36,6 +46,49 @@ internal class AtAGlanceItem(
     val key: String,
     val content: @Composable () -> Unit,
 )
+
+/**
+ * The At a Glance rows to lay out. When the last row goes away these stay the last rows shown
+ * until the card has collapsed ([visibility] finishes hiding), so the card can animate away; [live]
+ * is always the current rows, for hosts that stay on screen, such as the calendar card.
+ */
+internal class AtAGlanceItems(
+    private val shown: List<AtAGlanceItem>,
+    val live: List<AtAGlanceItem>,
+    val visibility: MutableTransitionState<Boolean>,
+) : List<AtAGlanceItem> by shown
+
+/** Not snapshot state; only read while composing. */
+private class RetainedAtAGlanceItems {
+    var lastShown: List<AtAGlanceItem> = emptyList()
+    var visibility: MutableTransitionState<Boolean>? = null
+}
+
+/**
+ * Keeps [live]'s last rows around while the card collapses after its last row goes. While
+ * [enabled] is off (a query is typed) nothing animates, so returning home shows the card at once.
+ */
+@Composable
+private fun rememberRetainedAtAGlanceItems(
+    enabled: Boolean,
+    live: List<AtAGlanceItem>,
+): AtAGlanceItems {
+    val holder = remember { RetainedAtAGlanceItems() }
+    val visibility =
+        holder.visibility?.takeIf { enabled } ?: MutableTransitionState(live.isNotEmpty()).also { holder.visibility = it }
+    if (!enabled) holder.visibility = null
+    if (live.isNotEmpty()) holder.lastShown = live
+    // Reading the transition state here recomposes once the card has finished collapsing.
+    val collapsed = !visibility.targetState && visibility.isIdle
+    val shown =
+        when {
+            live.isNotEmpty() -> live
+            enabled && !collapsed -> holder.lastShown
+            else -> emptyList()
+        }
+    SideEffect { visibility.targetState = live.isNotEmpty() }
+    return AtAGlanceItems(shown = shown, live = live, visibility = visibility)
+}
 
 /**
  * Collects the non-calendar At a Glance rows, most urgent at the top. In the [reversed] (bottom
@@ -48,7 +101,7 @@ internal fun rememberAtAGlanceItems(
     enabled: Boolean,
     reversed: Boolean,
     onShowContactMethods: (ContactInfo) -> Unit,
-): List<AtAGlanceItem> {
+): AtAGlanceItems {
     val battery = rememberBatteryGlances(enabled)
     val notifications = rememberNotificationGlances(enabled)
     val alarm = rememberUpcomingAlarmGlance(enabled)
@@ -62,6 +115,7 @@ internal fun rememberAtAGlanceItems(
     val hotspot = rememberHotspotGlance(enabled)
     val tomorrowEvents = rememberTomorrowEventsGlance(enabled)
     val customInfo = rememberCustomInfoGlance(enabled)
+    val appNotifications = rememberAppNotificationsGlance(enabled, excludedKeys = setOfNotNull(notifications.otp?.key))
     // Most time-critical first: live and expiring items, then things due soon, then what needs a
     // look, then today's and tomorrow's context, and the passive device states last.
     val groups =
@@ -96,6 +150,18 @@ internal fun rememberAtAGlanceItems(
                     AtAGlanceItem(key = "missed-calls") { MissedCallsRow(calls, notifications.dismissMissedCalls) }
                 },
             ),
+            appNotifications?.let { glance ->
+                glance.visible.map { notification ->
+                    AtAGlanceItem(key = "app-notification-${notification.key}") {
+                        AppNotificationRow(notification, glance.nowMillis)
+                    }
+                } +
+                    listOfNotNull(
+                        glance.takeIf { it.hiddenCount > 0 }?.let {
+                            AtAGlanceItem(key = "app-notifications-more") { ShowMoreAppNotificationsRow(it) }
+                        },
+                    )
+            }.orEmpty(),
             listOfNotNull(battery.lowBattery?.let { AtAGlanceItem(key = "low-battery") { LowBatteryRow(it) } }),
             listOfNotNull(wifiSignIn?.let { AtAGlanceItem(key = "wifi-sign-in") { WifiSignInRow(it) } }),
             notifications.progress.map { progress ->
@@ -146,7 +212,7 @@ internal fun rememberAtAGlanceItems(
             listOfNotNull(battery.charging?.let { AtAGlanceItem(key = "charging") { ChargingRow(it) } }),
             listOfNotNull(lowStorage?.let { AtAGlanceItem(key = "low-storage") { LowStorageRow(it) } }),
         )
-    return (if (reversed) groups.asReversed() else groups).flatten()
+    return rememberRetainedAtAGlanceItems(enabled, (if (reversed) groups.asReversed() else groups).flatten())
 }
 
 @Composable
@@ -162,16 +228,82 @@ internal fun AtAGlanceRows(
     dividerBefore: Boolean = false,
     dividerAfter: Boolean = false,
 ) {
-    if (items.isEmpty()) return
     val dividerColor = atAGlanceDividerColor(showWallpaperBackground)
+    val rows = rememberAnimatedGlanceRows(items)
+    if (rows.isEmpty()) return
     Column(modifier = Modifier.fillMaxWidth()) {
         if (dividerBefore) HorizontalDivider(color = dividerColor)
-        items.forEachIndexed { index, item ->
-            key(item.key) { item.content() }
-            if (index < items.lastIndex) HorizontalDivider(color = dividerColor)
+        rows.forEachIndexed { index, row ->
+            key(row.item.key) {
+                AnimatedVisibility(
+                    visibleState = row.visibility,
+                    enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+                ) {
+                    Column {
+                        if (index > 0) HorizontalDivider(color = dividerColor)
+                        row.item.content()
+                    }
+                }
+            }
         }
         if (dividerAfter) HorizontalDivider(color = dividerColor)
     }
+}
+
+private class AnimatedGlanceRow(
+    val item: AtAGlanceItem,
+    val visibility: MutableTransitionState<Boolean>,
+)
+
+/** The rows last shown by [rememberAnimatedGlanceRows]; not snapshot state, only read while composing. */
+private class AnimatedGlanceRows {
+    var rows: List<AnimatedGlanceRow> = emptyList()
+    var initialized = false
+}
+
+/**
+ * [items] with the rows that just left kept in their old places until they finish collapsing, so
+ * a dismissed row shrinks away and new rows (such as the ones "Show more" unfolds) grow in. Rows
+ * present the first time the group is shown appear without animating.
+ */
+@Composable
+private fun rememberAnimatedGlanceRows(items: List<AtAGlanceItem>): List<AnimatedGlanceRow> {
+    val holder = remember { AnimatedGlanceRows() }
+    val previous = holder.rows.associateBy { it.item.key }
+    fun rowFor(item: AtAGlanceItem): AnimatedGlanceRow {
+        val visibility =
+            previous[item.key]?.visibility
+                ?: MutableTransitionState(!holder.initialized).apply { targetState = true }
+        return AnimatedGlanceRow(item, visibility)
+    }
+    val currentIndex = items.withIndex().associate { (index, item) -> item.key to index }
+    val merged = mutableListOf<AnimatedGlanceRow>()
+    val emitted = mutableSetOf<String>()
+    var next = 0
+    for (old in holder.rows) {
+        val index = currentIndex[old.item.key]
+        if (index != null) {
+            while (next <= index) {
+                val item = items[next++]
+                if (emitted.add(item.key)) merged += rowFor(item)
+            }
+        } else {
+            // Reading the transition state here recomposes once the row has finished leaving.
+            val gone = !old.visibility.targetState && old.visibility.isIdle
+            if (!gone && emitted.add(old.item.key)) merged += old
+        }
+    }
+    while (next < items.size) {
+        val item = items[next++]
+        if (emitted.add(item.key)) merged += rowFor(item)
+    }
+    holder.rows = merged
+    holder.initialized = true
+    SideEffect {
+        merged.forEach { row -> row.visibility.targetState = row.item.key in currentIndex }
+    }
+    return merged
 }
 
 /** Tapping the title opens the At a Glance settings. */
@@ -215,19 +347,28 @@ internal fun AtAGlanceCardShell(
 }
 
 /**
- * The At a Glance card when there are no today's events to host the rows. Like the calendar card,
- * the title and card are emitted into the caller's column so they share its section spacing.
+ * The At a Glance card when there are no today's events to host the rows, with its title. The card
+ * grows in when rows appear and collapses away once the last one is dismissed.
  */
 @Composable
 internal fun AtAGlanceCard(
-    items: List<AtAGlanceItem>,
+    items: AtAGlanceItems,
     showWallpaperBackground: Boolean,
     showTitle: Boolean,
 ) {
     if (items.isEmpty()) return
-    if (showTitle) AtAGlanceTitle()
-    AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
-        AtAGlanceRows(items = items, showWallpaperBackground = showWallpaperBackground)
+    AnimatedVisibility(
+        visibleState = items.visibility,
+        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+    ) {
+        // Matches the spacing of the home column the title and card sit in.
+        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            if (showTitle) AtAGlanceTitle()
+            AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
+                AtAGlanceRows(items = items, showWallpaperBackground = showWallpaperBackground)
+            }
+        }
     }
 }
 

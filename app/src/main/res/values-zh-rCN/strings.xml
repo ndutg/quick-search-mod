@@ -270,6 +270,7 @@
     <string name="clear_query_toggle_title">清除查询内容</string>
     <string name="more_results_title">更多结果</string>
     <string name="open_keyboard_toggle_desc">应用启动时自动打开键盘</string>
+    <string name="open_keyboard_toggle_title">启动时打开键盘</string>
     <string name="recent_queries_toggle_desc">展开前显示的项目数</string>
     <string name="fuzzy_search_toggle_title">模糊搜索</string>
     <string name="fuzzy_search_toggle_desc">即使搜索内容中有输入错误，也能找到结果。</string>
@@ -595,8 +596,6 @@
     <string name="settings_calendar_include_past_events_desc">在搜索结果中包含过去的日程。</string>
     <string name="settings_calendar_include_past_events_title">过去的日程</string>
     <string name="settings_calendar_permission_title">日历</string>
-    <string name="settings_calendar_show_today_events_desc">在主屏幕上显示今天的日程。</string>
-    <string name="settings_calendar_show_today_events_title">显示今日日程</string>
     <string name="settings_calendar_default_title">在此打开日程...</string>
     <string name="settings_calendar_view_all_events_desc">查看所有日程</string>
 
@@ -773,7 +772,7 @@
     <string name="settings_app_language_picker_title">选择应用语言</string>
     <string name="settings_app_language_system_default">跟随系统</string>
     <string name="settings_launcher_icon_reset_default">重置为默认</string>
-    <string name="settings_launcher_icon_title">启动器应用图标</string>
+    <string name="settings_launcher_icon_title">更改应用图标</string>
     <string name="settings_layout_option_bottom_desc">最相关的匹配项将显示在底部，以便于轻松触达</string>
     <string name="settings_layout_option_bottom_title">单手模式</string>
     <string name="settings_unified_pinned_items_title">统一固定项目</string>
@@ -867,6 +866,30 @@
     <string name="settings_at_a_glance_workouts_title">锻炼</string>
     <string name="settings_at_a_glance_workouts_desc">来自 Google Health 和 Samsung Health 的锻炼实时状态</string>
     <string name="settings_at_a_glance_weather_desc">来自天气应用通知的当前天气和预警</string>
+    <string name="settings_at_a_glance_app_notifications_title">应用通知</string>
+    <string name="settings_at_a_glance_app_notifications_desc">基于所选应用或关键词的通知</string>
+    <string name="settings_at_a_glance_app_notifications_summary">应用：%1$d · 关键词：%2$d</string>
+    <string name="app_notifications_intro">匹配的通知会显示在“一览”中，直到你将其关闭</string>
+    <string name="app_notifications_any_app">任意应用</string>
+    <string name="app_notifications_add_app">添加应用</string>
+    <string name="app_notifications_all_from_app">所有通知</string>
+    <string name="app_notifications_no_matches">没有符合条件的近期通知</string>
+    <string name="app_notifications_remove_app">移除%1$s</string>
+    <string name="app_notifications_keyword_placeholder">添加任意字词或短语</string>
+    <string name="app_notifications_keywords_intro">包含这些字词或短语的通知将显示在主屏幕上</string>
+    <string name="app_notifications_keywords_intro_app">来自 %1$s 且包含这些字词或短语的通知将显示在主屏幕上</string>
+    <string name="app_notifications_want_all">我想要所有通知</string>
+    <string name="app_notifications_add_keyword">添加“%1$s”</string>
+    <string name="app_notifications_recent_matches">最近匹配</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="other">%d分钟</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="other">%d小时</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">选择应用</string>
+    <string name="app_notifications_search_apps">搜索应用</string>
+    <string name="home_app_notifications_more">再显示 %1$d 条</string>
     <string name="settings_at_a_glance_dnd_desc">开启请勿打扰时</string>
     <string name="settings_at_a_glance_airplane_desc">开启飞行模式时</string>
     <string name="settings_at_a_glance_hotspot_desc">开启热点时</string>
@@ -939,6 +962,7 @@
     <string name="settings_gemini_api_key_saving">正在保存...</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">搜索模型</string>
+    <string name="settings_model_picker_more_models_hint">正在显示最新模型。搜索以查找其他模型。</string>
     <string name="settings_search_engine_alias_suffix_desc">当您在查询内容的末尾加上别名时触发该搜索引擎。别名放在句首时也将始终保持生效。</string>
     <string name="settings_search_engine_alias_suffix_title">查询后别名</string>
     <string name="settings_search_engine_browser_default">系统默认浏览器</string>
@@ -1101,6 +1125,15 @@
     <string name="widget_note_widget_title">笔记小部件</string>
     <string name="widget_note_picker_title">选择笔记</string>
     <string name="widget_note_deleted">未找到笔记。点按以选择其他笔记。</string>
+    <string name="widget_countdown_widget_title">倒计时小部件</string>
+    <string name="widget_countdown_date">日期</string>
+    <string name="widget_countdown_format_days">天</string>
+    <string name="widget_countdown_format_weeks">周</string>
+    <string name="widget_countdown_format_months">月</string>
+    <string name="widget_countdown_format_years">年</string>
+    <string name="widget_countdown_format_detailed">详细</string>
+    <string name="widget_countdown_format_progress">进度 %</string>
+    <string name="widget_countdown_progress_hint">显示自设定日期以来已过去的时间比例。</string>
     <string name="widget_icon_center">居中</string>
     <string name="widget_icon_left">居左</string>
     <string name="widget_icon_off">关闭</string>
@@ -1309,7 +1342,7 @@
     <string name="home_anniversary_title_ordinal">%1$s的纪念日（%2$s）</string>
     <string name="home_birthday_wish">点按送上祝福</string>
     <string name="home_missed_call">未接来电</string>
-    <string name="home_otp_from">来自%1$s的验证码</string>
+    <string name="home_otp_from">来自%1$s</string>
     <string name="home_copied">已复制</string>
     <string name="home_reminder_marked_done">提醒已标记为完成</string>
     <string name="home_reminder_snoozed">提醒已推迟 30 分钟</string>
@@ -1323,7 +1356,6 @@
     <string name="home_hotspot_on">热点已开启</string>
     <string name="home_flashlight_on">手电筒已开启</string>
     <string name="home_wifi_sign_in">登录 WLAN 网络</string>
-    <string name="home_sign_in">登录</string>
     <string name="home_turn_off">关闭</string>
     <string name="settings_tavily_title">用于网页搜索的 Tavily</string>
     <string name="settings_tavily_desc">添加 Tavily API 密钥，为不支持网页搜索的模型添加网页搜索功能。</string>

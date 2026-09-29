@@ -46,7 +46,7 @@ private const val COPIED_FEEDBACK_MILLIS = 2_000L
 private const val JUST_NOW_MILLIS = 5_000L
 
 /**
- * The newest one-time code in large capitals with a copy icon beside it, under "OTP from <sender> •
+ * The newest one-time code in large capitals with a copy icon beside it, under "From <sender> •
  * <age>" (the app stands in when the message doesn't name a sender). Tapping the code or its icon
  * copies the code, and the icon turns into a check for a moment; tapping the rest of the row opens
  * the message.

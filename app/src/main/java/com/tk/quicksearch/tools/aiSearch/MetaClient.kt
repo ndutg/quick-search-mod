@@ -69,7 +69,8 @@ class MetaClient(
                                     ),
                                 )
                             }
-                        }.distinctBy { it.id }.sortedBy { it.displayName.lowercase() }
+                        }.distinctBy { it.id }
+                            .sortedBy { it.displayName.lowercase() }
                     } finally {
                         connection.disconnect()
                     }

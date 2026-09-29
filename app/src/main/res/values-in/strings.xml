@@ -271,6 +271,7 @@
     <string name="clear_query_toggle_title">Hapus Kueri</string>
     <string name="more_results_title">Hasil Lainnya</string>
     <string name="open_keyboard_toggle_desc">Buka keyboard secara otomatis saat aplikasi dibuka</string>
+    <string name="open_keyboard_toggle_title">Buka Keyboard saat Dibuka</string>
     <string name="recent_queries_toggle_desc">Jumlah item yang ditampilkan sebelum diperluas</string>
     <string name="fuzzy_search_toggle_title">Pencarian Fuzzy</string>
     <string name="fuzzy_search_toggle_desc">Temukan hasil meskipun pencarian Anda mengandung salah ketik.</string>
@@ -608,8 +609,6 @@
     <string name="settings_calendar_include_past_events_desc">Sertakan acara terdahulu dalam hasil pencarian.</string>
     <string name="settings_calendar_include_past_events_title">Acara Terdahulu</string>
     <string name="settings_calendar_permission_title">Kalender</string>
-    <string name="settings_calendar_show_today_events_desc">Tampilkan acara hari ini di layar utama.</string>
-    <string name="settings_calendar_show_today_events_title">Tampilkan Acara Hari Ini</string>
     <string name="settings_calendar_default_title">Buka Acara di…</string>
     <string name="settings_calendar_view_all_events_desc">Lihat semua acara</string>
 
@@ -787,7 +786,7 @@
     <string name="settings_app_language_picker_title">Pilih Bahasa Aplikasi</string>
     <string name="settings_app_language_system_default">Default sistem</string>
     <string name="settings_launcher_icon_reset_default">Reset ke default</string>
-    <string name="settings_launcher_icon_title">Ikon Aplikasi Peluncur</string>
+    <string name="settings_launcher_icon_title">Ubah Ikon Aplikasi</string>
     <string name="settings_layout_option_bottom_desc">Item paling relevan muncul di bagian bawah agar mudah dijangkau</string>
     <string name="settings_layout_option_bottom_title">Mode Satu Tangan</string>
     <string name="settings_unified_pinned_items_title">Item Sematan Terpadu</string>
@@ -881,6 +880,30 @@
     <string name="settings_at_a_glance_workouts_title">Olahraga</string>
     <string name="settings_at_a_glance_workouts_desc">Status langsung olahraga dari Google Health dan Samsung Health</string>
     <string name="settings_at_a_glance_weather_desc">Kondisi saat ini dan peringatan dari notifikasi aplikasi cuaca</string>
+    <string name="settings_at_a_glance_app_notifications_title">Notifikasi aplikasi</string>
+    <string name="settings_at_a_glance_app_notifications_desc">Notifikasi berdasarkan aplikasi atau kata kunci yang dipilih</string>
+    <string name="settings_at_a_glance_app_notifications_summary">Aplikasi: %1$d · Kata kunci: %2$d</string>
+    <string name="app_notifications_intro">Notifikasi yang cocok akan muncul di Sekilas hingga Anda menutupnya</string>
+    <string name="app_notifications_any_app">Aplikasi apa pun</string>
+    <string name="app_notifications_add_app">Tambah aplikasi</string>
+    <string name="app_notifications_all_from_app">Semua notifikasi</string>
+    <string name="app_notifications_no_matches">Tidak ada notifikasi terbaru yang cocok dengan kriteria Anda</string>
+    <string name="app_notifications_remove_app">Hapus %1$s</string>
+    <string name="app_notifications_keyword_placeholder">Tambahkan kata atau frasa apa pun</string>
+    <string name="app_notifications_keywords_intro">Notifikasi yang berisi kata atau frasa ini akan muncul di layar utama</string>
+    <string name="app_notifications_keywords_intro_app">Notifikasi dari %1$s yang berisi kata atau frasa ini akan muncul di layar utama</string>
+    <string name="app_notifications_want_all">Saya ingin semua notifikasi</string>
+    <string name="app_notifications_add_keyword">Tambahkan “%1$s”</string>
+    <string name="app_notifications_recent_matches">Kecocokan terbaru</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="other">%d mnt</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="other">%d jam</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">Pilih aplikasi</string>
+    <string name="app_notifications_search_apps">Cari aplikasi</string>
+    <string name="home_app_notifications_more">Tampilkan %1$d lagi</string>
     <string name="settings_at_a_glance_dnd_desc">Saat Jangan Ganggu aktif</string>
     <string name="settings_at_a_glance_airplane_desc">Saat Mode Pesawat aktif</string>
     <string name="settings_at_a_glance_hotspot_desc">Saat hotspot Anda aktif</string>
@@ -953,6 +976,7 @@
     <string name="settings_gemini_api_key_saving">Menyimpan...</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">Cari model</string>
+    <string name="settings_model_picker_more_models_hint">Menampilkan model terbaru. Cari untuk menemukan model lainnya.</string>
     <string name="settings_search_engine_alias_suffix_desc">Picu mesin pencari saat Anda menambahkan alias di akhir kueri. Alias akan selalu berfungsi di awal.</string>
     <string name="settings_search_engine_alias_suffix_title">Alias Setelah Kueri</string>
     <string name="settings_search_engine_browser_default">Browser Default</string>
@@ -1117,6 +1141,15 @@
     <string name="widget_note_widget_title">Widget Catatan</string>
     <string name="widget_note_picker_title">Pilih Catatan</string>
     <string name="widget_note_deleted">Catatan tidak ditemukan. Ketuk untuk memilih yang lain.</string>
+    <string name="widget_countdown_widget_title">Widget Hitung Mundur</string>
+    <string name="widget_countdown_date">Tanggal</string>
+    <string name="widget_countdown_format_days">Hari</string>
+    <string name="widget_countdown_format_weeks">Minggu</string>
+    <string name="widget_countdown_format_months">Bulan</string>
+    <string name="widget_countdown_format_years">Tahun</string>
+    <string name="widget_countdown_format_detailed">Terperinci</string>
+    <string name="widget_countdown_format_progress">Progres %</string>
+    <string name="widget_countdown_progress_hint">Menampilkan seberapa banyak waktu yang telah berlalu sejak Anda menetapkan tanggal.</string>
     <string name="widget_icon_center">Tengah</string>
     <string name="widget_icon_left">Kiri</string>
     <string name="widget_icon_off">Mati</string>
@@ -1317,7 +1350,7 @@
     <string name="home_anniversary_title_ordinal">Hari jadi %1$s (%2$s)</string>
     <string name="home_birthday_wish">Ketuk untuk mengucapkan selamat</string>
     <string name="home_missed_call">Panggilan tak terjawab</string>
-    <string name="home_otp_from">OTP dari %1$s</string>
+    <string name="home_otp_from">Dari %1$s</string>
     <string name="home_copied">Disalin</string>
     <string name="home_reminder_marked_done">Pengingat ditandai selesai</string>
     <string name="home_reminder_snoozed">Pengingat ditunda 30 menit</string>
@@ -1331,7 +1364,6 @@
     <string name="home_hotspot_on">Hotspot aktif</string>
     <string name="home_flashlight_on">Senter menyala</string>
     <string name="home_wifi_sign_in">Masuk ke jaringan Wi-Fi</string>
-    <string name="home_sign_in">Masuk</string>
     <string name="home_turn_off">Nonaktifkan</string>
     <string name="settings_tavily_title">Tavily untuk Penelusuran Web</string>
     <string name="settings_tavily_desc">Tambahkan kunci API Tavily untuk menambahkan penelusuran web pada model yang tidak mendukungnya.</string>

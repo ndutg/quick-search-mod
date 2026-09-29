@@ -1,7 +1,9 @@
 package com.tk.quicksearch.search.appSettings
 
+import android.content.Context
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchSection
+import com.tk.quicksearch.tools.tasker.TaskerIntegration
 
 internal const val AI_MODEL_SETTING_ID = "app_settings_ai_model"
 
@@ -16,6 +18,9 @@ internal val GESTURE_APP_SETTINGS: List<Triple<String, Int, AppSettingsDestinati
         Triple("app_settings_gesture_open_keyboard", R.string.action_open_keyboard, AppSettingsDestination.GESTURE_OPEN_KEYBOARD),
         Triple("app_settings_gesture_close_keyboard", R.string.settings_gesture_close_keyboard, AppSettingsDestination.GESTURE_CLOSE_KEYBOARD),
     )
+
+internal fun Context.isTaskerInstalled(): Boolean =
+    runCatching { packageManager.getPackageInfo(TaskerIntegration.PACKAGE_NAME, 0) }.isSuccess
 
 internal val AppSettingsDestination.isGestureDestination: Boolean
     get() = GESTURE_APP_SETTINGS.any { it.third == this }

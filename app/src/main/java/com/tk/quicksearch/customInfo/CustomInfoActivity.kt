@@ -186,6 +186,7 @@ private fun CustomInfoEditor(
     }
     LaunchedEffect(Unit) {
         val ids = withContext(Dispatchers.IO) {
+            LlmModelCatalogCache.restore(context)
             preferences.getConfiguredLlmProviderIds().filter { !preferences.getLlmApiKey(it).isNullOrBlank() }.toSet()
         }
         configuredIds = ids
@@ -207,7 +208,7 @@ private fun CustomInfoEditor(
                 val liveModels = withContext(Dispatchers.IO) {
                     val provider = AiSearchLlmProviderRegistry.get(id, context)
                     provider.fetchAvailableTextModels(preferences.getLlmApiKey(id).orEmpty(), context)
-                        .onSuccess { LlmModelCatalogCache.put(id, it) }
+                        .onSuccess { LlmModelCatalogCache.put(context, id, it) }
                         .getOrElse { provider.fallbackTextModels }
                 }
                 modelsByProvider = modelsByProvider + (id to liveModels)

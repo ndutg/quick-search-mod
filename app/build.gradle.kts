@@ -15,8 +15,8 @@ android {
         applicationId = "com.tk.quicksearch"
         minSdk = 24
         targetSdk = 36
-        versionCode = 90
-        versionName = "4.6"
+        versionCode = 100
+        versionName = "4.7"
         manifestPlaceholders["profileCaptureExported"] =
             providers.gradleProperty("profileCapture").orElse("false").get().toBoolean()
 
@@ -62,6 +62,8 @@ android {
         buildConfig = true
         resValues = true
     }
+    // Room's exported schemas, for migration tests.
+    sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11

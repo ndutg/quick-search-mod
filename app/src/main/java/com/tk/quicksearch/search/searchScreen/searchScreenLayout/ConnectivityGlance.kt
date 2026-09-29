@@ -46,7 +46,14 @@ internal class HotspotGlance(
  */
 internal class WifiSignInGlance(
     val onClick: () -> Unit,
+    /** Hides the row until the network no longer needs a sign-in. */
+    val dismiss: () -> Unit,
 )
+
+/** Process-wide so a dismissal survives home being left and recomposed; cleared once signed in. */
+private object WifiSignInDismissal {
+    var dismissed by mutableStateOf(false)
+}
 
 /** Follows airplane mode while [enabled] and the toggle is on. Reading it needs no permission. */
 @Composable
@@ -167,11 +174,19 @@ internal fun rememberWifiSignInGlance(enabled: Boolean): WifiSignInGlance? {
             runCatching {
                 needsCaptivePortalSignIn(connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork))
             }.getOrDefault(false)
+        if (show && !needsSignIn) WifiSignInDismissal.dismissed = false
 
         // Callbacks arrive on a system thread; state is only written on the main thread.
         val mainHandler = Handler(Looper.getMainLooper())
         var disposed = false
-        val post = { value: Boolean -> mainHandler.post { if (!disposed) needsSignIn = value } }
+        val post = { value: Boolean ->
+            mainHandler.post {
+                if (!disposed) {
+                    needsSignIn = value
+                    if (!value) WifiSignInDismissal.dismissed = false
+                }
+            }
+        }
         val callback =
             object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
@@ -203,7 +218,7 @@ internal fun rememberWifiSignInGlance(enabled: Boolean): WifiSignInGlance? {
         }
     }
 
-    if (!needsSignIn) return null
+    if (!needsSignIn || WifiSignInDismissal.dismissed) return null
     return WifiSignInGlance(
         onClick = {
             val wifiIntents =
@@ -213,6 +228,7 @@ internal fun rememberWifiSignInGlance(enabled: Boolean): WifiSignInGlance? {
                 )
             openFirstAvailable(context, *wifiIntents.toTypedArray())
         },
+        dismiss = { WifiSignInDismissal.dismissed = true },
     )
 }
 
@@ -293,7 +309,7 @@ internal fun WifiSignInRow(glance: WifiSignInGlance) {
             )
         },
         title = stringResource(R.string.home_wifi_sign_in),
-        pillText = stringResource(R.string.home_sign_in),
         onClick = glance.onClick,
+        onDismiss = glance.dismiss,
     )
 }

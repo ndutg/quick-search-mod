@@ -158,6 +158,19 @@ internal fun SearchPreferencesDelegate.refreshAvailableLlmModels() {
         scope.launch(Dispatchers.IO) {
             val configuredProviderIds = userPreferences.getLlmApiKeyLast4ByProvider().keys
             val now = System.currentTimeMillis()
+            // Show the last saved catalogs right away; the live fetch below only replaces them.
+            LlmModelCatalogCache.restore(applicationProvider())
+            val cachedCatalogs = LlmModelCatalogCache.snapshot().filterKeys { it in configuredProviderIds }
+            if (cachedCatalogs.isNotEmpty()) {
+                val activeProviderId = aiSearchHandler.getAiSearchProviderId()
+                updateFeatureState { state ->
+                    state.copy(
+                        activeLlmAvailableModels =
+                            state.activeLlmAvailableModels.ifEmpty { cachedCatalogs[activeProviderId].orEmpty() },
+                        availableLlmModelsByProvider = cachedCatalogs + state.availableLlmModelsByProvider,
+                    )
+                }
+            }
             // Refetch despite the throttle when a catalog was dropped from state (e.g. by a reload).
             var hasAllCatalogs = false
             updateFeatureState { state ->
@@ -189,7 +202,6 @@ internal fun SearchPreferencesDelegate.refreshAvailableLlmModels() {
                 }
             results.forEach { (providerId, result) ->
                 result.getOrNull()?.let { models ->
-                    LlmModelCatalogCache.put(providerId, models)
                     val selectedModelId = userPreferences.getLlmModel(providerId)
                     val resolvedModelId = resolveModelSelectionOrDefault(providerId, selectedModelId, models)
                     if (resolvedModelId != selectedModelId) {
@@ -274,6 +286,7 @@ internal suspend fun SearchPreferencesDelegate.fetchAvailableModels(
         val provider = AiSearchLlmProviderRegistry.get(providerId, applicationProvider())
         return provider
             .fetchAvailableTextModels(apiKey.trim(), applicationProvider())
+            .onSuccess { LlmModelCatalogCache.put(applicationProvider(), providerId, it) }
     }
 
 internal fun SearchPreferencesDelegate.updateBooleanPreference(

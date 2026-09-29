@@ -12,6 +12,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -223,9 +224,18 @@ private fun ProviderIconTile(providerId: AiSearchLlmProviderId) {
     val logoResId =
         when (providerId) {
             AiSearchLlmProviderId.GEMINI -> R.drawable.ic_gemini_sparkle_search_engine
+            AiSearchLlmProviderId.OPENAI -> R.drawable.chatgpt
             AiSearchLlmProviderId.ANTHROPIC -> R.drawable.claude
             AiSearchLlmProviderId.META -> R.drawable.meta_logo
+            AiSearchLlmProviderId.GROQ -> R.drawable.groq_logo
             else -> null
+        }
+    // The OpenAI mark is single-color white, so tint it to stay visible in light themes.
+    val logoColorFilter =
+        if (providerId == AiSearchLlmProviderId.OPENAI) {
+            ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+        } else {
+            null
         }
     Box(
         modifier =
@@ -238,6 +248,7 @@ private fun ProviderIconTile(providerId: AiSearchLlmProviderId) {
             Image(
                 painter = painterResource(logoResId),
                 contentDescription = null,
+                colorFilter = logoColorFilter,
                 modifier = Modifier.size(22.dp),
             )
         } else {

@@ -263,6 +263,7 @@
     <string name="clear_query_toggle_title">Clear Query</string>
     <string name="more_results_title">More Results</string>
     <string name="open_keyboard_toggle_desc">Automatically open keyboard when the app launches</string>
+    <string name="open_keyboard_toggle_title">Open Keyboard on Launch</string>
     <string name="recent_queries_toggle_desc">No. of items shown before expansion</string>
     <string name="fuzzy_search_toggle_title">Fuzzy search</string>
     <string name="fuzzy_search_toggle_desc">Find results even when your search contains a typo.</string>
@@ -603,8 +604,6 @@
     <string name="settings_calendar_include_past_events_desc">Include past events in search results.</string>
     <string name="settings_calendar_include_past_events_title">Past Events</string>
     <string name="settings_calendar_permission_title">Calendar</string>
-    <string name="settings_calendar_show_today_events_desc">Show today\'s events in home screen.</string>
-    <string name="settings_calendar_show_today_events_title">Show Today\'s Events</string>
     <string name="settings_calendar_default_title">Open Events in...</string>
     <string name="settings_calendar_view_all_events_desc">View all events</string>
 
@@ -612,7 +611,7 @@
          Notes
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Start a new note in the editor</string>
-    <string name="app_settings_search_create_note_title">Create note</string>
+    <string name="app_settings_search_create_note_title">Create Note</string>
     <string name="notes_body_hint">Write your note here</string>
     <string name="notes_create_note_cta">New Note</string>
     <string name="notes_delete_confirm_message">This note will be permanently deleted.</string>
@@ -745,11 +744,6 @@
     <string name="settings_font_size_medium">Medium</string>
     <string name="settings_font_size_small">Small</string>
     <string name="settings_font_size_title">Font Size</string>
-    <string name="settings_font_size_tick_xs" translatable="false">XS</string>
-    <string name="settings_font_size_tick_s" translatable="false">S</string>
-    <string name="settings_font_size_tick_m" translatable="false">M</string>
-    <string name="settings_font_size_tick_l" translatable="false">L</string>
-    <string name="settings_font_size_tick_xl" translatable="false">XL</string>
     <string name="settings_home_screen_widget_confirm_message">You are about to add Quick Search widget to your home screen. Long press on the widget to access widget settings page that has many customization options.</string>
     <string name="settings_home_screen_widget_desc">Add Quick Search widget to your home screen.</string>
     <string name="settings_home_screen_widget_title">Home Screen Widget</string>
@@ -787,7 +781,7 @@
     <string name="settings_app_language_picker_title">Choose App Language</string>
     <string name="settings_app_language_system_default">System default</string>
     <string name="settings_launcher_icon_reset_default">Reset to default</string>
-    <string name="settings_launcher_icon_title">Launcher App Icon</string>
+    <string name="settings_launcher_icon_title">Change App Icon</string>
     <string name="settings_layout_option_bottom_desc">Most relevant items appear at bottom for easy access</string>
     <string name="settings_layout_option_bottom_title">One-Handed Mode</string>
     <string name="settings_unified_pinned_items_title">Unified Pinned Items</string>
@@ -881,6 +875,32 @@
     <string name="settings_at_a_glance_workouts_title">Workouts</string>
     <string name="settings_at_a_glance_workouts_desc">Workout live status from Google Health and Samsung Health</string>
     <string name="settings_at_a_glance_weather_desc">Current conditions and alerts from your weather app\'s notifications</string>
+    <string name="settings_at_a_glance_app_notifications_title">App Notifications</string>
+    <string name="settings_at_a_glance_app_notifications_desc">Notifications based on selected apps or keywords</string>
+    <string name="settings_at_a_glance_app_notifications_summary">Apps: %1$d · Keywords: %2$d</string>
+    <string name="app_notifications_intro">Matching notifications will show up in At a Glance until you dismiss them</string>
+    <string name="app_notifications_any_app">Any App</string>
+    <string name="app_notifications_add_app">Add App</string>
+    <string name="app_notifications_all_from_app">All notifications</string>
+    <string name="app_notifications_no_matches">No recent notifications matched your criteria</string>
+    <string name="app_notifications_remove_app">Remove %1$s</string>
+    <string name="app_notifications_keyword_placeholder">Add any word or phrase</string>
+    <string name="app_notifications_keywords_intro">Notifications containing these words or phrases will appear in home screen</string>
+    <string name="app_notifications_keywords_intro_app">Notifications from %1$s containing these words or phrases will appear in home screen</string>
+    <string name="app_notifications_want_all">I want all notifications</string>
+    <string name="app_notifications_add_keyword">Add “%1$s”</string>
+    <string name="app_notifications_recent_matches">Recent Matches</string>
+    <plurals name="app_notifications_age_minutes">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d min</item>
+    </plurals>
+    <plurals name="app_notifications_age_hours">
+        <item quantity="one">%d hr</item>
+        <item quantity="other">%d hrs</item>
+    </plurals>
+    <string name="app_notifications_choose_apps">Choose App</string>
+    <string name="app_notifications_search_apps">Search apps</string>
+    <string name="home_app_notifications_more">Show %1$d more</string>
     <string name="settings_at_a_glance_dnd_desc">When Do Not Disturb is on</string>
     <string name="settings_at_a_glance_airplane_desc">When airplane mode is on</string>
     <string name="settings_at_a_glance_hotspot_desc">When your hotspot is on</string>
@@ -961,6 +981,7 @@
     <string name="settings_gemini_api_key_saving">Saving...</string>
     <string name="settings_gemini_guide_url" translatable="false">https://medium.com/@tejakarlapudi.apps/setting-up-gemini-api-key-in-quick-search-25ee92aa4311</string>
     <string name="settings_model_picker_search_hint">Search models</string>
+    <string name="settings_model_picker_more_models_hint">Showing the latest models. Search to find others.</string>
     <string name="settings_search_engine_alias_suffix_desc">Triggers search engine when you add an alias at the end of the query. Aliases will always work at the start.</string>
     <string name="settings_search_engine_alias_suffix_title">Alias after Query</string>
     <string name="settings_search_engine_browser_default">Default Browser</string>
@@ -1125,6 +1146,15 @@
     <string name="widget_note_widget_title">Note Widget</string>
     <string name="widget_note_picker_title">Select Note</string>
     <string name="widget_note_deleted">Note not found. Tap to choose another.</string>
+    <string name="widget_countdown_widget_title">Countdown Widget</string>
+    <string name="widget_countdown_date">Date</string>
+    <string name="widget_countdown_format_days">Days</string>
+    <string name="widget_countdown_format_weeks">Weeks</string>
+    <string name="widget_countdown_format_months">Months</string>
+    <string name="widget_countdown_format_years">Years</string>
+    <string name="widget_countdown_format_detailed">Detailed</string>
+    <string name="widget_countdown_format_progress">Progress %</string>
+    <string name="widget_countdown_progress_hint">Shows how much of the time from when you set the date has passed.</string>
     <string name="widget_icon_center">Center</string>
     <string name="widget_icon_left">Left</string>
     <string name="widget_icon_off">Off</string>
@@ -1325,7 +1355,7 @@
     <string name="home_anniversary_title_ordinal">%1$s\'s %2$s anniversary</string>
     <string name="home_birthday_wish">Tap to wish them</string>
     <string name="home_missed_call">Missed Call</string>
-    <string name="home_otp_from">OTP from %1$s</string>
+    <string name="home_otp_from">From %1$s</string>
     <string name="home_copied">Copied</string>
     <string name="home_reminder_marked_done">Reminder marked as done</string>
     <string name="home_reminder_snoozed">Reminder snoozed for 30 minutes</string>
@@ -1339,7 +1369,6 @@
     <string name="home_hotspot_on">Hotspot is ON</string>
     <string name="home_flashlight_on">Flashlight is ON</string>
     <string name="home_wifi_sign_in">Sign in to Wi-Fi network</string>
-    <string name="home_sign_in">Sign in</string>
     <string name="home_turn_off">Turn off</string>
     <!-- Reminders -->
     <string name="section_reminders">Reminders</string>
