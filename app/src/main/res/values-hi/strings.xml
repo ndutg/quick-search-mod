@@ -171,7 +171,6 @@
     <string name="action_move_down">नीचे ले जाएं</string>
     <string name="action_undo">पूर्ववत करें</string>
     <string name="action_uninstall_app">अनइंस्टॉल करें</string>
-    <string name="action_rate">अभी रेट करें</string>
     <string name="action_not_now">अभी नहीं</string>
     <string name="action_agree">सहमत हूँ</string>
     <string name="action_unpin_app">अनपिन करें</string>
@@ -999,6 +998,8 @@
     <string name="settings_release_notes_desc">इस संस्करण के रिलीज़ नोट्स देखें</string>
     <string name="update_card_title">क्विक सर्च के लिए नया अपडेट उपलब्ध है!</string>
     <string name="action_update">अपडेट करें</string>
+    <string name="update_card_ready_title">अपडेट डाउनलोड हो गया। इंस्टॉल पूरा करने के लिए Quick Search को रीस्टार्ट करें।</string>
+    <string name="action_restart">रीस्टार्ट करें</string>
     <string name="release_notes_title">Quick Search v%1$s रिलीज़ नोट्स</string>
     <string name="release_notes_title_no_version">Quick Search रिलीज़ नोट्स</string>
     <string name="settings_backup_export_api_key_warning_message">अपने जोखिम पर आगे बढ़ें। एक्सपोर्ट की गई API keys एन्क्रिप्टेड नहीं होतीं और आपकी बैकअप फाइल तक पहुंच रखने वाला कोई भी इन्हें देख सकता है।</string>

@@ -56,7 +56,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -538,18 +537,24 @@ private fun BoxScope.WidgetPanelGridItem(
             modifier = Modifier.fillMaxSize(),
         )
         if (!hasWidgetContent) {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                shape = DesignTokens.WidgetPanelCardShape,
-                color = MaterialTheme.colorScheme.surfaceVariant,
+            // A plain Box rather than Surface: Surface consumes touches, which would block the host
+            // view's long-press and leave a widget whose provider never sends content impossible
+            // to edit or remove.
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = DesignTokens.WidgetPanelCardShape,
+                        ),
+                contentAlignment = Alignment.Center,
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.widget_loading_state),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.widget_loading_state),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
 

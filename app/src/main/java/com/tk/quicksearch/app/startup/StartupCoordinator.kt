@@ -31,7 +31,6 @@ class StartupCoordinator(
     private val userPreferences: UserAppPreferences,
     private val isFirstLaunch: Boolean = false,
     private val mode: StartupMode,
-    private val onUsageTrackingUpdated: (() -> Unit)? = null,
 ) {
     companion object {
         private const val TRACE_FIRST_FRAME_GATE = "QS.Startup.FirstFrameGate"
@@ -114,7 +113,6 @@ class StartupCoordinator(
             try {
                 userPreferences.recordFirstAppOpenTime()
                 userPreferences.incrementAppOpenCount()
-                onUsageTrackingUpdated?.invoke()
             } finally {
                 Trace.endSection()
             }
@@ -129,8 +127,7 @@ class StartupCoordinator(
         lifecycleScope.launch {
             delay(UPDATE_CHECK_DELAY_MS)
             val targetActivity = activity ?: return@launch
-            userPreferences.resetUpdateCheckSession()
-            UpdateHelper.checkForUpdates(targetActivity, userPreferences, viewModel::onUpdateAvailable)
+            UpdateHelper.checkForUpdates(targetActivity, viewModel::onUpdateStateChanged)
         }
     }
 

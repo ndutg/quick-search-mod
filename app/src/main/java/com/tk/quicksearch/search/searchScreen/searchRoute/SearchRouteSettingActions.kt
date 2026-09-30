@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.appSettings.AppSettingResult
-import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.overlay.OverlayModeController
@@ -27,19 +26,6 @@ import com.tk.quicksearch.settings.settingsDetailScreen.ToolSettingsRegistry
 import com.tk.quicksearch.settings.shared.SettingsCommand
 import com.tk.quicksearch.settings.shared.applySettingsCommand
 import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
-
-internal const val RATE_QUICK_SEARCH_SETTING_ID = "app_settings_rate_quick_search"
-
-@Composable
-internal fun rememberRateQuickSearchSetting(): AppSettingResult =
-    remember {
-        AppSettingResult(
-            id = RATE_QUICK_SEARCH_SETTING_ID,
-            title = "",
-            action = AppSettingResultAction.NAVIGATE,
-            destination = AppSettingsDestination.RATE_QUICK_SEARCH,
-        )
-    }
 
 /**
  * Whether an app setting toggle row is on. App notifications keeps its state in
@@ -203,9 +189,6 @@ internal fun rememberRouteSettingActions(
             if (destination == AppSettingsDestination.OPEN_EVENTS_IN) {
                 onShowDefaultCalendarDialog()
                 return@appSettingClick
-            }
-            if (destination == AppSettingsDestination.RATE_QUICK_SEARCH) {
-                viewModel.markRateQuickSearchCompleted()
             }
             onOpenAppSettingDestination(destination)
         }

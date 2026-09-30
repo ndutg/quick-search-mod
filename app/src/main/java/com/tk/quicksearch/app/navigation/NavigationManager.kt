@@ -48,8 +48,6 @@ import com.tk.quicksearch.settings.settingsDetailScreen.level
 import com.tk.quicksearch.settings.settingsDetailScreen.resolveBackDestination
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailRoute
 import com.tk.quicksearch.R
-import com.tk.quicksearch.app.ReviewHelper
-import com.tk.quicksearch.app.UpdateHelper
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomToolNavigationMemory
 import com.tk.quicksearch.settings.shared.settingsRoute.SettingsRoute
@@ -460,33 +458,24 @@ private fun NavigationContent(
     val context = LocalContext.current
     val activity = context as? Activity
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var hasVisitedHomeInThisSession by rememberSaveable {
-        mutableStateOf(destination == RootDestination.Search)
-    }
-    var shouldRequestReviewOnHomeReturn by rememberSaveable { mutableStateOf(false) }
     var rootAnimationDirectionOverride by remember { mutableStateOf<SwipeAnimationDirection?>(null) }
     var settingsDetailAnimationDirectionOverride by
         remember { mutableStateOf<SwipeAnimationDirection?>(null) }
 
     LaunchedEffect(destination) {
         rootAnimationDirectionOverride = null
-
-        when (destination) {
-            RootDestination.Search -> {
-                if (shouldRequestReviewOnHomeReturn) {
-                    shouldRequestReviewOnHomeReturn = false
-                    activity?.let(ReviewHelper::launchInAppReview)
-                }
-                hasVisitedHomeInThisSession = true
-            }
-            RootDestination.Settings,
-            RootDestination.WidgetsPanel -> {
-                if (hasVisitedHomeInThisSession) {
-                    shouldRequestReviewOnHomeReturn = true
-                }
-            }
-        }
     }
+
+    InAppReviewOnReturnEffect(
+        destination = destination,
+        activity = activity,
+        userPreferences = viewModel.userPreferences,
+        canRequestNow = {
+            activity?.isFinishing == false &&
+                uiState.query.isBlank() &&
+                !uiState.showUpdateCard
+        },
+    )
 
     LaunchedEffect(settingsDetailType) {
         settingsDetailAnimationDirectionOverride = null
@@ -684,10 +673,6 @@ private fun SettingsNavigationContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val settingsScrollState = rememberScrollState()
     val detailScrollStates = remember { mutableStateMapOf<SettingsDetailType, androidx.compose.foundation.ScrollState>() }
-
-    LaunchedEffect(Unit) {
-        (context as? Activity)?.let(UpdateHelper::startUpdate)
-    }
 
     LaunchedEffect(settingsDetailType) {
         onSettingsDetailAnimationDirectionConsumed()

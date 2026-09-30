@@ -172,7 +172,6 @@
     <string name="action_move_down">下へ移動</string>
     <string name="action_undo">元に戻す</string>
     <string name="action_uninstall_app">アンインストール</string>
-    <string name="action_rate">今すぐ評価</string>
     <string name="action_not_now">後で</string>
     <string name="action_agree">同意する</string>
     <string name="action_unpin_app">固定解除</string>
@@ -1008,6 +1007,8 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_release_notes_desc">このバージョンのリリースノートを表示</string>
     <string name="update_card_title">Quick Searchの新しいアップデートが利用可能です！</string>
     <string name="action_update">アップデート</string>
+    <string name="update_card_ready_title">アップデートをダウンロードしました。Quick Searchを再起動してインストールを完了してください。</string>
+    <string name="action_restart">再起動</string>
     <string name="release_notes_title">Quick Search v%1$s リリースノート</string>
     <string name="release_notes_title_no_version">Quick Search リリースノート</string>
     <string name="settings_backup_export_api_key_warning_message">自己責任で続行してください。エクスポートされたAPIキーは暗号化されず、バックアップファイルにアクセスできるすべての人が閲覧できます。</string>

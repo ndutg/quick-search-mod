@@ -171,7 +171,6 @@
     <string name="action_move_down">Mover abajo</string>
     <string name="action_undo">Deshacer</string>
     <string name="action_uninstall_app">Desinstalar</string>
-    <string name="action_rate">Calificar ahora</string>
     <string name="action_not_now">Ahora no</string>
     <string name="action_agree">Aceptar</string>
     <string name="action_unpin_app">Desfijar</string>
@@ -999,6 +998,8 @@
     <string name="settings_release_notes_desc">Ver las notas de esta versión</string>
     <string name="update_card_title">¡Hay una nueva actualización disponible para Quick Search!</string>
     <string name="action_update">Actualizar</string>
+    <string name="update_card_ready_title">Actualización descargada. Reinicia Quick Search para terminar la instalación.</string>
+    <string name="action_restart">Reiniciar</string>
     <string name="release_notes_title">Notas de la versión de Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Notas de la versión de Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Procede bajo tu propio riesgo. Las claves API exportadas no están encriptadas y cualquier persona con acceso al archivo de respaldo podría verlas.</string>

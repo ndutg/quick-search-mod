@@ -171,7 +171,6 @@
     <string name="action_move_down">Μετακίνηση προς τα κάτω</string>
     <string name="action_undo">Αναίρεση</string>
     <string name="action_uninstall_app">Απεγκατάσταση</string>
-    <string name="action_rate">Βαθμολογήστε τώρα</string>
     <string name="action_not_now">Όχι τώρα</string>
     <string name="action_agree">Συμφωνώ</string>
     <string name="action_unpin_app">Ξεκαρφίτσωμα</string>
@@ -999,6 +998,8 @@
     <string name="settings_release_notes_desc">Δείτε τις σημειώσεις έκδοσης για αυτήν την έκδοση</string>
     <string name="update_card_title">Μια νέα ενημέρωση είναι διαθέσιμη για το Quick Search!</string>
     <string name="action_update">Ενημέρωση</string>
+    <string name="update_card_ready_title">Η ενημέρωση λήφθηκε. Επανεκκινήστε το Quick Search για να ολοκληρωθεί η εγκατάσταση.</string>
+    <string name="action_restart">Επανεκκίνηση</string>
     <string name="release_notes_title">Σημειώσεις έκδοσης Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Σημειώσεις έκδοσης Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Προχωρήστε με δική σας ευθύνη. Τα εξαγόμενα κλειδιά API δεν είναι κρυπτογραφημένα και μπορούν να προσπελαστούν από οποιονδήποτε έχει πρόσβαση στο αρχείο αντιγράφου ασφαλείας.</string>

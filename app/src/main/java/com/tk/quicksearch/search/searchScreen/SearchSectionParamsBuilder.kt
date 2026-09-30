@@ -102,8 +102,6 @@ internal fun buildSectionParams(
     onReorderPinnedAppGrid: (List<String>, List<AppInfo>, List<StaticShortcut>) -> Unit,
     appFolderActions: com.tk.quicksearch.search.folders.AppGridFolderActions?,
     onSuggestionTabSelected: (AppSuggestionTabType) -> Unit,
-    onRateQuickSearchClick: () -> Unit,
-    onRateQuickSearchNotNowClick: () -> Unit,
     onUpdateClick: () -> Unit,
     onUpdateNotNowClick: () -> Unit,
     getFileNickname: (String) -> String?,
@@ -567,13 +565,8 @@ internal fun buildSectionParams(
             isOverlayPresentation = isOverlayPresentation,
             showWallpaperBackground = state.showWallpaperBackground,
             notificationDotsEnabled = state.notificationDotsEnabled,
-            showRateQuickSearchCard =
-                state.showRateQuickSearchCard &&
-                    !derivedState.isSearching &&
-                    !isOverlayPresentation,
-            onRateQuickSearchClick = onRateQuickSearchClick,
-            onRateQuickSearchNotNowClick = onRateQuickSearchNotNowClick,
             showUpdateCard = state.showUpdateCard && !derivedState.isSearching && !isOverlayPresentation,
+            isUpdateReadyToInstall = state.isUpdateReadyToInstall,
             onUpdateClick = onUpdateClick,
             onUpdateNotNowClick = onUpdateNotNowClick,
             pinnedGridAppShortcuts =

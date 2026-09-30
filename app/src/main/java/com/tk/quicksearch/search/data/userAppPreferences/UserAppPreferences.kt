@@ -323,7 +323,7 @@ class UserAppPreferences(context: Context) : UserAppPreferencesFeatures(context)
     fun setDisabledSections(disabled: Set<String>) = uiPreferences.setDisabledSections(disabled)
 
     // ============================================================================
-    // Rate Quick Search Prompt Preferences
+    // In-App Review Preferences
     // ============================================================================
 
     fun getFirstAppOpenTime(): Long = uiPreferences.getFirstAppOpenTime()
@@ -334,27 +334,14 @@ class UserAppPreferences(context: Context) : UserAppPreferencesFeatures(context)
 
     fun incrementAppOpenCount() = uiPreferences.incrementAppOpenCount()
 
-    fun hasCompletedRateQuickSearch(): Boolean = uiPreferences.hasCompletedRateQuickSearch()
+    fun recordInAppReviewRequested() = uiPreferences.recordInAppReviewRequested()
 
-    fun markRateQuickSearchCompleted() = uiPreferences.markRateQuickSearchCompleted()
-
-    fun getRateQuickSearchLastDismissedAt(): Long = uiPreferences.getRateQuickSearchLastDismissedAt()
-
-    fun recordRateQuickSearchDismissed() = uiPreferences.recordRateQuickSearchDismissed()
-
-    fun shouldShowRateQuickSearchCard(): Boolean = uiPreferences.shouldShowRateQuickSearchCard()
+    fun shouldRequestInAppReview(): Boolean =
+        uiPreferences.shouldRequestInAppReview(
+            totalAppLaunchCount = appPreferences.getAllAppLaunchCounts().values.sum(),
+        )
 
     fun shouldShowUpdateCard(): Boolean = uiPreferences.shouldShowUpdateCard()
 
     fun recordUpdateCardDismissed() = uiPreferences.recordUpdateCardDismissed()
-
-    // ============================================================================
-    // In-App Update Session Tracking
-    // ============================================================================
-
-    fun hasShownUpdateCheckThisSession(): Boolean = uiPreferences.hasShownUpdateCheckThisSession()
-
-    fun setUpdateCheckShownThisSession() = uiPreferences.setUpdateCheckShownThisSession()
-
-    fun resetUpdateCheckSession() = uiPreferences.resetUpdateCheckSession()
 }

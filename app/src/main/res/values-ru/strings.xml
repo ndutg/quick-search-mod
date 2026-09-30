@@ -171,7 +171,6 @@
 <string name="action_move_down">Переместить вниз</string>
 <string name="action_undo">Отменить</string>
 <string name="action_uninstall_app">Удалить</string>
-<string name="action_rate">Оценить сейчас</string>
 <string name="action_not_now">Не сейчас</string>
 <string name="action_agree">Согласен</string>
 <string name="action_unpin_app">Открепить</string>
@@ -1023,6 +1022,8 @@
 <string name="settings_release_notes_desc">Посмотреть примечания к этому выпуску</string>
 <string name="update_card_title">Доступно новое обновление для Quick Search!</string>
 <string name="action_update">Обновить</string>
+<string name="update_card_ready_title">Обновление загружено. Перезапустите Quick Search, чтобы завершить установку.</string>
+<string name="action_restart">Перезапустить</string>
 <string name="release_notes_title">Примечания к релизу Quick Search v%1$s</string>
 <string name="release_notes_title_no_version">Примечания к релизу Quick Search</string>
 <string name="settings_backup_export_api_key_warning_message">Вы действуете на свой страх и риск. Экспортируемые API-ключи не зашифрованы и могут быть доступны любому, у кого есть доступ к вашему файлу резервной копии.</string>

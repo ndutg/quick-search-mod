@@ -171,7 +171,6 @@
     <string name="action_move_down">కిందికి జరుపు</string>
     <string name="action_undo">రద్దు చేయి</string>
     <string name="action_uninstall_app">అన్‌ఇన్‌స్టాల్ చేయి</string>
-    <string name="action_rate">ఇప్పుడే రేట్ చేయండి</string>
     <string name="action_not_now">ఇప్పుడు వద్దు</string>
     <string name="action_agree">అంగీకరిస్తున్నాను</string>
     <string name="action_unpin_app">అన్‌పిన్ చేయి</string>
@@ -999,6 +998,8 @@
     <string name="settings_release_notes_desc">ఈ వెర్షన్ రిలీజ్ నోట్స్ చూడండి</string>
     <string name="update_card_title">క్విక్ సెర్చ్ కోసం కొత్త అప్‌డేట్ అందుబాటులో ఉంది!</string>
     <string name="action_update">అప్‌డేట్ చేయండి</string>
+    <string name="update_card_ready_title">అప్‌డేట్ డౌన్‌లోడ్ అయింది. ఇన్‌స్టాలేషన్ పూర్తి చేయడానికి Quick Search‌ను రీస్టార్ట్ చేయండి.</string>
+    <string name="action_restart">రీస్టార్ట్ చేయండి</string>
     <string name="release_notes_title">Quick Search v%1$s రిలీజ్ నోట్స్</string>
     <string name="release_notes_title_no_version">Quick Search రిలీజ్ నోట్స్</string>
     <string name="settings_backup_export_api_key_warning_message">మీ స్వంత రిస్క్‌తోనే కొనసాగండి. ఎగుమతి చేసిన API కీలు ఎన్‌క్రిప్ట్ చేయబడవు మరియు మీ బ్యాకప్ ఫైల్‌కు యాక్సెస్ ఉన్న ఎవరైనా వాటిని యాక్సెస్ చేయవచ్చు.</string>
