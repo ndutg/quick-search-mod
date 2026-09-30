@@ -172,7 +172,6 @@ open class MainActivity : FragmentActivity() {
                     userPreferences = userPreferences,
                     isFirstLaunch = isFirstLaunchAtActivityStart,
                     mode = StartupMode.MAIN,
-                    onUsageTrackingUpdated = searchViewModel::refreshRateQuickSearchCardState,
                 )
             startupCoordinator.scheduleAfterFirstDraw(window)
 
@@ -209,6 +208,7 @@ open class MainActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         LockScreenAccessibilityService.onAppSurfaceResumed()
+        UpdateHelper.checkForUpdatesIfDue(this, searchViewModel::onUpdateStateChanged)
     }
 
     override fun onPause() {

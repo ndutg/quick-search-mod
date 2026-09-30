@@ -157,8 +157,8 @@ internal object SearchStateExtractor {
             numberSearchEnabled = s.numberSearchEnabled,
             assistantLaunchVoiceModeEnabled = s.assistantLaunchVoiceModeEnabled,
             shouldShowUsagePermissionBanner = s.shouldShowUsagePermissionBanner,
-            showRateQuickSearchCard = s.showRateQuickSearchCard,
             showUpdateCard = s.showUpdateCard,
+            isUpdateReadyToInstall = s.isUpdateReadyToInstall,
         )
 
     fun extractConfigState(s: SearchUiState) =

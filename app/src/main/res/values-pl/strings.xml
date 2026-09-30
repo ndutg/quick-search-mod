@@ -172,7 +172,6 @@
     <string name="action_move_down">Przenieś w dół</string>
     <string name="action_undo">Cofnij</string>
     <string name="action_uninstall_app">Odinstaluj</string>
-    <string name="action_rate">Oceń teraz</string>
     <string name="action_not_now">Nie teraz</string>
     <string name="action_agree">Zgadzam się</string>
     <string name="action_unpin_app">Odepnij</string>
@@ -1034,6 +1033,8 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_release_notes_desc">Zobacz informacje o wydaniu dla tej wersji</string>
     <string name="update_card_title">Dostępna jest nowa aktualizacja Quick Search!</string>
     <string name="action_update">Aktualizuj</string>
+    <string name="update_card_ready_title">Aktualizacja pobrana. Uruchom ponownie Quick Search, aby dokończyć instalację.</string>
+    <string name="action_restart">Uruchom ponownie</string>
     <string name="release_notes_title">Informacje o wydaniu Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Informacje o wydaniu Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Kontynuujesz na własne ryzyko. Wyeksportowane klucze API nie są szyfrowane i każdy, kto ma dostęp do Twojego pliku kopii zapasowej, może je odczytać.</string>

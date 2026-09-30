@@ -164,7 +164,6 @@
     <string name="action_move_down">Move Down</string>
     <string name="action_undo">Undo</string>
     <string name="action_uninstall_app">Uninstall</string>
-    <string name="action_rate">Rate Now</string>
     <string name="action_not_now">Not now</string>
     <string name="action_agree">Agree</string>
     <string name="action_unpin_app">Unpin</string>
@@ -1006,6 +1005,8 @@
     <string name="settings_release_notes_desc">View the release notes for this version</string>
     <string name="update_card_title">New update is available for Quick Search!</string>
     <string name="action_update">Update</string>
+    <string name="update_card_ready_title">Update downloaded. Restart Quick Search to finish installing.</string>
+    <string name="action_restart">Restart</string>
     <string name="release_notes_title">Quick Search v%1$s Release Notes</string>
     <string name="release_notes_title_no_version">Quick Search Release Notes</string>
     <string name="settings_backup_export_api_key_warning_message">Proceed at your own risk. Exported API keys are not encrypted and can be accessed by anyone who has access to your backup file.</string>

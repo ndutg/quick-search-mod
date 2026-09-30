@@ -172,7 +172,6 @@
     <string name="action_move_down">Pindahkan ke Bawah</string>
     <string name="action_undo">Urungkan</string>
     <string name="action_uninstall_app">Copot pemasangan</string>
-    <string name="action_rate">Beri Nilai Sekarang</string>
     <string name="action_not_now">Jangan sekarang</string>
     <string name="action_agree">Setuju</string>
     <string name="action_unpin_app">Lepas sematan</string>
@@ -1001,6 +1000,8 @@
     <string name="settings_release_notes_desc">Lihat catatan rilis untuk versi ini</string>
     <string name="update_card_title">Pembaruan baru tersedia untuk Quick Search!</string>
     <string name="action_update">Perbarui</string>
+    <string name="update_card_ready_title">Pembaruan telah diunduh. Mulai ulang Quick Search untuk menyelesaikan pemasangan.</string>
+    <string name="action_restart">Mulai ulang</string>
     <string name="release_notes_title">Catatan Rilis Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">Catatan Rilis Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">Lanjutkan dengan risiko Anda sendiri. Kunci-kunci API yang diekspor tidak dienkripsi dan dapat diakses oleh siapa saja yang memiliki akses ke file cadangan Anda.</string>

@@ -175,7 +175,6 @@
     <string name="action_move_down">Omlaag verplaatsen</string>
     <string name="action_undo">Ongedaan maken</string>
     <string name="action_uninstall_app">Verwijderen</string>
-    <string name="action_rate">Nu beoordelen</string>
     <string name="action_not_now">Niet nu</string>
     <string name="action_agree">Akkoord</string>
     <string name="action_unpin_app">Losmaken</string>
@@ -1039,6 +1038,8 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_release_notes_desc">Bekijk de releaseopmerkingen voor deze versie</string>
     <string name="update_card_title">Er is een nieuwe update beschikbaar voor Quick Search!</string>
     <string name="action_update">Bijwerken</string>
+    <string name="update_card_ready_title">Update gedownload. Start Quick Search opnieuw om de installatie te voltooien.</string>
+    <string name="action_restart">Opnieuw starten</string>
     <string name="release_notes_title">Quick Search v%1$s Releaseopmerkingen</string>
     <string name="release_notes_title_no_version">Quick Search Releaseopmerkingen</string>
     <string name="settings_backup_export_api_key_warning_message">Doorgaan op eigen risico. De geëxporteerde API-sleutels zijn niet versleuteld en kunnen worden bekeken door iedereen die toegang heeft tot je back-upbestand.</string>

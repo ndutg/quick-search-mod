@@ -172,7 +172,6 @@
     <string name="action_move_down">نقل لأسفل</string>
     <string name="action_undo">تراجع</string>
     <string name="action_uninstall_app">إلغاء تثبيت التطبيق</string>
-    <string name="action_rate">قيّم الآن</string>
     <string name="action_not_now">ليس الآن</string>
     <string name="action_agree">أوافق</string>
     <string name="action_unpin_app">إلغاء التثبيت</string>
@@ -1000,6 +999,8 @@
     <string name="settings_release_notes_desc">عرض ملاحظات إصدار هذا الإصدار</string>
     <string name="update_card_title">يتوفر تحديث جديد لـ Quick Search!</string>
     <string name="action_update">تحديث</string>
+    <string name="update_card_ready_title">تم تنزيل التحديث. أعد تشغيل Quick Search لإكمال التثبيت.</string>
+    <string name="action_restart">إعادة التشغيل</string>
     <string name="release_notes_title">ملاحظات إصدار Quick Search v%1$s</string>
     <string name="release_notes_title_no_version">ملاحظات إصدار Quick Search</string>
     <string name="settings_backup_export_api_key_warning_message">المضي قدماً على مسؤوليتك الخاصة. مفاتيح API المصدرة لن تكون مشفرة ويمكن لأي شخص لديه وصول لملف النسخ الاحتياطي رؤيتها.</string>

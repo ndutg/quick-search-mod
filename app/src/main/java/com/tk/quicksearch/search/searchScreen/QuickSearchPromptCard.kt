@@ -32,24 +32,6 @@ private val RateCardIconSize = 24.dp
 private val RateCardDismissSize = 28.dp
 
 @Composable
-internal fun RateQuickSearchCard(
-    showWallpaperBackground: Boolean,
-    onClick: () -> Unit,
-    onNotNowClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    QuickSearchPromptCard(
-        title = stringResource(R.string.settings_feedback_rate_title),
-        description = stringResource(R.string.settings_feedback_rate_desc),
-        action = stringResource(R.string.action_rate),
-        showWallpaperBackground = showWallpaperBackground,
-        onClick = onClick,
-        onNotNowClick = onNotNowClick,
-        modifier = modifier,
-    )
-}
-
-@Composable
 internal fun QuickSearchPromptCard(
     title: String,
     description: String? = null,

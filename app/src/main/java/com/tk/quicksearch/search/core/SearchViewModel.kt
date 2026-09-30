@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tk.quicksearch.R
+import com.tk.quicksearch.app.AppUpdateState
 import com.tk.quicksearch.app.ReleaseNotesHandler
 import com.tk.quicksearch.app.navigation.NavigationHandler
 import com.tk.quicksearch.search.appShortcuts.AppShortcutManagementHandler
@@ -723,24 +724,27 @@ class SearchViewModel(
     fun handleOnResume() {
         startupLifecycleDelegate.handleOnResume()
     }
-    fun refreshRateQuickSearchCardState() {
+    fun onUpdateStateChanged(state: AppUpdateState) {
         updateFeatureState {
-            it.copy(showRateQuickSearchCard = userPreferences.shouldShowRateQuickSearchCard())
+            when (state) {
+                AppUpdateState.AVAILABLE ->
+                    it.copy(
+                        showUpdateCard = userPreferences.shouldShowUpdateCard(),
+                        isUpdateReadyToInstall = false,
+                    )
+                AppUpdateState.READY_TO_INSTALL ->
+                    it.copy(showUpdateCard = true, isUpdateReadyToInstall = true)
+                AppUpdateState.DOWNLOADING,
+                AppUpdateState.NONE,
+                -> it.copy(showUpdateCard = false, isUpdateReadyToInstall = false)
+            }
         }
     }
-    fun markRateQuickSearchCompleted() {
-        userPreferences.markRateQuickSearchCompleted()
-        refreshRateQuickSearchCardState()
-    }
-    fun dismissRateQuickSearchForNow() {
-        userPreferences.recordRateQuickSearchDismissed()
-        refreshRateQuickSearchCardState()
-    }
-    fun onUpdateAvailable() {
-        updateFeatureState { it.copy(showUpdateCard = userPreferences.shouldShowUpdateCard()) }
-    }
     fun dismissUpdateForNow() {
-        userPreferences.recordUpdateCardDismissed()
+        // A downloaded update comes back on the next check; an available one waits out the cooldown.
+        if (!_featureState.value.isUpdateReadyToInstall) {
+            userPreferences.recordUpdateCardDismissed()
+        }
         updateFeatureState { it.copy(showUpdateCard = false) }
     }
     fun resetUsagePermissionBannerSessionDismissed() {

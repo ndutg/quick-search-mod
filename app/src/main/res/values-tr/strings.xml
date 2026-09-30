@@ -170,7 +170,6 @@
 <string name="action_move_down">Aşağı taşı</string>
 <string name="action_undo">Geri al</string>
 <string name="action_uninstall_app">Yüklemeyi kaldır</string>
-<string name="action_rate">Şimdi değerlendir</string>
 <string name="action_not_now">Şimdi değil</string>
 <string name="action_agree">Kabul ediyorum</string>
 <string name="action_unpin_app">Sabitlemeyi kaldır</string>
@@ -998,6 +997,8 @@
 <string name="settings_release_notes_desc">Bu sürümün notlarını görüntüle</string>
 <string name="update_card_title">Quick Search için yeni bir güncelleme mevcut!</string>
 <string name="action_update">Güncelle</string>
+<string name="update_card_ready_title">Güncelleme indirildi. Kurulumu tamamlamak için Quick Search’ü yeniden başlatın.</string>
+<string name="action_restart">Yeniden başlat</string>
 <string name="release_notes_title">Quick Search v%1$s sürüm notları</string>
 <string name="release_notes_title_no_version">Quick Search sürüm notları</string>
 <string name="settings_backup_export_api_key_warning_message">Sorumluluk sana aittir. Dışa aktarılan API anahtarları şifrelenmez ve yedek dosyana erişimi olan herkes tarafından görüntülenebilir.</string>

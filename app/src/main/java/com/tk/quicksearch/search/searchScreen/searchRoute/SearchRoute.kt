@@ -283,8 +283,6 @@ fun SearchRoute(
 
     val isAppSettingToggleChecked = rememberAppSettingToggleChecked(uiState)
 
-    val rateQuickSearchSetting = rememberRateQuickSearchSetting()
-
     val settingActions = rememberRouteSettingActions(
         viewModel = viewModel,
         uiState = uiState,
@@ -306,7 +304,6 @@ fun SearchRoute(
                 when (event) {
                     Lifecycle.Event.ON_RESUME -> {
                         viewModel.handleOnResume()
-                        viewModel.refreshRateQuickSearchCardState()
                         if (uiState.overlayModeEnabled && context.isDefaultHomeApp()) {
                             viewModel.setOverlayModeEnabled(false)
                         }
@@ -445,13 +442,14 @@ fun SearchRoute(
                     )
                 },
             onSuggestionTabSelected = viewModel::setSelectedAppSuggestionTab,
-            onRateQuickSearchClick = { onAppSettingClick(rateQuickSearchSetting) },
-            onRateQuickSearchNotNowClick = {
-                viewModel.trackRecentAppSettingTap(RATE_QUICK_SEARCH_SETTING_ID)
-                viewModel.dismissRateQuickSearchForNow()
-            },
             onUpdateClick = {
-                (context as? Activity)?.let(UpdateHelper::startUpdate)
+                (context as? Activity)?.let { activity ->
+                    if (uiState.isUpdateReadyToInstall) {
+                        UpdateHelper.completeUpdate(activity)
+                    } else {
+                        UpdateHelper.startUpdate(activity, viewModel::onUpdateStateChanged)
+                    }
+                }
             },
             onUpdateNotNowClick = viewModel::dismissUpdateForNow,
             onContactClick = { contact: com.tk.quicksearch.search.models.ContactInfo ->

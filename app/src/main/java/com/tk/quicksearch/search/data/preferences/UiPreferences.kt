@@ -254,7 +254,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
     }
 
     // ============================================================================
-    // Rate Quick Search Prompt Preferences
+    // In-App Review Preferences
     // ============================================================================
 
     fun getFirstAppOpenTime(): Long = timingPrefs.getLong(UiPreferences.KEY_FIRST_APP_OPEN_TIME, 0L)
@@ -277,49 +277,32 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
             .apply()
     }
 
-    fun hasCompletedRateQuickSearch(): Boolean =
-        timingPrefs.getBoolean(UiPreferences.KEY_RATE_QUICK_SEARCH_COMPLETED, false)
+    fun getInAppReviewLastRequestedAt(): Long =
+        timingPrefs.getLong(UiPreferences.KEY_IN_APP_REVIEW_LAST_REQUESTED_AT, 0L)
 
-    fun markRateQuickSearchCompleted() {
+    fun recordInAppReviewRequested() {
         timingPrefs
             .edit()
-            .putBoolean(UiPreferences.KEY_RATE_QUICK_SEARCH_COMPLETED, true)
+            .putLong(UiPreferences.KEY_IN_APP_REVIEW_LAST_REQUESTED_AT, System.currentTimeMillis())
             .apply()
     }
 
-    fun getRateQuickSearchLastDismissedAt(): Long =
-        timingPrefs.getLong(UiPreferences.KEY_RATE_QUICK_SEARCH_LAST_DISMISSED_AT, 0L)
-
-    fun getRateQuickSearchDismissCount(): Int =
-        timingPrefs.getInt(UiPreferences.KEY_RATE_QUICK_SEARCH_DISMISS_COUNT, 0)
-
-    fun recordRateQuickSearchDismissed() {
-        timingPrefs
-            .edit()
-            .putLong(
-                UiPreferences.KEY_RATE_QUICK_SEARCH_LAST_DISMISSED_AT,
-                System.currentTimeMillis(),
-            ).putInt(
-                UiPreferences.KEY_RATE_QUICK_SEARCH_DISMISS_COUNT,
-                getRateQuickSearchDismissCount() + 1,
-            ).apply()
-    }
-
-    fun shouldShowRateQuickSearchCard(): Boolean {
+    /**
+     * Whether an established user may be asked for an in-app review. Google decides whether the
+     * review sheet actually appears, so a request is recorded whether or not it was shown.
+     */
+    fun shouldRequestInAppReview(totalAppLaunchCount: Int): Boolean {
         if (!RATE_QUICK_SEARCH_ENABLED) return false
-        if (hasCompletedRateQuickSearch()) return false
-        if (getRateQuickSearchDismissCount() >= RATE_QUICK_SEARCH_MAX_DISMISS_COUNT) return false
 
         val firstOpenTime = getFirstAppOpenTime()
         if (firstOpenTime == 0L) return false
-        if (getAppOpenCount() < RATE_QUICK_SEARCH_MIN_OPEN_COUNT) return false
+        if (totalAppLaunchCount < IN_APP_REVIEW_MIN_APP_LAUNCHES) return false
 
         val now = System.currentTimeMillis()
-        val daysSinceFirstOpen = (now - firstOpenTime) / DAY_IN_MILLIS
-        if (daysSinceFirstOpen < RATE_QUICK_SEARCH_MIN_DAYS_USED) return false
+        if (now - firstOpenTime < IN_APP_REVIEW_MIN_DAYS_USED * DAY_IN_MILLIS) return false
 
-        val lastDismissedAt = getRateQuickSearchLastDismissedAt()
-        return lastDismissedAt == 0L || now - lastDismissedAt >= RATE_QUICK_SEARCH_DISMISS_COOLDOWN_MS
+        val lastRequestedAt = getInAppReviewLastRequestedAt()
+        return lastRequestedAt == 0L || now - lastRequestedAt >= IN_APP_REVIEW_COOLDOWN_MS
     }
 
     // ============================================================================
@@ -357,33 +340,6 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
                 UiPreferences.KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT,
                 System.currentTimeMillis(),
             ).apply()
-    }
-
-    // ============================================================================
-    // In-App Update Session Tracking
-    // ============================================================================
-
-    /**
-     * Check if an update check was performed this session. This is used to avoid showing both
-     * update and review prompts in the same session.
-     */
-    fun hasShownUpdateCheckThisSession(): Boolean =
-            sessionPrefs.getBoolean(UiPreferences.KEY_UPDATE_CHECK_SHOWN_THIS_SESSION, false)
-
-    /** Mark that an update check was shown this session. */
-    fun setUpdateCheckShownThisSession() {
-        sessionPrefs
-                .edit()
-                .putBoolean(UiPreferences.KEY_UPDATE_CHECK_SHOWN_THIS_SESSION, true)
-                .apply()
-    }
-
-    /** Reset the update check session flag. Should be called when the app starts. */
-    fun resetUpdateCheckSession() {
-        sessionPrefs
-                .edit()
-                .putBoolean(UiPreferences.KEY_UPDATE_CHECK_SHOWN_THIS_SESSION, false)
-                .apply()
     }
 
     companion object {
@@ -585,26 +541,19 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_WORD_CLOCK_THINKING_ENABLED = "word_clock_thinking_enabled"
         const val KEY_DICTIONARY_GROUNDING_ENABLED = "dictionary_grounding_enabled"
         const val KEY_DICTIONARY_THINKING_ENABLED = "dictionary_thinking_enabled"
-        // Rate Quick Search prompt keys
+        // In-app review keys
         const val KEY_FIRST_APP_OPEN_TIME = "first_app_open_time"
         const val KEY_APP_OPEN_COUNT = "app_open_count"
-        const val KEY_RATE_QUICK_SEARCH_LAST_DISMISSED_AT =
-            "rate_quick_search_last_dismissed_at"
-        const val KEY_RATE_QUICK_SEARCH_DISMISS_COUNT = "rate_quick_search_dismiss_count"
-        const val KEY_RATE_QUICK_SEARCH_COMPLETED = "rate_quick_search_completed"
+        const val KEY_IN_APP_REVIEW_LAST_REQUESTED_AT = "in_app_review_last_requested_at"
 
         const val KEY_UPDATE_CARD_LAST_DISMISSED_AT = "update_card_last_dismissed_at"
         const val KEY_WEB_SEARCH_FALLBACK_TIP_LAST_SHOWN_AT =
             "web_search_fallback_tip_last_shown_at"
 
-        // In-app update session tracking keys
-        const val KEY_UPDATE_CHECK_SHOWN_THIS_SESSION = "update_check_shown_this_session"
-
         private const val DAY_IN_MILLIS = 24 * 60 * 60 * 1000L
-        private const val RATE_QUICK_SEARCH_MIN_DAYS_USED = 3L
-        private const val RATE_QUICK_SEARCH_MIN_OPEN_COUNT = 6
-        private const val RATE_QUICK_SEARCH_DISMISS_COOLDOWN_MS = 14 * DAY_IN_MILLIS
-        private const val RATE_QUICK_SEARCH_MAX_DISMISS_COUNT = 2
+        private const val IN_APP_REVIEW_MIN_DAYS_USED = 7L
+        private const val IN_APP_REVIEW_MIN_APP_LAUNCHES = 10
+        private const val IN_APP_REVIEW_COOLDOWN_MS = 90 * DAY_IN_MILLIS
         private const val UPDATE_CARD_DISMISS_COOLDOWN_MS = 4 * DAY_IN_MILLIS
 
         fun appIconSizeScale(step: Int): Float {
