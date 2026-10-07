@@ -126,11 +126,6 @@
             android:taskAffinity=""
             android:theme="@style/Theme.QuickSearch.Opaque"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
 
         <!-- Main Activity: handles every other entry point (share, web search,
