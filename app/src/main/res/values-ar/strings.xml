@@ -130,6 +130,7 @@
     <string name="settings_gesture_close_keyboard_notifications">إغلاق لوحة المفاتيح / فتح الإشعارات</string>
     <string name="settings_gesture_close_keyboard">إغلاق لوحة المفاتيح</string>
     <string name="settings_gesture_notification_panel">لوحة الإشعارات</string>
+    <string name="settings_gesture_view_all_apps">عرض جميع التطبيقات</string>
     <string name="settings_gesture_lock_screen">قفل الشاشة</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">يتطلب إذن تسهيل الاستخدام</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>

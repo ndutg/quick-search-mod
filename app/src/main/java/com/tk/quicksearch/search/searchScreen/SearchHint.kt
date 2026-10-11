@@ -39,7 +39,8 @@ internal fun rememberSearchHint(state: SearchUiState, isDefaultLauncher: Boolean
                 R.string.search_hint_static
             },
         )
-    val cycleHints = stringArrayResource(R.array.search_hints_cycle)
+    // stringArrayResource returns a new array each call; arrays compare by identity, so key on a list
+    val cycleHints = stringArrayResource(R.array.search_hints_cycle).toList()
     // Indices must stay in sync with R.array.search_hints_cycle order in strings.xml
     val defaultHints = remember(
         hintSearchAnything,
