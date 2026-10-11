@@ -130,6 +130,7 @@
     <string name="settings_gesture_close_keyboard_notifications">Tutup Keyboard / Buka Notifikasi</string>
     <string name="settings_gesture_close_keyboard">Tutup Keyboard</string>
     <string name="settings_gesture_notification_panel">Panel Notifikasi</string>
+    <string name="settings_gesture_view_all_apps">Lihat Semua Aplikasi</string>
     <string name="settings_gesture_lock_screen">Kunci Layar</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>

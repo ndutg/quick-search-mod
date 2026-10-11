@@ -128,6 +128,7 @@
 <string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
+<string name="settings_gesture_view_all_apps">Tüm uygulamaları görüntüle</string>
 <string name="settings_gesture_lock_screen">Ekranı Kilitle</string>
 <string name="settings_gesture_lock_screen_requires_accessibility">Erişilebilirlik İzni Gerekir</string>
 <string name="accessibility_lock_screen_service_label">Quick Search</string>

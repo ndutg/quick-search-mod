@@ -28,6 +28,7 @@ import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
+import com.tk.quicksearch.search.apps.AllAppsDrawerController
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
 import com.tk.quicksearch.search.searchScreen.shouldCloseSearchSurfaceAfterExternalNavigation
@@ -53,6 +54,7 @@ internal data class RouteGestures(
     val closeQuickSearch: () -> Unit,
     val handleHomeHorizontalSwipe: (HomeHorizontalSwipe) -> Unit,
     val swipeNavigationModifier: Modifier,
+    val allAppsDrawer: AllAppsDrawerController,
 )
 
 @Composable
@@ -71,6 +73,7 @@ internal fun rememberRouteGestures(
         UserAppPreferences(context.applicationContext)
     }
     var isDefaultLauncher by remember { mutableStateOf(context.cachedDefaultHomeAppStatus()) }
+    val allAppsDrawer = remember { AllAppsDrawerController() }
     var pendingDeviceCredentialAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     val deviceCredentialLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -219,11 +222,16 @@ internal fun rememberRouteGestures(
         when (swipe) {
             HomeHorizontalSwipe.RIGHT -> {
                 if (isDefaultLauncher) {
-                    if (isLauncherSwipeRightEnabled) onOpenWidgetsPanelFromSwipe?.invoke()
+                    when {
+                        !isLauncherSwipeRightEnabled -> Unit
+                        swipeActions[0] == SwipeGestureAction.ALL_APPS -> allAppsDrawer.open()
+                        else -> onOpenWidgetsPanelFromSwipe?.invoke()
+                    }
                 } else {
                     when (swipeActions[0]) {
                         SwipeGestureAction.CLOSE_QUICK_SEARCH -> closeQuickSearch()
                         SwipeGestureAction.WIDGETS_PANEL -> onOpenWidgetsPanelFromSwipe?.invoke()
+                        SwipeGestureAction.ALL_APPS -> allAppsDrawer.open()
                         SwipeGestureAction.CUSTOM -> {
                             com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
                                 .fromJson(customSwipeActions[0])
@@ -239,6 +247,7 @@ internal fun rememberRouteGestures(
                 when (swipeActions[1]) {
                     SwipeGestureAction.CLOSE_QUICK_SEARCH -> closeQuickSearch()
                     SwipeGestureAction.SETTINGS -> onSettingsClick()
+                    SwipeGestureAction.ALL_APPS -> allAppsDrawer.open()
                     SwipeGestureAction.CUSTOM -> {
                         com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
                             .fromJson(customSwipeActions[1])
@@ -302,5 +311,6 @@ internal fun rememberRouteGestures(
         closeQuickSearch = closeQuickSearch,
         handleHomeHorizontalSwipe = handleHomeHorizontalSwipe,
         swipeNavigationModifier = swipeNavigationModifier,
+        allAppsDrawer = allAppsDrawer,
     )
 }

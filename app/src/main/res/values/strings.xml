@@ -122,6 +122,7 @@
     <string name="settings_gesture_close_keyboard_notifications">Close Keyboard / Open Notifications</string>
     <string name="settings_gesture_close_keyboard">Close Keyboard</string>
     <string name="settings_gesture_notification_panel">Notification Panel</string>
+    <string name="settings_gesture_view_all_apps">View All Apps</string>
     <string name="settings_gesture_lock_screen">Lock Screen</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>

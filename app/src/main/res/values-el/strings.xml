@@ -129,6 +129,7 @@
     <string name="settings_gesture_close_keyboard_notifications">Κλείσιμο πληκτρολογίου / Άνοιγμα ειδοποιήσεων</string>
     <string name="settings_gesture_close_keyboard">Κλείσιμο πληκτρολογίου</string>
     <string name="settings_gesture_notification_panel">Πίνακας ειδοποιήσεων</string>
+    <string name="settings_gesture_view_all_apps">Προβολή όλων των εφαρμογών</string>
     <string name="settings_gesture_lock_screen">Κλείδωμα οθόνης</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Απαιτείται άδεια προσβασιμότητας</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>

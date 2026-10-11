@@ -298,6 +298,31 @@ class AppSearchAlgorithmTest {
         assertEquals(3, preferenceReads)
     }
 
+    @Test
+    fun firstAndLastCharactersMatchAppNameAndNickname() {
+        val obsidian = app("Obsidian", "obsidian")
+        val notes = app("Keep", "keep")
+        val unrelated = app("Calendar", "calendar")
+        val source = listOf(unrelated, obsidian, notes)
+
+        fun matches(query: String) =
+            AppSearchAlgorithm.findMatches(
+                query = query,
+                source = source,
+                limit = 10,
+                fuzzySearchStrategy =
+                    FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG, isFuzzySearchEnabled = { false }),
+                appNicknames = mapOf(notes.packageName to "MyNotes"),
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
+            )
+
+        assertEquals(listOf(obsidian), matches("OBAN"))
+        assertEquals(listOf(obsidian), matches("obsian"))
+        assertEquals(listOf(notes), matches("MYES"))
+        assertEquals(emptyList<AppInfo>(), matches("oan"))
+        assertEquals(emptyList<AppInfo>(), matches("obidian"))
+    }
+
     private fun app(
         appName: String,
         packageSuffix: String,

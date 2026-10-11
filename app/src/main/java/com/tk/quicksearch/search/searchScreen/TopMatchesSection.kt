@@ -36,6 +36,7 @@ import com.tk.quicksearch.search.appShortcuts.AppShortcutRow
 import com.tk.quicksearch.search.appShortcuts.AppShortcutSearchPolicy
 import com.tk.quicksearch.search.apps.AppGridView
 import com.tk.quicksearch.search.apps.AppItemDropdownMenu
+import com.tk.quicksearch.search.apps.AppNameAbbreviation
 import com.tk.quicksearch.search.apps.AppSearchInitials
 import com.tk.quicksearch.search.apps.AppSearchPolicy
 import com.tk.quicksearch.search.apps.notificationDots.AppNotificationDot
@@ -432,6 +433,7 @@ internal fun appTopMatchPriority(
         nickname = nickname,
         query = query,
         initials = AppSearchInitials.initialsFor(app),
+        abbreviationTargets = AppNameAbbreviation.targetsFor(app),
     )
 
 internal fun appShortcutTopMatchPriority(
