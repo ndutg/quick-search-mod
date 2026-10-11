@@ -21,6 +21,7 @@ import com.tk.quicksearch.widgetsPanel.homeWidgetEditTapGuard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.GestureAllAppsDrawer
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
 import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -612,6 +613,7 @@ fun SearchScreen(
     } // CompositionLocalProvider(LocalImageBackgroundIsDark)
 
     // Dialogs
+    GestureAllAppsDrawer(params = stateResult.sectionParams.appsParams)
     SearchScreenDialogLogic(
         state = state,
         nicknameDialogState = stateResult.nicknameDialogState,

@@ -81,8 +81,8 @@ import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonPickerDi
 
 @Composable
 internal fun LauncherSwipeRightActionDialog(
-    isEnabled: Boolean,
-    onEnabledChange: (Boolean) -> Unit,
+    selectedAction: SwipeGestureAction,
+    onSelect: (SwipeGestureAction) -> Unit,
     onDismiss: () -> Unit,
 ) {
     AppAlertDialog(
@@ -90,17 +90,18 @@ internal fun LauncherSwipeRightActionDialog(
         title = { Text(stringResource(R.string.settings_gesture_swipe_right)) },
         text = {
             Column {
-                GestureActionRow(
-                    label = stringResource(R.string.settings_gesture_none),
-                    selected = !isEnabled,
-                    onClick = { onEnabledChange(false) },
-                )
-                HorizontalDivider(color = AppColors.SettingsDivider)
-                GestureActionRow(
-                    label = stringResource(R.string.settings_gesture_widget_panel),
-                    selected = isEnabled,
-                    onClick = { onEnabledChange(true) },
-                )
+                listOf(
+                    SwipeGestureAction.NONE,
+                    SwipeGestureAction.WIDGETS_PANEL,
+                    SwipeGestureAction.ALL_APPS,
+                ).forEachIndexed { index, action ->
+                    if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = stringResource(action.labelResId()),
+                        selected = selectedAction == action,
+                        onClick = { onSelect(action) },
+                    )
+                }
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.dialog_cancel)) } },
@@ -129,6 +130,7 @@ internal fun HomeVerticalGestureDialog(
     allowsNotificationPanel: Boolean,
     allowsCloseQuickSearch: Boolean,
     allowsLockScreen: Boolean,
+    allowsAllApps: Boolean,
     hasLockScreenAccessibilityPermission: Boolean,
     selectedAction: HomeSwipeGestureAction,
     selectedCustomActionJson: String?,
@@ -162,6 +164,14 @@ internal fun HomeVerticalGestureDialog(
                         label = stringResource(R.string.settings_gesture_notification_panel),
                         selected = selectedAction == HomeSwipeGestureAction.NOTIFICATION_PANEL,
                         onClick = { onSelectDefault(HomeSwipeGestureAction.NOTIFICATION_PANEL) },
+                    )
+                }
+                if (allowsAllApps) {
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = stringResource(R.string.settings_gesture_view_all_apps),
+                        selected = selectedAction == HomeSwipeGestureAction.ALL_APPS,
+                        onClick = { onSelectDefault(HomeSwipeGestureAction.ALL_APPS) },
                     )
                 }
                 if (allowsCloseQuickSearch) {
@@ -284,6 +294,12 @@ internal fun GestureActionDialog(
                     label = stringResource(direction.defaultAction.labelResId()),
                     selected = selectedAction == direction.defaultAction,
                     onClick = { onSelectDefault(direction.defaultAction) },
+                )
+                HorizontalDivider(color = AppColors.SettingsDivider)
+                GestureActionRow(
+                    label = stringResource(R.string.settings_gesture_view_all_apps),
+                    selected = selectedAction == SwipeGestureAction.ALL_APPS,
+                    onClick = { onSelectDefault(SwipeGestureAction.ALL_APPS) },
                 )
                 if (allowsCloseQuickSearch) {
                     HorizontalDivider(color = AppColors.SettingsDivider)
@@ -624,6 +640,7 @@ internal fun SwipeGestureAction.labelResId(): Int =
         SwipeGestureAction.CLOSE_QUICK_SEARCH -> R.string.settings_gesture_close_quick_search
         SwipeGestureAction.WIDGETS_PANEL -> R.string.settings_gesture_widget_panel
         SwipeGestureAction.SETTINGS -> R.string.settings_gesture_settings
+        SwipeGestureAction.ALL_APPS -> R.string.settings_gesture_view_all_apps
         SwipeGestureAction.OPEN_KEYBOARD -> R.string.action_open_keyboard
         SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS -> R.string.settings_gesture_close_keyboard_notifications
         SwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
@@ -637,6 +654,7 @@ internal fun HomeSwipeGestureAction.labelResId(): Int =
         HomeSwipeGestureAction.CLOSE_QUICK_SEARCH -> R.string.settings_gesture_close_quick_search
         HomeSwipeGestureAction.LOCK_SCREEN -> R.string.settings_gesture_lock_screen
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> R.string.settings_gesture_notification_panel
+        HomeSwipeGestureAction.ALL_APPS -> R.string.settings_gesture_view_all_apps
         HomeSwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
         HomeSwipeGestureAction.SEARCH_ENGINE -> R.string.settings_app_shortcuts_filter_search_engines
         HomeSwipeGestureAction.TOOL -> R.string.settings_tools_title

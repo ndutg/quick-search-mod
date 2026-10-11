@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.LocalAllAppsDrawerController
 import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchTarget
@@ -93,6 +94,7 @@ internal fun rememberSearchScreenSwipeActions(
     keyboardController: androidx.compose.ui.platform.SoftwareKeyboardController?,
 ): SearchScreenSwipeActions {
     val context = LocalContext.current
+    val allAppsDrawer = LocalAllAppsDrawerController.current
     val onLauncherSwipeUp: () -> Unit = {
         when {
             swipeUpAction == SwipeGestureAction.OPEN_KEYBOARD && !isImeVisible -> {
@@ -111,6 +113,7 @@ internal fun rememberSearchScreenSwipeActions(
                     context,
                     { action, target -> onGestureAliasTarget(action, target) },
                     onCloseQuickSearch,
+                    allAppsDrawer::open,
                 )
         }
     }
@@ -132,6 +135,7 @@ internal fun rememberSearchScreenSwipeActions(
                     context,
                     { action, target -> onGestureAliasTarget(action, target) },
                     onCloseQuickSearch,
+                    allAppsDrawer::open,
                 )
         }
     }
@@ -178,11 +182,13 @@ internal fun HomeSwipeGestureAction.performHomeGesture(
     context: android.content.Context,
     onAliasTarget: (HomeSwipeGestureAction, String) -> Unit,
     onCloseQuickSearch: () -> Unit,
+    onOpenAllApps: () -> Unit = {},
 ) {
     when (this) {
         HomeSwipeGestureAction.CLOSE_QUICK_SEARCH -> onCloseQuickSearch()
         HomeSwipeGestureAction.LOCK_SCREEN -> LockScreenAccessibilityService.lockScreen()
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
+        HomeSwipeGestureAction.ALL_APPS -> onOpenAllApps()
         HomeSwipeGestureAction.CUSTOM -> {
             CustomWidgetButtonAction.fromJson(actionJson)?.let { action ->
                 WidgetActionActivity.launch(context, action)

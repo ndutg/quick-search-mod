@@ -134,9 +134,24 @@ internal class GestureSettingsState(
         homeAliasTargets = homeAliasTargets + (gesture to aliasTarget)
     }
 
-    fun updateLauncherSwipeRightEnabled(enabled: Boolean) {
+    /** As the default launcher, swipe right opens the widget panel or All Apps, or does nothing. */
+    val launcherSwipeRightAction: SwipeGestureAction
+        get() =
+            when {
+                !isLauncherSwipeRightEnabled -> SwipeGestureAction.NONE
+                actions[SwipeDirection.RIGHT] == SwipeGestureAction.ALL_APPS -> SwipeGestureAction.ALL_APPS
+                else -> SwipeGestureAction.WIDGETS_PANEL
+            }
+
+    fun selectLauncherSwipeRight(action: SwipeGestureAction) {
+        val enabled = action != SwipeGestureAction.NONE
         preferences.setLauncherSwipeRightEnabled(enabled)
         isLauncherSwipeRightEnabled = enabled
+        if (action == SwipeGestureAction.ALL_APPS) {
+            save(SwipeDirection.RIGHT, SwipeGestureAction.ALL_APPS)
+        } else if (enabled && actions[SwipeDirection.RIGHT] == SwipeGestureAction.ALL_APPS) {
+            save(SwipeDirection.RIGHT, SwipeGestureAction.WIDGETS_PANEL)
+        }
     }
 
     fun deleteCustomAction(actionJson: String) {
@@ -238,9 +253,9 @@ internal fun GestureSettingsDialogs(
     state.selectedDirection?.let { direction ->
         if (direction == SwipeDirection.RIGHT && state.isDefaultLauncher) {
             LauncherSwipeRightActionDialog(
-                isEnabled = state.isLauncherSwipeRightEnabled,
-                onEnabledChange = { enabled ->
-                    state.updateLauncherSwipeRightEnabled(enabled)
+                selectedAction = state.launcherSwipeRightAction,
+                onSelect = { action ->
+                    state.selectLauncherSwipeRight(action)
                     state.selectedDirection = null
                 },
                 onDismiss = { state.selectedDirection = null },
@@ -381,6 +396,7 @@ internal fun GestureSettingsDialogs(
             allowsNotificationPanel = gesture == HomeGesture.SWIPE_DOWN || gesture == HomeGesture.DOUBLE_TAP,
             allowsCloseQuickSearch = !state.isDefaultLauncher,
             allowsLockScreen = gesture == HomeGesture.DOUBLE_TAP,
+            allowsAllApps = gesture != HomeGesture.DOUBLE_TAP,
             hasLockScreenAccessibilityPermission = state.isLockScreenAccessibilityEnabled,
             selectedAction = state.homeActions.getValue(gesture),
             selectedCustomActionJson = state.homeCustomActions[gesture],

@@ -39,7 +39,6 @@ import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.StartupPhase
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.appShortcutRepository.isShortcutDisabled
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
@@ -55,7 +54,6 @@ import com.tk.quicksearch.search.folders.appFolderMemberKey
 import com.tk.quicksearch.search.folders.ResolvedAppFolder
 import com.tk.quicksearch.search.folders.resolveAppFolders
 import kotlin.math.min
-import java.util.Locale
 
 @Composable
 fun AppGridView(
@@ -131,13 +129,7 @@ fun AppGridView(
     val gridColumns = getAppGridColumns(phoneColumnOverride)
     val suggestionSlotCount = (rowCount * gridColumns).coerceAtLeast(1)
     val alphabeticalApps =
-            remember(allApps) {
-                allApps.sortedWith(
-                        compareBy<AppInfo> { it.appName.lowercase(Locale.getDefault()) }
-                                .thenBy { it.packageName.lowercase(Locale.getDefault()) }
-                                .thenBy { it.userHandleId ?: Int.MIN_VALUE },
-                )
-            }
+            remember(allApps) { allApps.sortedForAllApps() }
     // Folders only live in the Pinned tab, which can't be turned off while suggestions are on.
     val pinnedFolders =
             remember(appFolders, allApps, appShortcuts, disabledShortcutIds, isSearching) {
@@ -428,14 +420,7 @@ fun AppGridView(
         folderActions?.onDeleteFolder?.invoke(folder.id, pinnedTabOrderKeys())
     }
     val shortcutsByPackage =
-            remember(appShortcuts, disabledShortcutIds) {
-                appShortcuts
-                        .asSequence()
-                        .filterNot { shortcut ->
-                            isShortcutDisabled(shortcut, disabledShortcutIds)
-                        }
-                        .groupBy { it.packageName }
-            }
+            remember(appShortcuts, disabledShortcutIds) { appShortcuts.enabledByPackage(disabledShortcutIds) }
     // Fade the suggestions grid (empty query) in when it first appears. It stays in its final
     // position throughout so nothing slides. Search results appear immediately without animation.
     val initialSuggestionsAlpha = if (suppressSuggestionsEnterAnimation) 1f else 0f
