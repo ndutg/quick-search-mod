@@ -11,11 +11,13 @@ import java.util.Locale
 
 data class PreparedAppSearchData(
     val initials: List<String>,
+    val abbreviationTargets: List<String> = emptyList(),
 ) {
     companion object {
         fun from(app: AppInfo): PreparedAppSearchData =
             PreparedAppSearchData(
                 initials = AppSearchInitials.initialsFor(app),
+                abbreviationTargets = AppNameAbbreviation.targetsFor(app),
             )
     }
 }
@@ -140,6 +142,7 @@ object AppSearchAlgorithm {
                 nickname = nickname,
                 query = queryContext,
                 initials = initials,
+                abbreviationTargets = preparedAppData.abbreviationTargets,
                 matcher = matcher,
             )
         if (AppSearchPolicy.hasMatch(priority)) {

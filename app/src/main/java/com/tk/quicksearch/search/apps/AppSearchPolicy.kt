@@ -8,6 +8,7 @@ object AppSearchPolicy {
     // Keep in sync with SearchRankingUtils priority semantics:
     // 1 = startsWith, 2 = wordStartsWith, 3 = contains, 4 = no match.
     private const val INITIALS_MATCH_PRIORITY = 3
+    private const val ABBREVIATION_MATCH_PRIORITY = 3
 
     fun matchPriority(
         appName: String,
@@ -15,6 +16,7 @@ object AppSearchPolicy {
         nickname: String?,
         query: SearchQueryContext,
         initials: List<String> = emptyList(),
+        abbreviationTargets: List<String> = emptyList(),
         matcher: SearchMatcher = DefaultSearchMatcher,
     ): Int {
         val basePriority = matcher.match(primaryText = appName, query = query, nickname = nickname)
@@ -22,11 +24,15 @@ object AppSearchPolicy {
             searchAliases.fold(basePriority) { priority, alias ->
                 minOf(priority, matcher.match(primaryText = alias, query = query))
             }
-        if (matcher.isMatch(bestTextPriority) || initials.isEmpty()) return bestTextPriority
+        if (matcher.isMatch(bestTextPriority)) return bestTextPriority
 
-        val initialsPriority = matcher.matchAny(query, *initials.toTypedArray())
-        if (!matcher.isMatch(initialsPriority)) return bestTextPriority
-        return INITIALS_MATCH_PRIORITY
+        if (initials.isNotEmpty() && matcher.isMatch(matcher.matchAny(query, *initials.toTypedArray()))) {
+            return INITIALS_MATCH_PRIORITY
+        }
+        if (AppNameAbbreviation.matches(query, abbreviationTargets, nickname)) {
+            return ABBREVIATION_MATCH_PRIORITY
+        }
+        return bestTextPriority
     }
 
     fun hasMatch(
