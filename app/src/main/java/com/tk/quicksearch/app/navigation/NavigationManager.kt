@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -544,8 +545,11 @@ private fun NavigationContent(
                 // The search field is disposed while another page is on screen, so an open keyboard
                 // is recorded here and restored when search comes back.
                 val density = androidx.compose.ui.platform.LocalDensity.current
-                val isImeVisible =
-                    WindowInsets.ime.getBottom(density) > 0
+                // Derived so the keyboard animation does not recompose this destination per frame.
+                val imeInsets = WindowInsets.ime
+                val isImeVisible by remember(imeInsets, density) {
+                    derivedStateOf { imeInsets.getBottom(density) > 0 }
+                }
                 val leaveSearchSurface: () -> Unit = {
                     viewModel.setSearchKeyboardRestoreRequest(isImeVisible)
                     keyboardController?.hide()

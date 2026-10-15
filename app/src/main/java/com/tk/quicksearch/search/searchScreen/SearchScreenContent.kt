@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -194,7 +195,11 @@ internal fun SearchScreenContent(
             remember(state.searchTargetsOrder, state.disabledSearchTargetIds) {
                 state.searchTargetsOrder.filter { it.getId() !in state.disabledSearchTargetIds }
             }
-    val isImeVisible = WindowInsets.ime.getBottom(density) > 0
+    // Derived so the keyboard animation does not recompose this whole screen on every frame.
+    val imeInsets = WindowInsets.ime
+    val isImeVisible by remember(imeInsets, density) {
+        derivedStateOf { imeInsets.getBottom(density) > 0 }
+    }
     LaunchedEffect(isImeVisible) {
         if (isImeVisible) {
             StartupTrace.mark("QS.Home.KeyboardVisible")
