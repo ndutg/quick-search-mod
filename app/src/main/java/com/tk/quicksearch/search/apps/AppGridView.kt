@@ -11,8 +11,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +42,7 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
-import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.AllAppsPill
 import com.tk.quicksearch.shared.util.getAppGridColumns
 import com.tk.quicksearch.search.folders.AppFolder
 import com.tk.quicksearch.search.folders.AppFolderMember
@@ -630,25 +628,11 @@ fun AppGridView(
                     )
                 }
                 if (shouldShowAllAppsButton) {
-                    ExpandButton(
-                            onClick = { showAllAppsDialog = true },
-                            modifier = Modifier.fillMaxWidth(),
-                            textResId = R.string.settings_app_shortcuts_filter_all_apps,
-                            usePillBackground = true,
-                            showWallpaperBackground = showWallpaperBackground,
-                            icon = Icons.Rounded.ChevronRight,
-                    )
+                    AllAppsPill(onClick = { showAllAppsDialog = true })
                 }
             }
         } else if (shouldShowAllAppsButton) {
-            ExpandButton(
-                    onClick = { showAllAppsDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    textResId = R.string.settings_app_shortcuts_filter_all_apps,
-                    usePillBackground = true,
-                    showWallpaperBackground = showWallpaperBackground,
-                    icon = Icons.Rounded.ChevronRight,
-            )
+            AllAppsPill(onClick = { showAllAppsDialog = true })
         }
     }
 
