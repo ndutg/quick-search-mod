@@ -57,6 +57,7 @@ open class UserAppPreferencesCore(protected val context: Context) {
     protected val anthropicPreferences by lazy { AnthropicPreferences(context) }
     protected val groqPreferences by lazy { GroqPreferences(context) }
     protected val metaPreferences by lazy { MetaPreferences(context) }
+    protected val openCodePreferences by lazy { OpenCodePreferences(context) }
     protected val customLlmProviderPreferences by lazy { CustomLlmProviderPreferences(context) }
     protected val tavilyPreferences by lazy { TavilyPreferences(context) }
     protected val llmPreferences by lazy { LlmPreferences(context) }

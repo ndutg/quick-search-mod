@@ -14,6 +14,7 @@ data class PreparedWebSearch(
 /** Whether the provider can run its own web search as part of an answer request. */
 fun providerSupportsNativeSearch(providerId: AiSearchLlmProviderId): Boolean =
     providerId != AiSearchLlmProviderId.GROQ &&
+        providerId != AiSearchLlmProviderId.OPENCODE &&
         !providerId.isCustom
 
 /** Whether this provider/model exposes a user-controllable thinking mode. */
@@ -23,7 +24,7 @@ fun supportsThinkingControl(
 ): Boolean =
     when {
         modelId.isBlank() -> false
-        providerId == AiSearchLlmProviderId.OPENAI || providerId.isCustom -> false
+        !isThinkingRequestSupported(providerId) -> false
         providerId == AiSearchLlmProviderId.GROQ -> {
             val normalized = modelId.lowercase()
             normalized.contains("gpt-oss") || normalized.contains("qwen")
@@ -33,7 +34,9 @@ fun supportsThinkingControl(
 
 /** Whether a request to this provider may carry the thinking flag at all. */
 fun isThinkingRequestSupported(providerId: AiSearchLlmProviderId): Boolean =
-    providerId != AiSearchLlmProviderId.OPENAI && !providerId.isCustom
+    providerId != AiSearchLlmProviderId.OPENAI &&
+        providerId != AiSearchLlmProviderId.OPENCODE &&
+        !providerId.isCustom
 
 /** Whether web search can be requested for this provider/model combination. */
 fun isWebSearchAvailable(
@@ -59,7 +62,9 @@ fun modelSupportsGrounding(
         ?: when {
             providerId == AiSearchLlmProviderId.OPENAI ->
                 OpenAiModelCatalog.supportsWebSearch(modelId)
-            providerId == AiSearchLlmProviderId.GROQ || providerId.isCustom -> false
+            providerId == AiSearchLlmProviderId.GROQ ||
+                providerId == AiSearchLlmProviderId.OPENCODE ||
+                providerId.isCustom -> false
             providerId == AiSearchLlmProviderId.GEMINI ->
                 !modelId.lowercase().startsWith("gemma-")
             else -> true

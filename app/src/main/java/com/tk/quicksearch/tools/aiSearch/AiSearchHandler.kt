@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AiSearchHandler(
     private val context: Context,
@@ -39,6 +40,8 @@ class AiSearchHandler(
     @Volatile private var isInitialized = false
     private var aiSearchJob: Job? = null
     private val conversationTurns = mutableListOf<AiConversationTurn>()
+    /** Shared by every request of the current conversation; replaced when a new one starts. */
+    private var conversationSessionId: String? = null
     private var isQuickSearchHelpConversation = false
 
     private fun ensureInitialized() {
@@ -192,13 +195,13 @@ class AiSearchHandler(
 
     fun isThinkingEnabled(): Boolean {
         ensureInitialized()
-        if (activeProviderId == AiSearchLlmProviderId.OPENAI || activeProviderId.isCustom) return false
+        if (!isThinkingRequestSupported(activeProviderId)) return false
         return thinkingEnabled
     }
 
     fun setThinkingEnabled(enabled: Boolean) {
         ensureInitialized()
-        if (activeProviderId == AiSearchLlmProviderId.OPENAI || activeProviderId.isCustom) return
+        if (!isThinkingRequestSupported(activeProviderId)) return
         if (enabled == thinkingEnabled) return
 
         thinkingEnabled = enabled
@@ -334,6 +337,10 @@ class AiSearchHandler(
         if (!isFollowUp) {
             conversationTurns.clear()
         }
+        if (!isFollowUp || conversationSessionId == null) {
+            conversationSessionId = UUID.randomUUID().toString()
+        }
+        val sessionId = conversationSessionId
         val isHelp = isQuickSearchHelpConversation
         // activeQuery keeps the typed `@help` text so query-change clearing and history still match.
         val questionText = if (isHelp) QuickSearchHelp.stripAlias(trimmedQuery) else trimmedQuery
@@ -430,6 +437,7 @@ class AiSearchHandler(
                                 // results wrap only the new question and earlier turns stay a
                                 // stable prefix that providers can serve from their prompt cache.
                                 history = if (isFollowUp) previousTurns else emptyList(),
+                                sessionId = sessionId,
                             ),
                     )
 
@@ -582,6 +590,8 @@ class AiSearchHandler(
                                 useSystemInstruction = useSystemInstruction,
                                 systemInstruction = resolvedSystemInstruction,
                                 advancedPayloadJson = advancedPayloadJson,
+                                // Custom tool runs are single questions, so each is its own session.
+                                sessionId = UUID.randomUUID().toString(),
                             ),
                     )
 
@@ -645,6 +655,7 @@ class AiSearchHandler(
         aiSearchJob?.cancel()
         aiSearchJob = null
         conversationTurns.clear()
+        conversationSessionId = null
         isQuickSearchHelpConversation = false
         _aiSearchState.update { AiSearchState() }
     }

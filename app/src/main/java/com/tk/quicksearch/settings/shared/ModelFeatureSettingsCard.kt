@@ -44,6 +44,7 @@ import com.tk.quicksearch.tools.aiSearch.ModelPickerDialog
 import com.tk.quicksearch.tools.aiSearch.LlmTextModel
 import com.tk.quicksearch.tools.aiSearch.isWebSearchAvailable
 import com.tk.quicksearch.tools.aiSearch.modelSupportsGrounding
+import com.tk.quicksearch.tools.aiSearch.openCodeLogoRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -228,6 +229,7 @@ private fun ProviderIconTile(providerId: AiSearchLlmProviderId) {
             AiSearchLlmProviderId.ANTHROPIC -> R.drawable.claude
             AiSearchLlmProviderId.META -> R.drawable.meta_logo
             AiSearchLlmProviderId.GROQ -> R.drawable.groq_logo
+            AiSearchLlmProviderId.OPENCODE -> openCodeLogoRes(MaterialTheme.colorScheme.onSurface)
             else -> null
         }
     // The OpenAI mark is single-color white, so tint it to stay visible in light themes.
@@ -272,6 +274,7 @@ fun aiProviderDisplayName(providerId: AiSearchLlmProviderId): String =
             AiSearchLlmProviderId.ANTHROPIC -> R.string.search_engine_claude
             AiSearchLlmProviderId.GROQ -> R.string.settings_ai_provider_groq
             AiSearchLlmProviderId.META -> R.string.settings_ai_provider_meta
+            AiSearchLlmProviderId.OPENCODE -> R.string.settings_ai_provider_opencode
             else -> R.string.common_custom
         },
     )
