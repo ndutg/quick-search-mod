@@ -37,6 +37,7 @@ private data class AppIconEntry(
     val bitmap: ImageBitmap,
     val isLegacy: Boolean,
     val monochromeData: ImageBitmap? = null,
+    val hasProfileBadge: Boolean = false,
 )
 
 // This process-wide value can be initialized by any surface while another surface is already
@@ -133,12 +134,14 @@ data class AppIconResult(
     val bitmap: ImageBitmap?,
     val isLegacy: Boolean,
     val monochromeData: ImageBitmap? = null,
+    /** True when a work profile badge is drawn in the bitmap corner; any circle mask is pre-applied. */
+    val hasProfileBadge: Boolean = false,
 )
 
 /**
  * Loads an app icon from cache or package manager.
- * When [userHandleId] is set (work profile), uses a themed icon only when the pack explicitly
- * supports the app; otherwise it preserves the system-badged fallback icon.
+ * When [userHandleId] is set (work profile), the icon (icon pack or system) gets the work badge
+ * drawn after any circular mask, so the badge is not clipped by the circle.
  * Returns bitmap and whether the icon is legacy (non-adaptive); legacy icons may need circular clip.
  * Set [includeArchived] to false to treat an archived app (Android 15+) as not installed.
  */
@@ -173,18 +176,18 @@ fun rememberAppIcon(
     val iconState =
         produceState<AppIconResult>(
             initialValue =
-                cachedInitial?.let { AppIconResult(it.bitmap, it.isLegacy, it.monochromeData) }
+                cachedInitial?.let(AppIconEntry::toResult)
                     ?: AppIconResult(null, false),
             key1 = cacheKey,
         ) {
             if (cachedInitial != null) {
-                value = AppIconResult(cachedInitial.bitmap, cachedInitial.isLegacy, cachedInitial.monochromeData)
+                value = cachedInitial.toResult()
                 return@produceState
             }
 
             val cached = AppIconCache.get(cacheKey)
             if (cached != null) {
-                value = AppIconResult(cached.bitmap, cached.isLegacy, cached.monochromeData)
+                value = cached.toResult()
                 return@produceState
             }
 
@@ -204,12 +207,14 @@ fun rememberAppIcon(
 
             if (entry != null) {
                 AppIconCache.put(cacheKey, entry)
-                value = AppIconResult(entry.bitmap, entry.isLegacy, entry.monochromeData)
+                value = entry.toResult()
             }
         }
 
     return iconState.value
 }
+
+private fun AppIconEntry.toResult(): AppIconResult = AppIconResult(bitmap, isLegacy, monochromeData, hasProfileBadge)
 
 private fun loadAppIconEntry(
     context: Context,
@@ -234,28 +239,27 @@ private fun loadAppIconEntry(
                 context = context,
                 iconPackPackage = pack,
                 targetPackage = packageName,
+                loadBaseIcon =
+                    userHandleId?.let { handleId ->
+                        { loadWorkProfileActivityIcon(context, packageName, handleId, densityDpi) }
+                    },
             )
         }
-    val hasExplicitIconPackIcon =
-        iconOverride?.useSystemDefault == false ||
-            iconPackPackage?.let { pack ->
-                IconPackManager.hasExplicitIcon(context, pack, packageName)
-            } == true
 
     return when {
-        iconPackBitmap != null && (userHandleId == null || hasExplicitIconPackIcon) -> {
+        iconPackBitmap != null -> {
             val boundedIcon = iconPackBitmap.boundedTo(targetSize)
-            AppIconEntry(
-                bitmap =
-                    userHandleId?.let { handleId ->
-                        addWorkProfileBadge(
-                            context = context,
-                            icon = boundedIcon,
-                            userHandleId = handleId,
-                        )
-                    } ?: boundedIcon,
-                isLegacy = false,
-            )
+            if (userHandleId == null) {
+                AppIconEntry(bitmap = boundedIcon, isLegacy = false)
+            } else {
+                workProfileIconEntry(
+                    context = context,
+                    icon = boundedIcon.asAndroidBitmap(),
+                    userHandleId = userHandleId,
+                    isLegacy = false,
+                    applyCircleMask = forceCircularMask,
+                )
+            }
         }
         userHandleId != null ->
             loadWorkProfileBadgedIcon(
@@ -290,22 +294,52 @@ private fun ImageBitmap.boundedTo(targetSize: Int): ImageBitmap {
         ).asImageBitmap()
 }
 
+/**
+ * Builds a work profile icon entry: [icon] is circle-cropped first when [applyCircleMask] is set,
+ * then the work badge is drawn on top so it sits in the corner outside the circle.
+ */
+private fun workProfileIconEntry(
+    context: Context,
+    icon: Bitmap,
+    userHandleId: Int,
+    isLegacy: Boolean,
+    applyCircleMask: Boolean,
+): AppIconEntry {
+    val shaped = if (applyCircleMask) icon.circleCropped() else icon
+    return AppIconEntry(
+        bitmap = addWorkProfileBadge(context, shaped, userHandleId).asImageBitmap(),
+        isLegacy = isLegacy && !applyCircleMask,
+        hasProfileBadge = true,
+    )
+}
+
+private fun Bitmap.circleCropped(): Bitmap {
+    val size = maxOf(width, height)
+    val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(output)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    val radius = size / 2f
+    canvas.drawCircle(radius, radius, radius, paint)
+    paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+    canvas.drawBitmap(this, (size - width) / 2f, (size - height) / 2f, paint)
+    return output
+}
+
 private fun addWorkProfileBadge(
     context: Context,
-    icon: ImageBitmap,
+    icon: Bitmap,
     userHandleId: Int,
-): ImageBitmap {
+): Bitmap {
     val userManager = context.getSystemService(Context.USER_SERVICE) as? android.os.UserManager ?: return icon
     val userHandle =
         UserHandleUtils.of(userHandleId)
             ?: userManager.userProfiles.find { UserHandleUtils.getIdentifier(it) == userHandleId }
             ?: return icon
     return runCatching {
-        val drawable = BitmapDrawable(context.resources, icon.asAndroidBitmap())
+        val drawable = BitmapDrawable(context.resources, icon)
         context.packageManager
             .getUserBadgedIcon(drawable, userHandle)
             .toBitmap(width = icon.width, height = icon.height)
-            .asImageBitmap()
     }.getOrDefault(icon)
 }
 
@@ -365,33 +399,49 @@ private fun loadWorkProfileBadgedIcon(
     targetSize: Int,
     forceCircularMask: Boolean,
 ): AppIconEntry? {
+    // Load the unbadged icon so the circle mask is applied before the work badge is drawn.
+    val drawable = loadWorkProfileActivityIcon(context, packageName, userHandleId, densityDpi) ?: return null
+    return runCatching {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
+            workProfileIconEntry(
+                context = context,
+                icon =
+                    adaptiveToBitmap(
+                        drawable = drawable,
+                        targetSize = targetSize,
+                        forceCircularMask = forceCircularMask,
+                    ),
+                userHandleId = userHandleId,
+                isLegacy = false,
+                applyCircleMask = false,
+            )
+        } else {
+            workProfileIconEntry(
+                context = context,
+                icon = drawable.toBoundedBitmap(targetSize),
+                userHandleId = userHandleId,
+                isLegacy = true,
+                applyCircleMask = forceCircularMask,
+            )
+        }
+    }.getOrNull()
+}
+
+/** Loads the unbadged launcher icon of [packageName] as installed in the given work profile. */
+private fun loadWorkProfileActivityIcon(
+    context: Context,
+    packageName: String,
+    userHandleId: Int,
+    densityDpi: Int,
+): android.graphics.drawable.Drawable? {
     val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as? LauncherApps ?: return null
     val userManager = context.getSystemService(Context.USER_SERVICE) as? android.os.UserManager ?: return null
     val userHandle =
         UserHandleUtils.of(userHandleId)
             ?: userManager.userProfiles.find { UserHandleUtils.getIdentifier(it) == userHandleId }
-    if (userHandle == null) return null
-    val activityInfo = runCatching {
-        launcherApps.getActivityList(packageName, userHandle).firstOrNull()
-    }.getOrNull() ?: return null
+            ?: return null
     return runCatching {
-        val drawable = activityInfo.getBadgedIcon(densityDpi)
-        val isLegacy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            drawable !is AdaptiveIconDrawable
-        } else {
-            true // All icons are legacy on API < 26
-        }
-        val bitmap =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
-                adaptiveToBitmap(
-                    drawable = drawable,
-                    targetSize = targetSize,
-                    forceCircularMask = forceCircularMask,
-                ).asImageBitmap()
-            } else {
-                drawable.toBoundedBitmap(targetSize).asImageBitmap()
-            }
-        AppIconEntry(bitmap, isLegacy)
+        launcherApps.getActivityList(packageName, userHandle).firstOrNull()?.getIcon(densityDpi)
     }.getOrNull()
 }
 
