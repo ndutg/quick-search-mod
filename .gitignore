@@ -110,3 +110,6 @@ Thumbs.db
 .codex/
 .vscode/
 .claude/settings.json
+
+# Promo video tooling (local only)
+marketing/promo-video/

@@ -974,6 +974,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_add_search_engine_error_required">Voer een URL-sjabloon in.</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">Alias:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

@@ -206,6 +206,7 @@ internal fun AppGridItem(
             AppIconSurface(
                     iconBitmap = iconResult.bitmap,
                     iconIsLegacy = iconResult.isLegacy,
+                    iconHasProfileBadge = iconResult.hasProfileBadge,
                     monochromeData = iconResult.monochromeData,
                     appName = appInfo.appName,
                     onClick = { if (!showOptions) appActions.onClick() },

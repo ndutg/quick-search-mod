@@ -44,6 +44,7 @@ class FileSearchHandler(
             includeFuzzyCandidates,
             resultLimit,
             fuzzyCandidateLimit,
+            extensionQuery = null,
         )
 
     /**
@@ -66,6 +67,7 @@ class FileSearchHandler(
         includeFuzzyCandidates: Boolean = false,
         resultLimit: Int = FILE_SEARCH_RESULT_LIMIT,
         fuzzyCandidateLimit: Int = FUZZY_FILE_CANDIDATE_LIMIT,
+        extensionQuery: FileExtensionQuery? = null,
     ): List<DeviceFile> =
         searchFilesInternal(
             queryContext,
@@ -82,6 +84,7 @@ class FileSearchHandler(
             includeFuzzyCandidates,
             resultLimit,
             fuzzyCandidateLimit,
+            extensionQuery,
         )
 
     private fun searchFilesInternal(
@@ -99,15 +102,34 @@ class FileSearchHandler(
         includeFuzzyCandidates: Boolean,
         resultLimit: Int,
         fuzzyCandidateLimit: Int,
+        extensionQuery: FileExtensionQuery?,
     ): List<DeviceFile> {
+        // With an extension query, [queryContext] holds only the name part, which may be blank.
         val whitespaceNormalized = queryContext.normalizedQuery
-        if (whitespaceNormalized.isBlank() || !fileRepository.hasPermission()) return emptyList()
-        if (whitespaceNormalized.length < 2) return emptyList()
+        if (!fileRepository.hasPermission()) return emptyList()
+        if (extensionQuery == null && whitespaceNormalized.length < 2) return emptyList()
 
         // Fetch more candidates than we need so that items dropped by the scorer
         // don't cause the final list to come up short.
         val prefetchLimit = resultLimit * FILE_SEARCH_PREFETCH_MULTIPLIER
-        val exactCandidates = fileRepository.searchFiles(whitespaceNormalized, prefetchLimit)
+        val exactCandidates =
+            fileRepository.searchFiles(whitespaceNormalized, prefetchLimit, extensionQuery?.extension)
+        if (extensionQuery != null && whitespaceNormalized.isBlank()) {
+            // Extension-only query: newest files first (repository order), recently opened ahead.
+            return FileSearchAlgorithm.filterCandidates(
+                fullList = exactCandidates,
+                query = whitespaceNormalized,
+                enabledFileTypes = enabledFileTypes,
+                excludedFileUris = excludedFileUris,
+                excludedFileExtensions = excludedFileExtensions,
+                folderWhitelistPatterns = folderWhitelistPatterns,
+                folderBlacklistPatterns = folderBlacklistPatterns,
+                showFolders = showFolders,
+                showSystemFiles = showSystemFiles,
+                extensionQuery = extensionQuery,
+            ).sortedByDescending { recentFileScores[it.uri.toString()] ?: 0 }
+                .take(resultLimit)
+        }
         val allFiles =
             if (includeFuzzyCandidates) {
                 (exactCandidates + fileRepository.getRecentFiles(fuzzyCandidateLimit))
@@ -134,6 +156,7 @@ class FileSearchHandler(
                 folderBlacklistPatterns = folderBlacklistPatterns,
                 showFolders = showFolders,
                 showSystemFiles = showSystemFiles,
+                extensionQuery = extensionQuery,
             )
         }
 
@@ -152,6 +175,7 @@ class FileSearchHandler(
             fileOpenCounts = fileOpenCounts,
             secondaryRankingSignal = secondaryRankingSignal,
             resultLimit = resultLimit,
+            extensionQuery = extensionQuery,
         )
     }
 }

@@ -312,6 +312,15 @@ private fun ProviderLogo(
                 )
             }
         }
+        AiSearchLlmProviderId.OPENCODE -> {
+            Image(
+                painter = painterResource(R.drawable.opencode_wordmark),
+                contentDescription = stringResource(R.string.settings_ai_provider_opencode),
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(contentColor),
+                modifier = Modifier.height(18.dp).aspectRatio(640.714f / 115f),
+            )
+        }
         AiSearchLlmProviderId.GEMINI -> {
             Box(modifier = Modifier.height(16.dp).aspectRatio(288f / 65f)) {
                 Image(

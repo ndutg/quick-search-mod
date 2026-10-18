@@ -77,12 +77,13 @@ class LlmDefaultModelsTest {
     }
 
     @Test
-    fun providerPriorityPrefersGeminiThenCustomGroqMetaOpenAiAnthropic() {
+    fun providerPriorityPrefersGeminiThenCustomGroqMetaOpenCodeOpenAiAnthropic() {
         val custom = AiSearchLlmProviderId.custom("abc")
         val all =
             listOf(
                 AiSearchLlmProviderId.ANTHROPIC,
                 AiSearchLlmProviderId.OPENAI,
+                AiSearchLlmProviderId.OPENCODE,
                 AiSearchLlmProviderId.META,
                 AiSearchLlmProviderId.GROQ,
                 custom,
