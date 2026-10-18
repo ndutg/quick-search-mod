@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
@@ -278,6 +279,16 @@ internal fun AiProviderAttributionRow(
                     )
                 }
             }
+            AiSearchLlmProviderId.OPENCODE -> {
+                Image(
+                        painter = painterResource(R.drawable.opencode_wordmark),
+                        contentDescription = poweredByText,
+                        contentScale = ContentScale.Fit,
+                        colorFilter = ColorFilter.tint(contentColor),
+                        modifier =
+                                Modifier.height(14.dp).aspectRatio(640.714f / 115f),
+                )
+            }
             else -> {
                 if (llmProviderId.isCustom) {
                     Text(
@@ -306,6 +317,10 @@ internal fun AiProviderAttributionRow(
         }
     }
 }
+
+/** OpenCode ships two-tone marks for light and dark surfaces; pick the one for [contentColor]. */
+internal fun openCodeLogoRes(contentColor: Color): Int =
+        if (contentColor.luminance() > 0.5f) R.drawable.opencode_logo_dark else R.drawable.opencode_logo_light
 
 /** Attribution row showing calculator branding. */
 @Composable

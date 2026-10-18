@@ -41,6 +41,8 @@ data class LlmRequest(
     val advancedPayloadJson: String? = null,
     /** Earlier turns of the conversation, sent as real messages before [query]. */
     val history: List<AiConversationTurn> = emptyList(),
+    /** Stable for every request of one conversation, for providers that route or cache by session. */
+    val sessionId: String? = null,
 )
 
 /** Provider response plus request-level delivery details needed by the result UI. */
@@ -67,11 +69,15 @@ data class AiSearchLlmProviderId(
         val ANTHROPIC = AiSearchLlmProviderId("anthropic")
         val GROQ = AiSearchLlmProviderId("groq")
         val META = AiSearchLlmProviderId("meta")
-        val entries = listOf(GEMINI, OPENAI, ANTHROPIC, GROQ, META)
+        val OPENCODE = AiSearchLlmProviderId("opencode")
+        val entries = listOf(GEMINI, OPENAI, ANTHROPIC, GROQ, META, OPENCODE)
+
+        /** OpenCode secret keys are `sk-` plus 64 letters and digits (anomalyco/opencode console/core/src/key.ts). */
+        private val openCodeApiKeyRegex = Regex("^sk-[A-Za-z0-9]{64}$")
 
         /**
          * Order used to pick the active provider when several have API keys: Gemini, custom
-         * providers (in the order added), Groq, Meta, OpenAI, then Anthropic.
+         * providers (in the order added), Groq, Meta, OpenCode, OpenAI, then Anthropic.
          */
         fun defaultPriority(id: AiSearchLlmProviderId): Int =
             when {
@@ -79,9 +85,10 @@ data class AiSearchLlmProviderId(
                 id.isCustom -> 1
                 id == GROQ -> 2
                 id == META -> 3
-                id == OPENAI -> 4
-                id == ANTHROPIC -> 5
-                else -> 6
+                id == OPENCODE -> 4
+                id == OPENAI -> 5
+                id == ANTHROPIC -> 6
+                else -> 7
             }
 
         /** Highest-priority provider in [ids]; ties keep the original order. */
@@ -103,6 +110,7 @@ data class AiSearchLlmProviderId(
          * - `sk-ant-*` → ANTHROPIC
          * - `gsk_*` → GROQ
          * - `LLM|*` → META
+         * - `sk-` + exactly 64 letters and digits → OPENCODE
          * - `sk-*` (not `sk-ant-`) → OPENAI
          * - everything else → GEMINI
          */
@@ -113,6 +121,7 @@ data class AiSearchLlmProviderId(
                 trimmed.startsWith("sk-ant-") -> ANTHROPIC
                 trimmed.startsWith("gsk_") -> GROQ
                 trimmed.startsWith("LLM|") -> META
+                openCodeApiKeyRegex.matches(trimmed) -> OPENCODE
                 trimmed.startsWith("sk-") -> OPENAI
                 else -> GEMINI
             }
@@ -155,6 +164,7 @@ object AiSearchLlmProviderRegistry {
             AiSearchLlmProviderId.ANTHROPIC -> AnthropicAiSearchLlmProvider
             AiSearchLlmProviderId.GROQ -> GroqAiSearchLlmProvider
             AiSearchLlmProviderId.META -> MetaAiSearchLlmProvider
+            AiSearchLlmProviderId.OPENCODE -> OpenCodeAiSearchLlmProvider
             else -> GeminiAiSearchLlmProvider
         }
     }

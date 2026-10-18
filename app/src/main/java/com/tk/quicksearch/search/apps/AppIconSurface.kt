@@ -54,6 +54,7 @@ import com.tk.quicksearch.shared.util.hapticConfirm
 internal fun AppIconSurface(
         iconBitmap: androidx.compose.ui.graphics.ImageBitmap?,
         iconIsLegacy: Boolean,
+        iconHasProfileBadge: Boolean = false,
         monochromeData: androidx.compose.ui.graphics.ImageBitmap? = null,
         appName: String,
         onClick: () -> Unit,
@@ -231,6 +232,9 @@ internal fun AppIconSurface(
                 } else {
                     val clipModifier =
                             when {
+                                // Badged work profile icons are already circle-masked; clipping
+                                // again would cut off the badge in the corner.
+                                iconHasProfileBadge -> Modifier
                                 appIconShape == AppIconShape.CIRCLE ->
                                         Modifier.clip(CircleShape)
                                 iconIsLegacy -> Modifier.clip(DesignTokens.ShapeLarge)

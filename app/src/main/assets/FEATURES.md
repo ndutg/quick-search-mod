@@ -310,7 +310,7 @@ An optional Home section that shows useful information when it matters.
 
 ### AI Provider Settings
 
-- **AI Providers** - Add API keys for Gemini, OpenAI, Claude, Groq, and Meta AI, and switch between models anytime.
+- **AI Providers** - Add API keys for Gemini, OpenAI, Claude, Groq, Meta AI, and OpenCode, and switch between models anytime.
 - **Free Gemini API Key** - Tap **Get Free API Key** for a step-by-step guide. Gemini Flash Latest is the default model.
 - **Model Selection** - Choose a model. Gemma models don't support Google Search grounding or personal context.
 - **Grounding** - Let Gemini use Google Search for up-to-date answers.

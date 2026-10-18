@@ -129,12 +129,15 @@ object IconPackManager {
 
     /**
      * Loads an app icon bitmap from the specified icon pack, or null if unavailable.
+     * [loadBaseIcon] overrides the app's own icon used by the pack's masked fallback; work profile
+     * callers pass the work profile icon so apps not installed in the personal profile still work.
      * Caller must invoke this on a background thread.
      */
     fun loadIconBitmap(
         context: Context,
         iconPackPackage: String,
         targetPackage: String,
+        loadBaseIcon: (() -> Drawable?)? = null,
     ): ImageBitmap? {
         val resources = getIconPackResources(context, iconPackPackage) ?: return null
         val renderData = loadAppFilterRenderData(iconPackPackage, resources)
@@ -155,6 +158,7 @@ object IconPackManager {
             iconPackPackage = iconPackPackage,
             targetPackage = targetPackage,
             renderData = renderData,
+            loadBaseIcon = loadBaseIcon,
         )
     }
 
@@ -500,6 +504,7 @@ object IconPackManager {
         iconPackPackage: String,
         targetPackage: String,
         renderData: IconPackRenderData,
+        loadBaseIcon: (() -> Drawable?)?,
     ): ImageBitmap? {
         if (
             renderData.backDrawables.isEmpty() &&
@@ -510,9 +515,11 @@ object IconPackManager {
         }
 
         val appDrawable =
-            runCatching { context.packageManager.getApplicationIcon(targetPackage) }
-                .onFailure { Log.w(TAG, "Unable to load base icon for $targetPackage", it) }
-                .getOrNull() ?: return null
+            loadBaseIcon?.invoke()
+                ?: runCatching { context.packageManager.getApplicationIcon(targetPackage) }
+                    .onFailure { Log.w(TAG, "Unable to load base icon for $targetPackage", it) }
+                    .getOrNull()
+                ?: return null
 
         val selectedBackName =
             renderData

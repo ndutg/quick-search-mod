@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OpenCode mark for light surfaces. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="30dp"
+    android:viewportWidth="240"
+    android:viewportHeight="300">
+    <path
+        android:fillColor="#FFCFCECD"
+        android:pathData="M180,240H60V120H180V240Z" />
+    <path
+        android:fillColor="#FF211E1E"
+        android:pathData="M180,60H60V240H180V60ZM240,300H0V0H240V300Z" />
+</vector>

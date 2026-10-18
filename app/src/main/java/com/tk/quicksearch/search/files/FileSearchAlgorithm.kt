@@ -69,11 +69,13 @@ object FileSearchAlgorithm {
             fileOpenCounts: Map<String, Int> = emptyMap(),
             secondaryRankingSignal: SecondaryRankingSignal = SecondaryRankingSignal.DEFAULT,
             resultLimit: Int = 25,
+            extensionQuery: FileExtensionQuery? = null,
     ): List<DeviceFile> {
         val filteredFiles =
                 filterCandidates(
                         fullList = fullList,
                         query = queryContext.normalizedQuery,
+                        extensionQuery = extensionQuery,
                         enabledFileTypes = enabledFileTypes,
                         excludedFileUris = excludedFileUris,
                         excludedFileExtensions = excludedFileExtensions,
@@ -103,11 +105,13 @@ object FileSearchAlgorithm {
             folderBlacklistPatterns: Set<String>,
             showFolders: Boolean,
             showSystemFiles: Boolean,
+            extensionQuery: FileExtensionQuery? = null,
     ): List<DeviceFile> {
-        if (query.isBlank()) return emptyList()
-
-        val normalizedQuery = SearchTextNormalizer.normalizeQueryWhitespace(query)
-        if (normalizedQuery.length < 2) return emptyList()
+        if (extensionQuery == null) {
+            if (query.isBlank()) return emptyList()
+            val normalizedQuery = SearchTextNormalizer.normalizeQueryWhitespace(query)
+            if (normalizedQuery.length < 2) return emptyList()
+        }
 
         val pathMatcher =
                 FolderPathPatternMatcher.createPathMatcher(
@@ -116,6 +120,9 @@ object FileSearchAlgorithm {
                 )
 
         return fullList.filter { file ->
+            if (extensionQuery?.matchesFileName(file.displayName, file.isDirectory) == false) {
+                return@filter false
+            }
             val isSystem = FileClassifier.isSystemFolder(file) || FileClassifier.isSystemFile(file)
 
             if (file.isDirectory) {
