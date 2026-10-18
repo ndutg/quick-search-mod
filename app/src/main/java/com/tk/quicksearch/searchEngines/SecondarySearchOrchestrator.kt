@@ -8,6 +8,7 @@ import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.core.UnifiedSearchResults
 import com.tk.quicksearch.search.core.UnifiedSectionSearchResult
 import com.tk.quicksearch.search.core.UnifiedSectionSearchConfig
+import com.tk.quicksearch.search.files.FileExtensionQuery
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineDispatcher
@@ -617,7 +618,7 @@ class SecondarySearchOrchestrator(
     ): Boolean {
         if (isBackspacing) return false
         val lastNoResultQuery = lastQueryWithNoResultsBySection[section] ?: return false
-        return query.startsWith(lastNoResultQuery)
+        return FileExtensionQuery.isNoResultPrefixReusable(lastNoResultQuery, query)
     }
 
     private fun updateNoResultTracking(

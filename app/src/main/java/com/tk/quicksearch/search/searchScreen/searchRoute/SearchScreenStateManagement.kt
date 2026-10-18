@@ -31,6 +31,7 @@ import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
+import com.tk.quicksearch.search.files.FileExtensionQuery
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.dialogs.NicknameDialogState
 import com.tk.quicksearch.search.searchScreen.dialogs.TriggerDialogState
@@ -284,14 +285,19 @@ internal fun SearchScreenStateManagement(
         }
     }
 
+    // Extension queries (".mkv") return only files, so their results open expanded too.
+    val isFileExtensionQuery = remember(state.query) { FileExtensionQuery.parse(state.query) != null }
+    val expandFileExtensionResults =
+        isFileExtensionQuery && !state.topMatchesEnabled && state.fileResults.isNotEmpty()
+
     // Keep alias-triggered searches expanded by default.
-    LaunchedEffect(state.query, state.detectedAliasSearchSection) {
+    LaunchedEffect(state.query, state.detectedAliasSearchSection, expandFileExtensionResults) {
         val aliasSection = state.detectedAliasSearchSection
         expandedSection =
-            if (aliasSection != null) {
-                aliasSection.toExpandedSectionOrNone()
-            } else {
-                ExpandedSection.NONE
+            when {
+                aliasSection != null -> aliasSection.toExpandedSectionOrNone()
+                expandFileExtensionResults -> ExpandedSection.FILES
+                else -> ExpandedSection.NONE
             }
     }
 

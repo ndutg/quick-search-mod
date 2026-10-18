@@ -155,26 +155,45 @@ class FileSearchRepository(
         return resultsByUri.values.sortedBy { it.displayName.lowercase(Locale.getDefault()) }
     }
 
+    /** With [extension], only files ending in `.<extension>` match and [query] may be blank. */
     fun searchFiles(
         query: String,
         limit: Int,
+        extension: String? = null,
     ): List<DeviceFile> {
-        if (query.isBlank() || !hasPermission()) return emptyList()
+        if ((query.isBlank() && extension == null) || !hasPermission()) return emptyList()
 
-        val queryTokens = normalizeQueryTokens(query)
-        if (queryTokens.isEmpty()) return emptyList()
-        val displayNameTokenSelection =
-            queryTokens.joinToString(" AND ") {
+        val queryTokens = if (query.isBlank()) emptyList() else normalizeQueryTokens(query)
+        if (queryTokens.isEmpty() && extension == null) return emptyList()
+        val nameSelection =
+            if (queryTokens.isEmpty()) {
+                null
+            } else {
+                val displayNameTokenSelection =
+                    queryTokens.joinToString(" AND ") {
+                        "LOWER(${MediaStore.Files.FileColumns.DISPLAY_NAME}) LIKE ? ESCAPE '\\'"
+                    }
+                val compactDisplayNameSelection = "${compactDisplayNameExpression()} LIKE ? ESCAPE '\\'"
+                "($displayNameTokenSelection OR $compactDisplayNameSelection)"
+            }
+        val typeSelection =
+            if (extension == null) {
+                "(format = ${MtpConstants.FORMAT_ASSOCIATION} OR LOWER(${MediaStore.Files.FileColumns.DISPLAY_NAME}) LIKE '%.%')"
+            } else {
                 "LOWER(${MediaStore.Files.FileColumns.DISPLAY_NAME}) LIKE ? ESCAPE '\\'"
             }
-        val compactDisplayNameSelection = "${compactDisplayNameExpression()} LIKE ? ESCAPE '\\'"
-        val selection =
-            "($displayNameTokenSelection OR $compactDisplayNameSelection) AND " +
-                "(format = ${MtpConstants.FORMAT_ASSOCIATION} OR LOWER(${MediaStore.Files.FileColumns.DISPLAY_NAME}) LIKE '%.%')"
-        val selectionArgs =
-            (
+        val selection = listOfNotNull(nameSelection, typeSelection).joinToString(" AND ")
+        val nameSelectionArgs =
+            if (queryTokens.isEmpty()) {
+                emptyList()
+            } else {
                 queryTokens.map { "%${escapeLikeQuery(it)}%" } +
                     "%${escapeLikeQuery(queryTokens.joinToString(""))}%"
+            }
+        val selectionArgs =
+            (
+                nameSelectionArgs +
+                    listOfNotNull(extension?.let { "%.${escapeLikeQuery(it.lowercase(Locale.ROOT))}" })
             ).toTypedArray()
         val uri = getFilesContentUri()
 

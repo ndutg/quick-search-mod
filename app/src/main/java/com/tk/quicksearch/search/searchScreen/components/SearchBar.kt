@@ -542,7 +542,8 @@ internal fun PersistentSearchBar(
     ) {
         TextField(
             value = textFieldValue,
-            onValueChange = { newValue ->
+            onValueChange = { rawValue ->
+                val newValue = rawValue.withoutAutoSpaceAfterLeadingDot(textFieldValue.text)
                 if (textFieldValue.text.isEmpty() && newValue.text.isNotEmpty()) {
                     StartupTrace.mark("QS.Home.FirstInputAccepted")
                 }
