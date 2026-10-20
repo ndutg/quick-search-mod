@@ -107,7 +107,7 @@ both flavors when changing typography.
 | `AppBottomPopup` | Bottom-anchored popup with header and scrollable card of options |
 | `ItemMenuPopup` | Long-press action menus: tile grids, rows, buttons, long-press dropdowns. Never leave placeholder gaps between options; reflow so any gap falls only at the end of the last row. |
 | `TipBanner` | Dismissible tips/hints, optional links and trailing action |
-| `AppPill` | Small pill labels |
+| `AppPill` | Small pill labels, with an optional accent-tinted `leadingIcon`; `compact` for tight rows (file result type and folder pills) |
 | `AppVoiceCallIcon` | App logo plus phone icon for call actions |
 | `dialogTextFieldColors()` | Text fields inside dialogs |
 | `CardTextField`, `cardTextFieldColors()` | Borderless text fields stacked as rows of a `SettingsCard` (divided by `HorizontalDivider`); dimmed placeholder that shows before focus (label stays floated when a placeholder is set), and the floated label keeps a gap above the input |

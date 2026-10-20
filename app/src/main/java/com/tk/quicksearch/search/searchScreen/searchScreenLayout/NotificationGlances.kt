@@ -442,6 +442,7 @@ internal fun WorkoutRow(workout: WorkoutNotification) {
         icon = { NotificationAppIcon(workout.packageName) },
         title = workout.title ?: appLabel,
         subtitle = workout.stats ?: appLabel.takeIf { workout.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         subtitleStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp, lineHeight = 26.sp),
         pillText = workout.duration,
         onClick = { openNotificationTarget(context, workout.packageName, workout.contentIntent) },
@@ -460,6 +461,7 @@ internal fun WeatherRow(
         icon = { NotificationAppIcon(weather.packageName) },
         title = weather.title ?: appLabel,
         subtitle = weather.text ?: appLabel.takeIf { weather.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         onClick = { openNotificationTarget(context, weather.packageName, weather.contentIntent) },
         onDismiss = onDismiss,
         dismissAtTop = true,
@@ -476,6 +478,7 @@ internal fun ProgressNotificationRow(notification: ProgressNotification) {
             icon = { NotificationAppIcon(notification.packageName) },
             title = notification.title ?: appLabel,
             subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+            titleMaxLines = GlanceTextMaxLines,
             pillText = notification.shortCriticalText,
             onClick = {
                 openNotificationTarget(context, notification.packageName, notification.contentIntent)
@@ -490,6 +493,7 @@ internal fun ProgressNotificationRow(notification: ProgressNotification) {
         icon = { NotificationAppIcon(notification.packageName) },
         title = notification.title ?: appLabel,
         subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         pillText = percentLabel,
         pillWidthText = fullLabel,
         onClick = {
@@ -516,6 +520,7 @@ internal fun FinishedProgressNotificationRow(
         icon = { NotificationAppIcon(notification.packageName) },
         title = notification.title ?: appLabel,
         subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         pillText = stringResource(R.string.reminder_status_done),
         onClick = {
             openNotificationTarget(context, notification.packageName, notification.contentIntent)

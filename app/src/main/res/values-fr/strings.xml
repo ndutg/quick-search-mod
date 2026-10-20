@@ -511,9 +511,9 @@
 <string name="excluded_item_type_file_extension">Extension de fichier</string>
 <string name="excluded_item_type_folder">Dossier</string>
 <string name="file_extension_label">Fichiers .%s</string>
-<string name="file_info_file_type">Type de fichier</string>
-<string name="file_info_modified">Modifié le</string>
+<string name="file_info_modified">Dernière modification</string>
 <string name="file_info_path">Chemin</string>
+<string name="file_path_sd_card">Carte SD</string>
 <string name="file_info_size">Taille</string>
 <string name="file_info_type">Type</string>
 <string name="file_type_apks">APKs</string>
