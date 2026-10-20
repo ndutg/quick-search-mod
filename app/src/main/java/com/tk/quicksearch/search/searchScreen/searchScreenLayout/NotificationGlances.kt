@@ -1,9 +1,15 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.telecom.TelecomManager
 import android.text.format.DateUtils
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateContentSize
@@ -58,6 +64,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
@@ -346,7 +353,8 @@ private fun timerActionIcon(title: String): ImageVector? =
 
 /**
  * A connected call with the caller (or the calling app when it doesn't say), its duration, and a
- * hang up button when the notification offers one.
+ * hang up button when the notification offers one. When that hang up only opens the call screen,
+ * the button ends the call through Telecom, asking for the permission on first use.
  */
 @Composable
 internal fun OngoingCallRow(
@@ -355,6 +363,32 @@ internal fun OngoingCallRow(
 ) {
     val context = LocalContext.current
     val subtitle = call.caller ?: rememberAppLabel(call.packageName)
+    val openCallScreen = { openNotificationTarget(context, call.packageName, call.contentIntent) }
+    val endCallPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (!isGranted || !endCallThroughTelecom(context)) openCallScreen()
+        }
+    val onHangUp: (() -> Unit)? =
+        when {
+            call.hangUpIntent != null -> {
+                { call.hangUpIntent.sendFromUserTap() }
+            }
+
+            call.endsThroughTelecom -> {
+                {
+                    val hasPermission =
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.ANSWER_PHONE_CALLS) ==
+                            PackageManager.PERMISSION_GRANTED
+                    if (!hasPermission) {
+                        endCallPermissionLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS)
+                    } else if (!endCallThroughTelecom(context)) {
+                        openCallScreen()
+                    }
+                }
+            }
+
+            else -> null
+        }
     GlanceStatusRow(
         icon = {
             Icon(
@@ -369,12 +403,12 @@ internal fun OngoingCallRow(
             call.startTime?.let { start ->
                 DateUtils.formatElapsedTime(((nowMillis - start).coerceAtLeast(0L)) / 1_000L)
             },
-        onClick = { openNotificationTarget(context, call.packageName, call.contentIntent) },
+        onClick = openCallScreen,
         trailing =
-            call.hangUpIntent?.let { hangUpIntent ->
+            onHangUp?.let { hangUp ->
                 {
                     FilledIconButton(
-                        onClick = { hangUpIntent.sendFromUserTap() },
+                        onClick = hangUp,
                         modifier = Modifier.size(32.dp),
                         colors =
                             IconButtonDefaults.filledIconButtonColors(
@@ -393,6 +427,12 @@ internal fun OngoingCallRow(
     )
 }
 
+/** Ends the current phone call; false when it can't, such as without the permission. */
+@Suppress("DEPRECATION")
+@SuppressLint("MissingPermission")
+private fun endCallThroughTelecom(context: Context): Boolean =
+    runCatching { context.getSystemService(TelecomManager::class.java)?.endCall() == true }.getOrDefault(false)
+
 /** A workout in progress with its live stats and the duration the app last posted. */
 @Composable
 internal fun WorkoutRow(workout: WorkoutNotification) {
@@ -402,6 +442,7 @@ internal fun WorkoutRow(workout: WorkoutNotification) {
         icon = { NotificationAppIcon(workout.packageName) },
         title = workout.title ?: appLabel,
         subtitle = workout.stats ?: appLabel.takeIf { workout.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         subtitleStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp, lineHeight = 26.sp),
         pillText = workout.duration,
         onClick = { openNotificationTarget(context, workout.packageName, workout.contentIntent) },
@@ -420,6 +461,7 @@ internal fun WeatherRow(
         icon = { NotificationAppIcon(weather.packageName) },
         title = weather.title ?: appLabel,
         subtitle = weather.text ?: appLabel.takeIf { weather.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         onClick = { openNotificationTarget(context, weather.packageName, weather.contentIntent) },
         onDismiss = onDismiss,
         dismissAtTop = true,
@@ -436,6 +478,7 @@ internal fun ProgressNotificationRow(notification: ProgressNotification) {
             icon = { NotificationAppIcon(notification.packageName) },
             title = notification.title ?: appLabel,
             subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+            titleMaxLines = GlanceTextMaxLines,
             pillText = notification.shortCriticalText,
             onClick = {
                 openNotificationTarget(context, notification.packageName, notification.contentIntent)
@@ -450,6 +493,7 @@ internal fun ProgressNotificationRow(notification: ProgressNotification) {
         icon = { NotificationAppIcon(notification.packageName) },
         title = notification.title ?: appLabel,
         subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         pillText = percentLabel,
         pillWidthText = fullLabel,
         onClick = {
@@ -476,6 +520,7 @@ internal fun FinishedProgressNotificationRow(
         icon = { NotificationAppIcon(notification.packageName) },
         title = notification.title ?: appLabel,
         subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         pillText = stringResource(R.string.reminder_status_done),
         onClick = {
             openNotificationTarget(context, notification.packageName, notification.contentIntent)

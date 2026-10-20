@@ -130,6 +130,7 @@ internal fun AppNotificationRow(
         icon = { NotificationAppIcon(notification.packageName) },
         title = notification.title ?: notification.text ?: appLabel,
         subtitle = notification.text.takeIf { notification.title != null },
+        titleMaxLines = GlanceTextMaxLines,
         onClick = { openNotificationTarget(context, notification.packageName, notification.contentIntent) },
         onDismiss = { GlanceNotificationsStore.dismissAppNotification(notification) },
         dismissAtTop = true,
