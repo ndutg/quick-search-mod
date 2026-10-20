@@ -14,7 +14,7 @@ import android.os.SystemClock
  */
 object MediaSeek {
     const val STEP_MS = 15_000L
-    private const val LONG_MEDIA_THRESHOLD_MS = 5 * 60_000L
+    private const val LONG_MEDIA_THRESHOLD_MS = 7 * 60_000L
 
     /** How long a commanded target stays the base for the next tap, before the session reports it. */
     private const val PENDING_TARGET_FRESH_MS = 1_500L
@@ -24,7 +24,7 @@ object MediaSeek {
     private var pendingAtElapsedMs = 0L
 
     /**
-     * Whether the media is longer than five minutes and its session accepts seeks. Live streams and
+     * Whether the media is longer than seven minutes and its session accepts seeks. Live streams and
      * some apps report an unknown (zero or negative) duration, which keeps plain previous/next.
      */
     fun isSeekMode(

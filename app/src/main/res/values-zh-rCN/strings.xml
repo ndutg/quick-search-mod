@@ -129,6 +129,7 @@
     <string name="settings_gesture_close_keyboard_notifications">关闭键盘 / 打开通知</string>
     <string name="settings_gesture_close_keyboard">关闭键盘</string>
     <string name="settings_gesture_notification_panel">通知面板</string>
+    <string name="settings_gesture_view_all_apps">查看所有应用</string>
     <string name="settings_gesture_lock_screen">锁定屏幕</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">需要无障碍权限</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -509,9 +510,9 @@
     <string name="excluded_item_type_file_extension">文件扩展名</string>
     <string name="excluded_item_type_folder">文件夹</string>
     <string name="file_extension_label">.%s 文件</string>
-    <string name="file_info_file_type">文件类型</string>
-    <string name="file_info_modified">修改时间</string>
+    <string name="file_info_modified">上次修改时间</string>
     <string name="file_info_path">路径</string>
+    <string name="file_path_sd_card">SD 卡</string>
     <string name="file_info_size">大小</string>
     <string name="file_info_type">类型</string>
     <string name="file_type_apks">APK 文件</string>
@@ -925,6 +926,7 @@
     <string name="settings_add_search_engine_error_required">请输入 URL 模板。</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">别名：</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

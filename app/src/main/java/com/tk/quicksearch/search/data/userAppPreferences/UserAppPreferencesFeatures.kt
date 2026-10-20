@@ -170,6 +170,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getApiKey()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getApiKey()
                 AiSearchLlmProviderId.META -> metaPreferences.getApiKey()
+                AiSearchLlmProviderId.OPENCODE -> openCodePreferences.getApiKey()
                 else -> null
             }
         }
@@ -190,6 +191,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setApiKey(key)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setApiKey(key)
             AiSearchLlmProviderId.META -> metaPreferences.setApiKey(key)
+            AiSearchLlmProviderId.OPENCODE -> openCodePreferences.setApiKey(key)
             else -> Unit
         }
         refreshConfiguredAiProviderHint()
@@ -205,6 +207,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getModel()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getModel()
                 AiSearchLlmProviderId.META -> metaPreferences.getModel()
+                AiSearchLlmProviderId.OPENCODE -> openCodePreferences.getModel()
                 else -> ""
             }
         }
@@ -220,6 +223,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setModel(modelId)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setModel(modelId)
             AiSearchLlmProviderId.META -> metaPreferences.setModel(modelId)
+            AiSearchLlmProviderId.OPENCODE -> openCodePreferences.setModel(modelId)
             else -> Unit
         }
     }
@@ -234,6 +238,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.isGroundingEnabled()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.isGroundingEnabled()
                 AiSearchLlmProviderId.META -> metaPreferences.isGroundingEnabled()
+                AiSearchLlmProviderId.OPENCODE -> openCodePreferences.isGroundingEnabled()
                 else -> false
             }
         }
@@ -249,6 +254,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setGroundingEnabled(enabled)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setGroundingEnabled(enabled)
             AiSearchLlmProviderId.META -> metaPreferences.setGroundingEnabled(enabled)
+            AiSearchLlmProviderId.OPENCODE -> openCodePreferences.setGroundingEnabled(enabled)
             else -> Unit
         }
     }
@@ -289,6 +295,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
                 AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.getPersonalContext()
                 AiSearchLlmProviderId.GROQ -> groqPreferences.getPersonalContext()
                 AiSearchLlmProviderId.META -> metaPreferences.getPersonalContext()
+                AiSearchLlmProviderId.OPENCODE -> openCodePreferences.getPersonalContext()
                 else -> null
             }
         }
@@ -304,6 +311,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
             AiSearchLlmProviderId.ANTHROPIC -> anthropicPreferences.setPersonalContext(context)
             AiSearchLlmProviderId.GROQ -> groqPreferences.setPersonalContext(context)
             AiSearchLlmProviderId.META -> metaPreferences.setPersonalContext(context)
+            AiSearchLlmProviderId.OPENCODE -> openCodePreferences.setPersonalContext(context)
             else -> Unit
         }
     }
@@ -315,6 +323,7 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
             !anthropicPreferences.getApiKey().isNullOrBlank() ||
             !groqPreferences.getApiKey().isNullOrBlank() ||
             !metaPreferences.getApiKey().isNullOrBlank() ||
+            !openCodePreferences.getApiKey().isNullOrBlank() ||
             customLlmProviderPreferences.getProviders().any { it.apiKey.isNotBlank() }
 
     /** Cheap cached hint of [hasAnyLlmApiKey]; does not open encrypted storage. */

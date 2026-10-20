@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Keyboard
@@ -173,6 +174,20 @@ internal fun SetAlarmPill(
     onClick = onClick,
     modifier = modifier,
 )
+
+@Composable
+internal fun AllAppsPill(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        ClockActionPill(
+            icon = Icons.Rounded.Apps,
+            label = stringResource(R.string.settings_app_shortcuts_filter_all_apps),
+            onClick = onClick,
+        )
+    }
+}
 
 @Composable
 internal fun StartTimerPill(

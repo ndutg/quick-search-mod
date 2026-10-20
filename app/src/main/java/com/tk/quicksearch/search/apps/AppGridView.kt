@@ -11,8 +11,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,13 +37,12 @@ import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.StartupPhase
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
-import com.tk.quicksearch.search.data.appShortcutRepository.isShortcutDisabled
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
 import com.tk.quicksearch.search.searchScreen.LocalHomeHorizontalSwipeHandler
-import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.AllAppsPill
 import com.tk.quicksearch.shared.util.getAppGridColumns
 import com.tk.quicksearch.search.folders.AppFolder
 import com.tk.quicksearch.search.folders.AppFolderMember
@@ -55,7 +52,6 @@ import com.tk.quicksearch.search.folders.appFolderMemberKey
 import com.tk.quicksearch.search.folders.ResolvedAppFolder
 import com.tk.quicksearch.search.folders.resolveAppFolders
 import kotlin.math.min
-import java.util.Locale
 
 @Composable
 fun AppGridView(
@@ -131,13 +127,7 @@ fun AppGridView(
     val gridColumns = getAppGridColumns(phoneColumnOverride)
     val suggestionSlotCount = (rowCount * gridColumns).coerceAtLeast(1)
     val alphabeticalApps =
-            remember(allApps) {
-                allApps.sortedWith(
-                        compareBy<AppInfo> { it.appName.lowercase(Locale.getDefault()) }
-                                .thenBy { it.packageName.lowercase(Locale.getDefault()) }
-                                .thenBy { it.userHandleId ?: Int.MIN_VALUE },
-                )
-            }
+            remember(allApps) { allApps.sortedForAllApps() }
     // Folders only live in the Pinned tab, which can't be turned off while suggestions are on.
     val pinnedFolders =
             remember(appFolders, allApps, appShortcuts, disabledShortcutIds, isSearching) {
@@ -428,14 +418,7 @@ fun AppGridView(
         folderActions?.onDeleteFolder?.invoke(folder.id, pinnedTabOrderKeys())
     }
     val shortcutsByPackage =
-            remember(appShortcuts, disabledShortcutIds) {
-                appShortcuts
-                        .asSequence()
-                        .filterNot { shortcut ->
-                            isShortcutDisabled(shortcut, disabledShortcutIds)
-                        }
-                        .groupBy { it.packageName }
-            }
+            remember(appShortcuts, disabledShortcutIds) { appShortcuts.enabledByPackage(disabledShortcutIds) }
     // Fade the suggestions grid (empty query) in when it first appears. It stays in its final
     // position throughout so nothing slides. Search results appear immediately without animation.
     val initialSuggestionsAlpha = if (suppressSuggestionsEnterAnimation) 1f else 0f
@@ -645,25 +628,11 @@ fun AppGridView(
                     )
                 }
                 if (shouldShowAllAppsButton) {
-                    ExpandButton(
-                            onClick = { showAllAppsDialog = true },
-                            modifier = Modifier.fillMaxWidth(),
-                            textResId = R.string.settings_app_shortcuts_filter_all_apps,
-                            usePillBackground = true,
-                            showWallpaperBackground = showWallpaperBackground,
-                            icon = Icons.Rounded.ChevronRight,
-                    )
+                    AllAppsPill(onClick = { showAllAppsDialog = true })
                 }
             }
         } else if (shouldShowAllAppsButton) {
-            ExpandButton(
-                    onClick = { showAllAppsDialog = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    textResId = R.string.settings_app_shortcuts_filter_all_apps,
-                    usePillBackground = true,
-                    showWallpaperBackground = showWallpaperBackground,
-                    icon = Icons.Rounded.ChevronRight,
-            )
+            AllAppsPill(onClick = { showAllAppsDialog = true })
         }
     }
 

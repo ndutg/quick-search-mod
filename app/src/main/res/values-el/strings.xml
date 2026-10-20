@@ -129,6 +129,7 @@
     <string name="settings_gesture_close_keyboard_notifications">Κλείσιμο πληκτρολογίου / Άνοιγμα ειδοποιήσεων</string>
     <string name="settings_gesture_close_keyboard">Κλείσιμο πληκτρολογίου</string>
     <string name="settings_gesture_notification_panel">Πίνακας ειδοποιήσεων</string>
+    <string name="settings_gesture_view_all_apps">Προβολή όλων των εφαρμογών</string>
     <string name="settings_gesture_lock_screen">Κλείδωμα οθόνης</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Απαιτείται άδεια προσβασιμότητας</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -510,9 +511,9 @@
     <string name="excluded_item_type_file_extension">Επέκταση αρχείου</string>
     <string name="excluded_item_type_folder">Φάκελος</string>
     <string name="file_extension_label">Αρχεία .%s</string>
-    <string name="file_info_file_type">Τύπος αρχείου</string>
-    <string name="file_info_modified">Τροποποιήθηκε</string>
+    <string name="file_info_modified">Τελευταία τροποποίηση</string>
     <string name="file_info_path">Διαδρομή</string>
+    <string name="file_path_sd_card">Κάρτα SD</string>
     <string name="file_info_size">Μέγεθος</string>
     <string name="file_info_type">Τύπος</string>
     <string name="file_type_apks">APKs</string>
@@ -937,6 +938,7 @@
     <string name="settings_add_search_engine_error_required">Παρακαλώ εισαγάγετε ένα πρότυπο URL.</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">Συντομογραφία:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

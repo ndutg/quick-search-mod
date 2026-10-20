@@ -130,6 +130,7 @@
     <string name="settings_gesture_close_keyboard_notifications">Zamknij klawiaturę / Otwórz powiadomienia</string>
     <string name="settings_gesture_close_keyboard">Zamknij klawiaturę</string>
     <string name="settings_gesture_notification_panel">Panel powiadomień</string>
+    <string name="settings_gesture_view_all_apps">Pokaż wszystkie aplikacje</string>
     <string name="settings_gesture_lock_screen">Zablokuj ekran</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Wymaga uprawnienia ułatwień dostępu</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -519,9 +520,9 @@
     <string name="excluded_item_type_file_extension">Rozszerzenie pliku</string>
     <string name="excluded_item_type_folder">Folder</string>
     <string name="file_extension_label">Pliki .%s</string>
-    <string name="file_info_file_type">Typ pliku</string>
-    <string name="file_info_modified">Zmodyfikowano</string>
+    <string name="file_info_modified">Ostatnia modyfikacja</string>
     <string name="file_info_path">Ścieżka</string>
+    <string name="file_path_sd_card">Karta SD</string>
     <string name="file_info_size">Rozmiar</string>
     <string name="file_info_type">Typ</string>
     <string name="file_type_apks">Pliki APK</string>
@@ -972,6 +973,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_add_search_engine_error_required">Wprowadź szablon adresu URL.</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">Alias:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

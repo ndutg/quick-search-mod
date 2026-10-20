@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -60,6 +61,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.core.AppIconShape
@@ -98,7 +102,8 @@ private const val VignetteStrength = 0.10f
  * Calming interstitial shown before a bumped app opens.
  *
  * The ring fills over [SpeedBump.DELAY_MILLIS] while the icon breathes; when it completes,
- * [onOpen] launches the app. "Don't Open" (and system back) abandon the launch via [onCancel].
+ * [onOpen] launches the app. "Don't Open", system back, and leaving the surface abandon the
+ * launch via [onCancel].
  */
 @Composable
 fun SpeedBumpOverlay(
@@ -110,6 +115,8 @@ fun SpeedBumpOverlay(
 ) {
     val context = LocalContext.current
     val currentOnOpen by rememberUpdatedState(onOpen)
+    val currentOnCancel by rememberUpdatedState(onCancel)
+    val lifecycleOwner = LocalLifecycleOwner.current
     // The host drops the pending launch on configuration change, so this only needs to
     // survive recomposition.
     val startedAtMillis by remember(appInfo.packageName) {
@@ -123,6 +130,17 @@ fun SpeedBumpOverlay(
         value = withContext(Dispatchers.IO) {
             AppsRepository(context.applicationContext).getTodayAppUsage(appInfo.packageName)
         }
+    }
+
+    // Leaving the surface (home gesture, recents, screen off) abandons the launch; otherwise the
+    // wall-clock timer would finish in the background and pull the app back to the foreground.
+    DisposableEffect(lifecycleOwner) {
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_STOP) currentOnCancel()
+            }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     LaunchedEffect(appInfo.packageName) {

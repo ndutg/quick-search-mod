@@ -87,11 +87,14 @@ internal fun NonSectionLayoutItem(
                     // rows, and carries the section title whenever it comes first.
                     val showGlanceTitle = !hideHomeSectionTitleRows
                     val mediaCardFirst = nowPlaying != null && !isReversed
+                    val hasOtherGlanceCard = hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty()
                     if (mediaCardFirst && nowPlaying != null) {
-                        if (showGlanceTitle) AtAGlanceTitle()
+                        // Alone, media owns the title so closing it removes the section in one motion.
+                        if (showGlanceTitle && hasOtherGlanceCard) AtAGlanceTitle()
                         NowPlayingCard(
                             glance = nowPlaying,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
+                            showTitle = showGlanceTitle && !hasOtherGlanceCard,
                         )
                     }
                     if (hasStandaloneTodayCalendarSection && regularSectionParams.calendarParams != null) {
@@ -120,11 +123,10 @@ internal fun NonSectionLayoutItem(
                         )
                     }
                     if (nowPlaying != null && isReversed) {
-                        val hasOtherGlanceCard = hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty()
-                        if (showGlanceTitle && !hasOtherGlanceCard) AtAGlanceTitle()
                         NowPlayingCard(
                             glance = nowPlaying,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
+                            showTitle = showGlanceTitle && !hasOtherGlanceCard,
                         )
                     }
                     onAtAGlanceRendered()

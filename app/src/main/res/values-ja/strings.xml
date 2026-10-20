@@ -130,6 +130,7 @@
     <string name="settings_gesture_close_keyboard_notifications">キーボードを閉じる / 通知を開く</string>
     <string name="settings_gesture_close_keyboard">キーボードを閉じる</string>
     <string name="settings_gesture_notification_panel">通知パネル</string>
+    <string name="settings_gesture_view_all_apps">すべてのアプリを表示</string>
     <string name="settings_gesture_lock_screen">画面をロック</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">ユーザー補助の権限が必要です</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -517,9 +518,9 @@
     <string name="excluded_item_type_file_extension">ファイル拡張子</string>
     <string name="excluded_item_type_folder">フォルダ</string>
     <string name="file_extension_label">.%sファイル</string>
-    <string name="file_info_file_type">ファイルの種類</string>
-    <string name="file_info_modified">更新日時</string>
+    <string name="file_info_modified">最終更新日時</string>
     <string name="file_info_path">パス</string>
+    <string name="file_path_sd_card">SDカード</string>
     <string name="file_info_size">サイズ</string>
     <string name="file_info_type">種類</string>
     <string name="file_type_apks">APK</string>
@@ -946,6 +947,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_add_search_engine_error_required">URLテンプレートを入力してください。</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">エイリアス:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

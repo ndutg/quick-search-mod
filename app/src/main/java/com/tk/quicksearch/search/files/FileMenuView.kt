@@ -1,9 +1,10 @@
 package com.tk.quicksearch.search.files
 
 import android.provider.OpenableColumns
+import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -21,8 +22,10 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PinEnd
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.VisibilityOff
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
@@ -40,7 +43,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,11 +65,10 @@ import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.components.itemMenuRemoveOption
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 private data class FileMenuItem(
         val textResId: Int,
@@ -113,44 +117,80 @@ fun FileInfoDialog(
                             } else null
                         }
     }
-    val dateFormat = SimpleDateFormat("MMM d, yyyy, h:mm a", Locale.getDefault())
-    val modifiedText = dateFormat.format(Date(deviceFile.lastModified))
-    val scrollState = rememberScrollState()
-    val fileTypeText = FileUtils.getFileExtension(deviceFile.displayName) ?: "—"
-    val sizeText = fileSizeBytes?.let { formatFileSize(it) } ?: "—"
+    val extension = FileUtils.getFileExtension(deviceFile.displayName)?.uppercase()
+    val sdCardLabel = stringResource(R.string.file_path_sd_card)
+    val locationText =
+            remember(deviceFile, sdCardLabel) {
+                FileFolderPathFormatter.format(deviceFile)?.let { path ->
+                    val parts = if (path.isSecondaryVolume) listOf(sdCardLabel) + path.segments else path.segments
+                    parts.joinToString(" › ")
+                }
+            }
+    // MediaStore DATE_MODIFIED is in seconds.
+    val modifiedText =
+            remember(deviceFile.lastModified) {
+                deviceFile.lastModified.takeIf { it > 0 }?.let {
+                    DateUtils.formatDateTime(
+                            context,
+                            TimeUnit.SECONDS.toMillis(it),
+                            DateUtils.FORMAT_SHOW_DATE or
+                                    DateUtils.FORMAT_SHOW_TIME or
+                                    DateUtils.FORMAT_ABBREV_MONTH,
+                    )
+                }
+            }
 
     AppAlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text(text = deviceFile.displayName) },
             text = {
-                Column(
-                        modifier = Modifier.verticalScroll(scrollState),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    listOf(
-                                    stringResource(R.string.file_info_type) to
-                                            (deviceFile.mimeType ?: "—"),
-                                    stringResource(R.string.file_info_file_type) to fileTypeText,
-                                    stringResource(R.string.file_info_size) to sizeText,
-                                    stringResource(R.string.file_info_modified) to modifiedText,
-                                    stringResource(R.string.file_info_path) to
-                                            (deviceFile.relativePath ?: "—"),
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Row(
+                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                            verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        FileResultThumbnailOrIcon(
+                                deviceFile = deviceFile,
+                                iconOverride = null,
+                                iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                                text = FileUtils.getFileNameWithoutExtension(deviceFile.displayName),
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    HorizontalDivider(
+                            modifier = Modifier.padding(vertical = DesignTokens.SpacingLarge),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge)) {
+                        Row {
+                            FileInfoSection(
+                                    icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
+                                    label = stringResource(R.string.file_info_type),
+                                    value = extension ?: "—",
+                                    modifier = Modifier.weight(1f),
                             )
-                            .forEach { (label, value) ->
-                                Column(modifier = Modifier.fillMaxWidth()) {
-                                    Text(
-                                            text = label,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                    Text(
-                                            text = value,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            modifier = Modifier.padding(top = 2.dp),
-                                    )
-                                }
-                            }
+                            FileInfoSection(
+                                    icon = Icons.Rounded.Storage,
+                                    label = stringResource(R.string.file_info_size),
+                                    value = fileSizeBytes?.let { formatFileSize(it) } ?: "—",
+                                    modifier = Modifier.weight(1f),
+                            )
+                        }
+                        FileInfoSection(
+                                icon = Icons.Rounded.Folder,
+                                label = stringResource(R.string.file_info_path),
+                                value = locationText ?: "—",
+                        )
+                        FileInfoSection(
+                                icon = Icons.Rounded.Schedule,
+                                label = stringResource(R.string.file_info_modified),
+                                value = modifiedText ?: "—",
+                        )
+                    }
                 }
             },
             confirmButton = {
@@ -159,6 +199,39 @@ fun FileInfoDialog(
                 }
             },
     )
+}
+
+@Composable
+private fun FileInfoSection(
+        icon: ImageVector,
+        label: String,
+        value: String,
+        modifier: Modifier = Modifier,
+) {
+    Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+    ) {
+        Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp).size(20.dp),
+        )
+        Column {
+            Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(top = 2.dp),
+            )
+        }
+    }
 }
 
 @Composable

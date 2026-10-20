@@ -128,6 +128,7 @@ object SettingsBackupManager {
             BasePreferences.KEY_ANTHROPIC_PERSONAL_CONTEXT,
             BasePreferences.KEY_GROQ_PERSONAL_CONTEXT,
             BasePreferences.KEY_META_PERSONAL_CONTEXT,
+            BasePreferences.KEY_OPENCODE_PERSONAL_CONTEXT,
         )
 
     fun exportToUri(

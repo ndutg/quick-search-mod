@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -30,6 +31,7 @@ import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
+import com.tk.quicksearch.search.files.FileExtensionQuery
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.dialogs.NicknameDialogState
 import com.tk.quicksearch.search.searchScreen.dialogs.TriggerDialogState
@@ -218,7 +220,12 @@ internal fun SearchScreenStateManagement(
     // Section expansion state
     var expandedSection by remember { mutableStateOf(ExpandedSection.NONE) }
     // Collapsing a section only brings the keyboard back if it was open when the section expanded.
-    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    // Derived so the keyboard animation does not recompose the search screen on every frame.
+    val imeInsets = WindowInsets.ime
+    val imeDensity = LocalDensity.current
+    val isImeVisible by remember(imeInsets, imeDensity) {
+        derivedStateOf { imeInsets.getBottom(imeDensity) > 0 }
+    }
     val currentIsImeVisible by rememberUpdatedState(isImeVisible)
     var keyboardOpenBeforeExpand by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -278,14 +285,19 @@ internal fun SearchScreenStateManagement(
         }
     }
 
+    // Extension queries (".mkv") return only files, so their results open expanded too.
+    val isFileExtensionQuery = remember(state.query) { FileExtensionQuery.parse(state.query) != null }
+    val expandFileExtensionResults =
+        isFileExtensionQuery && !state.topMatchesEnabled && state.fileResults.isNotEmpty()
+
     // Keep alias-triggered searches expanded by default.
-    LaunchedEffect(state.query, state.detectedAliasSearchSection) {
+    LaunchedEffect(state.query, state.detectedAliasSearchSection, expandFileExtensionResults) {
         val aliasSection = state.detectedAliasSearchSection
         expandedSection =
-            if (aliasSection != null) {
-                aliasSection.toExpandedSectionOrNone()
-            } else {
-                ExpandedSection.NONE
+            when {
+                aliasSection != null -> aliasSection.toExpandedSectionOrNone()
+                expandFileExtensionResults -> ExpandedSection.FILES
+                else -> ExpandedSection.NONE
             }
     }
 

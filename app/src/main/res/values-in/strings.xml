@@ -130,6 +130,7 @@
     <string name="settings_gesture_close_keyboard_notifications">Tutup Keyboard / Buka Notifikasi</string>
     <string name="settings_gesture_close_keyboard">Tutup Keyboard</string>
     <string name="settings_gesture_notification_panel">Panel Notifikasi</string>
+    <string name="settings_gesture_view_all_apps">Lihat Semua Aplikasi</string>
     <string name="settings_gesture_lock_screen">Kunci Layar</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -513,9 +514,9 @@
     <string name="excluded_item_type_file_extension">Ekstensi File</string>
     <string name="excluded_item_type_folder">Folder</string>
     <string name="file_extension_label">File .%s</string>
-    <string name="file_info_file_type">Jenis file</string>
-    <string name="file_info_modified">Diubah</string>
+    <string name="file_info_modified">Terakhir diubah</string>
     <string name="file_info_path">Jalur</string>
+    <string name="file_path_sd_card">Kartu SD</string>
     <string name="file_info_size">Ukuran</string>
     <string name="file_info_type">Jenis</string>
     <string name="file_type_apks">APK</string>
@@ -939,6 +940,7 @@
     <string name="settings_add_search_engine_error_required">Silakan masukkan template URL.</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">Alias:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

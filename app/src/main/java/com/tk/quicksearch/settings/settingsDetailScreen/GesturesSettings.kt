@@ -116,10 +116,7 @@ fun GesturesSettingsSection(
                                 icon = direction.gestureIcon(),
                                 description =
                                     if (direction == SwipeDirection.RIGHT && state.isDefaultLauncher) {
-                                        stringResource(
-                                            if (state.isLauncherSwipeRightEnabled) R.string.settings_gesture_widget_panel
-                                            else R.string.settings_gesture_none,
-                                        )
+                                        stringResource(state.launcherSwipeRightAction.labelResId())
                                     } else if (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) {
                                         val gesture = if (direction == SwipeDirection.UP) HomeGesture.SWIPE_UP else HomeGesture.SWIPE_DOWN
                                         homeGestureDescription(state.homeActions.getValue(gesture), state.homeCustomActions[gesture], state.homeAliasTargets[gesture], searchState)

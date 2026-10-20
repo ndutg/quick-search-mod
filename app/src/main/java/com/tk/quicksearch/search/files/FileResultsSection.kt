@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.AudioFile
 import androidx.compose.material.icons.rounded.ExpandMore
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -74,6 +76,7 @@ import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentP
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.search.utils.FileUtils
+import com.tk.quicksearch.shared.ui.components.AppPill
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppTheme
@@ -468,7 +471,7 @@ private fun fileResultIcon(deviceFile: DeviceFile): ImageVector {
 }
 
 @Composable
-private fun FileResultThumbnailOrIcon(
+internal fun FileResultThumbnailOrIcon(
         deviceFile: DeviceFile,
         iconOverride: ImageVector?,
         iconTint: Color,
@@ -667,18 +670,41 @@ internal fun FileResultRow(
                                     ),
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.86f),
                     )
-                    extension?.let {
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                                text = it.uppercase(),
-                                style =
-                                        MaterialTheme.typography.bodySmall.copy(
-                                                fontWeight = FontWeight.SemiBold,
-                                        ),
-                                color =
-                                        MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                                alpha = 0.64f,
-                                        ),
+                    val sdCardLabel = stringResource(R.string.file_path_sd_card)
+                    val folderLabel =
+                            remember(deviceFile, sdCardLabel) {
+                                FileFolderPathFormatter.folderLabel(
+                                        folderPath = FileFolderPathFormatter.format(deviceFile),
+                                        secondaryVolumeLabel = sdCardLabel,
+                                )
+                            }
+                    if (extension != null || folderLabel != null) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(
+                                horizontalArrangement =
+                                        Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                                verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            extension?.let { AppPill(text = it.uppercase(), compact = true) }
+                            folderLabel?.let {
+                                AppPill(
+                                        text = it,
+                                        leadingIcon = Icons.Rounded.Folder,
+                                        compact = true,
+                                        modifier = Modifier.weight(1f, fill = false),
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (!deviceFile.isDirectory) {
+                    IconButton(onClick = { showFileInfoDialog = true }) {
+                        Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = stringResource(R.string.action_file_info),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                modifier = Modifier.size(18.dp),
                         )
                     }
                 }

@@ -14,7 +14,10 @@ object UpdateHelper {
         onUpdateStateChanged: (AppUpdateState) -> Unit,
     ) = Unit
 
-    fun startUpdate(activity: Activity) = Unit
+    fun startUpdate(
+        activity: Activity,
+        onUpdateStateChanged: (AppUpdateState) -> Unit,
+    ) = Unit
 
     fun completeUpdate(activity: Activity) = Unit
 }

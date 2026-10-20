@@ -15,6 +15,7 @@ import com.tk.quicksearch.search.data.FileSearchRepository
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsSearchHandler
+import com.tk.quicksearch.search.files.FileExtensionQuery
 import com.tk.quicksearch.search.files.FileSearchHandler
 import com.tk.quicksearch.search.files.FileSearchPolicy
 import com.tk.quicksearch.search.files.FolderPathPatternMatcher
@@ -88,6 +89,11 @@ class UnifiedSearchHandler(
                         }
 
                         val queryContext = SearchQueryContext.fromRawQuery(trimmedQuery)
+                        // ".mkv test" searches only mkv files, matching and ranking by "test".
+                        val fileExtensionQuery = FileExtensionQuery.parse(trimmedQuery)
+                        val fileQueryContext = fileExtensionQuery?.nameQueryContext ?: queryContext
+                        val isExtensionOnlyFileQuery =
+                                fileExtensionQuery != null && fileQueryContext.normalizedQuery.isBlank()
                         val contactsConfig =
                                 sectionSearchConfig[SearchSection.CONTACTS]
                                         ?: UnifiedSectionSearchConfig()
@@ -151,7 +157,7 @@ class UnifiedSearchHandler(
                         val fileFuzzyPolicy =
                                 FuzzySearchPolicyResolver.effectivePolicy(
                                         section = SearchSection.FILES,
-                                        query = queryContext.normalizedQuery,
+                                        query = fileQueryContext.normalizedQuery,
                                         isLowRamDevice = isLowRamDevice,
                                 )
                         val contactFuzzyCandidateLimit = contactFuzzyPolicy.candidateLimit
@@ -285,7 +291,7 @@ class UnifiedSearchHandler(
                                                                 search = {
                                                                         SectionSearchResultPayload.Files(
                                                                                 fileSearchHandler.searchFiles(
-                                                                                        queryContext,
+                                                                                        fileQueryContext,
                                                                                         enabledFileTypes,
                                                                                         excludedFileUris,
                                                                                         excludedFileExtensions,
@@ -302,6 +308,7 @@ class UnifiedSearchHandler(
                                                                                                 fileResultLimit,
                                                                                         fuzzyCandidateLimit =
                                                                                                 fileFuzzyCandidateLimit,
+                                                                                        extensionQuery = fileExtensionQuery,
                                                                                 )
                                                                         )
                                                                 },
@@ -310,9 +317,9 @@ class UnifiedSearchHandler(
                                                                                 val nicknameResults =
                                                                                         findNicknameOnlyFiles(
                                                                                                 payload.results,
-                                                                                                queryContext,
+                                                                                                fileQueryContext,
                                                                                                 enabledFileTypes,
-                                                                                                canSearchFiles,
+                                                                                                canSearchFiles && !isExtensionOnlyFileQuery,
                                                                                                 excludedFileUris,
                                                                                                 excludedFileExtensions,
                                                                                                 folderWhitelistPatterns,
@@ -320,11 +327,14 @@ class UnifiedSearchHandler(
                                                                                                 showFolders,
                                                                                                 showSystemFiles,
                                                                                                 nicknameOnlyFileUriHydrationLimit,
-                                                                                        )
+                                                                                        ).filter {
+                                                                                                fileExtensionQuery?.matchesFileName(it.displayName, it.isDirectory) != false
+                                                                                        }
                                                                                 fileResults =
-                                                                                        resultRanker.filterAndRankFiles(
+                                                                                        if (isExtensionOnlyFileQuery) payload.results
+                                                                                        else resultRanker.filterAndRankFiles(
                                                                                                 payload.results + nicknameResults,
-                                                                                                queryContext,
+                                                                                                fileQueryContext,
                                                                                                 recencyIndex.fileScores,
                                                                                                 recencyIndex.fileOpenCounts,
                                                                                                 secondaryRankingSignal,

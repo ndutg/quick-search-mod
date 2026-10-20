@@ -129,6 +129,7 @@
     <string name="settings_gesture_close_keyboard_notifications">Cerrar teclado / Abrir notificaciones</string>
     <string name="settings_gesture_close_keyboard">Cerrar teclado</string>
     <string name="settings_gesture_notification_panel">Panel de notificaciones</string>
+    <string name="settings_gesture_view_all_apps">Ver todas las apps</string>
     <string name="settings_gesture_lock_screen">Bloquear pantalla</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requiere permiso de accesibilidad</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -510,9 +511,9 @@
     <string name="excluded_item_type_file_extension">Extensión de archivo</string>
     <string name="excluded_item_type_folder">Carpeta</string>
     <string name="file_extension_label">Archivos .%s</string>
-    <string name="file_info_file_type">Tipo de archivo</string>
-    <string name="file_info_modified">Modificado</string>
+    <string name="file_info_modified">Última modificación</string>
     <string name="file_info_path">Ruta</string>
+    <string name="file_path_sd_card">Tarjeta SD</string>
     <string name="file_info_size">Tamaño</string>
     <string name="file_info_type">Tipo</string>
     <string name="file_type_apks">APKs</string>
@@ -937,6 +938,7 @@
     <string name="settings_add_search_engine_error_required">Por favor, introduce una plantilla de URL.</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">Alias:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

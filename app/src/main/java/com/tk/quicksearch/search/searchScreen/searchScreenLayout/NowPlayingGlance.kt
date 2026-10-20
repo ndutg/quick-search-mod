@@ -34,6 +34,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +63,19 @@ import com.tk.quicksearch.media.MediaSeek
 import com.tk.quicksearch.media.openMediaSessionPlayer
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import kotlinx.coroutines.delay
+
+/** States a session passes through while loading or switching tracks; the card stays up through them. */
+private val NowPlayingTransitionStates =
+    setOf(
+        PlaybackState.STATE_BUFFERING,
+        PlaybackState.STATE_CONNECTING,
+        PlaybackState.STATE_SKIPPING_TO_NEXT,
+        PlaybackState.STATE_SKIPPING_TO_PREVIOUS,
+        PlaybackState.STATE_SKIPPING_TO_QUEUE_ITEM,
+        PlaybackState.STATE_FAST_FORWARDING,
+        PlaybackState.STATE_REWINDING,
+    )
 
 private val NowPlayingAlbumArtSize = 56.dp
 private val NowPlayingControlButtonSize = 44.dp
@@ -136,6 +151,24 @@ private object NowPlayingPausedFromCard {
  */
 @Composable
 internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
+    val live = rememberLiveNowPlayingGlance(enabled)
+    // Changing tracks briefly reports a paused/stopped state or empty metadata on many players,
+    // so keep the last card for a moment instead of hiding it and popping it back in.
+    var lastShown by remember { mutableStateOf<NowPlayingGlance?>(null) }
+    val canHold = enabled && NowPlayingDismissal.sessionToken == null
+    SideEffect { if (live != null) lastShown = live }
+    LaunchedEffect(live == null, canHold) {
+        if (live != null) return@LaunchedEffect
+        if (canHold) delay(NowPlayingTransitionHoldMs)
+        lastShown = null
+    }
+    return live ?: lastShown?.takeIf { canHold }
+}
+
+private const val NowPlayingTransitionHoldMs = 2_000L
+
+@Composable
+private fun rememberLiveNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val repository = remember(context) { MediaPlaybackRepository(context) }
@@ -205,7 +238,7 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
         activeMetadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
             ?: activeMetadata.getBitmap(MediaMetadata.METADATA_KEY_ART)
     val isPlaying = playbackState?.state == PlaybackState.STATE_PLAYING
-    val isActivelyPlaying = isPlaying || playbackState?.state == PlaybackState.STATE_BUFFERING
+    val isActivelyPlaying = isPlaying || playbackState?.state in NowPlayingTransitionStates
     val isPausedFromCard = pausedFromCard.sessionToken == activeController.sessionToken
     val isSeekMode = MediaSeek.isSeekMode(activeMetadata, playbackState)
     val dismissedForCurrentSession = dismissal.sessionToken == activeController.sessionToken
@@ -316,7 +349,10 @@ internal fun rememberNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
 }
 
 @Composable
-internal fun NowPlayingRow(glance: NowPlayingGlance) {
+internal fun NowPlayingRow(
+    glance: NowPlayingGlance,
+    onDismiss: () -> Unit = glance.dismiss,
+) {
     Row(
         modifier =
             Modifier
@@ -351,7 +387,7 @@ internal fun NowPlayingRow(glance: NowPlayingGlance) {
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                 )
-                IconButton(onClick = glance.dismiss, modifier = Modifier.size(NowPlayingDismissButtonSize)) {
+                IconButton(onClick = onDismiss, modifier = Modifier.size(NowPlayingDismissButtonSize)) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = stringResource(R.string.common_close),

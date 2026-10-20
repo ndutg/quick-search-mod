@@ -129,6 +129,7 @@
     <string name="settings_gesture_close_keyboard_notifications">कीबोर्ड बंद करें / नोटिफिकेशन खोलें</string>
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
     <string name="settings_gesture_notification_panel">नोटिफिकेशन पैनल</string>
+    <string name="settings_gesture_view_all_apps">सभी ऐप्स देखें</string>
     <string name="settings_gesture_lock_screen">स्क्रीन लॉक करें</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">सुलभता अनुमति आवश्यक है</string>
     <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -510,9 +511,9 @@
     <string name="excluded_item_type_file_extension">फाइल एक्सटेंशन</string>
     <string name="excluded_item_type_folder">फोल्डर</string>
     <string name="file_extension_label">.%s फाइलें</string>
-    <string name="file_info_file_type">फाइल प्रकार</string>
-    <string name="file_info_modified">संशोधित</string>
+    <string name="file_info_modified">अंतिम संशोधन</string>
     <string name="file_info_path">पथ</string>
+    <string name="file_path_sd_card">SD कार्ड</string>
     <string name="file_info_size">आकार</string>
     <string name="file_info_type">प्रकार</string>
     <string name="file_type_apks">APKs</string>
@@ -937,6 +938,7 @@
     <string name="settings_add_search_engine_error_required">कृपया URL टेम्पलेट दर्ज करें।</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
     <string name="settings_ai_provider_openai">OpenAI</string>
     <string name="settings_alias_label">उपनाम:</string>
     <string name="settings_amazon_domain_default">amazon.com</string>

@@ -36,7 +36,7 @@ A fast, private Android search app and launcher. Search **apps, app shortcuts, c
 ### 🌐 Web & AI
 - **30 Search Engines**: Google, ChatGPT, Gemini, Perplexity, Claude, Kagi, DuckDuckGo, YouTube, Spotify, Reddit, Wikipedia, and more. Reorder, disable, or assign aliases (`ggl` → Google). Installed browsers and custom engines can be added too.
 - **Web Suggestions**: Suggestions as you type, with a configurable count.
-- **AI Search**: AI answers with follow-up questions and optional personal context. Works with Gemini, OpenAI, Claude, Groq, and Meta AI, or any OpenAI-compatible provider. Add a Tavily key for web results on models without built-in search.
+- **AI Search**: AI answers with follow-up questions and optional personal context. Works with Gemini, OpenAI, Claude, Groq, Meta AI, and OpenCode, or any OpenAI-compatible provider. Add a Tavily key for web results on models without built-in search.
 - **Custom AI Tools**: Build your own AI-powered tools (requires an API key).
 
 ### 🧰 Tools

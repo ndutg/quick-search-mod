@@ -609,6 +609,12 @@ abstract class BasePreferences(
         const val KEY_META_MODEL = "meta_model"
         const val KEY_META_GROUNDING_ENABLED = "meta_grounding_enabled"
         const val KEY_META_THINKING_ENABLED = "meta_thinking_enabled"
+
+        // OpenCode preferences keys
+        const val KEY_OPENCODE_API_KEY = "opencode_api_key"
+        const val KEY_OPENCODE_PERSONAL_CONTEXT = "opencode_personal_context"
+        const val KEY_OPENCODE_MODEL = "opencode_model"
+        const val KEY_OPENCODE_GROUNDING_ENABLED = "opencode_grounding_enabled"
         const val KEY_CUSTOM_LLM_PROVIDERS = "custom_llm_providers"
 
         // Tavily web search preferences keys

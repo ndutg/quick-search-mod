@@ -2,6 +2,7 @@ package com.tk.quicksearch.search.core
 
 import android.os.SystemClock
 import com.tk.quicksearch.search.apps.AppSearchPerformanceLogger
+import com.tk.quicksearch.search.files.FileExtensionQuery
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import com.tk.quicksearch.searchEngines.AliasHandler
@@ -543,7 +544,9 @@ internal class SearchQueryCoordinator(
 
         val aliasState = aliasStateProvider()
         val detectedTarget: SearchTarget? = aliasState.lockedShortcutTarget
-        val detectedAliasSearchSection: SearchSection? = aliasState.lockedAliasSearchSection
+        // Extension queries (".mkv test") search only files, without entering Files alias mode.
+        val detectedAliasSearchSection: SearchSection? =
+            aliasState.lockedAliasSearchSection ?: FileExtensionQuery.parse(trimmedQuery)?.let { SearchSection.FILES }
 
         val calculatorResult =
             toolCoordinator.resolveToolState(
@@ -633,7 +636,7 @@ internal class SearchQueryCoordinator(
                         emptySet()
                     },
                 detectedShortcutTarget = detectedTarget,
-                detectedAliasSearchSection = detectedAliasSearchSection,
+                detectedAliasSearchSection = aliasState.lockedAliasSearchSection,
                 isCurrencyConverterAliasMode = aliasState.lockedCurrencyConverterAlias,
                 isWorldClockAliasMode = aliasState.lockedWorldClockAlias,
                 isDictionaryAliasMode = aliasState.lockedDictionaryAlias,
@@ -717,23 +720,7 @@ internal class SearchQueryCoordinator(
         }
 
         if (!showingTool) {
-            if (aliasState.lockedCurrencyConverterAlias) {
-                secondarySearchOrchestrator.cancel()
-                updateResultsState {
-                    it.copy(
-                        contactResults = emptyList(),
-                        fileResults = emptyList(),
-                        settingResults = emptyList(),
-                        appSettingResults = emptyList(),
-                        appShortcutResults = emptyList(),
-                        calendarEvents = emptyList(),
-                        reminderResults = emptyList(),
-                        noteResults = emptyList(),
-                        webSuggestions = emptyList(),
-                        webSuggestionsLoading = false,
-                    )
-                }
-            } else if (aliasState.lockedWorldClockAlias || aliasState.lockedDictionaryAlias || aliasState.lockedWeatherAlias || aliasState.lockedCustomToolId != null || aliasState.lockedTaskerIntentId != null) {
+            if (aliasState.lockedCurrencyConverterAlias || aliasState.lockedWorldClockAlias || aliasState.lockedDictionaryAlias || aliasState.lockedWeatherAlias || aliasState.lockedCustomToolId != null || aliasState.lockedTaskerIntentId != null) {
                 secondarySearchOrchestrator.cancel()
                 updateResultsState {
                     it.copy(

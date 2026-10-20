@@ -70,6 +70,11 @@ internal class OngoingCallNotification(
     val contentIntent: PendingIntent?,
     /** The call style notification's own hang up action, if it has one. */
     val hangUpIntent: PendingIntent?,
+    /**
+     * The notification offers a hang up that only opens the call screen (Samsung's phone app), so
+     * the call is ended through [android.telecom.TelecomManager] instead.
+     */
+    val endsThroughTelecom: Boolean = false,
 )
 
 /**
@@ -305,6 +310,8 @@ internal object GlanceNotificationsStore {
         val isConnected =
             if (callType != CALL_TYPE_UNKNOWN) callType == CALL_TYPE_ONGOING else notification.fullScreenIntent == null
         if (!isConnected) return null
+        val offeredHangUp = offeredHangUpIntents(extras)
+        val hangUpIntent = offeredHangUp.firstOrNull { !opensCallScreen(it) }
         return OngoingCallNotification(
             key = key,
             packageName = packageName,
@@ -315,7 +322,8 @@ internal object GlanceNotificationsStore {
                     ?.takeIf(String::isNotEmpty),
             startTime = callStartTime(context, extras),
             contentIntent = notification.contentIntent,
-            hangUpIntent = hangUpIntent(extras),
+            hangUpIntent = hangUpIntent,
+            endsThroughTelecom = hangUpIntent == null && offeredHangUp.isNotEmpty(),
         )
     }
 
@@ -353,21 +361,42 @@ internal object GlanceNotificationsStore {
         val chronometer = findRemoteChronometer(context, extras)
         val start =
             chronometer
-                ?.takeIf { !it.isCountDown && it.isStarted() != false }
+                ?.takeIf { !it.isCountDown && it.isStarted() != false && it.isShownCounting() }
                 ?.let { System.currentTimeMillis() - (SystemClock.elapsedRealtime() - it.base) }
         remoteCallStartCache[key] = postTime to start
         return start
     }
 
-    /**
-     * The hang up action, unless it is the same intent as the notification's tap target: Samsung's
-     * phone app sets both to open its call screen, so it wouldn't hang up.
-     */
+    /** The call style's hang up intent, then the hang up action button, when the notification has them. */
     @Suppress("DEPRECATION")
-    private fun StatusBarNotification.hangUpIntent(extras: Bundle): PendingIntent? =
-        runCatching { extras.getParcelable<PendingIntent>(EXTRA_HANG_UP_INTENT) }
-            .getOrNull()
-            ?.takeIf { it != notification.contentIntent && it != notification.fullScreenIntent }
+    private fun StatusBarNotification.offeredHangUpIntents(extras: Bundle): List<PendingIntent> =
+        listOfNotNull(
+            runCatching { extras.getParcelable<PendingIntent>(EXTRA_HANG_UP_INTENT) }.getOrNull(),
+            hangUpActionIntent(),
+        )
+
+    /**
+     * Whether [intent] is the same intent as the notification's tap target: Samsung's phone app sets
+     * its hang up to that too, which only opens its call screen.
+     */
+    private fun StatusBarNotification.opensCallScreen(intent: PendingIntent): Boolean =
+        intent == notification.contentIntent || intent == notification.fullScreenIntent
+
+    /**
+     * Dialers without the call style (Samsung's, for one) offer the hang up only as a notification
+     * action: the one titled like it, or else the only button.
+     */
+    private fun StatusBarNotification.hangUpActionIntent(): PendingIntent? {
+        val actions = notification.actions.orEmpty().filter { it.remoteInputs.isNullOrEmpty() && it.actionIntent != null }
+        val byTitle =
+            actions.firstOrNull { action ->
+                val title = action.title?.toString()?.lowercase().orEmpty()
+                HANG_UP_TITLES.any { it in title }
+            }
+        return (byTitle ?: actions.singleOrNull())?.actionIntent
+    }
+
+    private val HANG_UP_TITLES = listOf("end", "hang", "disconnect", "hangup")
 
     @Suppress("DEPRECATION")
     private fun callPersonName(extras: Bundle): CharSequence? =
@@ -599,6 +628,20 @@ internal object GlanceNotificationsStore {
             getChildAt(index).findChronometer()?.let { return it }
         }
         return null
+    }
+
+    /**
+     * Whether the chronometer is actually on screen. In-call layouts keep a chronometer view while
+     * dialing, hidden or blank, with its base at the time the notification was posted; only a
+     * visible one with text is a connected call's timer.
+     */
+    private fun Chronometer.isShownCounting(): Boolean {
+        var view: View? = this
+        while (view != null) {
+            if (view.visibility != View.VISIBLE) return false
+            view = view.parent as? View
+        }
+        return !text.isNullOrBlank()
     }
 
     /** Whether the chronometer is counting, or null when that cannot be read (it is not public API). */

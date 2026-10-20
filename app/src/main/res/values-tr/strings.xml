@@ -128,6 +128,7 @@
 <string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
+<string name="settings_gesture_view_all_apps">Tüm uygulamaları görüntüle</string>
 <string name="settings_gesture_lock_screen">Ekranı Kilitle</string>
 <string name="settings_gesture_lock_screen_requires_accessibility">Erişilebilirlik İzni Gerekir</string>
 <string name="accessibility_lock_screen_service_label">Quick Search</string>
@@ -509,9 +510,9 @@
 <string name="excluded_item_type_file_extension">Dosya uzantısı</string>
 <string name="excluded_item_type_folder">Klasör</string>
 <string name="file_extension_label">.%s dosyaları</string>
-<string name="file_info_file_type">Dosya türü</string>
-<string name="file_info_modified">Değiştirilme tarihi</string>
+<string name="file_info_modified">Son değiştirilme</string>
 <string name="file_info_path">Yol</string>
+<string name="file_path_sd_card">SD kart</string>
 <string name="file_info_size">Boyut</string>
 <string name="file_info_type">Tür</string>
 <string name="file_type_apks">APK\'lar</string>
@@ -936,6 +937,7 @@
 <string name="settings_add_search_engine_error_required">Lütfen bir URL şablonu gir.</string>
     <string name="settings_ai_provider_groq">Groq</string>
     <string name="settings_ai_provider_meta">Meta AI</string>
+    <string name="settings_ai_provider_opencode">OpenCode</string>
 <string name="settings_ai_provider_openai">OpenAI</string>
 <string name="settings_alias_label">Kısaltma:</string>
 <string name="settings_amazon_domain_default">amazon.com</string>
