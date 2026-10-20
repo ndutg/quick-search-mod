@@ -513,9 +513,9 @@
 <string name="excluded_item_type_file_extension">Расширение файла</string>
 <string name="excluded_item_type_folder">Папка</string>
 <string name="file_extension_label">Файлы .%s</string>
-<string name="file_info_file_type">Тип файла</string>
-<string name="file_info_modified">Изменен</string>
+<string name="file_info_modified">Последнее изменение</string>
 <string name="file_info_path">Путь</string>
+<string name="file_path_sd_card">SD-карта</string>
 <string name="file_info_size">Размер</string>
 <string name="file_info_type">Тип</string>
 <string name="file_type_apks">Файлы APK</string>

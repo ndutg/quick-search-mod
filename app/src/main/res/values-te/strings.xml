@@ -511,9 +511,9 @@
     <string name="excluded_item_type_file_extension">ఫైల్ ఎక్స్‌టెన్షన్</string>
     <string name="excluded_item_type_folder">ఫోల్డర్</string>
     <string name="file_extension_label">.%s ఫైళ్లు</string>
-    <string name="file_info_file_type">ఫైల్ రకం</string>
-    <string name="file_info_modified">సవరించబడింది</string>
+    <string name="file_info_modified">చివరిగా సవరించబడింది</string>
     <string name="file_info_path">పాత్</string>
+    <string name="file_path_sd_card">SD కార్డ్</string>
     <string name="file_info_size">పరిమాణం</string>
     <string name="file_info_type">రకం</string>
     <string name="file_type_apks">APKలు</string>
