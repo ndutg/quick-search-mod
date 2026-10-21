@@ -15,7 +15,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
@@ -372,13 +377,42 @@ internal fun AtAGlanceCard(
     }
 }
 
-/** Media controls sit in their own card under the At a Glance title, apart from the other rows. */
+/**
+ * Media controls sit in their own card under the At a Glance title, apart from the other rows.
+ * Closing it collapses the card first and records the dismissal once that animation ends. When
+ * media is the only At a Glance item, pass [showTitle] so the title collapses with the card and
+ * the whole section leaves in one motion.
+ */
 @Composable
 internal fun NowPlayingCard(
     glance: NowPlayingGlance,
     showWallpaperBackground: Boolean,
+    showTitle: Boolean = false,
 ) {
-    AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
-        NowPlayingRow(glance)
+    val visibility = remember { MutableTransitionState(true) }
+    val currentDismiss by rememberUpdatedState(glance.dismiss)
+    var dismissed by remember { mutableStateOf(false) }
+    val finishDismiss = {
+        if (!dismissed) {
+            dismissed = true
+            currentDismiss()
+        }
+    }
+    if (!visibility.targetState && visibility.isIdle) SideEffect { finishDismiss() }
+    // Leaving home mid-collapse still dismisses, so the card doesn't come back on return.
+    DisposableEffect(Unit) {
+        onDispose { if (!visibility.targetState) finishDismiss() }
+    }
+    AnimatedVisibility(
+        visibleState = visibility,
+        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+    ) {
+        // Matches the spacing of the home column the title and card sit in.
+        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            if (showTitle) AtAGlanceTitle()
+            AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
+                NowPlayingRow(glance, onDismiss = { visibility.targetState = false })
+            }
+        }
     }
 }
