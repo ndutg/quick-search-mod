@@ -2,6 +2,8 @@ package com.tk.quicksearch.media
 
 import android.content.Context
 import android.media.AudioManager
+import android.media.session.MediaController
+import android.media.session.PlaybackState
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.annotation.DrawableRes
@@ -66,31 +68,56 @@ enum class MediaCommand(
 
 object MediaControls {
     /**
-     * Sends [command] as a media key, which the system routes to the active media session. Unlike
-     * the At a Glance card, which drives the exact session it shows through its MediaController,
-     * this needs no notification access, so custom buttons work without that grant.
+     * Sends [command] to the priority media session. With notification access it goes through that
+     * session's MediaController, like the At a Glance card; some OEM builds (One UI 9) drop media
+     * keys dispatched from a background app, so the controller is preferred. Without access it
+     * falls back to a media key, which the system routes to the active session, so custom buttons
+     * still work without that grant.
      *
-     * Seek commands need an exact 15 second jump, which only a MediaController can do. With
-     * notification access they seek the priority session; without it, or when that session refuses
-     * seeks, they fall back to the rewind/fast-forward media key and the player decides the step.
+     * Seek commands need an exact 15 second jump, which only a MediaController can do. When the
+     * session refuses seeks they fall back to the rewind/fast-forward media key and the player
+     * decides the step.
      */
     fun dispatch(
         context: Context,
         command: MediaCommand,
     ) {
-        val seekDeltaMs = command.seekDeltaMs
-        if (seekDeltaMs != null) {
-            val controller = MediaPlaybackRepository(context).priorityController()
-            if (controller != null && MediaSeek.supportsSeek(runCatching { controller.playbackState }.getOrNull())) {
-                MediaSeek.seekBy(controller, seekDeltaMs)
-                return
-            }
-        }
+        val controller = MediaPlaybackRepository(context).priorityController()
+        if (controller != null && sendThroughController(controller, command)) return
         val audioManager = context.getSystemService(AudioManager::class.java) ?: return
         val time = SystemClock.uptimeMillis()
         runCatching {
             audioManager.dispatchMediaKeyEvent(KeyEvent(time, time, KeyEvent.ACTION_DOWN, command.keyCode, 0))
             audioManager.dispatchMediaKeyEvent(KeyEvent(time, time, KeyEvent.ACTION_UP, command.keyCode, 0))
         }
+    }
+
+    /** Returns false when [controller] can't run [command], so the caller falls back to a media key. */
+    private fun sendThroughController(
+        controller: MediaController,
+        command: MediaCommand,
+    ): Boolean {
+        val playbackState = runCatching { controller.playbackState }.getOrNull()
+        val seekDeltaMs = command.seekDeltaMs
+        if (seekDeltaMs != null) {
+            if (!MediaSeek.supportsSeek(playbackState)) return false
+            MediaSeek.seekBy(controller, seekDeltaMs)
+            return true
+        }
+        return runCatching {
+            val controls = controller.transportControls
+            when (command) {
+                MediaCommand.PLAY_PAUSE ->
+                    when (playbackState?.state) {
+                        PlaybackState.STATE_PLAYING,
+                        PlaybackState.STATE_BUFFERING,
+                        -> controls.pause()
+                        else -> controls.play()
+                    }
+                MediaCommand.PREVIOUS -> controls.skipToPrevious()
+                MediaCommand.NEXT -> controls.skipToNext()
+                MediaCommand.SEEK_BACK, MediaCommand.SEEK_FORWARD -> return false
+            }
+        }.isSuccess
     }
 }

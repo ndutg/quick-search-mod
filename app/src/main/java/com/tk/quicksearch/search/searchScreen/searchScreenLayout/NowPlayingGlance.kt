@@ -349,7 +349,10 @@ private fun rememberLiveNowPlayingGlance(enabled: Boolean): NowPlayingGlance? {
 }
 
 @Composable
-internal fun NowPlayingRow(glance: NowPlayingGlance) {
+internal fun NowPlayingRow(
+    glance: NowPlayingGlance,
+    onDismiss: () -> Unit = glance.dismiss,
+) {
     Row(
         modifier =
             Modifier
@@ -384,7 +387,7 @@ internal fun NowPlayingRow(glance: NowPlayingGlance) {
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                 )
-                IconButton(onClick = glance.dismiss, modifier = Modifier.size(NowPlayingDismissButtonSize)) {
+                IconButton(onClick = onDismiss, modifier = Modifier.size(NowPlayingDismissButtonSize)) {
                     Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = stringResource(R.string.common_close),
