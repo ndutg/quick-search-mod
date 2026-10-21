@@ -1343,6 +1343,8 @@
     <string name="home_upcoming_alarm_hide_app">Wecker von %1$s ausblenden</string>
     <string name="home_low_battery_saver_off">Tippen, um den Energiesparmodus einzuschalten</string>
     <string name="home_low_battery_saver_on">Energiesparmodus ist an</string>
+    <string name="home_critical_battery_title">Akku kritisch niedrig</string>
+    <string name="home_critical_battery_charge_now">Jetzt aufladen</string>
     <string name="home_charged">Vollständig geladen</string>
     <string name="home_charging_full_in">Voll in %1$s</string>
     <string name="home_charging_paused">Laden pausiert</string>

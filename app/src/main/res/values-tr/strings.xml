@@ -1342,6 +1342,8 @@
     <string name="home_upcoming_alarm_hide_app">%1$s alarmlarını gizle</string>
     <string name="home_low_battery_saver_off">Pil Tasarrufu\'nu açmak için dokunun</string>
     <string name="home_low_battery_saver_on">Pil Tasarrufu açık</string>
+    <string name="home_critical_battery_title">Pil kritik seviyede</string>
+    <string name="home_critical_battery_charge_now">Şimdi şarj edin</string>
     <string name="home_charged">Tamamen şarj oldu</string>
     <string name="home_charging_full_in">%1$s içinde dolacak</string>
     <string name="home_charging_paused">Şarj duraklatıldı</string>

@@ -1343,6 +1343,8 @@
     <string name="home_upcoming_alarm_hide_app">Ocultar alarmas de %1$s</string>
     <string name="home_low_battery_saver_off">Toca para activar el Ahorro de batería</string>
     <string name="home_low_battery_saver_on">El Ahorro de batería está activado</string>
+    <string name="home_critical_battery_title">Batería muy baja</string>
+    <string name="home_critical_battery_charge_now">Cárgala ya</string>
     <string name="home_charged">Carga completa</string>
     <string name="home_charging_full_in">Completa en %1$s</string>
     <string name="home_charging_paused">Carga en pausa</string>

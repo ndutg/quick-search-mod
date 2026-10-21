@@ -1331,6 +1331,8 @@
     <string name="home_upcoming_alarm_hide_app">隐藏来自 %1$s 的闹钟</string>
     <string name="home_low_battery_saver_off">点按即可开启省电模式</string>
     <string name="home_low_battery_saver_on">省电模式已开启</string>
+    <string name="home_critical_battery_title">电量严重不足</string>
+    <string name="home_critical_battery_charge_now">请立即充电</string>
     <string name="home_charged">已充满</string>
     <string name="home_charging_full_in">%1$s后充满</string>
     <string name="home_charging_paused">已暂停充电</string>

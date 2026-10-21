@@ -1343,6 +1343,8 @@
     <string name="home_upcoming_alarm_hide_app">%1$s నుండి అలారాలను దాచు</string>
     <string name="home_low_battery_saver_off">బ్యాటరీ సేవర్ ఆన్ చేయడానికి నొక్కండి</string>
     <string name="home_low_battery_saver_on">బ్యాటరీ సేవర్ ఆన్‌లో ఉంది</string>
+    <string name="home_critical_battery_title">బ్యాటరీ చాలా తక్కువగా ఉంది</string>
+    <string name="home_critical_battery_charge_now">ఇప్పుడే ఛార్జ్ చేయండి</string>
     <string name="home_charged">పూర్తిగా ఛార్జ్ అయింది</string>
     <string name="home_charging_full_in">%1$sలో పూర్తవుతుంది</string>
     <string name="home_charging_paused">ఛార్జింగ్ పాజ్ చేయబడింది</string>

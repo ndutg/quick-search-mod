@@ -1339,6 +1339,8 @@
     <string name="home_upcoming_alarm_hide_app">Sembunyikan alarm dari %1$s</string>
     <string name="home_low_battery_saver_off">Ketuk untuk mengaktifkan Penghemat Baterai</string>
     <string name="home_low_battery_saver_on">Penghemat Baterai aktif</string>
+    <string name="home_critical_battery_title">Baterai sangat lemah</string>
+    <string name="home_critical_battery_charge_now">Isi daya sekarang</string>
     <string name="home_charged">Terisi penuh</string>
     <string name="home_charging_full_in">Penuh dalam %1$s</string>
     <string name="home_charging_paused">Pengisian dijeda</string>

@@ -1343,6 +1343,8 @@
     <string name="home_upcoming_alarm_hide_app">Απόκρυψη ξυπνητηριών από %1$s</string>
     <string name="home_low_battery_saver_off">Πατήστε για ενεργοποίηση της Εξοικονόμησης μπαταρίας</string>
     <string name="home_low_battery_saver_on">Η Εξοικονόμηση μπαταρίας είναι ενεργή</string>
+    <string name="home_critical_battery_title">Πολύ χαμηλή μπαταρία</string>
+    <string name="home_critical_battery_charge_now">Φορτίστε τώρα</string>
     <string name="home_charged">Πλήρως φορτισμένη</string>
     <string name="home_charging_full_in">Πλήρης σε %1$s</string>
     <string name="home_charging_paused">Η φόρτιση σε παύση</string>

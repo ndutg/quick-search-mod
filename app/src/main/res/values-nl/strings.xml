@@ -1398,6 +1398,8 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="home_upcoming_alarm_hide_app">Wekkers van %1$s verbergen</string>
     <string name="home_low_battery_saver_off">Tik om Batterijbesparing aan te zetten</string>
     <string name="home_low_battery_saver_on">Batterijbesparing staat aan</string>
+    <string name="home_critical_battery_title">Batterij bijna leeg</string>
+    <string name="home_critical_battery_charge_now">Nu opladen</string>
     <string name="home_charged">Volledig opgeladen</string>
     <string name="home_charging_full_in">Vol over %1$s</string>
     <string name="home_charging_paused">Opladen gepauzeerd</string>

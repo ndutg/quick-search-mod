@@ -1345,6 +1345,8 @@
     <string name="home_upcoming_alarm_hide_app">إخفاء المنبهات من %1$s</string>
     <string name="home_low_battery_saver_off">انقر لتفعيل موفّر البطارية</string>
     <string name="home_low_battery_saver_on">موفّر البطارية مفعّل</string>
+    <string name="home_critical_battery_title">البطارية منخفضة جدًا</string>
+    <string name="home_critical_battery_charge_now">اشحن الآن</string>
     <string name="home_charged">مشحونة بالكامل</string>
     <string name="home_charging_full_in">يمتلئ خلال %1$s</string>
     <string name="home_charging_paused">تم إيقاف الشحن مؤقتًا</string>

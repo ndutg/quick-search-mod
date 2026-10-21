@@ -1367,6 +1367,8 @@
     <string name="home_upcoming_alarm_hide_app">Скрыть будильники из %1$s</string>
     <string name="home_low_battery_saver_off">Нажмите, чтобы включить режим энергосбережения</string>
     <string name="home_low_battery_saver_on">Режим энергосбережения включён</string>
+    <string name="home_critical_battery_title">Критически низкий заряд</string>
+    <string name="home_critical_battery_charge_now">Зарядите сейчас</string>
     <string name="home_charged">Полностью заряжено</string>
     <string name="home_charging_full_in">Полный заряд через %1$s</string>
     <string name="home_charging_paused">Зарядка приостановлена</string>

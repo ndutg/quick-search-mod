@@ -1342,6 +1342,8 @@
     <string name="home_upcoming_alarm_hide_app">Nascondi sveglie di %1$s</string>
     <string name="home_low_battery_saver_off">Tocca per attivare il Risparmio energetico</string>
     <string name="home_low_battery_saver_on">Il Risparmio energetico è attivo</string>
+    <string name="home_critical_battery_title">Batteria quasi scarica</string>
+    <string name="home_critical_battery_charge_now">Ricarica ora</string>
     <string name="home_charged">Carica completa</string>
     <string name="home_charging_full_in">Completa tra %1$s</string>
     <string name="home_charging_paused">Ricarica in pausa</string>
