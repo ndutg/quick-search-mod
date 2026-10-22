@@ -76,6 +76,7 @@
 <string name="action_add_to_home">Ana ekrana ekle</string>
 <string name="action_add_trigger">Tetikleyici</string>
 <string name="action_app_info">Uygulama bilgisi</string>
+<string name="action_open_in_google_play">Google Play\'de aç</string>
 <string name="action_manage_all_apps">Tüm uygulamaları yönet</string>
 <string name="action_app_shortcuts_settings">Uygulama kısayolu ayarları</string>
 <string name="action_files_settings">Dosya ayarları</string>

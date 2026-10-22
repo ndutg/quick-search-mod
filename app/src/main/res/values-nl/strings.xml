@@ -79,6 +79,7 @@
     <string name="action_add_to_home">Toevoegen aan startscherm</string>
     <string name="action_add_trigger">Trigger</string>
     <string name="action_app_info">App-info</string>
+    <string name="action_open_in_google_play">Openen in Google Play</string>
     <string name="action_manage_all_apps">Alle apps beheren</string>
     <string name="action_app_shortcuts_settings">Instellingen app-snelkoppelingen</string>
     <string name="action_files_settings">Bestandsinstellingen</string>

@@ -77,6 +77,7 @@
     <string name="action_add_to_home">Zum Startbildschirm hinzufügen</string>
     <string name="action_add_trigger">Auslöser</string>
     <string name="action_app_info">App-Info</string>
+    <string name="action_open_in_google_play">In Google Play öffnen</string>
     <string name="action_manage_all_apps">Alle Apps verwalten</string>
     <string name="action_app_shortcuts_settings">Einstellungen für App-Verknüpfungen</string>
     <string name="action_files_settings">Dateieinstellungen</string>

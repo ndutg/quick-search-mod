@@ -76,6 +76,7 @@
     <string name="action_add_to_home">Tambahkan ke Layar Utama</string>
     <string name="action_add_trigger">Pemicu</string>
     <string name="action_app_info">Info Aplikasi</string>
+    <string name="action_open_in_google_play">Buka di Google Play</string>
     <string name="action_manage_all_apps">Kelola Semua Aplikasi</string>
     <string name="action_app_shortcuts_settings">Pengaturan pintasan aplikasi</string>
     <string name="action_files_settings">Pengaturan file</string>

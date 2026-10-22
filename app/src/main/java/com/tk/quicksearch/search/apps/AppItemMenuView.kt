@@ -1,5 +1,9 @@
 package com.tk.quicksearch.search.apps
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -330,6 +334,11 @@ fun AppItemDropdownMenu(
                 onClick = { onDismiss(); onAddToHome() },
             ))
         }
+        add(ItemMenuRow(
+            label = stringResource(R.string.action_open_in_google_play),
+            icon = { Icon(painter = painterResource(R.drawable.google_play), contentDescription = null, tint = Color.Unspecified) },
+            onClick = { onDismiss(); openAppInGooglePlay(context, appInfo.packageName) },
+        ))
     }
 
     val (swipeUpAction, swipeDownAction) = rememberAppSwipeActions(appInfo)
@@ -563,6 +572,23 @@ private fun AppSwipeActionDropdown(
                 text = { Text(text = stringResource(R.string.action_remove)) },
                 leadingIcon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
                 onClick = onClear,
+            )
+        }
+    }
+}
+
+private fun openAppInGooglePlay(context: Context, packageName: String) {
+    try {
+        context.startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+                .setPackage("com.android.vending")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+    } catch (_: ActivityNotFoundException) {
+        runCatching {
+            context.startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName"))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             )
         }
     }

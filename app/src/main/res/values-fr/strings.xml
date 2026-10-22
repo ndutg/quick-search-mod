@@ -77,6 +77,7 @@
 <string name="action_add_to_home">Ajouter à l\'écran d\'accueil</string>
 <string name="action_add_trigger">Ajouter un déclencheur</string>
 <string name="action_app_info">Infos sur l\'application</string>
+<string name="action_open_in_google_play">Ouvrir dans Google Play</string>
 <string name="action_manage_all_apps">Gérer toutes les applis</string>
 <string name="action_app_shortcuts_settings">Paramètres des raccourcis d\'applis</string>
 <string name="action_files_settings">Paramètres des fichiers</string>

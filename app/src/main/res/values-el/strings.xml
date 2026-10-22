@@ -77,6 +77,7 @@
     <string name="action_add_to_home">Προσθήκη στην αρχική οθόνη</string>
     <string name="action_add_trigger">Ενεργοποίηση</string>
     <string name="action_app_info">Πληροφορίες εφαρμογής</string>
+    <string name="action_open_in_google_play">Άνοιγμα στο Google Play</string>
     <string name="action_manage_all_apps">Διαχείριση όλων των εφαρμογών</string>
     <string name="action_app_shortcuts_settings">Ρυθμίσεις συντομεύσεων εφαρμογών</string>
     <string name="action_files_settings">Ρυθμίσεις αρχείων</string>

@@ -77,6 +77,7 @@
     <string name="action_add_to_home">होम में जोड़ें</string>
     <string name="action_add_trigger">ट्रिगर जोड़ें</string>
     <string name="action_app_info">ऐप जानकारी</string>
+    <string name="action_open_in_google_play">Google Play में खोलें</string>
     <string name="action_manage_all_apps">सभी ऐप्स प्रबंधित करें</string>
     <string name="action_app_shortcuts_settings">ऐप शॉर्टकट सेटिंग्स</string>
     <string name="action_files_settings">फ़ाइल सेटिंग्स</string>

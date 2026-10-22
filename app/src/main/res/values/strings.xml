@@ -68,6 +68,7 @@
     <string name="action_add_to_home">Add to Home</string>
     <string name="action_add_trigger">Trigger</string>
     <string name="action_app_info">App Info</string>
+    <string name="action_open_in_google_play">Open in Google Play</string>
     <string name="action_manage_all_apps">Manage all Apps</string>
     <string name="action_app_shortcuts_settings">App shortcuts settings</string>
     <string name="action_files_settings">Files settings</string>

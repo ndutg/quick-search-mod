@@ -78,6 +78,7 @@
     <string name="action_add_to_home">إضافة إلى الشاشة الرئيسية</string>
     <string name="action_add_trigger">إضافة كلمة تشغيل</string>
     <string name="action_app_info">معلومات التطبيق</string>
+    <string name="action_open_in_google_play">فتح في Google Play</string>
     <string name="action_manage_all_apps">إدارة كل التطبيقات</string>
     <string name="action_app_shortcuts_settings">إعدادات اختصارات التطبيقات</string>
     <string name="action_files_settings">إعدادات الملفات</string>

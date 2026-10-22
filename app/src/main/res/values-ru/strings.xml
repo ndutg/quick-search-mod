@@ -77,6 +77,7 @@
 <string name="action_add_to_home">На главный экран</string>
 <string name="action_add_trigger">Добавить триггер</string>
 <string name="action_app_info">О приложении</string>
+<string name="action_open_in_google_play">Открыть в Google Play</string>
 <string name="action_manage_all_apps">Управление всеми приложениями</string>
 <string name="action_app_shortcuts_settings">Настройки ярлыков приложений</string>
 <string name="action_files_settings">Настройки файлов</string>
