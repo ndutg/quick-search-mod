@@ -197,6 +197,7 @@ internal object SearchStateExtractor {
             fontScaleMultiplier = s.fontScaleMultiplier,
             useSystemFont = s.useSystemFont,
             homeTextColorOverride = s.homeTextColorOverride,
+            searchBarStyle = s.searchBarStyle,
             showAppLabels = s.showAppLabels,
             phoneAppGridColumns = s.phoneAppGridColumns,
             appIconSizeStep = s.appIconSizeStep,

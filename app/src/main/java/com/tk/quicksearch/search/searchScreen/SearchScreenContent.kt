@@ -39,7 +39,7 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
-import com.tk.quicksearch.searchEngines.inline.InsetSearchBarGeometry
+import com.tk.quicksearch.search.searchScreen.components.cornerRadius
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
@@ -569,12 +569,8 @@ internal fun SearchScreenContent(
                 focusRequester = searchFocusRequester,
                 forceRestingOutline = showBottomSearchBar,
                 transparentBackground = useInsetEngineStrip,
-                cornerRadius =
-                        if (useInsetEngineStrip) {
-                            InsetSearchBarGeometry.BarCornerRadius
-                        } else {
-                            DesignTokens.Spacing28
-                        },
+                cornerRadius = state.searchBarStyle.cornerRadius(),
+                searchBarStyle = state.searchBarStyle,
                 modifier = searchFieldModifier,
                 onMoveTopResultSelectionUp = { moveSelectedTopMatch(-1) },
                 onMoveTopResultSelectionDown = { moveSelectedTopMatch(1) },

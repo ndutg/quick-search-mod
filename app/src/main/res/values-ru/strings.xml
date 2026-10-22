@@ -803,6 +803,9 @@
 <string name="settings_app_language_system_default">Системный язык</string>
 <string name="settings_launcher_icon_reset_default">Сбросить по умолчанию</string>
 <string name="settings_launcher_icon_title">Изменить значок приложения</string>
+<string name="settings_search_bar_style_title">Строка поиска</string>
+<string name="settings_search_bar_background_color_label">Цвет фона</string>
+<string name="settings_search_bar_color_accent">Акцент</string>
 <string name="settings_layout_option_bottom_desc">Наиболее важные элементы отображаются внизу для удобного доступа</string>
 <string name="settings_layout_option_bottom_title">Режим управления одной рукой</string>
 <string name="settings_unified_pinned_items_title">Объединенные закрепленные элементы</string>

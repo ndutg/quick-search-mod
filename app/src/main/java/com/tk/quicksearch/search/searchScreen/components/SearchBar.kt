@@ -79,6 +79,7 @@ import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.app.startup.StartupTrace
@@ -152,6 +153,7 @@ internal fun PersistentSearchBar(
     focusRequester: FocusRequester? = null,
     transparentBackground: Boolean = false,
     cornerRadius: Dp = DefaultSearchBarCornerRadius,
+    searchBarStyle: SearchBarStyle = SearchBarStyle(),
     modifier: Modifier = Modifier,
 ) {
     val barShape = remember(cornerRadius) { RoundedCornerShape(cornerRadius) }
@@ -166,9 +168,10 @@ internal fun PersistentSearchBar(
         } else if (opaqueBackground) {
             AppColors.DialogBackground
         } else {
-            AppColors.getSearchBarBackground(showWallpaperBackground)
+            searchBarStyle.backgroundColor(AppColors.getSearchBarBackground(showWallpaperBackground))
         }
     val accentColor = AppColors.Accent
+    val restingBorderColor = searchBarStyle.borderColor(accentColor)
     val iconAndTextColor = AppColors.getSearchBarTextAndIconColor(showWallpaperBackground)
     val isDarkTheme = LocalAppIsDarkTheme.current
     val lightWallpaperSearchBar = !isDarkTheme && showWallpaperBackground
@@ -533,16 +536,17 @@ internal fun PersistentSearchBar(
                         )
                     }
                 }.then(
-                    if (lightWallpaperSearchBar && !forceRestingOutline) {
+                    if (
+                        searchBarStyle.borderWidthDp <= 0f ||
+                        (lightWallpaperSearchBar && !forceRestingOutline && !searchBarStyle.hasCustomBorder)
+                    ) {
                         Modifier
                     } else {
                         Modifier.border(
-                            width = DesignTokens.SearchFieldRestingOutlineWidth,
+                            width = searchBarStyle.borderWidth(),
                             color =
-                                accentColor.copy(
-                                    alpha =
-                                        (borderAlpha.value * DesignTokens.SearchFieldAccentOutlineAlpha)
-                                            .coerceIn(0f, 1f),
+                                restingBorderColor.copy(
+                                    alpha = (borderAlpha.value * restingBorderColor.alpha).coerceIn(0f, 1f),
                                 ),
                             shape = barShape,
                         )

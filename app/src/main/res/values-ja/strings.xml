@@ -791,6 +791,9 @@
     <string name="settings_app_language_system_default">システムのデフォルト</string>
     <string name="settings_launcher_icon_reset_default">デフォルトに戻す</string>
     <string name="settings_launcher_icon_title">アプリアイコンを変更</string>
+    <string name="settings_search_bar_style_title">検索バー</string>
+    <string name="settings_search_bar_background_color_label">背景色</string>
+    <string name="settings_search_bar_color_accent">アクセント</string>
     <string name="settings_layout_option_bottom_desc">アクセスしやすいよう関連性の高い項目を画面下部に表示</string>
     <string name="settings_layout_option_bottom_title">片手モード</string>
     <string name="settings_unified_pinned_items_title">固定アイテムの統合</string>

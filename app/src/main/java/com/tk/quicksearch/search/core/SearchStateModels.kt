@@ -268,6 +268,7 @@ data class SearchUiConfigState(
         val fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER,
         val useSystemFont: Boolean = false,
         val homeTextColorOverride: HomeTextColor? = null,
+        val searchBarStyle: SearchBarStyle = SearchBarStyle(),
         // App display preferences
         val showAppLabels: Boolean = true,
         val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,

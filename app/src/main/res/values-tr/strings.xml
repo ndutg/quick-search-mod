@@ -782,6 +782,9 @@
 <string name="settings_app_language_system_default">Sistem varsayılanı</string>
 <string name="settings_launcher_icon_reset_default">Varsayılana sıfırla</string>
 <string name="settings_launcher_icon_title">Uygulama simgesini değiştir</string>
+<string name="settings_search_bar_style_title">Arama çubuğu</string>
+<string name="settings_search_bar_background_color_label">Arka plan rengi</string>
+<string name="settings_search_bar_color_accent">Vurgu</string>
 <string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>
 <string name="settings_layout_option_bottom_title">Tek el modu</string>
 <string name="settings_unified_pinned_items_title">Birleştirilmiş Sabitlenen Öğeler</string>

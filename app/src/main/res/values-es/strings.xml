@@ -783,6 +783,9 @@
     <string name="settings_app_language_system_default">Predeterminado del sistema</string>
     <string name="settings_launcher_icon_reset_default">Restablecer valores predeterminados</string>
     <string name="settings_launcher_icon_title">Cambiar icono de la app</string>
+    <string name="settings_search_bar_style_title">Barra de búsqueda</string>
+    <string name="settings_search_bar_background_color_label">Color de fondo</string>
+    <string name="settings_search_bar_color_accent">Acento</string>
     <string name="settings_layout_option_bottom_desc">Los elementos más relevantes aparecen abajo para facilitar el acceso</string>
     <string name="settings_layout_option_bottom_title">Modo a una mano</string>
     <string name="settings_unified_pinned_items_title">Elementos fijados unificados</string>

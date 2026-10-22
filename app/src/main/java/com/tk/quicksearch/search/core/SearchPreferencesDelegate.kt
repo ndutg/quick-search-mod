@@ -565,6 +565,13 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setSearchBarStyle(style: SearchBarStyle) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setSearchBarStyle(style)
+            updateConfigState { it.copy(searchBarStyle = style) }
+        }
+    }
+
     fun resetHomeTextColorForNewWallpaper() {
         scope.launch(Dispatchers.IO) {
             if (stateAccess.homeTextColorOverride == null) return@launch

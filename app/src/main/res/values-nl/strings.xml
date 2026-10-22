@@ -816,6 +816,9 @@
     <string name="settings_app_language_system_default">Systeemstandaard</string>
     <string name="settings_launcher_icon_reset_default">Herstellen naar standaard</string>
     <string name="settings_launcher_icon_title">App-icoon wijzigen</string>
+    <string name="settings_search_bar_style_title">Zoekbalk</string>
+    <string name="settings_search_bar_background_color_label">Achtergrondkleur</string>
+    <string name="settings_search_bar_color_accent">Accent</string>
     <string name="settings_layout_option_bottom_desc">Meest relevante items verschijnen onderaan voor eenvoudige toegang</string>
     <string name="settings_layout_option_bottom_title">Eenhandige modus</string>
     <string name="settings_unified_pinned_items_title">Gecombineerde vastgemaakte items</string>

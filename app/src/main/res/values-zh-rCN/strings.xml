@@ -773,6 +773,9 @@
     <string name="settings_app_language_system_default">跟随系统</string>
     <string name="settings_launcher_icon_reset_default">重置为默认</string>
     <string name="settings_launcher_icon_title">更改应用图标</string>
+    <string name="settings_search_bar_style_title">搜索栏</string>
+    <string name="settings_search_bar_background_color_label">背景颜色</string>
+    <string name="settings_search_bar_color_accent">强调色</string>
     <string name="settings_layout_option_bottom_desc">最相关的匹配项将显示在底部，以便于轻松触达</string>
     <string name="settings_layout_option_bottom_title">单手模式</string>
     <string name="settings_unified_pinned_items_title">统一固定项目</string>

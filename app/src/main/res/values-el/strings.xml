@@ -783,6 +783,9 @@
     <string name="settings_app_language_system_default">Προεπιλογή συστήματος</string>
     <string name="settings_launcher_icon_reset_default">Επαναφορά στο προεπιλεγμένο</string>
     <string name="settings_launcher_icon_title">Αλλαγή εικονιδίου εφαρμογής</string>
+    <string name="settings_search_bar_style_title">Γραμμή αναζήτησης</string>
+    <string name="settings_search_bar_background_color_label">Χρώμα φόντου</string>
+    <string name="settings_search_bar_color_accent">Έμφαση</string>
     <string name="settings_layout_option_bottom_desc">Τα πιο σχετικά στοιχεία εμφανίζονται στο κάτω μέρος για εύκολη πρόσβαση</string>
     <string name="settings_layout_option_bottom_title">Λειτουργία ενός χεριού</string>
     <string name="settings_unified_pinned_items_title">Ενοποιημένα καρφιτσωμένα στοιχεία</string>

@@ -783,6 +783,9 @@
     <string name="settings_app_language_system_default">Systemstandard</string>
     <string name="settings_launcher_icon_reset_default">Standard wiederherstellen</string>
     <string name="settings_launcher_icon_title">App-Symbol ändern</string>
+    <string name="settings_search_bar_style_title">Suchleiste</string>
+    <string name="settings_search_bar_background_color_label">Hintergrundfarbe</string>
+    <string name="settings_search_bar_color_accent">Akzent</string>
     <string name="settings_layout_option_bottom_desc">Relevanteste Elemente erscheinen unten für einfachen Zugriff</string>
     <string name="settings_layout_option_bottom_title">Einhand-Modus</string>
     <string name="settings_unified_pinned_items_title">Vereinheitlichte angeheftete Elemente</string>

@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
-import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.data.preferences.RATE_QUICK_SEARCH_ENABLED
 import com.tk.quicksearch.search.utils.SearchQueryContext
 import com.tk.quicksearch.shared.util.isTablet
@@ -60,6 +59,13 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_launcher_icon_title,
                 destination = AppSettingsDestination.APPEARANCE,
                 keywords = listOf("app icon", "launcher icon", "change icon", "home screen icon"),
+            )
+            addNavigation(
+                id = "app_settings_search_bar_style",
+                titleRes = R.string.settings_search_bar_style_title,
+                destination = AppSettingsDestination.APPEARANCE,
+                keywords =
+                    listOf("search bar", "border", "outline", "thickness", "corner", "rounded", "colour", "color", "transparency", "background"),
             )
             addNavigation(
                 id = "app_settings_icon_packs",
@@ -693,7 +699,7 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.DIRECT_DIAL,
                 keywords = listOf("call"),
             )
-            addSearchSectionToggles()
+            addAll(context.searchSectionToggleRows())
             addNavigation(
                 id = "app_toggle_wallpaper_accent",
                 titleRes = R.string.settings_wallpaper_accent_title,
@@ -776,17 +782,6 @@ class AppSettingsRepository(
                 toggleKey = toggleKey,
             ),
         )
-    }
-
-    private fun MutableList<AppSettingResult>.addSearchSectionToggles() {
-        SearchSectionRegistry.orderedDefinitions.forEach { definition ->
-            addToggle(
-                id = searchSectionToggleId(definition.section),
-                titleRes = searchSectionToggleTitleRes(definition.section),
-                descriptionRes = searchSectionToggleDescriptionRes(definition.section),
-                toggleKey = definition.appSettingsToggleKey,
-            )
-        }
     }
 
     private val descriptionResolver = AppSettingDescriptionResolver(context)
