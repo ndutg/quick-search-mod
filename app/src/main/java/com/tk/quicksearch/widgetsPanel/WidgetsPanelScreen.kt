@@ -447,6 +447,7 @@ fun WidgetsPanelScreen(
                                     scrollViewportTopPx = coordinates.positionInWindow().y
                                     scrollViewportHeightPx = coordinates.size.height
                                 }
+                                .widgetPanelEdgeFade(panelScrollState)
                                 .verticalScroll(panelScrollState)
                                 .padding(top = WidgetEditOverhang),
                         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
