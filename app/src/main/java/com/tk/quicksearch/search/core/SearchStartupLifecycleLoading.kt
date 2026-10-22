@@ -283,6 +283,7 @@ internal fun SearchStartupLifecycleDelegate.applyStartupPreferences(prefs: Start
                 disabledTopMatchesSections = userPreferences.getDisabledTopMatchesSections(),
                 homePinnedSectionOrder = userPreferences.getHomePinnedSectionOrder(),
                 pinnedAppShortcutsInAppGrid = userPreferences.isPinnedAppShortcutsInAppGridEnabled(),
+                showStatusBar = userPreferences.isStatusBarVisible(),
                 pinnedAppGridOrder = userPreferences.getPinnedAppGridOrder(),
                 appFolders = userPreferences.getAppFolders(),
                 shouldShowUsagePermissionBanner = userPreferences.shouldShowUsagePermissionBanner(),

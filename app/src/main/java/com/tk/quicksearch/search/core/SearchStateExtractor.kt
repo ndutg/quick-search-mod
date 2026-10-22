@@ -152,6 +152,7 @@ internal object SearchStateExtractor {
             disabledTopMatchesSections = s.disabledTopMatchesSections,
             homePinnedSectionOrder = s.homePinnedSectionOrder,
             pinnedAppShortcutsInAppGrid = s.pinnedAppShortcutsInAppGrid,
+            showStatusBar = s.showStatusBar,
             pinnedAppGridOrder = s.pinnedAppGridOrder,
             appFolders = s.appFolders,
             showTodayEvents = s.showTodayEvents,

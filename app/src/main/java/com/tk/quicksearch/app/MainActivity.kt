@@ -28,6 +28,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.app.navigation.MainContent
@@ -302,6 +305,9 @@ open class MainActivity : FragmentActivity() {
             LaunchedEffect(uiState.showInRecents) {
                 updateRecentsVisibility(showInRecents = uiState.showInRecents)
             }
+            LaunchedEffect(uiState.showStatusBar) {
+                updateStatusBarVisibility(showStatusBar = uiState.showStatusBar)
+            }
             val isSystemDarkTheme = isSystemInDarkTheme()
             LaunchedEffect(isSystemDarkTheme, uiState.appThemeMode, uiState.launcherAppIcon) {
                 searchViewModel.onSystemDarkModeChanged(isDarkMode = isSystemDarkTheme)
@@ -452,6 +458,17 @@ open class MainActivity : FragmentActivity() {
     }
 
     @Suppress("DEPRECATION")
+    private fun updateStatusBarVisibility(showStatusBar: Boolean) {
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        if (showStatusBar) {
+            controller.show(WindowInsetsCompat.Type.statusBars())
+        } else {
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(WindowInsetsCompat.Type.statusBars())
+        }
+    }
+
     private fun updateRecentsVisibility(showInRecents: Boolean) {
         if (this is HomeActivity) return
         val appTask =

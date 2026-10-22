@@ -258,7 +258,7 @@ class TopMatchesRankingTest {
     @Test
     fun refreshingTopMatchesKeepCurrentMatchesAndDropStaleOnes() {
         val currentMatch = topMatch("Gmail", priority = 0, secondaryScore = 0L, index = 0)
-        val staleMatch = topMatch("Old shortcut", priority = 4, secondaryScore = 0L, index = 1)
+        val staleMatch = topMatch("Old shortcut", priority = SearchRankingUtils.PRIORITY_NO_MATCH, secondaryScore = 0L, index = 1)
 
         assertEquals(
             listOf(currentMatch),

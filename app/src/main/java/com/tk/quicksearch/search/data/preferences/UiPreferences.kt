@@ -370,6 +370,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_DISABLED_TOP_MATCHES_SECTIONS = "disabled_top_matches_sections"
         const val KEY_HOME_PINNED_SECTION_ORDER = "home_pinned_section_order"
         const val KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID = "pinned_app_shortcuts_in_app_grid"
+        const val KEY_SHOW_STATUS_BAR = "show_status_bar"
         const val KEY_PINNED_APP_GRID_ORDER = "pinned_app_grid_order"
         const val KEY_CLEAR_QUERY_ON_LAUNCH = "clear_query_on_launch"
         const val KEY_AUTO_CLOSE_OVERLAY = "auto_close_overlay"

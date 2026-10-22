@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.fuzzy
 
+import com.tk.quicksearch.search.utils.SearchRankingUtils
+
 /**
  * Configuration for fuzzy search behavior.
  * Centralized configuration to avoid scattering across multiple files.
@@ -7,7 +9,7 @@ package com.tk.quicksearch.search.fuzzy
 data class FuzzySearchConfig(
     val matchThreshold: Int = 75,
     val minQueryLength: Int = 3,
-    val priority: Int = 5,
+    val priority: Int = SearchRankingUtils.PRIORITY_FUZZY_MATCH,
 ) {
     companion object {
         /**
@@ -17,7 +19,7 @@ data class FuzzySearchConfig(
             FuzzySearchConfig(
                 matchThreshold = 75,
                 minQueryLength = 3,
-                priority = 5,
+                priority = SearchRankingUtils.PRIORITY_FUZZY_MATCH,
             )
 
         /**

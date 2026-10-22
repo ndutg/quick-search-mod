@@ -72,6 +72,7 @@ internal fun SearchUiState.toSettingsScreenState(): SettingsScreenState {
         unifiedPinnedItemsEnabled = appearance.unifiedPinnedItemsEnabled,
         homePinnedSectionOrder = homePinnedSectionOrder,
         pinnedAppShortcutsInAppGrid = pinnedAppShortcutsInAppGrid,
+        showStatusBar = showStatusBar,
         searchHintsEnabled = appearance.searchHintsEnabled,
         settingsIconEnabled = appearance.settingsIconEnabled,
         overlayModeEnabled = appearance.overlayModeEnabled,

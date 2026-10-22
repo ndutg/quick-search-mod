@@ -465,6 +465,13 @@ class AppSettingsRepository(
                 keywords = listOf("pinned", "shortcuts", "apps", "grid"),
             )
             addToggle(
+                id = "app_toggle_show_status_bar",
+                titleRes = R.string.settings_show_status_bar_title,
+                descriptionRes = R.string.settings_show_status_bar_desc,
+                toggleKey = AppSettingsToggleKey.SHOW_STATUS_BAR,
+                keywords = listOf("status bar", "fullscreen", "immersive", "hide", "system bar"),
+            )
+            addToggle(
                 id = "app_toggle_search_hints",
                 titleRes = R.string.settings_search_hints_title,
                 descriptionRes = R.string.settings_search_hints_desc,
@@ -790,5 +797,4 @@ class AppSettingsRepository(
         setting: AppSettingResult,
         queryContext: SearchQueryContext,
     ): String? = descriptionResolver.resolveSearchDescription(setting, queryContext)
-
 }
