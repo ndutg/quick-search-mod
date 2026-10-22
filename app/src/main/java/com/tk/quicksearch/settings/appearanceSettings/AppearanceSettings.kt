@@ -23,6 +23,7 @@ import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.search.core.LauncherAppIcon
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
@@ -97,6 +98,8 @@ fun AppearanceSettingsSection(
         onSetAppIconShape: (AppIconShape) -> Unit,
         launcherAppIcon: LauncherAppIcon,
         onSetLauncherAppIcon: (LauncherAppIcon) -> Unit,
+        searchBarStyle: SearchBarStyle,
+        onSetSearchBarStyle: (SearchBarStyle) -> Unit,
         themedIconsEnabled: Boolean,
         onThemedIconsToggle: (Boolean) -> Unit,
         deviceThemeEnabled: Boolean,
@@ -208,6 +211,14 @@ fun AppearanceSettingsSection(
         AppLauncherIconCard(
                 launcherAppIcon = launcherAppIcon,
                 onSetLauncherAppIcon = onSetLauncherAppIcon,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        SearchBarStyleCard(
+                searchBarStyle = searchBarStyle,
+                onSetSearchBarStyle = onSetSearchBarStyle,
+                showWallpaperBackground = backgroundSource != BackgroundSource.THEME,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

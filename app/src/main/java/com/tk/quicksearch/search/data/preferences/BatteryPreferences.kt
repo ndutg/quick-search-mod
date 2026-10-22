@@ -45,6 +45,9 @@ class BatteryPreferences(context: Context) : BasePreferences(context) {
         /** The home row appears at or below this charge level while the phone is unplugged. */
         const val LOW_BATTERY_THRESHOLD_PERCENT = 15
 
+        /** At or below this level the home row switches to its more urgent "charge now" look. */
+        const val CRITICAL_BATTERY_THRESHOLD_PERCENT = 5
+
         private const val KEY_SHOW_LOW_BATTERY = "home_show_low_battery"
         private const val KEY_SHOW_CHARGING = "home_show_charging"
         private const val KEY_CHARGING_DISMISSED_PERCENT = "home_charging_dismissed_percent"

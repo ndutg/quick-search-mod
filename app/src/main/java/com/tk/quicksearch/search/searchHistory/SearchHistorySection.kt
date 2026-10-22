@@ -137,6 +137,9 @@ fun SearchHistorySection(
     showInlineCollapseButton: Boolean = true,
     selectedTab: SearchHistoryTab? = null,
     onSelectedTabChange: (SearchHistoryTab) -> Unit = {},
+    showTabs: Boolean = true,
+    // Null means every item came from history and can be removed.
+    removableEntryKeys: Set<String>? = null,
 ) {
     val overlayCardColor = LocalOverlayResultCardColor.current
     val overlayDividerColor = LocalOverlayDividerColor.current
@@ -245,7 +248,7 @@ fun SearchHistorySection(
                     contentModifier
                 }
             Column(modifier = listModifier) {
-                if (displayAsExpanded) {
+                if (displayAsExpanded && showTabs) {
                     SearchHistoryTabs(
                         selectedTab = activeSelectedTab,
                         onTabSelected = ::updateSelectedTab,
@@ -291,6 +294,8 @@ fun SearchHistorySection(
                         appSettingAppResultRowCount = appSettingAppResultRowCount,
                         onAppSettingAppResultRowCountChange = onAppSettingAppResultRowCountChange,
                         onDeleteRecentItem = onDeleteRecentItem,
+                        canRemoveFromHistory =
+                            removableEntryKeys == null || item.entry.stableKey in removableEntryKeys,
                         showDivider = baseShowDivider,
                         showWallpaperBackground = showWallpaperBackground,
                         overlayDividerColor = overlayDividerColor,

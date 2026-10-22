@@ -279,6 +279,7 @@ data class SearchUiState(
         val fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER,
         val useSystemFont: Boolean = false,
         val homeTextColorOverride: HomeTextColor? = null,
+        val searchBarStyle: SearchBarStyle = SearchBarStyle(),
         val backgroundSource: BackgroundSource = BackgroundSource.THEME,
         val accentColorMode: AccentColorMode = AccentColorMode.FROM_WALLPAPER,
         val customAccentColorArgb: Int = UiPreferences.DEFAULT_CUSTOM_ACCENT_COLOR_ARGB,
@@ -373,6 +374,8 @@ data class SearchUiState(
         // Recent items
         val recentItems: List<RecentSearchItem> = emptyList(),
         val aliasRecentItems: List<RecentSearchItem> = emptyList(),
+        val aliasRecentRemovableKeys: Set<String> = emptySet(),
+        val aliasFileTypeFilter: com.tk.quicksearch.search.models.FileType? = null,
         val recentResultRecencyIndex: RecentResultRankingUtils.RecencyIndex =
                 RecentResultRankingUtils.RecencyIndex(),
         val recentQueriesEnabled: Boolean = true,
@@ -490,6 +493,8 @@ fun SearchUiState(
                 detectedTaskerIntentId = results.detectedTaskerIntentId,
                 recentItems = results.recentItems,
                 aliasRecentItems = results.aliasRecentItems,
+                aliasRecentRemovableKeys = results.aliasRecentRemovableKeys,
+                aliasFileTypeFilter = results.aliasFileTypeFilter,
                 recentResultRecencyIndex = results.recentResultRecencyIndex,
                 nicknameUpdateVersion = results.nicknameUpdateVersion,
                 contactActionsVersion = results.contactActionsVersion,
@@ -603,6 +608,7 @@ fun SearchUiState(
                 fontScaleMultiplier = config.fontScaleMultiplier,
                 useSystemFont = config.useSystemFont,
                 homeTextColorOverride = config.homeTextColorOverride,
+                searchBarStyle = config.searchBarStyle,
                 showAppLabels = config.showAppLabels,
                 phoneAppGridColumns = config.phoneAppGridColumns,
                 appIconSizeStep = config.appIconSizeStep,

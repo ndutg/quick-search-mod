@@ -783,6 +783,9 @@
     <string name="settings_app_language_system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="settings_launcher_icon_reset_default">डिफ़ॉल्ट पर रीसेट करें</string>
     <string name="settings_launcher_icon_title">ऐप आइकन बदलें</string>
+    <string name="settings_search_bar_style_title">सर्च बार</string>
+    <string name="settings_search_bar_background_color_label">पृष्ठभूमि का रंग</string>
+    <string name="settings_search_bar_color_accent">एक्सेंट</string>
     <string name="settings_layout_option_bottom_desc">आसान पहुंच के लिए सबसे प्रासंगिक आइटम नीचे दिखते हैं</string>
     <string name="settings_layout_option_bottom_title">एक-हाथ मोड</string>
     <string name="settings_unified_pinned_items_title">एकीकृत पिन किए गए आइटम</string>
@@ -1343,6 +1346,8 @@
     <string name="home_upcoming_alarm_hide_app">%1$s के अलार्म छिपाएं</string>
     <string name="home_low_battery_saver_off">बैटरी सेवर चालू करने के लिए टैप करें</string>
     <string name="home_low_battery_saver_on">बैटरी सेवर चालू है</string>
+    <string name="home_critical_battery_title">बैटरी बहुत कम है</string>
+    <string name="home_critical_battery_charge_now">अभी चार्ज करें</string>
     <string name="home_charged">पूरी तरह चार्ज</string>
     <string name="home_charging_full_in">%1$s में पूरी</string>
     <string name="home_charging_paused">चार्जिंग रुकी हुई है</string>

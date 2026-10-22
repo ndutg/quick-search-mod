@@ -783,6 +783,9 @@
     <string name="settings_app_language_system_default">Padrão do sistema</string>
     <string name="settings_launcher_icon_reset_default">Restaurar padrão</string>
     <string name="settings_launcher_icon_title">Alterar ícone do app</string>
+    <string name="settings_search_bar_style_title">Barra de pesquisa</string>
+    <string name="settings_search_bar_background_color_label">Cor de fundo</string>
+    <string name="settings_search_bar_color_accent">Destaque</string>
     <string name="settings_layout_option_bottom_desc">Os itens mais relevantes aparecem na parte inferior para facilitar o acesso</string>
     <string name="settings_layout_option_bottom_title">Modo de uma mão</string>
     <string name="settings_unified_pinned_items_title">Itens fixados unificados</string>
@@ -1343,6 +1346,8 @@
     <string name="home_upcoming_alarm_hide_app">Ocultar alarmes de %1$s</string>
     <string name="home_low_battery_saver_off">Toque para ativar a Economia de bateria</string>
     <string name="home_low_battery_saver_on">A Economia de bateria está ativada</string>
+    <string name="home_critical_battery_title">Bateria criticamente baixa</string>
+    <string name="home_critical_battery_charge_now">Carregue agora</string>
     <string name="home_charged">Carga completa</string>
     <string name="home_charging_full_in">Completa em %1$s</string>
     <string name="home_charging_paused">Carregamento pausado</string>

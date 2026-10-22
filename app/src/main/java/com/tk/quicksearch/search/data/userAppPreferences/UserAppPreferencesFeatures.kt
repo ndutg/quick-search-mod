@@ -554,6 +554,12 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
 
     fun clearHomeTextColorOverride() = uiPreferences.clearHomeTextColorOverride()
 
+    fun getSearchBarStyle(): com.tk.quicksearch.search.core.SearchBarStyle =
+            uiPreferences.getSearchBarStyle()
+
+    fun setSearchBarStyle(style: com.tk.quicksearch.search.core.SearchBarStyle) =
+            uiPreferences.setSearchBarStyle(style)
+
     fun getAppLanguageTag(): String? = uiPreferences.getAppLanguageTag()
 
     fun setAppLanguageTag(languageTag: String?) = uiPreferences.setAppLanguageTag(languageTag)

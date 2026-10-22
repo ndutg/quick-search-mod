@@ -47,6 +47,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
+import com.tk.quicksearch.search.data.preferences.BatteryPreferences.Companion.CRITICAL_BATTERY_THRESHOLD_PERCENT
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences.Companion.LOW_BATTERY_THRESHOLD_PERCENT
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.NumberFormat
@@ -56,7 +57,9 @@ internal class LowBatteryGlance(
     val percent: Int,
     val isPowerSaveOn: Boolean,
     val open: () -> Unit,
-)
+) {
+    val isCritical: Boolean get() = percent <= CRITICAL_BATTERY_THRESHOLD_PERCENT
+}
 
 /** The low battery and charging rows share one battery listener; each is null while it has nothing to show. */
 internal class BatteryGlances(
@@ -272,9 +275,17 @@ internal fun openFirstAvailable(
 internal fun LowBatteryRow(glance: LowBatteryGlance) {
     val percentLabel =
         remember(glance.percent) { NumberFormat.getPercentInstance().format(glance.percent / 100.0) }
+    val title =
+        stringResource(
+            if (glance.isCritical) R.string.home_critical_battery_title else R.string.settings_at_a_glance_low_battery_title,
+        )
     val subtitle =
         stringResource(
-            if (glance.isPowerSaveOn) R.string.home_low_battery_saver_on else R.string.home_low_battery_saver_off,
+            when {
+                glance.isCritical -> R.string.home_critical_battery_charge_now
+                glance.isPowerSaveOn -> R.string.home_low_battery_saver_on
+                else -> R.string.home_low_battery_saver_off
+            },
         )
 
     Row(
@@ -291,15 +302,16 @@ internal fun LowBatteryRow(glance: LowBatteryGlance) {
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            BatteryLevelIcon(percent = glance.percent, modifier = Modifier.size(24.dp))
+            BatteryLevelIcon(percent = glance.percent, isCritical = glance.isCritical, modifier = Modifier.size(24.dp))
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.settings_at_a_glance_low_battery_title),
+                    text = title,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = if (glance.isCritical) FontWeight.SemiBold else null,
+                    color = if (glance.isCritical) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     text = subtitle,
@@ -311,27 +323,31 @@ internal fun LowBatteryRow(glance: LowBatteryGlance) {
                 modifier =
                     Modifier
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.errorContainer)
+                        .background(
+                            if (glance.isCritical) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.errorContainer,
+                        )
                         .padding(horizontal = 10.dp, vertical = 4.dp),
             ) {
                 Text(
                     text = percentLabel,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
+                    color = if (glance.isCritical) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onErrorContainer,
                 )
             }
         }
     }
 }
 
-/** A sideways battery outline whose red fill tracks [percent]. */
+/** A sideways battery outline whose red fill tracks [percent]; [isCritical] turns the outline red too. */
 @Composable
 private fun BatteryLevelIcon(
     percent: Int,
+    isCritical: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val outlineColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val outlineColor =
+        if (isCritical) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
     val fillColor = MaterialTheme.colorScheme.error
 
     Canvas(modifier = modifier) {

@@ -783,6 +783,9 @@
 <string name="settings_app_language_system_default">Langue du système</string>
 <string name="settings_launcher_icon_reset_default">Rétablir par défaut</string>
 <string name="settings_launcher_icon_title">Changer l’icône de l’application</string>
+<string name="settings_search_bar_style_title">Barre de recherche</string>
+<string name="settings_search_bar_background_color_label">Couleur d\'arrière-plan</string>
+<string name="settings_search_bar_color_accent">Accent</string>
 <string name="settings_layout_option_bottom_desc">Les éléments les plus pertinents apparaissent en bas pour un accès facile</string>
 <string name="settings_layout_option_bottom_title">Mode à une main</string>
 <string name="settings_unified_pinned_items_title">Éléments épinglés unifiés</string>
@@ -1343,6 +1346,8 @@
     <string name="home_upcoming_alarm_hide_app">Masquer les alarmes de %1$s</string>
     <string name="home_low_battery_saver_off">Appuyez pour activer l\'économiseur de batterie</string>
     <string name="home_low_battery_saver_on">L\'économiseur de batterie est activé</string>
+    <string name="home_critical_battery_title">Batterie très faible</string>
+    <string name="home_critical_battery_charge_now">Rechargez maintenant</string>
     <string name="home_charged">Complètement chargée</string>
     <string name="home_charging_full_in">Pleine dans %1$s</string>
     <string name="home_charging_paused">Recharge en pause</string>

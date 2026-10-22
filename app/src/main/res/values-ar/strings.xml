@@ -784,6 +784,9 @@
     <string name="settings_app_language_system_default">الإعداد الافتراضي للنظام</string>
     <string name="settings_launcher_icon_reset_default">إعادة تعيين للأيقونة الافتراضية</string>
     <string name="settings_launcher_icon_title">تغيير أيقونة التطبيق</string>
+    <string name="settings_search_bar_style_title">شريط البحث</string>
+    <string name="settings_search_bar_background_color_label">لون الخلفية</string>
+    <string name="settings_search_bar_color_accent">لون السمة</string>
     <string name="settings_layout_option_bottom_desc">عرض العناصر الهامة بالأسفل لسهولة الوصول إليها</string>
     <string name="settings_layout_option_bottom_title">الوضع بيد واحدة</string>
     <string name="settings_unified_pinned_items_title">العناصر المثبتة الموحدة</string>
@@ -1345,6 +1348,8 @@
     <string name="home_upcoming_alarm_hide_app">إخفاء المنبهات من %1$s</string>
     <string name="home_low_battery_saver_off">انقر لتفعيل موفّر البطارية</string>
     <string name="home_low_battery_saver_on">موفّر البطارية مفعّل</string>
+    <string name="home_critical_battery_title">البطارية منخفضة جدًا</string>
+    <string name="home_critical_battery_charge_now">اشحن الآن</string>
     <string name="home_charged">مشحونة بالكامل</string>
     <string name="home_charging_full_in">يمتلئ خلال %1$s</string>
     <string name="home_charging_paused">تم إيقاف الشحن مؤقتًا</string>

@@ -28,6 +28,7 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
+import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
@@ -111,6 +112,7 @@ internal fun SearchScreenStateManagement(
     onMovePinnedFile: (DeviceFile, Boolean) -> Unit,
     onExcludeFile: (DeviceFile) -> Unit,
     onExcludeFileExtension: (DeviceFile) -> Unit,
+    onAliasFileTypeFilterChange: (FileType?) -> Unit = {},
     onSettingClick: (DeviceSetting) -> Unit,
     onAppSettingClick: (AppSettingResult) -> Unit,
     onAppSettingToggle: (AppSettingResult, Boolean) -> Unit,
@@ -399,6 +401,7 @@ internal fun SearchScreenStateManagement(
             onMovePinnedFile = onMovePinnedFile,
             onExcludeFile = onExcludeFile,
             onExcludeFileExtension = onExcludeFileExtension,
+            onAliasFileTypeFilterChange = onAliasFileTypeFilterChange,
             onOpenStorageAccessSettings = onOpenStorageAccessSettings,
             onSettingClick = onSettingClick,
             onAppSettingClick = onAppSettingClick,
