@@ -3,12 +3,11 @@ package com.tk.quicksearch.search.apps
 import com.tk.quicksearch.search.utils.DefaultSearchMatcher
 import com.tk.quicksearch.search.utils.SearchMatcher
 import com.tk.quicksearch.search.utils.SearchQueryContext
+import com.tk.quicksearch.search.utils.SearchRankingUtils
 
 object AppSearchPolicy {
-    // Keep in sync with SearchRankingUtils priority semantics:
-    // 1 = startsWith, 2 = wordStartsWith, 3 = contains, 4 = no match.
-    private const val INITIALS_MATCH_PRIORITY = 3
-    private const val ABBREVIATION_MATCH_PRIORITY = 3
+    private const val INITIALS_MATCH_PRIORITY = SearchRankingUtils.PRIORITY_CONTAINS
+    private const val ABBREVIATION_MATCH_PRIORITY = SearchRankingUtils.PRIORITY_CONTAINS
 
     fun matchPriority(
         appName: String,
