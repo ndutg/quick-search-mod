@@ -73,6 +73,14 @@ object ToolSettingsRegistry {
                 infoDestination = SettingsDetailType.DATE_CALCULATOR_INFO,
             ),
             ToolSettingDefinition(
+                id = ToolSettingId.DICTIONARY,
+                aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
+                titleResId = R.string.dictionary_toggle_title,
+                defaultDescriptionResId = R.string.dictionary_toggle_desc,
+                icon = Icons.AutoMirrored.Rounded.MenuBook,
+                toggleKey = AppSettingsToggleKey.DICTIONARY,
+            ),
+            ToolSettingDefinition(
                 id = ToolSettingId.CURRENCY_CONVERTER,
                 aliasFeatureId = AliasHandler.CURRENCY_CONVERTER_ALIAS_FEATURE_ID,
                 titleResId = R.string.currency_converter_toggle_title,
@@ -97,14 +105,6 @@ object ToolSettingsRegistry {
                 icon = Icons.Rounded.AccessTime,
                 toggleKey = AppSettingsToggleKey.WORLD_CLOCK,
                 aiBackedModelConfigurable = true,
-            ),
-            ToolSettingDefinition(
-                id = ToolSettingId.DICTIONARY,
-                aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
-                titleResId = R.string.dictionary_toggle_title,
-                defaultDescriptionResId = R.string.dictionary_toggle_desc,
-                icon = Icons.AutoMirrored.Rounded.MenuBook,
-                toggleKey = AppSettingsToggleKey.DICTIONARY,
             ),
             ToolSettingDefinition(
                 id = ToolSettingId.WEATHER,
