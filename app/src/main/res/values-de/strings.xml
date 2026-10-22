@@ -1049,6 +1049,9 @@
     <string name="calculator_toggle_desc">Ergebnisse für einfache mathematische Ausdrücke</string>
     <string name="calculator_toggle_title">Rechner</string>
     <string name="currency_converter_invalid_input">Ungültige Währungsumrechnungseingabe</string>
+    <string name="currency_converter_rates_unavailable">Wechselkurse konnten nicht abgerufen werden. Versuche es erneut.</string>
+    <string name="currency_converter_unsupported_currency">%1$s wird nicht unterstützt</string>
+    <string name="currency_converter_check_rates_on_google">Kurse auf Google prüfen</string>
     <string name="currency_converter_requires_gemini_key">Erfordert einen AI-Anbieter-API-Schlüssel</string>
     <string name="currency_converter_toggle_desc">Beispiel: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Währungsrechner</string>

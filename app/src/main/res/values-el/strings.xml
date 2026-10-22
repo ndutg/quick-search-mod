@@ -1049,6 +1049,9 @@
     <string name="calculator_toggle_desc">Αποτελέσματα για βασικές μαθηματικές παραστάσεις</string>
     <string name="calculator_toggle_title">Αριθμομηχανή</string>
     <string name="currency_converter_invalid_input">Μη έγκυρα δεδομένα μετατροπής νομίσματος</string>
+    <string name="currency_converter_rates_unavailable">Δεν ήταν δυνατή η λήψη των συναλλαγματικών ισοτιμιών. Δοκιμάστε ξανά.</string>
+    <string name="currency_converter_unsupported_currency">Το %1$s δεν υποστηρίζεται</string>
+    <string name="currency_converter_check_rates_on_google">Έλεγχος ισοτιμιών στο Google</string>
     <string name="currency_converter_requires_gemini_key">Απαιτείται ένα κλειδί API παρόχου AI</string>
     <string name="currency_converter_toggle_desc">Παράδειγμα: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>

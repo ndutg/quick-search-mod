@@ -1051,6 +1051,9 @@
     <string name="calculator_toggle_desc">Hasil untuk ekspresi matematika dasar</string>
     <string name="calculator_toggle_title">Kalkulator</string>
     <string name="currency_converter_invalid_input">Input konversi mata uang tidak valid</string>
+    <string name="currency_converter_rates_unavailable">Tidak dapat mengambil kurs mata uang. Coba lagi.</string>
+    <string name="currency_converter_unsupported_currency">%1$s tidak didukung</string>
+    <string name="currency_converter_check_rates_on_google">Cek kurs di Google</string>
     <string name="currency_converter_requires_gemini_key">Memerlukan kunci API penyedia AI</string>
     <string name="currency_converter_toggle_desc">Contoh: 100 USD ke INR</string>
     <string name="currency_converter_toggle_title">Konverter Mata Uang</string>

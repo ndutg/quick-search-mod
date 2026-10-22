@@ -1050,6 +1050,9 @@
     <string name="calculator_toggle_desc">عرض نتائج العمليات الحسابية البسيطة</string>
     <string name="calculator_toggle_title">الآلة الحاسبة</string>
     <string name="currency_converter_invalid_input">بيانات تحويل العملة غير صالحة</string>
+    <string name="currency_converter_rates_unavailable">تعذّر جلب أسعار الصرف. حاول مرة أخرى.</string>
+    <string name="currency_converter_unsupported_currency">%1$s غير مدعومة</string>
+    <string name="currency_converter_check_rates_on_google">تحقق من الأسعار على Google</string>
     <string name="currency_converter_requires_gemini_key">يتطلب مفتاح API لمزود AI</string>
     <string name="currency_converter_toggle_desc">مثال: 100 USD إلى INR</string>
     <string name="currency_converter_toggle_title">محول العملات</string>

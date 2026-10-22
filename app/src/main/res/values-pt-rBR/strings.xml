@@ -1049,6 +1049,9 @@
     <string name="calculator_toggle_desc">Resultados para expressões matemáticas básicas</string>
     <string name="calculator_toggle_title">Calculadora</string>
     <string name="currency_converter_invalid_input">Entrada inválida para conversão de moeda</string>
+    <string name="currency_converter_rates_unavailable">Não foi possível obter as taxas de câmbio. Tente novamente.</string>
+    <string name="currency_converter_unsupported_currency">%1$s não é compatível</string>
+    <string name="currency_converter_check_rates_on_google">Ver taxas no Google</string>
     <string name="currency_converter_requires_gemini_key">Requer uma chave de API do provedor de IA</string>
     <string name="currency_converter_toggle_desc">Exemplo: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Conversor de moedas</string>

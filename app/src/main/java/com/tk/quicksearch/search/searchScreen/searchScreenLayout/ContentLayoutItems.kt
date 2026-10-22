@@ -171,6 +171,9 @@ internal fun NonSectionLayoutItem(
                     CurrencyConverterResult(
                             currencyConverterState = state.currencyConverterState,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
+                            onCheckRatesOnGoogle = { query ->
+                                onSearchTargetClick(query, SearchTarget.Engine(SearchEngine.GOOGLE))
+                            },
                     )
                 }
             }

@@ -1037,6 +1037,9 @@
     <string name="calculator_toggle_desc">直接计算并显示基础数学算式的结果</string>
     <string name="calculator_toggle_title">计算器</string>
     <string name="currency_converter_invalid_input">货币转换输入格式无效</string>
+    <string name="currency_converter_rates_unavailable">无法获取汇率，请重试。</string>
+    <string name="currency_converter_unsupported_currency">不支持 %1$s</string>
+    <string name="currency_converter_check_rates_on_google">在 Google 上查看汇率</string>
     <string name="currency_converter_requires_gemini_key">此功能需要配置 AI 提供商的 API 密钥</string>
     <string name="currency_converter_toggle_desc">例如：100 USD to INR</string>
     <string name="currency_converter_toggle_title">货币转换器</string>

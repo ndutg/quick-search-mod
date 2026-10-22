@@ -3,6 +3,7 @@ package com.tk.quicksearch.tools.aiTools
 import android.content.Context
 import android.util.Xml
 import com.tk.quicksearch.R
+import java.io.InputStream
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -13,10 +14,19 @@ import java.util.Locale
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 
+// EUR-based rates for ~200 currencies, served from two mirrors. Both chains end at roots that
+// Android 7 already trusts, unlike ECB's Sectigo Root E46 chain, so ECB is only the last fallback.
+private const val CURRENCY_API_URL =
+        "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json"
+private const val CURRENCY_API_MIRROR_URL = "https://latest.currency-api.pages.dev/v1/currencies/eur.json"
 private const val ECB_RATES_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 private const val RATES_PREFERENCES = "currency_exchange_rates"
-private const val RATES_JSON_KEY = "rates_json"
-private const val RATES_FETCHED_AT_KEY = "rates_fetched_at"
+// v2: snapshots from the wider currency list; older ECB-only snapshots are ignored.
+private const val RATES_JSON_KEY = "rates_v2_json"
+private const val RATES_FETCHED_AT_KEY = "rates_v2_fetched_at"
+private const val LEGACY_RATES_JSON_KEY = "rates_json"
+private const val LEGACY_RATES_FETCHED_AT_KEY = "rates_fetched_at"
+private val CURRENCY_CODE_REGEX = Regex("[a-z]{3}")
 private const val CACHE_DURATION_MS = 4 * 60 * 60 * 1000L
 private val CALCULATION_CONTEXT = MathContext(16, RoundingMode.HALF_UP)
 
@@ -25,14 +35,14 @@ class CurrencyConverterHandler(
 ) {
     private val preferences = context.getSharedPreferences(RATES_PREFERENCES, Context.MODE_PRIVATE)
 
-    /** Fetches one complete ECB rate snapshot on demand, then reuses it for four hours. */
+    /** Fetches one complete EUR-based rate snapshot on demand, then reuses it for four hours. */
     suspend fun convert(confirmed: ConfirmedCurrencyQuery): Result<CurrencyConversionModelResult> =
             runCatching {
                 val ratesSnapshot = loadRates()
                 val sourceRate = ratesSnapshot.rates[confirmed.fromCurrency]
-                        ?: error("Unsupported currency: ${confirmed.fromCurrency}")
+                        ?: error(unsupportedCurrencyMessage(confirmed.fromCurrency))
                 val targetRate = ratesSnapshot.rates[confirmed.toCurrency]
-                        ?: error("Unsupported currency: ${confirmed.toCurrency}")
+                        ?: error(unsupportedCurrencyMessage(confirmed.toCurrency))
                 val converted = confirmed.amount.toBigDecimal()
                         .multiply(targetRate, CALCULATION_CONTEXT)
                         .divide(sourceRate, CALCULATION_CONTEXT)
@@ -52,35 +62,62 @@ class CurrencyConverterHandler(
         return saveRates(fetchRates())
     }
 
+    /** Tries each source in order; raw network/TLS errors are replaced with a readable message. */
     private fun fetchRates(): Map<String, BigDecimal> {
+        val sources = listOf(
+                CURRENCY_API_URL to ::parseCurrencyApiRates,
+                CURRENCY_API_MIRROR_URL to ::parseCurrencyApiRates,
+                ECB_RATES_URL to ::parseEcbRates,
+        )
+        for ((url, parse) in sources) {
+            runCatching { fetchFrom(url, parse) }.getOrNull()?.let { return it }
+        }
+        error(context.getString(R.string.currency_converter_rates_unavailable))
+    }
+
+    private fun fetchFrom(
+            url: String,
+            parse: (InputStream) -> Map<String, BigDecimal>,
+    ): Map<String, BigDecimal> {
         var connection: HttpURLConnection? = null
         try {
-            connection = (URL(ECB_RATES_URL).openConnection() as HttpURLConnection).apply {
+            connection = (URL(url).openConnection() as HttpURLConnection).apply {
                 connectTimeout = 10_000
                 readTimeout = 10_000
                 requestMethod = "GET"
-                setRequestProperty("Accept", "application/xml")
             }
-            check(connection.responseCode in 200..299) {
-                context.getString(R.string.direct_search_error_generic)
-            }
-            val rates = mutableMapOf("EUR" to BigDecimal.ONE)
-            connection.inputStream.use { input ->
-                val parser = Xml.newPullParser().apply { setInput(input, null) }
-                while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                    if (parser.eventType != XmlPullParser.START_TAG || parser.name != "Cube") continue
-                    val code = parser.getAttributeValue(null, "currency")?.uppercase(Locale.ROOT)
-                    val rate = parser.getAttributeValue(null, "rate")?.toBigDecimalOrNull()
-                    if (code != null && code.length == 3 && rate != null && rate > BigDecimal.ZERO) {
-                        rates[code] = rate
-                    }
-                }
-            }
-            check(rates.size > 1) { context.getString(R.string.direct_search_error_generic) }
+            check(connection.responseCode in 200..299) { "HTTP ${connection.responseCode}" }
+            val rates = connection.inputStream.use(parse)
+            check(rates.size > 1) { "No rates" }
             return rates
         } finally {
             connection?.disconnect()
         }
+    }
+
+    private fun parseCurrencyApiRates(input: InputStream): Map<String, BigDecimal> {
+        val eurRates = JSONObject(input.bufferedReader().readText()).getJSONObject("eur")
+        val rates = mutableMapOf("EUR" to BigDecimal.ONE)
+        eurRates.keys().forEach { code ->
+            if (!CURRENCY_CODE_REGEX.matches(code)) return@forEach
+            val rate = eurRates.optString(code).toBigDecimalOrNull()
+            if (rate != null && rate > BigDecimal.ZERO) rates[code.uppercase(Locale.ROOT)] = rate
+        }
+        return rates
+    }
+
+    private fun parseEcbRates(input: InputStream): Map<String, BigDecimal> {
+        val rates = mutableMapOf("EUR" to BigDecimal.ONE)
+        val parser = Xml.newPullParser().apply { setInput(input, null) }
+        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+            if (parser.eventType != XmlPullParser.START_TAG || parser.name != "Cube") continue
+            val code = parser.getAttributeValue(null, "currency")?.uppercase(Locale.ROOT)
+            val rate = parser.getAttributeValue(null, "rate")?.toBigDecimalOrNull()
+            if (code != null && code.length == 3 && rate != null && rate > BigDecimal.ZERO) {
+                rates[code] = rate
+            }
+        }
+        return rates
     }
 
     private fun readCachedRates(): CachedRates? = runCatching {
@@ -104,9 +141,15 @@ class CurrencyConverterHandler(
             rates.forEach { (code, rate) -> put(code, rate.toPlainString()) }
         }
         preferences.edit().putString(RATES_JSON_KEY, json.toString())
-                .putLong(RATES_FETCHED_AT_KEY, fetchedAtMillis).apply()
+                .putLong(RATES_FETCHED_AT_KEY, fetchedAtMillis)
+                .remove(LEGACY_RATES_JSON_KEY)
+                .remove(LEGACY_RATES_FETCHED_AT_KEY)
+                .apply()
         return CachedRates(fetchedAtMillis, rates)
     }
+
+    private fun unsupportedCurrencyMessage(code: String): String =
+            context.getString(R.string.currency_converter_unsupported_currency, code)
 
     private fun currencyDisplayName(code: String): String =
             runCatching { Currency.getInstance(code).getDisplayName(Locale.getDefault()) }.getOrDefault(code)

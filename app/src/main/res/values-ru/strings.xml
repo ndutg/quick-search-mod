@@ -1073,6 +1073,9 @@
 <string name="calculator_toggle_desc">Результаты для простых математических выражений</string>
 <string name="calculator_toggle_title">Калькулятор</string>
 <string name="currency_converter_invalid_input">Некорректный ввод для конвертации валют</string>
+<string name="currency_converter_rates_unavailable">Не удалось получить курсы валют. Повторите попытку.</string>
+<string name="currency_converter_unsupported_currency">Валюта %1$s не поддерживается</string>
+<string name="currency_converter_check_rates_on_google">Курсы в Google</string>
 <string name="currency_converter_requires_gemini_key">Требуется API-ключ AI-провайдера</string>
 <string name="currency_converter_toggle_desc">Пример: 100 USD в INR</string>
     <string name="currency_converter_toggle_title">Конвертер валют</string>

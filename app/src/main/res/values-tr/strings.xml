@@ -1048,6 +1048,9 @@
 <string name="calculator_toggle_desc">Temel matematiksel ifadelerin sonuçları</string>
 <string name="calculator_toggle_title">Hesap makinesi</string>
 <string name="currency_converter_invalid_input">Geçersiz döviz çevirme girdisi</string>
+<string name="currency_converter_rates_unavailable">Döviz kurları alınamadı. Tekrar deneyin.</string>
+<string name="currency_converter_unsupported_currency">%1$s desteklenmiyor</string>
+<string name="currency_converter_check_rates_on_google">Kurları Google\'da kontrol et</string>
 <string name="currency_converter_requires_gemini_key">Bir AI sağlayıcı API anahtarı gerektirir</string>
 <string name="currency_converter_toggle_desc">Örnek: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Döviz dönüştürücü</string>
