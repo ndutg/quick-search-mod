@@ -358,6 +358,15 @@ internal fun SettingsDetailLevel1Screen(
                                     ),
                                 )
                             },
+                            showStatusBar = state.showStatusBar,
+                            onToggleShowStatusBar = { enabled ->
+                                callbacks.onApplySettingsCommand(
+                                    SettingsCommand.Toggle(
+                                        key = com.tk.quicksearch.search.appSettings.AppSettingsToggleKey.SHOW_STATUS_BAR,
+                                        enabled = enabled,
+                                    ),
+                                )
+                            },
                             settingsIconEnabled = state.settingsIconEnabled,
                             onToggleSettingsIcon = { enabled ->
                                 callbacks.onApplySettingsCommand(

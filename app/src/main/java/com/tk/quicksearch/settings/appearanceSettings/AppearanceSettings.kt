@@ -52,6 +52,8 @@ fun AppearanceSettingsSection(
         onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit,
         pinnedAppShortcutsInAppGrid: Boolean,
         onTogglePinnedAppShortcutsInAppGrid: (Boolean) -> Unit,
+        showStatusBar: Boolean,
+        onToggleShowStatusBar: (Boolean) -> Unit,
         settingsIconEnabled: Boolean,
         onToggleSettingsIcon: (Boolean) -> Unit,
         wallpaperBackgroundAlpha: Float,
@@ -265,6 +267,13 @@ fun AppearanceSettingsSection(
                         onCheckedChange = onToggleSettingsIcon,
                         enabled = !settingsIconRequired,
                         extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_show_status_bar_title),
+                        subtitle = stringResource(R.string.settings_show_status_bar_desc),
+                        checked = showStatusBar,
+                        onCheckedChange = onToggleShowStatusBar,
+                        extraVerticalPadding = 8.dp,
                         showDivider = false,
                 )
             }
@@ -308,6 +317,7 @@ fun AppearanceSettingsSection(
                 )
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 

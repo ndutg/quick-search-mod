@@ -470,6 +470,10 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
     fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) =
             uiPreferences.setPinnedAppShortcutsInAppGridEnabled(enabled)
 
+    fun isStatusBarVisible(): Boolean = uiPreferences.isStatusBarVisible()
+
+    fun setStatusBarVisible(visible: Boolean) = uiPreferences.setStatusBarVisible(visible)
+
     fun getPinnedAppGridOrder(): List<String> = uiPreferences.getPinnedAppGridOrder()
 
     fun setPinnedAppGridOrder(order: List<String>) = uiPreferences.setPinnedAppGridOrder(order)

@@ -103,6 +103,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                     setUnifiedPinnedItemsEnabled(command.enabled)
                 AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID ->
                     setPinnedAppShortcutsInAppGridEnabled(command.enabled)
+                AppSettingsToggleKey.SHOW_STATUS_BAR -> setStatusBarVisible(command.enabled)
                 AppSettingsToggleKey.SEARCH_HINTS -> setSearchHintsEnabled(command.enabled)
                 AppSettingsToggleKey.SETTINGS_ICON -> setSettingsIconEnabled(command.enabled)
                 AppSettingsToggleKey.APP_LABELS -> setShowAppLabels(command.enabled)
@@ -223,6 +224,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.BOTTOM_SEARCHBAR -> bottomSearchBarEnabled
         AppSettingsToggleKey.UNIFIED_PINNED_ITEMS -> unifiedPinnedItemsEnabled
         AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID -> pinnedAppShortcutsInAppGrid
+        AppSettingsToggleKey.SHOW_STATUS_BAR -> showStatusBar
         AppSettingsToggleKey.SEARCH_HINTS -> searchHintsEnabled
         AppSettingsToggleKey.SETTINGS_ICON -> settingsIconEnabled
         AppSettingsToggleKey.APP_LABELS -> showAppLabels
