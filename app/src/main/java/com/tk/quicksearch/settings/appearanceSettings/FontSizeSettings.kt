@@ -142,9 +142,12 @@ private fun FontSizeSlider(
                         sliderValue = value
                     },
                     // Apply the scale only on release: changing it mid-drag changes density and cancels the drag.
+                    // On a tap the slider calls this right after onValueChange, before recomposition, so read
+                    // the live slider value instead of the composition-captured activeIndex.
                     onValueChangeFinished = {
-                        if (activeIndex != committedIndex) {
-                            onFontScaleMultiplierChange(FONT_SIZE_STEPS[activeIndex].scale)
+                        val releasedIndex = sliderValue.roundToInt().coerceIn(0, FONT_SIZE_STEPS.lastIndex)
+                        if (releasedIndex != committedIndex) {
+                            onFontScaleMultiplierChange(FONT_SIZE_STEPS[releasedIndex].scale)
                         }
                     },
                     valueRange = 0f..FONT_SIZE_STEPS.lastIndex.toFloat(),
