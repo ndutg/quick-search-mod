@@ -65,16 +65,78 @@ class SearchRankingUtilsTest {
     }
 
     @Test
-    fun exactNicknameOutranksANameThatOnlyStartsWithTheQuery() {
+    fun namePrefixOutranksAnExactNickname() {
         val exactNicknamePriority =
             SearchRankingUtils.calculateMatchPriorityWithNickname(
-                primaryText = "Someone Else",
-                nickname = "Teja",
-                query = "teja",
+                primaryText = "Spotify",
+                nickname = "Music",
+                query = "music",
             )
-        val namePrefixPriority = SearchRankingUtils.calculateMatchPriority("Tejal", "teja")
+        val namePrefixPriority = SearchRankingUtils.calculateMatchPriority("Music", "music")
 
-        assertTrue(exactNicknamePriority < namePrefixPriority)
+        assertTrue(namePrefixPriority < exactNicknamePriority)
+    }
+
+    @Test
+    fun exactNicknameOutranksANameWordPrefix() {
+        val exactNicknamePriority =
+            SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = "Spotify",
+                nickname = "Music",
+                query = "music",
+            )
+        val nameWordPrefixPriority = SearchRankingUtils.calculateMatchPriority("YouTube Music", "music")
+
+        assertTrue(exactNicknamePriority < nameWordPrefixPriority)
+    }
+
+    @Test
+    fun nameMatchOutranksNicknameMatchOfTheSameStrength() {
+        val nameWordPrefixPriority = SearchRankingUtils.calculateMatchPriority("Google Lens", "lens")
+        val nicknameWordPrefixPriority =
+            SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = "Camera",
+                nickname = "Photo Lens",
+                query = "lens",
+            )
+        val nameContainsPriority = SearchRankingUtils.calculateMatchPriority("Tasker", "ask")
+        val nicknameContainsPriority =
+            SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = "Notes",
+                nickname = "Basket",
+                query = "ask",
+            )
+
+        assertTrue(nameWordPrefixPriority < nicknameWordPrefixPriority)
+        assertTrue(nicknameWordPrefixPriority < nameContainsPriority)
+        assertTrue(nameContainsPriority < nicknameContainsPriority)
+        assertTrue(DefaultSearchMatcher.isMatch(nicknameContainsPriority))
+    }
+
+    @Test
+    fun exactNicknameOutranksANameThatOnlyContainsTheQuery() {
+        val exactNicknamePriority =
+            SearchRankingUtils.calculateMatchPriorityWithNickname(
+                primaryText = "ChatGPT",
+                nickname = "ask",
+                query = "ask",
+            )
+        val nameContainsPriority = SearchRankingUtils.calculateMatchPriority("Tasker", "ask")
+
+        assertTrue(exactNicknamePriority < nameContainsPriority)
+    }
+
+    @Test
+    fun cachedMatcherAppliesNicknameStepDown() {
+        val matcher = CachedSearchMatcher(SearchTextCache())
+        val query = SearchQueryContext.fromRawQuery("music")
+
+        assertTrue(
+            matcher.match("Music", query, null) < matcher.match("Spotify", query, "Music"),
+        )
+        assertTrue(
+            matcher.match("Spotify", query, "Music") < matcher.match("YouTube Music", query, null),
+        )
     }
 
     @Test

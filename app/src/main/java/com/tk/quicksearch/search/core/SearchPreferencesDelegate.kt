@@ -416,6 +416,13 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setStatusBarVisible(visible: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setStatusBarVisible(visible)
+            updateFeatureState { it.copy(showStatusBar = visible) }
+        }
+    }
+
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             val updated =

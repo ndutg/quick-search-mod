@@ -127,6 +127,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) =
         preferencesApiDelegate.setPinnedAppShortcutsInAppGridEnabled(enabled)
 
+    fun setStatusBarVisible(visible: Boolean) =
+        preferencesApiDelegate.setStatusBarVisible(visible)
+
     fun setShowTodayEvents(enabled: Boolean) = preferencesApiDelegate.setShowTodayEvents(enabled)
 
 
@@ -534,6 +537,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) =
         preferencesDelegate.setPinnedAppShortcutsInAppGridEnabled(enabled)
+
+    fun setStatusBarVisible(visible: Boolean) =
+        preferencesDelegate.setStatusBarVisible(visible)
 
     fun setAccentColorMode(mode: AccentColorMode) =
         preferencesDelegate.setAccentColorMode(mode)

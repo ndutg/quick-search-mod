@@ -55,6 +55,7 @@ data class SettingsScreenState(
     val homePinnedSectionOrder: List<SearchSection> =
         com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER,
     val pinnedAppShortcutsInAppGrid: Boolean = false,
+    val showStatusBar: Boolean = true,
     val searchHintsEnabled: Boolean = true,
     val settingsIconEnabled: Boolean = true,
     val overlayModeEnabled: Boolean,

@@ -279,6 +279,13 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
         setBooleanPref(UiPreferences.KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID, enabled)
     }
 
+    fun isStatusBarVisible(): Boolean =
+            getBooleanPref(UiPreferences.KEY_SHOW_STATUS_BAR, true)
+
+    fun setStatusBarVisible(visible: Boolean) {
+        setBooleanPref(UiPreferences.KEY_SHOW_STATUS_BAR, visible)
+    }
+
     /** Combined drag order of pinned apps and pinned shortcuts shown in the app grid. */
     fun getPinnedAppGridOrder(): List<String> =
             getStringListPref(UiPreferences.KEY_PINNED_APP_GRID_ORDER)

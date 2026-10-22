@@ -3,19 +3,25 @@ package com.tk.quicksearch.search.utils
 /**
  * Utility object for calculating search result ranking priorities.
  *
- * Priority levels (lower is better):
- * 0. Nickname exactly matches query
- * 1. Result starts with query
- * 2. Any word in the text starts with query
- * 3. Result contains query
- * 4. No match
+ * Priority levels (lower is better). At each match strength the result's own name ranks
+ * above a nickname match of the same strength:
+ * 1. Name starts with query
+ * 2. Nickname starts with (or exactly matches) query
+ * 3. Any word in the name starts with query
+ * 4. Any word in the nickname starts with query
+ * 5. Name contains query
+ * 6. Nickname contains query
+ * 7. No match
  */
 object SearchRankingUtils {
-    private const val PRIORITY_EXACT_NICKNAME = 0
     private const val PRIORITY_STARTS_WITH = 1
-    private const val PRIORITY_WORD_STARTS_WITH = 2
-    private const val PRIORITY_CONTAINS = 3
-    private const val PRIORITY_NO_MATCH = 4
+    private const val PRIORITY_NICKNAME_STARTS_WITH = 2
+    private const val PRIORITY_WORD_STARTS_WITH = 3
+    const val PRIORITY_CONTAINS = 5
+    const val PRIORITY_NO_MATCH = 7
+
+    /** Ranks fuzzy matches after every direct match. */
+    const val PRIORITY_FUZZY_MATCH = PRIORITY_NO_MATCH + 1
 
     private val WHITESPACE_REGEX = "\\s+".toRegex()
 
@@ -25,7 +31,7 @@ object SearchRankingUtils {
      *
      * @param text The text to match against
      * @param query The search query
-     * @return Priority level (1-4, where 1 is highest priority)
+     * @return Priority level (1, 3, 5 for matches, 7 for no match; lower is better)
      */
     fun calculateMatchPriority(
         text: String,
@@ -118,17 +124,17 @@ object SearchRankingUtils {
             return PRIORITY_NO_MATCH
         }
 
-        // Priority 1: Starts with query or primary token (single-word only)
+        // Starts with query or primary token (single-word only)
         if (normalizedText.startsWith(normalizedQuery) || normalizedText.startsWith(primaryToken)) {
             return PRIORITY_STARTS_WITH
         }
 
-        // Priority 2: Any word starts with query/token (single-word only)
+        // Any word starts with query/token (single-word only)
         if (hasWordStartingWithQuery(textWords, normalizedQuery, primaryToken, queryTokens)) {
             return PRIORITY_WORD_STARTS_WITH
         }
 
-        // Priority 3: Contains query/token anywhere (single-word only)
+        // Contains query/token anywhere (single-word only)
         if (hasContainingMatch(normalizedText, normalizedQuery, queryTokens)) {
             return PRIORITY_CONTAINS
         }
@@ -137,7 +143,6 @@ object SearchRankingUtils {
             return PRIORITY_CONTAINS
         }
 
-        // Priority 4: No match
         return PRIORITY_NO_MATCH
     }
 
@@ -239,9 +244,11 @@ object SearchRankingUtils {
             bestNicknamePriority(nickname) { alias ->
                 val preparedAlias = SearchTextNormalizer.prepareForSearch(alias)
                 if (isExactNicknameMatch(preparedAlias, normalizedQuery, compactQuery)) {
-                    PRIORITY_EXACT_NICKNAME
+                    PRIORITY_NICKNAME_STARTS_WITH
                 } else {
-                    calculateMatchPriority(preparedAlias, normalizedQuery, queryTokens, compactQuery)
+                    toNicknamePriority(
+                        calculateMatchPriority(preparedAlias, normalizedQuery, queryTokens, compactQuery),
+                    )
                 }
             }
         return minOf(primaryPriority, nicknamePriority)
@@ -258,13 +265,17 @@ object SearchRankingUtils {
         val nicknamePriority =
             nickname?.let {
                 if (isExactNicknameMatch(it, query.normalizedQuery, query.compactQuery)) {
-                    PRIORITY_EXACT_NICKNAME
+                    PRIORITY_NICKNAME_STARTS_WITH
                 } else {
-                    calculateMatchPriority(it, query)
+                    toNicknamePriority(calculateMatchPriority(it, query))
                 }
             } ?: PRIORITY_NO_MATCH
         return minOf(primaryPriority, nicknamePriority)
     }
+
+    /** Places a nickname match one step below a name match of the same strength. */
+    private fun toNicknamePriority(namePriority: Int): Int =
+        if (namePriority == PRIORITY_NO_MATCH) PRIORITY_NO_MATCH else namePriority + 1
 
     private fun isExactNicknameMatch(
         nickname: PreparedSearchText,
