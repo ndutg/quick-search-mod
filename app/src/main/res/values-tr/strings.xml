@@ -1075,6 +1075,9 @@
 <string name="date_calculator_toggle_action_desc">Tarih &amp; saat hesaplayıcıyı aç veya kapat</string>
 <string name="date_calculator_toggle_desc">Kullanım örnekleri</string>
 <string name="dictionary_example_label">Örnek: %1$s</string>
+<string name="dictionary_definition_not_found">“%1$s” için tanım bulunamadı</string>
+<string name="dictionary_unavailable">Sözlüğe ulaşılamadı. Tekrar deneyin.</string>
+<string name="dictionary_search_on_google">Google\'da ara</string>
 <string name="dictionary_synonyms_label">Eş anlamlılar: %1$s</string>
 <string name="dictionary_toggle_desc">Örnek: define serendipity</string>
 <string name="dictionary_toggle_title">Sözlük</string>

@@ -1076,6 +1076,9 @@
     <string name="date_calculator_toggle_action_desc">तारीख और समय कैलकुलेटर चालू या बंद करें</string>
     <string name="date_calculator_toggle_desc">उपयोग उदाहरण</string>
     <string name="dictionary_example_label">उदाहरण: %1$s</string>
+    <string name="dictionary_definition_not_found">“%1$s” की कोई परिभाषा नहीं मिली</string>
+    <string name="dictionary_unavailable">शब्दकोश तक नहीं पहुँच सके। फिर से कोशिश करें।</string>
+    <string name="dictionary_search_on_google">Google पर खोजें</string>
     <string name="dictionary_synonyms_label">समानार्थी: %1$s</string>
     <string name="dictionary_toggle_desc">उदाहरण: define serendipity</string>
     <string name="dictionary_toggle_title">शब्दकोश</string>

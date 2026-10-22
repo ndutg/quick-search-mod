@@ -1076,6 +1076,9 @@
 <string name="date_calculator_toggle_action_desc">Activer ou désactiver la calculatrice de date &amp; heure</string>
 <string name="date_calculator_toggle_desc">Exemples d\'utilisation</string>
 <string name="dictionary_example_label">Exemple : %1$s</string>
+<string name="dictionary_definition_not_found">Aucune définition trouvée pour « %1$s »</string>
+<string name="dictionary_unavailable">Impossible d’accéder au dictionnaire. Réessayez.</string>
+<string name="dictionary_search_on_google">Rechercher sur Google</string>
 <string name="dictionary_synonyms_label">Synonymes : %1$s</string>
 <string name="dictionary_toggle_desc">Exemple : define serendipity</string>
 <string name="dictionary_toggle_title">Dictionnaire</string>

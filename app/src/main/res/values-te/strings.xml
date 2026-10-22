@@ -1076,6 +1076,9 @@
     <string name="date_calculator_toggle_action_desc">తేదీ &amp; సమయ క్యాలిక్యులేటర్‌ను ఆన్ లేదా ఆఫ్ చేయండి</string>
     <string name="date_calculator_toggle_desc">ఉపయోగించే ఉదాహరణలు</string>
     <string name="dictionary_example_label">ఉదాహరణ: %1$s</string>
+    <string name="dictionary_definition_not_found">“%1$s” కు నిర్వచనం కనుగొనబడలేదు</string>
+    <string name="dictionary_unavailable">నిఘంటువును చేరుకోలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="dictionary_search_on_google">Googleలో వెతకండి</string>
     <string name="dictionary_synonyms_label">పర్యాయపదాలు: %1$s</string>
     <string name="dictionary_toggle_desc">ఉదాహరణ: define serendipity</string>
     <string name="dictionary_toggle_title">డిక్షనరీ</string>

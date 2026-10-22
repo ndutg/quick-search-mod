@@ -91,7 +91,6 @@ class AliasHandler(
                 FeatureAliasDefinition(
                     featureId = DICTIONARY_ALIAS_FEATURE_ID,
                     standaloneMode = StandaloneFeatureAliasMode.DICTIONARY,
-                    requiresLlmApiKey = true,
                 ),
                 FeatureAliasDefinition(
                     featureId = WEATHER_ALIAS_FEATURE_ID,

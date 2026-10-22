@@ -1100,6 +1100,9 @@
 <string name="date_calculator_toggle_action_desc">Включить или отключить калькулятор даты и времени</string>
 <string name="date_calculator_toggle_desc">Примеры использования</string>
 <string name="dictionary_example_label">Пример: %1$s</string>
+<string name="dictionary_definition_not_found">Определение для «%1$s» не найдено</string>
+<string name="dictionary_unavailable">Не удалось подключиться к словарю. Повторите попытку.</string>
+<string name="dictionary_search_on_google">Искать в Google</string>
 <string name="dictionary_synonyms_label">Синонимы: %1$s</string>
 <string name="dictionary_toggle_desc">Пример: define serendipity</string>
 <string name="dictionary_toggle_title">Словарь</string>

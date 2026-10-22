@@ -1077,6 +1077,9 @@
     <string name="date_calculator_toggle_action_desc">تفعيل أو تعطيل حاسبة التاريخ والوقت</string>
     <string name="date_calculator_toggle_desc">أمثلة الاستخدام</string>
     <string name="dictionary_example_label">مثال: %1$s</string>
+    <string name="dictionary_definition_not_found">لم يتم العثور على تعريف لـ “%1$s”</string>
+    <string name="dictionary_unavailable">تعذّر الوصول إلى القاموس. حاول مرة أخرى.</string>
+    <string name="dictionary_search_on_google">البحث على Google</string>
     <string name="dictionary_synonyms_label">المرادفات: %1$s</string>
     <string name="dictionary_toggle_desc">مثال: تعريف Serendipity</string>
     <string name="dictionary_toggle_title">القاموس</string>

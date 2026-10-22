@@ -1078,6 +1078,9 @@
     <string name="date_calculator_toggle_action_desc">Aktifkan atau nonaktifkan kalkulator tanggal &amp; waktu</string>
     <string name="date_calculator_toggle_desc">Contoh penggunaan</string>
     <string name="dictionary_example_label">Contoh: %1$s</string>
+    <string name="dictionary_definition_not_found">Definisi untuk “%1$s” tidak ditemukan</string>
+    <string name="dictionary_unavailable">Tidak dapat menjangkau kamus. Coba lagi.</string>
+    <string name="dictionary_search_on_google">Telusuri di Google</string>
     <string name="dictionary_synonyms_label">Sinonim: %1$s</string>
     <string name="dictionary_toggle_desc">Contoh: define serendipity</string>
     <string name="dictionary_toggle_title">Kamus</string>

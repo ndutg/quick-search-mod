@@ -103,11 +103,8 @@ object ToolSettingsRegistry {
                 aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
                 titleResId = R.string.dictionary_toggle_title,
                 defaultDescriptionResId = R.string.dictionary_toggle_desc,
-                requiresLlmApiKey = true,
-                requiresLlmApiKeyDescriptionResId = R.string.currency_converter_requires_gemini_key,
                 icon = Icons.AutoMirrored.Rounded.MenuBook,
                 toggleKey = AppSettingsToggleKey.DICTIONARY,
-                aiBackedModelConfigurable = true,
             ),
             ToolSettingDefinition(
                 id = ToolSettingId.WEATHER,

@@ -144,7 +144,10 @@ fun CurrencyConverterResult(
                                     color = MaterialTheme.colorScheme.error,
                             )
                             currencyConverterState.activeQuery?.takeIf { it.isNotBlank() }?.let { query ->
-                                CheckRatesOnGoogleButton(onClick = { onCheckRatesOnGoogle(query) })
+                                SearchOnGoogleButton(
+                                        text = stringResource(R.string.currency_converter_check_rates_on_google),
+                                        onClick = { onCheckRatesOnGoogle(query) },
+                                )
                             }
                         }
                     }
@@ -155,8 +158,10 @@ fun CurrencyConverterResult(
     }
 }
 
+/** Fallback shown on tool error cards to run the same query on Google instead. */
 @Composable
-private fun CheckRatesOnGoogleButton(
+internal fun SearchOnGoogleButton(
+        text: String,
         onClick: () -> Unit,
         modifier: Modifier = Modifier,
 ) {
@@ -177,7 +182,7 @@ private fun CheckRatesOnGoogleButton(
         )
         Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
         Text(
-                text = stringResource(R.string.currency_converter_check_rates_on_google),
+                text = text,
                 style = MaterialTheme.typography.labelLarge,
         )
     }

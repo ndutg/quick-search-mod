@@ -1083,6 +1083,9 @@
     <string name="date_calculator_toggle_action_desc">Toggle date &amp; time calculator on or off</string>
     <string name="date_calculator_toggle_desc">Usage examples</string>
     <string name="dictionary_example_label">Example: %1$s</string>
+    <string name="dictionary_definition_not_found">No definition found for “%1$s”</string>
+    <string name="dictionary_unavailable">Couldn’t reach the dictionary. Try again.</string>
+    <string name="dictionary_search_on_google">Search on Google</string>
     <string name="dictionary_synonyms_label">Synonyms: %1$s</string>
     <string name="dictionary_toggle_desc">Example: define serendipity</string>
     <string name="dictionary_toggle_title">Dictionary</string>

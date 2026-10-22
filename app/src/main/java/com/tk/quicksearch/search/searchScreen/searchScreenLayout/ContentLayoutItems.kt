@@ -194,10 +194,10 @@ internal fun NonSectionLayoutItem(
                 if (showDictionary) {
                     DictionaryResult(
                             dictionaryState = state.dictionaryState,
-                            llmProviderId = state.dictionaryState.llmProviderId
-                                    ?: state.aiSearchLlmProviderId,
                             showWallpaperBackground = effectiveShowWallpaperBackground,
-                            onGeminiModelInfoClick = onGeminiModelInfoClick,
+                            onSearchOnGoogle = { query ->
+                                onSearchTargetClick(query, SearchTarget.Engine(SearchEngine.GOOGLE))
+                            },
                     )
                 }
             }

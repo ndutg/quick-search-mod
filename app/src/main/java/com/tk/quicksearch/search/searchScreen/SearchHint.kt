@@ -71,7 +71,7 @@ internal fun rememberSearchHint(state: SearchUiState, isDefaultLauncher: Boolean
             cycleHints[8] to state.dateCalculatorEnabled,
             cycleHints[9] to state.calculatorEnabled,
             cycleHints[10] to (state.worldClockEnabled && state.hasApiKey),
-            cycleHints[11] to (state.dictionaryEnabled && state.hasApiKey),
+            cycleHints[11] to state.dictionaryEnabled,
             cycleHints[12] to (state.weatherEnabled && state.hasApiKey),
             cycleHints[13] to true,
             cycleHints[14] to true,

@@ -1064,6 +1064,9 @@
     <string name="date_calculator_toggle_action_desc">开启或关闭日期时间计算器</string>
     <string name="date_calculator_toggle_desc">使用实例指南</string>
     <string name="dictionary_example_label">示例：%1$s</string>
+    <string name="dictionary_definition_not_found">未找到“%1$s”的释义</string>
+    <string name="dictionary_unavailable">无法连接词典，请重试。</string>
+    <string name="dictionary_search_on_google">在 Google 上搜索</string>
     <string name="dictionary_synonyms_label">同义词：%1$s</string>
     <string name="dictionary_toggle_desc">例如：define serendipity</string>
     <string name="dictionary_toggle_title">词典</string>

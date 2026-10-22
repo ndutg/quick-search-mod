@@ -1076,6 +1076,9 @@
     <string name="date_calculator_toggle_action_desc">Ενεργοποίηση ή απενεργοποίηση αριθμομηχανής ημερομηνίας &amp; ώρας</string>
     <string name="date_calculator_toggle_desc">Παραδείγματα χρήσης</string>
     <string name="dictionary_example_label">Παράδειγμα: %1$s</string>
+    <string name="dictionary_definition_not_found">Δεν βρέθηκε ορισμός για «%1$s»</string>
+    <string name="dictionary_unavailable">Δεν ήταν δυνατή η πρόσβαση στο λεξικό. Δοκιμάστε ξανά.</string>
+    <string name="dictionary_search_on_google">Αναζήτηση στο Google</string>
     <string name="dictionary_synonyms_label">Συνώνυμα: %1$s</string>
     <string name="dictionary_toggle_desc">Παράδειγμα: define serendipity</string>
     <string name="dictionary_toggle_title">Λεξικό</string>
