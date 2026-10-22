@@ -816,6 +816,9 @@
     <string name="settings_app_language_system_default">Systeemstandaard</string>
     <string name="settings_launcher_icon_reset_default">Herstellen naar standaard</string>
     <string name="settings_launcher_icon_title">App-icoon wijzigen</string>
+    <string name="settings_search_bar_style_title">Zoekbalk</string>
+    <string name="settings_search_bar_background_color_label">Achtergrondkleur</string>
+    <string name="settings_search_bar_color_accent">Accent</string>
     <string name="settings_layout_option_bottom_desc">Meest relevante items verschijnen onderaan voor eenvoudige toegang</string>
     <string name="settings_layout_option_bottom_title">Eenhandige modus</string>
     <string name="settings_unified_pinned_items_title">Gecombineerde vastgemaakte items</string>
@@ -1398,6 +1401,8 @@ Gebruik {time} om de huidige datum en tijd in de prompt op te nemen.</string>
     <string name="home_upcoming_alarm_hide_app">Wekkers van %1$s verbergen</string>
     <string name="home_low_battery_saver_off">Tik om Batterijbesparing aan te zetten</string>
     <string name="home_low_battery_saver_on">Batterijbesparing staat aan</string>
+    <string name="home_critical_battery_title">Batterij bijna leeg</string>
+    <string name="home_critical_battery_charge_now">Nu opladen</string>
     <string name="home_charged">Volledig opgeladen</string>
     <string name="home_charging_full_in">Vol over %1$s</string>
     <string name="home_charging_paused">Opladen gepauzeerd</string>

@@ -783,6 +783,9 @@
     <string name="settings_app_language_system_default">సిస్టమ్ డిఫాల్ట్</string>
     <string name="settings_launcher_icon_reset_default">డిఫాల్ట్‌కి రీసెట్ చేయి</string>
     <string name="settings_launcher_icon_title">యాప్ ఐకాన్ మార్చు</string>
+    <string name="settings_search_bar_style_title">సెర్చ్ బార్</string>
+    <string name="settings_search_bar_background_color_label">నేపథ్య రంగు</string>
+    <string name="settings_search_bar_color_accent">యాక్సెంట్</string>
     <string name="settings_layout_option_bottom_desc">సులభంగా యాక్సెస్ చేయడానికి అత్యంత సంబంధిత అంశాలు దిగువన కనిపిస్తాయి</string>
     <string name="settings_layout_option_bottom_title">వన్-హ్యాండెడ్ మోడ్</string>
     <string name="settings_unified_pinned_items_title">ఏకీకృత పిన్ చేసిన అంశాలు</string>
@@ -1343,6 +1346,8 @@
     <string name="home_upcoming_alarm_hide_app">%1$s నుండి అలారాలను దాచు</string>
     <string name="home_low_battery_saver_off">బ్యాటరీ సేవర్ ఆన్ చేయడానికి నొక్కండి</string>
     <string name="home_low_battery_saver_on">బ్యాటరీ సేవర్ ఆన్‌లో ఉంది</string>
+    <string name="home_critical_battery_title">బ్యాటరీ చాలా తక్కువగా ఉంది</string>
+    <string name="home_critical_battery_charge_now">ఇప్పుడే ఛార్జ్ చేయండి</string>
     <string name="home_charged">పూర్తిగా ఛార్జ్ అయింది</string>
     <string name="home_charging_full_in">%1$sలో పూర్తవుతుంది</string>
     <string name="home_charging_paused">ఛార్జింగ్ పాజ్ చేయబడింది</string>

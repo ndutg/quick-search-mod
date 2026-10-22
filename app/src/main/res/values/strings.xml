@@ -782,6 +782,9 @@
     <string name="settings_app_language_system_default">System default</string>
     <string name="settings_launcher_icon_reset_default">Reset to default</string>
     <string name="settings_launcher_icon_title">Change App Icon</string>
+    <string name="settings_search_bar_style_title">Search Bar</string>
+    <string name="settings_search_bar_background_color_label">Background color</string>
+    <string name="settings_search_bar_color_accent">Accent</string>
     <string name="settings_layout_option_bottom_desc">Most relevant items appear at bottom for easy access</string>
     <string name="settings_layout_option_bottom_title">One-Handed Mode</string>
     <string name="settings_unified_pinned_items_title">Unified Pinned Items</string>
@@ -1344,6 +1347,8 @@
     <string name="home_upcoming_alarm_hide_app">Hide alarms from %1$s</string>
     <string name="home_low_battery_saver_off">Tap to turn on Battery Saver</string>
     <string name="home_low_battery_saver_on">Battery Saver is on</string>
+    <string name="home_critical_battery_title">Battery critically low</string>
+    <string name="home_critical_battery_charge_now">Charge now</string>
     <string name="home_charged">Fully Charged</string>
     <string name="home_charging_full_in">Full in %1$s</string>
     <string name="home_charging_paused">Charging Paused</string>

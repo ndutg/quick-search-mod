@@ -506,6 +506,7 @@ fun SearchRoute(
             onMovePinnedFile = viewModel::movePinnedFile,
             onExcludeFile = onExcludeFileWithUndo,
             onExcludeFileExtension = onExcludeFileExtensionWithUndo,
+            onAliasFileTypeFilterChange = viewModel::setAliasFileTypeFilter,
             onSettingClick = { setting: com.tk.quicksearch.search.deviceSettings.DeviceSetting ->
                 // Notification History is a Quick Search screen, so it navigates in-app instead of
                 // starting an Activity the way every other device setting does.

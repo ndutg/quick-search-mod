@@ -782,6 +782,9 @@
 <string name="settings_app_language_system_default">Sistem varsayılanı</string>
 <string name="settings_launcher_icon_reset_default">Varsayılana sıfırla</string>
 <string name="settings_launcher_icon_title">Uygulama simgesini değiştir</string>
+<string name="settings_search_bar_style_title">Arama çubuğu</string>
+<string name="settings_search_bar_background_color_label">Arka plan rengi</string>
+<string name="settings_search_bar_color_accent">Vurgu</string>
 <string name="settings_layout_option_bottom_desc">Kolay erişim için en ilgili öğeler altta görünür</string>
 <string name="settings_layout_option_bottom_title">Tek el modu</string>
 <string name="settings_unified_pinned_items_title">Birleştirilmiş Sabitlenen Öğeler</string>
@@ -1342,6 +1345,8 @@
     <string name="home_upcoming_alarm_hide_app">%1$s alarmlarını gizle</string>
     <string name="home_low_battery_saver_off">Pil Tasarrufu\'nu açmak için dokunun</string>
     <string name="home_low_battery_saver_on">Pil Tasarrufu açık</string>
+    <string name="home_critical_battery_title">Pil kritik seviyede</string>
+    <string name="home_critical_battery_charge_now">Şimdi şarj edin</string>
     <string name="home_charged">Tamamen şarj oldu</string>
     <string name="home_charging_full_in">%1$s içinde dolacak</string>
     <string name="home_charging_paused">Şarj duraklatıldı</string>

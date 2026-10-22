@@ -312,6 +312,7 @@ internal object SearchViewModelInitialStateFactory {
                 useSystemFont =
                     startupSnapshot?.useSystemFont ?: startupPreferencesReader.shouldUseSystemFont(),
                 homeTextColorOverride = startupPreferencesReader.getHomeTextColorOverride(),
+                searchBarStyle = startupPreferencesReader.getSearchBarStyle(),
                 launcherAppIcon = startupPreferencesReader.getLauncherAppIcon(),
                 showAppLabels =
                     startupSnapshot?.showAppLabels ?: startupPreferencesReader.shouldShowAppLabels(),

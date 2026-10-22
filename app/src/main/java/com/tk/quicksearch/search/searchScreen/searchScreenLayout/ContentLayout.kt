@@ -317,7 +317,7 @@ fun ContentLayout(
         }
     val activeAliasSection = state.detectedAliasSearchSection
     val isSectionAliasMode = activeAliasSection != null
-    val showAliasRecentItems = isSectionAliasMode && !hasQuery && state.aliasRecentItems.isNotEmpty()
+    val showAliasRecentItems = shouldShowAliasRecentItems(state, isSectionAliasMode, hasQuery)
     val canDeferOtherContentForSuggestions =
         state.appSuggestionsEnabled &&
             !hasQuery &&
@@ -603,7 +603,7 @@ fun ContentLayout(
 
             if (showAliasRecentForSection) {
                 AliasRecentItemsSection(
-                    items = state.aliasRecentItems,
+                    state = state,
                     contactsParams = effectiveContactsParams,
                     filesParams = effectiveFilesParams,
                     settingsParams = effectiveSettingsParams,

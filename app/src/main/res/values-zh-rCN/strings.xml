@@ -773,6 +773,9 @@
     <string name="settings_app_language_system_default">跟随系统</string>
     <string name="settings_launcher_icon_reset_default">重置为默认</string>
     <string name="settings_launcher_icon_title">更改应用图标</string>
+    <string name="settings_search_bar_style_title">搜索栏</string>
+    <string name="settings_search_bar_background_color_label">背景颜色</string>
+    <string name="settings_search_bar_color_accent">强调色</string>
     <string name="settings_layout_option_bottom_desc">最相关的匹配项将显示在底部，以便于轻松触达</string>
     <string name="settings_layout_option_bottom_title">单手模式</string>
     <string name="settings_unified_pinned_items_title">统一固定项目</string>
@@ -1331,6 +1334,8 @@
     <string name="home_upcoming_alarm_hide_app">隐藏来自 %1$s 的闹钟</string>
     <string name="home_low_battery_saver_off">点按即可开启省电模式</string>
     <string name="home_low_battery_saver_on">省电模式已开启</string>
+    <string name="home_critical_battery_title">电量严重不足</string>
+    <string name="home_critical_battery_charge_now">请立即充电</string>
     <string name="home_charged">已充满</string>
     <string name="home_charging_full_in">%1$s后充满</string>
     <string name="home_charging_paused">已暂停充电</string>

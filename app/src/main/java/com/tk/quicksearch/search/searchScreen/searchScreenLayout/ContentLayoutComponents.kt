@@ -40,7 +40,10 @@ import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistorySection
+import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
+import com.tk.quicksearch.search.files.FileTypeFilterChips
 import com.tk.quicksearch.searchEngines.*
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
@@ -208,6 +211,16 @@ internal fun UnifiedPinnedItemsBlock(
     }
 }
 
+// A selected file type chip keeps the list (and its chips) up even when nothing matches.
+internal fun shouldShowAliasRecentItems(
+    state: SearchUiState,
+    isSectionAliasMode: Boolean,
+    hasQuery: Boolean,
+): Boolean =
+    isSectionAliasMode &&
+        !hasQuery &&
+        (state.aliasRecentItems.isNotEmpty() || state.aliasFileTypeFilter != null)
+
 internal val ALIAS_RECENT_ELIGIBLE_SECTIONS =
     setOf(
         SearchSection.APP_SHORTCUTS,
@@ -252,7 +265,7 @@ internal fun sectionAliasPermissionMessageRes(
 
 @Composable
 internal fun AliasRecentItemsSection(
-    items: List<com.tk.quicksearch.search.searchHistory.RecentSearchItem>,
+    state: SearchUiState,
     contactsParams: ContactsSectionParams,
     filesParams: FilesSectionParams,
     settingsParams: SettingsSectionParams,
@@ -265,8 +278,64 @@ internal fun AliasRecentItemsSection(
     showWallpaperBackground: Boolean,
     isOverlayPresentation: Boolean,
 ) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        if (state.detectedAliasSearchSection == SearchSection.FILES) {
+            FileTypeFilterChips(
+                selectedFileType = state.aliasFileTypeFilter,
+                onFileTypeSelected = filesParams.onAliasFileTypeFilterChange,
+                showWallpaperBackground = showWallpaperBackground,
+                // Chips carry invisible touch padding; match the visible gap above the row.
+                modifier = Modifier.padding(bottom = DesignTokens.SpacingSmall),
+            )
+            if (state.aliasRecentItems.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.widget_custom_buttons_no_results),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color =
+                        if (showWallpaperBackground) {
+                            AppColors.WallpaperTextSecondary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    modifier = Modifier.padding(horizontal = DesignTokens.SpacingMedium),
+                )
+            }
+        }
+        AliasRecentItemsList(
+            state = state,
+            contactsParams = contactsParams,
+            filesParams = filesParams,
+            settingsParams = settingsParams,
+            appShortcutsParams = appShortcutsParams,
+            notesParams = notesParams,
+            onRecentQueryClick = onRecentQueryClick,
+            onDeleteRecentItem = onDeleteRecentItem,
+            expandedCardMaxHeight = expandedCardMaxHeight,
+            showWallpaperBackground = showWallpaperBackground,
+            isOverlayPresentation = isOverlayPresentation,
+        )
+    }
+}
+
+@Composable
+private fun AliasRecentItemsList(
+    state: SearchUiState,
+    contactsParams: ContactsSectionParams,
+    filesParams: FilesSectionParams,
+    settingsParams: SettingsSectionParams,
+    appShortcutsParams: AppShortcutsSectionParams,
+    notesParams: NotesSectionParams,
+    onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
+    onDeleteRecentItem: (RecentSearchEntry) -> Unit,
+    expandedCardMaxHeight: Dp,
+    showWallpaperBackground: Boolean,
+    isOverlayPresentation: Boolean,
+) {
     SearchHistorySection(
-        items = items,
+        items = state.aliasRecentItems,
         primaryContactButton = contactsParams.primaryContactButton ?: ContactButtonAction.CALL,
         secondaryContactButton = contactsParams.secondaryContactButton ?: ContactButtonAction.SMS,
         onRecentQueryClick = onRecentQueryClick,
@@ -297,6 +366,10 @@ internal fun AliasRecentItemsSection(
         showWallpaperBackground = showWallpaperBackground,
         isOverlayPresentation = isOverlayPresentation,
         alwaysExpanded = true,
+        // Alias items are all opened results, so pin the list to that tab without the tab row.
+        selectedTab = SearchHistoryTab.RECENTLY_OPENED,
+        showTabs = false,
+        removableEntryKeys = state.aliasRecentRemovableKeys,
         modifier = Modifier.fillMaxWidth(),
     )
 }

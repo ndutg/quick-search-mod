@@ -277,7 +277,11 @@ internal fun detectConsumedPrefixAlias(
     if (activePrefixAliases.isEmpty()) return null
     val queryWithNoLeadingWhitespace = previousText.trimStart()
     if (queryWithNoLeadingWhitespace.isEmpty()) return null
-    val separatorIndex = queryWithNoLeadingWhitespace.indexOfFirst { it.isWhitespace() }
+    // Without a separator the whole text is the alias (aliases that trigger without a space).
+    val separatorIndex =
+        queryWithNoLeadingWhitespace
+            .indexOfFirst { it.isWhitespace() }
+            .let { if (it < 0) queryWithNoLeadingWhitespace.length else it }
     if (separatorIndex <= 0) return null
 
     val aliasToken = queryWithNoLeadingWhitespace.substring(0, separatorIndex)
