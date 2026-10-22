@@ -113,6 +113,7 @@ internal fun RecentSearchItemRow(
     appSettingAppResultRowCount: Int,
     onAppSettingAppResultRowCountChange: (Int) -> Unit,
     onDeleteRecentItem: (RecentSearchEntry) -> Unit,
+    canRemoveFromHistory: Boolean = true,
     showDivider: Boolean,
     showWallpaperBackground: Boolean,
     overlayDividerColor: Color?,
@@ -249,7 +250,7 @@ internal fun RecentSearchItemRow(
         }
 
         DropdownMenu(
-            expanded = showRemoveMenu,
+            expanded = showRemoveMenu && canRemoveFromHistory,
             onDismissRequest = { showRemoveMenu = false },
             shape = RoundedCornerShape(24.dp),
             properties = PopupProperties(focusable = false),

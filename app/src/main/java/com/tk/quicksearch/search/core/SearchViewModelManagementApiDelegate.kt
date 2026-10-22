@@ -12,6 +12,7 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
+import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.other.OtherSearchItemRegistry
@@ -61,6 +62,10 @@ class SearchViewModelManagementApiDelegate internal constructor(
 
     fun clearRecentItems() {
         historyDelegate.clearRecentItems(lockedAliasSearchSectionProvider())
+    }
+
+    fun setAliasFileTypeFilter(fileType: FileType?) {
+        historyDelegate.setAliasFileTypeFilter(fileType)
     }
 
     suspend fun refreshAppShortcutsAndAwait() {

@@ -268,7 +268,11 @@ class FileSearchRepository(
         return results
     }
 
-    fun getRecentFiles(limit: Int): List<DeviceFile> {
+    /** Newest-modified files first; [include] is applied while scanning so [limit] counts matches. */
+    fun getRecentFiles(
+        limit: Int,
+        include: (DeviceFile) -> Boolean = { true },
+    ): List<DeviceFile> {
         if (limit <= 0 || !hasPermission()) return emptyList()
 
         val uri = getFilesContentUri()
@@ -284,7 +288,7 @@ class FileSearchRepository(
                 val columnIndices = getColumnIndices(cursor)
                 while (cursor.moveToNext() && results.size < limit) {
                     val file = createDeviceFileFromCursor(cursor, uri, columnIndices)
-                    if (file != null) {
+                    if (file != null && include(file)) {
                         results.add(file)
                     }
                 }

@@ -9,7 +9,9 @@ import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsSearchHandler
+import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
+import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
@@ -31,11 +33,26 @@ internal class SearchHistoryDelegate(
     private val notesRepository: NotesRepository,
     private val reminderRepository: ReminderRepository,
     private val featureStateProvider: () -> SearchFeatureState,
+    private val configStateProvider: () -> SearchUiConfigState,
     private val currentQueryProvider: () -> String,
     private val updateResultsState: ((SearchResultsState) -> SearchResultsState) -> Unit,
     private val updateUiState: ((SearchUiState) -> SearchUiState) -> Unit,
 ) {
     private var recentItemsRefreshJob: Job? = null
+    // Selected file type chip in the blank-query Files alias view; null means All.
+    private var aliasFileTypeFilter: FileType? = null
+    private val aliasFillLoader by lazy {
+        AliasRecentFillLoader(
+            userPreferences = userPreferences,
+            contactRepository = contactRepository,
+            fileRepository = fileRepository,
+            settingsSearchHandler = settingsSearchHandler,
+            appShortcutSearchHandler = appShortcutSearchHandler,
+            appSettingsSearchHandler = appSettingsSearchHandler,
+            notesRepository = notesRepository,
+            configStateProvider = configStateProvider,
+        )
+    }
 
     fun refreshRecentItems() {
         recentItemsRefreshJob?.cancel()
@@ -150,19 +167,32 @@ internal class SearchHistoryDelegate(
         recentItemsRefreshJob?.join()
     }
 
+    fun setAliasFileTypeFilter(fileType: FileType?) {
+        aliasFileTypeFilter = fileType
+        updateResultsState { it.copy(aliasFileTypeFilter = fileType) }
+        refreshAliasRecentItems(SearchSection.FILES)
+    }
+
     fun refreshAliasRecentItems(section: SearchSection?) {
+        if (section != SearchSection.FILES) aliasFileTypeFilter = null
+        val fileTypeFilter = aliasFileTypeFilter
         scope.launch(Dispatchers.IO) {
             if (section == SearchSection.CALENDAR) {
                 val excludedEventIds = userPreferences.getExcludedCalendarEventIds()
-                val upcoming =
-                    calendarRepository.getUpcomingEventsSortedAscending(limit = MAX_RECENT_ITEMS)
+                // Recently opened events first, then upcoming ones.
+                val events =
+                    (
+                        recentlyOpenedCalendarEvents() +
+                            calendarRepository.getUpcomingEventsSortedAscending(limit = MAX_ALIAS_ITEMS)
+                    ).distinctBy { it.eventId }
                         .filterNot { excludedEventIds.contains(it.eventId) }
-                updateUiState { it.copy(calendarEvents = upcoming, aliasRecentItems = emptyList()) }
+                        .take(MAX_ALIAS_ITEMS)
+                updateUiState { it.copy(calendarEvents = events, aliasRecentItems = emptyList()) }
                 return@launch
             }
             if (section == SearchSection.REMINDERS) {
                 val upcoming =
-                    reminderRepository.getUpcomingReminders(limit = MAX_RECENT_ITEMS)
+                    reminderRepository.getUpcomingReminders(limit = MAX_ALIAS_ITEMS)
                 updateUiState { it.copy(reminderResults = upcoming, aliasRecentItems = emptyList()) }
                 return@launch
             }
@@ -177,12 +207,18 @@ internal class SearchHistoryDelegate(
                     SearchSection.APP_SETTINGS -> allOpens.filterIsInstance<RecentSearchEntry.AppSetting>()
                     SearchSection.NOTES -> allOpens.filterIsInstance<RecentSearchEntry.Note>()
                     else -> {
-                        updateResultsState { it.copy(aliasRecentItems = emptyList()) }
+                        updateResultsState {
+                            it.copy(
+                                aliasRecentItems = emptyList(),
+                                aliasRecentRemovableKeys = emptySet(),
+                                aliasFileTypeFilter = null,
+                            )
+                        }
                         return@launch
                     }
                 }
 
-            val limited = filteredEntries.take(MAX_RECENT_ITEMS)
+            val limited = filteredEntries.take(MAX_ALIAS_ITEMS)
 
             val contactIds = limited.filterIsInstance<RecentSearchEntry.Contact>().map { it.contactId }.toSet()
             val fileUris = limited.filterIsInstance<RecentSearchEntry.File>().map { it.uri }.toSet()
@@ -208,7 +244,7 @@ internal class SearchHistoryDelegate(
             val pinnedAppShortcutIds = userPreferences.getPinnedAppShortcutIds()
             val pinnedNoteIds = notesRepository.getPinnedNoteIds()
 
-            val items =
+            val recentItems =
                 buildList {
                     limited.forEach { entry ->
                         when (entry) {
@@ -216,7 +252,9 @@ internal class SearchHistoryDelegate(
                                 if (entry.contactId !in pinnedContactIds) add(RecentSearchItem.Contact(entry, it))
                             }
                             is RecentSearchEntry.File -> filesByUri[entry.uri]?.let {
-                                if (entry.uri !in pinnedFileUris) add(RecentSearchItem.File(entry, it))
+                                if (entry.uri !in pinnedFileUris && matchesFileType(it, fileTypeFilter)) {
+                                    add(RecentSearchItem.File(entry, it))
+                                }
                             }
                             is RecentSearchEntry.Setting -> settingsById[entry.id]?.let {
                                 if (entry.id !in pinnedSettingIds) add(RecentSearchItem.Setting(entry, it))
@@ -233,8 +271,23 @@ internal class SearchHistoryDelegate(
                             is RecentSearchEntry.Query -> Unit
                         }
                     }
-                }
-            updateResultsState { it.copy(aliasRecentItems = items) }
+                }.take(MAX_ALIAS_ITEMS)
+            val removableKeys = recentItems.map { it.entry.stableKey }.toSet()
+            // Opened items stay on top; the rest of the section fills the list up to the cap.
+            val fillItems =
+                aliasFillLoader.loadFill(
+                    section = section,
+                    shownKeys = removableKeys,
+                    limit = MAX_ALIAS_ITEMS - recentItems.size,
+                    fileTypeFilter = fileTypeFilter,
+                )
+            updateResultsState {
+                it.copy(
+                    aliasRecentItems = recentItems + fillItems,
+                    aliasRecentRemovableKeys = removableKeys,
+                    aliasFileTypeFilter = fileTypeFilter,
+                )
+            }
         }
     }
 
@@ -297,7 +350,25 @@ internal class SearchHistoryDelegate(
         }
     }
 
+    private fun recentlyOpenedCalendarEvents(): List<CalendarEventInfo> {
+        val eventIds =
+            userPreferences
+                .getRecentResultLastOpenedTimes()
+                .filterKeys { it.startsWith(CALENDAR_OPEN_KEY_PREFIX) }
+                .entries
+                .sortedByDescending { it.value }
+                .mapNotNull { it.key.removePrefix(CALENDAR_OPEN_KEY_PREFIX).toLongOrNull() }
+                .take(MAX_ALIAS_ITEMS)
+        if (eventIds.isEmpty()) return emptyList()
+        val eventsById =
+            calendarRepository.getEventsByIds(eventIds.toSet()).associateBy { it.eventId }
+        return eventIds.mapNotNull { eventsById[it] }
+    }
+
     private companion object {
         const val MAX_RECENT_ITEMS = 15
+        // Blank-query alias view: recently opened items first, then the rest of the section.
+        const val MAX_ALIAS_ITEMS = 50
+        const val CALENDAR_OPEN_KEY_PREFIX = "calendar:"
     }
 }

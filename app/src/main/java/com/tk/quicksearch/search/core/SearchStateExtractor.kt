@@ -73,6 +73,8 @@ internal object SearchStateExtractor {
             detectedTaskerIntentId = s.detectedTaskerIntentId,
             recentItems = s.recentItems,
             aliasRecentItems = s.aliasRecentItems,
+            aliasRecentRemovableKeys = s.aliasRecentRemovableKeys,
+            aliasFileTypeFilter = s.aliasFileTypeFilter,
             recentResultRecencyIndex = s.recentResultRecencyIndex,
             nicknameUpdateVersion = s.nicknameUpdateVersion,
             contactActionsVersion = s.contactActionsVersion,

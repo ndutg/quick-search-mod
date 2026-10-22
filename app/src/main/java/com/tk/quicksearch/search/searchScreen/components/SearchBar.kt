@@ -252,12 +252,22 @@ internal fun PersistentSearchBar(
 
     LaunchedEffect(query, leadingIconState) {
         val previousText = textFieldValue.text
+        // A consumed prefix alias shrinks the query to the typed text's suffix; apply it right away
+        // instead of treating it as a stale state echo.
+        val isConsumedAlias =
+            leadingIconState !is LeadingIconState.Search &&
+                detectConsumedPrefixAlias(
+                    previousText = previousText,
+                    currentQuery = query,
+                    activePrefixAliases = activePrefixAliases,
+                ) != null
         val shouldDeferSync =
-            shouldDeferTextFieldValueSync(
-                stateQuery = query,
-                localText = previousText,
-                localInputAwaitingStateAck = localInputAwaitingStateAck,
-            )
+            !isConsumedAlias &&
+                shouldDeferTextFieldValueSync(
+                    stateQuery = query,
+                    localText = previousText,
+                    localInputAwaitingStateAck = localInputAwaitingStateAck,
+                )
         if (query == localInputAwaitingStateAck) {
             localInputAwaitingStateAck = null
         }

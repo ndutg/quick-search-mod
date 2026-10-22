@@ -373,6 +373,8 @@ data class SearchUiState(
         // Recent items
         val recentItems: List<RecentSearchItem> = emptyList(),
         val aliasRecentItems: List<RecentSearchItem> = emptyList(),
+        val aliasRecentRemovableKeys: Set<String> = emptySet(),
+        val aliasFileTypeFilter: com.tk.quicksearch.search.models.FileType? = null,
         val recentResultRecencyIndex: RecentResultRankingUtils.RecencyIndex =
                 RecentResultRankingUtils.RecencyIndex(),
         val recentQueriesEnabled: Boolean = true,
@@ -490,6 +492,8 @@ fun SearchUiState(
                 detectedTaskerIntentId = results.detectedTaskerIntentId,
                 recentItems = results.recentItems,
                 aliasRecentItems = results.aliasRecentItems,
+                aliasRecentRemovableKeys = results.aliasRecentRemovableKeys,
+                aliasFileTypeFilter = results.aliasFileTypeFilter,
                 recentResultRecencyIndex = results.recentResultRecencyIndex,
                 nicknameUpdateVersion = results.nicknameUpdateVersion,
                 contactActionsVersion = results.contactActionsVersion,

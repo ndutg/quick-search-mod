@@ -1,6 +1,8 @@
 package com.tk.quicksearch.search.searchScreen.components
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -57,6 +59,29 @@ class SearchBarInputSyncPolicyTest {
                 localText = "What's the weather in Barcelona today?",
                 localInputAwaitingStateAck = null,
             ),
+        )
+    }
+
+    @Test
+    fun `detects an alias consumed without a trailing space`() {
+        assertEquals(
+            "fs",
+            detectConsumedPrefixAlias(previousText = "fs", currentQuery = "", activePrefixAliases = setOf("fs")),
+        )
+    }
+
+    @Test
+    fun `detects an alias consumed with a remainder`() {
+        assertEquals(
+            "fs",
+            detectConsumedPrefixAlias(previousText = "fs notes", currentQuery = "notes", activePrefixAliases = setOf("fs")),
+        )
+    }
+
+    @Test
+    fun `ignores text that is not an alias`() {
+        assertNull(
+            detectConsumedPrefixAlias(previousText = "fx", currentQuery = "", activePrefixAliases = setOf("fs")),
         )
     }
 }

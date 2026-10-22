@@ -114,6 +114,10 @@ data class SearchResultsState(
         val recentItems: List<RecentSearchItem> = emptyList(),
         // Recently opened items filtered to the active alias section (shown when alias detected + query blank)
         val aliasRecentItems: List<RecentSearchItem> = emptyList(),
+        // Keys of the alias items that came from history (the rest only fill the list)
+        val aliasRecentRemovableKeys: Set<String> = emptySet(),
+        // File type chip selected in the blank-query Files alias view (null = All)
+        val aliasFileTypeFilter: FileType? = null,
         val recentResultRecencyIndex: RecentResultRankingUtils.RecencyIndex =
                 RecentResultRankingUtils.RecencyIndex(),
         // Cache invalidation counters
