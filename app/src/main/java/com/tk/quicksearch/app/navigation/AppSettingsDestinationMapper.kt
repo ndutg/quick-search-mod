@@ -57,6 +57,7 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.ADD_HOME_SCREEN_WIDGET,
         AppSettingsDestination.ADD_QUICK_SETTINGS_TILE,
         AppSettingsDestination.CREATE_NOTE,
+        AppSettingsDestination.CREATE_NOTIFICATION_NOTE,
         AppSettingsDestination.NOTES_LIST,
         AppSettingsDestination.CREATE_REMINDER -> null
         AppSettingsDestination.OPEN_EVENTS_IN -> null

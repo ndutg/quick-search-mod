@@ -636,6 +636,8 @@
      ============================================================================ -->
 <string name="app_settings_search_create_note_desc">Создать новую заметку в редакторе</string>
 <string name="app_settings_search_create_note_title">Создать заметку</string>
+<string name="app_settings_search_create_notification_note_title">Создать заметку в уведомлениях</string>
+<string name="app_settings_search_create_notification_note_desc">Заметка, которая остаётся в панели уведомлений</string>
 <string name="notes_body_hint">Текст заметки</string>
 <string name="notes_create_note_cta">Новая заметка</string>
 <string name="notes_delete_confirm_message">Эта заметка будет удалена безвозвратно.</string>
@@ -646,6 +648,7 @@
 <string name="notes_editor_action_open_link">Открыть ссылку</string>
 <string name="notes_editor_action_send_email">Отправить эл. письмо</string>
 <string name="notes_editor_title">Редактор заметок</string>
+<string name="notes_editor_notification_note_title">Заметка в уведомлениях</string>
 <string name="notes_empty_note_subtext">Пустая заметка</string>
 <string name="notes_quick_note_title">Быстрая заметка</string>
 <string name="notes_quick_note_toggle_desc">Открывать быструю заметку жестом бокового свайпа</string>

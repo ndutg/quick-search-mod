@@ -606,6 +606,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">在编辑器中开始一条新笔记</string>
     <string name="app_settings_search_create_note_title">创建笔记</string>
+    <string name="app_settings_search_create_notification_note_title">创建通知笔记</string>
+    <string name="app_settings_search_create_notification_note_desc">写一条常驻通知栏的笔记</string>
     <string name="notes_body_hint">在此处撰写您的笔记</string>
     <string name="notes_create_note_cta">新笔记</string>
     <string name="notes_delete_confirm_message">这条笔记将被永久删除。</string>
@@ -616,6 +618,7 @@
     <string name="notes_editor_action_open_link">打开链接</string>
     <string name="notes_editor_action_send_email">发送电子邮件</string>
     <string name="notes_editor_title">笔记编辑器</string>
+    <string name="notes_editor_notification_note_title">通知笔记</string>
     <string name="notes_empty_note_subtext">空白笔记</string>
     <string name="notes_quick_note_title">快捷笔记</string>
     <string name="notes_quick_note_toggle_desc">支持通过滑动导航打开快捷笔记</string>

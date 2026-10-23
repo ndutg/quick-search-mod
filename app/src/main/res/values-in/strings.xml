@@ -619,6 +619,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Mulai catatan baru di editor</string>
     <string name="app_settings_search_create_note_title">Buat catatan</string>
+    <string name="app_settings_search_create_notification_note_title">Buat catatan notifikasi</string>
+    <string name="app_settings_search_create_notification_note_desc">Tulis catatan yang tetap ada di panel notifikasi</string>
     <string name="notes_body_hint">Tulis catatan Anda di sini</string>
     <string name="notes_create_note_cta">Catatan Baru</string>
     <string name="notes_delete_confirm_message">Catatan ini akan dihapus secara permanen.</string>
@@ -629,6 +631,7 @@
     <string name="notes_editor_action_open_link">Buka tautan</string>
     <string name="notes_editor_action_send_email">Kirim email</string>
     <string name="notes_editor_title">Editor Catatan</string>
+    <string name="notes_editor_notification_note_title">Catatan Notifikasi</string>
     <string name="notes_empty_note_subtext">Catatan kosong</string>
     <string name="notes_quick_note_title">Catatan Cepat</string>
     <string name="notes_quick_note_toggle_desc">Buka Catatan Cepat dari navigasi geser</string>

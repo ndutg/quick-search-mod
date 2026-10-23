@@ -616,6 +616,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Neue Notiz im Editor starten</string>
     <string name="app_settings_search_create_note_title">Notiz erstellen</string>
+    <string name="app_settings_search_create_notification_note_title">Benachrichtigungsnotiz erstellen</string>
+    <string name="app_settings_search_create_notification_note_desc">Eine Notiz schreiben, die in der Benachrichtigungsleiste bleibt</string>
     <string name="notes_body_hint">Hier Notiz schreiben</string>
     <string name="notes_create_note_cta">Neue Notiz</string>
     <string name="notes_delete_confirm_message">Diese Notiz wird dauerhaft gelöscht.</string>
@@ -626,6 +628,7 @@
     <string name="notes_editor_action_open_link">Link öffnen</string>
     <string name="notes_editor_action_send_email">E-Mail senden</string>
     <string name="notes_editor_title">Notiz-Editor</string>
+    <string name="notes_editor_notification_note_title">Benachrichtigungsnotiz</string>
     <string name="notes_empty_note_subtext">Leere Notiz</string>
     <string name="notes_quick_note_title">Schnellnotiz</string>
     <string name="notes_quick_note_toggle_desc">Schnellnotiz per Wischgeste öffnen</string>

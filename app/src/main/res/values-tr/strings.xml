@@ -615,6 +615,8 @@
      ============================================================================ -->
 <string name="app_settings_search_create_note_desc">Düzenleyicide yeni bir not başlat</string>
 <string name="app_settings_search_create_note_title">Not oluştur</string>
+<string name="app_settings_search_create_notification_note_title">Bildirim notu oluştur</string>
+<string name="app_settings_search_create_notification_note_desc">Bildirim panelinde kalan bir not yazın</string>
 <string name="notes_body_hint">Notunu buraya yazın</string>
 <string name="notes_create_note_cta">Yeni not</string>
 <string name="notes_delete_confirm_message">Bu not kalıcı olarak silinecek.</string>
@@ -625,6 +627,7 @@
 <string name="notes_editor_action_open_link">Bağlantıyı aç</string>
 <string name="notes_editor_action_send_email">E-posta gönder</string>
 <string name="notes_editor_title">Not düzenleyici</string>
+<string name="notes_editor_notification_note_title">Bildirim notu</string>
 <string name="notes_empty_note_subtext">Boş not</string>
 <string name="notes_quick_note_title">Hızlı not</string>
 <string name="notes_quick_note_toggle_desc">Kaydırma navigasyonundan Hızlı Not\'u aç</string>

@@ -90,6 +90,11 @@ object PinnedNotifications {
         show(context)
     }
 
+    fun removeNote(context: Context, noteId: Long) {
+        val action = CustomWidgetButtonAction.Note(noteId = noteId, title = "")
+        if (isPinned(context, action)) remove(context, action)
+    }
+
     fun reorder(context: Context, actions: List<CustomWidgetButtonAction>) {
         saveActions(context, actions)
         show(context)
@@ -139,20 +144,8 @@ object PinnedNotifications {
 
     private fun showSeparate(context: Context, action: CustomWidgetButtonAction) {
         val notificationId = separateNotificationId(action)
-        val iconSize = (context.resources.displayMetrics.density * 48).toInt()
-        val iconPackPackage = UserAppPreferences(context).uiPreferences.getSelectedIconPackPackage()
-        val icon = rememberWidgetButtonIcon(
-            context = context,
-            action = action,
-            iconSizePx = iconSize,
-            textIconColor = Color.White,
-            iconPackPackage = iconPackPackage,
-            badgeShortcutWithAppIcon = true,
-        )
-        val largeIcon = notificationIconBitmap(context, action, icon.bitmap, icon.drawableResId, iconSize)
-            ?: icon.drawableResId?.let { drawableResId ->
-                ContextCompat.getDrawable(context, drawableResId)?.toBitmap(width = iconSize, height = iconSize)
-            }
+        // Notes read as plain text notifications, so they skip the large note icon.
+        val largeIcon = if (action is CustomWidgetButtonAction.Note) null else separateLargeIcon(context, action)
         val launchIntent = WidgetActionActivity.createIntent(context, action).apply {
             data = android.net.Uri.parse("quicksearch://separate-pinned-notification/${action.stableKey().hashCode()}")
         }
@@ -209,6 +202,23 @@ object PinnedNotifications {
                 )
         }
         NotificationManagerCompat.from(context).notify(notificationId, builder.build())
+    }
+
+    private fun separateLargeIcon(context: Context, action: CustomWidgetButtonAction): android.graphics.Bitmap? {
+        val iconSize = (context.resources.displayMetrics.density * 48).toInt()
+        val iconPackPackage = UserAppPreferences(context).uiPreferences.getSelectedIconPackPackage()
+        val icon = rememberWidgetButtonIcon(
+            context = context,
+            action = action,
+            iconSizePx = iconSize,
+            textIconColor = Color.White,
+            iconPackPackage = iconPackPackage,
+            badgeShortcutWithAppIcon = true,
+        )
+        return notificationIconBitmap(context, action, icon.bitmap, icon.drawableResId, iconSize)
+            ?: icon.drawableResId?.let { drawableResId ->
+                ContextCompat.getDrawable(context, drawableResId)?.toBitmap(width = iconSize, height = iconSize)
+            }
     }
 
     private fun buildRemoteViews(

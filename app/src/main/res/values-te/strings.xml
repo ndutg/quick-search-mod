@@ -616,6 +616,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">ఎడిటర్‌లో కొత్త గమనికను ప్రారంభించండి</string>
     <string name="app_settings_search_create_note_title">గమనికను సృష్టించు</string>
+    <string name="app_settings_search_create_notification_note_title">నోటిఫికేషన్ గమనికను సృష్టించు</string>
+    <string name="app_settings_search_create_notification_note_desc">నోటిఫికేషన్ ప్యానెల్‌లో ఉండే గమనికను రాయండి</string>
     <string name="notes_body_hint">మీ గమనికను ఇక్కడ రాయండి</string>
     <string name="notes_create_note_cta">కొత్త గమనిక</string>
     <string name="notes_delete_confirm_message">ఈ గమనిక శాశ్వతంగా తొలగించబడుతుంది.</string>
@@ -626,6 +628,7 @@
     <string name="notes_editor_action_open_link">లింక్‌ను తెరువు</string>
     <string name="notes_editor_action_send_email">ఈమెయిల్ పంపు</string>
     <string name="notes_editor_title">గమనిక ఎడిటర్</string>
+    <string name="notes_editor_notification_note_title">నోటిఫికేషన్ గమనిక</string>
     <string name="notes_empty_note_subtext">ఖాళీ గమనిక</string>
     <string name="notes_quick_note_title">త్వరిత గమనిక</string>
     <string name="notes_quick_note_toggle_desc">స్వైప్ నావిగేషన్ నుండి త్వరిత గమనికను తెరువు</string>

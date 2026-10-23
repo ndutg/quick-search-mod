@@ -616,6 +616,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">एडिटर में नया नोट शुरू करें</string>
     <string name="app_settings_search_create_note_title">नोट बनाएं</string>
+    <string name="app_settings_search_create_notification_note_title">सूचना नोट बनाएं</string>
+    <string name="app_settings_search_create_notification_note_desc">ऐसा नोट लिखें जो सूचना पैनल में बना रहे</string>
     <string name="notes_body_hint">अपना नोट यहां लिखें</string>
     <string name="notes_create_note_cta">नया नोट</string>
     <string name="notes_delete_confirm_message">यह नोट स्थायी रूप से हटा दिया जाएगा।</string>
@@ -626,6 +628,7 @@
     <string name="notes_editor_action_open_link">लिंक खोलें</string>
     <string name="notes_editor_action_send_email">ईमेल भेजें</string>
     <string name="notes_editor_title">नोट एडिटर</string>
+    <string name="notes_editor_notification_note_title">सूचना नोट</string>
     <string name="notes_empty_note_subtext">खाली नोट</string>
     <string name="notes_quick_note_title">क्विक नोट</string>
     <string name="notes_quick_note_toggle_desc">स्वाइप नेविगेशन से क्विक नोट खोलें</string>

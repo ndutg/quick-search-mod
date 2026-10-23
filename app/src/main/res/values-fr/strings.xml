@@ -616,6 +616,8 @@
      ============================================================================ -->
 <string name="app_settings_search_create_note_desc">Commencer une nouvelle note dans l\'éditeur</string>
 <string name="app_settings_search_create_note_title">Créer une note</string>
+<string name="app_settings_search_create_notification_note_title">Créer une note de notification</string>
+<string name="app_settings_search_create_notification_note_desc">Écrivez une note qui reste dans le volet des notifications</string>
 <string name="notes_body_hint">Écrivez votre note ici</string>
 <string name="notes_create_note_cta">Nouvelle note</string>
 <string name="notes_delete_confirm_message">Cette note sera définitivement supprimée.</string>
@@ -626,6 +628,7 @@
 <string name="notes_editor_action_open_link">Ouvrir le lien</string>
 <string name="notes_editor_action_send_email">Envoyer un e-mail</string>
 <string name="notes_editor_title">Éditeur de notes</string>
+<string name="notes_editor_notification_note_title">Note de notification</string>
 <string name="notes_empty_note_subtext">Note vide</string>
 <string name="notes_quick_note_title">Note rapide</string>
 <string name="notes_quick_note_toggle_desc">Ouvrir la Note rapide depuis la navigation par balayage</string>

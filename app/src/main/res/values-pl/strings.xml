@@ -643,6 +643,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Rozpocznij nową notatkę w edytorze</string>
     <string name="app_settings_search_create_note_title">Utwórz notatkę</string>
+    <string name="app_settings_search_create_notification_note_title">Utwórz notatkę w powiadomieniach</string>
+    <string name="app_settings_search_create_notification_note_desc">Napisz notatkę, która zostanie w panelu powiadomień</string>
     <string name="notes_body_hint">Wpisz treść notatki tutaj</string>
     <string name="notes_create_note_cta">Nowa notatka</string>
     <string name="notes_delete_confirm_message">Ta notatka zostanie trwale usunięta.</string>
@@ -653,6 +655,7 @@
     <string name="notes_editor_action_open_link">Otwórz link</string>
     <string name="notes_editor_action_send_email">Wyślij e-mail</string>
     <string name="notes_editor_title">Edytor notatek</string>
+    <string name="notes_editor_notification_note_title">Notatka w powiadomieniach</string>
     <string name="notes_empty_note_subtext">Pusta notatka</string>
     <string name="notes_quick_note_title">Szybka notatka</string>
     <string name="notes_quick_note_toggle_desc">Otwieraj Szybką notatkę gestem nawigacji</string>

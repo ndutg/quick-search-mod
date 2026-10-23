@@ -623,6 +623,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">エディタで新しいメモを作成</string>
     <string name="app_settings_search_create_note_title">メモを作成</string>
+    <string name="app_settings_search_create_notification_note_title">通知メモを作成</string>
+    <string name="app_settings_search_create_notification_note_desc">通知パネルに表示し続けるメモを書く</string>
     <string name="notes_body_hint">ここにメモを入力</string>
     <string name="notes_create_note_cta">新規メモ</string>
     <string name="notes_delete_confirm_message">このメモは完全に削除されます。</string>
@@ -633,6 +635,7 @@
     <string name="notes_editor_action_open_link">リンクを開く</string>
     <string name="notes_editor_action_send_email">メールを送信</string>
     <string name="notes_editor_title">メモエディタ</string>
+    <string name="notes_editor_notification_note_title">通知メモ</string>
     <string name="notes_empty_note_subtext">空のメモ</string>
     <string name="notes_quick_note_title">クイックメモ</string>
     <string name="notes_quick_note_toggle_desc">スワイプナビゲーションからクイックメモを開く</string>

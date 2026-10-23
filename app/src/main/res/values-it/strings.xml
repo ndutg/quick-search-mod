@@ -615,6 +615,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Inizia una nuova nota nell\u2019editor</string>
     <string name="app_settings_search_create_note_title">Crea nota</string>
+    <string name="app_settings_search_create_notification_note_title">Crea nota di notifica</string>
+    <string name="app_settings_search_create_notification_note_desc">Scrivi una nota che resta nel pannello delle notifiche</string>
     <string name="notes_body_hint">Scrivi qui la tua nota</string>
     <string name="notes_create_note_cta">Nuova nota</string>
     <string name="notes_delete_confirm_message">Questa nota verrà eliminata in modo permanente.</string>
@@ -625,6 +627,7 @@
     <string name="notes_editor_action_open_link">Apri link</string>
     <string name="notes_editor_action_send_email">Invia email</string>
     <string name="notes_editor_title">Editor di note</string>
+    <string name="notes_editor_notification_note_title">Nota di notifica</string>
     <string name="notes_empty_note_subtext">Nota vuota</string>
     <string name="notes_quick_note_title">Nota rapida</string>
     <string name="notes_quick_note_toggle_desc">Apri Nota rapida tramite la navigazione con scorrimento (swipe)</string>

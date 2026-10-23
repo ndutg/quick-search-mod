@@ -107,8 +107,7 @@ internal fun SettingsNestedDetailScreen(
     var notesRefreshSignal by remember { mutableIntStateOf(0) }
     var showNotesBulkDeleteConfirm by remember { mutableStateOf(false) }
     var appShortcutsCollapseAllTrigger by remember { mutableIntStateOf(0) }
-    var noteEditorCanDelete by remember { mutableStateOf(false) }
-    var noteEditorOnConfirmedDelete by remember { mutableStateOf<(() -> Unit)?>(null) }
+    var noteEditorToolbar by remember { mutableStateOf(NoteEditorToolbarState()) }
     var showNoteDeleteConfirm by remember { mutableStateOf(false) }
     val pendingAiBackedToolForEditor =
         remember(detailType) {
@@ -154,8 +153,7 @@ internal fun SettingsNestedDetailScreen(
     }
     LaunchedEffect(detailType) {
         if (detailType != SettingsDetailType.NOTE_EDITOR) {
-            noteEditorCanDelete = false
-            noteEditorOnConfirmedDelete = null
+            noteEditorToolbar = NoteEditorToolbarState()
             showNoteDeleteConfirm = false
         }
         if (detailType != SettingsDetailType.NOTES) {
@@ -203,6 +201,8 @@ internal fun SettingsNestedDetailScreen(
                                 AiBackedToolConfigId.WEATHER -> R.string.weather_toggle_title
                                 null -> detailType.titleResId()
                             }
+                        } else if (detailType == SettingsDetailType.NOTE_EDITOR) {
+                            noteEditorTitleRes(noteEditorToolbar)
                         } else {
                             detailType.titleResId()
                         }
@@ -216,17 +216,8 @@ internal fun SettingsNestedDetailScreen(
                         }
                     },
                     trailingContent =
-                        if (detailType == SettingsDetailType.NOTE_EDITOR && noteEditorCanDelete) {
-                            {
-                                IconButton(onClick = { showNoteDeleteConfirm = true }) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Delete,
-                                        contentDescription =
-                                            stringResource(R.string.notes_delete_note_desc),
-                                        tint = MaterialTheme.colorScheme.onSurface,
-                                    )
-                                }
-                            }
+                        if (detailType == SettingsDetailType.NOTE_EDITOR) {
+                            noteEditorHeaderActions(noteEditorToolbar) { showNoteDeleteConfirm = true }
                         } else if (
                             detailType == SettingsDetailType.NOTIFICATION_HISTORY &&
                                 notificationHistoryAccessGranted == true
@@ -404,15 +395,7 @@ internal fun SettingsNestedDetailScreen(
                 NoteEditor(
                     onNavigateToNotes = { onNavigateToDetail(SettingsDetailType.NOTES) },
                     onNavigateToSearch = onNavigateToSearch,
-                    onDeleteToolbarState = { canDelete, onConfirmedDelete ->
-                        noteEditorCanDelete = canDelete
-                        noteEditorOnConfirmedDelete =
-                            if (canDelete) {
-                                onConfirmedDelete
-                            } else {
-                                null
-                            }
-                    },
+                    onToolbarState = { noteEditorToolbar = it },
                     hideTopBar = hideNoteEditorAppBar,
                     modifier =
                         Modifier
@@ -764,7 +747,7 @@ internal fun SettingsNestedDetailScreen(
         if (showNoteDeleteConfirm && detailType == SettingsDetailType.NOTE_EDITOR) {
             NoteDeleteConfirmationDialog(
                 onConfirm = {
-                    noteEditorOnConfirmedDelete?.invoke()
+                    noteEditorToolbar.onConfirmedDelete?.invoke()
                     showNoteDeleteConfirm = false
                 },
                 onDismiss = { showNoteDeleteConfirm = false }
