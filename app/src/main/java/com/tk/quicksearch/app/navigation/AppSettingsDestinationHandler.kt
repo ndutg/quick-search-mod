@@ -52,6 +52,10 @@ internal fun handleAppSettingsDestination(
             NotesNavigationMemory.setPendingNoteId(null)
             handlers.onOpenSettingsDetail(SettingsDetailType.NOTE_EDITOR)
         }
+        AppSettingsDestination.CREATE_NOTIFICATION_NOTE -> {
+            NotesNavigationMemory.setPendingNoteId(null, pinToNotification = true)
+            handlers.onOpenSettingsDetail(SettingsDetailType.NOTE_EDITOR)
+        }
         AppSettingsDestination.NOTES_LIST -> handlers.onOpenSettingsDetail(SettingsDetailType.NOTES)
         AppSettingsDestination.CREATE_REMINDER -> ReminderEditorRequests.openNew()
         else -> Unit

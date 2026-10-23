@@ -77,6 +77,7 @@
     <string name="action_add_to_home">添加到主屏幕</string>
     <string name="action_add_trigger">添加触发词</string>
     <string name="action_app_info">应用信息</string>
+    <string name="action_open_in_google_play">在 Google Play 中打开</string>
     <string name="action_manage_all_apps">管理所有应用</string>
     <string name="action_app_shortcuts_settings">应用快捷方式设置</string>
     <string name="action_files_settings">文件设置</string>
@@ -113,7 +114,7 @@
     <string name="action_open_folder">打开文件夹</string>
     <string name="action_open_keyboard">打开键盘</string>
     <string name="action_open_settings">打开设置</string>
-    <string name="settings_gestures_title">手势</string>
+    <string name="settings_gestures_title">主屏幕手势</string>
     <string name="settings_gestures_desc">自定义滑动手势</string>
     <string name="settings_gesture_swipe_right">向右滑动</string>
     <string name="settings_gesture_widget_panel">小部件面板</string>
@@ -121,14 +122,15 @@
     <string name="settings_gesture_swipe_left">向左滑动</string>
     <string name="settings_gesture_swipe_up">向上滑动</string>
     <string name="settings_gesture_swipe_down">向下滑动</string>
-    <string name="settings_gesture_swipe_up_home">向上滑动 (主屏幕)</string>
-    <string name="settings_gesture_swipe_down_home">向下滑动 (主屏幕)</string>
     <string name="settings_gesture_close_quick_search">关闭 Quick Search</string>
-    <string name="settings_gesture_double_tap_home">双击 (主屏幕)</string>
+    <string name="settings_gesture_double_tap_home">双击</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">双指向上滑动</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">双指向下滑动</string>
     <string name="settings_gesture_settings">设置</string>
     <string name="settings_gesture_close_keyboard_notifications">关闭键盘 / 打开通知</string>
     <string name="settings_gesture_close_keyboard">关闭键盘</string>
     <string name="settings_gesture_notification_panel">通知面板</string>
+    <string name="settings_gesture_quick_settings">打开快捷设置</string>
     <string name="settings_gesture_view_all_apps">查看所有应用</string>
     <string name="settings_gesture_lock_screen">锁定屏幕</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">需要无障碍权限</string>
@@ -138,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search 使用无障碍功能来：\n\n• 启用双击锁屏手势。\n• 使用边缘滑动手势打开 Quick Search。\n• 使用悬浮按钮打开 Quick Search。\n\n它不会读取、收集、存储或分享您的屏幕内容或其他个人数据。</string>
     <string name="settings_gesture_none">无</string>
     <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
-    <string name="settings_keyboard_gestures_title">键盘手势 (主屏幕)</string>
+    <string name="settings_keyboard_gestures_title">键盘手势</string>
     <string name="settings_keyboard_gestures_desc">仅当主屏幕上没有可滚动内容时有效</string>
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">固定到通知</string>
@@ -604,6 +606,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">在编辑器中开始一条新笔记</string>
     <string name="app_settings_search_create_note_title">创建笔记</string>
+    <string name="app_settings_search_create_notification_note_title">创建通知笔记</string>
+    <string name="app_settings_search_create_notification_note_desc">写一条常驻通知栏的笔记</string>
     <string name="notes_body_hint">在此处撰写您的笔记</string>
     <string name="notes_create_note_cta">新笔记</string>
     <string name="notes_delete_confirm_message">这条笔记将被永久删除。</string>
@@ -614,6 +618,7 @@
     <string name="notes_editor_action_open_link">打开链接</string>
     <string name="notes_editor_action_send_email">发送电子邮件</string>
     <string name="notes_editor_title">笔记编辑器</string>
+    <string name="notes_editor_notification_note_title">通知笔记</string>
     <string name="notes_empty_note_subtext">空白笔记</string>
     <string name="notes_quick_note_title">快捷笔记</string>
     <string name="notes_quick_note_toggle_desc">支持通过滑动导航打开快捷笔记</string>
@@ -775,10 +780,15 @@
     <string name="settings_app_language_system_default">跟随系统</string>
     <string name="settings_launcher_icon_reset_default">重置为默认</string>
     <string name="settings_launcher_icon_title">更改应用图标</string>
+    <string name="settings_search_bar_style_title">搜索栏</string>
+    <string name="settings_search_bar_background_color_label">背景颜色</string>
+    <string name="settings_search_bar_color_accent">强调色</string>
     <string name="settings_layout_option_bottom_desc">最相关的匹配项将显示在底部，以便于轻松触达</string>
     <string name="settings_layout_option_bottom_title">单手模式</string>
     <string name="settings_unified_pinned_items_title">统一固定项目</string>
     <string name="settings_unified_pinned_items_desc">在主屏幕上将固定项目显示为一个统一列表。</string>
+    <string name="settings_show_status_bar_title">显示状态栏</string>
+    <string name="settings_show_status_bar_desc">在屏幕顶部显示 Android 状态栏。</string>
     <string name="settings_pinned_sections_order_title">固定分区顺序</string>
     <string name="settings_pinned_sections_order_desc">重新排列主页上的固定分区</string>
     <string name="settings_pinned_sections_order_dialog_info">长按并拖动以更改主页上固定分区的顺序。</string>
@@ -1034,6 +1044,9 @@
     <string name="calculator_toggle_desc">直接计算并显示基础数学算式的结果</string>
     <string name="calculator_toggle_title">计算器</string>
     <string name="currency_converter_invalid_input">货币转换输入格式无效</string>
+    <string name="currency_converter_rates_unavailable">无法获取汇率，请重试。</string>
+    <string name="currency_converter_unsupported_currency">不支持 %1$s</string>
+    <string name="currency_converter_check_rates_on_google">在 Google 上查看汇率</string>
     <string name="currency_converter_requires_gemini_key">此功能需要配置 AI 提供商的 API 密钥</string>
     <string name="currency_converter_toggle_desc">例如：100 USD to INR</string>
     <string name="currency_converter_toggle_title">货币转换器</string>
@@ -1058,6 +1071,9 @@
     <string name="date_calculator_toggle_action_desc">开启或关闭日期时间计算器</string>
     <string name="date_calculator_toggle_desc">使用实例指南</string>
     <string name="dictionary_example_label">示例：%1$s</string>
+    <string name="dictionary_definition_not_found">未找到“%1$s”的释义</string>
+    <string name="dictionary_unavailable">无法连接词典，请重试。</string>
+    <string name="dictionary_search_on_google">在 Google 上搜索</string>
     <string name="dictionary_synonyms_label">同义词：%1$s</string>
     <string name="dictionary_toggle_desc">例如：define serendipity</string>
     <string name="dictionary_toggle_title">词典</string>
@@ -1333,6 +1349,8 @@
     <string name="home_upcoming_alarm_hide_app">隐藏来自 %1$s 的闹钟</string>
     <string name="home_low_battery_saver_off">点按即可开启省电模式</string>
     <string name="home_low_battery_saver_on">省电模式已开启</string>
+    <string name="home_critical_battery_title">电量严重不足</string>
+    <string name="home_critical_battery_charge_now">请立即充电</string>
     <string name="home_charged">已充满</string>
     <string name="home_charging_full_in">%1$s后充满</string>
     <string name="home_charging_paused">已暂停充电</string>

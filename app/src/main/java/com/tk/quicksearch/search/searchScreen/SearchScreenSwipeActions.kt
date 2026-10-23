@@ -53,6 +53,7 @@ import com.tk.quicksearch.tools.setAlarm.StartTimerHandler
 import com.tk.quicksearch.reminders.ReminderNaturalLanguageParser
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.openNotificationShade
+import com.tk.quicksearch.shared.util.openQuickSettings
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.search.other.OtherSearchItemRegistry
@@ -188,6 +189,7 @@ internal fun HomeSwipeGestureAction.performHomeGesture(
         HomeSwipeGestureAction.CLOSE_QUICK_SEARCH -> onCloseQuickSearch()
         HomeSwipeGestureAction.LOCK_SCREEN -> LockScreenAccessibilityService.lockScreen()
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> context.openNotificationShade()
+        HomeSwipeGestureAction.QUICK_SETTINGS -> context.openQuickSettings()
         HomeSwipeGestureAction.ALL_APPS -> onOpenAllApps()
         HomeSwipeGestureAction.CUSTOM -> {
             CustomWidgetButtonAction.fromJson(actionJson)?.let { action ->

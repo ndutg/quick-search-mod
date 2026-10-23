@@ -133,9 +133,6 @@ object InsetSearchBarGeometry {
     /** The distance the container has to reach down to cover a bar of [barHeight]. */
     fun overlapFor(barHeight: Dp): Dp =
         BarTopSpacing + barHeight.coerceAtLeast(BarHeight) + BarBottomSpacing
-
-    /** Keeps the inset search bar as rounded as the standalone search bar. */
-    val BarCornerRadius = DesignTokens.Spacing28
 }
 
 internal object SearchEngineSectionConstants {

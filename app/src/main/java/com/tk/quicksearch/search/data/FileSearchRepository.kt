@@ -171,9 +171,9 @@ class FileSearchRepository(
             } else {
                 val displayNameTokenSelection =
                     queryTokens.joinToString(" AND ") {
-                        "LOWER(${MediaStore.Files.FileColumns.DISPLAY_NAME}) LIKE ? ESCAPE '\\'"
+                        "${MediaStore.Files.FileColumns.DISPLAY_NAME} GLOB ?"
                     }
-                val compactDisplayNameSelection = "${compactDisplayNameExpression()} LIKE ? ESCAPE '\\'"
+                val compactDisplayNameSelection = "${compactDisplayNameExpression()} GLOB ?"
                 "($displayNameTokenSelection OR $compactDisplayNameSelection)"
             }
         val typeSelection =
@@ -187,8 +187,7 @@ class FileSearchRepository(
             if (queryTokens.isEmpty()) {
                 emptyList()
             } else {
-                queryTokens.map { "%${escapeLikeQuery(it)}%" } +
-                    "%${escapeLikeQuery(queryTokens.joinToString(""))}%"
+                nameGlobArgs(queryTokens)
             }
         val selectionArgs =
             (
@@ -231,16 +230,15 @@ class FileSearchRepository(
         if (queryTokens.isEmpty()) return emptyList()
         val displayNameTokenSelection =
             queryTokens.joinToString(" AND ") {
-                "LOWER(${MediaStore.Files.FileColumns.DISPLAY_NAME}) LIKE ? ESCAPE '\\'"
+                "${MediaStore.Files.FileColumns.DISPLAY_NAME} GLOB ?"
             }
-        val compactDisplayNameSelection = "${compactDisplayNameExpression()} LIKE ? ESCAPE '\\'"
+        val compactDisplayNameSelection = "${compactDisplayNameExpression()} GLOB ?"
         val selection =
             "($displayNameTokenSelection OR $compactDisplayNameSelection) AND " +
                 "format = ${MtpConstants.FORMAT_ASSOCIATION}"
         val selectionArgs =
             (
-                queryTokens.map { "%${escapeLikeQuery(it)}%" } +
-                    "%${escapeLikeQuery(queryTokens.joinToString(""))}%"
+                nameGlobArgs(queryTokens)
             ).toTypedArray()
         val uri = getFilesContentUri()
 
@@ -268,7 +266,11 @@ class FileSearchRepository(
         return results
     }
 
-    fun getRecentFiles(limit: Int): List<DeviceFile> {
+    /** Newest-modified files first; [include] is applied while scanning so [limit] counts matches. */
+    fun getRecentFiles(
+        limit: Int,
+        include: (DeviceFile) -> Boolean = { true },
+    ): List<DeviceFile> {
         if (limit <= 0 || !hasPermission()) return emptyList()
 
         val uri = getFilesContentUri()
@@ -284,7 +286,7 @@ class FileSearchRepository(
                 val columnIndices = getColumnIndices(cursor)
                 while (cursor.moveToNext() && results.size < limit) {
                     val file = createDeviceFileFromCursor(cursor, uri, columnIndices)
-                    if (file != null) {
+                    if (file != null && include(file)) {
                         results.add(file)
                     }
                 }
@@ -302,9 +304,13 @@ class FileSearchRepository(
     private fun normalizeQueryTokens(query: String): List<String> =
         FileSearchTextNormalizer.queryTokens(normalizeQuery(query))
 
+    /** Per-token patterns, then one for the tokens joined (matched against the compact name). */
+    private fun nameGlobArgs(queryTokens: List<String>): List<String> =
+        queryTokens.map(FileSearchTextNormalizer::containsGlobPattern) +
+            FileSearchTextNormalizer.containsGlobPattern(queryTokens.joinToString(""))
+
     private fun compactDisplayNameExpression(): String {
-        val lowerDisplayName = "LOWER(${MediaStore.Files.FileColumns.DISPLAY_NAME})"
-        val withoutSpaces = "REPLACE($lowerDisplayName, $SQL_SPACE, $SQL_EMPTY)"
+        val withoutSpaces = "REPLACE(${MediaStore.Files.FileColumns.DISPLAY_NAME}, $SQL_SPACE, $SQL_EMPTY)"
         val withoutHyphens = "REPLACE($withoutSpaces, $SQL_HYPHEN, $SQL_EMPTY)"
         val withoutUnderscores = "REPLACE($withoutHyphens, $SQL_UNDERSCORE, $SQL_EMPTY)"
         return "REPLACE($withoutUnderscores, $SQL_DOT, $SQL_EMPTY)"

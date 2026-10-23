@@ -14,6 +14,7 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
+import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.reminders.ReminderEditorRequests
@@ -209,6 +210,7 @@ data class FilesSectionParams(
     val onMovePinned: (DeviceFile, Boolean) -> Unit = { _, _ -> },
     val onExclude: (DeviceFile) -> Unit,
     val onExcludeExtension: (DeviceFile) -> Unit,
+    val onAliasFileTypeFilterChange: (FileType?) -> Unit = {},
     val onNicknameClick: (DeviceFile) -> Unit,
     val onTriggerClick: (DeviceFile) -> Unit,
     val getFileNickname: (String) -> String?,

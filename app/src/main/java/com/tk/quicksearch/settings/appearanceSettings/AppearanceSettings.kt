@@ -23,6 +23,7 @@ import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.IconPackInfo
 import com.tk.quicksearch.search.core.LauncherAppIcon
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
@@ -53,6 +54,8 @@ fun AppearanceSettingsSection(
         onHomePinnedSectionOrderChange: (List<SearchSection>) -> Unit,
         pinnedAppShortcutsInAppGrid: Boolean,
         onTogglePinnedAppShortcutsInAppGrid: (Boolean) -> Unit,
+        showStatusBar: Boolean,
+        onToggleShowStatusBar: (Boolean) -> Unit,
         settingsIconEnabled: Boolean,
         onToggleSettingsIcon: (Boolean) -> Unit,
         wallpaperBackgroundAlpha: Float,
@@ -99,6 +102,8 @@ fun AppearanceSettingsSection(
         onSetAppIconShape: (AppIconShape) -> Unit,
         launcherAppIcon: LauncherAppIcon,
         onSetLauncherAppIcon: (LauncherAppIcon) -> Unit,
+        searchBarStyle: SearchBarStyle,
+        onSetSearchBarStyle: (SearchBarStyle) -> Unit,
         themedIconsEnabled: Boolean,
         onThemedIconsToggle: (Boolean) -> Unit,
         deviceThemeEnabled: Boolean,
@@ -214,6 +219,14 @@ fun AppearanceSettingsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        SearchBarStyleCard(
+                searchBarStyle = searchBarStyle,
+                onSetSearchBarStyle = onSetSearchBarStyle,
+                showWallpaperBackground = backgroundSource != BackgroundSource.THEME,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         if (hasEnabledSearchEngines) {
             SearchEngineAppearanceCard(
                     isSearchEngineCompactMode = isSearchEngineCompactMode,
@@ -263,6 +276,13 @@ fun AppearanceSettingsSection(
                         onCheckedChange = onToggleSettingsIcon,
                         enabled = !settingsIconRequired,
                         extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_show_status_bar_title),
+                        subtitle = stringResource(R.string.settings_show_status_bar_desc),
+                        checked = showStatusBar,
+                        onCheckedChange = onToggleShowStatusBar,
+                        extraVerticalPadding = 8.dp,
                         showDivider = false,
                 )
             }
@@ -306,6 +326,7 @@ fun AppearanceSettingsSection(
                 )
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 

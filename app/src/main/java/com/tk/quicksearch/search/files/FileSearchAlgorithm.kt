@@ -113,13 +113,62 @@ object FileSearchAlgorithm {
             if (normalizedQuery.length < 2) return emptyList()
         }
 
+        return filterVisible(
+                fullList = fullList,
+                enabledFileTypes = enabledFileTypes,
+                excludedFileUris = excludedFileUris,
+                excludedFileExtensions = excludedFileExtensions,
+                folderWhitelistPatterns = folderWhitelistPatterns,
+                folderBlacklistPatterns = folderBlacklistPatterns,
+                showFolders = showFolders,
+                showSystemFiles = showSystemFiles,
+                extensionQuery = extensionQuery,
+        )
+    }
+
+    /** Applies the user's file visibility settings without any query matching. */
+    fun filterVisible(
+            fullList: List<DeviceFile>,
+            enabledFileTypes: Set<FileType>,
+            excludedFileUris: Set<String>,
+            excludedFileExtensions: Set<String>,
+            folderWhitelistPatterns: Set<String>,
+            folderBlacklistPatterns: Set<String>,
+            showFolders: Boolean,
+            showSystemFiles: Boolean,
+            extensionQuery: FileExtensionQuery? = null,
+    ): List<DeviceFile> =
+            fullList.filter(
+                    visibilityPredicate(
+                            enabledFileTypes = enabledFileTypes,
+                            excludedFileUris = excludedFileUris,
+                            excludedFileExtensions = excludedFileExtensions,
+                            folderWhitelistPatterns = folderWhitelistPatterns,
+                            folderBlacklistPatterns = folderBlacklistPatterns,
+                            showFolders = showFolders,
+                            showSystemFiles = showSystemFiles,
+                            extensionQuery = extensionQuery,
+                    ),
+            )
+
+    /** Builds the visibility check once so it can be applied while scanning a cursor. */
+    fun visibilityPredicate(
+            enabledFileTypes: Set<FileType>,
+            excludedFileUris: Set<String>,
+            excludedFileExtensions: Set<String>,
+            folderWhitelistPatterns: Set<String>,
+            folderBlacklistPatterns: Set<String>,
+            showFolders: Boolean,
+            showSystemFiles: Boolean,
+            extensionQuery: FileExtensionQuery? = null,
+    ): (DeviceFile) -> Boolean {
         val pathMatcher =
                 FolderPathPatternMatcher.createPathMatcher(
                         whitelistPatterns = folderWhitelistPatterns,
                         blacklistPatterns = folderBlacklistPatterns,
                 )
 
-        return fullList.filter { file ->
+        return filter@{ file ->
             if (extensionQuery?.matchesFileName(file.displayName, file.isDirectory) == false) {
                 return@filter false
             }

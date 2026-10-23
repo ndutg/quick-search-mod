@@ -65,6 +65,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
@@ -79,8 +80,10 @@ import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.app.HomeActivity
 import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.hapticStrong
@@ -152,6 +155,7 @@ internal fun PersistentSearchBar(
     focusRequester: FocusRequester? = null,
     transparentBackground: Boolean = false,
     cornerRadius: Dp = DefaultSearchBarCornerRadius,
+    searchBarStyle: SearchBarStyle = SearchBarStyle(),
     modifier: Modifier = Modifier,
 ) {
     val barShape = remember(cornerRadius) { RoundedCornerShape(cornerRadius) }
@@ -159,6 +163,7 @@ internal fun PersistentSearchBar(
     val keyboardController = LocalSoftwareKeyboardController.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val view = LocalView.current
+    val context = LocalContext.current
 
     val searchBarBackground =
         if (transparentBackground) {
@@ -166,9 +171,10 @@ internal fun PersistentSearchBar(
         } else if (opaqueBackground) {
             AppColors.DialogBackground
         } else {
-            AppColors.getSearchBarBackground(showWallpaperBackground)
+            searchBarStyle.backgroundColor(AppColors.getSearchBarBackground(showWallpaperBackground))
         }
     val accentColor = AppColors.Accent
+    val restingBorderColor = searchBarStyle.borderColor(accentColor)
     val iconAndTextColor = AppColors.getSearchBarTextAndIconColor(showWallpaperBackground)
     val isDarkTheme = LocalAppIsDarkTheme.current
     val lightWallpaperSearchBar = !isDarkTheme && showWallpaperBackground
@@ -252,12 +258,22 @@ internal fun PersistentSearchBar(
 
     LaunchedEffect(query, leadingIconState) {
         val previousText = textFieldValue.text
+        // A consumed prefix alias shrinks the query to the typed text's suffix; apply it right away
+        // instead of treating it as a stale state echo.
+        val isConsumedAlias =
+            leadingIconState !is LeadingIconState.Search &&
+                detectConsumedPrefixAlias(
+                    previousText = previousText,
+                    currentQuery = query,
+                    activePrefixAliases = activePrefixAliases,
+                ) != null
         val shouldDeferSync =
-            shouldDeferTextFieldValueSync(
-                stateQuery = query,
-                localText = previousText,
-                localInputAwaitingStateAck = localInputAwaitingStateAck,
-            )
+            !isConsumedAlias &&
+                shouldDeferTextFieldValueSync(
+                    stateQuery = query,
+                    localText = previousText,
+                    localInputAwaitingStateAck = localInputAwaitingStateAck,
+                )
         if (query == localInputAwaitingStateAck) {
             localInputAwaitingStateAck = null
         }
@@ -369,7 +385,11 @@ internal fun PersistentSearchBar(
                             }
 
                         Lifecycle.Event.ON_RESUME ->
-                            if (autoFocusOnStart && hasCompletedStartupAutoFocus) {
+                            if (
+                                autoFocusOnStart &&
+                                hasCompletedStartupAutoFocus &&
+                                (context as? HomeActivity)?.consumeResumeAutoFocusSuppression() != true
+                            ) {
                                 focusRequester.requestFocus()
                                 keyboardController?.show()
                             }
@@ -523,16 +543,17 @@ internal fun PersistentSearchBar(
                         )
                     }
                 }.then(
-                    if (lightWallpaperSearchBar && !forceRestingOutline) {
+                    if (
+                        searchBarStyle.borderWidthDp <= 0f ||
+                        (lightWallpaperSearchBar && !forceRestingOutline && !searchBarStyle.hasCustomBorder)
+                    ) {
                         Modifier
                     } else {
                         Modifier.border(
-                            width = DesignTokens.SearchFieldRestingOutlineWidth,
+                            width = searchBarStyle.borderWidth(),
                             color =
-                                accentColor.copy(
-                                    alpha =
-                                        (borderAlpha.value * DesignTokens.SearchFieldAccentOutlineAlpha)
-                                            .coerceIn(0f, 1f),
+                                restingBorderColor.copy(
+                                    alpha = (borderAlpha.value * restingBorderColor.alpha).coerceIn(0f, 1f),
                                 ),
                             shape = barShape,
                         )

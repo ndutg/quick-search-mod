@@ -210,6 +210,8 @@ private fun AppSettingsDestination.toGestureSettingTargetOrNull(): GestureSettin
         AppSettingsDestination.GESTURE_SWIPE_UP -> GestureSettingTarget.SWIPE_UP
         AppSettingsDestination.GESTURE_SWIPE_DOWN -> GestureSettingTarget.SWIPE_DOWN
         AppSettingsDestination.GESTURE_DOUBLE_TAP -> GestureSettingTarget.DOUBLE_TAP
+        AppSettingsDestination.GESTURE_TWO_FINGER_SWIPE_UP -> GestureSettingTarget.TWO_FINGER_SWIPE_UP
+        AppSettingsDestination.GESTURE_TWO_FINGER_SWIPE_DOWN -> GestureSettingTarget.TWO_FINGER_SWIPE_DOWN
         AppSettingsDestination.GESTURE_OPEN_KEYBOARD -> GestureSettingTarget.OPEN_KEYBOARD
         AppSettingsDestination.GESTURE_CLOSE_KEYBOARD -> GestureSettingTarget.CLOSE_KEYBOARD
         else -> null

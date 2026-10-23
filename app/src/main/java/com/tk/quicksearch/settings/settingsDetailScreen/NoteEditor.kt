@@ -1,10 +1,13 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -68,6 +71,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.notes.NotesTextUtils
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -210,7 +214,7 @@ private fun LinkStyledNoteTextField(
 fun NoteEditor(
     onNavigateToNotes: () -> Unit,
     onNavigateToSearch: () -> Unit = {},
-    onDeleteToolbarState: (canDelete: Boolean, onConfirmedDelete: () -> Unit) -> Unit = { _, _ -> },
+    onToolbarState: (NoteEditorToolbarState) -> Unit = {},
     hideTopBar: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
@@ -230,6 +234,9 @@ fun NoteEditor(
     var contentBaselineBody by rememberSaveable { mutableStateOf<String?>(null) }
     var isNewNoteEntry by rememberSaveable { mutableStateOf(false) }
     var isQuickNote by rememberSaveable { mutableStateOf(false) }
+    var notificationPinRequested by rememberSaveable { mutableStateOf(false) }
+    var notificationPermissionRequested by rememberSaveable { mutableStateOf(false) }
+    var isPinnedToNotification by rememberSaveable { mutableStateOf(false) }
     var editorInitialized by rememberSaveable { mutableStateOf(false) }
     var focusedEditorField by rememberSaveable { mutableStateOf<String?>(null) }
     var initialFocusRequested by remember { mutableStateOf(false) }
@@ -238,12 +245,18 @@ fun NoteEditor(
     LaunchedEffect(Unit) {
         if (editorInitialized) return@LaunchedEffect
         val pendingId = NotesNavigationMemory.consumePendingNoteId()
+        val pinToNotificationRequest = NotesNavigationMemory.consumePinToNotificationRequest()
         if (pendingId != null) {
             isNewNoteEntry = false
             val note = withContext(Dispatchers.IO) { repository.getNoteById(pendingId) }
             if (note != null) {
                 activeNoteId = note.noteId
                 isQuickNote = repository.isQuickNote(note.noteId)
+                isPinnedToNotification =
+                    PinnedNotifications.isPinned(
+                        context,
+                        noteNotificationAction(context, note.noteId, note.title, note.markdownContent),
+                    )
                 titleInput =
                     applyNoteLinkHighlighting(
                         TextFieldValue(
@@ -266,6 +279,7 @@ fun NoteEditor(
         } else {
             isNewNoteEntry = true
             isQuickNote = false
+            notificationPinRequested = pinToNotificationRequest
         }
         contentBaselineTitle = titleInput.text
         contentBaselineBody = bodyInput.text
@@ -304,6 +318,18 @@ fun NoteEditor(
         keyboardController?.show()
     }
 
+    val notificationPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (!granted) notificationPinRequested = false
+        }
+    LaunchedEffect(notificationPinRequested) {
+        if (!notificationPinRequested || notificationPermissionRequested) return@LaunchedEffect
+        if (!canPostNotifications(context)) {
+            notificationPermissionRequested = true
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     fun persistNote() {
         val title = titleInput.text.trim()
         val body = bodyInput.text
@@ -314,6 +340,15 @@ fun NoteEditor(
         } else {
             val created = repository.createNote(title = title, markdownContent = body)
             activeNoteId = created.noteId
+        }
+        if (notificationPinRequested && canPostNotifications(context)) {
+            PinnedNotifications.pin(
+                context,
+                noteNotificationAction(context, activeNoteId, title, body),
+                PinnedNotifications.PinMode.SEPARATELY,
+            )
+            notificationPinRequested = false
+            isPinnedToNotification = true
         }
     }
 
@@ -334,22 +369,28 @@ fun NoteEditor(
         }
     }
 
-    LaunchedEffect(activeNoteId, isQuickNote) {
+    LaunchedEffect(activeNoteId, isQuickNote, notificationPinRequested, isPinnedToNotification) {
         val id = activeNoteId
-        if (id > 0L && !isQuickNote) {
-            onDeleteToolbarState(true) {
-                repository.stageDelete(id)
-                repository.finalizeDelete(id)
-                persistOnLeave.value = false
-                onNavigateToNotes()
-            }
-        } else {
-            onDeleteToolbarState(false) {}
-        }
+        onToolbarState(
+            NoteEditorToolbarState(
+                onConfirmedDelete =
+                    if (id > 0L && !isQuickNote) {
+                        {
+                            repository.stageDelete(id)
+                            repository.finalizeDelete(id)
+                            persistOnLeave.value = false
+                            onNavigateToNotes()
+                        }
+                    } else {
+                        null
+                    },
+                isNotificationNote = notificationPinRequested || isPinnedToNotification,
+            ),
+        )
     }
     DisposableEffect(Unit) {
         onDispose {
-            onDeleteToolbarState(false) {}
+            onToolbarState(NoteEditorToolbarState())
         }
     }
 

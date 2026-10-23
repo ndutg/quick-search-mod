@@ -77,6 +77,7 @@
     <string name="action_add_to_home">Añadir a la pantalla de inicio</string>
     <string name="action_add_trigger">Activador</string>
     <string name="action_app_info">Información de la app</string>
+    <string name="action_open_in_google_play">Abrir en Google Play</string>
     <string name="action_manage_all_apps">Gestionar todas las apps</string>
     <string name="action_app_shortcuts_settings">Ajustes de accesos directos</string>
     <string name="action_files_settings">Ajustes de archivos</string>
@@ -113,7 +114,7 @@
     <string name="action_open_folder">Abrir carpeta</string>
     <string name="action_open_keyboard">Abrir teclado</string>
     <string name="action_open_settings">Abrir ajustes</string>
-    <string name="settings_gestures_title">Gestos</string>
+    <string name="settings_gestures_title">Gestos de inicio</string>
     <string name="settings_gestures_desc">Personalizar acciones de deslizamiento</string>
     <string name="settings_gesture_swipe_right">Deslizar a la derecha</string>
     <string name="settings_gesture_widget_panel">Panel de widgets</string>
@@ -121,14 +122,15 @@
     <string name="settings_gesture_swipe_left">Deslizar a la izquierda</string>
     <string name="settings_gesture_swipe_up">Deslizar hacia arriba</string>
     <string name="settings_gesture_swipe_down">Deslizar hacia abajo</string>
-    <string name="settings_gesture_swipe_up_home">Deslizar hacia arriba (Inicio)</string>
-<string name="settings_gesture_swipe_down_home">Deslizar hacia abajo (Inicio)</string>
 <string name="settings_gesture_close_quick_search">Cerrar Quick Search</string>
-<string name="settings_gesture_double_tap_home">Tocar dos veces (Inicio)</string>
+<string name="settings_gesture_double_tap_home">Tocar dos veces</string>
+<string name="settings_gesture_two_finger_swipe_up_home">Deslizar con dos dedos hacia arriba</string>
+<string name="settings_gesture_two_finger_swipe_down_home">Deslizar con dos dedos hacia abajo</string>
     <string name="settings_gesture_settings">Ajustes</string>
     <string name="settings_gesture_close_keyboard_notifications">Cerrar teclado / Abrir notificaciones</string>
     <string name="settings_gesture_close_keyboard">Cerrar teclado</string>
     <string name="settings_gesture_notification_panel">Panel de notificaciones</string>
+    <string name="settings_gesture_quick_settings">Abrir ajustes rápidos</string>
     <string name="settings_gesture_view_all_apps">Ver todas las apps</string>
     <string name="settings_gesture_lock_screen">Bloquear pantalla</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requiere permiso de accesibilidad</string>
@@ -138,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search usa Accesibilidad para:\n\n• Activar el gesto de doble toque para bloquear la pantalla.\n• Abrir Quick Search mediante gestos de deslizamiento desde el borde.\n• Abrir Quick Search mediante el botón flotante.\n\nNo lee, recopila, almacena ni comparte el contenido de tu pantalla ni otros datos personales.</string>
     <string name="settings_gesture_none">Ninguno</string>
     <string name="settings_gesture_custom">Personalizado (Apps, archivos, etc.)</string>
-    <string name="settings_keyboard_gestures_title">Gestos del teclado (Inicio)</string>
+    <string name="settings_keyboard_gestures_title">Gestos del teclado</string>
     <string name="settings_keyboard_gestures_desc">Funciona solo cuando no hay contenido desplazable en la pantalla de inicio</string>
     <string name="action_pin_app">Fijar</string>
     <string name="action_pin_to_notifications">Fijar en las notificaciones</string>
@@ -614,6 +616,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Comienza una nueva nota en el editor</string>
     <string name="app_settings_search_create_note_title">Crear nota</string>
+    <string name="app_settings_search_create_notification_note_title">Crear nota de notificación</string>
+    <string name="app_settings_search_create_notification_note_desc">Escribe una nota que se queda en el panel de notificaciones</string>
     <string name="notes_body_hint">Escribe tu nota aquí</string>
     <string name="notes_create_note_cta">Nueva nota</string>
     <string name="notes_delete_confirm_message">Esta nota se eliminará de forma permanente.</string>
@@ -624,6 +628,7 @@
     <string name="notes_editor_action_open_link">Abrir enlace</string>
     <string name="notes_editor_action_send_email">Enviar correo</string>
     <string name="notes_editor_title">Editor de notas</string>
+    <string name="notes_editor_notification_note_title">Nota de notificación</string>
     <string name="notes_empty_note_subtext">Nota vacía</string>
     <string name="notes_quick_note_title">Nota rápida</string>
     <string name="notes_quick_note_toggle_desc">Abre Nota rápida mediante navegación por gestos</string>
@@ -785,10 +790,15 @@
     <string name="settings_app_language_system_default">Predeterminado del sistema</string>
     <string name="settings_launcher_icon_reset_default">Restablecer valores predeterminados</string>
     <string name="settings_launcher_icon_title">Cambiar icono de la app</string>
+    <string name="settings_search_bar_style_title">Barra de búsqueda</string>
+    <string name="settings_search_bar_background_color_label">Color de fondo</string>
+    <string name="settings_search_bar_color_accent">Acento</string>
     <string name="settings_layout_option_bottom_desc">Los elementos más relevantes aparecen abajo para facilitar el acceso</string>
     <string name="settings_layout_option_bottom_title">Modo a una mano</string>
     <string name="settings_unified_pinned_items_title">Elementos fijados unificados</string>
     <string name="settings_unified_pinned_items_desc">Muestra los elementos fijados como una lista unificada en la pantalla de inicio.</string>
+    <string name="settings_show_status_bar_title">Mostrar barra de estado</string>
+    <string name="settings_show_status_bar_desc">Muestra la barra de estado de Android en la parte superior de la pantalla.</string>
     <string name="settings_pinned_sections_order_title">Orden de secciones fijadas</string>
     <string name="settings_pinned_sections_order_desc">Reordena las secciones fijadas en la pantalla de inicio</string>
     <string name="settings_pinned_sections_order_dialog_info">Mantén pulsado y arrastra para cambiar el orden de las secciones fijadas en la pantalla de inicio.</string>
@@ -1046,6 +1056,9 @@
     <string name="calculator_toggle_desc">Resultados para expresiones matemáticas básicas</string>
     <string name="calculator_toggle_title">Calculadora</string>
     <string name="currency_converter_invalid_input">Entrada de conversión de divisa no válida</string>
+    <string name="currency_converter_rates_unavailable">No se pudieron obtener los tipos de cambio. Inténtalo de nuevo.</string>
+    <string name="currency_converter_unsupported_currency">%1$s no es compatible</string>
+    <string name="currency_converter_check_rates_on_google">Consultar tipos en Google</string>
     <string name="currency_converter_requires_gemini_key">Requiere una clave API de un AI Provider</string>
     <string name="currency_converter_toggle_desc">Ejemplo: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Conversor de divisas</string>
@@ -1070,6 +1083,9 @@
     <string name="date_calculator_toggle_action_desc">Activar o desactivar la calculadora de fecha y hora</string>
     <string name="date_calculator_toggle_desc">Ejemplos de uso</string>
     <string name="dictionary_example_label">Ejemplo: %1$s</string>
+    <string name="dictionary_definition_not_found">No se encontró ninguna definición de «%1$s»</string>
+    <string name="dictionary_unavailable">No se pudo acceder al diccionario. Inténtalo de nuevo.</string>
+    <string name="dictionary_search_on_google">Buscar en Google</string>
     <string name="dictionary_synonyms_label">Sinónimos: %1$s</string>
     <string name="dictionary_toggle_desc">Ejemplo: define serendipity</string>
     <string name="dictionary_toggle_title">Diccionario</string>
@@ -1345,6 +1361,8 @@
     <string name="home_upcoming_alarm_hide_app">Ocultar alarmas de %1$s</string>
     <string name="home_low_battery_saver_off">Toca para activar el Ahorro de batería</string>
     <string name="home_low_battery_saver_on">El Ahorro de batería está activado</string>
+    <string name="home_critical_battery_title">Batería muy baja</string>
+    <string name="home_critical_battery_charge_now">Cárgala ya</string>
     <string name="home_charged">Carga completa</string>
     <string name="home_charging_full_in">Completa en %1$s</string>
     <string name="home_charging_paused">Carga en pausa</string>

@@ -416,6 +416,13 @@ internal class SearchPreferencesDelegate(
         }
     }
 
+    fun setStatusBarVisible(visible: Boolean) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setStatusBarVisible(visible)
+            updateFeatureState { it.copy(showStatusBar = visible) }
+        }
+    }
+
     fun setTopMatchesSectionEnabled(section: SearchSection, enabled: Boolean) {
         scope.launch(Dispatchers.IO) {
             val updated =
@@ -562,6 +569,13 @@ internal class SearchPreferencesDelegate(
             userPreferences.setHomeTextColorOverride(color)
             stateAccess.homeTextColorOverride = color
             updateConfigState { it.copy(homeTextColorOverride = color) }
+        }
+    }
+
+    fun setSearchBarStyle(style: SearchBarStyle) {
+        scope.launch(Dispatchers.IO) {
+            userPreferences.setSearchBarStyle(style)
+            updateConfigState { it.copy(searchBarStyle = style) }
         }
     }
 

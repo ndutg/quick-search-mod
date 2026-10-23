@@ -286,6 +286,13 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
         setBooleanPref(UiPreferences.KEY_PINNED_APP_SHORTCUTS_IN_APP_GRID, enabled)
     }
 
+    fun isStatusBarVisible(): Boolean =
+            getBooleanPref(UiPreferences.KEY_SHOW_STATUS_BAR, true)
+
+    fun setStatusBarVisible(visible: Boolean) {
+        setBooleanPref(UiPreferences.KEY_SHOW_STATUS_BAR, visible)
+    }
+
     /** Combined drag order of pinned apps and pinned shortcuts shown in the app grid. */
     fun getPinnedAppGridOrder(): List<String> =
             getStringListPref(UiPreferences.KEY_PINNED_APP_GRID_ORDER)
@@ -506,6 +513,56 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
 
     fun clearHomeTextColorOverride() {
         prefs.edit().remove(UiPreferences.KEY_HOME_TEXT_COLOR_OVERRIDE).apply()
+    }
+
+    fun getSearchBarStyle(): com.tk.quicksearch.search.core.SearchBarStyle =
+            com.tk.quicksearch.search.core.SearchBarStyle(
+                    borderWidthDp =
+                            prefs.getFloat(
+                                            UiPreferences.KEY_SEARCH_BAR_BORDER_WIDTH_DP,
+                                            com.tk.quicksearch.search.core.SearchBarStyle.DEFAULT_BORDER_WIDTH_DP,
+                                    )
+                                    .coerceIn(
+                                            com.tk.quicksearch.search.core.SearchBarStyle.MIN_BORDER_WIDTH_DP,
+                                            com.tk.quicksearch.search.core.SearchBarStyle.MAX_BORDER_WIDTH_DP,
+                                    ),
+                    borderColorArgb =
+                            UiPreferences.KEY_SEARCH_BAR_BORDER_COLOR_ARGB
+                                    .takeIf { prefs.contains(it) }
+                                    ?.let { prefs.getInt(it, 0) },
+                    backgroundColorArgb =
+                            UiPreferences.KEY_SEARCH_BAR_BACKGROUND_COLOR_ARGB
+                                    .takeIf { prefs.contains(it) }
+                                    ?.let { prefs.getInt(it, 0) },
+                    backgroundTransparency =
+                            prefs.getFloat(
+                                            UiPreferences.KEY_SEARCH_BAR_BACKGROUND_TRANSPARENCY,
+                                            com.tk.quicksearch.search.core.SearchBarStyle.DEFAULT_BACKGROUND_TRANSPARENCY,
+                                    )
+                                    .coerceIn(0f, 1f),
+                    cornerRadiusDp =
+                            prefs.getFloat(
+                                            UiPreferences.KEY_SEARCH_BAR_CORNER_RADIUS_DP,
+                                            com.tk.quicksearch.search.core.SearchBarStyle.DEFAULT_CORNER_RADIUS_DP,
+                                    )
+                                    .coerceIn(
+                                            com.tk.quicksearch.search.core.SearchBarStyle.MIN_CORNER_RADIUS_DP,
+                                            com.tk.quicksearch.search.core.SearchBarStyle.MAX_CORNER_RADIUS_DP,
+                                    ),
+            )
+
+    fun setSearchBarStyle(style: com.tk.quicksearch.search.core.SearchBarStyle) {
+        prefs.edit()
+                .putFloat(UiPreferences.KEY_SEARCH_BAR_BORDER_WIDTH_DP, style.borderWidthDp)
+                .putFloat(UiPreferences.KEY_SEARCH_BAR_BACKGROUND_TRANSPARENCY, style.backgroundTransparency)
+                .putFloat(UiPreferences.KEY_SEARCH_BAR_CORNER_RADIUS_DP, style.cornerRadiusDp)
+                .apply {
+                    style.borderColorArgb?.let { putInt(UiPreferences.KEY_SEARCH_BAR_BORDER_COLOR_ARGB, it) }
+                            ?: remove(UiPreferences.KEY_SEARCH_BAR_BORDER_COLOR_ARGB)
+                    style.backgroundColorArgb?.let { putInt(UiPreferences.KEY_SEARCH_BAR_BACKGROUND_COLOR_ARGB, it) }
+                            ?: remove(UiPreferences.KEY_SEARCH_BAR_BACKGROUND_COLOR_ARGB)
+                }
+                .apply()
     }
 
     fun getAppLanguageTag(): String? = prefs.getString(BasePreferences.KEY_APP_LANGUAGE_TAG, null)?.takeIf { it.isNotBlank() }

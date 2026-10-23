@@ -13,6 +13,7 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.DeviceFile
+import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.reminders.ReminderEditorRequests
@@ -38,6 +39,7 @@ internal fun buildSectionParams(
     onMovePinnedFile: (DeviceFile, Boolean) -> Unit,
     onExcludeFile: (DeviceFile) -> Unit,
     onExcludeFileExtension: (DeviceFile) -> Unit,
+    onAliasFileTypeFilterChange: (FileType?) -> Unit,
     onOpenStorageAccessSettings: () -> Unit,
     onSettingClick: (DeviceSetting) -> Unit,
     onAppSettingClick: (AppSettingResult) -> Unit,
@@ -134,6 +136,7 @@ internal fun buildSectionParams(
     onMovePinnedFile,
     onExcludeFile,
     onExcludeFileExtension,
+    onAliasFileTypeFilterChange,
     onOpenStorageAccessSettings,
     onSettingClick,
     onAppSettingClick,
@@ -228,6 +231,7 @@ internal fun buildSectionParams(
             onMovePinned = onMovePinnedFile,
             onExclude = onExcludeFile,
             onExcludeExtension = onExcludeFileExtension,
+            onAliasFileTypeFilterChange = onAliasFileTypeFilterChange,
             onNicknameClick = { file ->
                 onUpdateNicknameDialogState(
                     NicknameDialogState.File(

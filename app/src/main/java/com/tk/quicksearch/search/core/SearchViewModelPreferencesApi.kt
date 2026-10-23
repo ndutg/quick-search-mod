@@ -127,6 +127,9 @@ internal interface SearchViewModelPreferencesApi {
     fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) =
         preferencesApiDelegate.setPinnedAppShortcutsInAppGridEnabled(enabled)
 
+    fun setStatusBarVisible(visible: Boolean) =
+        preferencesApiDelegate.setStatusBarVisible(visible)
+
     fun setShowTodayEvents(enabled: Boolean) = preferencesApiDelegate.setShowTodayEvents(enabled)
 
 
@@ -153,6 +156,9 @@ internal interface SearchViewModelPreferencesApi {
 
     fun resetHomeTextColorForNewWallpaper() =
         preferencesApiDelegate.resetHomeTextColorForNewWallpaper()
+
+    fun setSearchBarStyle(style: SearchBarStyle) =
+        preferencesApiDelegate.setSearchBarStyle(style)
 
     fun setBackgroundSource(source: BackgroundSource) =
         preferencesApiDelegate.setBackgroundSource(source)
@@ -445,6 +451,8 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
     fun resetHomeTextColorForNewWallpaper() =
         preferencesDelegate.resetHomeTextColorForNewWallpaper()
 
+    fun setSearchBarStyle(style: SearchBarStyle) = preferencesDelegate.setSearchBarStyle(style)
+
     fun setBackgroundSource(source: BackgroundSource) = preferencesDelegate.setBackgroundSource(source)
 
     fun setCustomImageUri(uri: String?) = preferencesDelegate.setCustomImageUri(uri)
@@ -535,6 +543,9 @@ class SearchViewModelPreferencesApiDelegate internal constructor(
 
     fun setPinnedAppShortcutsInAppGridEnabled(enabled: Boolean) =
         preferencesDelegate.setPinnedAppShortcutsInAppGridEnabled(enabled)
+
+    fun setStatusBarVisible(visible: Boolean) =
+        preferencesDelegate.setStatusBarVisible(visible)
 
     fun setAccentColorMode(mode: AccentColorMode) =
         preferencesDelegate.setAccentColorMode(mode)

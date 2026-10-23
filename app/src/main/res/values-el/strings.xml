@@ -77,6 +77,7 @@
     <string name="action_add_to_home">Προσθήκη στην αρχική οθόνη</string>
     <string name="action_add_trigger">Ενεργοποίηση</string>
     <string name="action_app_info">Πληροφορίες εφαρμογής</string>
+    <string name="action_open_in_google_play">Άνοιγμα στο Google Play</string>
     <string name="action_manage_all_apps">Διαχείριση όλων των εφαρμογών</string>
     <string name="action_app_shortcuts_settings">Ρυθμίσεις συντομεύσεων εφαρμογών</string>
     <string name="action_files_settings">Ρυθμίσεις αρχείων</string>
@@ -113,7 +114,7 @@
     <string name="action_open_folder">Άνοιγμα φακέλου</string>
     <string name="action_open_keyboard">Άνοιγμα πληκτρολογίου</string>
     <string name="action_open_settings">Άνοιγμα ρυθμίσεων</string>
-    <string name="settings_gestures_title">Χειρονομίες</string>
+    <string name="settings_gestures_title">Χειρονομίες αρχικής</string>
     <string name="settings_gestures_desc">Προσαρμογή ενεργειών σάρωσης</string>
     <string name="settings_gesture_swipe_right">Σάρωση δεξιά</string>
     <string name="settings_gesture_widget_panel">Πίνακας widget</string>
@@ -121,14 +122,15 @@
     <string name="settings_gesture_swipe_left">Σάρωση αριστερά</string>
     <string name="settings_gesture_swipe_up">Σάρωση προς τα πάνω</string>
     <string name="settings_gesture_swipe_down">Σάρωση προς τα κάτω</string>
-    <string name="settings_gesture_swipe_up_home">Σάρωση προς τα πάνω (Αρχική)</string>
-<string name="settings_gesture_swipe_down_home">Σάρωση προς τα κάτω (Αρχική)</string>
 <string name="settings_gesture_close_quick_search">Κλείσιμο του Quick Search</string>
-<string name="settings_gesture_double_tap_home">Διπλό πάτημα (Αρχική)</string>
+<string name="settings_gesture_double_tap_home">Διπλό πάτημα</string>
+<string name="settings_gesture_two_finger_swipe_up_home">Σάρωση με δύο δάχτυλα προς τα πάνω</string>
+<string name="settings_gesture_two_finger_swipe_down_home">Σάρωση με δύο δάχτυλα προς τα κάτω</string>
     <string name="settings_gesture_settings">Ρυθμίσεις</string>
     <string name="settings_gesture_close_keyboard_notifications">Κλείσιμο πληκτρολογίου / Άνοιγμα ειδοποιήσεων</string>
     <string name="settings_gesture_close_keyboard">Κλείσιμο πληκτρολογίου</string>
     <string name="settings_gesture_notification_panel">Πίνακας ειδοποιήσεων</string>
+    <string name="settings_gesture_quick_settings">Άνοιγμα γρήγορων ρυθμίσεων</string>
     <string name="settings_gesture_view_all_apps">Προβολή όλων των εφαρμογών</string>
     <string name="settings_gesture_lock_screen">Κλείδωμα οθόνης</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Απαιτείται άδεια προσβασιμότητας</string>
@@ -138,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Το Quick Search χρησιμοποιεί την Προσβασιμότητα για να:\n\n• ενεργοποιεί τη χειρονομία διπλού πατήματος για κλείδωμα οθόνης.\n• ανοίγει το Quick Search με χειρονομίες σάρωσης από την άκρη.\n• ανοίγει το Quick Search με το αιωρούμενο κουμπί.\n\nΔεν διαβάζει, συλλέγει, αποθηκεύει ή κοινοποιεί το περιεχόμενο της οθόνης σας ή άλλα προσωπικά δεδομένα.</string>
     <string name="settings_gesture_none">Κανένα</string>
     <string name="settings_gesture_custom">Προσαρμοσμένο (Εφαρμογές, Αρχεία κ.λπ.)</string>
-    <string name="settings_keyboard_gestures_title">Χειρονομίες πληκτρολογίου (Αρχική)</string>
+    <string name="settings_keyboard_gestures_title">Χειρονομίες πληκτρολογίου</string>
     <string name="settings_keyboard_gestures_desc">Λειτουργεί μόνο όταν δεν υπάρχει περιεχόμενο με δυνατότητα κύλισης στην αρχική οθόνη</string>
     <string name="action_pin_app">Καρφίτσωμα</string>
     <string name="action_pin_to_notifications">Καρφίτσωμα στις ειδοποιήσεις</string>
@@ -614,6 +616,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Έναρξη νέας σημείωσης στο πρόγραμμα επεξεργασίας</string>
     <string name="app_settings_search_create_note_title">Δημιουργία σημείωσης</string>
+    <string name="app_settings_search_create_notification_note_title">Δημιουργία σημείωσης ειδοποίησης</string>
+    <string name="app_settings_search_create_notification_note_desc">Γράψτε μια σημείωση που μένει στον πίνακα ειδοποιήσεων</string>
     <string name="notes_body_hint">Γράψτε τη σημείωσή σας εδώ</string>
     <string name="notes_create_note_cta">Νέα σημείωση</string>
     <string name="notes_delete_confirm_message">Αυτή η σημείωση θα διαγραφεί μόνιμα.</string>
@@ -624,6 +628,7 @@
     <string name="notes_editor_action_open_link">Άνοιγμα συνδέσμου</string>
     <string name="notes_editor_action_send_email">Αποστολή email</string>
     <string name="notes_editor_title">Επεξεργαστής σημειώσεων</string>
+    <string name="notes_editor_notification_note_title">Σημείωση ειδοποίησης</string>
     <string name="notes_empty_note_subtext">Κενή σημείωση</string>
     <string name="notes_quick_note_title">Γρήγορη σημείωση</string>
     <string name="notes_quick_note_toggle_desc">Άνοιγμα της Γρήγορης Σημείωσης μέσω πλοήγησης με σάρωση</string>
@@ -785,10 +790,15 @@
     <string name="settings_app_language_system_default">Προεπιλογή συστήματος</string>
     <string name="settings_launcher_icon_reset_default">Επαναφορά στο προεπιλεγμένο</string>
     <string name="settings_launcher_icon_title">Αλλαγή εικονιδίου εφαρμογής</string>
+    <string name="settings_search_bar_style_title">Γραμμή αναζήτησης</string>
+    <string name="settings_search_bar_background_color_label">Χρώμα φόντου</string>
+    <string name="settings_search_bar_color_accent">Έμφαση</string>
     <string name="settings_layout_option_bottom_desc">Τα πιο σχετικά στοιχεία εμφανίζονται στο κάτω μέρος για εύκολη πρόσβαση</string>
     <string name="settings_layout_option_bottom_title">Λειτουργία ενός χεριού</string>
     <string name="settings_unified_pinned_items_title">Ενοποιημένα καρφιτσωμένα στοιχεία</string>
     <string name="settings_unified_pinned_items_desc">Εμφάνιση καρφιτσωμένων στοιχείων ως μία ενοποιημένη λίστα στην αρχική οθόνη.</string>
+    <string name="settings_show_status_bar_title">Εμφάνιση γραμμής κατάστασης</string>
+    <string name="settings_show_status_bar_desc">Εμφάνιση της γραμμής κατάστασης Android στο επάνω μέρος της οθόνης.</string>
     <string name="settings_pinned_sections_order_title">Σειρά καρφιτσωμένων ενοτήτων</string>
     <string name="settings_pinned_sections_order_desc">Αναδιάταξη καρφιτσωμένων ενοτήτων στην αρχική</string>
     <string name="settings_pinned_sections_order_dialog_info">Πατήστε παρατεταμένα και σύρετε για να αλλάξετε τη σειρά των καρφιτσωμένων ενοτήτων στην αρχική.</string>
@@ -1046,6 +1056,9 @@
     <string name="calculator_toggle_desc">Αποτελέσματα για βασικές μαθηματικές παραστάσεις</string>
     <string name="calculator_toggle_title">Αριθμομηχανή</string>
     <string name="currency_converter_invalid_input">Μη έγκυρα δεδομένα μετατροπής νομίσματος</string>
+    <string name="currency_converter_rates_unavailable">Δεν ήταν δυνατή η λήψη των συναλλαγματικών ισοτιμιών. Δοκιμάστε ξανά.</string>
+    <string name="currency_converter_unsupported_currency">Το %1$s δεν υποστηρίζεται</string>
+    <string name="currency_converter_check_rates_on_google">Έλεγχος ισοτιμιών στο Google</string>
     <string name="currency_converter_requires_gemini_key">Απαιτείται ένα κλειδί API παρόχου AI</string>
     <string name="currency_converter_toggle_desc">Παράδειγμα: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Μετατροπέας νομισμάτων</string>
@@ -1070,6 +1083,9 @@
     <string name="date_calculator_toggle_action_desc">Ενεργοποίηση ή απενεργοποίηση αριθμομηχανής ημερομηνίας &amp; ώρας</string>
     <string name="date_calculator_toggle_desc">Παραδείγματα χρήσης</string>
     <string name="dictionary_example_label">Παράδειγμα: %1$s</string>
+    <string name="dictionary_definition_not_found">Δεν βρέθηκε ορισμός για «%1$s»</string>
+    <string name="dictionary_unavailable">Δεν ήταν δυνατή η πρόσβαση στο λεξικό. Δοκιμάστε ξανά.</string>
+    <string name="dictionary_search_on_google">Αναζήτηση στο Google</string>
     <string name="dictionary_synonyms_label">Συνώνυμα: %1$s</string>
     <string name="dictionary_toggle_desc">Παράδειγμα: define serendipity</string>
     <string name="dictionary_toggle_title">Λεξικό</string>
@@ -1345,6 +1361,8 @@
     <string name="home_upcoming_alarm_hide_app">Απόκρυψη ξυπνητηριών από %1$s</string>
     <string name="home_low_battery_saver_off">Πατήστε για ενεργοποίηση της Εξοικονόμησης μπαταρίας</string>
     <string name="home_low_battery_saver_on">Η Εξοικονόμηση μπαταρίας είναι ενεργή</string>
+    <string name="home_critical_battery_title">Πολύ χαμηλή μπαταρία</string>
+    <string name="home_critical_battery_charge_now">Φορτίστε τώρα</string>
     <string name="home_charged">Πλήρως φορτισμένη</string>
     <string name="home_charging_full_in">Πλήρης σε %1$s</string>
     <string name="home_charging_paused">Η φόρτιση σε παύση</string>

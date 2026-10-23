@@ -159,6 +159,7 @@ class NotesRepository(
         if (isQuickNote(noteId)) return
         pendingDeletesByNoteId.remove(noteId)
         notesPreferences.unpinNote(noteId)
+        PinnedNotifications.removeNote(appContext, noteId)
     }
 
     fun pinNote(noteId: Long): Set<Long> = notesPreferences.pinNote(noteId)

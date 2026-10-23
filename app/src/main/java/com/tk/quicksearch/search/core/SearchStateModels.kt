@@ -114,6 +114,10 @@ data class SearchResultsState(
         val recentItems: List<RecentSearchItem> = emptyList(),
         // Recently opened items filtered to the active alias section (shown when alias detected + query blank)
         val aliasRecentItems: List<RecentSearchItem> = emptyList(),
+        // Keys of the alias items that came from history (the rest only fill the list)
+        val aliasRecentRemovableKeys: Set<String> = emptySet(),
+        // File type chip selected in the blank-query Files alias view (null = All)
+        val aliasFileTypeFilter: FileType? = null,
         val recentResultRecencyIndex: RecentResultRankingUtils.RecencyIndex =
                 RecentResultRankingUtils.RecencyIndex(),
         // Cache invalidation counters
@@ -210,6 +214,7 @@ data class SearchFeatureState(
         val disabledTopMatchesSections: Set<SearchSection> = emptySet(),
         val homePinnedSectionOrder: List<SearchSection> = UiPreferences.DEFAULT_HOME_PINNED_SECTION_ORDER,
         val pinnedAppShortcutsInAppGrid: Boolean = false,
+        val showStatusBar: Boolean = true,
         val pinnedAppGridOrder: List<String> = emptyList(),
         val appFolders: List<com.tk.quicksearch.search.folders.AppFolder> = emptyList(),
         // Calendar
@@ -265,6 +270,7 @@ data class SearchUiConfigState(
         val fontScaleMultiplier: Float = UiPreferences.DEFAULT_FONT_SCALE_MULTIPLIER,
         val useSystemFont: Boolean = false,
         val homeTextColorOverride: HomeTextColor? = null,
+        val searchBarStyle: SearchBarStyle = SearchBarStyle(),
         // App display preferences
         val showAppLabels: Boolean = true,
         val phoneAppGridColumns: Int = com.tk.quicksearch.search.data.preferences.UiPreferences.DEFAULT_PHONE_APP_GRID_COLUMNS,

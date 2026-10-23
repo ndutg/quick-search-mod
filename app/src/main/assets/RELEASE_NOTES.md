@@ -1,5 +1,11 @@
-- New in At a Glance: contact birthdays, charging status, timers and stopwatch, ongoing notifications, app notifications, low storage warnings, Do Not Disturb status, missed calls, ongoing call, airplane mode, hotspot, OTPs, Wi-Fi sign-in, weather, flashlight, and custom items powered by your AI provider API key.
-- Ask Quick Search for help with the any questions related to the app by typing @help in search bar (requires an AI provider API key).
-- New Launcher Widgets: Notes widget & Countdown widget
-- Choose any default contact action for the primary and secondary buttons on contact cards.
-- UI enhancements & bug fixes
+- Two-finger swipe gestures
+- New AI provider: Opencode
+- Customize the Home search bar (in Appearance settings)
+- Open the All Apps drawer with gestures
+- Search a file extension (for example, .pdf) to see all files of that type
+- Long press any app to open it in Google Play
+- The Dictionary tool no longer needs an API key
+- Option to hide the status bar
+- Add a note to a notification directly by searching for "Create Notification Note"
+- Triggering a section with its alias now shows your files, contacts, and settings without typing a query
+- Bugfixes, performance improvements and UI enhancements

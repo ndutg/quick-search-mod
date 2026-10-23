@@ -248,6 +248,7 @@ internal object SearchViewModelInitialStateFactory {
                 disabledTopMatchesSections = startupPreferencesReader.getDisabledTopMatchesSections(),
                 homePinnedSectionOrder = startupPreferencesReader.getHomePinnedSectionOrder(),
                 pinnedAppShortcutsInAppGrid = startupPreferencesReader.isPinnedAppShortcutsInAppGridEnabled(),
+                showStatusBar = startupPreferencesReader.isStatusBarVisible(),
                 pinnedAppGridOrder = startupPreferencesReader.getPinnedAppGridOrder(),
                 appFolders = appFolders,
                 recentQueriesEnabled = startupPreferencesReader.areRecentQueriesEnabled(),
@@ -313,6 +314,7 @@ internal object SearchViewModelInitialStateFactory {
                 useSystemFont =
                     startupSnapshot?.useSystemFont ?: startupPreferencesReader.shouldUseSystemFont(),
                 homeTextColorOverride = startupPreferencesReader.getHomeTextColorOverride(),
+                searchBarStyle = startupPreferencesReader.getSearchBarStyle(),
                 launcherAppIcon = startupPreferencesReader.getLauncherAppIcon(),
                 showAppLabels =
                     startupSnapshot?.showAppLabels ?: startupPreferencesReader.shouldShowAppLabels(),

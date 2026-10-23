@@ -101,6 +101,7 @@ internal fun PersistentSearchBar(
     focusRequester: androidx.compose.ui.focus.FocusRequester? = null,
     transparentBackground: Boolean = false,
     cornerRadius: androidx.compose.ui.unit.Dp = com.tk.quicksearch.shared.ui.theme.DesignTokens.Spacing28,
+    searchBarStyle: com.tk.quicksearch.search.core.SearchBarStyle = com.tk.quicksearch.search.core.SearchBarStyle(),
     modifier: Modifier = Modifier,
 ) = com.tk.quicksearch.search.searchScreen.components.PersistentSearchBar(
     query = query,
@@ -147,6 +148,7 @@ internal fun PersistentSearchBar(
     focusRequester = focusRequester,
     transparentBackground = transparentBackground,
     cornerRadius = cornerRadius,
+    searchBarStyle = searchBarStyle,
     modifier = modifier,
 )
 

@@ -1,7 +1,9 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -40,7 +42,10 @@ import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistorySection
+import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
+import com.tk.quicksearch.search.files.FileTypeFilterChips
 import com.tk.quicksearch.searchEngines.*
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
@@ -53,15 +58,17 @@ import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.R
 
 /**
- * Fades home sections in when their asynchronously loaded data first arrives. The section is laid
- * out at its final height from the first frame, so neighbouring sections never slide as late
- * content appears; only its opacity animates.
+ * Fades home sections in when their asynchronously loaded data first arrives. By default the
+ * section is laid out at its final height from the first frame, so neighbouring sections never
+ * slide as late content appears; only its opacity animates. With [expandIn] the section grows in
+ * as it fades, easing the content after it into place instead of jumping it.
  */
 @Composable
 internal fun HomeLoadingAnimatedContent(
     animationKey: String,
     enabled: Boolean,
     appearedKeys: MutableSet<String>,
+    expandIn: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     if (!enabled) {
@@ -72,6 +79,26 @@ internal fun HomeLoadingAnimatedContent(
     val shouldAnimate = remember(animationKey) { appearedKeys.add(animationKey) }
     if (!shouldAnimate) {
         content()
+        return
+    }
+
+    if (expandIn) {
+        val visibility = remember(animationKey) { MutableTransitionState(false).apply { targetState = true } }
+        AnimatedVisibility(
+            visibleState = visibility,
+            enter =
+                expandVertically(
+                    animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis),
+                    expandFrom = Alignment.Top,
+                ) + fadeIn(animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis)),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(HomeSectionContentSpacing),
+            ) {
+                content()
+            }
+        }
         return
     }
 
@@ -95,6 +122,8 @@ internal fun HomeLoadingAnimatedContent(
 }
 
 private const val HomeSectionFadeDurationMillis = 180
+private const val HomeSectionExpandDurationMillis = 280
+internal const val HOME_TODAY_CALENDAR_ANIMATION_KEY = "home-today-calendar"
 private val HomeSectionContentSpacing = 14.dp
 
 internal fun hasMoreResults(
@@ -208,6 +237,16 @@ internal fun UnifiedPinnedItemsBlock(
     }
 }
 
+// A selected file type chip keeps the list (and its chips) up even when nothing matches.
+internal fun shouldShowAliasRecentItems(
+    state: SearchUiState,
+    isSectionAliasMode: Boolean,
+    hasQuery: Boolean,
+): Boolean =
+    isSectionAliasMode &&
+        !hasQuery &&
+        (state.aliasRecentItems.isNotEmpty() || state.aliasFileTypeFilter != null)
+
 internal val ALIAS_RECENT_ELIGIBLE_SECTIONS =
     setOf(
         SearchSection.APP_SHORTCUTS,
@@ -252,7 +291,7 @@ internal fun sectionAliasPermissionMessageRes(
 
 @Composable
 internal fun AliasRecentItemsSection(
-    items: List<com.tk.quicksearch.search.searchHistory.RecentSearchItem>,
+    state: SearchUiState,
     contactsParams: ContactsSectionParams,
     filesParams: FilesSectionParams,
     settingsParams: SettingsSectionParams,
@@ -265,8 +304,64 @@ internal fun AliasRecentItemsSection(
     showWallpaperBackground: Boolean,
     isOverlayPresentation: Boolean,
 ) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        if (state.detectedAliasSearchSection == SearchSection.FILES) {
+            FileTypeFilterChips(
+                selectedFileType = state.aliasFileTypeFilter,
+                onFileTypeSelected = filesParams.onAliasFileTypeFilterChange,
+                showWallpaperBackground = showWallpaperBackground,
+                // Chips carry invisible touch padding; match the visible gap above the row.
+                modifier = Modifier.padding(bottom = DesignTokens.SpacingSmall),
+            )
+            if (state.aliasRecentItems.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.widget_custom_buttons_no_results),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color =
+                        if (showWallpaperBackground) {
+                            AppColors.WallpaperTextSecondary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    modifier = Modifier.padding(horizontal = DesignTokens.SpacingMedium),
+                )
+            }
+        }
+        AliasRecentItemsList(
+            state = state,
+            contactsParams = contactsParams,
+            filesParams = filesParams,
+            settingsParams = settingsParams,
+            appShortcutsParams = appShortcutsParams,
+            notesParams = notesParams,
+            onRecentQueryClick = onRecentQueryClick,
+            onDeleteRecentItem = onDeleteRecentItem,
+            expandedCardMaxHeight = expandedCardMaxHeight,
+            showWallpaperBackground = showWallpaperBackground,
+            isOverlayPresentation = isOverlayPresentation,
+        )
+    }
+}
+
+@Composable
+private fun AliasRecentItemsList(
+    state: SearchUiState,
+    contactsParams: ContactsSectionParams,
+    filesParams: FilesSectionParams,
+    settingsParams: SettingsSectionParams,
+    appShortcutsParams: AppShortcutsSectionParams,
+    notesParams: NotesSectionParams,
+    onRecentQueryClick: (RecentSearchEntry.Query) -> Unit,
+    onDeleteRecentItem: (RecentSearchEntry) -> Unit,
+    expandedCardMaxHeight: Dp,
+    showWallpaperBackground: Boolean,
+    isOverlayPresentation: Boolean,
+) {
     SearchHistorySection(
-        items = items,
+        items = state.aliasRecentItems,
         primaryContactButton = contactsParams.primaryContactButton ?: ContactButtonAction.CALL,
         secondaryContactButton = contactsParams.secondaryContactButton ?: ContactButtonAction.SMS,
         onRecentQueryClick = onRecentQueryClick,
@@ -297,6 +392,10 @@ internal fun AliasRecentItemsSection(
         showWallpaperBackground = showWallpaperBackground,
         isOverlayPresentation = isOverlayPresentation,
         alwaysExpanded = true,
+        // Alias items are all opened results, so pin the list to that tab without the tab row.
+        selectedTab = SearchHistoryTab.RECENTLY_OPENED,
+        showTabs = false,
+        removableEntryKeys = state.aliasRecentRemovableKeys,
         modifier = Modifier.fillMaxWidth(),
     )
 }

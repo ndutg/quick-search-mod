@@ -77,6 +77,7 @@
     <string name="action_add_to_home">होम में जोड़ें</string>
     <string name="action_add_trigger">ट्रिगर जोड़ें</string>
     <string name="action_app_info">ऐप जानकारी</string>
+    <string name="action_open_in_google_play">Google Play में खोलें</string>
     <string name="action_manage_all_apps">सभी ऐप्स प्रबंधित करें</string>
     <string name="action_app_shortcuts_settings">ऐप शॉर्टकट सेटिंग्स</string>
     <string name="action_files_settings">फ़ाइल सेटिंग्स</string>
@@ -113,7 +114,7 @@
     <string name="action_open_folder">फोल्डर खोलें</string>
     <string name="action_open_keyboard">कीबोर्ड खोलें</string>
     <string name="action_open_settings">सेटिंग्स खोलें</string>
-    <string name="settings_gestures_title">जेस्चर</string>
+    <string name="settings_gestures_title">होम जेस्चर</string>
     <string name="settings_gestures_desc">स्वाइप क्रियाओं को कस्टमाइज़ करें</string>
     <string name="settings_gesture_swipe_right">दाएँ स्वाइप करें</string>
     <string name="settings_gesture_widget_panel">विजेट पैनल</string>
@@ -121,14 +122,15 @@
     <string name="settings_gesture_swipe_left">बाएँ स्वाइप करें</string>
     <string name="settings_gesture_swipe_up">ऊपर स्वाइप करें</string>
     <string name="settings_gesture_swipe_down">नीचे स्वाइप करें</string>
-    <string name="settings_gesture_swipe_up_home">ऊपर स्वाइप करें (होम)</string>
-<string name="settings_gesture_swipe_down_home">नीचे स्वाइप करें (होम)</string>
 <string name="settings_gesture_close_quick_search">Quick Search बंद करें</string>
-<string name="settings_gesture_double_tap_home">डबल टैप (होम)</string>
+<string name="settings_gesture_double_tap_home">डबल टैप</string>
+<string name="settings_gesture_two_finger_swipe_up_home">दो उंगलियों से ऊपर स्वाइप करें</string>
+<string name="settings_gesture_two_finger_swipe_down_home">दो उंगलियों से नीचे स्वाइप करें</string>
     <string name="settings_gesture_settings">सेटिंग्स</string>
     <string name="settings_gesture_close_keyboard_notifications">कीबोर्ड बंद करें / नोटिफिकेशन खोलें</string>
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
     <string name="settings_gesture_notification_panel">नोटिफिकेशन पैनल</string>
+    <string name="settings_gesture_quick_settings">क्विक सेटिंग्स खोलें</string>
     <string name="settings_gesture_view_all_apps">सभी ऐप्स देखें</string>
     <string name="settings_gesture_lock_screen">स्क्रीन लॉक करें</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">सुलभता अनुमति आवश्यक है</string>
@@ -138,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search Accessibility का उपयोग इन कामों के लिए करता है:\n\n• स्क्रीन लॉक करने के लिए डबल-टैप जेस्चर सक्षम करने के लिए।\n• किनारे से स्वाइप जेस्चर से Quick Search खोलने के लिए।\n• फ़्लोटिंग बटन से Quick Search खोलने के लिए।\n\nयह आपकी स्क्रीन सामग्री या अन्य निजी डेटा को पढ़ता, एकत्र करता, संग्रहीत या साझा नहीं करता है।</string>
     <string name="settings_gesture_none">कोई नहीं</string>
     <string name="settings_gesture_custom">कस्टम (ऐप्स, फ़ाइलें आदि)</string>
-    <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर (होम)</string>
+    <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर</string>
     <string name="settings_keyboard_gestures_desc">केवल तब काम करता है जब होम स्क्रीन पर स्क्रॉल करने योग्य सामग्री न हो</string>
     <string name="action_pin_app">पिन करें</string>
     <string name="action_pin_to_notifications">सूचनाओं में पिन करें</string>
@@ -614,6 +616,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">एडिटर में नया नोट शुरू करें</string>
     <string name="app_settings_search_create_note_title">नोट बनाएं</string>
+    <string name="app_settings_search_create_notification_note_title">सूचना नोट बनाएं</string>
+    <string name="app_settings_search_create_notification_note_desc">ऐसा नोट लिखें जो सूचना पैनल में बना रहे</string>
     <string name="notes_body_hint">अपना नोट यहां लिखें</string>
     <string name="notes_create_note_cta">नया नोट</string>
     <string name="notes_delete_confirm_message">यह नोट स्थायी रूप से हटा दिया जाएगा।</string>
@@ -624,6 +628,7 @@
     <string name="notes_editor_action_open_link">लिंक खोलें</string>
     <string name="notes_editor_action_send_email">ईमेल भेजें</string>
     <string name="notes_editor_title">नोट एडिटर</string>
+    <string name="notes_editor_notification_note_title">सूचना नोट</string>
     <string name="notes_empty_note_subtext">खाली नोट</string>
     <string name="notes_quick_note_title">क्विक नोट</string>
     <string name="notes_quick_note_toggle_desc">स्वाइप नेविगेशन से क्विक नोट खोलें</string>
@@ -785,10 +790,15 @@
     <string name="settings_app_language_system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="settings_launcher_icon_reset_default">डिफ़ॉल्ट पर रीसेट करें</string>
     <string name="settings_launcher_icon_title">ऐप आइकन बदलें</string>
+    <string name="settings_search_bar_style_title">सर्च बार</string>
+    <string name="settings_search_bar_background_color_label">पृष्ठभूमि का रंग</string>
+    <string name="settings_search_bar_color_accent">एक्सेंट</string>
     <string name="settings_layout_option_bottom_desc">आसान पहुंच के लिए सबसे प्रासंगिक आइटम नीचे दिखते हैं</string>
     <string name="settings_layout_option_bottom_title">एक-हाथ मोड</string>
     <string name="settings_unified_pinned_items_title">एकीकृत पिन किए गए आइटम</string>
     <string name="settings_unified_pinned_items_desc">पिन किए गए आइटम को होम स्क्रीन पर एक एकीकृत सूची के रूप में दिखाएं।</string>
+    <string name="settings_show_status_bar_title">स्टेटस बार दिखाएं</string>
+    <string name="settings_show_status_bar_desc">स्क्रीन के ऊपर Android स्टेटस बार दिखाएं।</string>
     <string name="settings_pinned_sections_order_title">पिन किए गए सेक्शन का क्रम</string>
     <string name="settings_pinned_sections_order_desc">होम पर पिन किए गए सेक्शन का क्रम बदलें</string>
     <string name="settings_pinned_sections_order_dialog_info">होम पर पिन किए गए सेक्शन का क्रम बदलने के लिए दबाकर रखें और खींचें।</string>
@@ -1046,6 +1056,9 @@
     <string name="calculator_toggle_desc">बुनियादी गणितीय व्यंजकों के परिणाम</string>
     <string name="calculator_toggle_title">कैलकुलेटर</string>
     <string name="currency_converter_invalid_input">अमान्य मुद्रा रूपांतरण इनपुट</string>
+    <string name="currency_converter_rates_unavailable">विनिमय दरें प्राप्त नहीं हो सकीं। फिर से कोशिश करें।</string>
+    <string name="currency_converter_unsupported_currency">%1$s समर्थित नहीं है</string>
+    <string name="currency_converter_check_rates_on_google">Google पर दरें देखें</string>
     <string name="currency_converter_requires_gemini_key">AI provider API key आवश्यक है</string>
     <string name="currency_converter_toggle_desc">उदाहरण: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">मुद्रा परिवर्तक</string>
@@ -1070,6 +1083,9 @@
     <string name="date_calculator_toggle_action_desc">तारीख और समय कैलकुलेटर चालू या बंद करें</string>
     <string name="date_calculator_toggle_desc">उपयोग उदाहरण</string>
     <string name="dictionary_example_label">उदाहरण: %1$s</string>
+    <string name="dictionary_definition_not_found">“%1$s” की कोई परिभाषा नहीं मिली</string>
+    <string name="dictionary_unavailable">शब्दकोश तक नहीं पहुँच सके। फिर से कोशिश करें।</string>
+    <string name="dictionary_search_on_google">Google पर खोजें</string>
     <string name="dictionary_synonyms_label">समानार्थी: %1$s</string>
     <string name="dictionary_toggle_desc">उदाहरण: define serendipity</string>
     <string name="dictionary_toggle_title">शब्दकोश</string>
@@ -1345,6 +1361,8 @@
     <string name="home_upcoming_alarm_hide_app">%1$s के अलार्म छिपाएं</string>
     <string name="home_low_battery_saver_off">बैटरी सेवर चालू करने के लिए टैप करें</string>
     <string name="home_low_battery_saver_on">बैटरी सेवर चालू है</string>
+    <string name="home_critical_battery_title">बैटरी बहुत कम है</string>
+    <string name="home_critical_battery_charge_now">अभी चार्ज करें</string>
     <string name="home_charged">पूरी तरह चार्ज</string>
     <string name="home_charging_full_in">%1$s में पूरी</string>
     <string name="home_charging_paused">चार्जिंग रुकी हुई है</string>

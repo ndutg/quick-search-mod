@@ -9,13 +9,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.DictionaryState
 import com.tk.quicksearch.search.core.DictionaryStatus
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.GeminiLoadingAnimation
 import com.tk.quicksearch.tools.aiSearch.GeminiResultCard
 import java.util.Locale
@@ -23,15 +25,10 @@ import java.util.Locale
 @Composable
 fun DictionaryResult(
         dictionaryState: DictionaryState,
-        llmProviderId: AiSearchLlmProviderId = AiSearchLlmProviderId.GEMINI,
         showWallpaperBackground: Boolean = false,
-        onGeminiModelInfoClick: () -> Unit = {},
+        onSearchOnGoogle: (String) -> Unit = {},
 ) {
     if (dictionaryState.status == DictionaryStatus.Idle) return
-
-    val showAttribution =
-            dictionaryState.status == DictionaryStatus.Success &&
-                    !dictionaryState.meaning.isNullOrBlank()
 
     val copyText =
             if (dictionaryState.status == DictionaryStatus.Success) {
@@ -39,15 +36,11 @@ fun DictionaryResult(
             } else {
                 null
             }
-    val effectiveProviderId = dictionaryState.llmProviderId ?: llmProviderId
 
     GeminiResultCard(
             showWallpaperBackground = showWallpaperBackground,
-            showAttribution = showAttribution,
-            usedModelId = dictionaryState.usedModelId,
-            llmProviderId = effectiveProviderId,
-            isAttributionClickable = true,
-            onGeminiModelInfoClick = onGeminiModelInfoClick,
+            showAttribution = false,
+            usedModelId = null,
             copyText = copyText,
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -112,12 +105,25 @@ fun DictionaryResult(
                         }
                     }
                     DictionaryStatus.Error -> {
-                        Text(
-                                text = dictionaryState.errorMessage
-                                        ?: stringResource(R.string.direct_search_error_generic),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.error,
-                        )
+                        Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
+                        ) {
+                            Text(
+                                    text = dictionaryState.errorMessage
+                                            ?: stringResource(R.string.direct_search_error_generic),
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyMedium.copy(lineBreak = LineBreak.Heading),
+                                    color = MaterialTheme.colorScheme.error,
+                            )
+                            dictionaryState.activeQuery?.takeIf { it.isNotBlank() }?.let { query ->
+                                SearchOnGoogleButton(
+                                        text = stringResource(R.string.dictionary_search_on_google),
+                                        onClick = { onSearchOnGoogle(query) },
+                                )
+                            }
+                        }
                     }
                     DictionaryStatus.Idle -> {}
                 }

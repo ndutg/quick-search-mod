@@ -9,6 +9,7 @@ import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.LauncherAppIcon
 import com.tk.quicksearch.search.core.HomeTextColor
+import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchUiState
@@ -57,6 +58,8 @@ sealed interface SettingsCommand {
 
     data class HomeTextColorOverride(val color: HomeTextColor) : SettingsCommand
 
+    data class SearchBarStyleSetting(val style: SearchBarStyle) : SettingsCommand
+
     data class WallpaperBackgroundAlpha(val alpha: Float) : SettingsCommand
 
     data class WallpaperBlurRadius(val radius: Float) : SettingsCommand
@@ -101,6 +104,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                     setUnifiedPinnedItemsEnabled(command.enabled)
                 AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID ->
                     setPinnedAppShortcutsInAppGridEnabled(command.enabled)
+                AppSettingsToggleKey.SHOW_STATUS_BAR -> setStatusBarVisible(command.enabled)
                 AppSettingsToggleKey.SEARCH_HINTS -> setSearchHintsEnabled(command.enabled)
                 AppSettingsToggleKey.SETTINGS_ICON -> setSettingsIconEnabled(command.enabled)
                 AppSettingsToggleKey.APP_LABELS -> setShowAppLabels(command.enabled)
@@ -193,6 +197,7 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
         is SettingsCommand.FontScaleMultiplier -> setFontScaleMultiplier(command.multiplier)
         is SettingsCommand.UseSystemFont -> setUseSystemFont(command.enabled)
         is SettingsCommand.HomeTextColorOverride -> setHomeTextColorOverride(command.color)
+        is SettingsCommand.SearchBarStyleSetting -> setSearchBarStyle(command.style)
         is SettingsCommand.WallpaperBackgroundAlpha -> setWallpaperBackgroundAlpha(command.alpha)
         is SettingsCommand.WallpaperBlurRadius -> setWallpaperBlurRadius(command.radius)
         is SettingsCommand.OverlayThemeIntensity -> setOverlayThemeIntensity(command.intensity)
@@ -221,6 +226,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.COMPACT_LAYOUT -> !cardLayoutEnabled
         AppSettingsToggleKey.UNIFIED_PINNED_ITEMS -> unifiedPinnedItemsEnabled
         AppSettingsToggleKey.PINNED_APP_SHORTCUTS_IN_APP_GRID -> pinnedAppShortcutsInAppGrid
+        AppSettingsToggleKey.SHOW_STATUS_BAR -> showStatusBar
         AppSettingsToggleKey.SEARCH_HINTS -> searchHintsEnabled
         AppSettingsToggleKey.SETTINGS_ICON -> settingsIconEnabled
         AppSettingsToggleKey.APP_LABELS -> showAppLabels
@@ -260,7 +266,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.CURRENCY_CONVERTER -> currencyConverterEnabled
         // AI-backed tools read as off without an API key, matching the Tools settings page.
         AppSettingsToggleKey.WORLD_CLOCK -> worldClockEnabled && hasApiKey
-        AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled && hasApiKey
+        AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled
         AppSettingsToggleKey.WEATHER -> weatherEnabled && hasApiKey
         // Read by rememberAppSettingToggleChecked, which follows AppNotificationsSettings.
         AppSettingsToggleKey.APP_NOTIFICATIONS -> false

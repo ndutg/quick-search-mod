@@ -81,10 +81,15 @@ internal enum class SwipeDirection(val titleResId: Int, val defaultAction: Swipe
 }
 
 internal enum class HomeGesture(val titleResId: Int, val defaultAction: HomeSwipeGestureAction) {
-    SWIPE_UP(R.string.settings_gesture_swipe_up_home, HomeSwipeGestureAction.NONE),
-    SWIPE_DOWN(R.string.settings_gesture_swipe_down_home, HomeSwipeGestureAction.NOTIFICATION_PANEL),
+    SWIPE_UP(R.string.settings_gesture_swipe_up, HomeSwipeGestureAction.NONE),
+    SWIPE_DOWN(R.string.settings_gesture_swipe_down, HomeSwipeGestureAction.NOTIFICATION_PANEL),
     DOUBLE_TAP(R.string.settings_gesture_double_tap_home, HomeSwipeGestureAction.NONE),
+    TWO_FINGER_SWIPE_UP(R.string.settings_gesture_two_finger_swipe_up_home, HomeSwipeGestureAction.NONE),
+    TWO_FINGER_SWIPE_DOWN(R.string.settings_gesture_two_finger_swipe_down_home, HomeSwipeGestureAction.NONE),
 }
+
+internal val HomeGesture.isTwoFinger: Boolean
+    get() = this == HomeGesture.TWO_FINGER_SWIPE_UP || this == HomeGesture.TWO_FINGER_SWIPE_DOWN
 
 internal enum class AliasPickerKind { SEARCH_ENGINE, TOOL }
 
@@ -105,14 +110,7 @@ fun GesturesSettingsSection(
                     SettingsNavigationRow(
                         item =
                             SettingsCardItem(
-                                title =
-                                    stringResource(
-                                        when (direction) {
-                                            SwipeDirection.UP -> R.string.settings_gesture_swipe_up_home
-                                            SwipeDirection.DOWN -> R.string.settings_gesture_swipe_down_home
-                                            else -> direction.titleResId
-                                        },
-                                    ),
+                                title = stringResource(direction.titleResId),
                                 icon = direction.gestureIcon(),
                                 description =
                                     if (direction == SwipeDirection.RIGHT && state.isDefaultLauncher) {
@@ -138,24 +136,29 @@ fun GesturesSettingsSection(
                     )
                     HorizontalDivider(color = AppColors.SettingsDivider)
                 }
-                SettingsNavigationRow(
-                    item =
-                        SettingsCardItem(
-                            title = stringResource(HomeGesture.DOUBLE_TAP.titleResId),
-                            icon = HomeGesture.DOUBLE_TAP.icon(),
-                            description = homeGestureDescription(
-                                state.homeActions.getValue(HomeGesture.DOUBLE_TAP),
-                                state.homeCustomActions[HomeGesture.DOUBLE_TAP],
-                                state.homeAliasTargets[HomeGesture.DOUBLE_TAP],
-                                searchState,
+                val extraHomeGestures =
+                    listOf(HomeGesture.DOUBLE_TAP, HomeGesture.TWO_FINGER_SWIPE_UP, HomeGesture.TWO_FINGER_SWIPE_DOWN)
+                extraHomeGestures.forEachIndexed { index, gesture ->
+                    if (index > 0) HorizontalDivider(color = AppColors.SettingsDivider)
+                    SettingsNavigationRow(
+                        item =
+                            SettingsCardItem(
+                                title = stringResource(gesture.titleResId),
+                                icon = gesture.icon(),
+                                description = homeGestureDescription(
+                                    state.homeActions.getValue(gesture),
+                                    state.homeCustomActions[gesture],
+                                    state.homeAliasTargets[gesture],
+                                    searchState,
+                                ),
+                                actionOnPress = { state.selectedHomeGesture = gesture },
                             ),
-                            actionOnPress = { state.selectedHomeGesture = HomeGesture.DOUBLE_TAP },
+                        contentPadding = PaddingValues(
+                            horizontal = DesignTokens.CardHorizontalPadding,
+                            vertical = DesignTokens.CardVerticalPadding,
                         ),
-                    contentPadding = PaddingValues(
-                        horizontal = DesignTokens.CardHorizontalPadding,
-                        vertical = DesignTokens.CardVerticalPadding,
-                    ),
-                )
+                    )
+                }
             }
         }
 

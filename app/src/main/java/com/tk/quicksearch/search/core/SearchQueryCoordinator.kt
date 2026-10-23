@@ -80,7 +80,9 @@ internal class SearchQueryCoordinator(
                 noteResults = emptyList(),
             )
         }
-        if (currentQuery.isNotEmpty() && section != SearchSection.APPS) {
+        if (currentQuery.isBlank()) {
+            refreshAliasRecentItems(section)
+        } else if (section != SearchSection.APPS) {
             secondarySearchOrchestrator.performTargetedSecondarySearch(
                 query = currentQuery,
                 section = section,
@@ -130,6 +132,7 @@ internal class SearchQueryCoordinator(
                 weatherState = WeatherState(),
             )
         }
+        refreshAliasRecentItems(null)
     }
 
     fun clearQuery() {
@@ -655,6 +658,7 @@ internal class SearchQueryCoordinator(
                 reminderResults = if (shouldRunSecondarySearchBatch) state.reminderResults else emptyList(),
                 noteResults = if (shouldRunSecondarySearchBatch) state.noteResults else emptyList(),
                 aliasRecentItems = emptyList(),
+                aliasRecentRemovableKeys = emptySet(),
             )
         }
 
