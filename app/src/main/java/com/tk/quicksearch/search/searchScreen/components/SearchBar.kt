@@ -65,6 +65,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
@@ -82,6 +83,7 @@ import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.core.SearchBarStyle
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.app.HomeActivity
 import com.tk.quicksearch.app.startup.StartupTrace
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.hapticStrong
@@ -161,6 +163,7 @@ internal fun PersistentSearchBar(
     val keyboardController = LocalSoftwareKeyboardController.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val view = LocalView.current
+    val context = LocalContext.current
 
     val searchBarBackground =
         if (transparentBackground) {
@@ -382,7 +385,11 @@ internal fun PersistentSearchBar(
                             }
 
                         Lifecycle.Event.ON_RESUME ->
-                            if (autoFocusOnStart && hasCompletedStartupAutoFocus) {
+                            if (
+                                autoFocusOnStart &&
+                                hasCompletedStartupAutoFocus &&
+                                (context as? HomeActivity)?.consumeResumeAutoFocusSuppression() != true
+                            ) {
                                 focusRequester.requestFocus()
                                 keyboardController?.show()
                             }

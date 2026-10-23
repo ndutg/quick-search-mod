@@ -31,8 +31,7 @@ class HomeActivity : MainActivity() {
     var canShowSystemWallpaperBackdrop: Boolean = false
         private set
 
-    /** Soft input mode to put back once Home is left after a gesture-driven keyboard dismissal. */
-    private var softInputModeBeforeDismiss: Int? = null
+    private var suppressNextResumeAutoFocus = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         canShowSystemWallpaperBackdrop = isDefaultHomeApp()
@@ -58,31 +57,28 @@ class HomeActivity : MainActivity() {
                 ?.isVisible(WindowInsetsCompat.Type.ime()) == true
         super.onNewIntent(intent)
         if (isHomeGestureWhileVisible && isKeyboardVisible) {
+            // The search field re-requests focus and the keyboard on ON_RESUME; skip that once so
+            // the keyboard and the focus go away together.
+            suppressNextResumeAutoFocus = true
             dismissKeyboard()
-            // The search field may re-request focus on ON_RESUME; hide again once resume settles.
-            window.decorView.post { dismissKeyboard() }
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        softInputModeBeforeDismiss?.let(window::setSoftInputMode)
-        softInputModeBeforeDismiss = null
+    /** True once per Home gesture that dismissed the keyboard; the caller skips its resume focus. */
+    fun consumeResumeAutoFocusSuppression(): Boolean {
+        val suppress = suppressNextResumeAutoFocus
+        suppressNextResumeAutoFocus = false
+        return suppress
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Drop an unconsumed suppression (auto-focus off) so it can't swallow a later resume.
+        suppressNextResumeAutoFocus = false
     }
 
     private fun dismissKeyboard() {
-        // stateAlwaysVisible re-raises the IME whenever the window regains focus, which some
-        // devices do after the Home gesture settles, leaving a keyboard with no focused field.
-        // Hold the state as-is until Home is left; onStop restores the declared mode.
-        if (softInputModeBeforeDismiss == null) {
-            val mode = window.attributes.softInputMode
-            softInputModeBeforeDismiss = mode
-            window.setSoftInputMode(
-                (mode and WindowManager.LayoutParams.SOFT_INPUT_MASK_STATE.inv()) or
-                    WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED,
-            )
-        }
-        // The field must lose focus too, or the IME comes back with it.
+        // The window is stateAlwaysVisible, so the field must lose focus or the IME comes back.
         currentFocus?.clearFocus()
         WindowCompat.getInsetsController(window, window.decorView)
             .hide(WindowInsetsCompat.Type.ime())
