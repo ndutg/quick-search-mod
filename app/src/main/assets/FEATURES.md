@@ -9,10 +9,10 @@ This document highlights all the available features. It also includes details ab
 - **App Search** - Find and launch apps instantly.
 - **App Shortcuts Search** - Find and launch app shortcuts instantly.
 - **Contact Search** - Find contacts and act on them right away: call, SMS, Google Meet (voice/video call), or WhatsApp, Telegram, and Signal (chat, voice/video call).
-- **File Search** - Search files and folders on your device.
+- **File Search** - Search files and folders on your device. Search a file extension (e.g. `.pdf`) to see all files of that type.
 - **Calendar Events Search** - Search your calendar events.
 - **Reminders Search** - Create and search reminders directly from the search bar. For example, search `Laundry in 2 hrs`.
-- **Notes Search** - Write notes and search them from the search bar. Quick Note is also available in the Widgets Panel.
+- **Notes Search** - Write notes and search them from the search bar. Quick Note is also available in the Widgets Panel. Search `Create Notification Note` to write a note that stays in your notification panel.
 - **Notification History** - Search notifications you've received, or open the full Notification History screen, where you can filter by app, hide an app's notifications, or clear them all. Requires notification access; only notifications received after access is granted are saved.
 - **Device Settings Search** - Jump straight to specific device settings.
 - **App Settings Search** - Find any Quick Search setting by searching for it.
@@ -60,7 +60,7 @@ This document highlights all the available features. It also includes details ab
   - **Absolute time** — e.g. 5pm, 14:30, 9am
   - **Time offset from a time** — e.g. 3 hours after 5pm, 30 minutes before 9am, 1 hour after 14:00
 - **Alarms & Timers** - Set alarms and start timers directly from search. For example, search `2:45pm` to set an alarm or `15 min` to start a timer.
-- **Dictionary** - Search `define serendipity` or `serendipity meaning` to see a dictionary card; tap it to view the definition. Requires an AI provider API key.
+- **Dictionary** - Search `define serendipity` or `serendipity meaning` to see a dictionary card; tap it to view the definition.
 - **World Clock** - Search a city name to see its current time. Requires an AI provider API key.
 - **Currency Converter** - Convert currencies at the current exchange rate, e.g. `100 USD to EUR`. No API key needed.
 - **Weather** - See the current weather for a location directly in search. Requires an AI provider API key and a model with web search (or a Tavily API key).
@@ -77,7 +77,7 @@ Type an alias before your query to tell Quick Search what you want to do.
 - **Search Section Aliases** - Search only one section, such as apps, app shortcuts, contacts, files, or device settings. For contacts and files, this also runs a deeper search.
 - **Search Engine Aliases** - Search a specific engine by typing its alias (e.g. `ggl` for Google). Aliases also work at the end of a query; press space to trigger them.
 - **Tool Aliases** - Set aliases to switch the search bar into a tool's mode, such as calculator, date & time calculator, currency converter, dictionary, or weather (`wtr` by default).
-- **Empty Alias** - Type just an alias to see recently opened items for that section (upcoming events for calendar).
+- **Empty Alias** - Type just an alias to see items from that section without a query: recently opened items, your files, contacts, and settings (upcoming events for calendar).
 
 ---
 
@@ -107,6 +107,7 @@ Long-press on most results to open a context menu with quick actions.
 - **Add to Home Screen** - Add apps, app shortcuts, contacts, files, and device settings to your home screen as shortcuts.
 - **Edit Icons for App Shortcuts** - Set a custom icon for an app shortcut.
 - **App Info / Uninstall / Hide** - Open an app's system info, uninstall it, or hide it from suggestions and results.
+- **Open in Google Play** - Open an app's Google Play page.
 - **Lock / Unlock App** - Lock an app with biometrics (available when Quick Search is your launcher).
 - **Open in Split Screen** - Open an app in split screen.
 - **SpeedBump** - Add a short delay before an app opens, to help break habitual app opening.
@@ -202,6 +203,8 @@ Available when Quick Search is set as your launcher.
 - **Wallpaper Background** - Use your wallpaper or any image as the background, and adjust transparency and blur to keep content readable.
 - **One-Handed Mode** - Show the most relevant items at the bottom of the screen, within easy reach.
 - **Bottom Searchbar** - Move the search bar to the bottom of the screen.
+- **Search Bar Style** - Customize the Home search bar's border width and color, background color and transparency, and corner radius.
+- **Show Status Bar** - Show or hide the Android status bar at the top of the screen.
 - **Search Hints** - Show or hide the rotating hints in the search bar.
 - **Settings Icon** - Show or hide the settings icon in the search bar.
 - **Pinned Sections Order** - Reorder pinned sections on Home.
@@ -324,7 +327,9 @@ An optional Home section that shows useful information when it matters.
 
 - **Swipe Left/Right** - By default, swipe right opens the Widgets Panel and swipe left opens Settings. Assign any action, search engine, or tool instead, set a swipe to close Quick Search, or turn it off.
 - **Home Swipe Up/Down** - Assign an action, search engine, or tool, or turn the gesture off. Swipe down can also open the notification panel.
+- **Two-Finger Swipe Up/Down** - Swipe up or down with two fingers on Home to run an action, search engine, or tool.
 - **Double Tap** - Double-tap an empty area on Home to run an action, search engine, or tool, or to lock your screen.
+- **View All Apps** - Assign **View All Apps** to any gesture to open the All Apps drawer.
 - **App Icon Swipes** - Swipe up or down on an app icon to open any item you choose.
 - **Keyboard Gestures** - Choose which swipes open and close the keyboard. They work on Home only when there's nothing to scroll.
 - **Launcher Swipe Right** - When Quick Search is your launcher, swipe right opens the Widgets Panel.
