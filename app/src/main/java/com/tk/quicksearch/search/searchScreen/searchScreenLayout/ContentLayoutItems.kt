@@ -99,7 +99,7 @@ internal fun NonSectionLayoutItem(
                     }
                     if (hasStandaloneTodayCalendarSection && regularSectionParams.calendarParams != null) {
                         HomeLoadingAnimatedContent(
-                            animationKey = "home-today-calendar",
+                            animationKey = HOME_TODAY_CALENDAR_ANIMATION_KEY,
                             enabled = true,
                             appearedKeys = appearedHomeContentKeys,
                         ) {
@@ -116,6 +116,10 @@ internal fun NonSectionLayoutItem(
                             )
                         }
                     } else {
+                        // Today's events (even ones that have all ended) can load after the other
+                        // rows; the card is already on screen by then, so moving it into the
+                        // calendar host must not restart its first-appearance fade.
+                        if (atAGlanceItems.isNotEmpty()) appearedHomeContentKeys.add(HOME_TODAY_CALENDAR_ANIMATION_KEY)
                         AtAGlanceCard(
                             items = atAGlanceItems,
                             showWallpaperBackground = effectiveShowWallpaperBackground,

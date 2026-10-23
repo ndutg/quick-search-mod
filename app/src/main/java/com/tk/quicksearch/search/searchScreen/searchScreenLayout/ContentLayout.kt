@@ -390,9 +390,7 @@ fun ContentLayout(
     }
 
     val standaloneTodayEventIds =
-        sectionContextForRecentHistoryExpansion.todayCalendarEventsList
-            .map { it.eventId }
-            .toSet()
+        sectionContextForRecentHistoryExpansion.todayCalendarEventsList.map { it.eventId }.toSet()
     val hasStandaloneTodayCalendarSection = standaloneTodayEventIds.isNotEmpty()
     // Low battery, alarm, reminders and future At a Glance sources share the today's events card on
     // home; media controls get a card of their own.
@@ -670,6 +668,8 @@ fun ContentLayout(
                     animationKey = "home-section-${section.name}",
                     enabled = !hasQuery && !isHomeCalendarExpanded,
                     appearedKeys = appearedHomeContentKeys,
+                    // Late app suggestions push At a Glance and the rest of home down smoothly.
+                    expandIn = section == SearchSection.APPS,
                 ) {
                     renderHomePinnedSection(section) {
                         renderSection(section, regularSectionParams, sectionContext)
