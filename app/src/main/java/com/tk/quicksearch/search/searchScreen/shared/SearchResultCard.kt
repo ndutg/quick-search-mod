@@ -8,14 +8,26 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.Dp
+import kotlin.math.abs
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -121,6 +133,14 @@ fun SearchResultCard(
 
     val cardlessVerticalBleed = LocalCardlessStackSpacing.current / 2
     val showCardlessSectionDivider = LocalCardlessSectionDividers.current
+    val trailingEdge = LocalCardlessTrailingEdge.current
+    val cardBottomInRoot = remember { mutableFloatStateOf(Float.NaN) }
+    val isTrailingCard =
+        remember(trailingEdge) {
+            derivedStateOf {
+                trailingEdge != null && abs(cardBottomInRoot.floatValue - trailingEdge.bottomInRoot) < 1f
+            }
+        }
     val cardlessDividerColor =
         LocalOverlayDividerColor.current
             ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant
@@ -129,8 +149,15 @@ fun SearchResultCard(
             if (cardLayoutEnabled) {
                 modifier
             } else {
-                Modifier.cardlessBleed(DesignTokens.SpacingSmall, cardlessVerticalBleed)
-                    .then(if (showCardlessSectionDivider) Modifier.cardlessSectionDivider(cardlessDividerColor) else Modifier)
+                Modifier.onGloballyPositioned { cardBottomInRoot.floatValue = it.bottomInRoot() }
+                    .cardlessBleed(DesignTokens.SpacingSmall, cardlessVerticalBleed)
+                    .then(
+                        if (showCardlessSectionDivider) {
+                            Modifier.cardlessSectionDivider(cardlessDividerColor, isTrailingCard)
+                        } else {
+                            Modifier
+                        },
+                    )
                     .then(modifier)
             },
         colors = colors,
@@ -165,9 +192,39 @@ private fun Modifier.cardlessBleed(horizontal: Dp, vertical: Dp): Modifier =
  * Flat cards have no edges, so each one draws a hairline along its bottom edge (where it meets the
  * next card), inset like the row dividers inside sections.
  */
-private fun Modifier.cardlessSectionDivider(color: Color): Modifier =
+/**
+ * Bottom edge of the search results column in root coordinates. The flat card whose bottom lands
+ * on it is the last result, so it skips its section divider.
+ */
+@Stable
+internal class CardlessTrailingEdge {
+    var bottomInRoot by mutableFloatStateOf(Float.NaN)
+}
+
+internal val LocalCardlessTrailingEdge = staticCompositionLocalOf<CardlessTrailingEdge?> { null }
+
+/** Reports this node's bottom edge as the results column's [CardlessTrailingEdge]. */
+@Composable
+internal fun Modifier.reportCardlessTrailingEdge(): Modifier {
+    val trailingEdge = LocalCardlessTrailingEdge.current ?: return this
+    return onGloballyPositioned { trailingEdge.bottomInRoot = it.bottomInRoot() }
+}
+
+private fun LayoutCoordinates.bottomInRoot(): Float = localToRoot(Offset(0f, size.height.toFloat())).y
+
+/** Home section title style; much smaller when the card layout is off. */
+@Composable
+internal fun homeSectionTitleStyle(): TextStyle =
+    if (LocalSearchCardLayoutEnabled.current) {
+        MaterialTheme.typography.titleSmall
+    } else {
+        MaterialTheme.typography.labelSmall
+    }
+
+private fun Modifier.cardlessSectionDivider(color: Color, isTrailing: State<Boolean>): Modifier =
     drawWithContent {
         drawContent()
+        if (isTrailing.value) return@drawWithContent
         val stroke = DesignTokens.BorderWidth.toPx()
         val inset = DesignTokens.SpacingMedium.toPx()
         val y = size.height - stroke / 2

@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.search.searchScreen.shared.homeSectionTitleStyle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -106,7 +107,7 @@ internal fun HomePinnedSection(
                     }
                     Text(
                         text = stringResource(metadata.sectionLabelRes),
-                        style = MaterialTheme.typography.titleSmall,
+                        style = homeSectionTitleStyle(),
                         color = homeTextColor(),
                     )
                 }
