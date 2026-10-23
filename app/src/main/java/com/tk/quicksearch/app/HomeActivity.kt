@@ -31,6 +31,9 @@ class HomeActivity : MainActivity() {
     var canShowSystemWallpaperBackdrop: Boolean = false
         private set
 
+    /** Soft input mode to put back once Home is left after a gesture-driven keyboard dismissal. */
+    private var softInputModeBeforeDismiss: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         canShowSystemWallpaperBackdrop = isDefaultHomeApp()
         if (canShowSystemWallpaperBackdrop) {
@@ -61,8 +64,25 @@ class HomeActivity : MainActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        softInputModeBeforeDismiss?.let(window::setSoftInputMode)
+        softInputModeBeforeDismiss = null
+    }
+
     private fun dismissKeyboard() {
-        // The window is stateAlwaysVisible, so the field must lose focus or the IME comes back.
+        // stateAlwaysVisible re-raises the IME whenever the window regains focus, which some
+        // devices do after the Home gesture settles, leaving a keyboard with no focused field.
+        // Hold the state as-is until Home is left; onStop restores the declared mode.
+        if (softInputModeBeforeDismiss == null) {
+            val mode = window.attributes.softInputMode
+            softInputModeBeforeDismiss = mode
+            window.setSoftInputMode(
+                (mode and WindowManager.LayoutParams.SOFT_INPUT_MASK_STATE.inv()) or
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED,
+            )
+        }
+        // The field must lose focus too, or the IME comes back with it.
         currentFocus?.clearFocus()
         WindowCompat.getInsetsController(window, window.decorView)
             .hide(WindowInsetsCompat.Type.ime())
