@@ -527,6 +527,12 @@ abstract class BasePreferences(
         const val KEY_HOME_DOUBLE_TAP_ACTION = "home_double_tap_action"
         const val KEY_HOME_DOUBLE_TAP_CUSTOM_ACTION = "home_double_tap_custom_action"
         const val KEY_HOME_DOUBLE_TAP_ALIAS_TARGET = "home_double_tap_alias_target"
+        const val KEY_HOME_TWO_FINGER_SWIPE_UP_ACTION = "home_two_finger_swipe_up_action"
+        const val KEY_HOME_TWO_FINGER_SWIPE_UP_CUSTOM_ACTION = "home_two_finger_swipe_up_custom_action"
+        const val KEY_HOME_TWO_FINGER_SWIPE_UP_ALIAS_TARGET = "home_two_finger_swipe_up_alias_target"
+        const val KEY_HOME_TWO_FINGER_SWIPE_DOWN_ACTION = "home_two_finger_swipe_down_action"
+        const val KEY_HOME_TWO_FINGER_SWIPE_DOWN_CUSTOM_ACTION = "home_two_finger_swipe_down_custom_action"
+        const val KEY_HOME_TWO_FINGER_SWIPE_DOWN_ALIAS_TARGET = "home_two_finger_swipe_down_alias_target"
 
         // App shortcut preferences keys
         const val KEY_PINNED_APP_SHORTCUTS = "pinned_app_shortcuts"

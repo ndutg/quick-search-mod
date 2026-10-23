@@ -114,7 +114,7 @@
     <string name="action_open_folder">Abrir pasta</string>
     <string name="action_open_keyboard">Abrir teclado</string>
     <string name="action_open_settings">Abrir configurações</string>
-    <string name="settings_gestures_title">Gestos</string>
+    <string name="settings_gestures_title">Gestos da tela inicial</string>
     <string name="settings_gestures_desc">Personalizar ações de deslizar</string>
     <string name="settings_gesture_swipe_right">Deslizar para a direita</string>
     <string name="settings_gesture_widget_panel">Painel de widgets</string>
@@ -122,14 +122,15 @@
     <string name="settings_gesture_swipe_left">Deslizar para a esquerda</string>
     <string name="settings_gesture_swipe_up">Deslizar para cima</string>
     <string name="settings_gesture_swipe_down">Deslizar para baixo</string>
-    <string name="settings_gesture_swipe_up_home">Deslizar para cima (Início)</string>
-    <string name="settings_gesture_swipe_down_home">Deslizar para baixo (Início)</string>
     <string name="settings_gesture_close_quick_search">Fechar o Quick Search</string>
-    <string name="settings_gesture_double_tap_home">Toque duplo (Início)</string>
+    <string name="settings_gesture_double_tap_home">Toque duplo</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">Deslizar com dois dedos para cima</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">Deslizar com dois dedos para baixo</string>
     <string name="settings_gesture_settings">Configurações</string>
     <string name="settings_gesture_close_keyboard_notifications">Fechar teclado / Abrir notificações</string>
     <string name="settings_gesture_close_keyboard">Fechar teclado</string>
     <string name="settings_gesture_notification_panel">Painel de notificações</string>
+    <string name="settings_gesture_quick_settings">Abrir configurações rápidas</string>
     <string name="settings_gesture_view_all_apps">Ver todos os apps</string>
     <string name="settings_gesture_lock_screen">Bloquear tela</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requer permissão de acessibilidade</string>
@@ -139,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">O Quick Search usa a Acessibilidade para:\n\n• Ativar o gesto de toque duplo para bloquear a tela.\n• Abrir o Quick Search com gestos de deslizar pela borda.\n• Abrir o Quick Search com o botão flutuante.\n\nEle não lê, coleta, armazena nem compartilha o conteúdo da tela ou outros dados pessoais.</string>
     <string name="settings_gesture_none">Nenhum</string>
     <string name="settings_gesture_custom">Personalizado (Apps, arquivos etc.)</string>
-    <string name="settings_keyboard_gestures_title">Gestos do teclado (Início)</string>
+    <string name="settings_keyboard_gestures_title">Gestos do teclado</string>
     <string name="settings_keyboard_gestures_desc">Funciona apenas quando não há conteúdo rolável na tela inicial</string>
     <string name="action_pin_app">Fixar</string>
     <string name="action_pin_to_notifications">Fixar nas notificações</string>

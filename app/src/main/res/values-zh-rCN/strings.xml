@@ -114,7 +114,7 @@
     <string name="action_open_folder">打开文件夹</string>
     <string name="action_open_keyboard">打开键盘</string>
     <string name="action_open_settings">打开设置</string>
-    <string name="settings_gestures_title">手势</string>
+    <string name="settings_gestures_title">主屏幕手势</string>
     <string name="settings_gestures_desc">自定义滑动手势</string>
     <string name="settings_gesture_swipe_right">向右滑动</string>
     <string name="settings_gesture_widget_panel">小部件面板</string>
@@ -122,14 +122,15 @@
     <string name="settings_gesture_swipe_left">向左滑动</string>
     <string name="settings_gesture_swipe_up">向上滑动</string>
     <string name="settings_gesture_swipe_down">向下滑动</string>
-    <string name="settings_gesture_swipe_up_home">向上滑动 (主屏幕)</string>
-    <string name="settings_gesture_swipe_down_home">向下滑动 (主屏幕)</string>
     <string name="settings_gesture_close_quick_search">关闭 Quick Search</string>
-    <string name="settings_gesture_double_tap_home">双击 (主屏幕)</string>
+    <string name="settings_gesture_double_tap_home">双击</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">双指向上滑动</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">双指向下滑动</string>
     <string name="settings_gesture_settings">设置</string>
     <string name="settings_gesture_close_keyboard_notifications">关闭键盘 / 打开通知</string>
     <string name="settings_gesture_close_keyboard">关闭键盘</string>
     <string name="settings_gesture_notification_panel">通知面板</string>
+    <string name="settings_gesture_quick_settings">打开快捷设置</string>
     <string name="settings_gesture_view_all_apps">查看所有应用</string>
     <string name="settings_gesture_lock_screen">锁定屏幕</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">需要无障碍权限</string>
@@ -139,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search 使用无障碍功能来：\n\n• 启用双击锁屏手势。\n• 使用边缘滑动手势打开 Quick Search。\n• 使用悬浮按钮打开 Quick Search。\n\n它不会读取、收集、存储或分享您的屏幕内容或其他个人数据。</string>
     <string name="settings_gesture_none">无</string>
     <string name="settings_gesture_custom">自定义 (应用、文件等)</string>
-    <string name="settings_keyboard_gestures_title">键盘手势 (主屏幕)</string>
+    <string name="settings_keyboard_gestures_title">键盘手势</string>
     <string name="settings_keyboard_gestures_desc">仅当主屏幕上没有可滚动内容时有效</string>
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">固定到通知</string>

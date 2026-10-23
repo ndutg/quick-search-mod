@@ -115,7 +115,7 @@
     <string name="action_open_folder">Buka Folder</string>
     <string name="action_open_keyboard">Buka Keyboard</string>
     <string name="action_open_settings">Buka pengaturan</string>
-    <string name="settings_gestures_title">Gestur</string>
+    <string name="settings_gestures_title">Gestur Layar Utama</string>
     <string name="settings_gestures_desc">Sesuaikan tindakan geser</string>
     <string name="settings_gesture_swipe_right">Geser ke Kanan</string>
     <string name="settings_gesture_widget_panel">Panel Widget</string>
@@ -123,14 +123,15 @@
     <string name="settings_gesture_swipe_left">Geser ke Kiri</string>
     <string name="settings_gesture_swipe_up">Geser ke Atas</string>
     <string name="settings_gesture_swipe_down">Geser ke Bawah</string>
-    <string name="settings_gesture_swipe_up_home">Geser ke Atas (Layar Utama)</string>
-    <string name="settings_gesture_swipe_down_home">Geser ke Bawah (Layar Utama)</string>
     <string name="settings_gesture_close_quick_search">Tutup Quick Search</string>
-    <string name="settings_gesture_double_tap_home">Ketuk Dua Kali (Layar Utama)</string>
+    <string name="settings_gesture_double_tap_home">Ketuk Dua Kali</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">Geser Dua Jari ke Atas</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">Geser Dua Jari ke Bawah</string>
     <string name="settings_gesture_settings">Pengaturan</string>
     <string name="settings_gesture_close_keyboard_notifications">Tutup Keyboard / Buka Notifikasi</string>
     <string name="settings_gesture_close_keyboard">Tutup Keyboard</string>
     <string name="settings_gesture_notification_panel">Panel Notifikasi</string>
+    <string name="settings_gesture_quick_settings">Buka Setelan Cepat</string>
     <string name="settings_gesture_view_all_apps">Lihat Semua Aplikasi</string>
     <string name="settings_gesture_lock_screen">Kunci Layar</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Memerlukan Izin Aksesibilitas</string>
@@ -140,7 +141,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search menggunakan Aksesibilitas untuk:\n\n• Mengaktifkan gestur ketuk dua kali untuk mengunci layar.\n• Membuka Quick Search dengan gestur geser dari tepi.\n• Membuka Quick Search dengan tombol mengambang.\n\nQuick Search tidak membaca, mengumpulkan, menyimpan, atau membagikan konten layar atau data pribadi lainnya.</string>
     <string name="settings_gesture_none">Tidak ada</string>
     <string name="settings_gesture_custom">Kustom (Aplikasi, File, dll.)</string>
-    <string name="settings_keyboard_gestures_title">Gestur Keyboard (Layar Utama)</string>
+    <string name="settings_keyboard_gestures_title">Gestur Keyboard</string>
     <string name="settings_keyboard_gestures_desc">Hanya berfungsi jika tidak ada konten yang dapat digulir di layar utama</string>
     <string name="action_pin_app">Sematkan</string>
     <string name="action_pin_to_notifications">Sematkan ke Notifikasi</string>

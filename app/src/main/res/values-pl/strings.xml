@@ -115,7 +115,7 @@
     <string name="action_open_folder">Otwórz folder</string>
     <string name="action_open_keyboard">Otwórz klawiaturę</string>
     <string name="action_open_settings">Otwórz ustawienia</string>
-    <string name="settings_gestures_title">Gesty</string>
+    <string name="settings_gestures_title">Gesty ekranu głównego</string>
     <string name="settings_gestures_desc">Dostosuj gesty przesunięcia</string>
     <string name="settings_gesture_swipe_right">Przesunięcie w prawo</string>
     <string name="settings_gesture_widget_panel">Panel widżetów</string>
@@ -123,14 +123,15 @@
     <string name="settings_gesture_swipe_left">Przesunięcie w lewo</string>
     <string name="settings_gesture_swipe_up">Przesunięcie w górę</string>
     <string name="settings_gesture_swipe_down">Przesunięcie w dół</string>
-    <string name="settings_gesture_swipe_up_home">Przesunięcie w górę (Ekran główny)</string>
-    <string name="settings_gesture_swipe_down_home">Przesunięcie w dół (Ekran główny)</string>
     <string name="settings_gesture_close_quick_search">Zamknij Quick Search</string>
-    <string name="settings_gesture_double_tap_home">Dwukrotne dotknięcie (Ekran główny)</string>
+    <string name="settings_gesture_double_tap_home">Dwukrotne dotknięcie</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">Przesunięcie dwoma palcami w górę</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">Przesunięcie dwoma palcami w dół</string>
     <string name="settings_gesture_settings">Ustawienia</string>
     <string name="settings_gesture_close_keyboard_notifications">Zamknij klawiaturę / Otwórz powiadomienia</string>
     <string name="settings_gesture_close_keyboard">Zamknij klawiaturę</string>
     <string name="settings_gesture_notification_panel">Panel powiadomień</string>
+    <string name="settings_gesture_quick_settings">Otwórz szybkie ustawienia</string>
     <string name="settings_gesture_view_all_apps">Pokaż wszystkie aplikacje</string>
     <string name="settings_gesture_lock_screen">Zablokuj ekran</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Wymaga uprawnienia ułatwień dostępu</string>
@@ -140,7 +141,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search używa ułatwień dostępu, aby:\n\n• włączyć gest dwukrotnego dotknięcia do blokowania ekranu.\n• otwierać Quick Search gestami przesunięcia od krawędzi.\n• otwierać Quick Search pływającym przyciskiem.\n\nNie odczytuje, nie gromadzi, nie przechowuje ani nie udostępnia zawartości ekranu ani innych danych osobowych.</string>
     <string name="settings_gesture_none">Brak</string>
     <string name="settings_gesture_custom">Własne (Aplikacje, Pliki itp.)</string>
-    <string name="settings_keyboard_gestures_title">Gesty klawiatury (Ekran główny)</string>
+    <string name="settings_keyboard_gestures_title">Gesty klawiatury</string>
     <string name="settings_keyboard_gestures_desc">Działa tylko wtedy, gdy na ekranie głównym nie ma przewijanej zawartości</string>
     <string name="action_pin_app">Przypnij</string>
     <string name="action_pin_to_notifications">Przypnij do powiadomień</string>

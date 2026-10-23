@@ -36,6 +36,8 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.GESTURE_SWIPE_UP,
         AppSettingsDestination.GESTURE_SWIPE_DOWN,
         AppSettingsDestination.GESTURE_DOUBLE_TAP,
+        AppSettingsDestination.GESTURE_TWO_FINGER_SWIPE_UP,
+        AppSettingsDestination.GESTURE_TWO_FINGER_SWIPE_DOWN,
         AppSettingsDestination.GESTURE_OPEN_KEYBOARD,
         AppSettingsDestination.GESTURE_CLOSE_KEYBOARD -> SettingsDetailType.GESTURES
         AppSettingsDestination.FEATURES_LIST -> SettingsDetailType.FEATURES_LIST

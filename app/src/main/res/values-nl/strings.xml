@@ -118,7 +118,7 @@
     <string name="action_open_folder">Map openen</string>
     <string name="action_open_keyboard">Toetsenbord openen</string>
     <string name="action_open_settings">Instellingen openen</string>
-    <string name="settings_gestures_title">Gebaren</string>
+    <string name="settings_gestures_title">Startgebaren</string>
     <string name="settings_gestures_desc">Veegacties aanpassen</string>
     <string name="settings_gesture_swipe_right">Naar rechts vegen</string>
     <string name="settings_gesture_widget_panel">Widgetpaneel</string>
@@ -126,14 +126,15 @@
     <string name="settings_gesture_swipe_left">Naar links vegen</string>
     <string name="settings_gesture_swipe_up">Omhoog vegen</string>
     <string name="settings_gesture_swipe_down">Omlaag vegen</string>
-    <string name="settings_gesture_swipe_up_home">Omhoog vegen (Start)</string>
-    <string name="settings_gesture_swipe_down_home">Omlaag vegen (Start)</string>
     <string name="settings_gesture_close_quick_search">Quick Search sluiten</string>
-    <string name="settings_gesture_double_tap_home">Dubbeltikken (Start)</string>
+    <string name="settings_gesture_double_tap_home">Dubbeltikken</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">Met twee vingers omhoog vegen</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">Met twee vingers omlaag vegen</string>
     <string name="settings_gesture_settings">Instellingen</string>
     <string name="settings_gesture_close_keyboard_notifications">Toetsenbord sluiten / Meldingen openen</string>
     <string name="settings_gesture_close_keyboard">Toetsenbord sluiten</string>
     <string name="settings_gesture_notification_panel">Meldingenpaneel</string>
+    <string name="settings_gesture_quick_settings">Snelle instellingen openen</string>
     <string name="settings_gesture_view_all_apps">Alle apps bekijken</string>
     <string name="settings_gesture_lock_screen">Scherm vergrendelen</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Vereist toegankelijkheidsmachtiging</string>
@@ -143,7 +144,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search gebruikt Toegankelijkheid om:\n\n• de dubbeltikbeweging om het scherm te vergrendelen in te schakelen.\n• Quick Search te openen met veegbewegingen vanaf de rand.\n• Quick Search te openen met de zwevende knop.\n\nHet leest, verzamelt, bewaart of deelt je scherminhoud of andere persoonlijke gegevens niet.</string>
     <string name="settings_gesture_none">Geen</string>
     <string name="settings_gesture_custom">Aangepast (Apps, bestanden enz.)</string>
-    <string name="settings_keyboard_gestures_title">Toetsenbordgebaren (Start)</string>
+    <string name="settings_keyboard_gestures_title">Toetsenbordgebaren</string>
     <string name="settings_keyboard_gestures_desc">Werkt alleen als er geen scrollbare inhoud op het startscherm is</string>
     <string name="action_pin_app">Vastmaken</string>
     <string name="action_pin_to_notifications">Vastmaken aan meldingen</string>

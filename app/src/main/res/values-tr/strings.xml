@@ -113,7 +113,7 @@
 <string name="action_open_folder">Klasörü aç</string>
 <string name="action_open_keyboard">Klavyeyi aç</string>
 <string name="action_open_settings">Ayarları aç</string>
-<string name="settings_gestures_title">Hareketler</string>
+<string name="settings_gestures_title">Ana Ekran Hareketleri</string>
 <string name="settings_gestures_desc">Kaydırma işlemlerini özelleştir</string>
 <string name="settings_gesture_swipe_right">Sağa Kaydır</string>
 <string name="settings_gesture_widget_panel">Widget Paneli</string>
@@ -121,14 +121,15 @@
 <string name="settings_gesture_swipe_left">Sola Kaydır</string>
 <string name="settings_gesture_swipe_up">Yukarı Kaydır</string>
 <string name="settings_gesture_swipe_down">Aşağı Kaydır</string>
-<string name="settings_gesture_swipe_up_home">Yukarı Kaydır (Ana Ekran)</string>
-<string name="settings_gesture_swipe_down_home">Aşağı Kaydır (Ana Ekran)</string>
 <string name="settings_gesture_close_quick_search">Quick Search\'i kapat</string>
-<string name="settings_gesture_double_tap_home">Çift Dokunma (Ana Ekran)</string>
+<string name="settings_gesture_double_tap_home">Çift Dokunma</string>
+<string name="settings_gesture_two_finger_swipe_up_home">İki Parmakla Yukarı Kaydır</string>
+<string name="settings_gesture_two_finger_swipe_down_home">İki Parmakla Aşağı Kaydır</string>
 <string name="settings_gesture_settings">Ayarlar</string>
 <string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
+<string name="settings_gesture_quick_settings">Hızlı Ayarları Aç</string>
 <string name="settings_gesture_view_all_apps">Tüm uygulamaları görüntüle</string>
 <string name="settings_gesture_lock_screen">Ekranı Kilitle</string>
 <string name="settings_gesture_lock_screen_requires_accessibility">Erişilebilirlik İzni Gerekir</string>
@@ -138,7 +139,7 @@
 <string name="accessibility_lock_screen_disclosure_message">Quick Search Erişilebilirlik’i şunlar için kullanır:\n\n• Ekranı kilitlemek için çift dokunma hareketini etkinleştirmek.\n• Kenardan kaydırma hareketleriyle Quick Search’ü açmak.\n• Kayan düğmeyle Quick Search’ü açmak.\n\nEkran içeriğinizi veya diğer kişisel verilerinizi okumaz, toplamaz, saklamaz ya da paylaşmaz.</string>
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
-<string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
+<string name="settings_keyboard_gestures_title">Klavye Hareketleri</string>
 <string name="settings_keyboard_gestures_desc">Yalnızca ana ekranda kaydırılabilir içerik olmadığında çalışır</string>
 <string name="action_pin_app">Sabitle</string>
     <string name="action_pin_to_notifications">Bildirimlere sabitle</string>

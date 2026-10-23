@@ -114,7 +114,7 @@
 <string name="action_open_folder">Открыть папку</string>
 <string name="action_open_keyboard">Открыть клавиатуру</string>
 <string name="action_open_settings">Открыть настройки</string>
-<string name="settings_gestures_title">Жесты</string>
+<string name="settings_gestures_title">Жесты главного экрана</string>
 <string name="settings_gestures_desc">Настройка жестов смахивания</string>
 <string name="settings_gesture_swipe_right">Смахивание вправо</string>
 <string name="settings_gesture_widget_panel">Панель виджетов</string>
@@ -122,14 +122,15 @@
 <string name="settings_gesture_swipe_left">Смахивание влево</string>
 <string name="settings_gesture_swipe_up">Смахивание вверх</string>
 <string name="settings_gesture_swipe_down">Смахивание вниз</string>
-<string name="settings_gesture_swipe_up_home">Смахивание вверх (Главный экран)</string>
-<string name="settings_gesture_swipe_down_home">Смахивание вниз (Главный экран)</string>
 <string name="settings_gesture_close_quick_search">Закрыть Quick Search</string>
-<string name="settings_gesture_double_tap_home">Двойное нажатие (Главный экран)</string>
+<string name="settings_gesture_double_tap_home">Двойное нажатие</string>
+<string name="settings_gesture_two_finger_swipe_up_home">Смахивание двумя пальцами вверх</string>
+<string name="settings_gesture_two_finger_swipe_down_home">Смахивание двумя пальцами вниз</string>
 <string name="settings_gesture_settings">Настройки</string>
 <string name="settings_gesture_close_keyboard_notifications">Закрыть клавиатуру / Открыть уведомления</string>
 <string name="settings_gesture_close_keyboard">Закрыть клавиатуру</string>
 <string name="settings_gesture_notification_panel">Панель уведомлений</string>
+<string name="settings_gesture_quick_settings">Открыть быстрые настройки</string>
 <string name="settings_gesture_view_all_apps">Показать все приложения</string>
 <string name="settings_gesture_lock_screen">Заблокировать экран</string>
 <string name="settings_gesture_lock_screen_requires_accessibility">Требуется разрешение специальных возможностей</string>
@@ -139,7 +140,7 @@
 <string name="accessibility_lock_screen_disclosure_message">Quick Search использует специальные возможности, чтобы:\n\n• Включать жест двойного нажатия для блокировки экрана.\n• Открывать Quick Search жестами смахивания от края.\n• Открывать Quick Search с помощью плавающей кнопки.\n\nОн не читает, не собирает, не хранит и не передает содержимое экрана или другие персональные данные.</string>
 <string name="settings_gesture_none">Нет</string>
 <string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
-<string name="settings_keyboard_gestures_title">Жесты клавиатуры (Главный экран)</string>
+<string name="settings_keyboard_gestures_title">Жесты клавиатуры</string>
 <string name="settings_keyboard_gestures_desc">Работает, только когда на главном экране нет прокручиваемого содержимого</string>
 <string name="action_pin_app">Закрепить</string>
 <string name="action_pin_to_notifications">Закрепить в уведомлениях</string>

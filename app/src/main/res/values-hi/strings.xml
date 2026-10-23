@@ -114,7 +114,7 @@
     <string name="action_open_folder">फोल्डर खोलें</string>
     <string name="action_open_keyboard">कीबोर्ड खोलें</string>
     <string name="action_open_settings">सेटिंग्स खोलें</string>
-    <string name="settings_gestures_title">जेस्चर</string>
+    <string name="settings_gestures_title">होम जेस्चर</string>
     <string name="settings_gestures_desc">स्वाइप क्रियाओं को कस्टमाइज़ करें</string>
     <string name="settings_gesture_swipe_right">दाएँ स्वाइप करें</string>
     <string name="settings_gesture_widget_panel">विजेट पैनल</string>
@@ -122,14 +122,15 @@
     <string name="settings_gesture_swipe_left">बाएँ स्वाइप करें</string>
     <string name="settings_gesture_swipe_up">ऊपर स्वाइप करें</string>
     <string name="settings_gesture_swipe_down">नीचे स्वाइप करें</string>
-    <string name="settings_gesture_swipe_up_home">ऊपर स्वाइप करें (होम)</string>
-<string name="settings_gesture_swipe_down_home">नीचे स्वाइप करें (होम)</string>
 <string name="settings_gesture_close_quick_search">Quick Search बंद करें</string>
-<string name="settings_gesture_double_tap_home">डबल टैप (होम)</string>
+<string name="settings_gesture_double_tap_home">डबल टैप</string>
+<string name="settings_gesture_two_finger_swipe_up_home">दो उंगलियों से ऊपर स्वाइप करें</string>
+<string name="settings_gesture_two_finger_swipe_down_home">दो उंगलियों से नीचे स्वाइप करें</string>
     <string name="settings_gesture_settings">सेटिंग्स</string>
     <string name="settings_gesture_close_keyboard_notifications">कीबोर्ड बंद करें / नोटिफिकेशन खोलें</string>
     <string name="settings_gesture_close_keyboard">कीबोर्ड बंद करें</string>
     <string name="settings_gesture_notification_panel">नोटिफिकेशन पैनल</string>
+    <string name="settings_gesture_quick_settings">क्विक सेटिंग्स खोलें</string>
     <string name="settings_gesture_view_all_apps">सभी ऐप्स देखें</string>
     <string name="settings_gesture_lock_screen">स्क्रीन लॉक करें</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">सुलभता अनुमति आवश्यक है</string>
@@ -139,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search Accessibility का उपयोग इन कामों के लिए करता है:\n\n• स्क्रीन लॉक करने के लिए डबल-टैप जेस्चर सक्षम करने के लिए।\n• किनारे से स्वाइप जेस्चर से Quick Search खोलने के लिए।\n• फ़्लोटिंग बटन से Quick Search खोलने के लिए।\n\nयह आपकी स्क्रीन सामग्री या अन्य निजी डेटा को पढ़ता, एकत्र करता, संग्रहीत या साझा नहीं करता है।</string>
     <string name="settings_gesture_none">कोई नहीं</string>
     <string name="settings_gesture_custom">कस्टम (ऐप्स, फ़ाइलें आदि)</string>
-    <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर (होम)</string>
+    <string name="settings_keyboard_gestures_title">कीबोर्ड जेस्चर</string>
     <string name="settings_keyboard_gestures_desc">केवल तब काम करता है जब होम स्क्रीन पर स्क्रॉल करने योग्य सामग्री न हो</string>
     <string name="action_pin_app">पिन करें</string>
     <string name="action_pin_to_notifications">सूचनाओं में पिन करें</string>

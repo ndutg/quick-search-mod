@@ -115,7 +115,7 @@
     <string name="action_open_folder">فتح المجلد</string>
     <string name="action_open_keyboard">فتح لوحة المفاتيح</string>
     <string name="action_open_settings">فتح الإعدادات</string>
-    <string name="settings_gestures_title">الإيماءات</string>
+    <string name="settings_gestures_title">إيماءات الشاشة الرئيسية</string>
     <string name="settings_gestures_desc">تخصيص إجراءات السحب</string>
     <string name="settings_gesture_swipe_right">السحب لليمين</string>
     <string name="settings_gesture_widget_panel">لوحة عناصر واجهة المستخدم</string>
@@ -123,14 +123,15 @@
     <string name="settings_gesture_swipe_left">السحب لليسار</string>
     <string name="settings_gesture_swipe_up">السحب للأعلى</string>
     <string name="settings_gesture_swipe_down">السحب للأسفل</string>
-    <string name="settings_gesture_swipe_up_home">السحب للأعلى (الرئيسية)</string>
-<string name="settings_gesture_swipe_down_home">السحب للأسفل (الرئيسية)</string>
 <string name="settings_gesture_close_quick_search">إغلاق البحث السريع</string>
-<string name="settings_gesture_double_tap_home">النقر المزدوج (الرئيسية)</string>
+<string name="settings_gesture_double_tap_home">النقر المزدوج</string>
+<string name="settings_gesture_two_finger_swipe_up_home">السحب بإصبعين للأعلى</string>
+<string name="settings_gesture_two_finger_swipe_down_home">السحب بإصبعين للأسفل</string>
     <string name="settings_gesture_settings">الإعدادات</string>
     <string name="settings_gesture_close_keyboard_notifications">إغلاق لوحة المفاتيح / فتح الإشعارات</string>
     <string name="settings_gesture_close_keyboard">إغلاق لوحة المفاتيح</string>
     <string name="settings_gesture_notification_panel">لوحة الإشعارات</string>
+    <string name="settings_gesture_quick_settings">فتح الإعدادات السريعة</string>
     <string name="settings_gesture_view_all_apps">عرض جميع التطبيقات</string>
     <string name="settings_gesture_lock_screen">قفل الشاشة</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">يتطلب إذن تسهيل الاستخدام</string>
@@ -140,7 +141,7 @@
     <string name="accessibility_lock_screen_disclosure_message">يستخدم Quick Search ميزة إمكانية الوصول من أجل:\n\n• تفعيل إيماءة النقر المزدوج لقفل الشاشة.\n• فتح Quick Search باستخدام إيماءات السحب من الحافة.\n• فتح Quick Search باستخدام الزر العائم.\n\nلا يقرأ محتوى شاشتك أو بياناتك الشخصية الأخرى ولا يجمعها أو يخزنها أو يشاركها.</string>
     <string name="settings_gesture_none">بلا</string>
     <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
-    <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح (الرئيسية)</string>
+    <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح</string>
     <string name="settings_keyboard_gestures_desc">يعمل فقط عندما لا يوجد محتوى قابل للتمرير على الشاشة الرئيسية</string>
     <string name="action_pin_app">تثبيت</string>
     <string name="action_pin_to_notifications">تثبيت في الإشعارات</string>

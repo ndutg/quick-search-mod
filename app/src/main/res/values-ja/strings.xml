@@ -115,7 +115,7 @@
     <string name="action_open_folder">フォルダを開く</string>
     <string name="action_open_keyboard">キーボードを開く</string>
     <string name="action_open_settings">設定を開く</string>
-    <string name="settings_gestures_title">ジェスチャー</string>
+    <string name="settings_gestures_title">ホームジェスチャー</string>
     <string name="settings_gestures_desc">スワイプ操作をカスタマイズ</string>
     <string name="settings_gesture_swipe_right">右にスワイプ</string>
     <string name="settings_gesture_widget_panel">ウィジェットパネル</string>
@@ -123,14 +123,15 @@
     <string name="settings_gesture_swipe_left">左にスワイプ</string>
     <string name="settings_gesture_swipe_up">上にスワイプ</string>
     <string name="settings_gesture_swipe_down">下にスワイプ</string>
-    <string name="settings_gesture_swipe_up_home">上にスワイプ（ホーム）</string>
-    <string name="settings_gesture_swipe_down_home">下にスワイプ（ホーム）</string>
     <string name="settings_gesture_close_quick_search">Quick Searchを閉じる</string>
-    <string name="settings_gesture_double_tap_home">ダブルタップ（ホーム）</string>
+    <string name="settings_gesture_double_tap_home">ダブルタップ</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">2本指で上にスワイプ</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">2本指で下にスワイプ</string>
     <string name="settings_gesture_settings">設定</string>
     <string name="settings_gesture_close_keyboard_notifications">キーボードを閉じる / 通知を開く</string>
     <string name="settings_gesture_close_keyboard">キーボードを閉じる</string>
     <string name="settings_gesture_notification_panel">通知パネル</string>
+    <string name="settings_gesture_quick_settings">クイック設定を開く</string>
     <string name="settings_gesture_view_all_apps">すべてのアプリを表示</string>
     <string name="settings_gesture_lock_screen">画面をロック</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">ユーザー補助の権限が必要です</string>
@@ -140,7 +141,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search は、ユーザー補助機能を次の目的で使用します。\n\n• 画面をロックするダブルタップジェスチャーを有効にする。\n• 端からのスワイプジェスチャーで Quick Search を開く。\n• フローティングボタンで Quick Search を開く。\n\n画面の内容やその他の個人データを読み取り、収集、保存、共有することはありません。</string>
     <string name="settings_gesture_none">なし</string>
     <string name="settings_gesture_custom">カスタム（アプリ、ファイルなど）</string>
-    <string name="settings_keyboard_gestures_title">キーボードジェスチャー（ホーム）</string>
+    <string name="settings_keyboard_gestures_title">キーボードジェスチャー</string>
     <string name="settings_keyboard_gestures_desc">ホーム画面にスクロール可能なコンテンツがない場合のみ動作します</string>
     <string name="action_pin_app">固定</string>
     <string name="action_pin_to_notifications">通知に固定</string>

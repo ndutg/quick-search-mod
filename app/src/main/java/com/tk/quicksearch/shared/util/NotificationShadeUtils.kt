@@ -11,3 +11,12 @@ fun Context.openNotificationShade(): Boolean =
             .invoke(statusBarManager)
         true
     }.getOrDefault(false)
+
+fun Context.openQuickSettings(): Boolean =
+    runCatching {
+        val statusBarManager = getSystemService(StatusBarManager::class.java) ?: return false
+        StatusBarManager::class.java
+            .getMethod("expandSettingsPanel")
+            .invoke(statusBarManager)
+        true
+    }.getOrDefault(false)
