@@ -2,7 +2,7 @@
 
 This document highlights all the available features. It also includes details about hidden or non-obvious features that you might miss. Sections from **Overlay Mode** onward follow the order of the Settings screen (Tools settings are covered in the **Tools** section above).
 
-**Version**: 4.6 (Updated September 29, 2026)
+**Version**: 4.8 (Updated October 23, 2026)
 
 ### Search
 
