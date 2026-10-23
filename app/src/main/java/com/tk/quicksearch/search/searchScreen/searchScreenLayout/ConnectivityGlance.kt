@@ -51,7 +51,7 @@ internal class WifiSignInGlance(
 )
 
 /** Process-wide so a dismissal survives home being left and recomposed; cleared once signed in. */
-private object WifiSignInDismissal {
+internal object WifiSignInDismissal {
     var dismissed by mutableStateOf(false)
 }
 
@@ -78,18 +78,18 @@ internal fun rememberAirplaneModeGlance(enabled: Boolean): AirplaneModeGlance? {
     }
 
     if (!isOn) return null
-    return AirplaneModeGlance(
-        onClick = {
-            openFirstAvailable(
-                context,
-                Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS),
-                Intent(Settings.ACTION_WIRELESS_SETTINGS),
-            )
-        },
+    return AirplaneModeGlance(onClick = { openAirplaneModeSettings(context) })
+}
+
+internal fun openAirplaneModeSettings(context: Context) {
+    openFirstAvailable(
+        context,
+        Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS),
+        Intent(Settings.ACTION_WIRELESS_SETTINGS),
     )
 }
 
-private fun isAirplaneModeOn(context: Context): Boolean =
+internal fun isAirplaneModeOn(context: Context): Boolean =
     runCatching {
         Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
     }.getOrDefault(false)
@@ -136,14 +136,14 @@ internal fun rememberHotspotGlance(enabled: Boolean): HotspotGlance? {
     }
 
     if (!isOn) return null
-    return HotspotGlance(
-        onClick = {
-            openFirstAvailable(
-                context,
-                Intent(ACTION_TETHER_SETTINGS),
-                Intent(Settings.ACTION_WIRELESS_SETTINGS),
-            )
-        },
+    return HotspotGlance(onClick = { openHotspotSettings(context) })
+}
+
+internal fun openHotspotSettings(context: Context) {
+    openFirstAvailable(
+        context,
+        Intent(ACTION_TETHER_SETTINGS),
+        Intent(Settings.ACTION_WIRELESS_SETTINGS),
     )
 }
 
@@ -220,24 +220,27 @@ internal fun rememberWifiSignInGlance(enabled: Boolean): WifiSignInGlance? {
 
     if (!needsSignIn || WifiSignInDismissal.dismissed) return null
     return WifiSignInGlance(
-        onClick = {
-            val wifiIntents =
-                listOfNotNull(
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Intent(Settings.Panel.ACTION_WIFI) else null,
-                    Intent(Settings.ACTION_WIFI_SETTINGS),
-                )
-            openFirstAvailable(context, *wifiIntents.toTypedArray())
-        },
+        onClick = { openWifiPanel(context) },
         dismiss = { WifiSignInDismissal.dismissed = true },
     )
 }
 
-private fun needsCaptivePortalSignIn(capabilities: NetworkCapabilities?): Boolean =
+/** The Wi-Fi panel, where the system offers a network's sign-in page. */
+internal fun openWifiPanel(context: Context) {
+    val wifiIntents =
+        listOfNotNull(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Intent(Settings.Panel.ACTION_WIFI) else null,
+            Intent(Settings.ACTION_WIFI_SETTINGS),
+        )
+    openFirstAvailable(context, *wifiIntents.toTypedArray())
+}
+
+internal fun needsCaptivePortalSignIn(capabilities: NetworkCapabilities?): Boolean =
     capabilities != null &&
         capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
         capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)
 
-private fun isHotspotOn(
+internal fun isHotspotOn(
     context: Context,
     stateIntent: Intent?,
 ): Boolean {
@@ -259,7 +262,7 @@ private fun registerSystemReceiver(
     }.isSuccess
 
 /** The hotspot state broadcast, its state extra and enabled value; hidden [WifiManager] constants. */
-private const val ACTION_WIFI_AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED"
+internal const val ACTION_WIFI_AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED"
 private const val EXTRA_WIFI_AP_STATE = "wifi_state"
 private const val WIFI_AP_STATE_ENABLED = 13
 

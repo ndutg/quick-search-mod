@@ -87,12 +87,12 @@ internal fun rememberDoNotDisturbGlance(enabled: Boolean): DoNotDisturbGlance? {
     )
 }
 
-private fun isDoNotDisturbOn(filter: Int) =
+internal fun isDoNotDisturbOn(filter: Int) =
     filter == NotificationManager.INTERRUPTION_FILTER_PRIORITY ||
         filter == NotificationManager.INTERRUPTION_FILTER_ALARMS ||
         filter == NotificationManager.INTERRUPTION_FILTER_NONE
 
-private fun openDoNotDisturbSettings(context: Context) {
+internal fun openDoNotDisturbSettings(context: Context) {
     openFirstAvailable(
         context,
         Intent(ACTION_ZEN_MODE_SETTINGS),

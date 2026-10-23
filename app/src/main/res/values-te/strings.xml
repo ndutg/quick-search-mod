@@ -1157,6 +1157,10 @@
     <string name="widget_note_picker_title">నోట్‌ను ఎంచుకోండి</string>
     <string name="widget_note_deleted">నోట్ కనుగొనబడలేదు. మరొకదాన్ని ఎంచుకోవడానికి నొక్కండి.</string>
     <string name="widget_countdown_widget_title">కౌంట్‌డౌన్ విడ్జెట్</string>
+    <string name="widget_at_a_glance_widget_title">ఒక్క చూపులో విడ్జెట్</string>
+    <string name="widget_at_a_glance_sample_alarm">రేపు, ఉదయం 7:00</string>
+    <string name="widget_at_a_glance_sample_birthday">అలెక్స్ పుట్టినరోజు</string>
+    <string name="widget_at_a_glance_sample_caller">అమ్మ</string>
     <string name="widget_countdown_date">తేదీ</string>
     <string name="widget_countdown_format_days">రోజులు</string>
     <string name="widget_countdown_format_weeks">వారాలు</string>

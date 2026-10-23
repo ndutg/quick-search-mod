@@ -1157,6 +1157,10 @@
     <string name="widget_note_picker_title">Seleccionar nota</string>
     <string name="widget_note_deleted">No se encontró la nota. Toca para elegir otra.</string>
     <string name="widget_countdown_widget_title">Widget de cuenta regresiva</string>
+    <string name="widget_at_a_glance_widget_title">Widget De un vistazo</string>
+    <string name="widget_at_a_glance_sample_alarm">Mañana, 7:00</string>
+    <string name="widget_at_a_glance_sample_birthday">Cumpleaños de Alex</string>
+    <string name="widget_at_a_glance_sample_caller">Mamá</string>
     <string name="widget_countdown_date">Fecha</string>
     <string name="widget_countdown_format_days">Días</string>
     <string name="widget_countdown_format_weeks">Semanas</string>

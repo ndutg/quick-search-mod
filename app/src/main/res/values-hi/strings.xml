@@ -1157,6 +1157,10 @@
     <string name="widget_note_picker_title">नोट चुनें</string>
     <string name="widget_note_deleted">नोट नहीं मिला। दूसरा चुनने के लिए टैप करें।</string>
     <string name="widget_countdown_widget_title">काउंटडाउन विजेट</string>
+    <string name="widget_at_a_glance_widget_title">एक नज़र में विजेट</string>
+    <string name="widget_at_a_glance_sample_alarm">कल, सुबह 7:00</string>
+    <string name="widget_at_a_glance_sample_birthday">एलेक्स का जन्मदिन</string>
+    <string name="widget_at_a_glance_sample_caller">माँ</string>
     <string name="widget_countdown_date">तारीख</string>
     <string name="widget_countdown_format_days">दिन</string>
     <string name="widget_countdown_format_weeks">सप्ताह</string>

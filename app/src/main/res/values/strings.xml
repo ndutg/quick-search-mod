@@ -1166,6 +1166,10 @@
     <string name="widget_note_picker_title">Select Note</string>
     <string name="widget_note_deleted">Note not found. Tap to choose another.</string>
     <string name="widget_countdown_widget_title">Countdown Widget</string>
+    <string name="widget_at_a_glance_widget_title">At a Glance Widget</string>
+    <string name="widget_at_a_glance_sample_alarm">Tomorrow, 7:00 AM</string>
+    <string name="widget_at_a_glance_sample_birthday">Alex\'s birthday</string>
+    <string name="widget_at_a_glance_sample_caller">Mom</string>
     <string name="widget_countdown_date">Date</string>
     <string name="widget_countdown_format_days">Days</string>
     <string name="widget_countdown_format_weeks">Weeks</string>

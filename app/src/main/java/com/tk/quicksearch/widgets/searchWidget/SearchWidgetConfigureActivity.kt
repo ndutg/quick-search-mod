@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -39,9 +40,11 @@ import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.widgets.widgetConfigScreen.WidgetConfigScreen
 import com.tk.quicksearch.widgets.mediaControlsWidget.rememberMediaControlsAccess
+import com.tk.quicksearch.widgets.utils.launcherWidgetContentScale
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetTheme
 import com.tk.quicksearch.widgets.utils.WidgetVariant
+import com.tk.quicksearch.widgets.utils.hasStoredWidgetConfig
 import com.tk.quicksearch.widgets.utils.applyWidgetPreferences
 import com.tk.quicksearch.widgets.countdownWidget.CountdownWidgetConfigContent
 import com.tk.quicksearch.widgets.countdownWidget.CountdownWidgetReceiver
@@ -49,6 +52,7 @@ import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceive
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetPickerScreen
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetReceiver
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetReceiver
 import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.glanceWidgetFor
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
@@ -178,7 +182,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
             )
         return LoadedWidgetPreferences(
             preferences = prefs.toWidgetPreferences(this@SearchWidgetConfigureActivity).enforceVariantConstraints(widgetVariant),
-            hasStoredConfig = prefs.asMap().isNotEmpty(),
+            hasStoredConfig = prefs.hasStoredWidgetConfig(),
         )
     }
 
@@ -209,6 +213,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
             CustomButtonsWidgetReceiver::class.java.name -> WidgetVariant.CUSTOM_BUTTONS_ONLY
             MediaControlsWidgetReceiver::class.java.name -> WidgetVariant.MEDIA_CONTROLS
             NoteWidgetReceiver::class.java.name -> WidgetVariant.NOTE
+            AtAGlanceWidgetReceiver::class.java.name -> WidgetVariant.AT_A_GLANCE
             else -> WidgetVariant.STANDARD
         }
     }
@@ -246,9 +251,11 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(appWidgetId, deviceThemeEnabled, useDarkThemeForDeviceTheme) {
-            // The note widget ignores the app theme, so reloading on a theme change would only
+            // The note and At a Glance widgets ignore the app theme, so reloading on a theme change would only
             // discard the note the user just picked.
-            if (widgetVariant == WidgetVariant.NOTE && isLoaded) return@LaunchedEffect
+            if ((widgetVariant == WidgetVariant.NOTE || widgetVariant == WidgetVariant.AT_A_GLANCE) && isLoaded) {
+                return@LaunchedEffect
+            }
             val loaded = loadWidgetPreferences(appWidgetId)
             config = loaded.preferences
             if (widgetVariant == WidgetVariant.NOTE) {
@@ -258,6 +265,8 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                 showNotePicker =
                     noteId == null ||
                     withContext(Dispatchers.IO) { NotesRoomStore(this@SearchWidgetConfigureActivity).getById(noteId) } == null
+            } else if (!loaded.hasStoredConfig && widgetVariant == WidgetVariant.AT_A_GLANCE) {
+                config = config.withNoteWidgetDefaults()
             } else if (!loaded.hasStoredConfig && widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
                 config = config.copy(theme = WidgetTheme.DARK, backgroundColor = null)
             } else if (!loaded.hasStoredConfig && deviceThemeEnabled) {
@@ -290,6 +299,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
 
         WidgetConfigScreen(
             state = config,
+            launcherContentScale = remember(appWidgetId) { launcherWidgetContentScale(this, appWidgetId) },
             showDeviceThemeOption = deviceThemeEnabled,
             isLoaded = isLoaded,
             isSaveEnabled =
@@ -319,6 +329,7 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                     WidgetVariant.CUSTOM_BUTTONS_ONLY -> R.string.widget_custom_buttons_widget_title
                     WidgetVariant.MEDIA_CONTROLS -> R.string.widget_media_controls_widget_title
                     WidgetVariant.NOTE -> R.string.widget_note_widget_title
+                    WidgetVariant.AT_A_GLANCE -> R.string.widget_at_a_glance_widget_title
                     WidgetVariant.STANDARD -> R.string.widget_settings_title
                 },
             onChangeNote = { showNotePicker = true },

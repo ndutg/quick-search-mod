@@ -1157,6 +1157,10 @@
     <string name="widget_note_picker_title">Επιλογή σημείωσης</string>
     <string name="widget_note_deleted">Η σημείωση δεν βρέθηκε. Πατήστε για να επιλέξετε άλλη.</string>
     <string name="widget_countdown_widget_title">Γραφικό στοιχείο αντίστροφης μέτρησης</string>
+    <string name="widget_at_a_glance_widget_title">Γραφικό στοιχείο Με μια ματιά</string>
+    <string name="widget_at_a_glance_sample_alarm">Αύριο, 7:00 π.μ.</string>
+    <string name="widget_at_a_glance_sample_birthday">Γενέθλια: Άλεξ</string>
+    <string name="widget_at_a_glance_sample_caller">Μαμά</string>
     <string name="widget_countdown_date">Ημερομηνία</string>
     <string name="widget_countdown_format_days">Ημέρες</string>
     <string name="widget_countdown_format_weeks">Εβδομάδες</string>

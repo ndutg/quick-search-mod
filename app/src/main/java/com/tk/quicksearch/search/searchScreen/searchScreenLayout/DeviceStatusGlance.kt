@@ -88,7 +88,7 @@ internal fun ChargingRow(glance: ChargingGlance) {
 }
 
 /** Hours and minutes in the locale's short unit style, such as "1 hr, 5 min". */
-private fun formatShortDuration(millis: Long): String {
+internal fun formatShortDuration(millis: Long): String {
     val totalMinutes = TimeUnit.MILLISECONDS.toMinutes(millis).coerceAtLeast(1)
     val hours = totalMinutes / 60
     val minutes = totalMinutes % 60
@@ -133,12 +133,12 @@ internal fun rememberLowStorageGlance(enabled: Boolean): LowStorageGlance? {
     )
 }
 
-private fun isLowStorage(
+internal fun isLowStorage(
     free: Long,
     total: Long,
 ) = total > 0L && free * 100 <= total * LOW_STORAGE_THRESHOLD_PERCENT
 
-private fun freePercent(
+internal fun freePercent(
     free: Long,
     total: Long,
 ) = free * 100f / total
@@ -148,7 +148,7 @@ private fun freePercent(
  * the total below the level last seen since dismissal, and the dismissal ends once storage is no
  * longer low.
  */
-private fun updateLowStorageDismissal(
+internal fun updateLowStorageDismissal(
     preferences: GlancePreferences,
     free: Long,
     total: Long,
@@ -168,13 +168,13 @@ private fun updateLowStorageDismissal(
     }
 }
 
-private fun readInternalStorage(): Pair<Long, Long>? =
+internal fun readInternalStorage(): Pair<Long, Long>? =
     runCatching {
         val stat = StatFs(Environment.getDataDirectory().path)
         stat.availableBytes to stat.totalBytes
     }.getOrNull()
 
-private fun openStorageSettings(context: Context) {
+internal fun openStorageSettings(context: Context) {
     openFirstAvailable(
         context,
         Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS),

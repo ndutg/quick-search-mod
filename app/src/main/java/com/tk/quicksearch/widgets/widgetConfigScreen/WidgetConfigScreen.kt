@@ -49,6 +49,7 @@ import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetInternalPa
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetIconSizeSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetSearchIconSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetSlidersSection
+import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetTextSizeSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetTextIconColorSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetThemeSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetToggleSection
@@ -69,6 +70,7 @@ fun WidgetConfigScreen(
     widgetVariant: WidgetVariant = WidgetVariant.STANDARD,
     titleResId: Int = R.string.widget_settings_title,
     onChangeNote: () -> Unit = {},
+    launcherContentScale: Float = 1f,
 ) {
     val constrainedState = state.enforceVariantConstraints(widgetVariant)
     val onConstrainedStateChange: (WidgetPreferences) -> Unit = { updated ->
@@ -164,6 +166,7 @@ fun WidgetConfigScreen(
                 WidgetPreviewCard(
                     state = constrainedState,
                     widgetVariant = widgetVariant,
+                    launcherContentScale = launcherContentScale,
                 )
             }
 
@@ -171,6 +174,8 @@ fun WidgetConfigScreen(
             val isMediaControls = widgetVariant == WidgetVariant.MEDIA_CONTROLS
             // The note widget offers the note, background, text color, corner radius and transparency.
             val isNote = widgetVariant == WidgetVariant.NOTE
+            // At a Glance offers the note widget's settings without the note.
+            val isAtAGlance = widgetVariant == WidgetVariant.AT_A_GLANCE
 
             // Scrollable preferences section
             Column(
@@ -222,8 +227,10 @@ fun WidgetConfigScreen(
                     )
                 }
 
-                if (isNote) {
-                    NoteWidgetSelectedNoteSection(noteId = constrainedState.noteId, onChangeNote = onChangeNote)
+                if (isNote || isAtAGlance) {
+                    if (isNote) {
+                        NoteWidgetSelectedNoteSection(noteId = constrainedState.noteId, onChangeNote = onChangeNote)
+                    }
                     NoteWidgetBackgroundSection(state = constrainedState, onStateChange = onConstrainedStateChange)
                     NoteWidgetTextColorSection(state = constrainedState, onStateChange = onConstrainedStateChange)
                 } else if (isMediaControls) {
@@ -245,9 +252,12 @@ fun WidgetConfigScreen(
 
                 WidgetSlidersSection(
                     state = constrainedState,
-                    showBorderControls = !isMediaControls && !isNote,
+                    showBorderControls = !isMediaControls && !isNote && !isAtAGlance,
                     onStateChange = onConstrainedStateChange,
                 )
+                if (isAtAGlance) {
+                    WidgetTextSizeSection(state = constrainedState, onStateChange = onConstrainedStateChange)
+                }
                 if (widgetVariant == WidgetVariant.STANDARD) {
                     WidgetSearchIconSection(
                         state = constrainedState,
@@ -268,7 +278,7 @@ fun WidgetConfigScreen(
                         onStateChange = onConstrainedStateChange,
                     )
                 }
-                if (!isMediaControls && !isNote) {
+                if (!isMediaControls && !isNote && !isAtAGlance) {
                     WidgetInternalPaddingSection(
                         state = constrainedState,
                         onStateChange = onConstrainedStateChange,

@@ -1158,6 +1158,10 @@
     <string name="widget_note_picker_title">اختر ملاحظة</string>
     <string name="widget_note_deleted">لم يتم العثور على الملاحظة. انقر لاختيار ملاحظة أخرى.</string>
     <string name="widget_countdown_widget_title">أداة العد التنازلي</string>
+    <string name="widget_at_a_glance_widget_title">أداة نظرة سريعة</string>
+    <string name="widget_at_a_glance_sample_alarm">غداً، 7:00 ص</string>
+    <string name="widget_at_a_glance_sample_birthday">عيد ميلاد أليكس</string>
+    <string name="widget_at_a_glance_sample_caller">أمي</string>
     <string name="widget_countdown_date">التاريخ</string>
     <string name="widget_countdown_format_days">أيام</string>
     <string name="widget_countdown_format_weeks">أسابيع</string>

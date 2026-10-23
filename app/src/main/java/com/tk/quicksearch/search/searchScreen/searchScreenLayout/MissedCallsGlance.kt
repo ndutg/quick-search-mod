@@ -202,19 +202,25 @@ private fun MissedCallAppChip(
  * Opens the call history of the app that posted [latest] when it has one (the phone app), and
  * otherwise the notification's own target, such as WhatsApp's calls.
  */
-private fun openCallHistory(
+internal fun openCallHistory(
     context: Context,
     latest: MissedCallNotification,
 ) {
-    AppLockGate.runAfterUnlock(context, latest.packageName) {
-        // Only the app that posted the call is asked for its call history, so a WhatsApp or other
-        // app's missed call opens that app (through its notification) rather than the phone app.
-        val callLog =
-            Intent(Intent.ACTION_VIEW)
-                .setType(CallLog.Calls.CONTENT_TYPE)
-                .setPackage(latest.packageName)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        val opened = runCatching { context.startActivity(callLog) }.isSuccess
-        if (!opened) launchNotificationTarget(context, latest.packageName, latest.contentIntent)
-    }
+    AppLockGate.runAfterUnlock(context, latest.packageName) { openCallHistoryUnlocked(context, latest) }
+}
+
+/** [openCallHistory] for callers that have already passed the app lock. */
+internal fun openCallHistoryUnlocked(
+    context: Context,
+    latest: MissedCallNotification,
+) {
+    // Only the app that posted the call is asked for its call history, so a WhatsApp or other
+    // app's missed call opens that app (through its notification) rather than the phone app.
+    val callLog =
+        Intent(Intent.ACTION_VIEW)
+            .setType(CallLog.Calls.CONTENT_TYPE)
+            .setPackage(latest.packageName)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    val opened = runCatching { context.startActivity(callLog) }.isSuccess
+    if (!opened) launchNotificationTarget(context, latest.packageName, latest.contentIntent)
 }

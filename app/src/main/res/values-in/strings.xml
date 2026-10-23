@@ -1161,6 +1161,10 @@
     <string name="widget_note_picker_title">Pilih Catatan</string>
     <string name="widget_note_deleted">Catatan tidak ditemukan. Ketuk untuk memilih yang lain.</string>
     <string name="widget_countdown_widget_title">Widget Hitung Mundur</string>
+    <string name="widget_at_a_glance_widget_title">Widget Sekilas</string>
+    <string name="widget_at_a_glance_sample_alarm">Besok, 07.00</string>
+    <string name="widget_at_a_glance_sample_birthday">Ulang tahun Alex</string>
+    <string name="widget_at_a_glance_sample_caller">Ibu</string>
     <string name="widget_countdown_date">Tanggal</string>
     <string name="widget_countdown_format_days">Hari</string>
     <string name="widget_countdown_format_weeks">Minggu</string>

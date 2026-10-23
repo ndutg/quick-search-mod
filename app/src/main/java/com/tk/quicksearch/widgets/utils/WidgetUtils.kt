@@ -12,6 +12,8 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import com.tk.quicksearch.R
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidget
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetReceiver
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceiver
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidget
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
@@ -98,6 +100,29 @@ suspend fun refreshCountdownWidgets(context: Context) {
     refreshWidgets(context, CountdownWidgetReceiver::class.java, CountdownWidget())
 }
 
+/** Redraws placed At a Glance widgets, e.g. when a notification, device state or reminder changes. */
+/**
+ * How much the launcher shrinks or grows a placed widget's content. Samsung One UI Home draws
+ * widgets scaled to its grid and reports the factor in the widget's options; other launchers draw
+ * them as is.
+ */
+fun launcherWidgetContentScale(
+    context: Context,
+    appWidgetId: Int,
+): Float =
+    runCatching {
+        AppWidgetManager
+            .getInstance(context)
+            .getAppWidgetOptions(appWidgetId)
+            .getFloat(ONE_UI_RESIZE_RATIO_OPTION, 1f)
+    }.getOrDefault(1f).takeIf { it.isFinite() && it in 0.5f..1.5f } ?: 1f
+
+private const val ONE_UI_RESIZE_RATIO_OPTION = "hsResizeRatio"
+
+suspend fun refreshAtAGlanceWidgets(context: Context) {
+    refreshWidgets(context, AtAGlanceWidgetReceiver::class.java, AtAGlanceWidget())
+}
+
 /** Fire-and-forget [refreshNoteWidgets] for callers outside a coroutine. */
 fun requestNoteWidgetsRefresh(context: Context) {
     val appContext = context.applicationContext
@@ -121,6 +146,7 @@ fun glanceWidgetFor(variant: WidgetVariant): GlanceAppWidget =
         -> SearchWidget(variant)
         WidgetVariant.MEDIA_CONTROLS -> MediaControlsWidget()
         WidgetVariant.NOTE -> NoteWidget()
+        WidgetVariant.AT_A_GLANCE -> AtAGlanceWidget()
     }
 
 private suspend fun refreshWidgets(
