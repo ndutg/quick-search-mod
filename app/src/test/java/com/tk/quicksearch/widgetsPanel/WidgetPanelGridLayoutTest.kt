@@ -124,4 +124,27 @@ class WidgetPanelGridLayoutTest {
             assertTrue("empty row $r", occupied.any { it.second == r })
         }
     }
+
+    @Test
+    fun `resize does not crash when min span exceeds room left of position`() {
+        // Widget with min span 4 stored at column 1 (only 3 columns of room).
+        for (horizontal in listOf(-1, 1)) {
+            val result =
+                calculateGridResize(
+                    startColumn = 1,
+                    startRow = 0,
+                    startColumnSpan = 3,
+                    startRowSpan = 2,
+                    horizontalDirection = horizontal,
+                    verticalDirection = -1,
+                    horizontalDeltaPx = 50f,
+                    verticalDeltaPx = 50f,
+                    gridUnitWidthPx = 100f,
+                    gridUnitHeightPx = 100f,
+                    minColumnSpan = 4,
+                    minRowSpan = 3,
+                )
+            assertTrue(result.column + result.columnSpan <= WIDGET_PANEL_GRID_COLUMNS)
+        }
+    }
 }

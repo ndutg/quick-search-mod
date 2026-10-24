@@ -13,6 +13,7 @@ import android.view.ViewConfiguration
 import android.view.ViewOutlineProvider
 import android.widget.RemoteViews
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.util.CrashLogManager
 import com.tk.quicksearch.shared.util.MemoryDiagnostics
 import kotlin.math.abs
 
@@ -57,6 +58,7 @@ internal class WidgetPanelHost(
         appWidget: AppWidgetProviderInfo?,
     ): AppWidgetHostView =
         WidgetPanelHostView(context).also { view ->
+            appWidget?.provider?.packageName?.let(CrashLogManager::registerHostedWidgetPackage)
             view.onLongPress = { onWidgetLongPress?.invoke(appWidgetId) }
             view.onDragMove = { dx, dy -> onWidgetDragMove?.invoke(appWidgetId, dx, dy) }
             view.onDragEnd = { onWidgetDragEnd?.invoke(appWidgetId) }

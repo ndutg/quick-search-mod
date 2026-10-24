@@ -503,6 +503,10 @@ internal fun EdgeResizeHandle(
     val capturedStartRow by rememberUpdatedState(startRow)
     val capturedStartColumnSpan by rememberUpdatedState(startColumnSpan)
     val capturedStartRowSpan by rememberUpdatedState(startRowSpan)
+    val capturedGridUnitWidthPx by rememberUpdatedState(gridUnitWidthPx)
+    val capturedGridUnitHeightPx by rememberUpdatedState(gridUnitHeightPx)
+    val capturedMinColumnSpan by rememberUpdatedState(minColumnSpan)
+    val capturedMinRowSpan by rememberUpdatedState(minRowSpan)
 
     val (hitWidth, hitHeight) =
         if (edge.isHorizontalAxis) {
@@ -551,10 +555,10 @@ internal fun EdgeResizeHandle(
                                     verticalDirection = edge.ySign,
                                     horizontalDeltaPx = totalX,
                                     verticalDeltaPx = totalY,
-                                    gridUnitWidthPx = gridUnitWidthPx,
-                                    gridUnitHeightPx = gridUnitHeightPx,
-                                    minColumnSpan = minColumnSpan,
-                                    minRowSpan = minRowSpan,
+                                    gridUnitWidthPx = capturedGridUnitWidthPx,
+                                    gridUnitHeightPx = capturedGridUnitHeightPx,
+                                    minColumnSpan = capturedMinColumnSpan,
+                                    minRowSpan = capturedMinRowSpan,
                                 ),
                             )
                         },
