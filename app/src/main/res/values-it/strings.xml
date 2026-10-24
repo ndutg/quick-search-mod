@@ -76,6 +76,7 @@
     <string name="action_add_to_home">Aggiungi a Home</string>
     <string name="action_add_trigger">Aggiungi trigger</string>
     <string name="action_app_info">Info app</string>
+    <string name="action_open_in_google_play">Apri in Google Play</string>
     <string name="action_manage_all_apps">Gestisci tutte le app</string>
     <string name="action_app_shortcuts_settings">Impostazioni scorciatoie app</string>
     <string name="action_files_settings">Impostazioni file</string>
@@ -112,7 +113,7 @@
     <string name="action_open_folder">Apri cartella</string>
     <string name="action_open_keyboard">Apri tastiera</string>
     <string name="action_open_settings">Apri impostazioni</string>
-    <string name="settings_gestures_title">Gesti</string>
+    <string name="settings_gestures_title">Gesti della Home</string>
     <string name="settings_gestures_desc">Personalizza le azioni di scorrimento</string>
     <string name="settings_gesture_swipe_right">Scorri a destra</string>
     <string name="settings_gesture_widget_panel">Pannello widget</string>
@@ -120,14 +121,15 @@
     <string name="settings_gesture_swipe_left">Scorri a sinistra</string>
     <string name="settings_gesture_swipe_up">Scorri verso l\'alto</string>
     <string name="settings_gesture_swipe_down">Scorri verso il basso</string>
-    <string name="settings_gesture_swipe_up_home">Scorri verso l\'alto (Home)</string>
-<string name="settings_gesture_swipe_down_home">Scorri verso il basso (Home)</string>
 <string name="settings_gesture_close_quick_search">Chiudi Quick Search</string>
-<string name="settings_gesture_double_tap_home">Doppio tocco (Home)</string>
+<string name="settings_gesture_double_tap_home">Doppio tocco</string>
+<string name="settings_gesture_two_finger_swipe_up_home">Scorri con due dita verso l\'alto</string>
+<string name="settings_gesture_two_finger_swipe_down_home">Scorri con due dita verso il basso</string>
     <string name="settings_gesture_settings">Impostazioni</string>
     <string name="settings_gesture_close_keyboard_notifications">Chiudi tastiera / Apri notifiche</string>
     <string name="settings_gesture_close_keyboard">Chiudi tastiera</string>
     <string name="settings_gesture_notification_panel">Pannello delle notifiche</string>
+    <string name="settings_gesture_quick_settings">Apri impostazioni rapide</string>
     <string name="settings_gesture_view_all_apps">Visualizza tutte le app</string>
     <string name="settings_gesture_lock_screen">Blocca schermo</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Richiede l\'autorizzazione di accessibilità</string>
@@ -137,7 +139,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search usa l’accessibilità per:\n\n• Abilitare il gesto del doppio tocco per bloccare lo schermo.\n• Aprire Quick Search con i gesti di scorrimento dal bordo.\n• Aprire Quick Search con il pulsante mobile.\n\nNon legge, raccoglie, archivia o condivide il contenuto dello schermo o altri dati personali.</string>
     <string name="settings_gesture_none">Nessuno</string>
     <string name="settings_gesture_custom">Personalizzato (App, file ecc.)</string>
-    <string name="settings_keyboard_gestures_title">Gesti della tastiera (Home)</string>
+    <string name="settings_keyboard_gestures_title">Gesti della tastiera</string>
     <string name="settings_keyboard_gestures_desc">Funziona solo quando non sono presenti contenuti scorrevoli nella schermata Home</string>
     <string name="action_pin_app">Fissa</string>
     <string name="action_pin_to_notifications">Fissa nelle notifiche</string>
@@ -613,6 +615,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Inizia una nuova nota nell\u2019editor</string>
     <string name="app_settings_search_create_note_title">Crea nota</string>
+    <string name="app_settings_search_create_notification_note_title">Crea nota di notifica</string>
+    <string name="app_settings_search_create_notification_note_desc">Scrivi una nota che resta nel pannello delle notifiche</string>
     <string name="notes_body_hint">Scrivi qui la tua nota</string>
     <string name="notes_create_note_cta">Nuova nota</string>
     <string name="notes_delete_confirm_message">Questa nota verrà eliminata in modo permanente.</string>
@@ -623,6 +627,7 @@
     <string name="notes_editor_action_open_link">Apri link</string>
     <string name="notes_editor_action_send_email">Invia email</string>
     <string name="notes_editor_title">Editor di note</string>
+    <string name="notes_editor_notification_note_title">Nota di notifica</string>
     <string name="notes_empty_note_subtext">Nota vuota</string>
     <string name="notes_quick_note_title">Nota rapida</string>
     <string name="notes_quick_note_toggle_desc">Apri Nota rapida tramite la navigazione con scorrimento (swipe)</string>
@@ -1048,6 +1053,9 @@
     <string name="calculator_toggle_desc">Risultati per espressioni matematiche di base</string>
     <string name="calculator_toggle_title">Calcolatrice</string>
     <string name="currency_converter_invalid_input">Input per la conversione di valuta non valido</string>
+    <string name="currency_converter_rates_unavailable">Impossibile recuperare i tassi di cambio. Riprova.</string>
+    <string name="currency_converter_unsupported_currency">%1$s non è supportata</string>
+    <string name="currency_converter_check_rates_on_google">Controlla i tassi su Google</string>
     <string name="currency_converter_requires_gemini_key">Richiede la chiave API di un fornitore AI</string>
     <string name="currency_converter_toggle_desc">Esempio: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Convertitore di valuta</string>
@@ -1072,6 +1080,9 @@
     <string name="date_calculator_toggle_action_desc">Attiva o disattiva la calcolatrice di data e ora</string>
     <string name="date_calculator_toggle_desc">Esempi di utilizzo</string>
     <string name="dictionary_example_label">Esempio: %1$s</string>
+    <string name="dictionary_definition_not_found">Nessuna definizione trovata per “%1$s”</string>
+    <string name="dictionary_unavailable">Impossibile raggiungere il dizionario. Riprova.</string>
+    <string name="dictionary_search_on_google">Cerca su Google</string>
     <string name="dictionary_synonyms_label">Sinonimi: %1$s</string>
     <string name="dictionary_toggle_desc">Esempio: define serendipity</string>
     <string name="dictionary_toggle_title">Dizionario</string>

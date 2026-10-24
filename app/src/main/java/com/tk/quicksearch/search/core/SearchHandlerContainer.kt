@@ -200,7 +200,7 @@ internal class SearchHandlerContainer(
 
     val worldClockHandler by lazy { WorldClockHandler(appContext, userPreferences) }
 
-    val dictionaryHandler by lazy { DictionaryHandler(appContext, userPreferences) }
+    val dictionaryHandler by lazy { DictionaryHandler(appContext) }
     val weatherHandler by lazy { WeatherHandler(appContext, userPreferences) }
 
     val appSearchManager by lazy {

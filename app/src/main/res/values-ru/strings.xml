@@ -77,6 +77,7 @@
 <string name="action_add_to_home">На главный экран</string>
 <string name="action_add_trigger">Добавить триггер</string>
 <string name="action_app_info">О приложении</string>
+<string name="action_open_in_google_play">Открыть в Google Play</string>
 <string name="action_manage_all_apps">Управление всеми приложениями</string>
 <string name="action_app_shortcuts_settings">Настройки ярлыков приложений</string>
 <string name="action_files_settings">Настройки файлов</string>
@@ -113,7 +114,7 @@
 <string name="action_open_folder">Открыть папку</string>
 <string name="action_open_keyboard">Открыть клавиатуру</string>
 <string name="action_open_settings">Открыть настройки</string>
-<string name="settings_gestures_title">Жесты</string>
+<string name="settings_gestures_title">Жесты главного экрана</string>
 <string name="settings_gestures_desc">Настройка жестов смахивания</string>
 <string name="settings_gesture_swipe_right">Смахивание вправо</string>
 <string name="settings_gesture_widget_panel">Панель виджетов</string>
@@ -121,14 +122,15 @@
 <string name="settings_gesture_swipe_left">Смахивание влево</string>
 <string name="settings_gesture_swipe_up">Смахивание вверх</string>
 <string name="settings_gesture_swipe_down">Смахивание вниз</string>
-<string name="settings_gesture_swipe_up_home">Смахивание вверх (Главный экран)</string>
-<string name="settings_gesture_swipe_down_home">Смахивание вниз (Главный экран)</string>
 <string name="settings_gesture_close_quick_search">Закрыть Quick Search</string>
-<string name="settings_gesture_double_tap_home">Двойное нажатие (Главный экран)</string>
+<string name="settings_gesture_double_tap_home">Двойное нажатие</string>
+<string name="settings_gesture_two_finger_swipe_up_home">Смахивание двумя пальцами вверх</string>
+<string name="settings_gesture_two_finger_swipe_down_home">Смахивание двумя пальцами вниз</string>
 <string name="settings_gesture_settings">Настройки</string>
 <string name="settings_gesture_close_keyboard_notifications">Закрыть клавиатуру / Открыть уведомления</string>
 <string name="settings_gesture_close_keyboard">Закрыть клавиатуру</string>
 <string name="settings_gesture_notification_panel">Панель уведомлений</string>
+<string name="settings_gesture_quick_settings">Открыть быстрые настройки</string>
 <string name="settings_gesture_view_all_apps">Показать все приложения</string>
 <string name="settings_gesture_lock_screen">Заблокировать экран</string>
 <string name="settings_gesture_lock_screen_requires_accessibility">Требуется разрешение специальных возможностей</string>
@@ -138,7 +140,7 @@
 <string name="accessibility_lock_screen_disclosure_message">Quick Search использует специальные возможности, чтобы:\n\n• Включать жест двойного нажатия для блокировки экрана.\n• Открывать Quick Search жестами смахивания от края.\n• Открывать Quick Search с помощью плавающей кнопки.\n\nОн не читает, не собирает, не хранит и не передает содержимое экрана или другие персональные данные.</string>
 <string name="settings_gesture_none">Нет</string>
 <string name="settings_gesture_custom">Вручную (приложения, файлы и др.)</string>
-<string name="settings_keyboard_gestures_title">Жесты клавиатуры (Главный экран)</string>
+<string name="settings_keyboard_gestures_title">Жесты клавиатуры</string>
 <string name="settings_keyboard_gestures_desc">Работает, только когда на главном экране нет прокручиваемого содержимого</string>
 <string name="action_pin_app">Закрепить</string>
 <string name="action_pin_to_notifications">Закрепить в уведомлениях</string>
@@ -634,6 +636,8 @@
      ============================================================================ -->
 <string name="app_settings_search_create_note_desc">Создать новую заметку в редакторе</string>
 <string name="app_settings_search_create_note_title">Создать заметку</string>
+<string name="app_settings_search_create_notification_note_title">Создать заметку в уведомлениях</string>
+<string name="app_settings_search_create_notification_note_desc">Заметка, которая остаётся в панели уведомлений</string>
 <string name="notes_body_hint">Текст заметки</string>
 <string name="notes_create_note_cta">Новая заметка</string>
 <string name="notes_delete_confirm_message">Эта заметка будет удалена безвозвратно.</string>
@@ -644,6 +648,7 @@
 <string name="notes_editor_action_open_link">Открыть ссылку</string>
 <string name="notes_editor_action_send_email">Отправить эл. письмо</string>
 <string name="notes_editor_title">Редактор заметок</string>
+<string name="notes_editor_notification_note_title">Заметка в уведомлениях</string>
 <string name="notes_empty_note_subtext">Пустая заметка</string>
 <string name="notes_quick_note_title">Быстрая заметка</string>
 <string name="notes_quick_note_toggle_desc">Открывать быструю заметку жестом бокового свайпа</string>
@@ -1073,6 +1078,9 @@
 <string name="calculator_toggle_desc">Результаты для простых математических выражений</string>
 <string name="calculator_toggle_title">Калькулятор</string>
 <string name="currency_converter_invalid_input">Некорректный ввод для конвертации валют</string>
+<string name="currency_converter_rates_unavailable">Не удалось получить курсы валют. Повторите попытку.</string>
+<string name="currency_converter_unsupported_currency">Валюта %1$s не поддерживается</string>
+<string name="currency_converter_check_rates_on_google">Курсы в Google</string>
 <string name="currency_converter_requires_gemini_key">Требуется API-ключ AI-провайдера</string>
 <string name="currency_converter_toggle_desc">Пример: 100 USD в INR</string>
     <string name="currency_converter_toggle_title">Конвертер валют</string>
@@ -1097,6 +1105,9 @@
 <string name="date_calculator_toggle_action_desc">Включить или отключить калькулятор даты и времени</string>
 <string name="date_calculator_toggle_desc">Примеры использования</string>
 <string name="dictionary_example_label">Пример: %1$s</string>
+<string name="dictionary_definition_not_found">Определение для «%1$s» не найдено</string>
+<string name="dictionary_unavailable">Не удалось подключиться к словарю. Повторите попытку.</string>
+<string name="dictionary_search_on_google">Искать в Google</string>
 <string name="dictionary_synonyms_label">Синонимы: %1$s</string>
 <string name="dictionary_toggle_desc">Пример: define serendipity</string>
 <string name="dictionary_toggle_title">Словарь</string>

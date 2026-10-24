@@ -76,6 +76,7 @@
 <string name="action_add_to_home">Ana ekrana ekle</string>
 <string name="action_add_trigger">Tetikleyici</string>
 <string name="action_app_info">Uygulama bilgisi</string>
+<string name="action_open_in_google_play">Google Play\'de aç</string>
 <string name="action_manage_all_apps">Tüm uygulamaları yönet</string>
 <string name="action_app_shortcuts_settings">Uygulama kısayolu ayarları</string>
 <string name="action_files_settings">Dosya ayarları</string>
@@ -112,7 +113,7 @@
 <string name="action_open_folder">Klasörü aç</string>
 <string name="action_open_keyboard">Klavyeyi aç</string>
 <string name="action_open_settings">Ayarları aç</string>
-<string name="settings_gestures_title">Hareketler</string>
+<string name="settings_gestures_title">Ana Ekran Hareketleri</string>
 <string name="settings_gestures_desc">Kaydırma işlemlerini özelleştir</string>
 <string name="settings_gesture_swipe_right">Sağa Kaydır</string>
 <string name="settings_gesture_widget_panel">Widget Paneli</string>
@@ -120,14 +121,15 @@
 <string name="settings_gesture_swipe_left">Sola Kaydır</string>
 <string name="settings_gesture_swipe_up">Yukarı Kaydır</string>
 <string name="settings_gesture_swipe_down">Aşağı Kaydır</string>
-<string name="settings_gesture_swipe_up_home">Yukarı Kaydır (Ana Ekran)</string>
-<string name="settings_gesture_swipe_down_home">Aşağı Kaydır (Ana Ekran)</string>
 <string name="settings_gesture_close_quick_search">Quick Search\'i kapat</string>
-<string name="settings_gesture_double_tap_home">Çift Dokunma (Ana Ekran)</string>
+<string name="settings_gesture_double_tap_home">Çift Dokunma</string>
+<string name="settings_gesture_two_finger_swipe_up_home">İki Parmakla Yukarı Kaydır</string>
+<string name="settings_gesture_two_finger_swipe_down_home">İki Parmakla Aşağı Kaydır</string>
 <string name="settings_gesture_settings">Ayarlar</string>
 <string name="settings_gesture_close_keyboard_notifications">Klavyeyi Kapat / Bildirimleri Aç</string>
 <string name="settings_gesture_close_keyboard">Klavyeyi Kapat</string>
 <string name="settings_gesture_notification_panel">Bildirim Paneli</string>
+<string name="settings_gesture_quick_settings">Hızlı Ayarları Aç</string>
 <string name="settings_gesture_view_all_apps">Tüm uygulamaları görüntüle</string>
 <string name="settings_gesture_lock_screen">Ekranı Kilitle</string>
 <string name="settings_gesture_lock_screen_requires_accessibility">Erişilebilirlik İzni Gerekir</string>
@@ -137,7 +139,7 @@
 <string name="accessibility_lock_screen_disclosure_message">Quick Search Erişilebilirlik’i şunlar için kullanır:\n\n• Ekranı kilitlemek için çift dokunma hareketini etkinleştirmek.\n• Kenardan kaydırma hareketleriyle Quick Search’ü açmak.\n• Kayan düğmeyle Quick Search’ü açmak.\n\nEkran içeriğinizi veya diğer kişisel verilerinizi okumaz, toplamaz, saklamaz ya da paylaşmaz.</string>
 <string name="settings_gesture_none">Hiçbiri</string>
 <string name="settings_gesture_custom">Özel (Uygulamalar, Dosyalar vb.)</string>
-<string name="settings_keyboard_gestures_title">Klavye Hareketleri (Ana Ekran)</string>
+<string name="settings_keyboard_gestures_title">Klavye Hareketleri</string>
 <string name="settings_keyboard_gestures_desc">Yalnızca ana ekranda kaydırılabilir içerik olmadığında çalışır</string>
 <string name="action_pin_app">Sabitle</string>
     <string name="action_pin_to_notifications">Bildirimlere sabitle</string>
@@ -613,6 +615,8 @@
      ============================================================================ -->
 <string name="app_settings_search_create_note_desc">Düzenleyicide yeni bir not başlat</string>
 <string name="app_settings_search_create_note_title">Not oluştur</string>
+<string name="app_settings_search_create_notification_note_title">Bildirim notu oluştur</string>
+<string name="app_settings_search_create_notification_note_desc">Bildirim panelinde kalan bir not yazın</string>
 <string name="notes_body_hint">Notunu buraya yazın</string>
 <string name="notes_create_note_cta">Yeni not</string>
 <string name="notes_delete_confirm_message">Bu not kalıcı olarak silinecek.</string>
@@ -623,6 +627,7 @@
 <string name="notes_editor_action_open_link">Bağlantıyı aç</string>
 <string name="notes_editor_action_send_email">E-posta gönder</string>
 <string name="notes_editor_title">Not düzenleyici</string>
+<string name="notes_editor_notification_note_title">Bildirim notu</string>
 <string name="notes_empty_note_subtext">Boş not</string>
 <string name="notes_quick_note_title">Hızlı not</string>
 <string name="notes_quick_note_toggle_desc">Kaydırma navigasyonundan Hızlı Not\'u aç</string>
@@ -1048,6 +1053,9 @@
 <string name="calculator_toggle_desc">Temel matematiksel ifadelerin sonuçları</string>
 <string name="calculator_toggle_title">Hesap makinesi</string>
 <string name="currency_converter_invalid_input">Geçersiz döviz çevirme girdisi</string>
+<string name="currency_converter_rates_unavailable">Döviz kurları alınamadı. Tekrar deneyin.</string>
+<string name="currency_converter_unsupported_currency">%1$s desteklenmiyor</string>
+<string name="currency_converter_check_rates_on_google">Kurları Google\'da kontrol et</string>
 <string name="currency_converter_requires_gemini_key">Bir AI sağlayıcı API anahtarı gerektirir</string>
 <string name="currency_converter_toggle_desc">Örnek: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Döviz dönüştürücü</string>
@@ -1072,6 +1080,9 @@
 <string name="date_calculator_toggle_action_desc">Tarih &amp; saat hesaplayıcıyı aç veya kapat</string>
 <string name="date_calculator_toggle_desc">Kullanım örnekleri</string>
 <string name="dictionary_example_label">Örnek: %1$s</string>
+<string name="dictionary_definition_not_found">“%1$s” için tanım bulunamadı</string>
+<string name="dictionary_unavailable">Sözlüğe ulaşılamadı. Tekrar deneyin.</string>
+<string name="dictionary_search_on_google">Google\'da ara</string>
 <string name="dictionary_synonyms_label">Eş anlamlılar: %1$s</string>
 <string name="dictionary_toggle_desc">Örnek: define serendipity</string>
 <string name="dictionary_toggle_title">Sözlük</string>

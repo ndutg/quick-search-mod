@@ -77,6 +77,7 @@
     <string name="action_add_to_home">Zum Startbildschirm hinzufügen</string>
     <string name="action_add_trigger">Auslöser</string>
     <string name="action_app_info">App-Info</string>
+    <string name="action_open_in_google_play">In Google Play öffnen</string>
     <string name="action_manage_all_apps">Alle Apps verwalten</string>
     <string name="action_app_shortcuts_settings">Einstellungen für App-Verknüpfungen</string>
     <string name="action_files_settings">Dateieinstellungen</string>
@@ -113,7 +114,7 @@
     <string name="action_open_folder">Ordner öffnen</string>
     <string name="action_open_keyboard">Tastatur öffnen</string>
     <string name="action_open_settings">Einstellungen öffnen</string>
-    <string name="settings_gestures_title">Gesten</string>
+    <string name="settings_gestures_title">Startseiten-Gesten</string>
     <string name="settings_gestures_desc">Wischgesten anpassen</string>
     <string name="settings_gesture_swipe_right">Nach rechts wischen</string>
     <string name="settings_gesture_widget_panel">Widget-Panel</string>
@@ -121,14 +122,15 @@
     <string name="settings_gesture_swipe_left">Nach links wischen</string>
     <string name="settings_gesture_swipe_up">Nach oben wischen</string>
     <string name="settings_gesture_swipe_down">Nach unten wischen</string>
-    <string name="settings_gesture_swipe_up_home">Nach oben wischen (Startseite)</string>
-<string name="settings_gesture_swipe_down_home">Nach unten wischen (Startseite)</string>
 <string name="settings_gesture_close_quick_search">Quick Search schließen</string>
-<string name="settings_gesture_double_tap_home">Doppeltippen (Startseite)</string>
+<string name="settings_gesture_double_tap_home">Doppeltippen</string>
+<string name="settings_gesture_two_finger_swipe_up_home">Mit zwei Fingern nach oben wischen</string>
+<string name="settings_gesture_two_finger_swipe_down_home">Mit zwei Fingern nach unten wischen</string>
     <string name="settings_gesture_settings">Einstellungen</string>
     <string name="settings_gesture_close_keyboard_notifications">Tastatur schließen / Benachrichtigungen öffnen</string>
     <string name="settings_gesture_close_keyboard">Tastatur schließen</string>
     <string name="settings_gesture_notification_panel">Benachrichtigungsleiste</string>
+    <string name="settings_gesture_quick_settings">Schnelleinstellungen öffnen</string>
     <string name="settings_gesture_view_all_apps">Alle Apps anzeigen</string>
     <string name="settings_gesture_lock_screen">Bildschirm sperren</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Erfordert Bedienungshilfen-Berechtigung</string>
@@ -138,7 +140,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search verwendet die Bedienungshilfe, um:\n\n• die Doppeltipp-Geste zum Sperren des Bildschirms zu aktivieren.\n• Quick Search mit Wischgesten vom Bildschirmrand zu öffnen.\n• Quick Search über die schwebende Schaltfläche zu öffnen.\n\nEs liest, erfasst, speichert oder teilt weder deine Bildschirminhalte noch andere persönliche Daten.</string>
     <string name="settings_gesture_none">Keine</string>
     <string name="settings_gesture_custom">Benutzerdefiniert (Apps, Dateien usw.)</string>
-    <string name="settings_keyboard_gestures_title">Tastaturgesten (Startseite)</string>
+    <string name="settings_keyboard_gestures_title">Tastaturgesten</string>
     <string name="settings_keyboard_gestures_desc">Funktioniert nur, wenn auf dem Startbildschirm kein scrollbarer Inhalt vorhanden ist</string>
     <string name="action_pin_app">Anheften</string>
     <string name="action_pin_to_notifications">An Benachrichtigungen anheften</string>
@@ -614,6 +616,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Neue Notiz im Editor starten</string>
     <string name="app_settings_search_create_note_title">Notiz erstellen</string>
+    <string name="app_settings_search_create_notification_note_title">Benachrichtigungsnotiz erstellen</string>
+    <string name="app_settings_search_create_notification_note_desc">Eine Notiz schreiben, die in der Benachrichtigungsleiste bleibt</string>
     <string name="notes_body_hint">Hier Notiz schreiben</string>
     <string name="notes_create_note_cta">Neue Notiz</string>
     <string name="notes_delete_confirm_message">Diese Notiz wird dauerhaft gelöscht.</string>
@@ -624,6 +628,7 @@
     <string name="notes_editor_action_open_link">Link öffnen</string>
     <string name="notes_editor_action_send_email">E-Mail senden</string>
     <string name="notes_editor_title">Notiz-Editor</string>
+    <string name="notes_editor_notification_note_title">Benachrichtigungsnotiz</string>
     <string name="notes_empty_note_subtext">Leere Notiz</string>
     <string name="notes_quick_note_title">Schnellnotiz</string>
     <string name="notes_quick_note_toggle_desc">Schnellnotiz per Wischgeste öffnen</string>
@@ -1049,6 +1054,9 @@
     <string name="calculator_toggle_desc">Ergebnisse für einfache mathematische Ausdrücke</string>
     <string name="calculator_toggle_title">Rechner</string>
     <string name="currency_converter_invalid_input">Ungültige Währungsumrechnungseingabe</string>
+    <string name="currency_converter_rates_unavailable">Wechselkurse konnten nicht abgerufen werden. Versuche es erneut.</string>
+    <string name="currency_converter_unsupported_currency">%1$s wird nicht unterstützt</string>
+    <string name="currency_converter_check_rates_on_google">Kurse auf Google prüfen</string>
     <string name="currency_converter_requires_gemini_key">Erfordert einen AI-Anbieter-API-Schlüssel</string>
     <string name="currency_converter_toggle_desc">Beispiel: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Währungsrechner</string>
@@ -1073,6 +1081,9 @@
     <string name="date_calculator_toggle_action_desc">Datums- &amp; Zeitrechner ein- oder ausschalten</string>
     <string name="date_calculator_toggle_desc">Verwendungsbeispiele</string>
     <string name="dictionary_example_label">Beispiel: %1$s</string>
+    <string name="dictionary_definition_not_found">Keine Definition für „%1$s“ gefunden</string>
+    <string name="dictionary_unavailable">Wörterbuch nicht erreichbar. Versuche es erneut.</string>
+    <string name="dictionary_search_on_google">Auf Google suchen</string>
     <string name="dictionary_synonyms_label">Synonyme: %1$s</string>
     <string name="dictionary_toggle_desc">Beispiel: define serendipity</string>
     <string name="dictionary_toggle_title">Wörterbuch</string>

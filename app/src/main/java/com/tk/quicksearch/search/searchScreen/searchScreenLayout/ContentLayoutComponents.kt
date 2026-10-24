@@ -1,7 +1,9 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -56,15 +58,17 @@ import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.R
 
 /**
- * Fades home sections in when their asynchronously loaded data first arrives. The section is laid
- * out at its final height from the first frame, so neighbouring sections never slide as late
- * content appears; only its opacity animates.
+ * Fades home sections in when their asynchronously loaded data first arrives. By default the
+ * section is laid out at its final height from the first frame, so neighbouring sections never
+ * slide as late content appears; only its opacity animates. With [expandIn] the section grows in
+ * as it fades, easing the content after it into place instead of jumping it.
  */
 @Composable
 internal fun HomeLoadingAnimatedContent(
     animationKey: String,
     enabled: Boolean,
     appearedKeys: MutableSet<String>,
+    expandIn: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     if (!enabled) {
@@ -75,6 +79,26 @@ internal fun HomeLoadingAnimatedContent(
     val shouldAnimate = remember(animationKey) { appearedKeys.add(animationKey) }
     if (!shouldAnimate) {
         content()
+        return
+    }
+
+    if (expandIn) {
+        val visibility = remember(animationKey) { MutableTransitionState(false).apply { targetState = true } }
+        AnimatedVisibility(
+            visibleState = visibility,
+            enter =
+                expandVertically(
+                    animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis),
+                    expandFrom = Alignment.Top,
+                ) + fadeIn(animationSpec = tween(durationMillis = HomeSectionExpandDurationMillis)),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(HomeSectionContentSpacing),
+            ) {
+                content()
+            }
+        }
         return
     }
 
@@ -98,6 +122,8 @@ internal fun HomeLoadingAnimatedContent(
 }
 
 private const val HomeSectionFadeDurationMillis = 180
+private const val HomeSectionExpandDurationMillis = 280
+internal const val HOME_TODAY_CALENDAR_ANIMATION_KEY = "home-today-calendar"
 private val HomeSectionContentSpacing = 14.dp
 
 internal fun hasMoreResults(

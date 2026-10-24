@@ -68,6 +68,7 @@
     <string name="action_add_to_home">Add to Home</string>
     <string name="action_add_trigger">Trigger</string>
     <string name="action_app_info">App Info</string>
+    <string name="action_open_in_google_play">Open in Google Play</string>
     <string name="action_manage_all_apps">Manage all Apps</string>
     <string name="action_app_shortcuts_settings">App shortcuts settings</string>
     <string name="action_files_settings">Files settings</string>
@@ -106,7 +107,7 @@
     <string name="action_open_folder">Open Folder</string>
     <string name="action_open_keyboard">Open Keyboard</string>
     <string name="action_open_settings">Open settings</string>
-    <string name="settings_gestures_title">Gestures</string>
+    <string name="settings_gestures_title">Home Gestures</string>
     <string name="settings_gestures_desc">Customize swipe actions</string>
     <string name="settings_gesture_swipe_right">Swipe Right</string>
     <string name="settings_gesture_widget_panel">Widget Panel</string>
@@ -114,14 +115,15 @@
     <string name="settings_gesture_swipe_left">Swipe Left</string>
     <string name="settings_gesture_swipe_up">Swipe Up</string>
     <string name="settings_gesture_swipe_down">Swipe Down</string>
-    <string name="settings_gesture_swipe_up_home">Swipe Up (Home)</string>
-    <string name="settings_gesture_swipe_down_home">Swipe Down (Home)</string>
     <string name="settings_gesture_close_quick_search">Close Quick Search</string>
-    <string name="settings_gesture_double_tap_home">Double Tap (Home)</string>
+    <string name="settings_gesture_double_tap_home">Double Tap</string>
+    <string name="settings_gesture_two_finger_swipe_up_home">Two-Finger Swipe Up</string>
+    <string name="settings_gesture_two_finger_swipe_down_home">Two-Finger Swipe Down</string>
     <string name="settings_gesture_settings">Settings</string>
     <string name="settings_gesture_close_keyboard_notifications">Close Keyboard / Open Notifications</string>
     <string name="settings_gesture_close_keyboard">Close Keyboard</string>
     <string name="settings_gesture_notification_panel">Notification Panel</string>
+    <string name="settings_gesture_quick_settings">Open Quick Settings</string>
     <string name="settings_gesture_view_all_apps">View All Apps</string>
     <string name="settings_gesture_lock_screen">Lock Screen</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">Requires Accessibility Permission</string>
@@ -131,7 +133,7 @@
     <string name="accessibility_lock_screen_disclosure_message">Quick Search uses Accessibility to:\n\n• Enable double-tap to lock screen gesture.\n• Open Quick Search using edge swipe gestures.\n• Open Quick Search using floating button.\n\nIt does not read, collect, store, or share your screen content or other personal data.</string>
     <string name="settings_gesture_none">None</string>
     <string name="settings_gesture_custom">Custom (Apps, Files etc.)</string>
-    <string name="settings_keyboard_gestures_title">Keyboard Gestures (Home)</string>
+    <string name="settings_keyboard_gestures_title">Keyboard Gestures</string>
     <string name="settings_keyboard_gestures_desc">Works only when there is no scrollable content in home</string>
     <string name="action_pin_app">Pin</string>
     <string name="action_pin_to_notifications">Pin to Notifications</string>
@@ -612,6 +614,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">Start a new note in the editor</string>
     <string name="app_settings_search_create_note_title">Create Note</string>
+    <string name="app_settings_search_create_notification_note_title">Create Notification Note</string>
+    <string name="app_settings_search_create_notification_note_desc">Write a note that stays in your notification panel</string>
     <string name="notes_body_hint">Write your note here</string>
     <string name="notes_create_note_cta">New Note</string>
     <string name="notes_delete_confirm_message">This note will be permanently deleted.</string>
@@ -622,6 +626,7 @@
     <string name="notes_editor_action_open_link">Open link</string>
     <string name="notes_editor_action_send_email">Send email</string>
     <string name="notes_editor_title">Note Editor</string>
+    <string name="notes_editor_notification_note_title">Notification Note</string>
     <string name="notes_empty_note_subtext">Empty note</string>
     <string name="notes_quick_note_title">Quick Note</string>
     <string name="notes_quick_note_toggle_desc">Open Quick Note from swipe navigation</string>
@@ -1056,6 +1061,9 @@
     <string name="calculator_toggle_desc">Results for basic math expressions</string>
     <string name="calculator_toggle_title">Calculator</string>
     <string name="currency_converter_invalid_input">Invalid currency conversion input</string>
+    <string name="currency_converter_rates_unavailable">Couldn’t fetch exchange rates. Try again.</string>
+    <string name="currency_converter_unsupported_currency">%1$s isn’t supported</string>
+    <string name="currency_converter_check_rates_on_google">Check rates on Google</string>
     <string name="currency_converter_requires_gemini_key">Requires an AI provider API key</string>
     <string name="currency_converter_toggle_desc">Example: 100 USD to INR</string>
     <string name="currency_converter_toggle_title">Currency Converter</string>
@@ -1080,6 +1088,9 @@
     <string name="date_calculator_toggle_action_desc">Toggle date &amp; time calculator on or off</string>
     <string name="date_calculator_toggle_desc">Usage examples</string>
     <string name="dictionary_example_label">Example: %1$s</string>
+    <string name="dictionary_definition_not_found">No definition found for “%1$s”</string>
+    <string name="dictionary_unavailable">Couldn’t reach the dictionary. Try again.</string>
+    <string name="dictionary_search_on_google">Search on Google</string>
     <string name="dictionary_synonyms_label">Synonyms: %1$s</string>
     <string name="dictionary_toggle_desc">Example: define serendipity</string>
     <string name="dictionary_toggle_title">Dictionary</string>

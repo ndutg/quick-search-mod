@@ -180,10 +180,6 @@ internal fun ColumnScope.ToolsDetailContent(
                                         CustomToolNavigationMemory.setPendingAiBackedTool(AiBackedToolConfigId.WORD_CLOCK)
                                         onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)
                                     }
-                                    ToolSettingId.DICTIONARY -> {
-                                        CustomToolNavigationMemory.setPendingAiBackedTool(AiBackedToolConfigId.DICTIONARY)
-                                        onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)
-                                    }
                                     ToolSettingId.WEATHER -> {
                                         CustomToolNavigationMemory.setPendingAiBackedTool(AiBackedToolConfigId.WEATHER)
                                         onNavigateToDetail(SettingsDetailType.CUSTOM_TOOL_EDITOR)

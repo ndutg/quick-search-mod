@@ -130,6 +130,10 @@ internal val WidgetEditBorderWidth = 1.dp
 
 // How far edit badges and resize handles can extend past a widget's top edge.
 private val WidgetEditOverhang = 8.dp
+
+// How far the edit scale, side resize handles, and corner badges can extend past a widget's
+// left/right edges. Must stay within ContentHorizontalPadding.
+private val WidgetEditHorizontalOverhang = 16.dp
 private val WidgetPanelBottomScrollSpace = 150.dp
 internal val WidgetLayoutMotion =
     spring<Dp>(
@@ -422,14 +426,23 @@ fun WidgetsPanelScreen(
                         modifier =
                             Modifier
                                 .weight(1f)
-                                // Grow the scroll viewport upward (and pad its content back down)
-                                // so edit badges and handles that overhang the top row aren't
-                                // clipped by the scroll container, without moving the layout.
+                                // Grow the scroll viewport upward and sideways (and pad its content
+                                // back) so edit badges, handles, and the edit scale that overhang
+                                // the grid aren't clipped by the scroll container or the edge-fade
+                                // layer, without moving the layout.
                                 .layout { measurable, constraints ->
                                     val overhangPx = WidgetEditOverhang.roundToPx()
+                                    val sideOverhangPx = WidgetEditHorizontalOverhang.roundToPx()
                                     val placeable =
                                         measurable.measure(
                                             constraints.copy(
+                                                minWidth = constraints.minWidth + sideOverhangPx * 2,
+                                                maxWidth =
+                                                    if (constraints.hasBoundedWidth) {
+                                                        constraints.maxWidth + sideOverhangPx * 2
+                                                    } else {
+                                                        constraints.maxWidth
+                                                    },
                                                 minHeight = constraints.minHeight + overhangPx,
                                                 maxHeight =
                                                     if (constraints.hasBoundedHeight) {
@@ -439,8 +452,11 @@ fun WidgetsPanelScreen(
                                                     },
                                             ),
                                         )
-                                    layout(placeable.width, placeable.height - overhangPx) {
-                                        placeable.place(0, -overhangPx)
+                                    layout(
+                                        placeable.width - sideOverhangPx * 2,
+                                        placeable.height - overhangPx,
+                                    ) {
+                                        placeable.place(-sideOverhangPx, -overhangPx)
                                     }
                                 }
                                 .onGloballyPositioned { coordinates ->
@@ -449,7 +465,11 @@ fun WidgetsPanelScreen(
                                 }
                                 .widgetPanelEdgeFade(panelScrollState)
                                 .verticalScroll(panelScrollState)
-                                .padding(top = WidgetEditOverhang),
+                                .padding(
+                                    start = WidgetEditHorizontalOverhang,
+                                    top = WidgetEditOverhang,
+                                    end = WidgetEditHorizontalOverhang,
+                                ),
                         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
                     ) {
                         val panelItems =

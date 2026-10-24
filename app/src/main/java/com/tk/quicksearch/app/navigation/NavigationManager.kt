@@ -96,7 +96,12 @@ data class NavigationRequest(
     val destination: RootDestination,
     val settingsDetailType: SettingsDetailType? = null,
     val settingsImportUri: String? = null,
+    // Unique per request: an equal follow-up set before the handled reset recomposes would
+    // otherwise leave the LaunchedEffect key unchanged and never be consumed (e.g. Home ignored).
+    val requestId: Long = nextNavigationRequestId.incrementAndGet(),
 )
+
+private val nextNavigationRequestId = java.util.concurrent.atomic.AtomicLong()
 
 enum class AppScreen {
     Permissions,

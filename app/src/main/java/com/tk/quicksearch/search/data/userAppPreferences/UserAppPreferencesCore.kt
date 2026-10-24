@@ -550,6 +550,26 @@ open class UserAppPreferencesCore(protected val context: Context) {
     fun getHomeDoubleTapAliasTarget(): String? = gesturesPreferences.getHomeDoubleTapAliasTarget()
     fun setHomeDoubleTapAliasTarget(targetId: String?) = gesturesPreferences.setHomeDoubleTapAliasTarget(targetId)
 
+    fun getHomeTwoFingerSwipeUpAction(): HomeSwipeGestureAction = gesturesPreferences.getHomeTwoFingerSwipeUpAction()
+
+    fun setHomeTwoFingerSwipeUpAction(action: HomeSwipeGestureAction) = gesturesPreferences.setHomeTwoFingerSwipeUpAction(action)
+
+    fun getHomeTwoFingerSwipeUpCustomAction(): String? = gesturesPreferences.getHomeTwoFingerSwipeUpCustomAction()
+
+    fun setHomeTwoFingerSwipeUpCustomAction(actionJson: String?) = gesturesPreferences.setHomeTwoFingerSwipeUpCustomAction(actionJson)
+    fun getHomeTwoFingerSwipeUpAliasTarget(): String? = gesturesPreferences.getHomeTwoFingerSwipeUpAliasTarget()
+    fun setHomeTwoFingerSwipeUpAliasTarget(targetId: String?) = gesturesPreferences.setHomeTwoFingerSwipeUpAliasTarget(targetId)
+
+    fun getHomeTwoFingerSwipeDownAction(): HomeSwipeGestureAction = gesturesPreferences.getHomeTwoFingerSwipeDownAction()
+
+    fun setHomeTwoFingerSwipeDownAction(action: HomeSwipeGestureAction) = gesturesPreferences.setHomeTwoFingerSwipeDownAction(action)
+
+    fun getHomeTwoFingerSwipeDownCustomAction(): String? = gesturesPreferences.getHomeTwoFingerSwipeDownCustomAction()
+
+    fun setHomeTwoFingerSwipeDownCustomAction(actionJson: String?) = gesturesPreferences.setHomeTwoFingerSwipeDownCustomAction(actionJson)
+    fun getHomeTwoFingerSwipeDownAliasTarget(): String? = gesturesPreferences.getHomeTwoFingerSwipeDownAliasTarget()
+    fun setHomeTwoFingerSwipeDownAliasTarget(targetId: String?) = gesturesPreferences.setHomeTwoFingerSwipeDownAliasTarget(targetId)
+
     // ============================================================================
     // App Shortcut Preferences
     // ============================================================================

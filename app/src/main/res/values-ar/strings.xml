@@ -78,6 +78,7 @@
     <string name="action_add_to_home">إضافة إلى الشاشة الرئيسية</string>
     <string name="action_add_trigger">إضافة كلمة تشغيل</string>
     <string name="action_app_info">معلومات التطبيق</string>
+    <string name="action_open_in_google_play">فتح في Google Play</string>
     <string name="action_manage_all_apps">إدارة كل التطبيقات</string>
     <string name="action_app_shortcuts_settings">إعدادات اختصارات التطبيقات</string>
     <string name="action_files_settings">إعدادات الملفات</string>
@@ -114,7 +115,7 @@
     <string name="action_open_folder">فتح المجلد</string>
     <string name="action_open_keyboard">فتح لوحة المفاتيح</string>
     <string name="action_open_settings">فتح الإعدادات</string>
-    <string name="settings_gestures_title">الإيماءات</string>
+    <string name="settings_gestures_title">إيماءات الشاشة الرئيسية</string>
     <string name="settings_gestures_desc">تخصيص إجراءات السحب</string>
     <string name="settings_gesture_swipe_right">السحب لليمين</string>
     <string name="settings_gesture_widget_panel">لوحة عناصر واجهة المستخدم</string>
@@ -122,14 +123,15 @@
     <string name="settings_gesture_swipe_left">السحب لليسار</string>
     <string name="settings_gesture_swipe_up">السحب للأعلى</string>
     <string name="settings_gesture_swipe_down">السحب للأسفل</string>
-    <string name="settings_gesture_swipe_up_home">السحب للأعلى (الرئيسية)</string>
-<string name="settings_gesture_swipe_down_home">السحب للأسفل (الرئيسية)</string>
 <string name="settings_gesture_close_quick_search">إغلاق البحث السريع</string>
-<string name="settings_gesture_double_tap_home">النقر المزدوج (الرئيسية)</string>
+<string name="settings_gesture_double_tap_home">النقر المزدوج</string>
+<string name="settings_gesture_two_finger_swipe_up_home">السحب بإصبعين للأعلى</string>
+<string name="settings_gesture_two_finger_swipe_down_home">السحب بإصبعين للأسفل</string>
     <string name="settings_gesture_settings">الإعدادات</string>
     <string name="settings_gesture_close_keyboard_notifications">إغلاق لوحة المفاتيح / فتح الإشعارات</string>
     <string name="settings_gesture_close_keyboard">إغلاق لوحة المفاتيح</string>
     <string name="settings_gesture_notification_panel">لوحة الإشعارات</string>
+    <string name="settings_gesture_quick_settings">فتح الإعدادات السريعة</string>
     <string name="settings_gesture_view_all_apps">عرض جميع التطبيقات</string>
     <string name="settings_gesture_lock_screen">قفل الشاشة</string>
     <string name="settings_gesture_lock_screen_requires_accessibility">يتطلب إذن تسهيل الاستخدام</string>
@@ -139,7 +141,7 @@
     <string name="accessibility_lock_screen_disclosure_message">يستخدم Quick Search ميزة إمكانية الوصول من أجل:\n\n• تفعيل إيماءة النقر المزدوج لقفل الشاشة.\n• فتح Quick Search باستخدام إيماءات السحب من الحافة.\n• فتح Quick Search باستخدام الزر العائم.\n\nلا يقرأ محتوى شاشتك أو بياناتك الشخصية الأخرى ولا يجمعها أو يخزنها أو يشاركها.</string>
     <string name="settings_gesture_none">بلا</string>
     <string name="settings_gesture_custom">مخصص (التطبيقات، الملفات، إلخ.)</string>
-    <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح (الرئيسية)</string>
+    <string name="settings_keyboard_gestures_title">إيماءات لوحة المفاتيح</string>
     <string name="settings_keyboard_gestures_desc">يعمل فقط عندما لا يوجد محتوى قابل للتمرير على الشاشة الرئيسية</string>
     <string name="action_pin_app">تثبيت</string>
     <string name="action_pin_to_notifications">تثبيت في الإشعارات</string>
@@ -615,6 +617,8 @@
          ============================================================================ -->
     <string name="app_settings_search_create_note_desc">بدء ملاحظة جديدة في المحرر</string>
     <string name="app_settings_search_create_note_title">إنشاء ملاحظة</string>
+    <string name="app_settings_search_create_notification_note_title">إنشاء ملاحظة إشعار</string>
+    <string name="app_settings_search_create_notification_note_desc">اكتب ملاحظة تبقى في لوحة الإشعارات</string>
     <string name="notes_body_hint">اكتب ملاحظتك هنا</string>
     <string name="notes_create_note_cta">ملاحظة جديدة</string>
     <string name="notes_delete_confirm_message">سيتم حذف هذه الملاحظة نهائياً.</string>
@@ -625,6 +629,7 @@
     <string name="notes_editor_action_open_link">فتح الرابط</string>
     <string name="notes_editor_action_send_email">إرسال بريد إلكتروني</string>
     <string name="notes_editor_title">محرر الملاحظات</string>
+    <string name="notes_editor_notification_note_title">ملاحظة إشعار</string>
     <string name="notes_empty_note_subtext">ملاحظة فارغة</string>
     <string name="notes_quick_note_title">ملاحظة سريعة</string>
     <string name="notes_quick_note_toggle_desc">فتح الملاحظة السريعة عبر السحب</string>
@@ -1050,6 +1055,9 @@
     <string name="calculator_toggle_desc">عرض نتائج العمليات الحسابية البسيطة</string>
     <string name="calculator_toggle_title">الآلة الحاسبة</string>
     <string name="currency_converter_invalid_input">بيانات تحويل العملة غير صالحة</string>
+    <string name="currency_converter_rates_unavailable">تعذّر جلب أسعار الصرف. حاول مرة أخرى.</string>
+    <string name="currency_converter_unsupported_currency">%1$s غير مدعومة</string>
+    <string name="currency_converter_check_rates_on_google">تحقق من الأسعار على Google</string>
     <string name="currency_converter_requires_gemini_key">يتطلب مفتاح API لمزود AI</string>
     <string name="currency_converter_toggle_desc">مثال: 100 USD إلى INR</string>
     <string name="currency_converter_toggle_title">محول العملات</string>
@@ -1074,6 +1082,9 @@
     <string name="date_calculator_toggle_action_desc">تفعيل أو تعطيل حاسبة التاريخ والوقت</string>
     <string name="date_calculator_toggle_desc">أمثلة الاستخدام</string>
     <string name="dictionary_example_label">مثال: %1$s</string>
+    <string name="dictionary_definition_not_found">لم يتم العثور على تعريف لـ “%1$s”</string>
+    <string name="dictionary_unavailable">تعذّر الوصول إلى القاموس. حاول مرة أخرى.</string>
+    <string name="dictionary_search_on_google">البحث على Google</string>
     <string name="dictionary_synonyms_label">المرادفات: %1$s</string>
     <string name="dictionary_toggle_desc">مثال: تعريف Serendipity</string>
     <string name="dictionary_toggle_title">القاموس</string>

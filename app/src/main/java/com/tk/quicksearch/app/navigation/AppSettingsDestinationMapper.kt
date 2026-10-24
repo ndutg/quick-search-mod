@@ -36,6 +36,8 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.GESTURE_SWIPE_UP,
         AppSettingsDestination.GESTURE_SWIPE_DOWN,
         AppSettingsDestination.GESTURE_DOUBLE_TAP,
+        AppSettingsDestination.GESTURE_TWO_FINGER_SWIPE_UP,
+        AppSettingsDestination.GESTURE_TWO_FINGER_SWIPE_DOWN,
         AppSettingsDestination.GESTURE_OPEN_KEYBOARD,
         AppSettingsDestination.GESTURE_CLOSE_KEYBOARD -> SettingsDetailType.GESTURES
         AppSettingsDestination.FEATURES_LIST -> SettingsDetailType.FEATURES_LIST
@@ -55,6 +57,7 @@ internal fun AppSettingsDestination.toSettingsDetailTypeOrNull(): SettingsDetail
         AppSettingsDestination.ADD_HOME_SCREEN_WIDGET,
         AppSettingsDestination.ADD_QUICK_SETTINGS_TILE,
         AppSettingsDestination.CREATE_NOTE,
+        AppSettingsDestination.CREATE_NOTIFICATION_NOTE,
         AppSettingsDestination.NOTES_LIST,
         AppSettingsDestination.CREATE_REMINDER -> null
         AppSettingsDestination.OPEN_EVENTS_IN -> null
