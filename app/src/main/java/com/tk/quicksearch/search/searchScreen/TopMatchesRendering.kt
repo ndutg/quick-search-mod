@@ -100,6 +100,7 @@ internal fun TopMatchesSection(
     showHeader: Boolean = true,
     selectedMatchIndex: Int? = null,
     reverseOrder: Boolean = false,
+    showLeadingDivider: Boolean = false,
     screenTimeState: ScreenTimeState,
     pinnedNonAppItemOrder: List<String>,
     iconPackPackage: String?,
@@ -114,8 +115,9 @@ internal fun TopMatchesSection(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
     ) {
-        // Bottom-aligned results stack Top Matches under the app grid, which ends without a divider.
-        if (!cardLayoutEnabled && reverseOrder) {
+        // Bottom-aligned results can stack Top Matches under the app grid, which ends without a
+        // divider. Flat cards above already end in one, so only the grid needs this.
+        if (!cardLayoutEnabled && showLeadingDivider) {
             TopMatchesBoundaryDivider(showWallpaperBackground)
         }
         if (showHeader) {
@@ -127,10 +129,11 @@ internal fun TopMatchesSection(
                 key(item.stableKey()) {
                     val isTopPredicted = showTopResultIndicator && item == highlightedMatch
                     if (item is TopMatchItem.AppGrid) {
-                        // Flat rows end in a divider; keep the icons off it.
+                        // Flat rows end in a divider; keep the icons as far off it as the regular app
+                        // grid sits below the section above it (half the results stack spacing).
                         val gridTopPadding =
                             if (!cardLayoutEnabled && item != displayedMatches.first()) {
-                                DesignTokens.SpacingSmall
+                                (DesignTokens.SpacingMedium - DesignTokens.SpacingXSmall) / 2
                             } else {
                                 0.dp
                             }
@@ -139,6 +142,15 @@ internal fun TopMatchesSection(
                                 apps = item.apps,
                                 params = params.appsParams,
                                 isPredicted = isTopPredicted,
+                            )
+                        }
+                        // Flat cards end in their own divider, the app grid doesn't. Close it off before
+                        // the next match or, when not bottom-aligned, before the regular results, at the
+                        // same distance as the results stack spacing.
+                        if (!cardLayoutEnabled && (item != displayedMatches.last() || !reverseOrder)) {
+                            TopMatchesBoundaryDivider(
+                                showWallpaperBackground,
+                                Modifier.padding(top = DesignTokens.SpacingMedium - DesignTokens.SpacingXSmall),
                             )
                         }
                     } else if (item is TopMatchItem.Other) {
@@ -194,10 +206,6 @@ internal fun TopMatchesSection(
                     }
                 }
             }
-        }
-        // Flat cards end in their own divider, the app grid doesn't; mark where regular results begin.
-        if (!cardLayoutEnabled && !reverseOrder && displayedMatches.lastOrNull() is TopMatchItem.AppGrid) {
-            TopMatchesBoundaryDivider(showWallpaperBackground, Modifier.padding(top = DesignTokens.SpacingSmall))
         }
     }
 }

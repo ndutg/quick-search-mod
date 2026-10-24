@@ -381,13 +381,19 @@ fun ContentLayout(
         )
     val regularSectionParams = regularSectionParams(sectionParams, showTopMatches)
 
+    val topMatchesDuplicateApps =
+        showTopMatches && topMatchesRepeatApps(displayedTopMatches, regularRenderingState.displayApps)
+
     fun shouldRenderSection(section: SearchSection): Boolean {
+        if (section == SearchSection.APPS && topMatchesDuplicateApps) return false
         return if (isSectionAliasMode) {
             activeAliasSection == section
         } else {
             !hideResults
         }
     }
+    val rendersAppsSection = shouldRenderSection(SearchSection.APPS) && !isUrlQuery &&
+        !holdRegularSectionsForTopMatches && sectionContext.shouldRenderApps && regularAppsParams.hasAppResults
 
     val standaloneTodayEventIds =
         sectionContextForRecentHistoryExpansion.todayCalendarEventsList.map { it.eventId }.toSet()
@@ -518,6 +524,7 @@ fun ContentLayout(
             onOtherSearchItemAction = onOtherSearchItemAction,
             showTopMatches = showTopMatches,
             hasMoreResults = hasMoreResults,
+            appsSectionAbove = isReversed && rendersAppsSection,
         )
     }
 
@@ -739,9 +746,7 @@ fun ContentLayout(
             state = state,
             showTopMatchesSection = showTopMatchesSection,
             topMatches = displayedTopMatches,
-            rendersAppsSection =
-                shouldRenderSection(SearchSection.APPS) && !isUrlQuery && !holdRegularSectionsForTopMatches &&
-                    sectionContext.shouldRenderApps && regularAppsParams.hasAppResults,
+            rendersAppsSection = rendersAppsSection,
         )
     val contentModifier = modifier.padding(bottom = bottomGap).reportCardlessTrailingEdge()
 

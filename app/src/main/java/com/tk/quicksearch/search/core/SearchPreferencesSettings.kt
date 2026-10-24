@@ -6,6 +6,7 @@ import com.tk.quicksearch.overlay.OverlayModeController
 import com.tk.quicksearch.search.apps.IconPackService
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
+import com.tk.quicksearch.search.data.preferences.CompactLayoutPriorUi
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.tools.aiSearch.AiSearchHandler
@@ -129,6 +130,7 @@ internal fun SearchPreferencesDelegate.setUnifiedPinnedItemsEnabled(enabled: Boo
     }
 
 internal fun SearchPreferencesDelegate.setCardLayoutEnabled(enabled: Boolean) {
+        val layoutChanged = userPreferences.isCardLayoutEnabled() != enabled
         updateBooleanPreference(
             value = enabled,
             preferenceSetter = userPreferences::setCardLayoutEnabled,
@@ -136,11 +138,31 @@ internal fun SearchPreferencesDelegate.setCardLayoutEnabled(enabled: Boolean) {
                 updateUiState { state -> state.copy(cardLayoutEnabled = it) }
             },
         )
+        if (!layoutChanged) return
         // Compact layout starts with a denser app grid and small text; all stay adjustable afterwards.
+        // Turning it off restores each previous value the user hasn't changed since.
         if (!enabled) {
+            userPreferences.saveCompactLayoutPriorUi(
+                CompactLayoutPriorUi(
+                    phoneAppGridColumns = userPreferences.getPhoneAppGridColumns(),
+                    appIconSizeStep = userPreferences.getAppIconSizeStep(),
+                    fontScaleMultiplier = userPreferences.getFontScaleMultiplier(),
+                ),
+            )
             setPhoneAppGridColumns(UiPreferences.COMPACT_LAYOUT_PHONE_APP_GRID_COLUMNS)
             setAppIconSizeStep(UiPreferences.COMPACT_LAYOUT_APP_ICON_SIZE_STEP)
             setFontScaleMultiplier(UiPreferences.COMPACT_LAYOUT_FONT_SCALE_MULTIPLIER)
+        } else {
+            val prior = userPreferences.takeCompactLayoutPriorUi() ?: return
+            if (userPreferences.getPhoneAppGridColumns() == UiPreferences.COMPACT_LAYOUT_PHONE_APP_GRID_COLUMNS) {
+                setPhoneAppGridColumns(prior.phoneAppGridColumns)
+            }
+            if (userPreferences.getAppIconSizeStep() == UiPreferences.COMPACT_LAYOUT_APP_ICON_SIZE_STEP) {
+                setAppIconSizeStep(prior.appIconSizeStep)
+            }
+            if (userPreferences.getFontScaleMultiplier() == UiPreferences.COMPACT_LAYOUT_FONT_SCALE_MULTIPLIER) {
+                setFontScaleMultiplier(prior.fontScaleMultiplier)
+            }
         }
     }
 

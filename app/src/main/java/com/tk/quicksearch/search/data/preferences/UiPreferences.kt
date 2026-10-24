@@ -13,6 +13,13 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 
+/** Apps per row, icon size and font size in use before compact layout was turned on. */
+data class CompactLayoutPriorUi(
+    val phoneAppGridColumns: Int,
+    val appIconSizeStep: Int,
+    val fontScaleMultiplier: Float,
+)
+
 /** Preferences for UI-related settings such as layout, messaging app, banners, etc. */
 class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
     fun isCalculatorEnabled(): Boolean = getBooleanPref(UiPreferences.KEY_CALCULATOR_ENABLED, true)
@@ -349,6 +356,9 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_UNIFIED_PINNED_ITEMS_ENABLED = "unified_pinned_items_enabled"
         const val KEY_SEARCH_HINTS_ENABLED = "search_hints_enabled"
         const val KEY_CARD_LAYOUT_ENABLED = "card_layout_enabled"
+        const val KEY_COMPACT_PRIOR_APP_GRID_COLUMNS = "compact_prior_app_grid_columns"
+        const val KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP = "compact_prior_app_icon_size_step"
+        const val KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER = "compact_prior_font_scale_multiplier"
         const val KEY_SETTINGS_ICON_ENABLED = "settings_icon_enabled"
         const val KEY_OPEN_KEYBOARD_ON_LAUNCH = "open_keyboard_on_launch"
         const val KEY_RESERVED_KEYBOARD_HEIGHT_PORTRAIT = "reserved_keyboard_height_portrait"
