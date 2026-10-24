@@ -1,5 +1,8 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -111,6 +114,10 @@ internal fun TopMatchesSection(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
     ) {
+        // Bottom-aligned results stack Top Matches under the app grid, which ends without a divider.
+        if (!cardLayoutEnabled && reverseOrder) {
+            TopMatchesBoundaryDivider(showWallpaperBackground)
+        }
         if (showHeader) {
             TopMatchesHeader()
         }
@@ -188,7 +195,21 @@ internal fun TopMatchesSection(
                 }
             }
         }
+        // Flat cards end in their own divider, the app grid doesn't; mark where regular results begin.
+        if (!cardLayoutEnabled && !reverseOrder && displayedMatches.lastOrNull() is TopMatchItem.AppGrid) {
+            TopMatchesBoundaryDivider(showWallpaperBackground, Modifier.padding(top = DesignTokens.SpacingSmall))
+        }
     }
+}
+
+/** Full-width divider between Top Matches and the regular results (card layout off). */
+@Composable
+private fun TopMatchesBoundaryDivider(showWallpaperBackground: Boolean, modifier: Modifier = Modifier) {
+    HorizontalDivider(
+        modifier = Modifier.compactEdgeToEdge().then(modifier),
+        color = LocalOverlayDividerColor.current
+            ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
+    )
 }
 
 @Composable

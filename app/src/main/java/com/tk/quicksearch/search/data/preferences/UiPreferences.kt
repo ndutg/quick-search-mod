@@ -433,6 +433,11 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val MAX_APP_ICON_SIZE_STEP = 10
         // Keep the existing default icon rendering while expressing it as 80%.
         const val DEFAULT_APP_ICON_SIZE_STEP = 6
+
+        /** Grid columns, icon size step (65%) and font size (Small) applied when the compact layout is turned on. */
+        const val COMPACT_LAYOUT_PHONE_APP_GRID_COLUMNS = 5
+        const val COMPACT_LAYOUT_APP_ICON_SIZE_STEP = 3
+        const val COMPACT_LAYOUT_FONT_SCALE_MULTIPLIER = 0.95f
         private const val APP_ICON_SIZE_PERCENT_DELTA = 5
         private const val MIN_APP_ICON_SIZE_PERCENT = 50
         private const val DEFAULT_APP_ICON_SIZE_PERCENT = 80

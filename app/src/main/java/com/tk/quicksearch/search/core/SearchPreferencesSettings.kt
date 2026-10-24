@@ -136,6 +136,12 @@ internal fun SearchPreferencesDelegate.setCardLayoutEnabled(enabled: Boolean) {
                 updateUiState { state -> state.copy(cardLayoutEnabled = it) }
             },
         )
+        // Compact layout starts with a denser app grid and small text; all stay adjustable afterwards.
+        if (!enabled) {
+            setPhoneAppGridColumns(UiPreferences.COMPACT_LAYOUT_PHONE_APP_GRID_COLUMNS)
+            setAppIconSizeStep(UiPreferences.COMPACT_LAYOUT_APP_ICON_SIZE_STEP)
+            setFontScaleMultiplier(UiPreferences.COMPACT_LAYOUT_FONT_SCALE_MULTIPLIER)
+        }
     }
 
 internal fun SearchPreferencesDelegate.setSearchHintsEnabled(enabled: Boolean) {

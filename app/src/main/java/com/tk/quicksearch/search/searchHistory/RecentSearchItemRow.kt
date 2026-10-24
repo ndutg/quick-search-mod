@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.searchHistory
 
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -271,7 +273,12 @@ internal fun RecentSearchItemRow(
 
     if (showDivider) {
         HorizontalDivider(
-            modifier = Modifier.padding(horizontal = dividerPadding(item)),
+            modifier =
+                if (LocalSearchCardLayoutEnabled.current) {
+                    Modifier.padding(horizontal = dividerPadding(item))
+                } else {
+                    Modifier.compactEdgeToEdge()
+                },
             color = dividerColor,
         )
     }

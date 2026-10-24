@@ -460,17 +460,6 @@ fun ContentLayout(
 
     var showPinnedSectionOrderDialog by rememberSaveable { mutableStateOf(false) }
 
-    @Composable
-    fun renderHomePinnedSection(section: SearchSection, content: @Composable () -> Unit) {
-        HomePinnedSection(
-            section = section,
-            showSectionedPinnedHeaders = showSectionedPinnedHeaders,
-            userPreferences = userPreferences,
-            effectiveShowWallpaperBackground = effectiveShowWallpaperBackground,
-            onShowOrderDialog = { showPinnedSectionOrderDialog = true },
-            content = content,
-        )
-    }
     HomePinnedSectionOrderDialog(
         showPinnedSectionOrderDialog = showPinnedSectionOrderDialog,
         state = state,
@@ -671,7 +660,13 @@ fun ContentLayout(
                     // Late app suggestions push At a Glance and the rest of home down smoothly.
                     expandIn = section == SearchSection.APPS,
                 ) {
-                    renderHomePinnedSection(section) {
+                    HomePinnedSection(
+                        section = section,
+                        showSectionedPinnedHeaders = showSectionedPinnedHeaders,
+                        userPreferences = userPreferences,
+                        effectiveShowWallpaperBackground = effectiveShowWallpaperBackground,
+                        onShowOrderDialog = { showPinnedSectionOrderDialog = true },
+                    ) {
                         renderSection(section, regularSectionParams, sectionContext)
                     }
                 }

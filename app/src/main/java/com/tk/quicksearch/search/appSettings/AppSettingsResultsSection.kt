@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.appSettings
 
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
@@ -47,6 +49,7 @@ import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
@@ -166,7 +169,7 @@ fun AppSettingsResultsSection(
 
                     if (index != displayRows.lastIndex && !showPredictedOnRow) {
                         HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                             color = overlayDividerColor
                                 ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
                         )
@@ -174,10 +177,12 @@ fun AppSettingsResultsSection(
                 }
 
                 if (cardState.shouldShowExpandButton) {
+                    ExpandButtonDivider(showWallpaperBackground)
                     ExpandButton(
                         onClick = onExpandClick,
                         modifier =
-                            Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp),
+                            Modifier.align(Alignment.CenterHorizontally)
+                                .padding(top = if (LocalSearchCardLayoutEnabled.current) 4.dp else 0.dp),
                     )
                 }
             }

@@ -1,8 +1,14 @@
 package com.tk.quicksearch.search.searchScreen.components
 
+import androidx.compose.ui.unit.Dp
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -12,6 +18,7 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +35,7 @@ import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnable
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.searchScreen.LocalOverlayActionColor
+import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
@@ -35,7 +43,21 @@ import com.tk.quicksearch.shared.ui.theme.LocalAppTheme
 
 private const val EXPAND_ICON_SIZE = 18
 private const val COMPACT_EXPAND_ICON_SIZE = 14
-private const val COMPACT_EXPAND_BUTTON_MIN_HEIGHT = 24
+private const val COMPACT_EXPAND_BUTTON_HEIGHT = 36
+
+/**
+ * Divider between a section's last row and its More button. Only flat rows (card layout off) get
+ * one; card sections end at the card edge instead.
+ */
+@Composable
+internal fun ExpandButtonDivider(showWallpaperBackground: Boolean) {
+    if (LocalSearchCardLayoutEnabled.current) return
+    HorizontalDivider(
+        modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
+        color = LocalOverlayDividerColor.current
+            ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
+    )
+}
 
 @Composable
 internal fun ExpandButton(
@@ -47,6 +69,8 @@ internal fun ExpandButton(
     icon: ImageVector = Icons.Rounded.ExpandMore,
     compact: Boolean = false,
 ) {
+    // Flat sections (card layout off) always use the short More button.
+    val compact = compact || !LocalSearchCardLayoutEnabled.current
     val overlayActionColor = LocalOverlayActionColor.current
     val moreActionColor = expandCollapseActionContentColor(overlayActionColor)
     val cardContainerColor = resultCardContainerColor(showWallpaperBackground)
@@ -86,23 +110,28 @@ internal fun ExpandButton(
             )
         }
     } else {
-        TextButton(
-            onClick = onClick,
-            // Compact drops the 40dp default min height so the button hugs the rows above it.
-            modifier = if (compact) modifier.heightIn(min = COMPACT_EXPAND_BUTTON_MIN_HEIGHT.dp) else modifier,
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+        // Compact drops the 40dp minimum and 48dp touch-target padding so the button is a short row.
+        CompositionLocalProvider(
+            LocalMinimumInteractiveComponentSize provides
+                if (compact) Dp.Unspecified else LocalMinimumInteractiveComponentSize.current,
         ) {
-            Text(
-                text = stringResource(textResId),
-                style = moreTextStyle,
-                color = moreActionColor,
-            )
-            Icon(
-                imageVector = icon,
-                contentDescription = stringResource(R.string.desc_expand),
-                tint = moreActionColor,
-                modifier = Modifier.size(iconSize.dp),
-            )
+            TextButton(
+                onClick = onClick,
+                modifier = if (compact) modifier.height(COMPACT_EXPAND_BUTTON_HEIGHT.dp) else modifier,
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+            ) {
+                Text(
+                    text = stringResource(textResId),
+                    style = moreTextStyle,
+                    color = moreActionColor,
+                )
+                Icon(
+                    imageVector = icon,
+                    contentDescription = stringResource(R.string.desc_expand),
+                    tint = moreActionColor,
+                    modifier = Modifier.size(iconSize.dp),
+                )
+            }
         }
     }
 }

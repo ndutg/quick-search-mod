@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.files
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import android.os.Build
 import android.os.SystemClock
 import android.util.Size
@@ -71,6 +72,8 @@ import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
@@ -101,7 +104,14 @@ internal const val THUMBNAIL_CACHE_MAX_SIZE = 60
 internal const val THUMBNAIL_FAILURE_RETRY_DELAY_MS = 30_000L
 private const val THUMBNAIL_FADE_IN_DURATION_MS = 100
 private const val EXPAND_BUTTON_TOP_PADDING = 2
-private const val EXPAND_BUTTON_HORIZONTAL_PADDING = 12
+
+/** Card sections squeeze the More button; flat ones keep the standard size other sections use. */
+private fun Modifier.compactExpandButtonSize(cardLayoutEnabled: Boolean): Modifier =
+        if (cardLayoutEnabled) {
+            height(ContactUiConstants.EXPAND_BUTTON_HEIGHT.dp).padding(top = EXPAND_BUTTON_TOP_PADDING.dp)
+        } else {
+            this
+        }
 private val FILE_CARD_CONTENT_VERTICAL_PADDING = 4.dp
 private val WORD_EXTENSIONS = setOf("doc", "docx")
 private val SHEET_EXTENSIONS = setOf("xls", "xlsx")
@@ -352,7 +362,7 @@ private fun FileCardContent(
                 )
                 if (index != displayFiles.lastIndex && !showPredictedOnRow) {
                     HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                             color = overlayDividerColor ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
                     )
                 }
@@ -360,17 +370,20 @@ private fun FileCardContent(
 
             if (shouldShowExpandButton) {
                 item {
-                    Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    ExpandButtonDivider(showWallpaperBackground)
+                }
+                item {
+                    val cardLayoutEnabled = LocalSearchCardLayoutEnabled.current
+                    Box(
+                            modifier =
+                                    Modifier.fillMaxWidth()
+                                            .padding(bottom = if (cardLayoutEnabled) 8.dp else 0.dp),
+                    ) {
                         ExpandButton(
                                 onClick = onExpandClick,
                                 modifier =
                                         Modifier.align(Alignment.Center)
-                                                .height(
-                                                        ContactUiConstants.EXPAND_BUTTON_HEIGHT.dp,
-                                                )
-                                                .padding(
-                                                        top = EXPAND_BUTTON_TOP_PADDING.dp,
-                                                ),
+                                                .compactExpandButtonSize(cardLayoutEnabled),
                         )
                     }
                 }
@@ -409,23 +422,22 @@ private fun FileCardContent(
                 )
                 if (index != displayFiles.lastIndex && !showPredictedOnRow) {
                     HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                             color = overlayDividerColor ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
                     )
                 }
             }
 
             if (shouldShowExpandButton) {
+                ExpandButtonDivider(showWallpaperBackground)
+                val cardLayoutEnabled = LocalSearchCardLayoutEnabled.current
                 ExpandButton(
                         onClick = onExpandClick,
                         modifier =
                                 Modifier.align(Alignment.CenterHorizontally)
-                                        .height(
-                                                ContactUiConstants.EXPAND_BUTTON_HEIGHT.dp,
-                                        )
-                                        .padding(top = EXPAND_BUTTON_TOP_PADDING.dp),
+                                        .compactExpandButtonSize(cardLayoutEnabled),
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                if (cardLayoutEnabled) Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -753,33 +765,9 @@ private fun ExpandButton(
         onClick: () -> Unit,
         modifier: Modifier = Modifier,
 ) {
-    val moreActionColor = MaterialTheme.colorScheme.primary
-    val moreTextStyle =
-            if (LocalAppTheme.current == AppTheme.MONOCHROME) {
-                MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
-            } else {
-                MaterialTheme.typography.bodySmall
-            }
-
-    TextButton(
+    com.tk.quicksearch.search.searchScreen.components.ExpandButton(
             onClick = onClick,
             modifier = modifier,
-            contentPadding =
-                    PaddingValues(
-                            horizontal = EXPAND_BUTTON_HORIZONTAL_PADDING.dp,
-                            vertical = 0.dp,
-                    ),
-    ) {
-        Text(
-                text = stringResource(R.string.action_expand_more_files),
-                style = moreTextStyle,
-                color = moreActionColor,
-        )
-        Icon(
-                imageVector = Icons.Rounded.ExpandMore,
-                contentDescription = stringResource(R.string.desc_expand),
-                tint = moreActionColor,
-                modifier = Modifier.size(ContactUiConstants.EXPAND_ICON_SIZE.dp),
-        )
-    }
+            textResId = R.string.action_expand_more_files,
+    )
 }

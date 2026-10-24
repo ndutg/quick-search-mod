@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.calendar
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +49,7 @@ import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
@@ -226,7 +228,7 @@ fun CalendarEventsSection(
                         )
                         if (index < displayEvents.lastIndex && !showPredictedOnRow) {
                             HorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                                 color = overlayDividerColor ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
                             )
                         }
@@ -238,6 +240,7 @@ fun CalendarEventsSection(
                 }
 
                 if (cardState.shouldShowExpandButton) {
+                    ExpandButtonDivider(showWallpaperBackground)
                     ExpandButton(
                         onClick = onExpandClick,
                         modifier = Modifier.align(Alignment.CenterHorizontally),

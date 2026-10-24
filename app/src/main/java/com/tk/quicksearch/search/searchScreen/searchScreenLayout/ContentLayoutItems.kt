@@ -90,7 +90,7 @@ internal fun NonSectionLayoutItem(
                     val hasOtherGlanceCard = hasStandaloneTodayCalendarSection || atAGlanceItems.isNotEmpty()
                     if (mediaCardFirst && nowPlaying != null) {
                         // Alone, media owns the title so closing it removes the section in one motion.
-                        if (showGlanceTitle && hasOtherGlanceCard) AtAGlanceTitle()
+                        if (showGlanceTitle && hasOtherGlanceCard) AtAGlanceTitle(effectiveShowWallpaperBackground)
                         NowPlayingCard(
                             glance = nowPlaying,
                             showWallpaperBackground = effectiveShowWallpaperBackground,

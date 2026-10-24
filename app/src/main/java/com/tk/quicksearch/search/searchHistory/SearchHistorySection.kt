@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchHistory
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -8,9 +9,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
@@ -45,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -149,6 +153,10 @@ fun SearchHistorySection(
     val expanded = alwaysExpanded || (isExpanded ?: localExpanded)
     var showClearAllConfirmation by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val imeInsets = WindowInsets.ime
+    val density = LocalDensity.current
+    // Collapsing restores the keyboard only if it was open when More History was tapped.
+    var keyboardOpenBeforeExpand by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     var lastCollapseRequestKey by remember { mutableStateOf(collapseRequestKey) }
     var localSelectedTab by rememberSaveable { mutableStateOf(SearchHistoryTab.SEARCHES) }
@@ -172,6 +180,12 @@ fun SearchHistorySection(
         onExpandedChange(value)
     }
 
+    fun collapseAndRestoreKeyboard() {
+        updateExpanded(false)
+        if (keyboardOpenBeforeExpand) keyboardController?.show()
+        keyboardOpenBeforeExpand = false
+    }
+
     fun updateSelectedTab(tab: SearchHistoryTab) {
         if (selectedTab == null) {
             localSelectedTab = tab
@@ -180,15 +194,13 @@ fun SearchHistorySection(
     }
 
     BackHandler(enabled = expanded) {
-        updateExpanded(false)
-        keyboardController?.show()
+        collapseAndRestoreKeyboard()
     }
 
     LaunchedEffect(collapseRequestKey) {
         if (collapseRequestKey != lastCollapseRequestKey && !alwaysExpanded && expanded) {
             lastCollapseRequestKey = collapseRequestKey
-            updateExpanded(false)
-            keyboardController?.show()
+            collapseAndRestoreKeyboard()
         } else {
             lastCollapseRequestKey = collapseRequestKey
         }
@@ -256,16 +268,21 @@ fun SearchHistorySection(
                         showWallpaperBackground = showWallpaperBackground,
                     )
                     HorizontalDivider(
+                        modifier = Modifier.compactEdgeToEdge(),
                         color = dividerColor(showWallpaperBackground, overlayDividerColor),
                     )
                 }
 
+                val cardLayoutEnabled = LocalSearchCardLayoutEnabled.current
                 val showClearAllHistory =
                     displayAsExpanded &&
                         onClearRecentItems != null &&
                         displayItems.isNotEmpty()
+                // Flat rows (card layout off) also separate the last row from More History.
+                val showMoreHistoryDivider = !displayAsExpanded && canExpand && !cardLayoutEnabled
                 displayItems.forEachIndexed { index, item ->
-                    val baseShowDivider = index < displayItems.lastIndex || showClearAllHistory
+                    val baseShowDivider =
+                        index < displayItems.lastIndex || showClearAllHistory || showMoreHistoryDivider
                     RecentSearchItemRow(
                         item = item,
                         textColor = textColor,
@@ -313,12 +330,13 @@ fun SearchHistorySection(
                 if (!displayAsExpanded && canExpand) {
                     ExpandButton(
                         onClick = {
+                            keyboardOpenBeforeExpand = imeInsets.getBottom(density) > 0
                             updateExpanded(true)
                             keyboardController?.hide()
                         },
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         textResId = R.string.action_more_search_history,
-                        compact = !LocalSearchCardLayoutEnabled.current,
+                        compact = !cardLayoutEnabled,
                     )
                 }
             }
@@ -327,10 +345,7 @@ fun SearchHistorySection(
         if (expanded && !alwaysExpanded && showInlineCollapseButton) {
             CollapseButton(
                 showWallpaperBackground = showWallpaperBackground,
-                onClick = {
-                    updateExpanded(false)
-                    keyboardController?.show()
-                },
+                onClick = { collapseAndRestoreKeyboard() },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = DesignTokens.SpacingXXLarge),
