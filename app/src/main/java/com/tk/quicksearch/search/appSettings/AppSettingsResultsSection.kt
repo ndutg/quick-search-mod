@@ -1,6 +1,7 @@
 package com.tk.quicksearch.search.appSettings
 
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
+import com.tk.quicksearch.settings.appearanceSettings.homeTextColorTitleRes
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -228,6 +229,11 @@ internal fun AppSettingResultRow(
             val selectedLanguageLabel =
                 remember(context) { AppLanguageManager.getSelectedLanguageLabel(context) }
             stringResource(R.string.settings_app_language_desc, selectedLanguageLabel)
+        } else if (
+            setting.toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR &&
+                !LocalSearchCardLayoutEnabled.current
+        ) {
+            null
         } else {
             setting.description
         }
@@ -277,7 +283,14 @@ internal fun AppSettingResultRow(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
-                text = rememberQueryHighlightedText(setting.title),
+                text =
+                    rememberQueryHighlightedText(
+                        if (setting.toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR) {
+                            stringResource(homeTextColorTitleRes(!LocalSearchCardLayoutEnabled.current))
+                        } else {
+                            setting.title
+                        },
+                    ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (isBlockedByLauncher) {
                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)

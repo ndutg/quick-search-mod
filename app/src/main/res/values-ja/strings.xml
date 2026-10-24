@@ -1311,6 +1311,7 @@ www.google.com/search?q={{query}}</string>
     <string name="settings_custom_tool_alias_label">エイリアス</string>
     <string name="settings_home_text_color_title">ホームの文字色</string>
     <string name="settings_home_text_color_desc">アプリ名、セクションタイトルなど</string>
+    <string name="settings_home_text_color_title_compact">ホームと検索の文字色</string>
     <string name="settings_custom_tool_delete_button">ツールを削除</string>
     <string name="settings_custom_tool_editor_title">カスタムツール</string>
     <string name="settings_custom_tool_name_label">ツール名</string>

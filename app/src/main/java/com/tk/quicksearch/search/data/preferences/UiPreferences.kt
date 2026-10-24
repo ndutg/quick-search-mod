@@ -13,11 +13,12 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 
-/** Apps per row, icon size and font size in use before compact layout was turned on. */
+/** Apps per row, icon size, font size and light-mode wallpaper transparency in use before compact layout was turned on. */
 data class CompactLayoutPriorUi(
     val phoneAppGridColumns: Int,
     val appIconSizeStep: Int,
     val fontScaleMultiplier: Float,
+    val lightWallpaperBackgroundAlpha: Float,
 )
 
 /** Preferences for UI-related settings such as layout, messaging app, banners, etc. */
@@ -359,6 +360,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_COMPACT_PRIOR_APP_GRID_COLUMNS = "compact_prior_app_grid_columns"
         const val KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP = "compact_prior_app_icon_size_step"
         const val KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER = "compact_prior_font_scale_multiplier"
+        const val KEY_COMPACT_PRIOR_LIGHT_WALLPAPER_ALPHA = "compact_prior_light_wallpaper_alpha"
         const val KEY_SETTINGS_ICON_ENABLED = "settings_icon_enabled"
         const val KEY_OPEN_KEYBOARD_ON_LAUNCH = "open_keyboard_on_launch"
         const val KEY_RESERVED_KEYBOARD_HEIGHT_PORTRAIT = "reserved_keyboard_height_portrait"
@@ -448,6 +450,8 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val COMPACT_LAYOUT_PHONE_APP_GRID_COLUMNS = 5
         const val COMPACT_LAYOUT_APP_ICON_SIZE_STEP = 3
         const val COMPACT_LAYOUT_FONT_SCALE_MULTIPLIER = 0.95f
+        /** Light-mode wallpaper transparency applied with compact layout, which has no cards to darken. */
+        const val COMPACT_LAYOUT_LIGHT_WALLPAPER_BACKGROUND_ALPHA = 0f
         private const val APP_ICON_SIZE_PERCENT_DELTA = 5
         private const val MIN_APP_ICON_SIZE_PERCENT = 50
         private const val DEFAULT_APP_ICON_SIZE_PERCENT = 80

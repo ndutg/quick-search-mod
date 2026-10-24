@@ -60,6 +60,7 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
                 .putInt(UiPreferences.KEY_COMPACT_PRIOR_APP_GRID_COLUMNS, prior.phoneAppGridColumns)
                 .putInt(UiPreferences.KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP, prior.appIconSizeStep)
                 .putFloat(UiPreferences.KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER, prior.fontScaleMultiplier)
+                .putFloat(UiPreferences.KEY_COMPACT_PRIOR_LIGHT_WALLPAPER_ALPHA, prior.lightWallpaperBackgroundAlpha)
                 .apply()
     }
 
@@ -72,11 +73,17 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
                         appIconSizeStep = prefs.getInt(UiPreferences.KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP, 0),
                         fontScaleMultiplier =
                                 prefs.getFloat(UiPreferences.KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER, 0f),
+                        lightWallpaperBackgroundAlpha =
+                                prefs.getFloat(
+                                        UiPreferences.KEY_COMPACT_PRIOR_LIGHT_WALLPAPER_ALPHA,
+                                        UiPreferences.DEFAULT_WALLPAPER_BACKGROUND_ALPHA_LIGHT,
+                                ),
                 )
         prefs.edit()
                 .remove(UiPreferences.KEY_COMPACT_PRIOR_APP_GRID_COLUMNS)
                 .remove(UiPreferences.KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP)
                 .remove(UiPreferences.KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER)
+                .remove(UiPreferences.KEY_COMPACT_PRIOR_LIGHT_WALLPAPER_ALPHA)
                 .apply()
         return prior
     }

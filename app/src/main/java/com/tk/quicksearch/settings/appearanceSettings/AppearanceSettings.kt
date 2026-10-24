@@ -167,6 +167,7 @@ fun AppearanceSettingsSection(
                 onHomeTextColorChange = onHomeTextColorChange,
                 backgroundSource = backgroundSource,
                 customImageUri = customImageUri,
+                compactLayoutEnabled = compactLayoutEnabled,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

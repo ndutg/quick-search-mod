@@ -292,12 +292,12 @@ object AppColors {
 
     /**
      * Muted empty-state / helper text on the search surface (e.g. global “no results” line).
-     * When [LocalImageBackgroundIsDark] is set, uses white or black at [alpha] like app grid labels;
+     * With an image background, uses white or black (per [homeBackgroundIsDark]) at [alpha] like app grid labels;
      * otherwise [MaterialTheme.colorScheme.onSurface] at [alpha].
      */
     @Composable
     fun wallpaperAwareMutedSearchForeground(alpha: Float = 0.6f): Color {
-        val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
+        val imageBackgroundIsDark = homeBackgroundIsDark()
         return when (imageBackgroundIsDark) {
             true -> Color.White.copy(alpha = alpha)
             false -> Color.Black.copy(alpha = alpha)

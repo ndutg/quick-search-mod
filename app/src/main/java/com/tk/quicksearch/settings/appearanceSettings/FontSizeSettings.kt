@@ -41,6 +41,7 @@ fun FontSizeCard(
         onHomeTextColorChange: (HomeTextColor) -> Unit,
         backgroundSource: BackgroundSource,
         customImageUri: String?,
+        compactLayoutEnabled: Boolean = false,
         modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
@@ -79,6 +80,7 @@ fun FontSizeCard(
                     onColorSelected = onHomeTextColorChange,
                     backgroundSource = backgroundSource,
                     customImageUri = customImageUri,
+                    compactLayoutEnabled = compactLayoutEnabled,
             )
         }
     }

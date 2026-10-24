@@ -147,11 +147,13 @@ internal fun SearchPreferencesDelegate.setCardLayoutEnabled(enabled: Boolean) {
                     phoneAppGridColumns = userPreferences.getPhoneAppGridColumns(),
                     appIconSizeStep = userPreferences.getAppIconSizeStep(),
                     fontScaleMultiplier = userPreferences.getFontScaleMultiplier(),
+                    lightWallpaperBackgroundAlpha = userPreferences.getWallpaperBackgroundAlpha(isDarkMode = false),
                 ),
             )
             setPhoneAppGridColumns(UiPreferences.COMPACT_LAYOUT_PHONE_APP_GRID_COLUMNS)
             setAppIconSizeStep(UiPreferences.COMPACT_LAYOUT_APP_ICON_SIZE_STEP)
             setFontScaleMultiplier(UiPreferences.COMPACT_LAYOUT_FONT_SCALE_MULTIPLIER)
+            setLightWallpaperBackgroundAlpha(UiPreferences.COMPACT_LAYOUT_LIGHT_WALLPAPER_BACKGROUND_ALPHA)
         } else {
             val prior = userPreferences.takeCompactLayoutPriorUi() ?: return
             if (userPreferences.getPhoneAppGridColumns() == UiPreferences.COMPACT_LAYOUT_PHONE_APP_GRID_COLUMNS) {
@@ -163,6 +165,21 @@ internal fun SearchPreferencesDelegate.setCardLayoutEnabled(enabled: Boolean) {
             if (userPreferences.getFontScaleMultiplier() == UiPreferences.COMPACT_LAYOUT_FONT_SCALE_MULTIPLIER) {
                 setFontScaleMultiplier(prior.fontScaleMultiplier)
             }
+            if (
+                userPreferences.getWallpaperBackgroundAlpha(isDarkMode = false) ==
+                    UiPreferences.COMPACT_LAYOUT_LIGHT_WALLPAPER_BACKGROUND_ALPHA
+            ) {
+                setLightWallpaperBackgroundAlpha(prior.lightWallpaperBackgroundAlpha)
+            }
+        }
+    }
+
+/** Writes the light-mode wallpaper transparency, refreshing the live value only while in light mode. */
+private fun SearchPreferencesDelegate.setLightWallpaperBackgroundAlpha(alpha: Float) {
+        if (stateAccess.computeEffectiveIsDarkMode()) {
+            userPreferences.setWallpaperBackgroundAlpha(alpha, isDarkMode = false)
+        } else {
+            setWallpaperBackgroundAlpha(alpha)
         }
     }
 

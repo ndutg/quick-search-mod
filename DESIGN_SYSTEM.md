@@ -42,7 +42,8 @@ It exposes composition locals (in `AppColorPalette.kt`) for branching on this st
 | `AppColorPalette.kt` | Light/dark palette backing `AppColors`, scrim/alpha constants, composition locals |
 | `Color.kt` | Default accent (`AppAccentLight`/`AppAccentDark`) and base Material 3 schemes |
 | `ThemeColorRegistry.kt` | Per-`AppTheme` accents, gradients, themed icon colors, Material You tone slots |
-| `HomeTextColor.kt` | `homeTextColor()`, which applies the user's Home text override or else a wallpaper-derived foreground |
+| `HomeTextColor.kt` | `homeTextColor()`, which applies the user's Home text override or else a wallpaper-derived foreground; `homeBackgroundIsDark()`, the same choice as a dark/light flag (null without an image background), for anything that picks white or black against the wallpaper |
+| `Theme.kt` (`HomeTextContrastTheme`) | Wraps the search content area in Compact Layout (not the overlay). Over a wallpaper or image, when `homeBackgroundIsDark()` doesn't match the app theme, it swaps in the other theme's text, surface and outline roles (and `LocalAppIsDarkTheme`/palette), and trades `primary` with `primaryContainer` so accents stay legible |
 
 Main `AppColors` groups:
 
