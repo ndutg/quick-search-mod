@@ -31,6 +31,8 @@ class HomeActivity : MainActivity() {
     var canShowSystemWallpaperBackdrop: Boolean = false
         private set
 
+    private var suppressNextResumeAutoFocus = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         canShowSystemWallpaperBackdrop = isDefaultHomeApp()
         if (canShowSystemWallpaperBackdrop) {
@@ -55,10 +57,24 @@ class HomeActivity : MainActivity() {
                 ?.isVisible(WindowInsetsCompat.Type.ime()) == true
         super.onNewIntent(intent)
         if (isHomeGestureWhileVisible && isKeyboardVisible) {
+            // The search field re-requests focus and the keyboard on ON_RESUME; skip that once so
+            // the keyboard and the focus go away together.
+            suppressNextResumeAutoFocus = true
             dismissKeyboard()
-            // The search field may re-request focus on ON_RESUME; hide again once resume settles.
-            window.decorView.post { dismissKeyboard() }
         }
+    }
+
+    /** True once per Home gesture that dismissed the keyboard; the caller skips its resume focus. */
+    fun consumeResumeAutoFocusSuppression(): Boolean {
+        val suppress = suppressNextResumeAutoFocus
+        suppressNextResumeAutoFocus = false
+        return suppress
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Drop an unconsumed suppression (auto-focus off) so it can't swallow a later resume.
+        suppressNextResumeAutoFocus = false
     }
 
     private fun dismissKeyboard() {

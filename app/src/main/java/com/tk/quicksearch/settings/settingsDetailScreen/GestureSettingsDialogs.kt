@@ -33,6 +33,8 @@ enum class GestureSettingTarget {
     SWIPE_UP,
     SWIPE_DOWN,
     DOUBLE_TAP,
+    TWO_FINGER_SWIPE_UP,
+    TWO_FINGER_SWIPE_DOWN,
     OPEN_KEYBOARD,
     CLOSE_KEYBOARD,
 }
@@ -86,6 +88,8 @@ internal class GestureSettingsState(
             GestureSettingTarget.SWIPE_UP -> selectedHomeGesture = HomeGesture.SWIPE_UP
             GestureSettingTarget.SWIPE_DOWN -> selectedHomeGesture = HomeGesture.SWIPE_DOWN
             GestureSettingTarget.DOUBLE_TAP -> selectedHomeGesture = HomeGesture.DOUBLE_TAP
+            GestureSettingTarget.TWO_FINGER_SWIPE_UP -> selectedHomeGesture = HomeGesture.TWO_FINGER_SWIPE_UP
+            GestureSettingTarget.TWO_FINGER_SWIPE_DOWN -> selectedHomeGesture = HomeGesture.TWO_FINGER_SWIPE_DOWN
             GestureSettingTarget.OPEN_KEYBOARD -> selectedKeyboardAction = SwipeGestureAction.OPEN_KEYBOARD
             GestureSettingTarget.CLOSE_KEYBOARD ->
                 selectedKeyboardAction = SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS
@@ -393,10 +397,17 @@ internal fun GestureSettingsDialogs(
     state.selectedHomeGesture?.let { gesture ->
         HomeVerticalGestureDialog(
             titleResId = gesture.titleResId,
-            allowsNotificationPanel = gesture == HomeGesture.SWIPE_DOWN || gesture == HomeGesture.DOUBLE_TAP,
-            allowsCloseQuickSearch = !state.isDefaultLauncher,
+            allowsNotificationPanel =
+                gesture == HomeGesture.SWIPE_DOWN ||
+                    gesture == HomeGesture.DOUBLE_TAP ||
+                    gesture == HomeGesture.TWO_FINGER_SWIPE_DOWN,
+            allowsQuickSettings = gesture == HomeGesture.SWIPE_DOWN || gesture == HomeGesture.TWO_FINGER_SWIPE_DOWN,
+            allowsCloseQuickSearch = !state.isDefaultLauncher && !gesture.isTwoFinger,
             allowsLockScreen = gesture == HomeGesture.DOUBLE_TAP,
-            allowsAllApps = gesture != HomeGesture.DOUBLE_TAP,
+            allowsAllApps =
+                gesture == HomeGesture.SWIPE_UP ||
+                    gesture == HomeGesture.SWIPE_DOWN ||
+                    gesture == HomeGesture.TWO_FINGER_SWIPE_UP,
             hasLockScreenAccessibilityPermission = state.isLockScreenAccessibilityEnabled,
             selectedAction = state.homeActions.getValue(gesture),
             selectedCustomActionJson = state.homeCustomActions[gesture],

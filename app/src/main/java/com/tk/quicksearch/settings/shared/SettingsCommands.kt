@@ -264,7 +264,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.CURRENCY_CONVERTER -> currencyConverterEnabled
         // AI-backed tools read as off without an API key, matching the Tools settings page.
         AppSettingsToggleKey.WORLD_CLOCK -> worldClockEnabled && hasApiKey
-        AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled && hasApiKey
+        AppSettingsToggleKey.DICTIONARY -> dictionaryEnabled
         AppSettingsToggleKey.WEATHER -> weatherEnabled && hasApiKey
         // Read by rememberAppSettingToggleChecked, which follows AppNotificationsSettings.
         AppSettingsToggleKey.APP_NOTIFICATIONS -> false

@@ -14,7 +14,7 @@ class AppSettingsRepository(
     private val context: Context,
 ) {
     fun loadSettings(): List<AppSettingResult> {
-        return buildList {
+        return AppSettingsCatalogBuilder(context).apply {
             addNavigation(
                 id = "app_settings_appearance",
                 titleRes = R.string.settings_appearance_title,
@@ -404,6 +404,13 @@ class AppSettingsRepository(
                 keywords = listOf("new note", "memo", "write"),
             )
             addNavigation(
+                id = "app_settings_create_notification_note",
+                titleRes = R.string.app_settings_search_create_notification_note_title,
+                descriptionRes = R.string.app_settings_search_create_notification_note_desc,
+                destination = AppSettingsDestination.CREATE_NOTIFICATION_NOTE,
+                keywords = listOf("sticky note", "pin note", "notification panel", "shade"),
+            )
+            addNavigation(
                 id = "app_settings_notes_list",
                 titleRes = R.string.section_notes,
                 descriptionRes = R.string.settings_notes_view_all_desc,
@@ -746,50 +753,10 @@ class AppSettingsRepository(
                     keywords = listOf("grid", "layout"),
                 )
             }
-        }.also(::validateAppSettingsCatalog)
-    }
-
-    private fun MutableList<AppSettingResult>.addNavigation(
-        id: String,
-        titleRes: Int,
-        descriptionRes: Int? = null,
-        destination: AppSettingsDestination,
-        keywords: List<String> = emptyList(),
-    ) {
-        add(
-            AppSettingResult(
-                id = id,
-                title = context.getString(titleRes),
-                description = descriptionRes?.let(context::getString),
-                keywords = keywords,
-                action = AppSettingResultAction.NAVIGATE,
-                destination = destination,
-            ),
-        )
+        }.build().also(::validateAppSettingsCatalog)
     }
 
     fun hasPinnedNotificationItems(): Boolean = PinnedNotifications.pinnedItems(context).isNotEmpty()
-
-    private fun MutableList<AppSettingResult>.addToggle(
-        id: String,
-        titleRes: Int,
-        descriptionRes: Int? = null,
-        toggleKey: AppSettingsToggleKey,
-        destination: AppSettingsDestination? = null,
-        keywords: List<String> = emptyList(),
-    ) {
-        add(
-            AppSettingResult(
-                id = id,
-                title = context.getString(titleRes),
-                description = descriptionRes?.let(context::getString),
-                keywords = keywords,
-                action = AppSettingResultAction.TOGGLE,
-                destination = destination,
-                toggleKey = toggleKey,
-            ),
-        )
-    }
 
     private val descriptionResolver = AppSettingDescriptionResolver(context)
 

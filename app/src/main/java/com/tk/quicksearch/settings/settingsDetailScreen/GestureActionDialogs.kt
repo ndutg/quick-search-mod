@@ -24,6 +24,8 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.KeyboardHide
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SwipeDown
+import androidx.compose.material.icons.rounded.SwipeUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -122,12 +124,15 @@ internal fun HomeGesture.icon() =
         HomeGesture.SWIPE_DOWN,
         HomeGesture.DOUBLE_TAP,
         -> Icons.Rounded.ArrowDownward
+        HomeGesture.TWO_FINGER_SWIPE_UP -> Icons.Rounded.SwipeUp
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> Icons.Rounded.SwipeDown
     }
 
 @Composable
 internal fun HomeVerticalGestureDialog(
     titleResId: Int,
     allowsNotificationPanel: Boolean,
+    allowsQuickSettings: Boolean,
     allowsCloseQuickSearch: Boolean,
     allowsLockScreen: Boolean,
     allowsAllApps: Boolean,
@@ -164,6 +169,14 @@ internal fun HomeVerticalGestureDialog(
                         label = stringResource(R.string.settings_gesture_notification_panel),
                         selected = selectedAction == HomeSwipeGestureAction.NOTIFICATION_PANEL,
                         onClick = { onSelectDefault(HomeSwipeGestureAction.NOTIFICATION_PANEL) },
+                    )
+                }
+                if (allowsQuickSettings) {
+                    HorizontalDivider(color = AppColors.SettingsDivider)
+                    GestureActionRow(
+                        label = stringResource(R.string.settings_gesture_quick_settings),
+                        selected = selectedAction == HomeSwipeGestureAction.QUICK_SETTINGS,
+                        onClick = { onSelectDefault(HomeSwipeGestureAction.QUICK_SETTINGS) },
                     )
                 }
                 if (allowsAllApps) {
@@ -508,6 +521,8 @@ internal fun UserAppPreferences.homeActionFor(
         HomeGesture.SWIPE_UP -> getHomeSwipeUpAction()
         HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAction(isDefaultLauncher)
         HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAction()
+        HomeGesture.TWO_FINGER_SWIPE_UP -> getHomeTwoFingerSwipeUpAction()
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> getHomeTwoFingerSwipeDownAction()
     }
 
 internal fun UserAppPreferences.setHomeActionFor(gesture: HomeGesture, action: HomeSwipeGestureAction) {
@@ -515,6 +530,8 @@ internal fun UserAppPreferences.setHomeActionFor(gesture: HomeGesture, action: H
         HomeGesture.SWIPE_UP -> setHomeSwipeUpAction(action)
         HomeGesture.SWIPE_DOWN -> setHomeSwipeDownAction(action)
         HomeGesture.DOUBLE_TAP -> setHomeDoubleTapAction(action)
+        HomeGesture.TWO_FINGER_SWIPE_UP -> setHomeTwoFingerSwipeUpAction(action)
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> setHomeTwoFingerSwipeDownAction(action)
     }
 }
 
@@ -523,6 +540,8 @@ internal fun UserAppPreferences.homeCustomActionFor(gesture: HomeGesture): Strin
         HomeGesture.SWIPE_UP -> getHomeSwipeUpCustomAction()
         HomeGesture.SWIPE_DOWN -> getHomeSwipeDownCustomAction()
         HomeGesture.DOUBLE_TAP -> getHomeDoubleTapCustomAction()
+        HomeGesture.TWO_FINGER_SWIPE_UP -> getHomeTwoFingerSwipeUpCustomAction()
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> getHomeTwoFingerSwipeDownCustomAction()
     }
 
 internal fun UserAppPreferences.setHomeCustomActionFor(gesture: HomeGesture, actionJson: String?) {
@@ -530,6 +549,8 @@ internal fun UserAppPreferences.setHomeCustomActionFor(gesture: HomeGesture, act
         HomeGesture.SWIPE_UP -> setHomeSwipeUpCustomAction(actionJson)
         HomeGesture.SWIPE_DOWN -> setHomeSwipeDownCustomAction(actionJson)
         HomeGesture.DOUBLE_TAP -> setHomeDoubleTapCustomAction(actionJson)
+        HomeGesture.TWO_FINGER_SWIPE_UP -> setHomeTwoFingerSwipeUpCustomAction(actionJson)
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> setHomeTwoFingerSwipeDownCustomAction(actionJson)
     }
 }
 
@@ -538,6 +559,8 @@ internal fun UserAppPreferences.homeAliasTargetFor(gesture: HomeGesture): String
         HomeGesture.SWIPE_UP -> getHomeSwipeUpAliasTarget()
         HomeGesture.SWIPE_DOWN -> getHomeSwipeDownAliasTarget()
         HomeGesture.DOUBLE_TAP -> getHomeDoubleTapAliasTarget()
+        HomeGesture.TWO_FINGER_SWIPE_UP -> getHomeTwoFingerSwipeUpAliasTarget()
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> getHomeTwoFingerSwipeDownAliasTarget()
     }
 
 internal fun UserAppPreferences.setHomeAliasTargetFor(gesture: HomeGesture, targetId: String?) {
@@ -545,6 +568,8 @@ internal fun UserAppPreferences.setHomeAliasTargetFor(gesture: HomeGesture, targ
         HomeGesture.SWIPE_UP -> setHomeSwipeUpAliasTarget(targetId)
         HomeGesture.SWIPE_DOWN -> setHomeSwipeDownAliasTarget(targetId)
         HomeGesture.DOUBLE_TAP -> setHomeDoubleTapAliasTarget(targetId)
+        HomeGesture.TWO_FINGER_SWIPE_UP -> setHomeTwoFingerSwipeUpAliasTarget(targetId)
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> setHomeTwoFingerSwipeDownAliasTarget(targetId)
     }
 }
 
@@ -654,6 +679,7 @@ internal fun HomeSwipeGestureAction.labelResId(): Int =
         HomeSwipeGestureAction.CLOSE_QUICK_SEARCH -> R.string.settings_gesture_close_quick_search
         HomeSwipeGestureAction.LOCK_SCREEN -> R.string.settings_gesture_lock_screen
         HomeSwipeGestureAction.NOTIFICATION_PANEL -> R.string.settings_gesture_notification_panel
+        HomeSwipeGestureAction.QUICK_SETTINGS -> R.string.settings_gesture_quick_settings
         HomeSwipeGestureAction.ALL_APPS -> R.string.settings_gesture_view_all_apps
         HomeSwipeGestureAction.CUSTOM -> R.string.settings_gesture_custom
         HomeSwipeGestureAction.SEARCH_ENGINE -> R.string.settings_app_shortcuts_filter_search_engines

@@ -265,8 +265,6 @@ data class DictionaryState(
         val example: String? = null,
         val synonyms: List<String> = emptyList(),
         val activeQuery: String? = null,
-        val usedModelId: String? = null,
-        val llmProviderId: AiSearchLlmProviderId? = null,
         val errorMessage: String? = null,
 )
 

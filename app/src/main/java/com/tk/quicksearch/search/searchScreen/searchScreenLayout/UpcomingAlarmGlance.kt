@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
 import com.tk.quicksearch.search.data.UpcomingAlarmRepository
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -163,12 +165,7 @@ internal fun UpcomingAlarmRow(glance: UpcomingAlarmGlance) {
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Alarm,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp),
-            )
+            UpcomingAlarmAppIcon(glance.alarm.showIntent?.creatorPackage)
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = title,
@@ -211,5 +208,25 @@ internal fun UpcomingAlarmRow(glance: UpcomingAlarmGlance) {
                 modifier = Modifier.size(16.dp),
             )
         }
+    }
+}
+
+/** The clock app's icon, or the generic alarm icon when its package is unknown or still loading. */
+@Composable
+private fun UpcomingAlarmAppIcon(packageName: String?) {
+    val appIcon = packageName?.let { rememberAppIcon(packageName = it).bitmap }
+    if (appIcon != null) {
+        Image(
+            bitmap = appIcon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+        )
+    } else {
+        Icon(
+            imageVector = Icons.Rounded.Alarm,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp),
+        )
     }
 }

@@ -19,6 +19,7 @@ enum class HomeSwipeGestureAction {
     CLOSE_QUICK_SEARCH,
     LOCK_SCREEN,
     NOTIFICATION_PANEL,
+    QUICK_SETTINGS,
     ALL_APPS,
     CUSTOM,
     SEARCH_ENGINE,
@@ -134,6 +135,30 @@ class GesturesPreferences(
     fun setHomeDoubleTapCustomAction(actionJson: String?) = setCustomAction(KEY_HOME_DOUBLE_TAP_CUSTOM_ACTION, actionJson)
     fun getHomeDoubleTapAliasTarget(): String? = prefs.getString(KEY_HOME_DOUBLE_TAP_ALIAS_TARGET, null)
     fun setHomeDoubleTapAliasTarget(targetId: String?) = setCustomAction(KEY_HOME_DOUBLE_TAP_ALIAS_TARGET, targetId)
+
+    fun getHomeTwoFingerSwipeUpAction(): HomeSwipeGestureAction =
+        getHomeGestureAction(KEY_HOME_TWO_FINGER_SWIPE_UP_ACTION, HomeSwipeGestureAction.NONE)
+
+    fun setHomeTwoFingerSwipeUpAction(action: HomeSwipeGestureAction) =
+        setHomeGestureAction(KEY_HOME_TWO_FINGER_SWIPE_UP_ACTION, action)
+
+    fun getHomeTwoFingerSwipeUpCustomAction(): String? = prefs.getString(KEY_HOME_TWO_FINGER_SWIPE_UP_CUSTOM_ACTION, null)
+
+    fun setHomeTwoFingerSwipeUpCustomAction(actionJson: String?) = setCustomAction(KEY_HOME_TWO_FINGER_SWIPE_UP_CUSTOM_ACTION, actionJson)
+    fun getHomeTwoFingerSwipeUpAliasTarget(): String? = prefs.getString(KEY_HOME_TWO_FINGER_SWIPE_UP_ALIAS_TARGET, null)
+    fun setHomeTwoFingerSwipeUpAliasTarget(targetId: String?) = setCustomAction(KEY_HOME_TWO_FINGER_SWIPE_UP_ALIAS_TARGET, targetId)
+
+    fun getHomeTwoFingerSwipeDownAction(): HomeSwipeGestureAction =
+        getHomeGestureAction(KEY_HOME_TWO_FINGER_SWIPE_DOWN_ACTION, HomeSwipeGestureAction.NONE)
+
+    fun setHomeTwoFingerSwipeDownAction(action: HomeSwipeGestureAction) =
+        setHomeGestureAction(KEY_HOME_TWO_FINGER_SWIPE_DOWN_ACTION, action)
+
+    fun getHomeTwoFingerSwipeDownCustomAction(): String? = prefs.getString(KEY_HOME_TWO_FINGER_SWIPE_DOWN_CUSTOM_ACTION, null)
+
+    fun setHomeTwoFingerSwipeDownCustomAction(actionJson: String?) = setCustomAction(KEY_HOME_TWO_FINGER_SWIPE_DOWN_CUSTOM_ACTION, actionJson)
+    fun getHomeTwoFingerSwipeDownAliasTarget(): String? = prefs.getString(KEY_HOME_TWO_FINGER_SWIPE_DOWN_ALIAS_TARGET, null)
+    fun setHomeTwoFingerSwipeDownAliasTarget(targetId: String?) = setCustomAction(KEY_HOME_TWO_FINGER_SWIPE_DOWN_ALIAS_TARGET, targetId)
 
     private fun getGestureAction(key: String, default: SwipeGestureAction): SwipeGestureAction {
         val stored = prefs.getString(key, default.name) ?: return default

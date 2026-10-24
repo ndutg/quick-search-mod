@@ -35,6 +35,7 @@ import com.tk.quicksearch.search.searchScreen.shouldCloseSearchSurfaceAfterExter
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.search.searchScreen.HomeHorizontalSwipe
+import com.tk.quicksearch.search.searchScreen.performHomeGesture
 import kotlinx.coroutines.launch
 
 private const val SWIPE_NAVIGATION_THRESHOLD_PX = 140f
@@ -158,6 +159,8 @@ internal fun rememberRouteGestures(
     }
     var homeAliasTargets by remember { mutableStateOf(listOf(gesturePreferences.getHomeSwipeUpAliasTarget(), gesturePreferences.getHomeSwipeDownAliasTarget(), gesturePreferences.getHomeDoubleTapAliasTarget())) }
     var isLauncherSwipeRightEnabled by remember { mutableStateOf(gesturePreferences.isLauncherSwipeRightEnabled()) }
+    var twoFingerSwipeUp by remember { mutableStateOf(gesturePreferences.twoFingerSwipeUpGesture()) }
+    var twoFingerSwipeDown by remember { mutableStateOf(gesturePreferences.twoFingerSwipeDownGesture()) }
     DisposableEffect(gesturePreferences) {
         val preferences =
             context.applicationContext.getSharedPreferences(
@@ -191,6 +194,8 @@ internal fun rememberRouteGestures(
                 )
             homeAliasTargets = listOf(gesturePreferences.getHomeSwipeUpAliasTarget(), gesturePreferences.getHomeSwipeDownAliasTarget(), gesturePreferences.getHomeDoubleTapAliasTarget())
             isLauncherSwipeRightEnabled = gesturePreferences.isLauncherSwipeRightEnabled()
+            twoFingerSwipeUp = gesturePreferences.twoFingerSwipeUpGesture()
+            twoFingerSwipeDown = gesturePreferences.twoFingerSwipeDownGesture()
         }
         preferences.registerOnSharedPreferenceChangeListener(listener)
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
@@ -260,8 +265,33 @@ internal fun rememberRouteGestures(
             }
         }
     }
+    val performTwoFingerSwipe: (TwoFingerSwipeGesture) -> Unit = { gesture ->
+        gesture.action.performHomeGesture(
+            gesture.customActionJson,
+            gesture.aliasTarget,
+            context,
+            { action, targetId ->
+                if (action == HomeSwipeGestureAction.SEARCH_ENGINE) {
+                    viewModel.activateGestureSearchTarget(targetId)
+                } else {
+                    viewModel.activateGestureTool(targetId)
+                }
+            },
+            closeQuickSearch,
+            allAppsDrawer::open,
+        )
+    }
+    val twoFingerSwipeModifier =
+        Modifier.twoFingerVerticalSwipe(
+            enabled =
+                uiState.query.isBlank() &&
+                    (twoFingerSwipeUp.action != HomeSwipeGestureAction.NONE ||
+                        twoFingerSwipeDown.action != HomeSwipeGestureAction.NONE),
+            onSwipeUp = { performTwoFingerSwipe(twoFingerSwipeUp) },
+            onSwipeDown = { performTwoFingerSwipe(twoFingerSwipeDown) },
+        )
     val swipeNavigationModifier =
-        Modifier.pointerInput(isDefaultLauncher, isLauncherSwipeRightEnabled, swipeActions, customSwipeActions, uiState.query) {
+        twoFingerSwipeModifier.pointerInput(isDefaultLauncher, isLauncherSwipeRightEnabled, swipeActions, customSwipeActions, uiState.query) {
             var totalHorizontalDrag = 0f
             detectHorizontalDragGestures(
                 onDragStart = { totalHorizontalDrag = 0f },
@@ -314,3 +344,23 @@ internal fun rememberRouteGestures(
         allAppsDrawer = allAppsDrawer,
     )
 }
+
+internal data class TwoFingerSwipeGesture(
+    val action: HomeSwipeGestureAction,
+    val customActionJson: String?,
+    val aliasTarget: String?,
+)
+
+private fun UserAppPreferences.twoFingerSwipeUpGesture() =
+    TwoFingerSwipeGesture(
+        getHomeTwoFingerSwipeUpAction(),
+        getHomeTwoFingerSwipeUpCustomAction(),
+        getHomeTwoFingerSwipeUpAliasTarget(),
+    )
+
+private fun UserAppPreferences.twoFingerSwipeDownGesture() =
+    TwoFingerSwipeGesture(
+        getHomeTwoFingerSwipeDownAction(),
+        getHomeTwoFingerSwipeDownCustomAction(),
+        getHomeTwoFingerSwipeDownAliasTarget(),
+    )

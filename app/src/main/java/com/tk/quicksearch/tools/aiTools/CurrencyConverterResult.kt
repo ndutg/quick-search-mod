@@ -2,16 +2,27 @@ package com.tk.quicksearch.tools.aiTools
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
@@ -29,6 +40,7 @@ import java.math.RoundingMode
 fun CurrencyConverterResult(
         currencyConverterState: CurrencyConverterState,
         showWallpaperBackground: Boolean = false,
+        onCheckRatesOnGoogle: (String) -> Unit = {},
 ) {
     if (currencyConverterState.status == CurrencyConverterStatus.Idle) return
 
@@ -112,18 +124,67 @@ fun CurrencyConverterResult(
                         }
                     }
                     CurrencyConverterStatus.Error -> {
-                        Text(
-                                text =
-                                        currencyConverterState.errorMessage
-                                                ?: stringResource(R.string.direct_search_error_generic),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.error,
-                        )
+                        // Same min height as the success layout so the card doesn't jump between states.
+                        Column(
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 143.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement =
+                                        Arrangement.spacedBy(
+                                                DesignTokens.SpacingLarge,
+                                                Alignment.CenterVertically,
+                                        ),
+                        ) {
+                            Text(
+                                    text =
+                                            currencyConverterState.errorMessage
+                                                    ?: stringResource(R.string.direct_search_error_generic),
+                                    textAlign = TextAlign.Center,
+                                    // Balanced wrapping avoids a lone word on the second line.
+                                    style = MaterialTheme.typography.bodyMedium.copy(lineBreak = LineBreak.Heading),
+                                    color = MaterialTheme.colorScheme.error,
+                            )
+                            currencyConverterState.activeQuery?.takeIf { it.isNotBlank() }?.let { query ->
+                                SearchOnGoogleButton(
+                                        text = stringResource(R.string.currency_converter_check_rates_on_google),
+                                        onClick = { onCheckRatesOnGoogle(query) },
+                                )
+                            }
+                        }
                     }
                     CurrencyConverterStatus.Idle -> {}
                 }
             }
         }
+    }
+}
+
+/** Fallback shown on tool error cards to run the same query on Google instead. */
+@Composable
+internal fun SearchOnGoogleButton(
+        text: String,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+) {
+    FilledTonalButton(
+            onClick = onClick,
+            modifier = modifier.height(40.dp),
+            colors =
+                    ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
+                    ),
+            contentPadding = PaddingValues(horizontal = DesignTokens.SpacingLarge, vertical = 0.dp),
+    ) {
+        Icon(
+                painter = painterResource(R.drawable.google),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = Color.Unspecified,
+        )
+        Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
+        Text(
+                text = text,
+                style = MaterialTheme.typography.labelLarge,
+        )
     }
 }
 

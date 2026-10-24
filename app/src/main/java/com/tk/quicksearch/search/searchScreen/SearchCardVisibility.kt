@@ -70,7 +70,6 @@ internal fun searchCardVisibility(
                     }
     val showDictionarySearchCard =
             (state.dictionaryEnabled || isDictionaryAliasMode) &&
-                    state.hasApiKey &&
                     !showCalculatorResult &&
                     !showCurrencyConverter &&
                     !showWorldClock &&

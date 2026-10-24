@@ -8,7 +8,6 @@ import com.tk.quicksearch.tools.aiTools.CurrencyConversionIntentParser
 import com.tk.quicksearch.tools.aiTools.CurrencyConverterHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryHandler
 import com.tk.quicksearch.tools.aiTools.DictionaryIntentParser
-import com.tk.quicksearch.tools.aiTools.DictionaryNotRecognizedException
 import com.tk.quicksearch.tools.aiTools.WorldClockHandler
 import com.tk.quicksearch.tools.aiTools.WorldClockIntentParser
 import com.tk.quicksearch.tools.aiTools.WorldClockNotRecognizedException
@@ -400,9 +399,8 @@ internal class SearchToolCoordinator(
         dictionaryJob?.cancel()
         val aliasState = toolAliasStateProvider()
         val lockedDictionaryAlias = aliasState.lockedDictionaryAlias
-        val hasApiKey = hasApiKeyProvider()
 
-        if ((!userPreferences.isDictionaryEnabled() && !lockedDictionaryAlias) || !hasApiKey) {
+        if (!userPreferences.isDictionaryEnabled() && !lockedDictionaryAlias) {
             updateResultsState { s ->
                 if (s.dictionaryState.status == DictionaryStatus.Idle) {
                     s
@@ -445,9 +443,7 @@ internal class SearchToolCoordinator(
         if (trimmedQuery.isBlank()) return
 
         val aliasState = toolAliasStateProvider()
-        if ((!userPreferences.isDictionaryEnabled() && !aliasState.lockedDictionaryAlias) ||
-            !hasApiKeyProvider()
-        ) {
+        if (!userPreferences.isDictionaryEnabled() && !aliasState.lockedDictionaryAlias) {
             return
         }
 
@@ -483,7 +479,7 @@ internal class SearchToolCoordinator(
                 if (version != dictionaryQueryVersion) return@launch
                 if (currentQueryProvider().trim() != trimmedQuery) return@launch
                 apiResult.fold(
-                    onSuccess = { (parsed, modelId) ->
+                    onSuccess = { parsed ->
                         updateResultsState { s ->
                             s.copy(
                                 dictionaryState =
@@ -495,19 +491,11 @@ internal class SearchToolCoordinator(
                                         example = parsed.example,
                                         synonyms = parsed.synonyms,
                                         activeQuery = trimmedQuery,
-                                        usedModelId = modelId,
-                                        llmProviderId = userPreferences.getDictionaryProviderId(),
                                     ),
                             )
                         }
                     },
                     onFailure = { e ->
-                        if (e is DictionaryNotRecognizedException) {
-                            updateResultsState { s ->
-                                s.copy(dictionaryState = DictionaryState())
-                            }
-                            return@fold
-                        }
                         val msg = e.message ?: appContext.getString(R.string.direct_search_error_generic)
                         updateResultsState { s ->
                             s.copy(
