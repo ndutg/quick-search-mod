@@ -144,7 +144,7 @@ fun SearchRoute(
     val nicknameUpdateVersion = uiState.nicknameUpdateVersion
     val getAppNickname: (String) -> String? =
         remember(nicknameUpdateVersion) {
-            { packageName -> viewModel.getAppNickname(packageName) }
+            { appKey -> viewModel.getAppNickname(appKey) }
         }
     val getContactNickname: (Long) -> String? =
         remember(nicknameUpdateVersion) {

@@ -165,7 +165,7 @@ internal fun AllAppsDialog(
                                     appState =
                                             AppState(
                                                     hasNickname =
-                                                            !getAppNickname(app.packageName)
+                                                            !getAppNickname(app.launchCountKey())
                                                                     .isNullOrBlank(),
                                                     hasTrigger =
                                                             getAppTrigger(app.packageName)

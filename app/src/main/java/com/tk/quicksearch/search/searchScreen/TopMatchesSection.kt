@@ -264,7 +264,7 @@ private fun buildTopMatches(
                     priority =
                         appTopMatchPriority(
                             app = topApp,
-                            nickname = params.appsParams?.getAppNickname?.invoke(topApp.packageName),
+                            nickname = params.appsParams?.getAppNickname?.invoke(topApp.launchCountKey()),
                             query = queryContext,
                         ),
                     sectionOrder = order(SearchSection.APPS),

@@ -633,13 +633,13 @@ open class UserAppPreferencesCore(protected val context: Context) {
 
     fun getAllAppNicknames(): Map<String, String> = nicknamePreferences.getAllAppNicknames()
 
-    fun getAppNickname(packageName: String): String? =
-            nicknamePreferences.getAppNickname(packageName)
+    fun getAppNickname(appKey: String): String? =
+            nicknamePreferences.getAppNickname(appKey)
 
     fun setAppNickname(
-            packageName: String,
+            appKey: String,
             nickname: String?,
-    ) = nicknamePreferences.setAppNickname(packageName, nickname)
+    ) = nicknamePreferences.setAppNickname(appKey, nickname)
 
     fun getAllAppShortcutNicknames(): Map<String, String> =
             nicknamePreferences.getAllAppShortcutNicknames()

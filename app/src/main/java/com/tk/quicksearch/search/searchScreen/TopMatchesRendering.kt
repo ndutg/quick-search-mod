@@ -582,7 +582,7 @@ private fun TopMatchAppRow(
                 !app.isSystemApp &&
                     app.userHandleId == null &&
                     app.packageName != context.packageName,
-            hasNickname = !params.getAppNickname(app.packageName).isNullOrBlank(),
+            hasNickname = !params.getAppNickname(app.launchCountKey()).isNullOrBlank(),
             hasTrigger = params.getAppTrigger(app.packageName)?.word?.isNotBlank() == true,
             shortcuts = shortcuts,
             appInfo = app,

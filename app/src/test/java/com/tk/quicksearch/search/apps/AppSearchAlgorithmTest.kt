@@ -323,6 +323,31 @@ class AppSearchAlgorithmTest {
         assertEquals(emptyList<AppInfo>(), matches("obidian"))
     }
 
+    @Test
+    fun clonedAppNicknameIsSeparateFromMainApp() {
+        val main = app("WhatsApp", "whatsapp")
+        val clone = main.copy(userHandleId = 999)
+        val source = listOf(main, clone)
+
+        fun matches(query: String) =
+            AppSearchAlgorithm.findMatches(
+                query = query,
+                source = source,
+                limit = 10,
+                fuzzySearchStrategy =
+                    FuzzyAppSearchStrategy(FuzzySearchConfig.DEFAULT_APP_CONFIG, isFuzzySearchEnabled = { false }),
+                appNicknames =
+                    mapOf(
+                        main.launchCountKey() to "personal",
+                        clone.launchCountKey() to "business",
+                    ),
+                secondaryRankingSignal = SecondaryRankingSignal.NONE,
+            )
+
+        assertEquals(listOf(main), matches("personal"))
+        assertEquals(listOf(clone), matches("business"))
+    }
+
     private fun app(
         appName: String,
         packageSuffix: String,

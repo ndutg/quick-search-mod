@@ -360,7 +360,7 @@ internal fun AppGrid(
                 remember(getAppNickname, getAppTrigger, pinnedPackageNames) {
                     { app: AppInfo ->
                         AppState(
-                                hasNickname = !getAppNickname(app.packageName).isNullOrBlank(),
+                                hasNickname = !getAppNickname(app.launchCountKey()).isNullOrBlank(),
                                 hasTrigger = getAppTrigger(app.packageName)?.word?.isNotBlank() == true,
                                 isPinned = pinnedPackageNames.contains(app.launchCountKey()),
                                 showUninstall =
