@@ -1158,6 +1158,10 @@
 <string name="widget_note_picker_title">Not Seç</string>
 <string name="widget_note_deleted">Not bulunamadı. Başka birini seçmek için dokun.</string>
 <string name="widget_countdown_widget_title">Geri Sayım Widget\'ı</string>
+<string name="widget_at_a_glance_widget_title">Bir Bakışta Widget\'ı</string>
+<string name="widget_at_a_glance_sample_alarm">Yarın, 07:00</string>
+<string name="widget_at_a_glance_sample_birthday">Alex doğum günü</string>
+<string name="widget_at_a_glance_sample_caller">Annem</string>
 <string name="widget_countdown_date">Tarih</string>
 <string name="widget_countdown_format_days">Gün</string>
 <string name="widget_countdown_format_weeks">Hafta</string>

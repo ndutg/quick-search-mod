@@ -1147,6 +1147,10 @@
     <string name="widget_note_picker_title">选择笔记</string>
     <string name="widget_note_deleted">未找到笔记。点按以选择其他笔记。</string>
     <string name="widget_countdown_widget_title">倒计时小部件</string>
+    <string name="widget_at_a_glance_widget_title">一览小部件</string>
+    <string name="widget_at_a_glance_sample_alarm">明天 上午7:00</string>
+    <string name="widget_at_a_glance_sample_birthday">亚历克斯的生日</string>
+    <string name="widget_at_a_glance_sample_caller">妈妈</string>
     <string name="widget_countdown_date">日期</string>
     <string name="widget_countdown_format_days">天</string>
     <string name="widget_countdown_format_weeks">周</string>

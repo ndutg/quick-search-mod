@@ -1159,6 +1159,10 @@
     <string name="widget_note_picker_title">Notiz auswählen</string>
     <string name="widget_note_deleted">Notiz nicht gefunden. Tippen, um eine andere auszuwählen.</string>
     <string name="widget_countdown_widget_title">Countdown-Widget</string>
+    <string name="widget_at_a_glance_widget_title">Auf-einen-Blick-Widget</string>
+    <string name="widget_at_a_glance_sample_alarm">Morgen, 7:00</string>
+    <string name="widget_at_a_glance_sample_birthday">Geburtstag von Alex</string>
+    <string name="widget_at_a_glance_sample_caller">Mama</string>
     <string name="widget_countdown_date">Datum</string>
     <string name="widget_countdown_format_days">Tage</string>
     <string name="widget_countdown_format_weeks">Wochen</string>

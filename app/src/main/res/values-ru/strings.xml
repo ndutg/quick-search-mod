@@ -1183,6 +1183,10 @@
 <string name="widget_note_picker_title">Выберите заметку</string>
 <string name="widget_note_deleted">Заметка не найдена. Нажмите, чтобы выбрать другую.</string>
 <string name="widget_countdown_widget_title">Виджет обратного отсчёта</string>
+<string name="widget_at_a_glance_widget_title">Виджет «Кратко»</string>
+<string name="widget_at_a_glance_sample_alarm">Завтра, 7:00</string>
+<string name="widget_at_a_glance_sample_birthday">День рождения: Алекс</string>
+<string name="widget_at_a_glance_sample_caller">Мама</string>
 <string name="widget_countdown_date">Дата</string>
 <string name="widget_countdown_format_days">Дни</string>
 <string name="widget_countdown_format_weeks">Недели</string>
