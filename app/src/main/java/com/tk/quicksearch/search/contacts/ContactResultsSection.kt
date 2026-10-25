@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.contacts
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,8 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -380,23 +383,33 @@ private fun ContactList(
             }
             if (index != displayContacts.lastIndex && !showPredictedOnRow) {
                 HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                     color = overlayDividerColor ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
                 )
             }
         }
 
         if (shouldShowExpandButton) {
+            ExpandButtonDivider(showWallpaperBackground)
+            // Flat sections (card layout off) keep the standard button size, like other More buttons.
+            val cardLayoutEnabled = LocalSearchCardLayoutEnabled.current
             ExpandButton(
                 onClick = onExpandClick,
                 modifier =
                     Modifier
                         .align(Alignment.CenterHorizontally)
-                        .height(ContactUiConstants.EXPAND_BUTTON_HEIGHT.dp)
-                        .padding(top = DesignTokens.SpacingXXSmall),
+                        .then(
+                            if (cardLayoutEnabled) {
+                                Modifier
+                                    .height(ContactUiConstants.EXPAND_BUTTON_HEIGHT.dp)
+                                    .padding(top = DesignTokens.SpacingXXSmall)
+                            } else {
+                                Modifier
+                            },
+                        ),
                 textResId = R.string.action_expand_more_contacts,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            if (cardLayoutEnabled) Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

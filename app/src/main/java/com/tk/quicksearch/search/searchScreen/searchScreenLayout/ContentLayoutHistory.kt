@@ -1,11 +1,9 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -19,7 +17,6 @@ import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
 import com.tk.quicksearch.search.searchHistory.SearchHistorySection
 import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
 import com.tk.quicksearch.search.searchScreen.FilesSectionParams
 import com.tk.quicksearch.search.searchScreen.AppShortcutsSectionParams
@@ -73,16 +70,18 @@ internal fun HomeSearchHistoryBlock(
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                verticalArrangement =
+                    Arrangement.spacedBy(
+                        if (LocalSearchCardLayoutEnabled.current) DesignTokens.SpacingSmall else HomeSectionContentSpacing,
+                    ),
             ) {
                 if (
-                    shouldShowSearchHistoryTitle(hasAtAGlanceSection)
+                    !searchHistoryExpanded &&
+                        shouldShowSearchHistoryTitle(hasAtAGlanceSection)
                 ) {
-                    Text(
-                        text = stringResource(R.string.recent_queries_toggle_title),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = homeTextColor(),
-                        modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                    HomeSectionTitle(
+                        title = stringResource(R.string.recent_queries_toggle_title),
+                        showWallpaperBackground = effectiveShowWallpaperBackground,
                     )
                 }
                 SearchHistorySection(

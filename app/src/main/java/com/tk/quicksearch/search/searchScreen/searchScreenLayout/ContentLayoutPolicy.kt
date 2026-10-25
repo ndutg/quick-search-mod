@@ -11,6 +11,7 @@ import com.tk.quicksearch.search.core.ItemPriorityConfig
 import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.other.OtherSearchItemRegistry
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
+import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.TopMatchItem
 
 internal fun homeLayoutOrder(
@@ -101,6 +102,10 @@ internal fun shouldSkipRegularCalendarSectionForStandaloneTodayEvents(
     section == SearchSection.CALENDAR &&
         todayCalendarEventsCount > 0 &&
         pinnedCalendarEventsCount == 0
+
+/** Whether Top Matches already shows the regular app results, making the Apps section a duplicate. */
+internal fun topMatchesRepeatApps(topMatches: List<TopMatchItem>, displayApps: List<AppInfo>): Boolean =
+    topMatches.any { it is TopMatchItem.AppGrid && it.apps == displayApps }
 
 internal fun regularSectionParams(
     sectionParams: SectionRenderParams,

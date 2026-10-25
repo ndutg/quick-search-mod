@@ -1,5 +1,8 @@
 package com.tk.quicksearch.search.appSettings
 
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
+import com.tk.quicksearch.settings.appearanceSettings.homeTextColorTitleRes
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
@@ -47,8 +50,10 @@ import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -165,7 +170,7 @@ fun AppSettingsResultsSection(
 
                     if (index != displayRows.lastIndex && !showPredictedOnRow) {
                         HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                             color = overlayDividerColor
                                 ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
                         )
@@ -173,10 +178,12 @@ fun AppSettingsResultsSection(
                 }
 
                 if (cardState.shouldShowExpandButton) {
+                    ExpandButtonDivider(showWallpaperBackground)
                     ExpandButton(
                         onClick = onExpandClick,
                         modifier =
-                            Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp),
+                            Modifier.align(Alignment.CenterHorizontally)
+                                .padding(top = if (LocalSearchCardLayoutEnabled.current) 4.dp else 0.dp),
                     )
                 }
             }
@@ -222,6 +229,11 @@ internal fun AppSettingResultRow(
             val selectedLanguageLabel =
                 remember(context) { AppLanguageManager.getSelectedLanguageLabel(context) }
             stringResource(R.string.settings_app_language_desc, selectedLanguageLabel)
+        } else if (
+            setting.toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR &&
+                !LocalSearchCardLayoutEnabled.current
+        ) {
+            null
         } else {
             setting.description
         }
@@ -231,7 +243,7 @@ internal fun AppSettingResultRow(
             .heightIn(min = ROW_MIN_HEIGHT.dp)
             .topPredictedRowContainer(isTopPredicted = isPredicted)
             .topPredictedRowContentPadding()
-            .padding(vertical = DesignTokens.SpacingLarge)
+            .padding(vertical = resultRowVerticalPadding(DesignTokens.SpacingLarge))
             .combinedClickable(
                 interactionSource = null,
                 indication = null,
@@ -271,7 +283,14 @@ internal fun AppSettingResultRow(
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             Text(
-                text = rememberQueryHighlightedText(setting.title),
+                text =
+                    rememberQueryHighlightedText(
+                        if (setting.toggleKey == AppSettingsToggleKey.HOME_TEXT_COLOR) {
+                            stringResource(homeTextColorTitleRes(!LocalSearchCardLayoutEnabled.current))
+                        } else {
+                            setting.title
+                        },
+                    ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (isBlockedByLauncher) {
                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)

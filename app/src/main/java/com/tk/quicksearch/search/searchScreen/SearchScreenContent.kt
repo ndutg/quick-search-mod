@@ -41,6 +41,8 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchScreen.components.cornerRadius
 import com.tk.quicksearch.searchEngines.getId
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.shared.ui.theme.HomeTextContrastTheme
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SearchContentArea
 import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
@@ -659,6 +661,7 @@ internal fun SearchScreenContent(
             Spacer(modifier = Modifier.padding(top = DesignTokens.SpacingXSmall))
         }
 
+        HomeTextContrastTheme(enabled = !isOverlayPresentation && !LocalSearchCardLayoutEnabled.current) {
         SearchContentArea(
                 modifier =
                         run {
@@ -736,6 +739,7 @@ internal fun SearchScreenContent(
                 },
                 selectedTopMatchIndex = selectedTopMatchIndex,
         )
+        }
 
         // Pinned above the keyboard, outside the scrollable content.
         SearchScreenBottomChrome(

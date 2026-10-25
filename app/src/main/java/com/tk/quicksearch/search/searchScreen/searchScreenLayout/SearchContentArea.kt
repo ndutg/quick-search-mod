@@ -260,11 +260,12 @@ fun SearchContentArea(
     var showHomeWidgetPicker by rememberSaveable { mutableStateOf(false) }
     var backgroundMenuOffset by remember { mutableStateOf(Offset.Zero) }
     val density = LocalDensity.current
+    val edgeBleed = compactEdgeBleed(isOverlayPresentation)
     val backgroundMenuDpOffset =
-        remember(backgroundMenuOffset, density) {
+        remember(backgroundMenuOffset, density, edgeBleed) {
             with(density) {
                 DpOffset(
-                    x = backgroundMenuOffset.x.toDp(),
+                    x = backgroundMenuOffset.x.toDp() - edgeBleed,
                     y = backgroundMenuOffset.y.toDp(),
                 )
             }
@@ -501,9 +502,8 @@ fun SearchContentArea(
                 Column(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .then(expansionTransitionModifier)
-                            .then(heightModifier)
+                            .edgeBleed(edgeBleed).fillMaxWidth()
+                            .then(expansionTransitionModifier).then(heightModifier)
                             .clip(TopRoundedShape)
                             .then(edgeFadeModifier)
                             .then(
@@ -555,7 +555,7 @@ fun SearchContentArea(
                                                 },
                                         )
                                 },
-                            ),
+                            ).padding(horizontal = edgeBleed),
                     verticalArrangement =
                         if (shouldHideScrollView) Arrangement.Top else verticalArrangement,
                 ) {

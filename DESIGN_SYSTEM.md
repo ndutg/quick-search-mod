@@ -42,7 +42,8 @@ It exposes composition locals (in `AppColorPalette.kt`) for branching on this st
 | `AppColorPalette.kt` | Light/dark palette backing `AppColors`, scrim/alpha constants, composition locals |
 | `Color.kt` | Default accent (`AppAccentLight`/`AppAccentDark`) and base Material 3 schemes |
 | `ThemeColorRegistry.kt` | Per-`AppTheme` accents, gradients, themed icon colors, Material You tone slots |
-| `HomeTextColor.kt` | `homeTextColor()`, which applies the user's Home text override or else a wallpaper-derived foreground |
+| `HomeTextColor.kt` | `homeTextColor()`, which applies the user's Home text override or else a wallpaper-derived foreground; `homeBackgroundIsDark()`, the same choice as a dark/light flag (null without an image background), for anything that picks white or black against the wallpaper |
+| `Theme.kt` (`HomeTextContrastTheme`) | Wraps the search content area in Compact Layout (not the overlay). Over a wallpaper or image, when `homeBackgroundIsDark()` doesn't match the app theme, it swaps in the other theme's text, surface and outline roles (and `LocalAppIsDarkTheme`/palette), and trades `primary` with `primaryContainer` so accents stay legible |
 
 Main `AppColors` groups:
 
@@ -112,6 +113,7 @@ both flavors when changing typography.
 | `dialogTextFieldColors()` | Text fields inside dialogs |
 | `CardTextField`, `cardTextFieldColors()` | Borderless text fields stacked as rows of a `SettingsCard` (divided by `HorizontalDivider`); dimmed placeholder that shows before focus (label stays floated when a placeholder is set), and the floated label keeps a gap above the input |
 | `SettingsCard` and `Settings*Row` (`settings/shared/`) | Settings cards, toggle/checkbox/navigation rows. `SettingsToggleRow` takes `subtitleTextStyle` (default `bodySmall`) a `trailingAction` placed after the switch, such as a delete button, and `showNavigationChevron`, which with `onRowClick` adds the chevron and divider of `SettingsNavigationToggleRow` before the switch |
+| `SearchResultCard` (`searchScreen/shared/`) | Every home and result card (sections, history, suggestions, engine cards, tools via `InformationCard`). When the Compact Layout setting is on (`LocalSearchCardLayoutEnabled` is false, provided in `SearchScreen`), it drops its container color and border so content sits on the screen background at the width of section titles and the app grid, and draws a divider under each card in search results (not on Home, via `LocalCardlessSectionDividers`). A list that stacks cards with a gap other than `SpacingMedium` must provide `LocalCardlessStackSpacing` so those dividers stay centred; new home/result cards must use it so they follow the setting |
 | `GlanceStatusRow` (`searchScreenLayout/`) | Home At a Glance rows: icon, title, subtitle or `belowText`, optional pill, trailing action, dismiss |
 | `GlanceActionChip` (`searchScreenLayout/`) | Pill button for a Glance row's own actions: outlined by default, or filled with `GlancePillColors` and an optional icon (missed call Call) |
 | `MarkdownText` (`shared/util/MarkdownRenderer.kt`) | Short Markdown such as AI answers rendered as body text; `RenderMarkdownDocument` is for full documents |

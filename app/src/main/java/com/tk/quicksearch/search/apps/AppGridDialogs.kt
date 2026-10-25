@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.apps
 
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.apps.swipeGestures.appSwipeGestures
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -322,12 +323,17 @@ internal fun AppSuggestionTabStrip(
     val inactiveColor = activeColor.copy(alpha = SuggestionTabInactiveAlpha)
     val leftTab = tabs.getOrNull(selectedIndex - 1)
     val rightTab = tabs.getOrNull(selectedIndex + 1)
+    // With the card layout off the strip sits right under a divider, so it gets room to breathe.
+    val compactLayout = !LocalSearchCardLayoutEnabled.current
 
     Row(
             modifier =
                     Modifier
                             .fillMaxWidth(0.86f)
-                            .padding(bottom = DesignTokens.SpacingXSmall),
+                            .padding(
+                                    top = if (compactLayout) DesignTokens.SpacingSmall else 0.dp,
+                                    bottom = if (compactLayout) DesignTokens.SpacingMedium else DesignTokens.SpacingXSmall,
+                            ),
             verticalAlignment = Alignment.CenterVertically,
     ) {
         EdgeSuggestionTabLabel(

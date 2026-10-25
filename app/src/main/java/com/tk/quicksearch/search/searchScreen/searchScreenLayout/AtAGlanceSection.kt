@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -35,7 +35,6 @@ import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
-import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -237,7 +236,7 @@ internal fun AtAGlanceRows(
     val rows = rememberAnimatedGlanceRows(items)
     if (rows.isEmpty()) return
     Column(modifier = Modifier.fillMaxWidth()) {
-        if (dividerBefore) HorizontalDivider(color = dividerColor)
+        if (dividerBefore) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
         rows.forEachIndexed { index, row ->
             key(row.item.key) {
                 AnimatedVisibility(
@@ -246,13 +245,13 @@ internal fun AtAGlanceRows(
                     exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
                 ) {
                     Column {
-                        if (index > 0) HorizontalDivider(color = dividerColor)
+                        if (index > 0) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
                         row.item.content()
                     }
                 }
             }
         }
-        if (dividerAfter) HorizontalDivider(color = dividerColor)
+        if (dividerAfter) HorizontalDivider(modifier = Modifier.compactEdgeToEdge(), color = dividerColor)
     }
 }
 
@@ -313,18 +312,15 @@ private fun rememberAnimatedGlanceRows(items: List<AtAGlanceItem>): List<Animate
 
 /** Tapping the title opens the At a Glance settings. */
 @Composable
-internal fun AtAGlanceTitle() {
+internal fun AtAGlanceTitle(showWallpaperBackground: Boolean) {
     val openAppSettingDestination = LocalOpenAppSettingDestination.current
-    Text(
-        text = stringResource(R.string.settings_at_a_glance_title),
-        style = MaterialTheme.typography.titleSmall,
-        color = homeTextColor(),
+    HomeSectionTitle(
+        title = stringResource(R.string.settings_at_a_glance_title),
+        showWallpaperBackground = showWallpaperBackground,
         modifier =
-            Modifier
-                .padding(horizontal = DesignTokens.SpacingLarge)
-                .clickable(enabled = openAppSettingDestination != null, role = Role.Button) {
-                    openAppSettingDestination?.invoke(AppSettingsDestination.AT_A_GLANCE)
-                },
+            Modifier.clickable(enabled = openAppSettingDestination != null, role = Role.Button) {
+                openAppSettingDestination?.invoke(AppSettingsDestination.AT_A_GLANCE)
+            },
     )
 }
 
@@ -369,7 +365,7 @@ internal fun AtAGlanceCard(
     ) {
         // Matches the spacing of the home column the title and card sit in.
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            if (showTitle) AtAGlanceTitle()
+            if (showTitle) AtAGlanceTitle(showWallpaperBackground)
             AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
                 AtAGlanceRows(items = items, showWallpaperBackground = showWallpaperBackground)
             }
@@ -409,7 +405,7 @@ internal fun NowPlayingCard(
     ) {
         // Matches the spacing of the home column the title and card sit in.
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            if (showTitle) AtAGlanceTitle()
+            if (showTitle) AtAGlanceTitle(showWallpaperBackground)
             AtAGlanceCardShell(showWallpaperBackground = showWallpaperBackground) {
                 NowPlayingRow(glance, onDismiss = { visibility.targetState = false })
             }
