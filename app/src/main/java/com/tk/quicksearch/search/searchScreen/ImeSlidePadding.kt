@@ -27,10 +27,17 @@ internal fun Modifier.safeDrawingPaddingWithImeSlide(enabled: Boolean): Modifier
     if (!enabled) return safeDrawingPadding()
     val ime = WindowInsets.ime
     val imeTarget = WindowInsets.imeAnimationTarget
+    val bars = WindowInsets.systemBars.union(WindowInsets.displayCutout)
     return graphicsLayer {
-        translationY = (imeTarget.getBottom(this) - ime.getBottom(this)).toFloat()
+        // The keyboard overlaps the navigation bar, so the padding is the larger of the two, not
+        // their sum. Slide by the difference in that padding, or the content jumps by the
+        // navigation bar height as the keyboard starts opening or closing.
+        val barsBottom = bars.getBottom(this)
+        translationY =
+            (maxOf(imeTarget.getBottom(this), barsBottom) - maxOf(ime.getBottom(this), barsBottom))
+                .toFloat()
     }
-        .windowInsetsPadding(WindowInsets.systemBars.union(WindowInsets.displayCutout).union(imeTarget))
+        .windowInsetsPadding(bars.union(imeTarget))
         // Children still use imePadding(); consume the live insets so they don't pad twice.
         .consumeWindowInsets(WindowInsets.safeDrawing)
 }
