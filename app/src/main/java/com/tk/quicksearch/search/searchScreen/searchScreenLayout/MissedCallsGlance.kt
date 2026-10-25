@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.PhoneMissed
+import androidx.compose.material.icons.automirrored.rounded.PhoneMissed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -85,7 +85,7 @@ internal fun MissedCallsRow(
             ) {
                 Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = Icons.Rounded.PhoneMissed,
+                        imageVector = Icons.AutoMirrored.Rounded.PhoneMissed,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                     )

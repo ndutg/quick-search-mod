@@ -285,12 +285,16 @@ internal fun HostedWidget(
                 setAppWidget(appWidgetId, providerInfo)
                 layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
                 appWidgetManager.updateAppWidgetOptions(appWidgetId, displayOptions)
+                // displayOptions already carries OPTION_APPWIDGET_SIZES; this overload keeps the host
+                // view's padding handling unchanged.
+                @Suppress("DEPRECATION")
                 updateAppWidgetSize(displayOptions, widthDp, heightDp, widthDp, heightDp)
             }
         },
         update = { hostView ->
             hostView.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
             appWidgetManager.updateAppWidgetOptions(appWidgetId, displayOptions)
+            @Suppress("DEPRECATION")
             hostView.updateAppWidgetSize(displayOptions, widthDp, heightDp, widthDp, heightDp)
         },
         modifier = modifier,

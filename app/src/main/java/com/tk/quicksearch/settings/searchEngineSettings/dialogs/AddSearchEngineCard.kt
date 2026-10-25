@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -60,6 +59,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.withLink
 
 @Composable
 fun AddSearchEngineCard(
@@ -304,41 +305,33 @@ private fun AddSearchEngineForm(
                                     }
                                     val placeholderEnd = placeholderStart + CUSTOM_QUERY_PLACEHOLDER.length
                                     append(fullMessage.substring(0, placeholderStart))
-                                    pushStringAnnotation(tag = "placeholder", annotation = CUSTOM_QUERY_PLACEHOLDER)
-                                    withStyle(
-                                        style =
-                                            SpanStyle(
-                                                color = AppColors.LinkColor,
-                                            ),
-                                    ) {
-                                        append(CUSTOM_QUERY_PLACEHOLDER)
+                                    val placeholderLink =
+                                        LinkAnnotation.Clickable(tag = CUSTOM_QUERY_PLACEHOLDER) {
+                                            val appendedText = "${urlInput.text}$CUSTOM_QUERY_PLACEHOLDER"
+                                            urlInput =
+                                                TextFieldValue(
+                                                    text = appendedText,
+                                                    selection = TextRange(appendedText.length),
+                                                )
+                                        }
+                                    withLink(placeholderLink) {
+                                        withStyle(
+                                            style =
+                                                SpanStyle(
+                                                    color = AppColors.LinkColor,
+                                                ),
+                                        ) {
+                                            append(CUSTOM_QUERY_PLACEHOLDER)
+                                        }
                                     }
-                                    pop()
                                     append(fullMessage.substring(placeholderEnd))
                                 }
-                            ClickableText(
+                            Text(
                                 text = messageText,
                                 style =
                                     MaterialTheme.typography.bodySmall.copy(
                                         color = MaterialTheme.colorScheme.error,
                                     ),
-                                onClick = { offset ->
-                                    val hasPlaceholderLink =
-                                        messageText
-                                            .getStringAnnotations(
-                                                tag = "placeholder",
-                                                start = offset,
-                                                end = offset,
-                                            ).isNotEmpty()
-                                    if (hasPlaceholderLink) {
-                                        val appendedText = "${urlInput.text}$CUSTOM_QUERY_PLACEHOLDER"
-                                        urlInput =
-                                            TextFieldValue(
-                                                text = appendedText,
-                                                selection = TextRange(appendedText.length),
-                                            )
-                                    }
-                                },
                             )
                         }
 

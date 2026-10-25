@@ -12,15 +12,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.CalculatorState
 import com.tk.quicksearch.search.searchScreen.shared.InformationCard
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.runtime.rememberCoroutineScope
+import com.tk.quicksearch.shared.util.writeText
+import kotlinx.coroutines.launch
 
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
@@ -28,14 +30,15 @@ fun ColorVisualizerResult(
     calculatorState: CalculatorState,
     showWallpaperBackground: Boolean,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val clipboardScope = rememberCoroutineScope()
     val color = calculatorState.colorArgb?.let(::Color)
     InformationCard(
         modifier =
             Modifier.fillMaxWidth().combinedClickable(
                 onClick = {},
                 onLongClick = {
-                    calculatorState.result?.let { clipboardManager.setText(AnnotatedString(it)) }
+                    calculatorState.result?.let { clipboardScope.launch { clipboard.writeText(it) } }
                 },
             ),
         showWallpaperBackground = showWallpaperBackground,

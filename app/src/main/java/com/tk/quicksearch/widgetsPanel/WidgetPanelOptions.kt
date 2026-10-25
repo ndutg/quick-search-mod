@@ -96,7 +96,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.BackgroundSource
@@ -142,14 +141,16 @@ internal class WidgetOptionsFactory(
         val maxWidthDp = minWidthDp
         val maxHeightDp = minHeightDp
 
-        return bundleOf(
-            AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH to minWidthDp.roundToInt(),
-            AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT to minHeightDp.roundToInt(),
-            AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH to maxWidthDp.roundToInt(),
-            AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT to maxHeightDp.roundToInt(),
-            AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY to
+        return Bundle().apply {
+            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, minWidthDp.roundToInt())
+            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, minHeightDp.roundToInt())
+            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, maxWidthDp.roundToInt())
+            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, maxHeightDp.roundToInt())
+            putInt(
+                AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY,
                 AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
-        ).applySamsungHostCompatExtras(
+            )
+        }.applySamsungHostCompatExtras(
             columnSpan = columnSpan,
             rowSpan = rowSpan,
             density = density,
@@ -190,14 +191,16 @@ internal fun createDisplayedWidgetOptions(
     density: Float,
     orientation: Int,
 ): Bundle =
-    bundleOf(
-        AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH to widthDp,
-        AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT to heightDp,
-        AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH to widthDp,
-        AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT to heightDp,
-        AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY to
+    Bundle().apply {
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, widthDp)
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, heightDp)
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, widthDp)
+        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, heightDp)
+        putInt(
+            AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY,
             AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN,
-    ).applySamsungHostCompatExtras(
+        )
+    }.applySamsungHostCompatExtras(
         columnSpan = columnSpan,
         rowSpan = rowSpan,
         density = density,

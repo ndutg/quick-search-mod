@@ -527,6 +527,8 @@ internal object GlanceNotificationsStore {
      * A paused timer or stopwatch whose custom layout shows its time as plain text in a view named
      * "chronometer" rather than in a chronometer view, as Google Clock's does.
      */
+    // Other apps' custom notification layouts are only exposed through the deprecated fields.
+    @Suppress("DEPRECATION")
     private fun StatusBarNotification.toFrozenTextTimer(
         context: Context,
         previous: TimerNotification?,
