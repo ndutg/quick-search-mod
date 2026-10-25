@@ -730,7 +730,7 @@
     <string name="settings_bottom_searchbar_desc">Suchleiste am unteren Bildschirmrand platzieren</string>
     <string name="settings_bottom_searchbar_title">Untere Suchleiste</string>
     <string name="settings_compact_layout_title">Kompaktes Layout</string>
-    <string name="settings_compact_layout_desc">Kartenhintergründe von Startseite und Suchergebnissen entfernen, damit Inhalte die volle Breite nutzen</string>
+    <string name="settings_compact_layout_desc">Kartenloses Layout auf Startseite und in der Suche, damit mehr Inhalt auf den Bildschirm passt</string>
     <string name="settings_cache_cleared_toast">Cache geleert. App-Index wird neu aufgebaut…</string>
     <string name="settings_circular_app_icons_desc">App-Symbole als Kreise erzwingen</string>
     <string name="settings_circular_app_icons_title">Runde App-Symbole</string>
@@ -1161,6 +1161,9 @@
     <string name="widget_note_deleted">Notiz nicht gefunden. Tippen, um eine andere auszuwählen.</string>
     <string name="widget_countdown_widget_title">Countdown-Widget</string>
     <string name="widget_at_a_glance_widget_title">Auf-einen-Blick-Widget</string>
+    <string name="widget_at_a_glance_items_title">Auf einen Blick: Elemente</string>
+    <string name="widget_at_a_glance_items_summary">Wähle, was dieses Widget anzeigt</string>
+    <string name="widget_at_a_glance_app_notifications_setup">Aktiviere zuerst App-Benachrichtigungen in den Auf-einen-Blick-Einstellungen</string>
     <string name="widget_at_a_glance_sample_alarm">Morgen, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Geburtstag von Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mama</string>

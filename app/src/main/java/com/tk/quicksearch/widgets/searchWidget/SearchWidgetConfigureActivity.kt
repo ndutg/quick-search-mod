@@ -132,6 +132,10 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                 useSystemFont = uiState.useSystemFont,
                 appTheme = uiState.appTheme,
                 appThemeMode = uiState.appThemeMode,
+                backgroundSource = uiState.backgroundSource,
+                customImageUri = uiState.customImageUri,
+                accentColorMode = uiState.accentColorMode,
+                customAccentColorArgb = uiState.customAccentColorArgb,
                 deviceThemeEnabled = uiState.deviceThemeEnabled,
             ) {
                 if (isCountdownWidget) {

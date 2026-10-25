@@ -730,7 +730,7 @@
     <string name="settings_bottom_searchbar_desc">శోధన పట్టీని స్క్రీన్ దిగువన ఉంచండి</string>
     <string name="settings_bottom_searchbar_title">దిగువ శోధన పట్టీ</string>
     <string name="settings_compact_layout_title">కాంపాక్ట్ లేఅవుట్</string>
-    <string name="settings_compact_layout_desc">హోమ్ మరియు శోధన ఫలితాల నుండి కార్డ్ నేపథ్యాలను తీసివేసి పూర్తి వెడల్పును ఉపయోగించండి</string>
+    <string name="settings_compact_layout_desc">స్క్రీన్‌లో ఎక్కువ కంటెంట్ సరిపోయేలా హోమ్ మరియు శోధనలో కార్డ్‌లు లేని లేఅవుట్</string>
     <string name="settings_cache_cleared_toast">కాష్ క్లియర్ చేయబడింది. యాప్ ఇండెక్స్ పునర్నిర్మించబడుతోంది\u2026</string>
     <string name="settings_circular_app_icons_desc">యాప్ ఐకాన్‌లను గుండ్రంగా మార్చండి</string>
     <string name="settings_circular_app_icons_title">గుండ్రటి యాప్ ఐకాన్‌లు</string>
@@ -1161,6 +1161,9 @@
     <string name="widget_note_deleted">నోట్ కనుగొనబడలేదు. మరొకదాన్ని ఎంచుకోవడానికి నొక్కండి.</string>
     <string name="widget_countdown_widget_title">కౌంట్‌డౌన్ విడ్జెట్</string>
     <string name="widget_at_a_glance_widget_title">ఒక్క చూపులో విడ్జెట్</string>
+    <string name="widget_at_a_glance_items_title">ఒక్క చూపులో అంశాలు</string>
+    <string name="widget_at_a_glance_items_summary">ఈ విడ్జెట్ ఏమి చూపాలో ఎంచుకోండి</string>
+    <string name="widget_at_a_glance_app_notifications_setup">ముందుగా ఒక్క చూపులో సెట్టింగ్‌లలో యాప్ నోటిఫికేషన్‌లను ఆన్ చేయండి</string>
     <string name="widget_at_a_glance_sample_alarm">రేపు, ఉదయం 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">అలెక్స్ పుట్టినరోజు</string>
     <string name="widget_at_a_glance_sample_caller">అమ్మ</string>

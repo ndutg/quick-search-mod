@@ -45,6 +45,8 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.color.ColorProvider as DayNightColorProvider
 import com.tk.quicksearch.R
+import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
+import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetColors
 import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.WidgetBitmapUtils
@@ -103,7 +105,8 @@ class AtAGlanceWidget : GlanceAppWidget() {
         val storedConfig = prefs.toWidgetPreferences(context).enforceVariantConstraints(WidgetVariant.AT_A_GLANCE)
         // Until the configure screen saves, show the look it starts from.
         val config = if (prefs.hasStoredWidgetConfig()) storedConfig else storedConfig.withNoteWidgetDefaults()
-        val snapshot = loadAtAGlanceWidgetSnapshot(context)
+        val items = WidgetGlanceItemSettings(config.glanceItems, AppGlanceItemSettings(context))
+        val snapshot = loadAtAGlanceWidgetSnapshot(context, items)
         AtAGlanceWidgetReceiver.scheduleRefresh(context, snapshot.nextChangeMillis)
 
         val size = LocalSize.current

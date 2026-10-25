@@ -729,7 +729,7 @@
     <string name="settings_bottom_searchbar_desc">Posiziona la barra di ricerca nella parte inferiore dello schermo</string>
     <string name="settings_bottom_searchbar_title">Barra di ricerca in basso</string>
     <string name="settings_compact_layout_title">Layout compatto</string>
-    <string name="settings_compact_layout_desc">Rimuovi gli sfondi a scheda da home e risultati per usare tutta la larghezza</string>
+    <string name="settings_compact_layout_desc">Layout senza schede in Home e Ricerca per mostrare più contenuti sullo schermo</string>
     <string name="settings_cache_cleared_toast">Cache svuotata. Ricostruzione dell\u2019indice delle app\u2026</string>
     <string name="settings_circular_app_icons_desc">Forza le icone delle app circolari</string>
     <string name="settings_circular_app_icons_title">Icone app circolari</string>
@@ -1160,6 +1160,9 @@
     <string name="widget_note_deleted">Nota non trovata. Tocca per sceglierne un\'altra.</string>
     <string name="widget_countdown_widget_title">Widget conto alla rovescia</string>
     <string name="widget_at_a_glance_widget_title">Widget In breve</string>
+    <string name="widget_at_a_glance_items_title">Elementi In breve</string>
+    <string name="widget_at_a_glance_items_summary">Scegli cosa mostra questo widget</string>
+    <string name="widget_at_a_glance_app_notifications_setup">Attiva prima Notifiche app nelle impostazioni di In breve</string>
     <string name="widget_at_a_glance_sample_alarm">Domani, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Compleanno di Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mamma</string>

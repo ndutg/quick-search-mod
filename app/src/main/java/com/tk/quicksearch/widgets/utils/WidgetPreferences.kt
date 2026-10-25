@@ -143,6 +143,7 @@ private object WidgetKeys {
     val CUSTOM_BUTTON_4 = stringPreferencesKey("quick_search_widget_custom_button_4")
     val CUSTOM_BUTTON_5 = stringPreferencesKey("quick_search_widget_custom_button_5")
     val NOTE_ID = longPreferencesKey("quick_search_widget_note_id")
+    val GLANCE_ITEMS = stringPreferencesKey("quick_search_widget_glance_items")
 }
 
 /** Preferences for the Quick Search widget appearance and behavior. */
@@ -173,6 +174,8 @@ data class WidgetPreferences(
     val customButtons: List<CustomWidgetButtonAction?> = WidgetDefaults.CUSTOM_BUTTONS,
     /** The note shown by the Note widget; null until one is picked. */
     val noteId: Long? = null,
+    /** The At a Glance widget's own item toggles by key; items not in it follow the app's. */
+    val glanceItems: Map<String, Boolean> = emptyMap(),
 ) : Parcelable {
     companion object {
         /** Default widget preferences instance. */
@@ -322,6 +325,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         useHomeScreenAppearance = this[WidgetKeys.USE_HOME_SCREEN_APPEARANCE] ?: false,
         customButtons = customButtons,
         noteId = this[WidgetKeys.NOTE_ID],
+        glanceItems = decodeGlanceItems(this[WidgetKeys.GLANCE_ITEMS]),
     ).coerceToValidRanges()
 }
 
@@ -365,6 +369,17 @@ fun MutablePreferences.applyWidgetPreferences(
     customButtons.getOrNull(5)?.let { action -> this[WidgetKeys.CUSTOM_BUTTON_5] = action.toManagedJson(context) }
         ?: remove(WidgetKeys.CUSTOM_BUTTON_5)
     validated.noteId?.let { this[WidgetKeys.NOTE_ID] = it } ?: remove(WidgetKeys.NOTE_ID)
+    if (validated.glanceItems.isEmpty()) {
+        remove(WidgetKeys.GLANCE_ITEMS)
+    } else {
+        this[WidgetKeys.GLANCE_ITEMS] = org.json.JSONObject(validated.glanceItems).toString()
+    }
+}
+
+private fun decodeGlanceItems(raw: String?): Map<String, Boolean> {
+    if (raw.isNullOrBlank()) return emptyMap()
+    val json = runCatching { org.json.JSONObject(raw) }.getOrNull() ?: return emptyMap()
+    return json.keys().asSequence().associateWith { json.optBoolean(it, true) }
 }
 
 private fun CustomWidgetButtonAction.toManagedJson(context: Context): String {

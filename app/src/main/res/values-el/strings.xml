@@ -730,7 +730,7 @@
     <string name="settings_bottom_searchbar_desc">Τοποθέτηση της γραμμής αναζήτησης στο κάτω μέρος της οθόνης</string>
     <string name="settings_bottom_searchbar_title">Κάτω γραμμή αναζήτησης</string>
     <string name="settings_compact_layout_title">Συμπαγής διάταξη</string>
-    <string name="settings_compact_layout_desc">Αφαίρεση φόντου καρτών από την αρχική και τα αποτελέσματα αναζήτησης ώστε το περιεχόμενο να χρησιμοποιεί όλο το πλάτος</string>
+    <string name="settings_compact_layout_desc">Διάταξη χωρίς κάρτες στην αρχική και την αναζήτηση για να χωράει περισσότερο περιεχόμενο στην οθόνη</string>
     <string name="settings_cache_cleared_toast">Η προσωρινή μνήμη εκκαθαρίστηκε. Ανακατασκευή ευρετηρίου εφαρμογών\u2026</string>
     <string name="settings_circular_app_icons_desc">Επιβολή κυκλικών εικονιδίων εφαρμογών</string>
     <string name="settings_circular_app_icons_title">Κυκλικά εικονίδια εφαρμογών</string>
@@ -1161,6 +1161,9 @@
     <string name="widget_note_deleted">Η σημείωση δεν βρέθηκε. Πατήστε για να επιλέξετε άλλη.</string>
     <string name="widget_countdown_widget_title">Γραφικό στοιχείο αντίστροφης μέτρησης</string>
     <string name="widget_at_a_glance_widget_title">Γραφικό στοιχείο Με μια ματιά</string>
+    <string name="widget_at_a_glance_items_title">Στοιχεία Με μια ματιά</string>
+    <string name="widget_at_a_glance_items_summary">Επιλέξτε τι εμφανίζει αυτό το widget</string>
+    <string name="widget_at_a_glance_app_notifications_setup">Ενεργοποιήστε πρώτα τις Ειδοποιήσεις εφαρμογών στις ρυθμίσεις Με μια ματιά</string>
     <string name="widget_at_a_glance_sample_alarm">Αύριο, 7:00 π.μ.</string>
     <string name="widget_at_a_glance_sample_birthday">Γενέθλια: Άλεξ</string>
     <string name="widget_at_a_glance_sample_caller">Μαμά</string>

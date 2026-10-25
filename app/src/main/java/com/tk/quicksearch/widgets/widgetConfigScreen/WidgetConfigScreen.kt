@@ -31,6 +31,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.shared.ui.components.TipBanner
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetItemsSection
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonsSection
 import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetBackgroundSection
@@ -230,6 +231,12 @@ fun WidgetConfigScreen(
                 if (isNote || isAtAGlance) {
                     if (isNote) {
                         NoteWidgetSelectedNoteSection(noteId = constrainedState.noteId, onChangeNote = onChangeNote)
+                    } else {
+                        AtAGlanceWidgetItemsSection(
+                            state = constrainedState,
+                            onStateChange = onConstrainedStateChange,
+                            searchViewModel = searchViewModel,
+                        )
                     }
                     NoteWidgetBackgroundSection(state = constrainedState, onStateChange = onConstrainedStateChange)
                     NoteWidgetTextColorSection(state = constrainedState, onStateChange = onConstrainedStateChange)

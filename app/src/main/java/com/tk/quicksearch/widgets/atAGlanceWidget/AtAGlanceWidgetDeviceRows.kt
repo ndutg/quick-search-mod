@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences.Companion.CRITICAL_BATTERY_THRESHOLD_PERCENT
+import com.tk.quicksearch.search.data.preferences.GlanceItem
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.ACTION_WIFI_AP_STATE_CHANGED
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.BatteryStatus
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.WifiSignInDismissal
@@ -61,7 +62,7 @@ private fun AtAGlanceWidgetRowLoader.deviceRow(
 )
 
 internal fun AtAGlanceWidgetRowLoader.lowBatteryRows(): List<AtAGlanceWidgetRow> {
-    if (!BatteryPreferences(context).isShowLowBatteryEnabled()) return emptyList()
+    if (!items.isShown(GlanceItem.LOW_BATTERY)) return emptyList()
     val battery = batteryStatus()?.takeIf { it.isLow } ?: return emptyList()
     val isCritical = battery.percent <= CRITICAL_BATTERY_THRESHOLD_PERCENT
     val isPowerSaveOn =
@@ -88,7 +89,7 @@ internal fun AtAGlanceWidgetRowLoader.lowBatteryRows(): List<AtAGlanceWidgetRow>
 }
 
 internal fun AtAGlanceWidgetRowLoader.wifiSignInRows(): List<AtAGlanceWidgetRow> {
-    if (!glancePreferences.isShowWifiSignInEnabled()) return emptyList()
+    if (!items.isShown(GlanceItem.WIFI_SIGN_IN)) return emptyList()
     val connectivityManager = context.getSystemService(ConnectivityManager::class.java) ?: return emptyList()
     val needsSignIn =
         runCatching {
@@ -110,13 +111,13 @@ internal fun AtAGlanceWidgetRowLoader.deviceStateRows(): List<AtAGlanceWidgetRow
     buildList {
         val notificationManager = context.getSystemService(NotificationManager::class.java)
         if (
-            glancePreferences.isShowDoNotDisturbEnabled() &&
+            items.isShown(GlanceItem.DO_NOT_DISTURB) &&
             notificationManager != null &&
             isDoNotDisturbOn(notificationManager.currentInterruptionFilter)
         ) {
             add(deviceRow(AtAGlanceWidgetTapType.DO_NOT_DISTURB, Icons.Rounded.DoNotDisturbOn, string(R.string.home_dnd_on)))
         }
-        if (glancePreferences.isShowAirplaneModeEnabled() && isAirplaneModeOn(context)) {
+        if (items.isShown(GlanceItem.AIRPLANE_MODE) && isAirplaneModeOn(context)) {
             add(
                 deviceRow(
                     AtAGlanceWidgetTapType.AIRPLANE_MODE,
@@ -125,13 +126,13 @@ internal fun AtAGlanceWidgetRowLoader.deviceStateRows(): List<AtAGlanceWidgetRow
                 ),
             )
         }
-        if (glancePreferences.isShowHotspotEnabled()) {
+        if (items.isShown(GlanceItem.HOTSPOT)) {
             val stateIntent = runCatching { context.registerReceiver(null, IntentFilter(ACTION_WIFI_AP_STATE_CHANGED)) }.getOrNull()
             if (isHotspotOn(context, stateIntent)) {
                 add(deviceRow(AtAGlanceWidgetTapType.HOTSPOT, Icons.Rounded.WifiTethering, string(R.string.home_hotspot_on)))
             }
         }
-        if (glancePreferences.isShowFlashlightEnabled() && AtAGlanceWidgetUpdater.litCameraIds.value.isNotEmpty()) {
+        if (items.isShown(GlanceItem.FLASHLIGHT) && AtAGlanceWidgetUpdater.litCameraIds.value.isNotEmpty()) {
             add(deviceRow(AtAGlanceWidgetTapType.FLASHLIGHT, Icons.Rounded.FlashlightOn, string(R.string.home_flashlight_on)))
         }
         addAll(chargingRows())
@@ -139,8 +140,8 @@ internal fun AtAGlanceWidgetRowLoader.deviceStateRows(): List<AtAGlanceWidgetRow
     }
 
 private fun AtAGlanceWidgetRowLoader.chargingRows(): List<AtAGlanceWidgetRow> {
+    if (!items.isShown(GlanceItem.CHARGING)) return emptyList()
     val preferences = BatteryPreferences(context)
-    if (!preferences.isShowChargingEnabled()) return emptyList()
     val battery = batteryStatus()?.takeIf { it.isPlugged } ?: return emptyList()
     // Charging dismissed on home stays hidden until the phone is unplugged, as on home.
     val dismissedPercent = preferences.getChargingDismissedPercent()
@@ -169,7 +170,7 @@ private fun AtAGlanceWidgetRowLoader.chargingRows(): List<AtAGlanceWidgetRow> {
 }
 
 private fun AtAGlanceWidgetRowLoader.lowStorageRows(): List<AtAGlanceWidgetRow> {
-    if (!glancePreferences.isShowLowStorageEnabled()) return emptyList()
+    if (!items.isShown(GlanceItem.LOW_STORAGE)) return emptyList()
     val (free, total) = readInternalStorage() ?: return emptyList()
     if (!isLowStorage(free, total) || updateLowStorageDismissal(glancePreferences, free, total)) return emptyList()
     return listOf(

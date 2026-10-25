@@ -45,17 +45,19 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.appNotifications.AppNotificationsSettingsRow
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
+import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
-import com.tk.quicksearch.search.data.preferences.CalendarPreferences
+import com.tk.quicksearch.search.data.preferences.GlanceItem
+import com.tk.quicksearch.search.data.preferences.GlanceItemSettings
 import com.tk.quicksearch.customInfo.CustomInfoActivity
 import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.customInfo.CustomInfoScheduler
 import com.tk.quicksearch.customInfo.customInfoRepeatLabel
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
-import com.tk.quicksearch.search.data.preferences.MediaPreferences
-import com.tk.quicksearch.search.data.preferences.ReminderPreferences
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
+import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.rememberAppNotificationsConfig
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.AliasPill
@@ -76,6 +78,19 @@ private class GlanceToggle(
     val searchText: String,
     val row: @Composable (isFirstItem: Boolean, isLastItem: Boolean) -> Unit,
 )
+
+/** The toggles that need notification access, each with its own permission request. */
+private val NOTIFICATION_ITEMS =
+    listOf(
+        GlanceItem.NOW_PLAYING,
+        GlanceItem.ONGOING_CALL,
+        GlanceItem.OTP_CODES,
+        GlanceItem.MISSED_CALLS,
+        GlanceItem.WEATHER,
+        GlanceItem.WORKOUTS,
+        GlanceItem.TIMERS,
+        GlanceItem.PROGRESS,
+    )
 
 /** A runtime permission behind a toggle: whether it is granted, and a request that turns the toggle on once it is. */
 private class PermissionGate(
@@ -146,20 +161,26 @@ private fun rememberPermissionGate(
 /**
  * Toggles for the glanceable rows shown on the home screen, filtered by [searchQuery] from the
  * page's bottom search bar. Give [modifier] a bounded height; the toggles card scrolls within it.
+ *
+ * With [widgetItems], the toggles edit an At a Glance widget's own items instead: changes go to
+ * [onWidgetItemsChange], and items the widget hasn't changed show the app's setting. Media, which
+ * has its own widget, and the app-wide actions (editing Custom Info, App notifications' apps,
+ * hidden alarm apps) are left out.
  */
 @Composable
 fun AtAGlanceSettingsSection(
     modifier: Modifier = Modifier,
     searchQuery: String = "",
+    widgetItems: Map<String, Boolean>? = null,
+    onWidgetItemsChange: (Map<String, Boolean>) -> Unit = {},
 ) {
     val context = LocalContext.current
     val appContext = context.applicationContext
-    val calendarPreferences = remember(context) { CalendarPreferences(appContext) }
+    val isWidget = widgetItems != null
+    val appSettings = remember(context) { AppGlanceItemSettings(appContext) }
+    val settings: GlanceItemSettings =
+        if (widgetItems != null) WidgetGlanceItemSettings(widgetItems, appSettings, onWidgetItemsChange) else appSettings
     val alarmPreferences = remember(context) { UpcomingAlarmPreferences(appContext) }
-    val reminderPreferences = remember(context) { ReminderPreferences(appContext) }
-    val mediaPreferences = remember(context) { MediaPreferences(appContext) }
-    val batteryPreferences = remember(context) { BatteryPreferences(appContext) }
-    val glancePreferences = remember(context) { GlancePreferences(appContext) }
     val customInfoRepository = remember(context) { CustomInfoRepository(appContext) }
     val customInfoChange by CustomInfoRepository.changes.collectAsState()
     var customInfoItems by remember { mutableStateOf(emptyList<CustomInfoItem>()) }
@@ -167,32 +188,20 @@ fun AtAGlanceSettingsSection(
     LaunchedEffect(customInfoRepository, customInfoChange) {
         customInfoItems = withContext(Dispatchers.IO) { customInfoRepository.all() }
     }
-    var showTodayEvents by remember { mutableStateOf(calendarPreferences.getShowTodayEvents()) }
-    var showUpcomingAlarm by remember { mutableStateOf(alarmPreferences.isShowUpcomingAlarmEnabled()) }
-    var showTomorrowAlarm by remember { mutableStateOf(alarmPreferences.isShowTomorrowAlarmEnabled()) }
-    var showTomorrowEvents by remember { mutableStateOf(glancePreferences.isShowTomorrowEventsEnabled()) }
+    var shown by remember(widgetItems) { mutableStateOf(GlanceItem.entries.associateWith(settings::isShown)) }
+    val settingsState = rememberUpdatedState(settings)
+
+    fun isShown(item: GlanceItem) = shown.getValue(item)
+
+    fun setShown(
+        item: GlanceItem,
+        value: Boolean,
+    ) {
+        shown = shown + (item to value)
+        settingsState.value.setShown(item, value)
+    }
     var hiddenAlarmPackages by remember { mutableStateOf(alarmPreferences.getHiddenPackages()) }
     var showHiddenAlarmAppsDialog by remember { mutableStateOf(false) }
-    var showUpcomingReminders by remember {
-        mutableStateOf(reminderPreferences.isShowUpcomingRemindersEnabled())
-    }
-    var showNowPlaying by remember { mutableStateOf(mediaPreferences.isShowNowPlayingEnabled()) }
-    var showLowBattery by remember { mutableStateOf(batteryPreferences.isShowLowBatteryEnabled()) }
-    var showCharging by remember { mutableStateOf(batteryPreferences.isShowChargingEnabled()) }
-    var showBirthdays by remember { mutableStateOf(glancePreferences.isShowBirthdaysEnabled()) }
-    var showTimers by remember { mutableStateOf(glancePreferences.isShowTimersEnabled()) }
-    var showProgress by remember { mutableStateOf(glancePreferences.isShowProgressNotificationsEnabled()) }
-    var showLowStorage by remember { mutableStateOf(glancePreferences.isShowLowStorageEnabled()) }
-    var showMissedCalls by remember { mutableStateOf(glancePreferences.isShowMissedCallsEnabled()) }
-    var showDoNotDisturb by remember { mutableStateOf(glancePreferences.isShowDoNotDisturbEnabled()) }
-    var showOngoingCall by remember { mutableStateOf(glancePreferences.isShowOngoingCallEnabled()) }
-    var showWorkouts by remember { mutableStateOf(glancePreferences.isShowWorkoutsEnabled()) }
-    var showOtpCodes by remember { mutableStateOf(glancePreferences.isShowOtpCodesEnabled()) }
-    var showWeather by remember { mutableStateOf(glancePreferences.isShowWeatherEnabled()) }
-    var showAirplaneMode by remember { mutableStateOf(glancePreferences.isShowAirplaneModeEnabled()) }
-    var showHotspot by remember { mutableStateOf(glancePreferences.isShowHotspotEnabled()) }
-    var showWifiSignIn by remember { mutableStateOf(glancePreferences.isShowWifiSignInEnabled()) }
-    var showFlashlight by remember { mutableStateOf(glancePreferences.isShowFlashlightEnabled()) }
     var hasNotificationAccess by remember {
         mutableStateOf(NotificationDotsPermission.hasNotificationListenerAccess(context))
     }
@@ -210,72 +219,26 @@ fun AtAGlanceSettingsSection(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val calendarGate =
-        rememberPermissionGate(Manifest.permission.READ_CALENDAR) {
-            showTodayEvents = true
-            calendarPreferences.setShowTodayEvents(true)
-        }
-    val contactsGate =
-        rememberPermissionGate(Manifest.permission.READ_CONTACTS) {
-            showBirthdays = true
-            glancePreferences.setShowBirthdaysEnabled(true)
-        }
+    val calendarGate = rememberPermissionGate(Manifest.permission.READ_CALENDAR) { setShown(GlanceItem.TODAY_EVENTS, true) }
+    val contactsGate = rememberPermissionGate(Manifest.permission.READ_CONTACTS) { setShown(GlanceItem.BIRTHDAYS, true) }
     val needsPermissionText = stringResource(R.string.settings_overlay_source_needs_permission)
 
     // These reuse the notification-listener grant already used for notification dots, so the
     // request dialog and permission bookkeeping are not duplicated for each feature.
-    val onShowNowPlayingCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showNowPlaying = enabled
-            mediaPreferences.setShowNowPlayingEnabled(enabled)
-        }
-    val onShowTimersCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showTimers = enabled
-            glancePreferences.setShowTimersEnabled(enabled)
-        }
-    val onShowProgressCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showProgress = enabled
-            glancePreferences.setShowProgressNotificationsEnabled(enabled)
-        }
-    val onShowMissedCallsCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showMissedCalls = enabled
-            glancePreferences.setShowMissedCallsEnabled(enabled)
-        }
-    val onShowOngoingCallCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showOngoingCall = enabled
-            glancePreferences.setShowOngoingCallEnabled(enabled)
-        }
-    val onShowWorkoutsCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showWorkouts = enabled
-            glancePreferences.setShowWorkoutsEnabled(enabled)
-        }
-    val onShowOtpCodesCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showOtpCodes = enabled
-            glancePreferences.setShowOtpCodesEnabled(enabled)
-        }
-    val onShowWeatherCheckedChange =
-        rememberNotificationDotsCheckedChange { enabled ->
-            showWeather = enabled
-            glancePreferences.setShowWeatherEnabled(enabled)
-        }
+    val notificationCheckedChanges =
+        NOTIFICATION_ITEMS.associateWith { item -> rememberNotificationDotsCheckedChange { setShown(item, it) } }
 
     /** A toggle that needs notification access; its description gives way to the permission hint. */
     fun notificationToggle(
+        item: GlanceItem,
         title: String,
         description: String,
-        checked: Boolean,
-        onCheckedChange: (Boolean) -> Unit,
     ) = GlanceToggle("$title $description") { isFirst, isLast ->
+        val onCheckedChange = notificationCheckedChanges.getValue(item)
         SettingsToggleRow(
             title = title,
             subtitle = if (hasNotificationAccess) description else needsPermissionText,
-            checked = checked && hasNotificationAccess,
+            checked = isShown(item) && hasNotificationAccess,
             onCheckedChange = onCheckedChange,
             enabled = hasNotificationAccess,
             onDisabledClick = { onCheckedChange(true) },
@@ -286,19 +249,18 @@ fun AtAGlanceSettingsSection(
 
     /** A toggle that needs a runtime permission tracked by [gate]. */
     fun permissionToggle(
+        item: GlanceItem,
         title: String,
         description: String,
-        checked: Boolean,
         gate: PermissionGate,
         subtitleContent: (@Composable () -> Unit)? = null,
-        onCheckedChange: (Boolean) -> Unit,
     ) = GlanceToggle("$title $description") { isFirst, isLast ->
         SettingsToggleRow(
             title = title,
             subtitle = if (gate.hasAccess) description else needsPermissionText,
-            subtitleContent = subtitleContent?.takeIf { gate.hasAccess && checked },
-            checked = checked && gate.hasAccess,
-            onCheckedChange = onCheckedChange,
+            subtitleContent = subtitleContent?.takeIf { gate.hasAccess && isShown(item) },
+            checked = isShown(item) && gate.hasAccess,
+            onCheckedChange = { setShown(item, it) },
             enabled = gate.hasAccess,
             onDisabledClick = gate.request,
             isFirstItem = isFirst,
@@ -308,27 +270,39 @@ fun AtAGlanceSettingsSection(
 
     /** A toggle with no permission requirement. */
     fun simpleToggle(
+        item: GlanceItem,
         title: String,
         description: String,
-        checked: Boolean,
-        onCheckedChange: (Boolean) -> Unit,
     ) = GlanceToggle("$title $description") { isFirst, isLast ->
         SettingsToggleRow(
             title = title,
             subtitle = description,
-            checked = checked,
-            onCheckedChange = onCheckedChange,
+            checked = isShown(item),
+            onCheckedChange = { setShown(item, it) },
             isFirstItem = isFirst,
             isLastItem = isLast,
         )
     }
+
+    /** A nested checkbox under a toggle for [item]. */
+    @Composable
+    fun nestedCheckbox(
+        item: GlanceItem,
+        label: String,
+    ) = SettingsNestedCheckbox(
+        label = label,
+        checked = isShown(item),
+        onCheckedChange = { setShown(item, it) },
+        modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
+    )
 
     val alarmsTitle = stringResource(R.string.settings_at_a_glance_alarms_title)
     val appNotificationsTitle = stringResource(R.string.settings_at_a_glance_app_notifications_title)
     val appNotificationsDescription = stringResource(R.string.settings_at_a_glance_app_notifications_desc)
     val alarmsDescription = stringResource(R.string.settings_upcoming_alarm_desc)
     val hiddenAlarmAppsLabel = stringResource(R.string.settings_hidden_alarm_apps_title)
-    val customInfoToggles = customInfoItems.asReversed().map { item ->
+    // A Custom Info item turned off in the app never runs, so a widget can only hide those that do.
+    val customInfoToggles = customInfoItems.asReversed().filter { !isWidget || it.enabled }.map { item ->
         // Next run, or the last one once a one-time item has run.
         val scheduleText = listOfNotNull(
             (item.dueMillis ?: item.lastRunMillis)?.let { millis ->
@@ -340,18 +314,12 @@ fun AtAGlanceSettingsSection(
             SettingsToggleRow(
                 title = item.title,
                 subtitle = scheduleText,
-                checked = item.enabled,
-                onCheckedChange = { enabled -> CustomInfoScheduler.setEnabled(appContext, item.id, enabled) },
-                subtitleContent = {
-                    Row(
-                        modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    ) {
-                        AliasPill(
-                            text = AnnotatedString(stringResource(R.string.settings_edit_label)),
-                            textColor = AppColors.LinkColor,
-                            leadingIcon = Icons.Rounded.Edit,
-                            onClick = {
+                checked = settings.isCustomInfoShown(item),
+                onCheckedChange = { enabled -> settings.setCustomInfoShown(item, enabled) },
+                subtitleContent = if (isWidget) null else {
+                    {
+                        CustomInfoActions(
+                            onEdit = {
                                 context.startActivity(
                                     Intent(context, CustomInfoActivity::class.java)
                                         .putExtra(CustomInfoActivity.EXTRA_ITEM_ID, item.id),
@@ -362,12 +330,7 @@ fun AtAGlanceSettingsSection(
                                     R.anim.custom_info_slide_out_left,
                                 )
                             },
-                        )
-                        AliasPill(
-                            text = AnnotatedString(stringResource(R.string.dialog_delete)),
-                            textColor = MaterialTheme.colorScheme.error,
-                            leadingIcon = Icons.Rounded.Delete,
-                            onClick = { itemToDelete = item },
+                            onDelete = { itemToDelete = item },
                         )
                     }
                 },
@@ -376,101 +339,89 @@ fun AtAGlanceSettingsSection(
             )
         }
     }
+    val appNotificationsToggle =
+        GlanceToggle("$appNotificationsTitle $appNotificationsDescription") { isFirst, isLast ->
+            if (isWidget) {
+                WidgetAppNotificationsRow(
+                    hasNotificationAccess = hasNotificationAccess,
+                    checked = isShown(GlanceItem.APP_NOTIFICATIONS),
+                    onCheckedChange = { setShown(GlanceItem.APP_NOTIFICATIONS, it) },
+                    isFirstItem = isFirst,
+                    isLastItem = isLast,
+                )
+            } else {
+                AppNotificationsSettingsRow(hasNotificationAccess, isFirst, isLast)
+            }
+        }
     val toggles =
-        customInfoToggles + listOf(
-            notificationToggle(
-                title = stringResource(R.string.section_media),
-                description = stringResource(R.string.settings_now_playing_desc),
-                checked = showNowPlaying,
-                onCheckedChange = onShowNowPlayingCheckedChange,
-            ),
+        customInfoToggles + listOfNotNull(
+            if (isWidget) {
+                null
+            } else {
+                notificationToggle(
+                    item = GlanceItem.NOW_PLAYING,
+                    title = stringResource(R.string.section_media),
+                    description = stringResource(R.string.settings_now_playing_desc),
+                )
+            },
             permissionToggle(
+                item = GlanceItem.TODAY_EVENTS,
                 title = stringResource(R.string.section_calendar),
                 description = stringResource(R.string.settings_at_a_glance_events_desc),
-                checked = showTodayEvents,
                 gate = calendarGate,
                 subtitleContent = {
-                    SettingsNestedCheckbox(
-                        label = stringResource(R.string.settings_at_a_glance_tomorrow_events),
-                        checked = showTomorrowEvents,
-                        onCheckedChange = { enabled ->
-                            showTomorrowEvents = enabled
-                            glancePreferences.setShowTomorrowEventsEnabled(enabled)
-                        },
-                        modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
-                    )
+                    nestedCheckbox(GlanceItem.TOMORROW_EVENTS, stringResource(R.string.settings_at_a_glance_tomorrow_events))
                 },
-            ) { enabled ->
-                showTodayEvents = enabled
-                calendarPreferences.setShowTodayEvents(enabled)
-            },
+            ),
             notificationToggle(
+                item = GlanceItem.ONGOING_CALL,
                 title = stringResource(R.string.settings_at_a_glance_ongoing_call_title),
                 description = stringResource(R.string.settings_at_a_glance_ongoing_call_desc),
-                checked = showOngoingCall,
-                onCheckedChange = onShowOngoingCallCheckedChange,
             ),
             notificationToggle(
+                item = GlanceItem.OTP_CODES,
                 title = stringResource(R.string.settings_at_a_glance_otp_title),
                 description = stringResource(R.string.settings_at_a_glance_otp_desc),
-                checked = showOtpCodes,
-                onCheckedChange = onShowOtpCodesCheckedChange,
             ),
-            GlanceToggle("$appNotificationsTitle $appNotificationsDescription") { isFirst, isLast ->
-                AppNotificationsSettingsRow(hasNotificationAccess, isFirst, isLast)
-            },
+            appNotificationsToggle,
             notificationToggle(
+                item = GlanceItem.MISSED_CALLS,
                 title = stringResource(R.string.settings_at_a_glance_missed_calls_title),
                 description = stringResource(R.string.settings_at_a_glance_missed_calls_desc),
-                checked = showMissedCalls,
-                onCheckedChange = onShowMissedCallsCheckedChange,
             ),
             simpleToggle(
+                item = GlanceItem.DO_NOT_DISTURB,
                 title = stringResource(R.string.settings_shortcut_do_not_disturb),
                 description = stringResource(R.string.settings_at_a_glance_dnd_desc),
-                checked = showDoNotDisturb,
-            ) { enabled ->
-                showDoNotDisturb = enabled
-                glancePreferences.setShowDoNotDisturbEnabled(enabled)
-            },
+            ),
             simpleToggle(
+                item = GlanceItem.AIRPLANE_MODE,
                 title = stringResource(R.string.settings_shortcut_airplane),
                 description = stringResource(R.string.settings_at_a_glance_airplane_desc),
-                checked = showAirplaneMode,
-            ) { enabled ->
-                showAirplaneMode = enabled
-                glancePreferences.setShowAirplaneModeEnabled(enabled)
-            },
+            ),
             simpleToggle(
+                item = GlanceItem.HOTSPOT,
                 title = stringResource(R.string.settings_shortcut_hotspot),
                 description = stringResource(R.string.settings_at_a_glance_hotspot_desc),
-                checked = showHotspot,
-            ) { enabled ->
-                showHotspot = enabled
-                glancePreferences.setShowHotspotEnabled(enabled)
-            },
+            ),
             simpleToggle(
+                item = GlanceItem.WIFI_SIGN_IN,
                 title = stringResource(R.string.settings_at_a_glance_wifi_sign_in_title),
                 description = stringResource(R.string.settings_at_a_glance_wifi_sign_in_desc),
-                checked = showWifiSignIn,
-            ) { enabled ->
-                showWifiSignIn = enabled
-                glancePreferences.setShowWifiSignInEnabled(enabled)
-            },
+            ),
             simpleToggle(
+                item = GlanceItem.FLASHLIGHT,
                 title = stringResource(R.string.settings_at_a_glance_flashlight_title),
                 description = stringResource(R.string.settings_at_a_glance_flashlight_desc),
-                checked = showFlashlight,
-            ) { enabled ->
-                showFlashlight = enabled
-                glancePreferences.setShowFlashlightEnabled(enabled)
-            },
+            ),
             GlanceToggle("$alarmsTitle $alarmsDescription") { isFirst, isLast ->
+                // Hidden alarm apps are shared with the home card, so a widget doesn't offer them.
+                val showHiddenAppsLink = !isWidget && hiddenAlarmPackages.isNotEmpty()
                 SettingsToggleRow(
                     title = alarmsTitle,
-                    subtitle = if (hiddenAlarmPackages.isEmpty()) alarmsDescription else null,
+                    subtitle = if (showHiddenAppsLink) null else alarmsDescription,
                     subtitleContent = {
-                        if (hiddenAlarmPackages.isNotEmpty()) {
+                        if (showHiddenAppsLink) {
                             Text(
                                 text = hiddenAlarmAppsLabel,
                                 style = MaterialTheme.typography.bodySmall,
@@ -478,97 +429,67 @@ fun AtAGlanceSettingsSection(
                                 modifier = Modifier.clickable { showHiddenAlarmAppsDialog = true },
                             )
                         }
-                        if (showUpcomingAlarm) {
-                            SettingsNestedCheckbox(
-                                label = stringResource(R.string.settings_at_a_glance_tomorrow_alarm),
-                                checked = showTomorrowAlarm,
-                                onCheckedChange = { enabled ->
-                                    showTomorrowAlarm = enabled
-                                    alarmPreferences.setShowTomorrowAlarmEnabled(enabled)
-                                },
-                                modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
-                            )
+                        if (isShown(GlanceItem.UPCOMING_ALARM)) {
+                            nestedCheckbox(GlanceItem.TOMORROW_ALARM, stringResource(R.string.settings_at_a_glance_tomorrow_alarm))
                         }
                     },
-                    checked = showUpcomingAlarm,
-                    onCheckedChange = { enabled ->
-                        showUpcomingAlarm = enabled
-                        alarmPreferences.setShowUpcomingAlarmEnabled(enabled)
-                    },
+                    checked = isShown(GlanceItem.UPCOMING_ALARM),
+                    onCheckedChange = { setShown(GlanceItem.UPCOMING_ALARM, it) },
                     isFirstItem = isFirst,
                     isLastItem = isLast,
                 )
             },
             notificationToggle(
+                item = GlanceItem.WEATHER,
                 title = stringResource(R.string.weather_toggle_title),
                 description = stringResource(R.string.settings_at_a_glance_weather_desc),
-                checked = showWeather,
-                onCheckedChange = onShowWeatherCheckedChange,
             ),
             notificationToggle(
+                item = GlanceItem.WORKOUTS,
                 title = stringResource(R.string.settings_at_a_glance_workouts_title),
                 description = stringResource(R.string.settings_at_a_glance_workouts_desc),
-                checked = showWorkouts,
-                onCheckedChange = onShowWorkoutsCheckedChange,
             ),
             notificationToggle(
+                item = GlanceItem.TIMERS,
                 title = stringResource(R.string.settings_at_a_glance_timers_title),
                 description = stringResource(R.string.settings_at_a_glance_timers_desc),
-                checked = showTimers,
-                onCheckedChange = onShowTimersCheckedChange,
             ),
             simpleToggle(
+                item = GlanceItem.REMINDERS,
                 title = stringResource(R.string.section_reminders),
                 description = stringResource(R.string.settings_upcoming_reminders_desc),
-                checked = showUpcomingReminders,
-            ) { enabled ->
-                showUpcomingReminders = enabled
-                reminderPreferences.setShowUpcomingRemindersEnabled(enabled)
-            },
+            ),
             permissionToggle(
+                item = GlanceItem.BIRTHDAYS,
                 title = stringResource(R.string.settings_at_a_glance_birthdays_title),
                 description = stringResource(R.string.settings_at_a_glance_birthdays_desc),
-                checked = showBirthdays,
                 gate = contactsGate,
-            ) { enabled ->
-                showBirthdays = enabled
-                glancePreferences.setShowBirthdaysEnabled(enabled)
-            },
+            ),
             notificationToggle(
+                item = GlanceItem.PROGRESS,
                 title = stringResource(R.string.settings_at_a_glance_progress_title),
                 description = stringResource(R.string.settings_at_a_glance_progress_desc),
-                checked = showProgress,
-                onCheckedChange = onShowProgressCheckedChange,
             ),
             simpleToggle(
+                item = GlanceItem.LOW_BATTERY,
                 title = stringResource(R.string.settings_at_a_glance_low_battery_title),
                 description =
                     stringResource(R.string.settings_low_battery_desc, BatteryPreferences.LOW_BATTERY_THRESHOLD_PERCENT),
-                checked = showLowBattery,
-            ) { enabled ->
-                showLowBattery = enabled
-                batteryPreferences.setShowLowBatteryEnabled(enabled)
-            },
+            ),
             simpleToggle(
+                item = GlanceItem.CHARGING,
                 title = stringResource(R.string.settings_at_a_glance_charging_title),
                 description = stringResource(R.string.settings_at_a_glance_charging_desc),
-                checked = showCharging,
-            ) { enabled ->
-                showCharging = enabled
-                batteryPreferences.setShowChargingEnabled(enabled)
-            },
+            ),
             simpleToggle(
+                item = GlanceItem.LOW_STORAGE,
                 title = stringResource(R.string.settings_at_a_glance_storage_title),
                 description =
                     stringResource(
                         R.string.settings_at_a_glance_storage_desc,
                         GlancePreferences.LOW_STORAGE_THRESHOLD_PERCENT,
                     ),
-                checked = showLowStorage,
-            ) { enabled ->
-                showLowStorage = enabled
-                glancePreferences.setShowLowStorageEnabled(enabled)
-            },
+            ),
         )
     val query = searchQuery.trim()
     val visibleToggles =
@@ -578,12 +499,15 @@ fun AtAGlanceSettingsSection(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge),
     ) {
-        Text(
-            text = stringResource(R.string.settings_at_a_glance_desc),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = DesignTokens.SpacingXSmall),
-        )
+        // A widget's drawer says what it is for in its own title.
+        if (!isWidget) {
+            Text(
+                text = stringResource(R.string.settings_at_a_glance_desc),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = DesignTokens.SpacingXSmall),
+            )
+        }
         if (visibleToggles.isEmpty()) {
             Text(
                 text = stringResource(R.string.widget_custom_buttons_no_results),
@@ -692,6 +616,61 @@ fun AtAGlanceSettingsBottomBar(
             onSetupKey = onNavigateToApiKeySetup,
         )
     }
+}
+
+/** Edit and Delete pills under a Custom Info toggle. */
+@Composable
+private fun CustomInfoActions(
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.padding(top = DesignTokens.SpacingXSmall),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+    ) {
+        AliasPill(
+            text = AnnotatedString(stringResource(R.string.settings_edit_label)),
+            textColor = AppColors.LinkColor,
+            leadingIcon = Icons.Rounded.Edit,
+            onClick = onEdit,
+        )
+        AliasPill(
+            text = AnnotatedString(stringResource(R.string.dialog_delete)),
+            textColor = MaterialTheme.colorScheme.error,
+            leadingIcon = Icons.Rounded.Delete,
+            onClick = onDelete,
+        )
+    }
+}
+
+/**
+ * App notifications in a widget's items: it shows what the app's App notifications matches, so it
+ * can be turned on only once that is on and set up.
+ */
+@Composable
+private fun WidgetAppNotificationsRow(
+    hasNotificationAccess: Boolean,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    isFirstItem: Boolean,
+    isLastItem: Boolean,
+) {
+    val isActiveInApp = rememberAppNotificationsConfig()?.isActive == true
+    val enabled = hasNotificationAccess && isActiveInApp
+    SettingsToggleRow(
+        title = stringResource(R.string.settings_at_a_glance_app_notifications_title),
+        subtitle =
+            when {
+                !hasNotificationAccess -> stringResource(R.string.settings_overlay_source_needs_permission)
+                !isActiveInApp -> stringResource(R.string.widget_at_a_glance_app_notifications_setup)
+                else -> stringResource(R.string.settings_at_a_glance_app_notifications_desc)
+            },
+        checked = checked && enabled,
+        onCheckedChange = onCheckedChange,
+        enabled = enabled,
+        isFirstItem = isFirstItem,
+        isLastItem = isLastItem,
+    )
 }
 
 /** Lists the apps whose alarms were hidden from At a Glance, each with an Unhide action. */

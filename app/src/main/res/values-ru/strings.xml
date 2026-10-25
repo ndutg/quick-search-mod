@@ -750,7 +750,7 @@
 <string name="settings_bottom_searchbar_desc">Расположить поисковую строку внизу экрана</string>
 <string name="settings_bottom_searchbar_title">Нижняя поисковая строка</string>
 <string name="settings_compact_layout_title">Компактный вид</string>
-<string name="settings_compact_layout_desc">Убрать фон карточек на главном экране и в результатах, чтобы контент занимал всю ширину</string>
+<string name="settings_compact_layout_desc">Макет без карточек на главном экране и в поиске, чтобы на экране помещалось больше контента</string>
 <string name="settings_cache_cleared_toast">Кэш очищен. Перестройка индекса приложений\u2026</string>
 <string name="settings_circular_app_icons_desc">Принудительно делать значки приложений круглыми</string>
 <string name="settings_circular_app_icons_title">Круглые значки приложений</string>
@@ -1185,6 +1185,9 @@
 <string name="widget_note_deleted">Заметка не найдена. Нажмите, чтобы выбрать другую.</string>
 <string name="widget_countdown_widget_title">Виджет обратного отсчёта</string>
 <string name="widget_at_a_glance_widget_title">Виджет «Кратко»</string>
+<string name="widget_at_a_glance_items_title">Элементы «Кратко»</string>
+<string name="widget_at_a_glance_items_summary">Выберите, что показывает этот виджет</string>
+<string name="widget_at_a_glance_app_notifications_setup">Сначала включите «Уведомления приложений» в настройках «Кратко»</string>
 <string name="widget_at_a_glance_sample_alarm">Завтра, 7:00</string>
 <string name="widget_at_a_glance_sample_birthday">День рождения: Алекс</string>
 <string name="widget_at_a_glance_sample_caller">Мама</string>
