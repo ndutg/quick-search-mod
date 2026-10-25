@@ -421,6 +421,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Όλες οι συντομεύσεις απενεργοποιημένες</string>
     <string name="settings_app_shortcuts_expand_all">Ανάπτυξη όλων</string>
     <string name="settings_app_shortcuts_filter_all_apps">Όλες οι εφαρμογές</string>
+    <string name="all_apps_private_space">Ιδιωτικός χώρος</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Εφαρμογές με συντομεύσεις</string>
     <string name="settings_app_shortcuts_filter_browsers">Προγράμματα περιήγησης</string>
     <string name="settings_app_shortcuts_filter_search_engines">Μηχανές αναζήτησης</string>

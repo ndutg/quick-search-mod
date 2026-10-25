@@ -421,6 +421,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Alle Verknüpfungen deaktiviert</string>
     <string name="settings_app_shortcuts_expand_all">Alle aufklappen</string>
     <string name="settings_app_shortcuts_filter_all_apps">Alle Apps</string>
+    <string name="all_apps_private_space">Privater Bereich</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Apps mit Verknüpfungen</string>
     <string name="settings_app_shortcuts_filter_browsers">Browser</string>
     <string name="settings_app_shortcuts_filter_search_engines">Suchmaschinen</string>

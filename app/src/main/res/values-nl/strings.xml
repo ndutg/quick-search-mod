@@ -437,6 +437,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Alle snelkoppelingen uitgeschakeld</string>
     <string name="settings_app_shortcuts_expand_all">Alles uitvouwen</string>
     <string name="settings_app_shortcuts_filter_all_apps">Alle apps</string>
+    <string name="all_apps_private_space">Privéruimte</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Apps met snelkoppelingen</string>
     <string name="settings_app_shortcuts_filter_browsers">Browsers</string>
     <string name="settings_app_shortcuts_filter_search_engines">Zoekmachines</string>

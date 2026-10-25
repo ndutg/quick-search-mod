@@ -421,6 +421,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">అన్ని షార్ట్‌కట్‌లు నిలిపివేయబడ్డాయి</string>
     <string name="settings_app_shortcuts_expand_all">అన్నింటినీ విస్తరించు</string>
     <string name="settings_app_shortcuts_filter_all_apps">అన్ని యాప్‌లు</string>
+    <string name="all_apps_private_space">ప్రైవేట్ స్పేస్</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">షార్ట్‌కట్‌లు ఉన్న యాప్‌లు</string>
     <string name="settings_app_shortcuts_filter_browsers">బ్రౌజర్‌లు</string>
     <string name="settings_app_shortcuts_filter_search_engines">శోధన ఇంజిన్‌లు</string>

@@ -421,6 +421,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">सभी शॉर्टकट बंद हैं</string>
     <string name="settings_app_shortcuts_expand_all">सभी फैलाएं</string>
     <string name="settings_app_shortcuts_filter_all_apps">सभी ऐप्स</string>
+    <string name="all_apps_private_space">प्राइवेट स्पेस</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">शॉर्टकट वाले ऐप्स</string>
     <string name="settings_app_shortcuts_filter_browsers">ब्राउज़र</string>
     <string name="settings_app_shortcuts_filter_search_engines">सर्च इंजन</string>

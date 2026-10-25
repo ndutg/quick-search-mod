@@ -416,6 +416,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">All shortcuts disabled</string>
     <string name="settings_app_shortcuts_expand_all">Expand all</string>
     <string name="settings_app_shortcuts_filter_all_apps">All Apps</string>
+    <string name="all_apps_private_space">Private space</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Apps with Shortcuts</string>
     <string name="settings_app_shortcuts_filter_browsers">Browsers</string>
     <string name="settings_app_shortcuts_filter_search_engines">Search Engines</string>

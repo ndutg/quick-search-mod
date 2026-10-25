@@ -428,6 +428,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Wszystkie skróty wyłączone</string>
     <string name="settings_app_shortcuts_expand_all">Rozwiń wszystko</string>
     <string name="settings_app_shortcuts_filter_all_apps">Wszystkie aplikacje</string>
+    <string name="all_apps_private_space">Przestrzeń prywatna</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Aplikacje ze skrótami</string>
     <string name="settings_app_shortcuts_filter_browsers">Przeglądarki</string>
     <string name="settings_app_shortcuts_filter_search_engines">Wyszukiwarki</string>

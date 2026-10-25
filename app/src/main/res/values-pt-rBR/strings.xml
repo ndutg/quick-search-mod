@@ -421,6 +421,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Todos os atalhos desativados</string>
     <string name="settings_app_shortcuts_expand_all">Expandir todos</string>
     <string name="settings_app_shortcuts_filter_all_apps">Todos os apps</string>
+    <string name="all_apps_private_space">Espaço privado</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Apps com atalhos</string>
     <string name="settings_app_shortcuts_filter_browsers">Navegadores</string>
     <string name="settings_app_shortcuts_filter_search_engines">Mecanismos de busca</string>

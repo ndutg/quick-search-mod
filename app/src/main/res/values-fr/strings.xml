@@ -421,6 +421,7 @@
 <string name="settings_app_shortcuts_card_all_disabled">Tous les raccourcis désactivés</string>
 <string name="settings_app_shortcuts_expand_all">Tout développer</string>
 <string name="settings_app_shortcuts_filter_all_apps">Toutes les applications</string>
+<string name="all_apps_private_space">Espace privé</string>
 <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Applications avec raccourcis</string>
 <string name="settings_app_shortcuts_filter_browsers">Navigateurs</string>
 <string name="settings_app_shortcuts_filter_search_engines">Moteurs de recherche</string>

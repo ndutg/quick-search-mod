@@ -421,6 +421,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Todos los accesos directos desactivados</string>
     <string name="settings_app_shortcuts_expand_all">Expandir todo</string>
     <string name="settings_app_shortcuts_filter_all_apps">Todas las apps</string>
+    <string name="all_apps_private_space">Espacio privado</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Apps con accesos directos</string>
     <string name="settings_app_shortcuts_filter_browsers">Navegadores</string>
     <string name="settings_app_shortcuts_filter_search_engines">Motores de búsqueda</string>

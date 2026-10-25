@@ -423,6 +423,7 @@
 <string name="settings_app_shortcuts_card_all_disabled">Все ярлыки отключены</string>
 <string name="settings_app_shortcuts_expand_all">Развернуть все</string>
 <string name="settings_app_shortcuts_filter_all_apps">Все приложения</string>
+<string name="all_apps_private_space">Частное пространство</string>
 <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Приложения с ярлыками</string>
 <string name="settings_app_shortcuts_filter_browsers">Браузеры</string>
 <string name="settings_app_shortcuts_filter_search_engines">Поисковые системы</string>

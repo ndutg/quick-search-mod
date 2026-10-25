@@ -132,6 +132,9 @@ class AppsRepository(
         if (packageChangeReceiver != null || launcherAppsCallback != null) return
         fun invalidate(change: AppCatalogChange) {
             if (!change.requiresCatalogReconciliation) return
+            // Private Space package names must not be written to the catalog's change log.
+            val changedUser = change.userHandleId?.let(UserHandleUtils::of)
+            if (changedUser != null && PrivateSpaceProfile.isPrivateProfile(context, changedUser)) return
             appCatalogInvalidated = true
             appCache.recordCatalogChange(change, currentUserHandleId)
             onCatalogInvalidated(change)
@@ -367,7 +370,9 @@ class AppsRepository(
 
         val profiles = runCatching { userManager.userProfiles }.getOrNull() ?: return emptyList()
 
-        return profiles.flatMap { userHandle ->
+        // Private Space apps are listed only in their own All Apps section, never in the
+        // persisted catalog.
+        return profiles.filterNot { PrivateSpaceProfile.isPrivateProfile(context, it) }.flatMap { userHandle ->
             runCatching {
                 launcherApps.getActivityList(null, userHandle)
             }.getOrNull().orEmpty()

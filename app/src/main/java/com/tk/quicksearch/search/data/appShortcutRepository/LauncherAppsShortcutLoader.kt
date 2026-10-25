@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Process
 import android.os.UserHandle
 import android.util.Log
+import com.tk.quicksearch.search.data.PrivateSpaceProfile
 import java.util.Locale
 
 /**
@@ -68,7 +69,9 @@ fun loadShortcutsViaLauncherApps(
 
     val profiles: List<UserHandle> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            kotlin.runCatching { launcherApps.profiles }.getOrNull()?.takeIf { it.isNotEmpty() }
+            kotlin.runCatching { launcherApps.profiles }.getOrNull()
+                ?.filterNot { PrivateSpaceProfile.isPrivateProfile(context, it) }
+                ?.takeIf { it.isNotEmpty() }
                 ?: listOf(Process.myUserHandle())
         } else {
             listOf(Process.myUserHandle())

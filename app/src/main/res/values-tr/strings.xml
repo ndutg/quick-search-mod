@@ -420,6 +420,7 @@
 <string name="settings_app_shortcuts_card_all_disabled">Tüm kısayollar devre dışı</string>
 <string name="settings_app_shortcuts_expand_all">Tümünü genişlet</string>
 <string name="settings_app_shortcuts_filter_all_apps">Tüm uygulamalar</string>
+<string name="all_apps_private_space">Özel alan</string>
 <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Kısayolu olan uygulamalar</string>
 <string name="settings_app_shortcuts_filter_browsers">Tarayıcılar</string>
 <string name="settings_app_shortcuts_filter_search_engines">Arama motorları</string>

@@ -422,6 +422,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Semua pintasan dinonaktifkan</string>
     <string name="settings_app_shortcuts_expand_all">Perluas semua</string>
     <string name="settings_app_shortcuts_filter_all_apps">Semua Aplikasi</string>
+    <string name="all_apps_private_space">Ruang pribadi</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">Aplikasi dengan Pintasan</string>
     <string name="settings_app_shortcuts_filter_browsers">Browser</string>
     <string name="settings_app_shortcuts_filter_search_engines">Mesin Pencari</string>

@@ -420,6 +420,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">所有快捷方式已停用</string>
     <string name="settings_app_shortcuts_expand_all">全部展开</string>
     <string name="settings_app_shortcuts_filter_all_apps">所有应用</string>
+    <string name="all_apps_private_space">私密空间</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">包含快捷方式的应用</string>
     <string name="settings_app_shortcuts_filter_browsers">浏览器</string>
     <string name="settings_app_shortcuts_filter_search_engines">搜索引擎</string>

@@ -426,6 +426,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">すべてのショートカットが無効</string>
     <string name="settings_app_shortcuts_expand_all">すべて展開</string>
     <string name="settings_app_shortcuts_filter_all_apps">すべてのアプリ</string>
+    <string name="all_apps_private_space">プライベート スペース</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">ショートカット付きアプリ</string>
     <string name="settings_app_shortcuts_filter_browsers">ブラウザ</string>
     <string name="settings_app_shortcuts_filter_search_engines">検索エンジン</string>

@@ -422,6 +422,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">كل الاختصارات معطّلة</string>
     <string name="settings_app_shortcuts_expand_all">توسيع الكل</string>
     <string name="settings_app_shortcuts_filter_all_apps">جميع التطبيقات</string>
+    <string name="all_apps_private_space">المساحة الخاصة</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">التطبيقات ذات الاختصارات</string>
     <string name="settings_app_shortcuts_filter_browsers">المتصفحات</string>
     <string name="settings_app_shortcuts_filter_search_engines">محركات البحث</string>

@@ -420,6 +420,7 @@
     <string name="settings_app_shortcuts_card_all_disabled">Tutte le scorciatoie disattivate</string>
     <string name="settings_app_shortcuts_expand_all">Espandi tutto</string>
     <string name="settings_app_shortcuts_filter_all_apps">Tutte le app</string>
+    <string name="all_apps_private_space">Spazio privato</string>
     <string name="settings_app_shortcuts_filter_apps_with_shortcuts">App con scorciatoie</string>
     <string name="settings_app_shortcuts_filter_browsers">Browser</string>
     <string name="settings_app_shortcuts_filter_search_engines">Motori di ricerca</string>
