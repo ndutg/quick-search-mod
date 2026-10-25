@@ -1,7 +1,6 @@
 package com.tk.quicksearch.search.data
 
 import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +10,7 @@ import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.GlanceItem
 import com.tk.quicksearch.search.data.preferences.GlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
+import com.tk.quicksearch.shared.util.sendFromUserTap
 import java.time.Instant
 import java.time.ZoneId
 
@@ -124,14 +124,7 @@ class UpcomingAlarmRepository(
                 // Fall back to the alarm-specific show intent.
             }
         }
-        return try {
-            alarm.showIntent.send()
-            true
-        } catch (_: PendingIntent.CanceledException) {
-            false
-        } catch (_: SecurityException) {
-            false
-        }
+        return alarm.showIntent.sendFromUserTap()
     }
 
     companion object {
