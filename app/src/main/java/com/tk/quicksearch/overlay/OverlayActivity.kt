@@ -39,6 +39,7 @@ import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.searchWidget.VoiceSearchHandler
 import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
+import com.tk.quicksearch.shared.util.setSystemBarsDark
 
 class OverlayActivity : FragmentActivity() {
     private companion object {
@@ -202,21 +203,7 @@ class OverlayActivity : FragmentActivity() {
                     AppThemeMode.SYSTEM -> isSystemDarkTheme
                 }
             val useDarkSystemBars = wallpaperIsDark ?: useDarkSystemBarsFromTheme
-            SideEffect {
-                val systemBarStyle =
-                    if (useDarkSystemBars) {
-                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
-                    } else {
-                        SystemBarStyle.light(
-                            android.graphics.Color.TRANSPARENT,
-                            android.graphics.Color.TRANSPARENT,
-                        )
-                    }
-                enableEdgeToEdge(
-                    statusBarStyle = systemBarStyle,
-                    navigationBarStyle = systemBarStyle,
-                )
-            }
+            SideEffect { setSystemBarsDark(useDarkSystemBars) }
             QuickSearchTheme(
                 fontScaleMultiplier = uiState.fontScaleMultiplier,
                 useSystemFont = uiState.useSystemFont,

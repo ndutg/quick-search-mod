@@ -1,8 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -50,6 +48,7 @@ import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenStateManag
 import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenDialogLogic
 import com.tk.quicksearch.shared.ui.theme.ThemeModeFallbackBackgroundAlpha
 import com.tk.quicksearch.shared.util.ImageAppearanceUtils
+import com.tk.quicksearch.shared.util.setSystemBarsDark
 
 private const val STARTUP_BACKGROUND_TRANSITION_DURATION_MS = 90
 
@@ -417,38 +416,11 @@ fun SearchScreen(
         val useDarkSystemBars = imageBackgroundIsDark ?: useDarkSystemBarsFromTheme
         val themeSystemBarsDarkState = rememberUpdatedState(useDarkSystemBarsFromTheme)
         SideEffect {
-            val activity = context as? ComponentActivity ?: return@SideEffect
-            val systemBarStyle =
-                if (useDarkSystemBars) {
-                    SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
-                } else {
-                    SystemBarStyle.light(
-                        android.graphics.Color.TRANSPARENT,
-                        android.graphics.Color.TRANSPARENT,
-                    )
-                }
-            activity.enableEdgeToEdge(
-                statusBarStyle = systemBarStyle,
-                navigationBarStyle = systemBarStyle,
-            )
+            (context as? ComponentActivity)?.setSystemBarsDark(useDarkSystemBars)
         }
         DisposableEffect(Unit) {
             onDispose {
-                val activity = context as? ComponentActivity ?: return@onDispose
-                val useDark = themeSystemBarsDarkState.value
-                val systemBarStyle =
-                    if (useDark) {
-                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
-                    } else {
-                        SystemBarStyle.light(
-                            android.graphics.Color.TRANSPARENT,
-                            android.graphics.Color.TRANSPARENT,
-                        )
-                    }
-                activity.enableEdgeToEdge(
-                    statusBarStyle = systemBarStyle,
-                    navigationBarStyle = systemBarStyle,
-                )
+                (context as? ComponentActivity)?.setSystemBarsDark(themeSystemBarsDarkState.value)
             }
         }
     }

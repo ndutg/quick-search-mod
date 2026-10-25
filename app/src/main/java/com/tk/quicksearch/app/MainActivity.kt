@@ -63,6 +63,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.tk.quicksearch.shared.util.lockPortraitOrientationOnPhones
+import com.tk.quicksearch.shared.util.setSystemBarsDark
 
 open class MainActivity : FragmentActivity() {
     private data class PendingContactActionPickerRequest(
@@ -318,21 +319,7 @@ open class MainActivity : FragmentActivity() {
                     AppThemeMode.DARK -> true
                     AppThemeMode.SYSTEM -> isSystemDarkTheme
                 }
-            SideEffect {
-                val systemBarStyle =
-                    if (useDarkSystemBars) {
-                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
-                    } else {
-                        SystemBarStyle.light(
-                            android.graphics.Color.TRANSPARENT,
-                            android.graphics.Color.TRANSPARENT,
-                        )
-                    }
-                enableEdgeToEdge(
-                    statusBarStyle = systemBarStyle,
-                    navigationBarStyle = systemBarStyle,
-                )
-            }
+            SideEffect { setSystemBarsDark(useDarkSystemBars) }
             QuickSearchTheme(
                 fontScaleMultiplier = uiState.fontScaleMultiplier,
                 useSystemFont = uiState.useSystemFont,

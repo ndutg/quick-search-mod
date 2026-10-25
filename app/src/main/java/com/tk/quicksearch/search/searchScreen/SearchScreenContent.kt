@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
@@ -439,8 +438,12 @@ internal fun SearchScreenContent(
                                 end = DesignTokens.SpacingXLarge,
                         )
             } else {
+                // Bottom-anchored Home rides on the keyboard as one block, so slide it on a layer.
+                val slideWithIme =
+                        showBottomSearchBar && state.oneHandedMode && state.query.isBlank() &&
+                                expandedSection == ExpandedSection.NONE && !isSearchHistoryExpanded
                 modifier.fillMaxSize()
-                        .safeDrawingPadding()
+                        .safeDrawingPaddingWithImeSlide(enabled = slideWithIme)
                         .padding(
                                 start = DesignTokens.SpacingLarge,
                                 top = DesignTokens.SpacingSmall,
