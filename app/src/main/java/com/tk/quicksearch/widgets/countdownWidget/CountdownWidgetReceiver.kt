@@ -37,14 +37,15 @@ class CountdownWidgetReceiver : GlanceAppWidgetReceiver() {
             Intent.ACTION_LOCALE_CHANGED,
             Intent.ACTION_CONFIGURATION_CHANGED,
             -> {
-                val pendingResult = goAsync()
+                // Null when super.onReceive (Glance) already took the async result, e.g. on locale change.
+                val pendingResult: PendingResult? = goAsync()
                 val appContext = context.applicationContext
                 countdownRefreshScope.launch {
                     try {
                         runCatching { refreshCountdownWidgets(appContext) }
                         scheduleNextDayRefresh(appContext)
                     } finally {
-                        pendingResult.finish()
+                        pendingResult?.finish()
                     }
                 }
             }

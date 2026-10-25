@@ -3,6 +3,7 @@ package com.tk.quicksearch.search.core
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 
 /** Applies launcher icon alias state based on the selected icon option. */
 class LauncherIconManager(
@@ -11,7 +12,9 @@ class LauncherIconManager(
     fun applySelection(
         selection: LauncherAppIcon,
     ) {
-        val resolved = selection
+        // Alternate icons are adaptive-only; below API 26 they don't resolve, so keep the default.
+        val resolved =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) selection else LauncherAppIcon.DEFAULT
         val packageManager = context.packageManager
         // Enable the new alias first, then disable the rest. Enabling before disabling ensures
         // Android does not kill the app when the previously-active alias is disabled.

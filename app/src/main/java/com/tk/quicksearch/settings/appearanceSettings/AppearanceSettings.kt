@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.appearanceSettings
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -210,12 +211,15 @@ fun AppearanceSettingsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        AppLauncherIconCard(
-                launcherAppIcon = launcherAppIcon,
-                onSetLauncherAppIcon = onSetLauncherAppIcon,
-        )
+        // Alternate launcher icons are adaptive icons (mipmap-anydpi-v26 only).
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AppLauncherIconCard(
+                    launcherAppIcon = launcherAppIcon,
+                    onSetLauncherAppIcon = onSetLauncherAppIcon,
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         SearchBarStyleCard(
                 searchBarStyle = searchBarStyle,

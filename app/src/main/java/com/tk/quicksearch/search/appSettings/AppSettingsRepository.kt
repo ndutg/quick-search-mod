@@ -54,12 +54,14 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.APP_ICON_SIZE,
                 keywords = listOf("icons", "size", "bigger", "smaller"),
             )
-            addNavigation(
-                id = "app_settings_launcher_icon",
-                titleRes = R.string.settings_launcher_icon_title,
-                destination = AppSettingsDestination.APPEARANCE,
-                keywords = listOf("app icon", "launcher icon", "change icon", "home screen icon"),
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                addNavigation(
+                    id = "app_settings_launcher_icon",
+                    titleRes = R.string.settings_launcher_icon_title,
+                    destination = AppSettingsDestination.APPEARANCE,
+                    keywords = listOf("app icon", "launcher icon", "change icon", "home screen icon"),
+                )
+            }
             addNavigation(
                 id = "app_settings_search_bar_style",
                 titleRes = R.string.settings_search_bar_style_title,
