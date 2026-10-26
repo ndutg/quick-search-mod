@@ -119,7 +119,7 @@ private fun birthdayTitle(birthday: ContactBirthday): String {
     )
 }
 
-private fun englishOrdinal(number: Int): String {
+internal fun englishOrdinal(number: Int): String {
     val suffix =
         if (number % 100 in 11..13) {
             "th"

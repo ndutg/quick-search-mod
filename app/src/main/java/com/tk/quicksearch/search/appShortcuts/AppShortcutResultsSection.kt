@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.appShortcuts
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.Intent
 import android.net.Uri
@@ -66,6 +67,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.isUserCreatedShortcut
 import com.tk.quicksearch.search.data.appShortcutRepository.ShortcutIcon
@@ -83,6 +85,7 @@ import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
@@ -265,7 +268,7 @@ private fun AppShortcutsCardContent(
                                 )
                                 if (index < displayShortcuts.lastIndex && !showPredictedOnRow) {
                                         HorizontalDivider(
-                                                modifier = Modifier.fillMaxWidth(),
+                                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                                                 color = overlayDividerColor
                                                                 ?: if (showWallpaperBackground) AppColors.WallpaperDivider else MaterialTheme.colorScheme.outlineVariant,
                                         )
@@ -274,6 +277,7 @@ private fun AppShortcutsCardContent(
                 }
 
                 if (shouldShowExpandButton) {
+                        ExpandButtonDivider(showWallpaperBackground)
                         ExpandButton(
                                 onClick = onExpandClick,
                                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -347,7 +351,7 @@ internal fun AppShortcutRow(
                                                         },
                                 )
                                 .topPredictedRowContentPadding()
-                                .padding(vertical = 12.dp),
+                                .padding(vertical = resultRowVerticalPadding(12.dp)),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
         ) {

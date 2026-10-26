@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -246,7 +247,7 @@ internal fun PinnedNonAppItemsSection(
 
                 if (index < orderedItems.lastIndex) {
                     HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                         color = dividerColor,
                     )
                 }

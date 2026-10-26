@@ -2,6 +2,7 @@ package com.tk.quicksearch.app
 
 import android.content.Context
 import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -50,7 +51,13 @@ class PinShortcutRequestActivity : ComponentActivity() {
         val shortcutKey = "${info.`package`}:${info.id}"
         val userPreferences = UserAppPreferences(this)
         userPreferences.removeExcludedAppShortcut(shortcutKey)
-        userPreferences.setAppShortcutEnabled(shortcutKey, true)
+        // The user just asked for this shortcut, so it must show even if the app's shortcuts are
+        // disabled as a whole; the app's other shortcuts stay disabled.
+        userPreferences.enableAppShortcutOverridingApp(
+            packageName = info.`package`,
+            id = shortcutKey,
+            otherAppShortcutIds = otherShortcutKeys(launcherApps, info),
+        )
         userPreferences.pinAppShortcut(shortcutKey)
         PinnedShortcutRequests.markRefreshNeeded()
 
@@ -62,6 +69,26 @@ class PinShortcutRequestActivity : ComponentActivity() {
                 getString(R.string.pin_shortcut_request_added_generic)
             }
         Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun otherShortcutKeys(
+        launcherApps: LauncherApps,
+        info: ShortcutInfo,
+    ): List<String> {
+        val query =
+            LauncherApps.ShortcutQuery().apply {
+                setPackage(info.`package`)
+                setQueryFlags(
+                    LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or
+                        LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or
+                        LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED,
+                )
+            }
+        return runCatching { launcherApps.getShortcuts(query, info.userHandle) }
+            .getOrNull()
+            .orEmpty()
+            .filter { it.id != info.id }
+            .map { "${it.`package`}:${it.id}" }
     }
 
     private companion object {

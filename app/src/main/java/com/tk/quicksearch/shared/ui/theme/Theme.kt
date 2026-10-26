@@ -383,3 +383,62 @@ fun QuickSearchTheme(
         )
     }
 }
+
+/**
+ * Content drawn straight on a wallpaper or image (compact layout has no cards behind it) takes the
+ * text and surface colours of the theme that matches [homeBackgroundIsDark] (the Home text colour
+ * setting, else the detected wallpaper), so light-theme text never
+ * lands on a dark wallpaper (or the reverse).
+ */
+@Composable
+fun HomeTextContrastTheme(
+    enabled: Boolean,
+    content: @Composable () -> Unit,
+) {
+    val wantDark = homeBackgroundIsDark()
+    if (!enabled || wantDark == null || wantDark == LocalAppIsDarkTheme.current) {
+        content()
+        return
+    }
+    val base = if (wantDark) DarkColorScheme else LightColorScheme
+    val current = MaterialTheme.colorScheme
+    // A light theme's primary container is the pale tint of its accent (and a dark theme's the deep
+    // one), which is about where the other theme puts its primary, so the two roles trade places.
+    val colorScheme =
+        current.copy(
+            primary = current.primaryContainer,
+            onPrimary = current.onPrimaryContainer,
+            primaryContainer = current.primary,
+            onPrimaryContainer = current.onPrimary,
+            background = base.background,
+            onBackground = base.onBackground,
+            surface = base.surface,
+            onSurface = base.onSurface,
+            surfaceVariant = base.surfaceVariant,
+            onSurfaceVariant = base.onSurfaceVariant,
+            surfaceTint = base.surfaceTint,
+            inverseSurface = base.inverseSurface,
+            inverseOnSurface = base.inverseOnSurface,
+            outline = base.outline,
+            outlineVariant = base.outlineVariant,
+            scrim = base.scrim,
+            surfaceBright = base.surfaceBright,
+            surfaceDim = base.surfaceDim,
+            surfaceContainer = base.surfaceContainer,
+            surfaceContainerHigh = base.surfaceContainerHigh,
+            surfaceContainerHighest = base.surfaceContainerHighest,
+            surfaceContainerLow = base.surfaceContainerLow,
+            surfaceContainerLowest = base.surfaceContainerLowest,
+        )
+    CompositionLocalProvider(
+        LocalAppIsDarkTheme provides wantDark,
+        LocalQuickSearchAppColorPalette provides
+            if (wantDark) DarkQuickSearchAppColorPalette else LightQuickSearchAppColorPalette,
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = MaterialTheme.typography,
+            content = content,
+        )
+    }
+}

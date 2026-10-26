@@ -60,6 +60,7 @@ enum class WidgetVariant {
     CUSTOM_BUTTONS_ONLY,
     MEDIA_CONTROLS,
     NOTE,
+    AT_A_GLANCE,
 }
 
 internal object WidgetButtonSlotConfig {
@@ -76,6 +77,7 @@ internal object WidgetDefaults {
     const val BORDER_WIDTH_DP = 0f
     const val SHOW_LABEL = true
     const val ICON_SIZE_SCALE = 1.15f
+    const val TEXT_SCALE = 1f
 
     val SEARCH_ICON_DISPLAY = SearchIconDisplay.LEFT
 
@@ -92,7 +94,7 @@ internal object WidgetDefaults {
         List(WidgetButtonSlotConfig.STANDARD_COUNT) { null }
 }
 
-private object WidgetRanges {
+internal object WidgetRanges {
     const val BORDER_RADIUS_MIN = 0f
     const val BORDER_RADIUS_MAX = 40f
     const val BORDER_WIDTH_MIN = 0f
@@ -105,6 +107,8 @@ private object WidgetRanges {
     const val INTERNAL_VERTICAL_PADDING_MAX = 12f
     const val ICON_SIZE_SCALE_MIN = 1f
     const val ICON_SIZE_SCALE_MAX = 1.4f
+    const val TEXT_SCALE_MIN = 0.8f
+    const val TEXT_SCALE_MAX = 1.5f
 }
 
 private object WidgetKeys {
@@ -114,6 +118,7 @@ private object WidgetKeys {
     val BORDER_WIDTH = floatPreferencesKey("quick_search_widget_border_width")
     val SHOW_LABEL = booleanPreferencesKey("quick_search_widget_show_label")
     val ICON_SIZE_SCALE = floatPreferencesKey("quick_search_widget_icon_size_scale")
+    val TEXT_SCALE = floatPreferencesKey("quick_search_widget_text_scale")
     val SEARCH_ICON_DISPLAY = stringPreferencesKey("quick_search_widget_search_icon_display")
     val THEME = stringPreferencesKey("quick_search_widget_theme")
     val BACKGROUND_COLOR = intPreferencesKey("quick_search_widget_background_color")
@@ -138,6 +143,7 @@ private object WidgetKeys {
     val CUSTOM_BUTTON_4 = stringPreferencesKey("quick_search_widget_custom_button_4")
     val CUSTOM_BUTTON_5 = stringPreferencesKey("quick_search_widget_custom_button_5")
     val NOTE_ID = longPreferencesKey("quick_search_widget_note_id")
+    val GLANCE_ITEMS = stringPreferencesKey("quick_search_widget_glance_items")
 }
 
 /** Preferences for the Quick Search widget appearance and behavior. */
@@ -149,6 +155,8 @@ data class WidgetPreferences(
     val borderWidthDp: Float = WidgetDefaults.BORDER_WIDTH_DP,
     val showLabel: Boolean = WidgetDefaults.SHOW_LABEL,
     val iconSizeScale: Float = WidgetDefaults.ICON_SIZE_SCALE,
+    /** Multiplies the At a Glance widget's text sizes. */
+    val textScale: Float = WidgetDefaults.TEXT_SCALE,
     val searchIconDisplay: SearchIconDisplay = WidgetDefaults.SEARCH_ICON_DISPLAY,
     val theme: WidgetTheme = WidgetDefaults.THEME,
     val backgroundColor: Int? = WidgetDefaults.BACKGROUND_COLOR,
@@ -166,6 +174,8 @@ data class WidgetPreferences(
     val customButtons: List<CustomWidgetButtonAction?> = WidgetDefaults.CUSTOM_BUTTONS,
     /** The note shown by the Note widget; null until one is picked. */
     val noteId: Long? = null,
+    /** The At a Glance widget's own item toggles by key; items not in it follow the app's. */
+    val glanceItems: Map<String, Boolean> = emptyMap(),
 ) : Parcelable {
     companion object {
         /** Default widget preferences instance. */
@@ -210,6 +220,7 @@ data class WidgetPreferences(
                     WidgetRanges.ICON_SIZE_SCALE_MIN,
                     WidgetRanges.ICON_SIZE_SCALE_MAX,
                 ),
+            textScale = textScale.coerceFiniteIn(WidgetRanges.TEXT_SCALE_MIN, WidgetRanges.TEXT_SCALE_MAX),
             internalHorizontalPaddingDp =
                 internalHorizontalPaddingDp.coerceFiniteIn(
                     WidgetRanges.INTERNAL_HORIZONTAL_PADDING_MIN,
@@ -248,6 +259,9 @@ private fun normalizeCustomButtons(
     return normalized
 }
 
+/** Whether the configure screen has saved this widget's look; refreshes add other keys, so it checks one it always writes. */
+fun Preferences.hasStoredWidgetConfig(): Boolean = this[WidgetKeys.THEME] != null
+
 fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
     val theme =
         this[WidgetKeys.THEME]?.let { themeString ->
@@ -276,6 +290,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         borderWidthDp = this[WidgetKeys.BORDER_WIDTH] ?: WidgetDefaults.BORDER_WIDTH_DP,
         showLabel = this[WidgetKeys.SHOW_LABEL] ?: WidgetDefaults.SHOW_LABEL,
         iconSizeScale = this[WidgetKeys.ICON_SIZE_SCALE] ?: WidgetDefaults.ICON_SIZE_SCALE,
+        textScale = this[WidgetKeys.TEXT_SCALE] ?: WidgetDefaults.TEXT_SCALE,
         searchIconDisplay =
             this[WidgetKeys.SEARCH_ICON_DISPLAY]?.let { displayString ->
                 SearchIconDisplay.entries.find { it.value == displayString }
@@ -310,6 +325,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         useHomeScreenAppearance = this[WidgetKeys.USE_HOME_SCREEN_APPEARANCE] ?: false,
         customButtons = customButtons,
         noteId = this[WidgetKeys.NOTE_ID],
+        glanceItems = decodeGlanceItems(this[WidgetKeys.GLANCE_ITEMS]),
     ).coerceToValidRanges()
 }
 
@@ -324,6 +340,7 @@ fun MutablePreferences.applyWidgetPreferences(
     this[WidgetKeys.BORDER_WIDTH] = validated.borderWidthDp
     this[WidgetKeys.SHOW_LABEL] = validated.showLabel
     this[WidgetKeys.ICON_SIZE_SCALE] = validated.iconSizeScale
+    this[WidgetKeys.TEXT_SCALE] = validated.textScale
     this[WidgetKeys.SEARCH_ICON_DISPLAY] = validated.searchIconDisplay.value
     this[WidgetKeys.THEME] = validated.theme.value
     validated.backgroundColor?.let { this[WidgetKeys.BACKGROUND_COLOR] = it }
@@ -352,6 +369,17 @@ fun MutablePreferences.applyWidgetPreferences(
     customButtons.getOrNull(5)?.let { action -> this[WidgetKeys.CUSTOM_BUTTON_5] = action.toManagedJson(context) }
         ?: remove(WidgetKeys.CUSTOM_BUTTON_5)
     validated.noteId?.let { this[WidgetKeys.NOTE_ID] = it } ?: remove(WidgetKeys.NOTE_ID)
+    if (validated.glanceItems.isEmpty()) {
+        remove(WidgetKeys.GLANCE_ITEMS)
+    } else {
+        this[WidgetKeys.GLANCE_ITEMS] = org.json.JSONObject(validated.glanceItems).toString()
+    }
+}
+
+private fun decodeGlanceItems(raw: String?): Map<String, Boolean> {
+    if (raw.isNullOrBlank()) return emptyMap()
+    val json = runCatching { org.json.JSONObject(raw) }.getOrNull() ?: return emptyMap()
+    return json.keys().asSequence().associateWith { json.optBoolean(it, true) }
 }
 
 private fun CustomWidgetButtonAction.toManagedJson(context: Context): String {
@@ -446,8 +474,11 @@ fun WidgetPreferences.enforceVariantConstraints(variant: WidgetVariant): WidgetP
                 customButtons = emptyList(),
             )
         // The note, background (system, light, dark or a custom color), text color (automatic,
-        // white or black), corner radius and background transparency are configurable.
-        WidgetVariant.NOTE ->
+        // white or black), corner radius and background transparency are configurable. At a
+        // Glance offers the same, without a note.
+        WidgetVariant.NOTE,
+        WidgetVariant.AT_A_GLANCE,
+        ->
             normalized.copy(
                 useDeviceThemeBackground = false,
                 useHomeScreenAppearance = false,

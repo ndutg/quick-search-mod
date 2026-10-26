@@ -204,9 +204,10 @@ class SearchWidget(
                     internalVerticalPaddingDp = config.internalVerticalPaddingDp,
                     customButtons = customButtons,
                 )
-            // Rendered by MediaControlsWidget and NoteWidget; SearchWidget is never bound to those providers.
+            // Rendered by MediaControlsWidget, NoteWidget and AtAGlanceWidget; SearchWidget is never bound to those providers.
             WidgetVariant.MEDIA_CONTROLS,
             WidgetVariant.NOTE,
+            WidgetVariant.AT_A_GLANCE,
             -> Unit
         }
     }

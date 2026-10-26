@@ -70,14 +70,16 @@ class NicknamePreferences(
     // Nickname Preferences
     // ============================================================================
 
-    fun getAppNickname(packageName: String): String? =
-        customizationStore.getString("${BasePreferences.KEY_NICKNAME_APP_PREFIX}$packageName")
+    // App nicknames are keyed by AppInfo.launchCountKey(): the package name, plus ":<userId>" for
+    // cloned and work-profile apps.
+    fun getAppNickname(appKey: String): String? =
+        customizationStore.getString("${BasePreferences.KEY_NICKNAME_APP_PREFIX}$appKey")
 
     fun setAppNickname(
-        packageName: String,
+        appKey: String,
         nickname: String?,
     ) {
-        val key = "${BasePreferences.KEY_NICKNAME_APP_PREFIX}$packageName"
+        val key = "${BasePreferences.KEY_NICKNAME_APP_PREFIX}$appKey"
         customizationStore.putString(key, NicknameUtils.normalizeInput(nickname))
     }
 
@@ -89,8 +91,8 @@ class NicknamePreferences(
                 !key.startsWith(BasePreferences.KEY_NICKNAME_APP_SHORTCUT_PREFIX) &&
                 value is String
             ) {
-                val packageName = key.removePrefix(BasePreferences.KEY_NICKNAME_APP_PREFIX)
-                nicknames[packageName] = value
+                val appKey = key.removePrefix(BasePreferences.KEY_NICKNAME_APP_PREFIX)
+                nicknames[appKey] = value
             }
         }
         return nicknames

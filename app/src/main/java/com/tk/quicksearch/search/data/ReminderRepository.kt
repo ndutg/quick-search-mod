@@ -103,8 +103,11 @@ class ReminderRepository(context: Context) {
     }
 
     /** Reminders to surface on Home: due within 30 minutes or overdue, and not done, dismissed or snoozed there. */
-    fun getHomeCardReminders(nowMillis: Long = System.currentTimeMillis()): List<ReminderInfo> {
-        if (!preferences.isShowUpcomingRemindersEnabled()) return emptyList()
+    fun getHomeCardReminders(
+        nowMillis: Long = System.currentTimeMillis(),
+        isShown: Boolean = preferences.isShowUpcomingRemindersEnabled(),
+    ): List<ReminderInfo> {
+        if (!isShown) return emptyList()
         val snoozedUntil = preferences.getHomeSnoozedUntil()
         return readReminders()
             .filter { reminder ->

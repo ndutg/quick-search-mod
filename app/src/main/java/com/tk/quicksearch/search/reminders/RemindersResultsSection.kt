@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.reminders
 
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import android.text.format.DateFormat
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -48,10 +49,12 @@ import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
 import com.tk.quicksearch.search.searchScreen.SearchScreenConstants
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
+import com.tk.quicksearch.search.searchScreen.components.ExpandButtonDivider
 import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
+import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -139,7 +142,7 @@ fun RemindersResultsSection(
                         )
                         if (index < displayReminders.lastIndex) {
                             HorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.compactEdgeToEdge().fillMaxWidth(),
                                 color =
                                     overlayDividerColor
                                         ?: if (showWallpaperBackground) {
@@ -153,6 +156,7 @@ fun RemindersResultsSection(
                 }
 
                 if (cardState.shouldShowExpandButton) {
+                    ExpandButtonDivider(showWallpaperBackground)
                     ExpandButton(
                         onClick = onExpandClick,
                         modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -192,7 +196,7 @@ internal fun ReminderRow(
                     onLongClick = { showMenu = true },
                 )
                 .topPredictedRowContentPadding()
-                .padding(vertical = 12.dp),
+                .padding(vertical = resultRowVerticalPadding(12.dp)),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -47,6 +47,47 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
         setBooleanPref(UiPreferences.KEY_SEARCH_HINTS_ENABLED, enabled)
     }
 
+    fun isCardLayoutEnabled(): Boolean =
+            getBooleanPref(UiPreferences.KEY_CARD_LAYOUT_ENABLED, true)
+
+    fun setCardLayoutEnabled(enabled: Boolean) {
+        setBooleanPref(UiPreferences.KEY_CARD_LAYOUT_ENABLED, enabled)
+    }
+
+    /** Remembers the grid and text sizes in use before compact layout replaced them. */
+    fun saveCompactLayoutPriorUi(prior: CompactLayoutPriorUi) {
+        prefs.edit()
+                .putInt(UiPreferences.KEY_COMPACT_PRIOR_APP_GRID_COLUMNS, prior.phoneAppGridColumns)
+                .putInt(UiPreferences.KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP, prior.appIconSizeStep)
+                .putFloat(UiPreferences.KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER, prior.fontScaleMultiplier)
+                .putFloat(UiPreferences.KEY_COMPACT_PRIOR_LIGHT_WALLPAPER_ALPHA, prior.lightWallpaperBackgroundAlpha)
+                .apply()
+    }
+
+    /** Returns and clears the sizes saved by [saveCompactLayoutPriorUi], or null if none were saved. */
+    fun takeCompactLayoutPriorUi(): CompactLayoutPriorUi? {
+        if (!prefs.contains(UiPreferences.KEY_COMPACT_PRIOR_APP_GRID_COLUMNS)) return null
+        val prior =
+                CompactLayoutPriorUi(
+                        phoneAppGridColumns = prefs.getInt(UiPreferences.KEY_COMPACT_PRIOR_APP_GRID_COLUMNS, 0),
+                        appIconSizeStep = prefs.getInt(UiPreferences.KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP, 0),
+                        fontScaleMultiplier =
+                                prefs.getFloat(UiPreferences.KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER, 0f),
+                        lightWallpaperBackgroundAlpha =
+                                prefs.getFloat(
+                                        UiPreferences.KEY_COMPACT_PRIOR_LIGHT_WALLPAPER_ALPHA,
+                                        UiPreferences.DEFAULT_WALLPAPER_BACKGROUND_ALPHA_LIGHT,
+                                ),
+                )
+        prefs.edit()
+                .remove(UiPreferences.KEY_COMPACT_PRIOR_APP_GRID_COLUMNS)
+                .remove(UiPreferences.KEY_COMPACT_PRIOR_APP_ICON_SIZE_STEP)
+                .remove(UiPreferences.KEY_COMPACT_PRIOR_FONT_SCALE_MULTIPLIER)
+                .remove(UiPreferences.KEY_COMPACT_PRIOR_LIGHT_WALLPAPER_ALPHA)
+                .apply()
+        return prior
+    }
+
     fun isSettingsIconEnabled(): Boolean =
             getBooleanPref(UiPreferences.KEY_SETTINGS_ICON_ENABLED, true)
 

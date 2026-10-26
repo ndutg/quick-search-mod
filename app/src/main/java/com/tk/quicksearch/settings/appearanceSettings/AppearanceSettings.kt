@@ -47,6 +47,8 @@ fun AppearanceSettingsSection(
         onToggleOneHandedMode: (Boolean) -> Unit,
         bottomSearchBarEnabled: Boolean,
         onToggleBottomSearchBar: (Boolean) -> Unit,
+        compactLayoutEnabled: Boolean,
+        onToggleCompactLayout: (Boolean) -> Unit,
         unifiedPinnedItemsEnabled: Boolean,
         onToggleUnifiedPinnedItems: (Boolean) -> Unit,
         homePinnedSectionOrder: List<SearchSection>,
@@ -166,6 +168,7 @@ fun AppearanceSettingsSection(
                 onHomeTextColorChange = onHomeTextColorChange,
                 backgroundSource = backgroundSource,
                 customImageUri = customImageUri,
+                compactLayoutEnabled = compactLayoutEnabled,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -255,6 +258,13 @@ fun AppearanceSettingsSection(
                         subtitle = stringResource(R.string.settings_bottom_searchbar_desc),
                         checked = bottomSearchBarEnabled,
                         onCheckedChange = onToggleBottomSearchBar,
+                        extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_compact_layout_title),
+                        subtitle = stringResource(R.string.settings_compact_layout_desc),
+                        checked = compactLayoutEnabled,
+                        onCheckedChange = onToggleCompactLayout,
                         extraVerticalPadding = 8.dp,
                 )
                 SettingsToggleRow(

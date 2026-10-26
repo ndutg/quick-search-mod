@@ -42,6 +42,7 @@ import com.tk.quicksearch.shared.util.WallpaperUtils
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonIcon
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetPreview
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetPreview
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetPreview
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import kotlin.math.floor
 
@@ -75,6 +76,8 @@ fun rememberWidgetPreviewWallpaper(): ImageBitmap? {
 fun WidgetPreviewCard(
     state: WidgetPreferences,
     widgetVariant: WidgetVariant = WidgetVariant.STANDARD,
+    /** The launcher's scale for the placed widget's content; see [launcherWidgetContentScale]. */
+    launcherContentScale: Float = 1f,
 ) {
     val previewState = state.enforceVariantConstraints(widgetVariant)
     val context = LocalContext.current
@@ -85,6 +88,14 @@ fun WidgetPreviewCard(
     }
     if (widgetVariant == WidgetVariant.NOTE) {
         NoteWidgetPreview(state = previewState, wallpaperBitmap = wallpaperBitmap)
+        return
+    }
+    if (widgetVariant == WidgetVariant.AT_A_GLANCE) {
+        AtAGlanceWidgetPreview(
+            state = previewState,
+            wallpaperBitmap = wallpaperBitmap,
+            launcherContentScale = launcherContentScale,
+        )
         return
     }
     val colors = calculatePreviewColors(previewState)
@@ -326,6 +337,7 @@ fun WidgetPreviewCard(
                 }
                 WidgetVariant.MEDIA_CONTROLS,
                 WidgetVariant.NOTE,
+                WidgetVariant.AT_A_GLANCE,
                 -> Unit
             }
         }

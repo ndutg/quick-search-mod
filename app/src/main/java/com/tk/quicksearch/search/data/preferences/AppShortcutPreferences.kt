@@ -99,6 +99,22 @@ class AppShortcutPreferences(
             }
         }
 
+    /**
+     * Enables [id] even when its whole app is disabled. The app-wide marker would otherwise keep
+     * hiding it, so it is replaced by individual entries for [otherAppShortcutIds].
+     */
+    fun enableAppShortcutOverridingApp(
+        packageName: String,
+        id: String,
+        otherAppShortcutIds: Collection<String>,
+    ): Set<String> =
+        updateStringSet(BasePreferences.KEY_DISABLED_APP_SHORTCUTS) { disabledIds ->
+            if (disabledIds.remove(allAppShortcutsKey(packageName))) {
+                disabledIds.addAll(otherAppShortcutIds)
+            }
+            disabledIds.remove(id)
+        }
+
     fun getAppShortcutIconOverride(id: String): String? =
         assetStore.getBase64("${ManagedAssetStore.SHORTCUT_ICON_PREFIX}$id")
             ?: prefs.getString(iconOverrideKey(id), null)?.takeIf { it.isNotBlank() }?.also {

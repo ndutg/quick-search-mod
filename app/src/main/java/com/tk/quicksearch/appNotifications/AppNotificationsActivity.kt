@@ -61,6 +61,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
+import com.tk.quicksearch.shared.util.setSystemBarsDark
 
 /**
  * App notifications settings for At a Glance: the apps to show (each optionally narrowed by
@@ -95,14 +96,7 @@ class AppNotificationsActivity : ComponentActivity() {
                 AppThemeMode.DARK -> true
                 AppThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
-            SideEffect {
-                val style = if (useDarkSystemBars) {
-                    SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
-                } else {
-                    SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
-                }
-                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
-            }
+            SideEffect { setSystemBarsDark(useDarkSystemBars) }
             QuickSearchTheme(
                 fontScaleMultiplier = preferences.getFontScaleMultiplier(),
                 useSystemFont = preferences.shouldUseSystemFont(),

@@ -540,7 +540,7 @@ internal fun buildSectionParams(
                     NicknameDialogState.App(
                         app = app,
                         currentNickname =
-                            getAppNickname(app.packageName),
+                            getAppNickname(app.launchCountKey()),
                         itemName = app.appName,
                     ),
                 )

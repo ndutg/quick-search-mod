@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import com.tk.quicksearch.R
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
+import com.tk.quicksearch.widgets.utils.WidgetRanges
 import com.tk.quicksearch.shared.util.hapticToggle
 import kotlin.math.roundToInt
 import java.util.Locale
@@ -104,6 +105,22 @@ fun WidgetIconSizeSection(
         steps = 8,
         valueFormatter = { "${(it * 100).roundToInt()}%" },
         onValueChange = { onStateChange(state.copy(iconSizeScale = it)) },
+    )
+}
+
+@Composable
+fun WidgetTextSizeSection(
+    state: WidgetPreferences,
+    onStateChange: (WidgetPreferences) -> Unit,
+) {
+    SliderRow(
+        label = stringResource(R.string.settings_font_size_title),
+        value = state.textScale,
+        valueRange = WidgetRanges.TEXT_SCALE_MIN..WidgetRanges.TEXT_SCALE_MAX,
+        steps = 14,
+        valueFormatter = { "${(it * 100).roundToInt()}%" },
+        showTicks = false,
+        onValueChange = { onStateChange(state.copy(textScale = it)) },
     )
 }
 

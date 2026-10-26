@@ -1,0 +1,141 @@
+package com.tk.quicksearch.widgets.atAGlanceWidget
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Today
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tk.quicksearch.R
+import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.settings.settingsDetailScreen.AtAGlanceSettingsSection
+import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.settings.shared.SettingsCardItem
+import com.tk.quicksearch.settings.shared.ProvideSettingsColors
+import com.tk.quicksearch.settings.shared.SettingsNavigationRow
+import com.tk.quicksearch.settings.shared.SettingsScreenBackground
+import com.tk.quicksearch.shared.ui.components.AppBottomSheet
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.widgets.utils.WidgetPreferences
+
+/**
+ * The At a Glance widget's At a Glance Items row. It opens the At a Glance toggles in a drawer, so they read
+ * as this widget's own rather than the app's settings page; changes save with the widget.
+ */
+@Composable
+fun AtAGlanceWidgetItemsSection(
+    state: WidgetPreferences,
+    onStateChange: (WidgetPreferences) -> Unit,
+    searchViewModel: SearchViewModel,
+) {
+    var showDrawer by rememberSaveable { mutableStateOf(false) }
+    SettingsCard(modifier = Modifier.fillMaxWidth()) {
+        SettingsNavigationRow(
+            item =
+                SettingsCardItem(
+                    title = stringResource(R.string.widget_at_a_glance_items_title),
+                    description = stringResource(R.string.widget_at_a_glance_items_summary),
+                    icon = Icons.Rounded.Today,
+                    actionOnPress = { showDrawer = true },
+                ),
+            contentPadding =
+                PaddingValues(
+                    horizontal = DesignTokens.SpacingXXLarge,
+                    vertical = DesignTokens.SpacingLarge,
+                ),
+        )
+    }
+    if (showDrawer) {
+        AtAGlanceWidgetItemsDrawer(
+            items = state.glanceItems,
+            onItemsChange = { onStateChange(state.copy(glanceItems = it)) },
+            onDismissRequest = { showDrawer = false },
+            searchViewModel = searchViewModel,
+        )
+    }
+}
+
+/** Drawn with the settings background and card colors, so it matches the app's At a Glance settings. */
+@Composable
+private fun AtAGlanceWidgetItemsDrawer(
+    items: Map<String, Boolean>,
+    onItemsChange: (Map<String, Boolean>) -> Unit,
+    onDismissRequest: () -> Unit,
+    searchViewModel: SearchViewModel,
+) {
+    val uiState by searchViewModel.uiState.collectAsStateWithLifecycle()
+    ProvideSettingsColors(
+        appTheme = uiState.appTheme,
+        overlayThemeIntensity = uiState.overlayThemeIntensity,
+        deviceThemeEnabled = uiState.deviceThemeEnabled,
+        amoledThemeEnabled = uiState.amoledThemeEnabled,
+    ) {
+        AppBottomSheet(
+            onDismissRequest = onDismissRequest,
+            background = {
+                SettingsScreenBackground(
+                    appTheme = uiState.appTheme,
+                    overlayThemeIntensity = uiState.overlayThemeIntensity,
+                    deviceThemeEnabled = uiState.deviceThemeEnabled,
+                    amoledThemeEnabled = uiState.amoledThemeEnabled,
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                ) {}
+            },
+        ) { dismiss ->
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = DesignTokens.ContentHorizontalPadding, end = DesignTokens.SpacingSmall),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.widget_at_a_glance_items_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f),
+                )
+                if (items.isNotEmpty()) {
+                    TextButton(onClick = { onItemsChange(emptyMap()) }) {
+                        Text(text = stringResource(R.string.dialog_reset))
+                    }
+                }
+                IconButton(onClick = dismiss) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = stringResource(R.string.common_close),
+                    )
+                }
+            }
+            AtAGlanceSettingsSection(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = DesignTokens.ContentHorizontalPadding,
+                            end = DesignTokens.ContentHorizontalPadding,
+                            top = DesignTokens.SpacingSmall,
+                            bottom = DesignTokens.SpacingLarge,
+                        ),
+                widgetItems = items,
+                onWidgetItemsChange = onItemsChange,
+            )
+        }
+    }
+}

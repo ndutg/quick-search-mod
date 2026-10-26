@@ -17,6 +17,7 @@ import com.tk.quicksearch.search.data.GlanceNotificationsStore
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryStore
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetUpdater
 import com.tk.quicksearch.widgets.utils.refreshAllWidgets
 import com.tk.quicksearch.widgets.utils.refreshMediaControlsWidgets
 import kotlinx.coroutines.CoroutineScope
@@ -46,6 +47,8 @@ class NotificationDotsListenerService : NotificationListenerService() {
         val active = runCatching { activeNotifications }.getOrNull()
         NotificationDotsStore.updateFromNotifications(active)
         GlanceNotificationsStore.update(this, active)
+        // A process started for the listener has no widget drawing yet to start the updater.
+        AtAGlanceWidgetUpdater.startIfPlaced(this)
         NotificationHistoryAccess.set(true)
         NotificationHistoryStore.seed(this, active, ::isAppNotificationCandidate)
         startMediaPlaybackMonitoring()

@@ -7,12 +7,19 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.AlarmClock
+import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
+import com.tk.quicksearch.search.data.preferences.GlanceItem
+import com.tk.quicksearch.search.data.preferences.GlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
 import java.time.Instant
 import java.time.ZoneId
 
 /** Android exposes the next scheduled alarm clock, rather than a list of upcoming alarms. */
-class UpcomingAlarmRepository(private val context: Context) {
+/** [glanceItems] decides whether alarms and tomorrow's alarm show; the home card's by default. */
+class UpcomingAlarmRepository(
+    private val context: Context,
+    private val glanceItems: GlanceItemSettings = AppGlanceItemSettings(context),
+) {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
     private val preferences = UpcomingAlarmPreferences(context)
 
@@ -30,7 +37,7 @@ class UpcomingAlarmRepository(private val context: Context) {
      * Android only exposes the next alarm, so an alarm still to ring tonight hides tomorrow's.
      */
     fun tomorrowsFirstAlarm(nowMillis: Long = System.currentTimeMillis()): AlarmManager.AlarmClockInfo? {
-        if (!preferences.isShowTomorrowAlarmEnabled()) return null
+        if (!glanceItems.isShown(GlanceItem.TOMORROW_ALARM)) return null
         val zoneId = ZoneId.systemDefault()
         val now = Instant.ofEpochMilli(nowMillis).atZone(zoneId)
         if (now.hour < TOMORROW_ALARM_START_HOUR) return null
@@ -43,7 +50,7 @@ class UpcomingAlarmRepository(private val context: Context) {
 
     /** The next alarm when the home card shows alarms and a clock app not hidden by the user set it. */
     private fun nextClockAlarm(): AlarmManager.AlarmClockInfo? {
-        if (!preferences.isShowUpcomingAlarmEnabled()) return null
+        if (!glanceItems.isShown(GlanceItem.UPCOMING_ALARM)) return null
         val alarm = alarmManager?.nextAlarmClock ?: return null
         if (!isFromClockApp(alarm)) return null
         if (alarm.showIntent?.creatorPackage?.let(preferences::isHiddenPackage) == true) return null

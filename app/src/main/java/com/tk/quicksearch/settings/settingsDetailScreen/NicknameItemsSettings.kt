@@ -76,13 +76,23 @@ fun NicknameItemsScreen(
                 emptyMap()
             }
             buildList {
-                prefs.getAllAppNicknames().forEach { (packageName, nickname) ->
+                prefs.getAllAppNicknames().forEach { (appKey, nickname) ->
+                    val packageName = appKey.substringBefore(':')
+                    val userHandleId = appKey.substringAfter(':', "").toIntOrNull()
                     val appName = try {
                         pm.getApplicationInfo(packageName, 0).loadLabel(pm).toString()
                     } catch (e: Exception) {
                         packageName
                     }
-                    add(NicknameItem.App(packageName = packageName, nickname = nickname, itemName = appName))
+                    add(
+                        NicknameItem.App(
+                            appKey = appKey,
+                            packageName = packageName,
+                            userHandleId = userHandleId,
+                            nickname = nickname,
+                            itemName = appName,
+                        ),
+                    )
                 }
                 prefs.getAllAppShortcutNicknames().forEach { (shortcutId, nickname) ->
                     val shortcut = shortcutsById[shortcutId]
@@ -176,7 +186,7 @@ fun NicknameItemsScreen(
                         onRemove = {
                             val prefs = NicknamePreferences(context)
                             when (item) {
-                                is NicknameItem.App -> prefs.setAppNickname(item.packageName, null)
+                                is NicknameItem.App -> prefs.setAppNickname(item.appKey, null)
                                 is NicknameItem.AppShortcut -> prefs.setAppShortcutNickname(item.shortcutId, null)
                                 is NicknameItem.Contact -> prefs.setContactNickname(item.contactId, null)
                                 is NicknameItem.File -> prefs.setFileNickname(item.uri, null)
@@ -251,7 +261,7 @@ private fun NicknameItemRow(
 private fun NicknameItemIcon(item: NicknameItem) {
     when (item) {
         is NicknameItem.App -> {
-            val iconResult = rememberAppIcon(packageName = item.packageName)
+            val iconResult = rememberAppIcon(packageName = item.packageName, userHandleId = item.userHandleId)
             if (iconResult.bitmap != null) {
                 Image(
                     bitmap = iconResult.bitmap!!,
@@ -336,7 +346,9 @@ private sealed class NicknameItem {
     abstract val itemName: String
 
     data class App(
+        val appKey: String,
         val packageName: String,
+        val userHandleId: Int?,
         override val nickname: String,
         override val itemName: String,
     ) : NicknameItem()

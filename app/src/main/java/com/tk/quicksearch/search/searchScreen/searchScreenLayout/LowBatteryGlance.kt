@@ -67,7 +67,7 @@ internal class BatteryGlances(
     val charging: ChargingGlance?,
 )
 
-private data class BatteryStatus(
+internal data class BatteryStatus(
     val percent: Int,
     val isCharging: Boolean,
     val isPlugged: Boolean,
@@ -248,7 +248,7 @@ internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
     )
 }
 
-private fun openBatterySettings(context: Context) {
+internal fun openBatterySettings(context: Context) {
     openFirstAvailable(
         context,
         Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS),
@@ -257,7 +257,7 @@ private fun openBatterySettings(context: Context) {
     )
 }
 
-private fun openBatteryUsage(context: Context) {
+internal fun openBatteryUsage(context: Context) {
     openFirstAvailable(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY), Intent(Settings.ACTION_SETTINGS))
 }
 
