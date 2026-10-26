@@ -53,6 +53,9 @@ internal object LegacySecretsMigration {
 }
 
 /** Read-only access to the old store; kept only so existing installs can be migrated. */
+// TODO: Remove this migration, LegacyEncryptedPreferences and the security-crypto dependency once most
+// users have updated past the release that moved secrets to the Keystore. Users who skip that release
+// will need to re-enter their API keys.
 @Suppress("DEPRECATION")
 internal object LegacyEncryptedPreferences {
     // security-crypto's default master key alias, used by MasterKey.Builder.
