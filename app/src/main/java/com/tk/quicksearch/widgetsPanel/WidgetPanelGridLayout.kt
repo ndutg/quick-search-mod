@@ -363,23 +363,26 @@ internal fun calculateGridResize(
 
     when (horizontalDirection) {
         -1 -> {
-            val maxLeftDelta = startColumnSpan - minColumnSpan
-            val appliedDelta = columnDelta.coerceIn(-startColumn, maxLeftDelta)
+            val maxLeftDelta = (startColumnSpan - minColumnSpan).coerceAtLeast(0)
+            val appliedDelta = columnDelta.coerceIn(-startColumn.coerceAtLeast(0), maxLeftDelta)
             nextColumn = startColumn + appliedDelta
             nextColumnSpan = startColumnSpan - appliedDelta
         }
 
         1 -> {
+            // A stored position can leave less room than the widget's min span; never build an
+            // empty range from that.
+            val maxColumnSpan = (WIDGET_PANEL_GRID_COLUMNS - startColumn).coerceAtLeast(1)
             nextColumnSpan =
                 (startColumnSpan + columnDelta)
-                    .coerceIn(minColumnSpan, WIDGET_PANEL_GRID_COLUMNS - startColumn)
+                    .coerceIn(minColumnSpan.coerceAtMost(maxColumnSpan), maxColumnSpan)
         }
     }
 
     when (verticalDirection) {
         -1 -> {
-            val maxUpDelta = startRowSpan - minRowSpan
-            val appliedDelta = rowDelta.coerceIn(-startRow, maxUpDelta)
+            val maxUpDelta = (startRowSpan - minRowSpan).coerceAtLeast(0)
+            val appliedDelta = rowDelta.coerceIn(-startRow.coerceAtLeast(0), maxUpDelta)
             nextRow = startRow + appliedDelta
             nextRowSpan = startRowSpan - appliedDelta
         }
@@ -387,7 +390,7 @@ internal fun calculateGridResize(
         1 -> {
             nextRowSpan =
                 (startRowSpan + rowDelta)
-                    .coerceIn(minRowSpan, WIDGET_PANEL_MAX_ROW_SPAN)
+                    .coerceIn(minRowSpan.coerceAtMost(WIDGET_PANEL_MAX_ROW_SPAN), WIDGET_PANEL_MAX_ROW_SPAN)
         }
     }
 

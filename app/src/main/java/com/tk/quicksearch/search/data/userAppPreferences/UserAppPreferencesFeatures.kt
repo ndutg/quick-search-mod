@@ -407,6 +407,14 @@ open class UserAppPreferencesFeatures(context: Context) : UserAppPreferencesCore
 
     fun setSearchHintsEnabled(enabled: Boolean) = uiPreferences.setSearchHintsEnabled(enabled)
 
+    fun isCardLayoutEnabled(): Boolean = uiPreferences.isCardLayoutEnabled()
+
+    fun setCardLayoutEnabled(enabled: Boolean) = uiPreferences.setCardLayoutEnabled(enabled)
+
+    fun saveCompactLayoutPriorUi(prior: CompactLayoutPriorUi) = uiPreferences.saveCompactLayoutPriorUi(prior)
+
+    fun takeCompactLayoutPriorUi(): CompactLayoutPriorUi? = uiPreferences.takeCompactLayoutPriorUi()
+
     fun isSettingsIconEnabled(): Boolean = uiPreferences.isSettingsIconEnabled()
 
     fun setSettingsIconEnabled(enabled: Boolean) = uiPreferences.setSettingsIconEnabled(enabled)

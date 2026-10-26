@@ -2,6 +2,7 @@ package com.tk.quicksearch.shared.util
 
 import android.content.Context
 import android.os.Build
+import android.os.Looper
 import com.tk.quicksearch.BuildConfig
 import java.io.File
 import java.io.FileOutputStream
@@ -10,6 +11,7 @@ import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.system.exitProcess
 
@@ -23,6 +25,13 @@ object CrashLogManager {
     private var isInstalled = false
     private val isHandlingCrash = AtomicBoolean(false)
 
+    /** Packages of third-party widgets hosted in this process; their view code runs here. */
+    private val hostedWidgetPackages = ConcurrentHashMap.newKeySet<String>()
+
+    fun registerHostedWidgetPackage(packageName: String) {
+        hostedWidgetPackages.add(packageName)
+    }
+
     @Synchronized
     fun install(context: Context) {
         if (isInstalled) return
@@ -30,6 +39,12 @@ object CrashLogManager {
         val appContext = context.applicationContext
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            if (isHostedWidgetBackgroundCrash(thread, throwable)) {
+                // A hosted widget's own background thread failed (e.g. a vendor calendar widget
+                // denied its provider). Record it and let that thread end instead of the app.
+                runCatching { writeCrashEntry(appContext, thread, throwable) }
+                return@setDefaultUncaughtExceptionHandler
+            }
             if (isHandlingCrash.compareAndSet(false, true)) {
                 try {
                     writeCrashEntry(appContext, thread, throwable)
@@ -103,6 +118,15 @@ object CrashLogManager {
         }
 
         return file
+    }
+
+    private fun isHostedWidgetBackgroundCrash(thread: Thread, throwable: Throwable): Boolean {
+        if (hostedWidgetPackages.isEmpty() || thread === Looper.getMainLooper().thread) return false
+        val classNames = throwable.stackTrace.map { it.className }
+        if (classNames.any { it.startsWith("com.tk.quicksearch.") }) return false
+        return classNames.any { className ->
+            hostedWidgetPackages.any { className.startsWith("$it.") }
+        }
     }
 
     private fun writeCrashEntry(context: Context, thread: Thread, throwable: Throwable) {

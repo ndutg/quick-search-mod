@@ -376,7 +376,7 @@ private fun renderCalendarSection(
     if (context.isHomeScreenCalendarMode && visibleTodayCalendarEvents.isEmpty() && atAGlanceContent != null) {
         // Today's events have all ended, so the remaining At a Glance rows get a card of their own.
         if (!context.hideHomeSectionTitleRows) {
-            AtAGlanceTitle()
+            AtAGlanceTitle(calendarParams.showWallpaperBackground)
         }
         AtAGlanceCardShell(showWallpaperBackground = calendarParams.showWallpaperBackground) {
             atAGlanceContent(false, false)
@@ -388,7 +388,7 @@ private fun renderCalendarSection(
         }
         if (context.isHomeScreenCalendarMode && visibleTodayCalendarEvents.isNotEmpty()) {
             if (!calendarParams.isExpanded && !context.hideHomeSectionTitleRows) {
-                AtAGlanceTitle()
+                AtAGlanceTitle(calendarParams.showWallpaperBackground)
             }
             CalendarEventsSection(
                 events = visibleTodayCalendarEvents,

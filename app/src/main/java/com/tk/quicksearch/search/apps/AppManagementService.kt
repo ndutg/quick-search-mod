@@ -73,6 +73,6 @@ class AppManagementService(
         nickname: String?,
     ) = setItemNickname(appInfo, nickname)
 
-    fun getAppNickname(packageName: String): String? =
-        getItemNickname(AppInfo("", packageName, 0L, 0L, 0, 0L, false))
+    // [appKey] is [AppInfo.launchCountKey], so cloned and work-profile apps keep their own nickname.
+    fun getAppNickname(appKey: String): String? = userPreferences.getAppNickname(appKey)
 }

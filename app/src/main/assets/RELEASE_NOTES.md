@@ -8,4 +8,4 @@
 - Option to hide the status bar
 - Add a note to a notification directly by searching for "Create Notification Note"
 - Triggering a section with its alias now shows your files, contacts, and settings without typing a query
-- Bugfixes, performance improvements and UI enhancements
+- Bug fixes, performance improvements and UI enhancements

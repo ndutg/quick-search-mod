@@ -33,33 +33,12 @@ fun SettingsScreenBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val isDarkMode = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val amoledSurfacesActive =
-        isAmoledSurfaceTheme(
-            amoledThemeEnabled = amoledThemeEnabled,
-            theme = appTheme,
-            isDarkMode = isDarkMode,
-            deviceThemeEnabled = deviceThemeEnabled,
-            backgroundSource = backgroundSource,
-        )
-    val searchColorTheme =
-        remember(appTheme, overlayThemeIntensity, isDarkMode, deviceThemeEnabled, amoledThemeEnabled, backgroundSource) {
-            if (deviceThemeEnabled) {
-                null
-            } else {
-                resolveSearchColorTheme(
-                    theme = appTheme,
-                    backgroundSource = backgroundSource,
-                    isDarkMode = isDarkMode,
-                    intensity = overlayThemeIntensity,
-                    amoledThemeEnabled = amoledThemeEnabled,
-                )
-            }
-        }
-
-    CompositionLocalProvider(
-        LocalSearchColorTheme provides searchColorTheme,
-        LocalAmoledThemeActive provides amoledSurfacesActive,
+    ProvideSettingsColors(
+        appTheme = appTheme,
+        overlayThemeIntensity = overlayThemeIntensity,
+        deviceThemeEnabled = deviceThemeEnabled,
+        amoledThemeEnabled = amoledThemeEnabled,
+        backgroundSource = backgroundSource,
     ) {
         Box(modifier = modifier.fillMaxSize()) {
             SearchScreenBackground(
@@ -94,4 +73,45 @@ fun SettingsScreenBackground(
             content()
         }
     }
+}
+
+/** Provides the settings card colors to [content] without drawing the settings background. */
+@Composable
+fun ProvideSettingsColors(
+    appTheme: AppTheme,
+    overlayThemeIntensity: Float,
+    deviceThemeEnabled: Boolean = false,
+    amoledThemeEnabled: Boolean = false,
+    backgroundSource: BackgroundSource = BackgroundSource.THEME,
+    content: @Composable () -> Unit,
+) {
+    val isDarkMode = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    val amoledSurfacesActive =
+        isAmoledSurfaceTheme(
+            amoledThemeEnabled = amoledThemeEnabled,
+            theme = appTheme,
+            isDarkMode = isDarkMode,
+            deviceThemeEnabled = deviceThemeEnabled,
+            backgroundSource = backgroundSource,
+        )
+    val searchColorTheme =
+        remember(appTheme, overlayThemeIntensity, isDarkMode, deviceThemeEnabled, amoledThemeEnabled, backgroundSource) {
+            if (deviceThemeEnabled) {
+                null
+            } else {
+                resolveSearchColorTheme(
+                    theme = appTheme,
+                    backgroundSource = backgroundSource,
+                    isDarkMode = isDarkMode,
+                    intensity = overlayThemeIntensity,
+                    amoledThemeEnabled = amoledThemeEnabled,
+                )
+            }
+        }
+
+    CompositionLocalProvider(
+        LocalSearchColorTheme provides searchColorTheme,
+        LocalAmoledThemeActive provides amoledSurfacesActive,
+        content = content,
+    )
 }

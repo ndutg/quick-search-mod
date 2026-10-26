@@ -28,6 +28,7 @@ import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.search.searchScreen.ExpandedSection
 import com.tk.quicksearch.search.searchScreen.hasAnySearchResults
 import com.tk.quicksearch.search.searchScreen.renderSection
+import com.tk.quicksearch.search.searchScreen.shared.reportCardlessTrailingEdge
 import com.tk.quicksearch.search.searchScreen.rememberSettledRegularSearchRenderingState
 import com.tk.quicksearch.search.searchScreen.rememberSettledTopMatches
 import com.tk.quicksearch.search.searchScreen.rememberTopMatches
@@ -264,7 +265,6 @@ fun ContentLayout(
                 suggestionsNotEmpty &&
                 suggestionsEnabled &&
                 !suggestionWasSelected
-
     val showRecentItems = shouldShowHomeSearchHistory(state)
 
     // Hoisted to the screen so the screen-level layout (bottom alignment, one-handed mode) flips
@@ -381,13 +381,19 @@ fun ContentLayout(
         )
     val regularSectionParams = regularSectionParams(sectionParams, showTopMatches)
 
+    val topMatchesDuplicateApps =
+        showTopMatches && topMatchesRepeatApps(displayedTopMatches, regularRenderingState.displayApps)
+
     fun shouldRenderSection(section: SearchSection): Boolean {
+        if (section == SearchSection.APPS && topMatchesDuplicateApps) return false
         return if (isSectionAliasMode) {
             activeAliasSection == section
         } else {
             !hideResults
         }
     }
+    val rendersAppsSection = shouldRenderSection(SearchSection.APPS) && !isUrlQuery &&
+        !holdRegularSectionsForTopMatches && sectionContext.shouldRenderApps && regularAppsParams.hasAppResults
 
     val standaloneTodayEventIds =
         sectionContextForRecentHistoryExpansion.todayCalendarEventsList.map { it.eventId }.toSet()
@@ -460,17 +466,6 @@ fun ContentLayout(
 
     var showPinnedSectionOrderDialog by rememberSaveable { mutableStateOf(false) }
 
-    @Composable
-    fun renderHomePinnedSection(section: SearchSection, content: @Composable () -> Unit) {
-        HomePinnedSection(
-            section = section,
-            showSectionedPinnedHeaders = showSectionedPinnedHeaders,
-            userPreferences = userPreferences,
-            effectiveShowWallpaperBackground = effectiveShowWallpaperBackground,
-            onShowOrderDialog = { showPinnedSectionOrderDialog = true },
-            content = content,
-        )
-    }
     HomePinnedSectionOrderDialog(
         showPinnedSectionOrderDialog = showPinnedSectionOrderDialog,
         state = state,
@@ -529,6 +524,7 @@ fun ContentLayout(
             onOtherSearchItemAction = onOtherSearchItemAction,
             showTopMatches = showTopMatches,
             hasMoreResults = hasMoreResults,
+            appsSectionAbove = isReversed && rendersAppsSection,
         )
     }
 
@@ -671,7 +667,13 @@ fun ContentLayout(
                     // Late app suggestions push At a Glance and the rest of home down smoothly.
                     expandIn = section == SearchSection.APPS,
                 ) {
-                    renderHomePinnedSection(section) {
+                    HomePinnedSection(
+                        section = section,
+                        showSectionedPinnedHeaders = showSectionedPinnedHeaders,
+                        userPreferences = userPreferences,
+                        effectiveShowWallpaperBackground = effectiveShowWallpaperBackground,
+                        onShowOrderDialog = { showPinnedSectionOrderDialog = true },
+                    ) {
                         renderSection(section, regularSectionParams, sectionContext)
                     }
                 }
@@ -744,11 +746,9 @@ fun ContentLayout(
             state = state,
             showTopMatchesSection = showTopMatchesSection,
             topMatches = displayedTopMatches,
-            rendersAppsSection =
-                shouldRenderSection(SearchSection.APPS) && !isUrlQuery && !holdRegularSectionsForTopMatches &&
-                    sectionContext.shouldRenderApps && regularAppsParams.hasAppResults,
+            rendersAppsSection = rendersAppsSection,
         )
-    val contentModifier = modifier.padding(bottom = bottomGap)
+    val contentModifier = modifier.padding(bottom = bottomGap).reportCardlessTrailingEdge()
 
     val homeWidgets = rememberHomePinnedWidgets(enabled = !isOverlayPresentation)
     // The container only depends on whether any widget is pinned, so typing a query keeps the same

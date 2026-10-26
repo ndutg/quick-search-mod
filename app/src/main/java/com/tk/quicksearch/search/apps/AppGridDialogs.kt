@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.apps
 
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.apps.swipeGestures.appSwipeGestures
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -32,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +51,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.AppNotificationDot
 import com.tk.quicksearch.search.apps.notificationDots.hasNotificationDot
+import com.tk.quicksearch.search.apps.privateSpace.privateSpaceItems
+import com.tk.quicksearch.search.apps.privateSpace.rememberPrivateSpaceController
 import com.tk.quicksearch.search.common.AddToHomeHandler
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.data.appShortcutRepository.StaticShortcut
@@ -89,6 +93,8 @@ internal fun AllAppsDialog(
     val dialogColumns = getAppGridColumns(phoneColumnOverride)
     val context = LocalContext.current
     val addToHomeHandler = remember(context) { AddToHomeHandler(context) }
+    val privateSpace = rememberPrivateSpaceController()
+    val privateSpaceState by privateSpace.state.collectAsState()
     // Load every icon in the background up front so they are already cached when scrolled to.
     LaunchedEffect(apps, iconPackPackage, appIconShape) {
         prefetchAppIconRequests(
@@ -164,7 +170,7 @@ internal fun AllAppsDialog(
                                     appState =
                                             AppState(
                                                     hasNickname =
-                                                            !getAppNickname(app.packageName)
+                                                            !getAppNickname(app.launchCountKey())
                                                                     .isNullOrBlank(),
                                                     hasTrigger =
                                                             getAppTrigger(app.packageName)
@@ -181,6 +187,24 @@ internal fun AllAppsDialog(
                                                     showAppLabel = true,
                                                     isOverlayPresentation = false,
                                             ),
+                            )
+                        }
+                        // Private Space apps get no options menu: pinning, nicknames, and the
+                        // like would persist them outside the locked profile.
+                        privateSpaceItems(
+                                state = privateSpaceState,
+                                onLockedChange = privateSpace::setLocked,
+                        ) { app ->
+                            AllAppsDialogGridItem(
+                                    app = app,
+                                    appIconSizeStep = appIconSizeStep,
+                                    iconPackPackage = iconPackPackage,
+                                    appIconShape = appIconShape,
+                                    notificationDotKeys = emptySet(),
+                                    onClick = {
+                                        onDismiss()
+                                        privateSpace.launch(context, app)
+                                    },
                             )
                         }
                     }
@@ -216,9 +240,10 @@ internal fun AllAppsDialogGridItem(
         appIconShape: AppIconShape,
         notificationDotKeys: Set<String>,
         onClick: () -> Unit,
-        shortcuts: List<StaticShortcut>,
-        appActions: AppActions,
-        appState: AppState,
+        shortcuts: List<StaticShortcut> = emptyList(),
+        // Null for apps without an options menu or swipe gestures (Private Space).
+        appActions: AppActions? = null,
+        appState: AppState? = null,
 ) {
     val view = LocalView.current
     val context = LocalContext.current
@@ -249,7 +274,9 @@ internal fun AllAppsDialogGridItem(
                                             hapticConfirm(view)()
                                             onClick()
                                         },
-                                        onLongClick = if (app.isArchived) null else ({ showOptions = true }),
+                                        onLongClick =
+                                                if (app.isArchived || appActions == null || appState == null) null
+                                                else ({ showOptions = true }),
                                 )
                                 .padding(
                                         horizontal = DesignTokens.SpacingXSmall,
@@ -259,7 +286,10 @@ internal fun AllAppsDialogGridItem(
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXSmall),
         ) {
             Box(
-                    modifier = Modifier.size(iconSurfaceSize).appSwipeGestures(app),
+                    modifier =
+                            Modifier.size(iconSurfaceSize).then(
+                                    if (appActions != null) Modifier.appSwipeGestures(app) else Modifier,
+                            ),
                     contentAlignment = Alignment.Center,
             ) {
                 iconResult.bitmap?.let { icon ->
@@ -286,6 +316,7 @@ internal fun AllAppsDialogGridItem(
             )
         }
 
+        if (appActions == null || appState == null) return@Box
         AppItemDropdownMenu(
                 expanded = showOptions,
                 onDismiss = { showOptions = false },
@@ -322,12 +353,17 @@ internal fun AppSuggestionTabStrip(
     val inactiveColor = activeColor.copy(alpha = SuggestionTabInactiveAlpha)
     val leftTab = tabs.getOrNull(selectedIndex - 1)
     val rightTab = tabs.getOrNull(selectedIndex + 1)
+    // With the card layout off the strip sits right under a divider, so it gets room to breathe.
+    val compactLayout = !LocalSearchCardLayoutEnabled.current
 
     Row(
             modifier =
                     Modifier
                             .fillMaxWidth(0.86f)
-                            .padding(bottom = DesignTokens.SpacingXSmall),
+                            .padding(
+                                    top = if (compactLayout) DesignTokens.SpacingSmall else 0.dp,
+                                    bottom = if (compactLayout) DesignTokens.SpacingMedium else DesignTokens.SpacingXSmall,
+                            ),
             verticalAlignment = Alignment.CenterVertically,
     ) {
         EdgeSuggestionTabLabel(

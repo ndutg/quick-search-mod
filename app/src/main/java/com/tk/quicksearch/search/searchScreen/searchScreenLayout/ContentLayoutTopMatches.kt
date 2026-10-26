@@ -28,6 +28,7 @@ internal fun ContentLayoutTopMatches(
     onOtherSearchItemAction: OtherSearchItemActionHandler,
     showTopMatches: Boolean,
     hasMoreResults: Boolean,
+    appsSectionAbove: Boolean,
 ) {
         if (!showTopMatchesSection) return
         TopMatchesSection(
@@ -39,6 +40,7 @@ internal fun ContentLayoutTopMatches(
             showHeader = !state.oneHandedMode || !isLocalSearchRefreshing,
             selectedMatchIndex = selectedTopMatchIndex,
             reverseOrder = isReversed,
+            showLeadingDivider = appsSectionAbove,
             screenTimeState = state.screenTimeState,
             pinnedNonAppItemOrder = state.pinnedNonAppItemOrder,
             iconPackPackage = state.selectedIconPackPackage,

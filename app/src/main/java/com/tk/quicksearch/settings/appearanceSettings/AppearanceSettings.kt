@@ -1,6 +1,7 @@
 package com.tk.quicksearch.settings.appearanceSettings
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,6 +47,8 @@ fun AppearanceSettingsSection(
         onToggleOneHandedMode: (Boolean) -> Unit,
         bottomSearchBarEnabled: Boolean,
         onToggleBottomSearchBar: (Boolean) -> Unit,
+        compactLayoutEnabled: Boolean,
+        onToggleCompactLayout: (Boolean) -> Unit,
         unifiedPinnedItemsEnabled: Boolean,
         onToggleUnifiedPinnedItems: (Boolean) -> Unit,
         homePinnedSectionOrder: List<SearchSection>,
@@ -165,6 +168,7 @@ fun AppearanceSettingsSection(
                 onHomeTextColorChange = onHomeTextColorChange,
                 backgroundSource = backgroundSource,
                 customImageUri = customImageUri,
+                compactLayoutEnabled = compactLayoutEnabled,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -210,12 +214,15 @@ fun AppearanceSettingsSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        AppLauncherIconCard(
-                launcherAppIcon = launcherAppIcon,
-                onSetLauncherAppIcon = onSetLauncherAppIcon,
-        )
+        // Alternate launcher icons are adaptive icons (mipmap-anydpi-v26 only).
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AppLauncherIconCard(
+                    launcherAppIcon = launcherAppIcon,
+                    onSetLauncherAppIcon = onSetLauncherAppIcon,
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         SearchBarStyleCard(
                 searchBarStyle = searchBarStyle,
@@ -251,6 +258,13 @@ fun AppearanceSettingsSection(
                         subtitle = stringResource(R.string.settings_bottom_searchbar_desc),
                         checked = bottomSearchBarEnabled,
                         onCheckedChange = onToggleBottomSearchBar,
+                        extraVerticalPadding = 8.dp,
+                )
+                SettingsToggleRow(
+                        title = stringResource(R.string.settings_compact_layout_title),
+                        subtitle = stringResource(R.string.settings_compact_layout_desc),
+                        checked = compactLayoutEnabled,
+                        onCheckedChange = onToggleCompactLayout,
                         extraVerticalPadding = 8.dp,
                 )
                 SettingsToggleRow(

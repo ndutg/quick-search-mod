@@ -1,5 +1,7 @@
 package com.tk.quicksearch.search.webSuggestions
 
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
+import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -99,10 +101,14 @@ private fun WebSuggestionsCard(
                 if (index < suggestions.size - 1) {
                     HorizontalDivider(
                         modifier =
-                            Modifier.padding(
-                                start = SUGGESTION_ICON_START_PADDING.dp,
-                                end = SUGGESTION_TEXT_END_PADDING.dp,
-                            ),
+                            if (LocalSearchCardLayoutEnabled.current) {
+                                Modifier.padding(
+                                    start = SUGGESTION_ICON_START_PADDING.dp,
+                                    end = SUGGESTION_TEXT_END_PADDING.dp,
+                                )
+                            } else {
+                                Modifier.compactEdgeToEdge()
+                            },
                         color = dividerColor,
                     )
                 }

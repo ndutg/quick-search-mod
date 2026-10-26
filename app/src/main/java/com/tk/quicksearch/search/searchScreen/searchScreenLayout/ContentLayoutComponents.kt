@@ -12,15 +12,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,13 +41,13 @@ import com.tk.quicksearch.search.files.FileTypeFilterChips
 import com.tk.quicksearch.searchEngines.*
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
-import com.tk.quicksearch.shared.ui.theme.homeTextColor
 import com.tk.quicksearch.search.searchScreen.ContactsSectionParams
 import com.tk.quicksearch.search.searchScreen.FilesSectionParams
 import com.tk.quicksearch.search.searchScreen.AppShortcutsSectionParams
 import com.tk.quicksearch.search.searchScreen.SettingsSectionParams
 import com.tk.quicksearch.search.searchScreen.NotesSectionParams
 import com.tk.quicksearch.search.searchScreen.RemindersSectionParams
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.R
 
@@ -124,7 +118,8 @@ internal fun HomeLoadingAnimatedContent(
 private const val HomeSectionFadeDurationMillis = 180
 private const val HomeSectionExpandDurationMillis = 280
 internal const val HOME_TODAY_CALENDAR_ANIMATION_KEY = "home-today-calendar"
-private val HomeSectionContentSpacing = 14.dp
+/** Gap between home content items; flat dividers sit half the stack spacing into it. */
+internal val HomeSectionContentSpacing = 14.dp
 
 internal fun hasMoreResults(
     renderingState: SectionRenderingState,
@@ -169,43 +164,23 @@ internal fun UnifiedPinnedItemsBlock(
         userPreferences.setUnifiedPinnedItemsExpanded(newExpanded)
     }
 
+    val compactHeader = !LocalSearchCardLayoutEnabled.current
     val headerContent: @Composable (Modifier) -> Unit = { modifier ->
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClick = toggleExpanded,
-                )
-                .padding(
-                    horizontal = DesignTokens.SpacingLarge,
-                    vertical = DesignTokens.SpacingXXSmall,
-                ),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.app_suggestions_tab_pinned),
-                style = MaterialTheme.typography.titleSmall,
-                color = homeTextColor(),
-            )
-            Icon(
-                imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-                contentDescription = stringResource(
-                    if (isExpanded) R.string.desc_collapse else R.string.desc_expand,
-                ),
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(DesignTokens.IconSizeSmall),
-            )
-        }
+        HomeSectionHeaderRow(
+            title = stringResource(R.string.app_suggestions_tab_pinned),
+            leadingIcon = null,
+            isExpanded = isExpanded,
+            showWallpaperBackground = showWallpaperBackground,
+            modifier = modifier.clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = toggleExpanded,
+            ),
+        )
     }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
-    ) {
-        if (isExpanded) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        if (isExpanded || compactHeader) {
             headerContent(Modifier)
         } else {
             SearchResultCard(
@@ -221,19 +196,13 @@ internal fun UnifiedPinnedItemsBlock(
                     contentAlignment = Alignment.Center,
                 ) {
                     headerContent(
-                        Modifier.padding(horizontal = DesignTokens.SpacingLarge),
+                        Modifier.padding(horizontal = collapsedPinnedHeaderInset()),
                     )
                 }
             }
         }
 
-        AnimatedVisibility(
-            visible = isExpanded,
-            enter = expandVertically(),
-            exit = shrinkVertically(),
-        ) {
-            content()
-        }
+        HomeSectionCollapsibleContent(visible = isExpanded, content = content)
     }
 }
 

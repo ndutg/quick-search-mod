@@ -1,0 +1,553 @@
+package com.tk.quicksearch.widgets.atAGlanceWidget
+
+import android.app.AlarmManager
+import android.content.Context
+import android.text.format.DateFormat
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.AvTimer
+import androidx.compose.material.icons.rounded.Cake
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.PhoneMissed
+import androidx.compose.material.icons.rounded.Timer
+import com.tk.quicksearch.R
+import com.tk.quicksearch.customInfo.CustomInfoItem
+import com.tk.quicksearch.customInfo.CustomInfoRepository
+import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
+import com.tk.quicksearch.search.data.AppNotificationsSettings
+import com.tk.quicksearch.search.data.CalendarRepository
+import com.tk.quicksearch.search.data.ContactBirthday
+import com.tk.quicksearch.search.data.ContactBirthdaysRepository
+import com.tk.quicksearch.search.data.GlanceNotificationsStore
+import com.tk.quicksearch.search.data.MissedCallNotification
+import com.tk.quicksearch.search.data.OtpNotifications
+import com.tk.quicksearch.search.data.ReminderRepository
+import com.tk.quicksearch.search.data.UpcomingAlarmRepository
+import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
+import com.tk.quicksearch.search.data.preferences.CalendarPreferences
+import com.tk.quicksearch.search.data.preferences.GlanceItem
+import com.tk.quicksearch.search.data.preferences.GlanceItemSettings
+import com.tk.quicksearch.search.data.preferences.GlancePreferences
+import com.tk.quicksearch.search.models.CalendarEventInfo
+import com.tk.quicksearch.search.models.ReminderInfo
+import com.tk.quicksearch.search.notes.NotesTextUtils
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.englishOrdinal
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.util.Date
+import java.util.Locale
+
+/** Matches the home card: at most this many ongoing and finished progress notifications. */
+private const val MAX_PROGRESS_ROWS = 3
+
+/** Matches the home card: at most this many weather notifications. */
+private const val MAX_WEATHER_ROWS = 2
+
+/** Tomorrow's events show from this hour of the evening, as on home. */
+private const val TOMORROW_EVENTS_START_HOUR = 21
+
+/** Tomorrow's first timed event shows only when it starts before this hour. */
+private const val TOMORROW_MORNING_END_HOUR = 12
+
+/** The upcoming alarm row shows from this long before the alarm, as on home. */
+private const val ALARM_LEAD_MILLIS = 45L * 60L * 1000L
+
+/** RemoteViews collections are sent in one parcel, so the widget stops well short of its size limit. */
+private const val MAX_ROWS = 30
+
+/**
+ * Reads the home At a Glance items without Compose, in the home card's order: the time-critical
+ * items, then things due soon, what needs a look, today's and tomorrow's context, passive device
+ * states, and today's calendar events last. Media keeps its own widget. Rows carry absolute times
+ * rather than "in 5 min", which the widget could not keep current. [items] decides which items the
+ * widget shows. Blocking; call off the main thread.
+ */
+internal fun loadAtAGlanceWidgetSnapshot(
+    context: Context,
+    items: GlanceItemSettings,
+    nowMillis: Long = System.currentTimeMillis(),
+): AtAGlanceWidgetSnapshot {
+    val loader = AtAGlanceWidgetRowLoader(context.applicationContext, nowMillis, items)
+    val rows =
+        with(loader) {
+            buildList {
+                addAll(notificationRows())
+                addAll(alarmRows())
+                addAll(reminderRows())
+                addAll(missedCallRows())
+                addAll(appNotificationRows())
+                addAll(lowBatteryRows())
+                addAll(wifiSignInRows())
+                addAll(progressRows())
+                addAll(workoutAndWeatherRows())
+                addAll(birthdayRows())
+                addAll(tomorrowEventRows())
+                addAll(customInfoRows())
+                addAll(deviceStateRows())
+                addAll(todayEventRows())
+            }
+        }
+    return AtAGlanceWidgetSnapshot(rows = rows.take(MAX_ROWS), nextChangeMillis = loader.nextChangeMillis)
+}
+
+internal class AtAGlanceWidgetRowLoader(
+    val context: Context,
+    val nowMillis: Long,
+    val items: GlanceItemSettings = AppGlanceItemSettings(context),
+) {
+    val glancePreferences = GlancePreferences(context)
+    private val calendarPreferences = CalendarPreferences(context)
+    private val hasNotificationAccess = NotificationDotsPermission.hasNotificationListenerAccess(context)
+    private val timeFormat = DateFormat.getTimeFormat(context)
+    private val appLabels = mutableMapOf<String, String>()
+
+    /** Earliest time a row appears or disappears without any broadcast saying so. */
+    var nextChangeMillis: Long? = null
+        private set
+
+    init {
+        // Today's and tomorrow's rows change when the evening starts and at midnight.
+        val today = LocalDate.now()
+        changesAt(today.atTime(LocalTime.of(TOMORROW_EVENTS_START_HOUR, 0)).toEpochMillis())
+        changesAt(today.plusDays(1).atStartOfDay().toEpochMillis())
+    }
+
+    fun changesAt(millis: Long) {
+        if (millis <= nowMillis) return
+        nextChangeMillis = nextChangeMillis?.coerceAtMost(millis) ?: millis
+    }
+
+    fun string(
+        resId: Int,
+        vararg args: Any,
+    ): String = context.getString(resId, *args)
+
+    fun formatTime(millis: Long): String = timeFormat.format(Date(millis))
+
+    fun appLabel(packageName: String): String =
+        appLabels.getOrPut(packageName) {
+            val packageManager = context.packageManager
+            runCatching {
+                packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager).toString()
+            }.getOrDefault(packageName)
+        }
+
+    private fun notificationRow(
+        prefix: String,
+        key: String,
+        packageName: String,
+        title: String,
+        subtitle: String?,
+        icon: AtAGlanceWidgetIcon = AtAGlanceWidgetIcon.App(packageName),
+        dismiss: AtAGlanceWidgetDismissType? = null,
+    ) = AtAGlanceWidgetRow(
+        key = "$prefix-$key",
+        icon = icon,
+        title = title,
+        subtitle = subtitle,
+        tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.NOTIFICATION, key = key, packageName = packageName),
+        dismiss = dismiss,
+    )
+
+    /** Ongoing calls, the newest one-time code and running timers. */
+    fun notificationRows(): List<AtAGlanceWidgetRow> {
+        if (!hasNotificationAccess) return emptyList()
+        val calls =
+            if (items.isShown(GlanceItem.ONGOING_CALL)) {
+                GlanceNotificationsStore.ongoingCalls.value.map { call ->
+                    notificationRow(
+                        prefix = "ongoing-call",
+                        key = call.key,
+                        packageName = call.packageName,
+                        title = string(R.string.home_ongoing_call),
+                        subtitle = call.caller ?: appLabel(call.packageName),
+                        icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.Call),
+                    )
+                }
+            } else {
+                emptyList()
+            }
+        val otp =
+            GlanceNotificationsStore.otps.value
+                .firstOrNull()
+                ?.takeIf { items.isShown(GlanceItem.OTP_CODES) && it.postTime > nowMillis - OtpNotifications.LIFETIME_MILLIS }
+        otp?.let { changesAt(it.postTime + OtpNotifications.LIFETIME_MILLIS) }
+        val otpRows =
+            listOfNotNull(
+                otp?.let {
+                    AtAGlanceWidgetRow(
+                        key = "otp-${it.key}",
+                        icon = AtAGlanceWidgetIcon.App(it.packageName),
+                        title = it.code,
+                        subtitle = string(R.string.home_otp_from, it.sender ?: appLabel(it.packageName)),
+                        tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.OTP, key = it.key, packageName = it.packageName),
+                        dismiss = AtAGlanceWidgetDismissType.OTP,
+                    )
+                },
+            )
+        val timers =
+            if (items.isShown(GlanceItem.TIMERS)) {
+                GlanceNotificationsStore.timers.value.map { timer ->
+                    val kind = string(if (timer.isCountDown) R.string.home_timer else R.string.home_stopwatch)
+                    // A ticking clock can't be kept current in a widget, so the row says when a running timer ends.
+                    val detail =
+                        when {
+                            timer.pausedMillis != null -> string(R.string.home_timer_paused)
+                            timer.isCountDown && timer.chronometerBase > nowMillis -> formatTime(timer.chronometerBase)
+                            else -> appLabel(timer.packageName)
+                        }
+                    notificationRow(
+                        prefix = "timer",
+                        key = timer.key,
+                        packageName = timer.packageName,
+                        title = kind,
+                        subtitle = detail,
+                        icon = AtAGlanceWidgetIcon.Vector(if (timer.isCountDown) Icons.Rounded.Timer else Icons.Rounded.AvTimer),
+                    )
+                }
+            } else {
+                emptyList()
+            }
+        return calls + otpRows + timers
+    }
+
+    /** The next alarm within 45 minutes, or else tomorrow's first alarm in the evening. */
+    fun alarmRows(): List<AtAGlanceWidgetRow> {
+        val repository = UpcomingAlarmRepository(context, items)
+        val soon = repository.nextWithinFortyFiveMinutes(nowMillis)
+        val alarm = soon ?: repository.tomorrowsFirstAlarm(nowMillis)
+        // The row appears 45 minutes before the next alarm and leaves once it rings.
+        context.getSystemService(AlarmManager::class.java)?.nextAlarmClock?.let { next ->
+            changesAt(next.triggerTime - ALARM_LEAD_MILLIS)
+            changesAt(next.triggerTime + 1_000L)
+        }
+        alarm ?: return emptyList()
+        val time = formatTime(alarm.triggerTime)
+        val packageName = alarm.showIntent?.creatorPackage
+        return listOf(
+            AtAGlanceWidgetRow(
+                key = "alarm",
+                icon = packageName?.let { AtAGlanceWidgetIcon.App(it) } ?: AtAGlanceWidgetIcon.Vector(Icons.Rounded.Timer),
+                title = string(R.string.home_upcoming_alarm),
+                subtitle = if (soon == null) "$time • ${string(R.string.calendar_relative_tomorrow)}" else time,
+                tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.ALARM, packageName = packageName),
+                dismiss = AtAGlanceWidgetDismissType.ALARM,
+            ),
+        )
+    }
+
+    /** Reminders due within 30 minutes or overdue. */
+    fun reminderRows(): List<AtAGlanceWidgetRow> {
+        val repository = ReminderRepository(context)
+        val reminders = repository.getHomeCardReminders(nowMillis, items.isShown(GlanceItem.REMINDERS))
+        // Upcoming reminders join the card 30 minutes before they are due, and turn overdue at their due time.
+        repository.getUpcomingReminders(limit = 5).forEach { reminder ->
+            changesAt(reminder.dueMillis - ReminderRepository.HOME_CARD_LEAD_MILLIS)
+            changesAt(reminder.dueMillis)
+        }
+        return reminders.map { reminder ->
+            val schedule = reminderSchedule(reminder)
+            AtAGlanceWidgetRow(
+                key = "reminder-${reminder.reminderId}",
+                icon = AtAGlanceWidgetIcon.Drawable(R.drawable.ic_reminder),
+                title = reminder.title,
+                subtitle =
+                    if (reminder.isOverdue(nowMillis)) "$schedule • ${string(R.string.reminder_status_overdue)}" else schedule,
+                tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.REMINDER, id = reminder.reminderId),
+                // As on home, only a reminder not yet due can be put off until it is.
+                dismiss = AtAGlanceWidgetDismissType.REMINDER.takeIf { reminder.dueMillis > nowMillis },
+            )
+        }
+    }
+
+    private fun reminderSchedule(reminder: ReminderInfo): String {
+        val isToday = reminder.date == LocalDate.now()
+        val time = if (reminder.hasTime) formatTime(reminder.dueMillis) else null
+        return when {
+            isToday -> time ?: string(R.string.calendar_relative_today)
+            else -> {
+                val date = SimpleDateFormat("EEE, MMM d", Locale.getDefault()).format(Date(reminder.dayStartMillis))
+                listOfNotNull(date, time).joinToString(" • ")
+            }
+        }
+    }
+
+    /** One summary row for the missed calls since they were last dismissed on home. */
+    fun missedCallRows(): List<AtAGlanceWidgetRow> {
+        if (!hasNotificationAccess || !items.isShown(GlanceItem.MISSED_CALLS)) return emptyList()
+        val dismissedAt = glancePreferences.getMissedCallsDismissedAt()
+        val calls = GlanceNotificationsStore.missedCalls.value.filter { it.callTime > dismissedAt }
+        val latest = calls.firstOrNull() ?: return emptyList()
+        val title =
+            if (calls.size == 1) {
+                string(R.string.home_missed_call)
+            } else {
+                string(R.string.home_missed_calls_count, NumberFormat.getIntegerInstance().format(calls.size))
+            }
+        return listOf(
+            AtAGlanceWidgetRow(
+                key = "missed-calls",
+                icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.PhoneMissed),
+                title = title,
+                subtitle = calls.mapNotNull(::callerLabel).distinct().joinToString(", ").ifBlank { null },
+                tap =
+                    AtAGlanceWidgetTap(AtAGlanceWidgetTapType.MISSED_CALLS, key = latest.key, packageName = latest.packageName),
+                dismiss = AtAGlanceWidgetDismissType.MISSED_CALLS,
+            ),
+        )
+    }
+
+    private fun callerLabel(call: MissedCallNotification): String? {
+        if (call.fromPhoneApp) return call.caller
+        val appLabel = appLabel(call.packageName)
+        return call.caller?.let { string(R.string.home_missed_call_from_app, it, appLabel) } ?: appLabel
+    }
+
+    /** Every notification matching the App Notifications apps and keywords; the widget scrolls instead of folding them. */
+    fun appNotificationRows(): List<AtAGlanceWidgetRow> {
+        if (!hasNotificationAccess) return emptyList()
+        val config = AppNotificationsSettings.config.value ?: AppNotificationsSettings.load(context)
+        if (!config.isActive || !items.isShown(GlanceItem.APP_NOTIFICATIONS)) return emptyList()
+        val otpKey = GlanceNotificationsStore.otps.value.firstOrNull()?.key
+        return GlanceNotificationsStore.appNotifications.value
+            .filter { it.key != otpKey }
+            .sortedByDescending { it.postTime }
+            .map { notification ->
+                val appLabel = appLabel(notification.packageName)
+                notificationRow(
+                    prefix = "app-notification",
+                    key = notification.key,
+                    packageName = notification.packageName,
+                    title = notification.title ?: notification.text ?: appLabel,
+                    subtitle = listOfNotNull(notification.text.takeIf { notification.title != null }, appLabel).joinToString(" • "),
+                    dismiss = AtAGlanceWidgetDismissType.APP_NOTIFICATION,
+                )
+            }
+    }
+
+    /** Running progress and Live Updates first, then those that finished. */
+    fun progressRows(): List<AtAGlanceWidgetRow> {
+        if (!hasNotificationAccess || !items.isShown(GlanceItem.PROGRESS)) return emptyList()
+        val progress = GlanceNotificationsStore.progress.value.take(MAX_PROGRESS_ROWS)
+        val finished = GlanceNotificationsStore.finishedProgress.value.take(MAX_PROGRESS_ROWS - progress.size)
+        val percentFormat = NumberFormat.getPercentInstance()
+        return progress.map { notification ->
+            val appLabel = appLabel(notification.packageName)
+            val status =
+                if (notification.progressMax > 0) {
+                    percentFormat.format(notification.progress.toDouble() / notification.progressMax)
+                } else {
+                    notification.shortCriticalText
+                }
+            notificationRow(
+                prefix = "progress",
+                key = notification.key,
+                packageName = notification.packageName,
+                title = notification.title ?: appLabel,
+                subtitle = listOfNotNull(status, notification.text ?: appLabel.takeIf { notification.title != null }).joinToString(" • "),
+            )
+        } +
+            finished.map { notification ->
+                val appLabel = appLabel(notification.packageName)
+                notificationRow(
+                    prefix = "finished-progress",
+                    key = notification.key,
+                    packageName = notification.packageName,
+                    title = notification.title ?: appLabel,
+                    subtitle =
+                        listOfNotNull(
+                            string(R.string.reminder_status_done),
+                            notification.text ?: appLabel.takeIf { notification.title != null },
+                        ).joinToString(" • "),
+                    dismiss = AtAGlanceWidgetDismissType.FINISHED_PROGRESS,
+                )
+            }
+    }
+
+    fun workoutAndWeatherRows(): List<AtAGlanceWidgetRow> {
+        if (!hasNotificationAccess) return emptyList()
+        val workouts =
+            if (items.isShown(GlanceItem.WORKOUTS)) {
+                GlanceNotificationsStore.workouts.value.map { workout ->
+                    val appLabel = appLabel(workout.packageName)
+                    notificationRow(
+                        prefix = "workout",
+                        key = workout.key,
+                        packageName = workout.packageName,
+                        title = workout.title ?: appLabel,
+                        subtitle =
+                            listOfNotNull(workout.stats ?: appLabel.takeIf { workout.title != null }, workout.duration)
+                                .joinToString(" • ")
+                                .ifBlank { null },
+                    )
+                }
+            } else {
+                emptyList()
+            }
+        val weather =
+            if (items.isShown(GlanceItem.WEATHER)) {
+                GlanceNotificationsStore.weather.value.take(MAX_WEATHER_ROWS).map { weather ->
+                    val appLabel = appLabel(weather.packageName)
+                    notificationRow(
+                        prefix = "weather",
+                        key = weather.key,
+                        packageName = weather.packageName,
+                        title = weather.title ?: appLabel,
+                        subtitle = weather.text ?: appLabel.takeIf { weather.title != null },
+                        dismiss = AtAGlanceWidgetDismissType.WEATHER,
+                    )
+                }
+            } else {
+                emptyList()
+            }
+        return workouts + weather
+    }
+
+    /** Today's birthdays and anniversaries not dismissed on home. */
+    fun birthdayRows(): List<AtAGlanceWidgetRow> {
+        val repository = ContactBirthdaysRepository(context)
+        if (!items.isShown(GlanceItem.BIRTHDAYS) || !repository.hasPermission()) return emptyList()
+        val today = LocalDate.now()
+        val dismissed = glancePreferences.getDismissedBirthdays(today.toString())
+        return repository.birthdaysOn(today).filterNot { it.contactId in dismissed }.map { birthday ->
+            AtAGlanceWidgetRow(
+                key = "birthday-${birthday.contactId}-${birthday.isAnniversary}",
+                icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.Cake),
+                title = birthdayTitle(birthday),
+                subtitle = string(R.string.home_birthday_wish),
+                tap =
+                    AtAGlanceWidgetTap(
+                        AtAGlanceWidgetTapType.BIRTHDAY,
+                        id = birthday.contactId,
+                        extra = birthday.lookupKey,
+                    ),
+                dismiss = AtAGlanceWidgetDismissType.BIRTHDAY,
+            )
+        }
+    }
+
+    private fun birthdayTitle(birthday: ContactBirthday): String {
+        val years =
+            birthday.years
+                ?: return string(
+                    if (birthday.isAnniversary) R.string.home_anniversary_title else R.string.home_birthday_title,
+                    birthday.name,
+                )
+        return string(
+            if (birthday.isAnniversary) R.string.home_anniversary_title_ordinal else R.string.home_birthday_title_ordinal,
+            birthday.name,
+            englishOrdinal(years),
+        )
+    }
+
+    /** In the evening, tomorrow's all-day events and its first timed event when that is in the morning. */
+    fun tomorrowEventRows(): List<AtAGlanceWidgetRow> {
+        val repository = CalendarRepository(context)
+        val now = LocalDateTime.now()
+        if (
+            now.hour < TOMORROW_EVENTS_START_HOUR ||
+            !items.isShown(GlanceItem.TODAY_EVENTS) ||
+            !items.isShown(GlanceItem.TOMORROW_EVENTS) ||
+            !repository.hasPermission()
+        ) {
+            return emptyList()
+        }
+        val tomorrow = now.toLocalDate().plusDays(1)
+        val excluded = calendarPreferences.getExcludedEventIds()
+        val dismissed = glancePreferences.getDismissedTomorrowEvents(tomorrow.toString())
+        val startOfTomorrow = tomorrow.atStartOfDay().toEpochMillis()
+        val tomorrowNoon = tomorrow.atTime(TOMORROW_MORNING_END_HOUR, 0).toEpochMillis()
+        val events = repository.getEventsOn(tomorrow).filterNot { it.eventId in excluded }
+        val morningEvent =
+            events.firstOrNull { !it.allDay && it.startMillis >= startOfTomorrow }?.takeIf { it.startMillis < tomorrowNoon }
+        val tomorrowLabel = string(R.string.calendar_relative_tomorrow)
+        return (events.filter { it.allDay } + listOfNotNull(morningEvent))
+            .filterNot { it.eventId in dismissed }
+            .distinctBy { it.eventId }
+            .map { event ->
+                calendarEventRow(
+                    prefix = "tomorrow-event",
+                    event = event,
+                    subtitle = if (event.allDay) tomorrowLabel else "${formatTime(event.startMillis)} • $tomorrowLabel",
+                    dismiss = AtAGlanceWidgetDismissType.TOMORROW_EVENT,
+                )
+            }
+    }
+
+    /** The latest Custom Info answers and failures still shown on home. */
+    fun customInfoRows(): List<AtAGlanceWidgetRow> =
+        CustomInfoRepository(context)
+            .all()
+            .filter { item ->
+                items.isCustomInfoShown(item) && item.showOnHome &&
+                    (item.status == CustomInfoItem.ERROR ||
+                        (item.status == CustomInfoItem.COMPLETE && item.answer.isNotBlank()))
+            }.map { item ->
+                val isError = item.status == CustomInfoItem.ERROR
+                AtAGlanceWidgetRow(
+                    key = "custom-info-${item.id}",
+                    icon = AtAGlanceWidgetIcon.Vector(if (isError) Icons.Rounded.ErrorOutline else Icons.Rounded.AutoAwesome),
+                    title = item.title,
+                    subtitle =
+                        if (isError) {
+                            string(R.string.direct_search_error_generic)
+                        } else {
+                            NotesTextUtils.firstLinesPreview(item.answer, maxLines = 4)
+                        },
+                    subtitleMaxLines = 4,
+                    tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.CUSTOM_INFO, id = item.id.toLong()),
+                    dismiss = AtAGlanceWidgetDismissType.CUSTOM_INFO,
+                )
+            }
+
+    /** Today's calendar events that haven't ended, soonest first, like the events in the home card. */
+    fun todayEventRows(): List<AtAGlanceWidgetRow> {
+        val repository = CalendarRepository(context)
+        if (!items.isShown(GlanceItem.TODAY_EVENTS) || !repository.hasPermission()) return emptyList()
+        val excluded = calendarPreferences.getExcludedEventIds()
+        val archived = calendarPreferences.getArchivedTodayEventIds()
+        val events =
+            repository.getTodayEvents()
+                .filterNot { it.eventId in excluded || it.eventId in archived }
+                .distinctBy { it.eventId }
+                .sortedBy { it.startMillis }
+                .filter { it.allDay || it.endMillis >= nowMillis }
+        events.forEach { if (!it.allDay) changesAt(it.endMillis + 1_000L) }
+        val todayLabel = string(R.string.calendar_relative_today)
+        return events.map { event ->
+            calendarEventRow(
+                prefix = "today-event",
+                event = event,
+                subtitle =
+                    if (event.allDay) todayLabel else "${formatTime(event.startMillis)} – ${formatTime(event.endMillis)}",
+            )
+        }
+    }
+
+    private fun calendarEventRow(
+        prefix: String,
+        event: CalendarEventInfo,
+        subtitle: String,
+        dismiss: AtAGlanceWidgetDismissType? = null,
+    ) = AtAGlanceWidgetRow(
+        key = "$prefix-${event.eventId}",
+        icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.CalendarMonth),
+        title = event.title,
+        subtitle = subtitle,
+        tap =
+            AtAGlanceWidgetTap(
+                AtAGlanceWidgetTapType.CALENDAR_EVENT,
+                id = event.eventId,
+                packageName = calendarPreferences.getDefaultCalendarPackage(),
+            ),
+        dismiss = dismiss,
+    )
+}
+
+internal fun LocalDateTime.toEpochMillis(): Long = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()

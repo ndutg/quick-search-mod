@@ -42,7 +42,7 @@ import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.search.searchScreen.components.rememberPredictedSubmitIndicatorAlpha
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
-import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
+import com.tk.quicksearch.shared.ui.theme.homeBackgroundIsDark
 import com.tk.quicksearch.search.folders.AppFolderMember
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -75,7 +75,7 @@ internal fun AppGridItem(
 ) {
     val context = LocalContext.current
     val view = LocalView.current
-    val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
+    val imageBackgroundIsDark = homeBackgroundIsDark()
     val indicatorUseLightFill =
             if (showWallpaperBackground && imageBackgroundIsDark != null) {
                 imageBackgroundIsDark

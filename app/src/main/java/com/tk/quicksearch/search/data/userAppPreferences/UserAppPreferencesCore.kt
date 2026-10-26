@@ -614,6 +614,13 @@ open class UserAppPreferencesCore(protected val context: Context) {
             enabled: Boolean,
     ): Set<String> = appShortcutPreferences.setAllAppShortcutsEnabled(packageName, enabled)
 
+    fun enableAppShortcutOverridingApp(
+            packageName: String,
+            id: String,
+            otherAppShortcutIds: Collection<String>,
+    ): Set<String> =
+            appShortcutPreferences.enableAppShortcutOverridingApp(packageName, id, otherAppShortcutIds)
+
     fun getAppShortcutIconOverride(id: String): String? =
             appShortcutPreferences.getAppShortcutIconOverride(id)
 
@@ -633,13 +640,13 @@ open class UserAppPreferencesCore(protected val context: Context) {
 
     fun getAllAppNicknames(): Map<String, String> = nicknamePreferences.getAllAppNicknames()
 
-    fun getAppNickname(packageName: String): String? =
-            nicknamePreferences.getAppNickname(packageName)
+    fun getAppNickname(appKey: String): String? =
+            nicknamePreferences.getAppNickname(appKey)
 
     fun setAppNickname(
-            packageName: String,
+            appKey: String,
             nickname: String?,
-    ) = nicknamePreferences.setAppNickname(packageName, nickname)
+    ) = nicknamePreferences.setAppNickname(appKey, nickname)
 
     fun getAllAppShortcutNicknames(): Map<String, String> =
             nicknamePreferences.getAllAppShortcutNicknames()

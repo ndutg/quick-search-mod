@@ -194,13 +194,13 @@ class AppManagementConfig : ManagementHandlerConfig<AppInfo> {
         nickname: String?,
         preferences: UserAppPreferences,
     ) {
-        preferences.setAppNickname(item.packageName, nickname)
+        preferences.setAppNickname(item.launchCountKey(), nickname)
     }
 
     override fun getItemNicknameFromPreferences(
         item: AppInfo,
         preferences: UserAppPreferences,
-    ): String? = preferences.getAppNickname(item.packageName)
+    ): String? = preferences.getAppNickname(item.launchCountKey())
 
     override fun clearAllExcludedItemsInPreferences(preferences: UserAppPreferences) {
         preferences.clearAllHiddenAppsInSuggestions()

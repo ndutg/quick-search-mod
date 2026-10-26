@@ -54,12 +54,14 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.APP_ICON_SIZE,
                 keywords = listOf("icons", "size", "bigger", "smaller"),
             )
-            addNavigation(
-                id = "app_settings_launcher_icon",
-                titleRes = R.string.settings_launcher_icon_title,
-                destination = AppSettingsDestination.APPEARANCE,
-                keywords = listOf("app icon", "launcher icon", "change icon", "home screen icon"),
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                addNavigation(
+                    id = "app_settings_launcher_icon",
+                    titleRes = R.string.settings_launcher_icon_title,
+                    destination = AppSettingsDestination.APPEARANCE,
+                    keywords = listOf("app icon", "launcher icon", "change icon", "home screen icon"),
+                )
+            }
             addNavigation(
                 id = "app_settings_search_bar_style",
                 titleRes = R.string.settings_search_bar_style_title,
@@ -449,6 +451,13 @@ class AppSettingsRepository(
                 titleRes = R.string.settings_bottom_searchbar_title,
                 descriptionRes = R.string.settings_bottom_searchbar_desc,
                 toggleKey = AppSettingsToggleKey.BOTTOM_SEARCHBAR,
+            )
+            addToggle(
+                id = "app_toggle_compact_layout",
+                titleRes = R.string.settings_compact_layout_title,
+                descriptionRes = R.string.settings_compact_layout_desc,
+                toggleKey = AppSettingsToggleKey.COMPACT_LAYOUT,
+                keywords = listOf("cards", "card layout", "background", "full width", "dense", "flat"),
             )
             addToggle(
                 id = "app_toggle_unified_pinned_items",

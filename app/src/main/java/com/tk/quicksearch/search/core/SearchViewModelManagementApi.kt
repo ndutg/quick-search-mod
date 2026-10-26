@@ -67,7 +67,7 @@ internal interface SearchViewModelManagementApi {
     fun setAppNickname(appInfo: AppInfo, nickname: String?) =
         managementApiDelegate.setAppNickname(appInfo, nickname)
 
-    fun getAppNickname(packageName: String): String? = managementApiDelegate.getAppNickname(packageName)
+    fun getAppNickname(appKey: String): String? = managementApiDelegate.getAppNickname(appKey)
 
     fun setAppTrigger(appInfo: AppInfo, trigger: ResultTrigger?) =
         managementApiDelegate.setAppTrigger(appInfo, trigger)

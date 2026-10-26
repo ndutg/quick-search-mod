@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
-import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
+import com.tk.quicksearch.shared.ui.theme.homeBackgroundIsDark
 
 private const val PredictedSubmitIndicatorEnterDelayMs = 500
 private const val PredictedSubmitIndicatorFadeInDurationMs = 300
@@ -54,7 +54,7 @@ internal fun Modifier.predictedSubmitHighlight(
 ): Modifier =
     composed {
         val indicatorAlpha = rememberPredictedSubmitIndicatorAlpha(isPredicted)
-        val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
+        val imageBackgroundIsDark = homeBackgroundIsDark()
         val primary = MaterialTheme.colorScheme.primary
         val highlightColor =
             when (imageBackgroundIsDark) {
@@ -124,7 +124,7 @@ internal fun Modifier.predictedSubmitCardBorder(
             ) { predicted ->
                 if (predicted) 1f else 0f
             }
-        val imageBackgroundIsDark = LocalImageBackgroundIsDark.current
+        val imageBackgroundIsDark = homeBackgroundIsDark()
         val primary = MaterialTheme.colorScheme.primary
         val borderColor =
             when (imageBackgroundIsDark) {

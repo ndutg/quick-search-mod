@@ -40,6 +40,7 @@ fun HomeTextColorOptions(
         onColorSelected: (HomeTextColor) -> Unit,
         backgroundSource: BackgroundSource,
         customImageUri: String?,
+        compactLayoutEnabled: Boolean = false,
         modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -62,17 +63,19 @@ fun HomeTextColorOptions(
     ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                        text = stringResource(R.string.settings_home_text_color_title),
+                        text = stringResource(homeTextColorTitleRes(compactLayoutEnabled)),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(horizontal = 4.dp),
                 )
-                Text(
-                        text = stringResource(R.string.settings_home_text_color_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 4.dp),
-                )
+                if (!compactLayoutEnabled) {
+                    Text(
+                            text = stringResource(R.string.settings_home_text_color_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 4.dp),
+                    )
+                }
             }
             Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -147,3 +150,11 @@ private fun HomeTextColorChip(
             modifier = modifier.fillMaxWidth(),
     )
 }
+
+/** Compact layout applies the Home text colour to search results too, so its title says so. */
+internal fun homeTextColorTitleRes(compactLayoutEnabled: Boolean): Int =
+        if (compactLayoutEnabled) {
+            R.string.settings_home_text_color_title_compact
+        } else {
+            R.string.settings_home_text_color_title
+        }
