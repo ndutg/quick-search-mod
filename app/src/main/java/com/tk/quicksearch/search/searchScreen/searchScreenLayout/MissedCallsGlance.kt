@@ -14,10 +14,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.automirrored.rounded.PhoneMissed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -39,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import com.tk.quicksearch.search.data.MissedCallNotification
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.sendFromUserTap
 import java.text.NumberFormat
@@ -87,7 +84,7 @@ internal fun MissedCallsRow(
             ) {
                 Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.PhoneMissed,
+                        imageVector = MaterialSymbols.PhoneMissed,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                     )
@@ -132,7 +129,7 @@ internal fun MissedCallsRow(
                 GlanceActionChip(
                     label = stringResource(R.string.contact_method_call_label),
                     onClick = { callBackIntent.sendFromUserTap() },
-                    icon = Icons.Rounded.Call,
+                    icon = MaterialSymbols.Call,
                     colors =
                         GlancePillColors(
                             container = MaterialTheme.colorScheme.primaryContainer,
@@ -150,7 +147,7 @@ internal fun MissedCallsRow(
                     .size(GlanceDismissButtonSize),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Close,
+                imageVector = MaterialSymbols.Close,
                 contentDescription = stringResource(R.string.common_close),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp),

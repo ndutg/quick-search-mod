@@ -47,10 +47,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -105,6 +101,7 @@ import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenWallpaperLogic
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
@@ -234,7 +231,7 @@ internal fun BoxScope.QuickNoteEditOverlay(
             }
         }
         WidgetActionButton(
-            icon = Icons.Rounded.Close,
+            icon = MaterialSymbols.Close,
             tint = MaterialTheme.colorScheme.onError,
             background = MaterialTheme.colorScheme.error,
             onClick = onRemove,
@@ -417,7 +414,7 @@ internal fun BoxScope.WidgetEditActionButtons(
     ) {
         onPinToHome?.let { onClick ->
             WidgetActionButton(
-                icon = Icons.Rounded.Home,
+                icon = MaterialSymbols.Home,
                 tint = MaterialTheme.colorScheme.onPrimary,
                 background = MaterialTheme.colorScheme.primary,
                 onClick = onClick,
@@ -425,14 +422,14 @@ internal fun BoxScope.WidgetEditActionButtons(
         }
         onConfigure?.let { onClick ->
             WidgetActionButton(
-                icon = Icons.Rounded.Settings,
+                icon = MaterialSymbols.Settings,
                 tint = MaterialTheme.colorScheme.onPrimary,
                 background = MaterialTheme.colorScheme.primary,
                 onClick = onClick,
             )
         }
         WidgetActionButton(
-            icon = Icons.Rounded.Close,
+            icon = MaterialSymbols.Close,
             tint = MaterialTheme.colorScheme.onError,
             background = MaterialTheme.colorScheme.error,
             onClick = onRemove,

@@ -15,10 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -47,6 +43,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
 import com.tk.quicksearch.search.data.UpcomingAlarmRepository
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Date
@@ -189,7 +186,7 @@ internal fun UpcomingAlarmRow(glance: UpcomingAlarmGlance) {
                     text = {
                         Text(text = stringResource(R.string.home_upcoming_alarm_hide_app, glance.appLabel.orEmpty()))
                     },
-                    leadingIcon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+                    leadingIcon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
                     onClick = {
                         showMenu = false
                         glance.hideAlarmsFromApp()
@@ -202,7 +199,7 @@ internal fun UpcomingAlarmRow(glance: UpcomingAlarmGlance) {
             modifier = Modifier.size(UpcomingAlarmDismissSize),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Close,
+                imageVector = MaterialSymbols.Close,
                 contentDescription = stringResource(R.string.common_close),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp),
@@ -223,7 +220,7 @@ private fun UpcomingAlarmAppIcon(packageName: String?) {
         )
     } else {
         Icon(
-            imageVector = Icons.Rounded.Alarm,
+            imageVector = MaterialSymbols.Alarm,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(24.dp),

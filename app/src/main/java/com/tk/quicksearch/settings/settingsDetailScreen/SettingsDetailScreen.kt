@@ -19,10 +19,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,6 +56,7 @@ import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.settings.shared.settingsRoute.SettingsScreenState
 import com.tk.quicksearch.settings.shared.isAppSettingToggleEnabled
 import com.tk.quicksearch.settings.shared.settingsContentWidth
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
@@ -172,7 +169,7 @@ internal fun SettingsDetailLevel1Screen(
                         {
                             IconButton(onClick = onExportFeatures) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Download,
+                                    imageVector = MaterialSymbols.Download,
                                     contentDescription =
                                         stringResource(R.string.settings_features_export),
                                     tint = MaterialTheme.colorScheme.onSurface,
@@ -661,7 +658,7 @@ internal fun SettingsDetailLevel1Screen(
                 contentColor = AppColors.OnAccent,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.KeyboardArrowUp,
+                    imageVector = MaterialSymbols.KeyboardArrowUp,
                     contentDescription = stringResource(R.string.settings_scroll_to_top),
                     modifier = Modifier.size(DesignTokens.IconSizeSmall),
                 )
@@ -690,7 +687,7 @@ internal fun SettingsDetailHeader(
     ) {
         IconButton(onClick = onBack) {
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                imageVector = MaterialSymbols.ArrowBack,
                 contentDescription = stringResource(R.string.desc_navigate_back),
                 tint = MaterialTheme.colorScheme.onSurface,
             )

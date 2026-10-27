@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,6 +61,7 @@ import com.tk.quicksearch.search.data.appShortcutRepository.rememberShortcutIcon
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressDropdown
 import com.tk.quicksearch.shared.ui.components.ItemMenuLongPressOption
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -251,7 +250,7 @@ internal fun FolderGridItem(
                 option =
                         ItemMenuLongPressOption(
                                 label = stringResource(R.string.dialog_delete),
-                                icon = Icons.Rounded.Delete,
+                                icon = MaterialSymbols.Delete,
                                 onClick = onDelete,
                         ),
                 expanded = showOptions,

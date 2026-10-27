@@ -3,15 +3,6 @@ package com.tk.quicksearch.widgets.atAGlanceWidget
 import android.app.AlarmManager
 import android.content.Context
 import android.text.format.DateFormat
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.AvTimer
-import androidx.compose.material.icons.rounded.Cake
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.automirrored.rounded.PhoneMissed
-import androidx.compose.material.icons.rounded.Timer
 import com.tk.quicksearch.R
 import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoRepository
@@ -34,6 +25,7 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.notes.NotesTextUtils
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.englishOrdinal
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -167,7 +159,7 @@ internal class AtAGlanceWidgetRowLoader(
                         packageName = call.packageName,
                         title = string(R.string.home_ongoing_call),
                         subtitle = call.caller ?: appLabel(call.packageName),
-                        icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.Call),
+                        icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.Call),
                     )
                 }
             } else {
@@ -208,7 +200,7 @@ internal class AtAGlanceWidgetRowLoader(
                         packageName = timer.packageName,
                         title = kind,
                         subtitle = detail,
-                        icon = AtAGlanceWidgetIcon.Vector(if (timer.isCountDown) Icons.Rounded.Timer else Icons.Rounded.AvTimer),
+                        icon = AtAGlanceWidgetIcon.Vector(if (timer.isCountDown) MaterialSymbols.Timer else MaterialSymbols.AvTimer),
                     )
                 }
             } else {
@@ -233,7 +225,7 @@ internal class AtAGlanceWidgetRowLoader(
         return listOf(
             AtAGlanceWidgetRow(
                 key = "alarm",
-                icon = packageName?.let { AtAGlanceWidgetIcon.App(it) } ?: AtAGlanceWidgetIcon.Vector(Icons.Rounded.Timer),
+                icon = packageName?.let { AtAGlanceWidgetIcon.App(it) } ?: AtAGlanceWidgetIcon.Vector(MaterialSymbols.Timer),
                 title = string(R.string.home_upcoming_alarm),
                 subtitle = if (soon == null) "$time • ${string(R.string.calendar_relative_tomorrow)}" else time,
                 tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.ALARM, packageName = packageName),
@@ -293,7 +285,7 @@ internal class AtAGlanceWidgetRowLoader(
         return listOf(
             AtAGlanceWidgetRow(
                 key = "missed-calls",
-                icon = AtAGlanceWidgetIcon.Vector(Icons.AutoMirrored.Rounded.PhoneMissed),
+                icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.PhoneMissed),
                 title = title,
                 subtitle = calls.mapNotNull(::callerLabel).distinct().joinToString(", ").ifBlank { null },
                 tap =
@@ -418,7 +410,7 @@ internal class AtAGlanceWidgetRowLoader(
         return repository.birthdaysOn(today).filterNot { it.contactId in dismissed }.map { birthday ->
             AtAGlanceWidgetRow(
                 key = "birthday-${birthday.contactId}-${birthday.isAnniversary}",
-                icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.Cake),
+                icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.Cake),
                 title = birthdayTitle(birthday),
                 subtitle = string(R.string.home_birthday_wish),
                 tap =
@@ -492,7 +484,7 @@ internal class AtAGlanceWidgetRowLoader(
                 val isError = item.status == CustomInfoItem.ERROR
                 AtAGlanceWidgetRow(
                     key = "custom-info-${item.id}",
-                    icon = AtAGlanceWidgetIcon.Vector(if (isError) Icons.Rounded.ErrorOutline else Icons.Rounded.AutoAwesome),
+                    icon = AtAGlanceWidgetIcon.Vector(if (isError) MaterialSymbols.ErrorOutline else MaterialSymbols.AutoAwesome),
                     title = item.title,
                     subtitle =
                         if (isError) {
@@ -537,7 +529,7 @@ internal class AtAGlanceWidgetRowLoader(
         dismiss: AtAGlanceWidgetDismissType? = null,
     ) = AtAGlanceWidgetRow(
         key = "$prefix-${event.eventId}",
-        icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.CalendarMonth),
+        icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.CalendarMonth),
         title = event.title,
         subtitle = subtitle,
         tap =

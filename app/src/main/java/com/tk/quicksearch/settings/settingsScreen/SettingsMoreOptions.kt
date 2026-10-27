@@ -27,23 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.FormatListBulleted
-import androidx.compose.material.icons.automirrored.rounded.ManageSearch
-import androidx.compose.material.icons.rounded.AdminPanelSettings
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.Layers
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.RocketLaunch
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Swipe
-import androidx.compose.material.icons.rounded.Today
-import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material.icons.rounded.Translate
-import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.ButtonDefaults
 import com.tk.quicksearch.settings.preloadFeaturesMarkdown
 import com.tk.quicksearch.settings.shared.SettingsCard
@@ -81,6 +64,7 @@ import com.tk.quicksearch.shared.featureFlags.FeatureFlag
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.permissions.LockScreenAccessibilityDisclosureDialog
 import com.tk.quicksearch.shared.ui.components.TipBanner
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.AppLanguageManager
@@ -170,7 +154,7 @@ fun SettingsMoreOptions(
             SettingsCardItem(
                 title = stringResource(R.string.settings_feedback_send_title),
                 description = stringResource(R.string.settings_feedback_send_desc),
-                icon = Icons.Rounded.Email,
+                icon = MaterialSymbols.Email,
                 actionOnPress = onSendFeedback,
             ),
             SettingsCardItem(
@@ -189,13 +173,13 @@ fun SettingsMoreOptions(
             SettingsCardItem(
                 title = stringResource(R.string.settings_release_notes_title),
                 description = stringResource(R.string.settings_release_notes_desc),
-                icon = Icons.Rounded.RocketLaunch,
+                icon = MaterialSymbols.RocketLaunch,
                 actionOnPress = onOpenReleaseNotes,
             ),
             SettingsCardItem(
                 title = stringResource(R.string.settings_all_quick_search_features),
                 description = stringResource(R.string.settings_all_quick_search_features_desc),
-                icon = Icons.AutoMirrored.Rounded.FormatListBulleted,
+                icon = MaterialSymbols.FormatListBulleted,
                 actionOnPress = onOpenFeatures,
             ),
         )
@@ -332,7 +316,7 @@ internal fun BackupRestoreRow(
                 modifier = Modifier.weight(1f),
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Download,
+                    imageVector = MaterialSymbols.Download,
                     contentDescription = null,
                 )
                 Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
@@ -343,7 +327,7 @@ internal fun BackupRestoreRow(
                 modifier = Modifier.weight(1f),
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Upload,
+                    imageVector = MaterialSymbols.Upload,
                     contentDescription = null,
                 )
                 Spacer(modifier = Modifier.width(DesignTokens.SpacingSmall))
@@ -370,7 +354,7 @@ fun SettingsHeader(onBack: () -> Unit) {
     ) {
         IconButton(onClick = onBack) {
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                imageVector = MaterialSymbols.ArrowBack,
                 contentDescription = stringResource(R.string.desc_navigate_back),
                 tint = MaterialTheme.colorScheme.onSurface,
             )

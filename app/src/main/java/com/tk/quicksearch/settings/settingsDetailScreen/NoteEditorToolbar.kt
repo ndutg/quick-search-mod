@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 
 /** Top-bar state the note editor publishes to its host screen; a null delete action hides it. */
@@ -36,7 +35,7 @@ internal fun noteEditorHeaderActions(
     return {
         IconButton(onClick = onDeleteClick) {
             Icon(
-                imageVector = Icons.Rounded.Delete,
+                imageVector = MaterialSymbols.Delete,
                 contentDescription = stringResource(R.string.notes_delete_note_desc),
                 tint = MaterialTheme.colorScheme.onSurface,
             )

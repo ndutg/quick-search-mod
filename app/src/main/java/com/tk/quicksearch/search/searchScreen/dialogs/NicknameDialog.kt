@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import androidx.compose.material3.Button
@@ -31,6 +29,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.utils.NicknameUtils
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlinx.coroutines.delay
 
 @Composable
@@ -97,7 +96,7 @@ fun NicknameDialog(
                         if (nicknameText.text.isNotEmpty()) {
                             IconButton(onClick = { nicknameText = TextFieldValue("") }) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Close,
+                                    imageVector = MaterialSymbols.Close,
                                     contentDescription =
                                         stringResource(R.string.desc_clear_search),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,

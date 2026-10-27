@@ -10,11 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,6 +33,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.shared.ui.components.AppVoiceCallIcon
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -182,7 +178,7 @@ private fun ContactActionIcon(
             method is ContactMethod.SignalCall)
     ) {
         Icon(
-            imageVector = Icons.Rounded.Call,
+            imageVector = MaterialSymbols.Call,
             contentDescription = null,
             tint = AppColors.CallIconTint,
             modifier = modifier.size(iconSize),
@@ -192,7 +188,7 @@ private fun ContactActionIcon(
     when (method) {
         is ContactMethod.Phone -> {
             Icon(
-                imageVector = Icons.Rounded.Call,
+                imageVector = MaterialSymbols.Call,
                 contentDescription = null,
                 tint = tint,
                 modifier = modifier.size(iconSize),
@@ -201,7 +197,7 @@ private fun ContactActionIcon(
 
         is ContactMethod.Sms -> {
             Icon(
-                imageVector = Icons.Rounded.Sms,
+                imageVector = MaterialSymbols.Sms,
                 contentDescription = null,
                 tint = tint,
                 modifier = modifier.size(iconSize * 0.9f),
@@ -294,7 +290,7 @@ private fun ContactActionIcon(
 
         is ContactMethod.Email -> {
             Icon(
-                imageVector = Icons.Rounded.Email,
+                imageVector = MaterialSymbols.Email,
                 contentDescription = null,
                 tint = tint,
                 modifier = modifier.size(iconSize),
@@ -303,7 +299,7 @@ private fun ContactActionIcon(
 
         is ContactMethod.VideoCall -> {
             Icon(
-                imageVector = Icons.Rounded.Call,
+                imageVector = MaterialSymbols.Call,
                 contentDescription = null,
                 tint = tint,
                 modifier = modifier.size(iconSize),
@@ -355,7 +351,7 @@ private fun ContactActionIcon(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Person,
+                    imageVector = MaterialSymbols.Person,
                     contentDescription = null,
                     tint = tint,
                     modifier = modifier.size(iconSize),
@@ -365,7 +361,7 @@ private fun ContactActionIcon(
 
         is ContactMethod.ViewInContactsApp -> {
             Icon(
-                imageVector = Icons.Rounded.Person,
+                imageVector = MaterialSymbols.Person,
                 contentDescription = null,
                 tint = tint,
                 modifier = modifier.size(iconSize),

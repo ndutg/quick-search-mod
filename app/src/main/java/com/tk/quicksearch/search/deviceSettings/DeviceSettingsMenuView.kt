@@ -1,14 +1,6 @@
 package com.tk.quicksearch.search.deviceSettings
 
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.PinEnd
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -22,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
@@ -96,7 +89,7 @@ fun DeviceSettingsDropdownMenu(
                 add(
                         DeviceSettingsMenuItem(
                                 textResId = R.string.action_move_up,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowUpward, contentDescription = null) },
                                 onClick = {
                                     onDismissRequest()
                                     onMoveUp()
@@ -106,7 +99,7 @@ fun DeviceSettingsDropdownMenu(
                 add(
                         DeviceSettingsMenuItem(
                                 textResId = R.string.action_move_down,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowDownward, contentDescription = null) },
                                 onClick = {
                                     onDismissRequest()
                                     onMoveDown()
@@ -143,7 +136,7 @@ fun DeviceSettingsDropdownMenu(
                                     if (hasTrigger) R.string.action_edit_trigger
                                     else R.string.action_add_trigger,
                             icon = {
-                                Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null)
+                                Icon(imageVector = MaterialSymbols.Bolt, contentDescription = null)
                             },
                             onClick = {
                                 onDismissRequest()
@@ -158,7 +151,7 @@ fun DeviceSettingsDropdownMenu(
                                 if (isPinnedToNotifications) {
                                     Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null)
                                 } else {
-                                    Icon(imageVector = Icons.Rounded.PinEnd, contentDescription = null)
+                                    Icon(imageVector = MaterialSymbols.PinEnd, contentDescription = null)
                                 }
                             },
                             onClick = { onDismissRequest(); PinnedNotifications.toggle(context, notificationAction) },
@@ -169,7 +162,7 @@ fun DeviceSettingsDropdownMenu(
                         DeviceSettingsMenuItem(
                                 textResId = R.string.action_add_to_home,
                                 icon = {
-                                    Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
+                                    Icon(imageVector = MaterialSymbols.Home, contentDescription = null)
                                 },
                                 onClick = {
                                     onDismissRequest()
@@ -184,7 +177,7 @@ fun DeviceSettingsDropdownMenu(
                                     if (hasNickname) R.string.action_edit_nickname
                                     else R.string.common_nickname,
                             icon = {
-                                Icon(imageVector = Icons.Rounded.Edit, contentDescription = null)
+                                Icon(imageVector = MaterialSymbols.Edit, contentDescription = null)
                             },
                             onClick = {
                                 onDismissRequest()
@@ -197,7 +190,7 @@ fun DeviceSettingsDropdownMenu(
                             textResId = R.string.action_exclude_generic,
                             icon = {
                                 Icon(
-                                        imageVector = Icons.Rounded.VisibilityOff,
+                                        imageVector = MaterialSymbols.VisibilityOff,
                                         contentDescription = null
                                 )
                             },

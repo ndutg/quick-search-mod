@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Construction
-import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +27,7 @@ import com.tk.quicksearch.settings.shared.SettingsCardItem
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.ToolToggleCardModel
 import com.tk.quicksearch.settings.shared.ToolToggleRows
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.tasker.TaskerIntegration
 
@@ -129,7 +126,7 @@ fun ToolsSettingsSection(
                         onCheckedChange = { enabled ->
                             onCustomToolToggle(tool.id, enabled)
                         },
-                        leadingIcon = Icons.Rounded.Construction,
+                        leadingIcon = MaterialSymbols.Construction,
                         aliasCode = customToolAliases[tool.id].orEmpty(),
                         onAliasCodeChange = { code ->
                             onCustomToolAliasChange(tool.id, code)
@@ -159,7 +156,7 @@ fun ToolsSettingsSection(
                     item = SettingsCardItem(
                         title = stringResource(R.string.tasker_integration_title),
                         description = stringResource(R.string.tasker_integration_description),
-                        icon = Icons.Rounded.Bolt,
+                        icon = MaterialSymbols.Bolt,
                         iconBitmap = taskerIcon,
                         actionOnPress = onNavigateToTaskerIntegration,
                     ),
@@ -190,7 +187,7 @@ fun ToolsSettingsSection(
                 text = { Text(text = stringResource(R.string.settings_create_new_tool_button)) },
                 icon = {
                     Icon(
-                            imageVector = Icons.Rounded.Add,
+                            imageVector = MaterialSymbols.Add,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp),
                     )

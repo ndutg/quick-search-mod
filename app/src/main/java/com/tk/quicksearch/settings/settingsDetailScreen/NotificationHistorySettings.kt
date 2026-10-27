@@ -4,7 +4,6 @@ import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,13 +18,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlin.math.abs
 import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.draw.rotate
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +40,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -62,8 +59,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -88,7 +83,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsCardItem
-import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.foundation.layout.PaddingValues
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
@@ -194,7 +188,7 @@ fun NotificationHistorySettingsSection(
                         SettingsCardItem(
                             title = stringResource(R.string.permission_required_title),
                             description = stringResource(R.string.notification_history_permission_desc),
-                            icon = Icons.Rounded.NotificationsActive,
+                            icon = MaterialSymbols.NotificationsActive,
                             actionOnPress = { NotificationHistoryAccess.openSettings(context) },
                         ),
                     contentPadding =
@@ -348,7 +342,7 @@ private fun NotificationHistoryRow(
                     }
                     if (isTruncatable) {
                         Icon(
-                            imageVector = Icons.Rounded.ExpandMore,
+                            imageVector = MaterialSymbols.ExpandMore,
                             contentDescription =
                                 stringResource(if (expanded) R.string.desc_collapse else R.string.desc_expand),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -394,7 +388,7 @@ private fun NotificationHistoryRow(
         ) {
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.notification_history_hide_app, appLabel)) },
-                leadingIcon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+                leadingIcon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
                 onClick = {
                     showMenu = false
                     onHideApp()
@@ -464,7 +458,7 @@ private fun SwipeToDeleteContainer(
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Delete,
+                            imageVector = MaterialSymbols.Delete,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onError,
                         )
@@ -490,7 +484,7 @@ private fun NotificationAppIcon(packageName: String) {
         )
     } else {
         Icon(
-            imageVector = Icons.Rounded.Apps,
+            imageVector = MaterialSymbols.Apps,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.LargeIconSize),
@@ -572,7 +566,7 @@ private fun NotificationHistoryAppFilterDialog(
                         contentColor = MaterialTheme.colorScheme.error,
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Delete,
+                            imageVector = MaterialSymbols.Delete,
                             contentDescription = stringResource(R.string.settings_action_clear_all),
                             modifier =
                                 Modifier
@@ -649,7 +643,7 @@ private fun NotificationHistoryAppFilterItem(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Apps,
+                    imageVector = MaterialSymbols.Apps,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = iconModifier,
@@ -665,7 +659,7 @@ private fun NotificationHistoryAppFilterItem(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Check,
+                        imageVector = MaterialSymbols.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(14.dp),

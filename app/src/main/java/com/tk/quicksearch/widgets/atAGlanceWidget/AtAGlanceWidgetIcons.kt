@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Paint
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
@@ -14,6 +12,7 @@ import androidx.compose.ui.graphics.vector.VectorGroup
 import androidx.compose.ui.graphics.vector.VectorNode
 import androidx.compose.ui.graphics.vector.VectorPath
 import androidx.core.graphics.drawable.toBitmap
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlin.math.roundToInt
 
 /** Every row icon is parceled into the widget's RemoteViews, so icons stay small. */
@@ -56,7 +55,7 @@ internal object AtAGlanceWidgetIcons {
         }
     }
 
-    fun fallbackAppIcon(context: Context): Bitmap = vector(context, Icons.Rounded.Apps)
+    fun fallbackAppIcon(context: Context): Bitmap = vector(context, MaterialSymbols.Apps)
 
     private fun renderVector(
         vector: ImageVector,

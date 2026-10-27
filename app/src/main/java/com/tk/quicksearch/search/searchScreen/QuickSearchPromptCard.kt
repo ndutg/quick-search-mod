@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.Image
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 private const val QUICK_SEARCH_PACKAGE_NAME = "com.tk.quicksearch"
@@ -98,7 +97,7 @@ internal fun QuickSearchPromptCard(
                             .size(RateCardDismissSize),
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.action_not_now),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
                         modifier = Modifier.size(16.dp),

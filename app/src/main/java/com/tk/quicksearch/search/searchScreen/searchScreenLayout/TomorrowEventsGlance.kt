@@ -2,8 +2,6 @@ package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
 import android.app.Application
 import android.text.format.DateFormat
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -20,6 +18,7 @@ import com.tk.quicksearch.search.data.CalendarRepository
 import com.tk.quicksearch.search.data.preferences.CalendarPreferences
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.models.CalendarEventInfo
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -145,7 +144,7 @@ internal fun TomorrowEventRow(
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.CalendarMonth,
+                imageVector = MaterialSymbols.CalendarMonth,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )

@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
@@ -24,6 +22,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
 
@@ -82,7 +81,7 @@ internal fun AppSettingChoiceChip(
         ) {
             if (selected && showCheck) {
                 Icon(
-                    imageVector = Icons.Rounded.Check,
+                    imageVector = MaterialSymbols.Check,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(14.dp),
@@ -107,7 +106,7 @@ internal fun AppSettingChoiceChip(
             if (selected && showCheck) {
                 {
                     Icon(
-                        imageVector = Icons.Rounded.Check,
+                        imageVector = MaterialSymbols.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(AssistChipDefaults.IconSize),

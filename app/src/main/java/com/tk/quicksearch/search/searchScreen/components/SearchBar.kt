@@ -24,9 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.automirrored.rounded.Shortcut
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.material3.MaterialTheme

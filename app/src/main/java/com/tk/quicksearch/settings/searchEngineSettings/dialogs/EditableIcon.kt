@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -59,7 +57,7 @@ fun EditableIcon(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Public,
+                    imageVector = MaterialSymbols.Public,
                     contentDescription = contentDescription,
                     modifier =
                         Modifier
@@ -82,7 +80,7 @@ fun EditableIcon(
             contentAlignment = androidx.compose.ui.Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Rounded.Edit,
+                imageVector = MaterialSymbols.Edit,
                 contentDescription = null,
                 modifier = Modifier.size(8.dp),
                 tint = MaterialTheme.colorScheme.onPrimary,

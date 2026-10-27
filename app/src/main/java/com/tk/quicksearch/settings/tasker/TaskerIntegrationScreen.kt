@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +31,7 @@ import com.tk.quicksearch.searchEngines.AliasValidator.isValidGeneralAliasCode
 import com.tk.quicksearch.searchEngines.AliasValidator.normalizeShortcutCodeInput
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
@@ -143,7 +141,7 @@ fun TaskerIntegrationScreen(
                         )
                     } else {
                         Icon(
-                            Icons.Rounded.Bolt,
+                            MaterialSymbols.Bolt,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(DesignTokens.IconSizeSmall),
@@ -168,7 +166,7 @@ fun TaskerIntegrationScreen(
                     }
                     IconButton(onClick = { onDelete(tool.id) }) {
                         Icon(
-                            Icons.Rounded.Delete,
+                            MaterialSymbols.Delete,
                             contentDescription = stringResource(R.string.tasker_delete_intent),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

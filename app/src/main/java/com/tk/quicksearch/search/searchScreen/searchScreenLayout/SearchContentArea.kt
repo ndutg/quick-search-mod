@@ -16,11 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Swipe
-import androidx.compose.material.icons.rounded.Widgets
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -79,6 +74,7 @@ import com.tk.quicksearch.search.searchScreen.components.CollapseButton
 import com.tk.quicksearch.search.searchHistory.RecentSearchEntry
 import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.searchHistory.SearchHistoryTab
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlin.math.min
@@ -652,7 +648,7 @@ fun SearchContentArea(
                         text = { Text(stringResource(R.string.action_change_wallpaper)) },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Rounded.Image,
+                                imageVector = MaterialSymbols.Image,
                                 contentDescription = null,
                             )
                         },
@@ -666,7 +662,7 @@ fun SearchContentArea(
                         text = { Text(stringResource(R.string.settings_gestures_title)) },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Rounded.Swipe,
+                                imageVector = MaterialSymbols.Swipe,
                                 contentDescription = null,
                             )
                         },
@@ -681,7 +677,7 @@ fun SearchContentArea(
                             text = { Text(stringResource(R.string.action_open_settings)) },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Rounded.Settings,
+                                    imageVector = MaterialSymbols.Settings,
                                     contentDescription = null,
                                 )
                             },
@@ -697,7 +693,7 @@ fun SearchContentArea(
                             text = { Text(stringResource(R.string.widgets_panel_title)) },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Rounded.Widgets,
+                                    imageVector = MaterialSymbols.Widgets,
                                     contentDescription = null,
                                 )
                             },

@@ -4,8 +4,6 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +25,7 @@ import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.settings.settingsDetailScreen.ReminderFormDialog
 import com.tk.quicksearch.settings.settingsDetailScreen.FormDateTimeSuggestion
 import com.tk.quicksearch.shared.permissions.PermissionHelper
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.time.Instant
 import java.time.ZoneId
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -162,7 +161,7 @@ private fun ReminderFormDialog(
             if (onDelete != null) {
                 IconButton(onClick = onDelete) {
                     Icon(
-                        imageVector = Icons.Rounded.Delete,
+                        imageVector = MaterialSymbols.Delete,
                         contentDescription = stringResource(R.string.reminder_delete),
                         tint = MaterialTheme.colorScheme.error,
                     )

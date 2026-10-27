@@ -23,9 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -59,6 +56,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
@@ -115,7 +113,7 @@ data class ItemMenuLongPressOption(
 @Composable
 fun itemMenuRemoveOption(onRemove: (() -> Unit)?): ItemMenuLongPressOption? {
     val label = stringResource(R.string.action_remove)
-    return onRemove?.let { ItemMenuLongPressOption(label = label, icon = Icons.Rounded.Close, onClick = it) }
+    return onRemove?.let { ItemMenuLongPressOption(label = label, icon = MaterialSymbols.Close, onClick = it) }
 }
 
 private const val ItemMenuGridColumns = 4
@@ -385,7 +383,7 @@ private fun ItemMenuListRow(row: ItemMenuRow) {
             }
             if (!row.destructive) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    imageVector = MaterialSymbols.KeyboardArrowRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),

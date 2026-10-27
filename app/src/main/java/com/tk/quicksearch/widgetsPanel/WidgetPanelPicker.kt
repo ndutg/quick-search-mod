@@ -34,11 +34,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -75,6 +70,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.utils.UserHandleUtils
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
@@ -226,7 +222,7 @@ internal fun WidgetPickerSheet(
                     )
                     IconButton(onClick = onDismiss, modifier = Modifier.size(40.dp)) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = MaterialSymbols.Close,
                             contentDescription = stringResource(R.string.common_close),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -318,7 +314,7 @@ private fun QuickNotePickerRow(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
         ) {
             Icon(
-                imageVector = Icons.Rounded.EditNote,
+                imageVector = MaterialSymbols.EditNote,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(DesignTokens.LargeIconSize),
@@ -355,7 +351,7 @@ private fun WidgetPickerSearchField(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Search,
+                imageVector = MaterialSymbols.Search,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -438,7 +434,7 @@ private fun WidgetPickerAppGroup(
                     )
                 }
                 Icon(
-                    imageVector = Icons.Rounded.ExpandMore,
+                    imageVector = MaterialSymbols.ExpandMore,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.rotate(chevronRotation),

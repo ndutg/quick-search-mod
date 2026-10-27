@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -24,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /**
@@ -38,7 +37,7 @@ data class SettingsCardItem(
     val iconResId: Int? = null,
     val iconBitmap: ImageBitmap? = null,
     val iconTint: Color? = null,
-    val actionIcon: ImageVector = Icons.Rounded.ChevronRight,
+    val actionIcon: ImageVector = MaterialSymbols.ChevronRight,
     val isEnabled: Boolean = true,
     val actionOnPress: () -> Unit,
 )

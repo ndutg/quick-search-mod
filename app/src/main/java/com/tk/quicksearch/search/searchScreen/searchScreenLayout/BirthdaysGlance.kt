@@ -1,7 +1,5 @@
 package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -19,6 +17,7 @@ import com.tk.quicksearch.search.data.ContactBirthdaysRepository
 import com.tk.quicksearch.search.data.ContactRepository
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.models.ContactInfo
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -91,7 +90,7 @@ internal fun BirthdayRow(
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Cake,
+                imageVector = MaterialSymbols.Cake,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )

@@ -17,11 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronLeft
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -57,6 +52,7 @@ import com.tk.quicksearch.search.models.ContactInfo
 import com.tk.quicksearch.search.models.ContactMethod
 import com.tk.quicksearch.search.models.ContactMethodMimeTypes
 import com.tk.quicksearch.search.utils.PhoneNumberUtils
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE
 import com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_PACKAGE
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
@@ -70,7 +66,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.ui.platform.LocalClipboard
@@ -311,7 +306,7 @@ internal fun ContactActionsPopup(
                             modifier = Modifier.size(32.dp),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.ChevronLeft,
+                                imageVector = MaterialSymbols.ChevronLeft,
                                 contentDescription = stringResource(R.string.contacts_action_previous_number),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp),
@@ -368,7 +363,7 @@ internal fun ContactActionsPopup(
                             modifier = Modifier.size(32.dp),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
+                                imageVector = MaterialSymbols.ChevronRight,
                                 contentDescription = stringResource(R.string.contacts_action_next_number),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp),

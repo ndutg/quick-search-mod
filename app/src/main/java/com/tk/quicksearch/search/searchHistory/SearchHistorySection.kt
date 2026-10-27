@@ -21,11 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -84,6 +79,7 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandButton
 import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.searchEngines.SearchTargetQueryShortcutActivity
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -539,7 +535,7 @@ private fun ClearAllHistoryRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Rounded.Delete,
+            imageVector = MaterialSymbols.Delete,
             contentDescription = null,
             tint = clearColor,
             modifier = Modifier.size(DesignTokens.IconSizeSmall),
@@ -606,7 +602,7 @@ internal fun RecentQueryRow(
             )
         } else {
             Icon(
-                imageVector = Icons.Rounded.Search,
+                imageVector = MaterialSymbols.Search,
                 contentDescription = stringResource(R.string.common_search),
                 tint = iconColor,
                 modifier =

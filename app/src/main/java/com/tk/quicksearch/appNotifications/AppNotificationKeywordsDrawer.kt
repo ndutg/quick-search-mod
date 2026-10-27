@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +36,7 @@ import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerAppIcon
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerIconBadge
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerSearch
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -52,7 +49,7 @@ internal fun List<String>.plusKeyword(keyword: String): List<String> {
 /** The icon for a source row: the app's icon, or a generic badge for Any App. */
 @Composable
 internal fun AppNotificationSourceIcon(packageName: String?) {
-    if (packageName != null) AppPickerDrawerAppIcon(packageName) else AppPickerDrawerIconBadge(Icons.Rounded.Apps)
+    if (packageName != null) AppPickerDrawerAppIcon(packageName) else AppPickerDrawerIconBadge(MaterialSymbols.Apps)
 }
 
 /**
@@ -121,7 +118,7 @@ internal fun AppNotificationKeywordsDrawer(
                 item(key = "add") {
                     KeywordRow(
                         text = stringResource(R.string.app_notifications_add_keyword, typed),
-                        icon = Icons.Rounded.Add,
+                        icon = MaterialSymbols.Add,
                         iconDescription = stringResource(R.string.common_action_add),
                         iconTint = AppColors.LinkColor,
                         onClick = add,
@@ -134,7 +131,7 @@ internal fun AppNotificationKeywordsDrawer(
                 if (index > 0 || canAdd) HorizontalDivider(color = AppColors.SettingsDivider)
                 KeywordRow(
                     text = keyword,
-                    icon = Icons.Rounded.DeleteOutline,
+                    icon = MaterialSymbols.DeleteOutline,
                     iconDescription = stringResource(R.string.app_notifications_remove_app, keyword),
                     iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
                     onClick = { onKeywordsChange(keywords - keyword) },

@@ -11,13 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Event
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +37,7 @@ import com.tk.quicksearch.search.data.appShortcutRepository.AppShortcutCache
 import com.tk.quicksearch.search.data.preferences.NicknamePreferences
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsRepository
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
@@ -249,7 +243,7 @@ private fun NicknameItemRow(
 
         IconButton(onClick = onRemove) {
             Icon(
-                imageVector = Icons.Rounded.Close,
+                imageVector = MaterialSymbols.Close,
                 contentDescription = stringResource(R.string.action_remove),
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -271,7 +265,7 @@ private fun NicknameItemIcon(item: NicknameItem) {
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Apps,
+                    imageVector = MaterialSymbols.Apps,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(DesignTokens.IconSize),
@@ -306,7 +300,7 @@ private fun NicknameItemIcon(item: NicknameItem) {
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Rounded.Apps,
+                        imageVector = MaterialSymbols.Apps,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(DesignTokens.IconSize),
@@ -315,25 +309,25 @@ private fun NicknameItemIcon(item: NicknameItem) {
             }
         }
         is NicknameItem.Contact -> Icon(
-            imageVector = Icons.Rounded.Person,
+            imageVector = MaterialSymbols.Person,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is NicknameItem.File -> Icon(
-            imageVector = Icons.AutoMirrored.Rounded.InsertDriveFile,
+            imageVector = MaterialSymbols.InsertDriveFile,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is NicknameItem.Setting -> Icon(
-            imageVector = Icons.Rounded.Settings,
+            imageVector = MaterialSymbols.Settings,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is NicknameItem.CalendarEvent -> Icon(
-            imageVector = Icons.Rounded.Event,
+            imageVector = MaterialSymbols.Event,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),

@@ -31,10 +31,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items as rowItems
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Send
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -73,6 +69,7 @@ import com.tk.quicksearch.searchEngines.extendToScreenEdges
 import com.tk.quicksearch.searchEngines.shared.SearchTargetConstants
 import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.apps.rememberAppIcon
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.isLandscape
 import com.tk.quicksearch.shared.util.isTablet
 import com.tk.quicksearch.shared.ui.theme.AppColors
@@ -170,7 +167,7 @@ internal fun AiFollowUpInputSection(
                         enabled = value.isNotBlank(),
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Send,
+                            imageVector = MaterialSymbols.Send,
                             contentDescription = stringResource(R.string.dialog_send),
                         )
                     }

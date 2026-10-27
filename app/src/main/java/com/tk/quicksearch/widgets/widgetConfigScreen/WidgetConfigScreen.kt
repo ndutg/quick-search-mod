@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,6 +28,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.shared.ui.components.TipBanner
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetItemsSection
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonsSection
 import com.tk.quicksearch.widgets.utils.WidgetButtonSlotConfig
@@ -90,7 +88,7 @@ fun WidgetConfigScreen(
                 navigationIcon = {
                     IconButton(onClick = onCancel) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = MaterialSymbols.Close,
                             contentDescription =
                                 stringResource(
                                     R.string
@@ -205,7 +203,7 @@ fun WidgetConfigScreen(
                     val context = LocalContext.current
                     TipBanner(
                         text = stringResource(R.string.widget_media_controls_permission_hint),
-                        icon = Icons.Rounded.Info,
+                        icon = MaterialSymbols.Info,
                         onContentClick = { NotificationDotsPermission.openNotificationListenerSettings(context) },
                         showDismissButton = false,
                         showContentRipple = false,

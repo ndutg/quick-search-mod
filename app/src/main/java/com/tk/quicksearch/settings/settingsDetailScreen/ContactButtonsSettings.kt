@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +37,7 @@ import com.tk.quicksearch.search.contacts.components.ContactUiConstants
 import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -199,7 +197,7 @@ private fun ContactButtonPickerRow(
             )
         }
         Icon(
-            imageVector = Icons.Rounded.ChevronRight,
+            imageVector = MaterialSymbols.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -250,7 +248,7 @@ private fun ContactButtonPickerDialog(
                         )
                         if (isSelected) {
                             Icon(
-                                imageVector = Icons.Rounded.Check,
+                                imageVector = MaterialSymbols.Check,
                                 contentDescription = stringResource(R.string.desc_selected),
                                 tint = MaterialTheme.colorScheme.primary,
                             )

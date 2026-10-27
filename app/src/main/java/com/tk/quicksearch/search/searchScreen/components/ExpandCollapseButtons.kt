@@ -13,10 +13,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,6 +33,7 @@ import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.searchScreen.LocalOverlayActionColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.LocalOverlayResultCardColor
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.LocalAppTheme
@@ -66,7 +63,7 @@ internal fun ExpandButton(
     textResId: Int = R.string.action_expand_more,
     usePillBackground: Boolean = false,
     showWallpaperBackground: Boolean = false,
-    icon: ImageVector = Icons.Rounded.ExpandMore,
+    icon: ImageVector = MaterialSymbols.ExpandMore,
     compact: Boolean = false,
 ) {
     // Flat sections (card layout off) always use the short More button.
@@ -165,7 +162,7 @@ internal fun CollapseButton(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Icon(
-            imageVector = Icons.Rounded.ExpandLess,
+            imageVector = MaterialSymbols.ExpandLess,
             contentDescription = stringResource(R.string.desc_collapse),
             tint = collapseContentColor,
             modifier = Modifier.size(EXPAND_ICON_SIZE.dp),

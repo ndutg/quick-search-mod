@@ -10,13 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +38,7 @@ import com.tk.quicksearch.search.contacts.models.ContactCardAction
 import com.tk.quicksearch.search.data.preferences.TriggerPreferences
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsRepository
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
@@ -235,7 +229,7 @@ private fun TriggerItemRow(
 
         IconButton(onClick = onRemove) {
             Icon(
-                imageVector = Icons.Rounded.Close,
+                imageVector = MaterialSymbols.Close,
                 contentDescription = stringResource(R.string.action_remove),
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -257,7 +251,7 @@ private fun TriggerItemIcon(item: TriggerItem) {
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Apps,
+                    imageVector = MaterialSymbols.Apps,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(DesignTokens.IconSize),
@@ -292,7 +286,7 @@ private fun TriggerItemIcon(item: TriggerItem) {
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Rounded.Apps,
+                        imageVector = MaterialSymbols.Apps,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(DesignTokens.IconSize),
@@ -301,31 +295,31 @@ private fun TriggerItemIcon(item: TriggerItem) {
             }
         }
         is TriggerItem.Contact -> Icon(
-            imageVector = Icons.Rounded.Person,
+            imageVector = MaterialSymbols.Person,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.ContactAction -> Icon(
-            imageVector = Icons.Rounded.Person,
+            imageVector = MaterialSymbols.Person,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.File -> Icon(
-            imageVector = Icons.AutoMirrored.Rounded.InsertDriveFile,
+            imageVector = MaterialSymbols.InsertDriveFile,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.Setting -> Icon(
-            imageVector = Icons.Rounded.Settings,
+            imageVector = MaterialSymbols.Settings,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
         )
         is TriggerItem.Note -> Icon(
-            imageVector = Icons.Rounded.Description,
+            imageVector = MaterialSymbols.Description,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),

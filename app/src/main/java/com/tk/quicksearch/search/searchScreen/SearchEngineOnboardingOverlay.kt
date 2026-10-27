@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -306,7 +305,7 @@ private fun OnboardingContent(
                                 .size(DesignTokens.SpacingHuge),
         ) {
             Icon(
-                    imageVector = Icons.Rounded.Close,
+                    imageVector = MaterialSymbols.Close,
                     contentDescription = stringResource(R.string.common_close),
                     tint = AppColors.DialogText,
                     modifier = Modifier.size(DesignTokens.IconSizeSmall),

@@ -25,10 +25,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -72,6 +68,7 @@ import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileTypeUtils
 import com.tk.quicksearch.search.utils.FileUtils
 import com.tk.quicksearch.shared.ui.components.PreserveHostKeyboardStateEffect
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
@@ -133,7 +130,7 @@ fun FilePreviewDialog(
                     )
                     IconButton(onClick = onDismiss) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = MaterialSymbols.Close,
                             contentDescription = stringResource(R.string.common_close),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -177,7 +174,7 @@ private fun FilePreviewActions(
             modifier = Modifier.size(ACTION_BUTTON_HEIGHT),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Share,
+                imageVector = MaterialSymbols.Share,
                 contentDescription = stringResource(R.string.action_share),
                 modifier = Modifier.size(ACTION_ICON_SIZE),
             )
@@ -190,7 +187,7 @@ private fun FilePreviewActions(
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
+                imageVector = MaterialSymbols.OpenInNew,
                 contentDescription = null,
                 modifier = Modifier.size(ACTION_ICON_SIZE),
             )

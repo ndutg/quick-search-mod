@@ -26,17 +26,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Block
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -82,6 +71,7 @@ import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.search.searchScreen.AppThemeColors
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.WallpaperUtils
@@ -187,21 +177,21 @@ fun AppThemeCard(
                     ) {
                         AppModeOption(
                                 label = stringResource(R.string.common_theme_light),
-                                icon = Icons.Rounded.LightMode,
+                                icon = MaterialSymbols.LightMode,
                                 selected = appThemeMode == AppThemeMode.LIGHT,
                                 onClick = { onSetAppThemeMode(AppThemeMode.LIGHT) },
                                 modifier = Modifier.weight(1f),
                         )
                         AppModeOption(
                                 label = stringResource(R.string.common_theme_dark),
-                                icon = Icons.Rounded.DarkMode,
+                                icon = MaterialSymbols.DarkMode,
                                 selected = appThemeMode == AppThemeMode.DARK,
                                 onClick = { onSetAppThemeMode(AppThemeMode.DARK) },
                                 modifier = Modifier.weight(1f),
                         )
                         AppModeOption(
                                 label = stringResource(R.string.common_theme_system),
-                                icon = Icons.Rounded.Settings,
+                                icon = MaterialSymbols.Settings,
                                 selected = appThemeMode == AppThemeMode.SYSTEM,
                                 onClick = { onSetAppThemeMode(AppThemeMode.SYSTEM) },
                                 modifier = Modifier.weight(1f),
@@ -291,7 +281,7 @@ fun AppThemeCard(
                                                 contentAlignment = Alignment.Center,
                                         ) {
                                             Icon(
-                                                    imageVector = Icons.Rounded.Check,
+                                                    imageVector = MaterialSymbols.Check,
                                                     contentDescription = null,
                                                     tint = MaterialTheme.colorScheme.onPrimary,
                                                     modifier = Modifier.size(14.dp),
@@ -322,7 +312,7 @@ fun AppThemeCard(
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
                             Icon(
-                                    imageVector = Icons.Rounded.LightMode,
+                                    imageVector = MaterialSymbols.LightMode,
                                     contentDescription =
                                             stringResource(R.string.settings_overlay_theme_tone_lighter),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -349,7 +339,7 @@ fun AppThemeCard(
                                     modifier = Modifier.weight(1f),
                             )
                             Icon(
-                                    imageVector = Icons.Rounded.DarkMode,
+                                    imageVector = MaterialSymbols.DarkMode,
                                     contentDescription =
                                             stringResource(R.string.settings_overlay_theme_tone_darker),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -532,7 +522,7 @@ internal fun OverlaySourceBox(
                         contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                            imageVector = Icons.Rounded.Check,
+                            imageVector = MaterialSymbols.Check,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(14.dp),

@@ -22,11 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
@@ -60,6 +55,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetBackgroundSection
@@ -102,7 +98,7 @@ fun CountdownWidgetConfigScreen(
                 navigationIcon = {
                     IconButton(onClick = onCancel) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = MaterialSymbols.Close,
                             contentDescription = stringResource(R.string.dialog_cancel),
                         )
                     }
@@ -241,7 +237,7 @@ private fun CountdownDateSection(
                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.CalendarMonth,
+                    imageVector = MaterialSymbols.CalendarMonth,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(DesignTokens.IconSizeSmall),
@@ -256,7 +252,7 @@ private fun CountdownDateSection(
                     modifier = Modifier.weight(1f),
                 )
                 Icon(
-                    imageVector = Icons.Rounded.ChevronRight,
+                    imageVector = MaterialSymbols.ChevronRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -383,7 +379,7 @@ private fun CountdownTextColorSection(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Rounded.Palette,
+                        imageVector = MaterialSymbols.Palette,
                         contentDescription = stringResource(R.string.common_custom),
                         modifier = Modifier.size(18.dp),
                     )

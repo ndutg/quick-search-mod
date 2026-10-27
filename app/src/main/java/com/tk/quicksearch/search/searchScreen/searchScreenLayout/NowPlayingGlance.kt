@@ -19,15 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.FastForward
-import androidx.compose.material.icons.rounded.FastRewind
-import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +53,7 @@ import com.tk.quicksearch.media.MediaAppSeek
 import com.tk.quicksearch.media.MediaSeek
 import com.tk.quicksearch.media.openMediaSessionPlayer
 import com.tk.quicksearch.search.data.MediaPlaybackRepository
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.delay
 
@@ -389,7 +381,7 @@ internal fun NowPlayingRow(
                 )
                 IconButton(onClick = onDismiss, modifier = Modifier.size(NowPlayingDismissButtonSize)) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.common_close),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),
@@ -408,23 +400,23 @@ internal fun NowPlayingRow(
                 outerBack = null
                 outerForward = null
                 innerBack =
-                    seekControl(appSeek.back, Icons.Rounded.FastRewind, R.string.media_seek_back, glance.seekBack, glance.canSeek)
+                    seekControl(appSeek.back, MaterialSymbols.FastRewind, R.string.media_seek_back, glance.seekBack, glance.canSeek)
                 innerForward =
                     seekControl(
                         appSeek.forward,
-                        Icons.Rounded.FastForward,
+                        MaterialSymbols.FastForward,
                         R.string.media_seek_forward,
                         glance.seekForward,
                         glance.canSeek,
                     )
             } else {
-                val skipBack = NowPlayingControl(Icons.Rounded.SkipPrevious, R.string.media_command_previous, glance.previous)
-                val skipForward = NowPlayingControl(Icons.Rounded.SkipNext, R.string.media_command_next, glance.next)
+                val skipBack = NowPlayingControl(MaterialSymbols.SkipPrevious, R.string.media_command_previous, glance.previous)
+                val skipForward = NowPlayingControl(MaterialSymbols.SkipNext, R.string.media_command_next, glance.next)
                 val seekBack =
-                    NowPlayingControl(Icons.Rounded.FastRewind, R.string.media_seek_back, glance.seekBack)
+                    NowPlayingControl(MaterialSymbols.FastRewind, R.string.media_seek_back, glance.seekBack)
                         .takeIf { glance.canSeek }
                 val seekForward =
-                    NowPlayingControl(Icons.Rounded.FastForward, R.string.media_seek_forward, glance.seekForward)
+                    NowPlayingControl(MaterialSymbols.FastForward, R.string.media_seek_forward, glance.seekForward)
                         .takeIf { glance.canSeek }
                 if (glance.isSeekMode) {
                     outerBack = skipBack
@@ -471,7 +463,7 @@ internal fun NowPlayingRow(
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                imageVector = if (glance.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                                imageVector = if (glance.isPlaying) MaterialSymbols.Pause else MaterialSymbols.PlayArrow,
                                 contentDescription = stringResource(R.string.media_command_play_pause),
                                 tint = MaterialTheme.colorScheme.surface,
                                 modifier = Modifier.size(NowPlayingPlayPauseIconSize),
@@ -608,7 +600,7 @@ private fun NowPlayingAlbumArt(glance: NowPlayingGlance) {
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Rounded.MusicNote,
+                imageVector = MaterialSymbols.MusicNote,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp),

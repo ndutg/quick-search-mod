@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,6 +68,7 @@ import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.data.AppsRepository
 import com.tk.quicksearch.search.data.TodayAppUsage
 import com.tk.quicksearch.search.models.AppInfo
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -286,7 +285,7 @@ fun SpeedBumpOverlay(
                                     ),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Schedule,
+                                imageVector = MaterialSymbols.Schedule,
                                 contentDescription = null,
                                 tint =
                                     MaterialTheme.colorScheme.onSurfaceVariant

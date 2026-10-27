@@ -16,11 +16,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
@@ -46,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.util.Locale
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -111,7 +107,7 @@ fun NotesSettingsBottomBar(
                 text = { Text(text = stringResource(R.string.dialog_delete)) },
                 icon = {
                     Icon(
-                        imageVector = Icons.Rounded.Delete,
+                        imageVector = MaterialSymbols.Delete,
                         contentDescription = stringResource(R.string.notes_delete_note_desc),
                         modifier = Modifier.size(18.dp),
                     )
@@ -136,7 +132,7 @@ fun NotesSettingsBottomBar(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Add,
+                    imageVector = MaterialSymbols.Add,
                     contentDescription = stringResource(R.string.notes_create_note_cta),
                     modifier = Modifier.size(24.dp),
                 )
@@ -148,7 +144,7 @@ fun NotesSettingsBottomBar(
                 shape = NotesSettingsBarCornerShape,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Search,
+                    imageVector = MaterialSymbols.Search,
                     contentDescription = stringResource(R.string.common_search),
                     modifier = Modifier.size(22.dp),
                 )
@@ -163,7 +159,7 @@ fun NotesSettingsBottomBar(
                 text = { Text(text = stringResource(R.string.notes_create_note_cta)) },
                 icon = {
                     Icon(
-                        imageVector = Icons.Rounded.Add,
+                        imageVector = MaterialSymbols.Add,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                     )
@@ -239,7 +235,7 @@ fun NotesSettingsSection(
                         quickNoteEnabled = enabled
                         notesPreferences.setQuickNoteEnabled(enabled)
                     },
-                    leadingIcon = Icons.Rounded.EditNote,
+                    leadingIcon = MaterialSymbols.EditNote,
                     onRowClick = { onOpenNoteEditor(note.noteId) },
                 )
             }

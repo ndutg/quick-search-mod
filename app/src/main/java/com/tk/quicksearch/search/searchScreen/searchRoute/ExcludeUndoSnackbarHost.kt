@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -37,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 
@@ -45,7 +44,7 @@ internal data class UndoSnackbarVisuals(
     override val message: String,
     override val actionLabel: String?,
     val supportingText: String? = null,
-    val icon: ImageVector? = Icons.Rounded.VisibilityOff,
+    val icon: ImageVector? = MaterialSymbols.VisibilityOff,
     override val duration: SnackbarDuration = SnackbarDuration.Short,
     override val withDismissAction: Boolean = false,
 ) : SnackbarVisuals
@@ -63,7 +62,7 @@ internal fun ExcludeUndoSnackbarHost(
             UndoSnackbar(
                 message = rememberHighlightedExcludeMessage(visuals.message),
                 supportingText = undoVisuals?.supportingText,
-                icon = if (undoVisuals != null) undoVisuals.icon else Icons.Rounded.VisibilityOff,
+                icon = if (undoVisuals != null) undoVisuals.icon else MaterialSymbols.VisibilityOff,
                 actionLabel = visuals.actionLabel,
                 onAction = { data.performAction() },
             )

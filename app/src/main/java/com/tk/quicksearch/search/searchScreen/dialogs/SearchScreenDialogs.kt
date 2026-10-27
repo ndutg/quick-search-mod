@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.ChevronRight
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -257,7 +255,7 @@ private fun ReleaseNotesExpanderRow(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Icon(
-            imageVector = Icons.Rounded.ExpandMore,
+            imageVector = MaterialSymbols.ExpandMore,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp).rotate(chevronRotation),
@@ -290,7 +288,7 @@ private fun ReleaseNotesNavigationRow(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Icon(
-            imageVector = Icons.Rounded.ChevronRight,
+            imageVector = MaterialSymbols.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),

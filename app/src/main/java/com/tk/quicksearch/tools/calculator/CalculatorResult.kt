@@ -2,10 +2,6 @@ package com.tk.quicksearch.tools.calculator
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.ContentCopy
-import androidx.compose.material.icons.rounded.NorthWest
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -14,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -212,13 +209,13 @@ private fun CalculatorResultActions(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
         CalculatorActionChip(
-                icon = if (showCopyConfirmation) Icons.Rounded.Check else Icons.Rounded.ContentCopy,
+                icon = if (showCopyConfirmation) MaterialSymbols.Check else MaterialSymbols.ContentCopy,
                 label = stringResource(R.string.calculator_copy_result),
                 onClick = onCopy,
         )
         if (onUseResult != null) {
             CalculatorActionChip(
-                    icon = Icons.Rounded.NorthWest,
+                    icon = MaterialSymbols.NorthWest,
                     label = stringResource(R.string.calculator_use_result),
                     onClick = onUseResult,
             )

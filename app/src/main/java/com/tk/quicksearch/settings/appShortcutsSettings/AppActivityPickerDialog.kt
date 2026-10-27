@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +18,7 @@ import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerMessage
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRow
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 @Composable
 fun AppActivityPickerDialog(
@@ -77,7 +76,7 @@ private fun AppActivityRow(
                     contentScale = ContentScale.Fit,
                 )
             } else {
-                AppPickerDrawerIconBadge(icon = Icons.Rounded.Android)
+                AppPickerDrawerIconBadge(icon = MaterialSymbols.Android)
             }
         },
     )

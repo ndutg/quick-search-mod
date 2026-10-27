@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
-import androidx.compose.material.icons.rounded.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 private const val SOURCE_CODE_URL = "https://github.com/teja2495/quick-search"
@@ -68,7 +66,7 @@ fun OpenSourceTrustCard(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
     ) {
         Icon(
-            imageVector = Icons.Rounded.VerifiedUser,
+            imageVector = MaterialSymbols.VerifiedUser,
             contentDescription = null,
             tint = accent,
             modifier = Modifier.size(24.dp),
@@ -98,7 +96,7 @@ fun OpenSourceTrustCard(modifier: Modifier = Modifier) {
         }
 
         Icon(
-            imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
+            imageVector = MaterialSymbols.OpenInNew,
             contentDescription = null,
             tint = accent,
             modifier = Modifier.size(20.dp),

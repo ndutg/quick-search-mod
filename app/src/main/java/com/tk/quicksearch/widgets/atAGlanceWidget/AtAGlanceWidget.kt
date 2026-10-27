@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.text.format.DateFormat
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +45,7 @@ import androidx.glance.color.ColorProvider as DayNightColorProvider
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetColors
 import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.WidgetBitmapUtils
@@ -259,7 +258,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
             contentAlignment = Alignment.Center,
         ) {
             Image(
-                provider = ImageProvider(AtAGlanceWidgetIcons.vector(context, Icons.Rounded.Close)),
+                provider = ImageProvider(AtAGlanceWidgetIcons.vector(context, MaterialSymbols.Close)),
                 contentDescription = context.getString(R.string.common_close),
                 modifier = GlanceModifier.size(AtAGlanceWidgetDimens.DISMISS_ICON_SIZE),
                 colorFilter = ColorFilter.tint(tint),
