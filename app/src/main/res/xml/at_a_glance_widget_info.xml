@@ -5,7 +5,7 @@
     android:minResizeWidth="110dp"
     android:minResizeHeight="60dp"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/widget_at_a_glance_placeholder"
+    android:initialLayout="@layout/widget_at_a_glance_loading"
     android:previewLayout="@layout/widget_at_a_glance_placeholder"
     android:configure="com.tk.quicksearch.widgets.searchWidget.SearchWidgetConfigureActivity"
     android:widgetCategory="home_screen"

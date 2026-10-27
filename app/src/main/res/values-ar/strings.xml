@@ -1200,6 +1200,7 @@
     <string name="widget_text_icon_color_white">أبيض</string>
     <string name="widget_text_color">لون النص</string>
     <string name="widget_toggle_show_label">نص Quick Search</string>
+    <string name="widget_toggle_show_empty_date">إظهار التاريخ عند عدم وجود عناصر</string>
     <string name="widgets_panel_title">عناصر واجهة المستخدم</string>
     <string name="widgets_picker_empty">لم يتم العثور على أي عناصر واجهة مستخدم.</string>
     <string name="widgets_picker_loading">جارٍ تحميل عناصر واجهة المستخدم...</string>

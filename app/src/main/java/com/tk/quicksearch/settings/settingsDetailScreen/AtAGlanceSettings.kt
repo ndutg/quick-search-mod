@@ -65,6 +65,7 @@ import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetUpdater
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -532,6 +533,7 @@ fun AtAGlanceSettingsSection(
             packageNames = hiddenAlarmPackages,
             onUnhide = { packageName ->
                 hiddenAlarmPackages = alarmPreferences.unhidePackage(packageName)
+                AtAGlanceWidgetUpdater.startIfPlaced(appContext)
                 if (hiddenAlarmPackages.isEmpty()) showHiddenAlarmAppsDialog = false
             },
             onDismiss = { showHiddenAlarmAppsDialog = false },

@@ -1208,6 +1208,7 @@
     <string name="widget_text_icon_color_white">White</string>
     <string name="widget_text_color">Text Color</string>
     <string name="widget_toggle_show_label">Quick Search Text</string>
+    <string name="widget_toggle_show_empty_date">Show date when there are no items</string>
     <string name="widgets_panel_title">Widgets</string>
     <string name="widgets_picker_empty">No widgets found.</string>
     <string name="widgets_picker_loading">Loading Widgets...</string>

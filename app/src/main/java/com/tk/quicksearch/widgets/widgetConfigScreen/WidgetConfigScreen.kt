@@ -40,6 +40,7 @@ import com.tk.quicksearch.widgets.utils.WidgetPreferences
 import com.tk.quicksearch.widgets.utils.WidgetPreviewCard
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
 import com.tk.quicksearch.widgets.utils.WidgetVariant
+import com.tk.quicksearch.widgets.widgetConfigScreen.components.AtAGlanceEmptyDateToggle
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.MediaControlsTextColorSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.MediaControlsThemeSection
 import com.tk.quicksearch.widgets.widgetConfigScreen.components.WidgetLoadingState
@@ -262,6 +263,7 @@ fun WidgetConfigScreen(
                 )
                 if (isAtAGlance) {
                     WidgetTextSizeSection(state = constrainedState, onStateChange = onConstrainedStateChange)
+                    AtAGlanceEmptyDateToggle(state = constrainedState, onStateChange = onConstrainedStateChange)
                 }
                 if (widgetVariant == WidgetVariant.STANDARD) {
                     WidgetSearchIconSection(

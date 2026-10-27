@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
+import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 
@@ -44,6 +46,24 @@ fun WidgetToggleSection(
                 }
                 onStateChange(state.copy(showLabel = enabled))
             },
+        )
+    }
+}
+
+/** At a Glance widget: whether it shows today's date or stays blank when there are no items. */
+@Composable
+fun AtAGlanceEmptyDateToggle(
+    state: WidgetPreferences,
+    onStateChange: (WidgetPreferences) -> Unit,
+) {
+    SettingsCard(modifier = androidx.compose.ui.Modifier.fillMaxWidth()) {
+        SettingsToggleRow(
+            title = stringResource(R.string.widget_toggle_show_empty_date),
+            checked = state.showEmptyDate,
+            onCheckedChange = { onStateChange(state.copy(showEmptyDate = it)) },
+            isFirstItem = true,
+            isLastItem = true,
+            showDivider = false,
         )
     }
 }

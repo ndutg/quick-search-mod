@@ -78,6 +78,7 @@ internal object WidgetDefaults {
     const val SHOW_LABEL = true
     const val ICON_SIZE_SCALE = 1.15f
     const val TEXT_SCALE = 1f
+    const val SHOW_EMPTY_DATE = true
 
     val SEARCH_ICON_DISPLAY = SearchIconDisplay.LEFT
 
@@ -144,6 +145,7 @@ private object WidgetKeys {
     val CUSTOM_BUTTON_5 = stringPreferencesKey("quick_search_widget_custom_button_5")
     val NOTE_ID = longPreferencesKey("quick_search_widget_note_id")
     val GLANCE_ITEMS = stringPreferencesKey("quick_search_widget_glance_items")
+    val SHOW_EMPTY_DATE = booleanPreferencesKey("quick_search_widget_show_empty_date")
 }
 
 /** Preferences for the Quick Search widget appearance and behavior. */
@@ -176,6 +178,8 @@ data class WidgetPreferences(
     val noteId: Long? = null,
     /** The At a Glance widget's own item toggles by key; items not in it follow the app's. */
     val glanceItems: Map<String, Boolean> = emptyMap(),
+    /** Whether the At a Glance widget shows today's date when it has no items, or stays blank. */
+    val showEmptyDate: Boolean = WidgetDefaults.SHOW_EMPTY_DATE,
 ) : Parcelable {
     companion object {
         /** Default widget preferences instance. */
@@ -326,6 +330,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         customButtons = customButtons,
         noteId = this[WidgetKeys.NOTE_ID],
         glanceItems = decodeGlanceItems(this[WidgetKeys.GLANCE_ITEMS]),
+        showEmptyDate = this[WidgetKeys.SHOW_EMPTY_DATE] ?: WidgetDefaults.SHOW_EMPTY_DATE,
     ).coerceToValidRanges()
 }
 
@@ -374,6 +379,7 @@ fun MutablePreferences.applyWidgetPreferences(
     } else {
         this[WidgetKeys.GLANCE_ITEMS] = org.json.JSONObject(validated.glanceItems).toString()
     }
+    this[WidgetKeys.SHOW_EMPTY_DATE] = validated.showEmptyDate
 }
 
 private fun decodeGlanceItems(raw: String?): Map<String, Boolean> {
