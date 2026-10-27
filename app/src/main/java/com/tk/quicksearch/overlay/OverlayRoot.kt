@@ -28,6 +28,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -66,6 +67,7 @@ import com.tk.quicksearch.search.searchScreen.components.NumberKeyboardOperatorP
 import com.tk.quicksearch.settings.settingsDetailScreen.CustomToolNavigationMemory
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailType
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.searchEngines.inline.LocalInsetFullBleedHorizontalExtension
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.isLandscape
 import com.tk.quicksearch.shared.util.isTablet
@@ -451,127 +453,133 @@ fun OverlayRoot(
                                                 modifier = Modifier.fillMaxSize(),
                                         )
 
-                                        SearchRoute(
-                                                modifier = Modifier.fillMaxSize(),
-                                                viewModel = viewModel,
-                                                isOverlayPresentation = true,
-                                                overlaySnackbarHostState = overlaySnackbarHostState,
-                                                onOverlayNumberKeyboardUiChanged = {
-                                                    manuallySwitched, isImeOpen ->
-                                                    overlayManualNumberKeyboard = manuallySwitched
-                                                    overlayImeVisible = isImeOpen
-                                                },
-                                                onWelcomeAnimationCompleted = {
-                                                        viewModel.onSearchBarWelcomeAnimationCompleted()
-                                                },
-                                                onOverlayDismissRequest = { handleClose() },
-                                                onSettingsClick = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType =
-                                                                        SettingsNavigationMemory
-                                                                                .getLastOpenedSettingsDetail(),
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onOpenNotesDetail = {
-                                                        val destination =
-                                                                if (it != null) {
-                                                                        SettingsDetailType
-                                                                                .NOTE_EDITOR
-                                                                } else {
-                                                                        SettingsDetailType.NOTES
-                                                                }
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType = destination,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onOpenNotificationHistory = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType =
-                                                                        SettingsDetailType
-                                                                                .NOTIFICATION_HISTORY,
-                                                        )
-                                                        handleClose()
-                                                },                                                onOpenWidgetsPanelFromSwipe = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openWidgetsPanel = true,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onSearchEngineLongPress = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType =
-                                                                        SettingsDetailType
-                                                                                .SEARCH_ENGINES,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onCustomizeSearchEnginesClick = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType =
-                                                                        SettingsDetailType
-                                                                                .SEARCH_ENGINES,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onOpenAiSearchConfigure = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType =
-                                                                        SettingsDetailType
-                                                                                .GEMINI_API_CONFIG,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onOpenToolsSettings = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType = SettingsDetailType.TOOLS,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onOpenCustomToolSettings = { toolId ->
-                                                        CustomToolNavigationMemory.setPendingToolId(toolId)
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType = SettingsDetailType.CUSTOM_TOOL_EDITOR,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onOpenReleaseNotesFeatures = {
-                                                        OverlayModeController.openMainActivity(
-                                                                context,
-                                                                openSettings = true,
-                                                                settingsDetailType =
-                                                                        SettingsDetailType.FEATURES_LIST,
-                                                        )
-                                                        handleClose()
-                                                },
-                                                onOpenAppSettingDestination = { destination ->
-                                                        handleOverlayAppSettingDestination(
-                                                                context = context,
-                                                                destination = destination,
-                                                                viewModel = viewModel,
-                                                                autoCloseOverlay = uiState.autoCloseOverlay,
-                                                                onCloseRequested = handleClose,
-                                                        )
-                                                },
-                                        )
+                                        // The overlay's content padding is wider than the search screen's, so the
+                                        // full-bleed engine card has to reach further to meet the overlay's edges.
+                                        CompositionLocalProvider(
+                                                LocalInsetFullBleedHorizontalExtension provides DesignTokens.SpacingXLarge,
+                                        ) {
+                                            SearchRoute(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    viewModel = viewModel,
+                                                    isOverlayPresentation = true,
+                                                    overlaySnackbarHostState = overlaySnackbarHostState,
+                                                    onOverlayNumberKeyboardUiChanged = {
+                                                        manuallySwitched, isImeOpen ->
+                                                        overlayManualNumberKeyboard = manuallySwitched
+                                                        overlayImeVisible = isImeOpen
+                                                    },
+                                                    onWelcomeAnimationCompleted = {
+                                                            viewModel.onSearchBarWelcomeAnimationCompleted()
+                                                    },
+                                                    onOverlayDismissRequest = { handleClose() },
+                                                    onSettingsClick = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType =
+                                                                            SettingsNavigationMemory
+                                                                                    .getLastOpenedSettingsDetail(),
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onOpenNotesDetail = {
+                                                            val destination =
+                                                                    if (it != null) {
+                                                                            SettingsDetailType
+                                                                                    .NOTE_EDITOR
+                                                                    } else {
+                                                                            SettingsDetailType.NOTES
+                                                                    }
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType = destination,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onOpenNotificationHistory = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType =
+                                                                            SettingsDetailType
+                                                                                    .NOTIFICATION_HISTORY,
+                                                            )
+                                                            handleClose()
+                                                    },                                                onOpenWidgetsPanelFromSwipe = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openWidgetsPanel = true,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onSearchEngineLongPress = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType =
+                                                                            SettingsDetailType
+                                                                                    .SEARCH_ENGINES,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onCustomizeSearchEnginesClick = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType =
+                                                                            SettingsDetailType
+                                                                                    .SEARCH_ENGINES,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onOpenAiSearchConfigure = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType =
+                                                                            SettingsDetailType
+                                                                                    .GEMINI_API_CONFIG,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onOpenToolsSettings = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType = SettingsDetailType.TOOLS,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onOpenCustomToolSettings = { toolId ->
+                                                            CustomToolNavigationMemory.setPendingToolId(toolId)
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType = SettingsDetailType.CUSTOM_TOOL_EDITOR,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onOpenReleaseNotesFeatures = {
+                                                            OverlayModeController.openMainActivity(
+                                                                    context,
+                                                                    openSettings = true,
+                                                                    settingsDetailType =
+                                                                            SettingsDetailType.FEATURES_LIST,
+                                                            )
+                                                            handleClose()
+                                                    },
+                                                    onOpenAppSettingDestination = { destination ->
+                                                            handleOverlayAppSettingDestination(
+                                                                    context = context,
+                                                                    destination = destination,
+                                                                    viewModel = viewModel,
+                                                                    autoCloseOverlay = uiState.autoCloseOverlay,
+                                                                    onCloseRequested = handleClose,
+                                                            )
+                                                    },
+                                            )
+                                        }
                                 }
                         }
 
