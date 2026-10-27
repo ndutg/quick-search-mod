@@ -12,6 +12,8 @@ import com.tk.quicksearch.widgets.searchWidget.SearchWidget
 class CustomButtonsWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = SearchWidget(WidgetVariant.CUSTOM_BUTTONS_ONLY)
 
+    // ACTION_WALLPAPER_CHANGED is deprecated but still the broadcast that signals a new wallpaper.
+    @Suppress("DEPRECATION")
     override fun onReceive(
         context: Context,
         intent: Intent,

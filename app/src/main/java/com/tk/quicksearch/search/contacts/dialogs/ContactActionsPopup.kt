@@ -38,12 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -75,6 +73,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.runtime.rememberCoroutineScope
+import com.tk.quicksearch.shared.util.writeText
+import kotlinx.coroutines.launch
 
 internal sealed interface ContactActionsPopupState {
     data class ContactActions(
@@ -122,7 +124,8 @@ internal fun ContactActionsPopup(
     val hasMultipleNumbers = contactInfo.phoneNumbers.size > 1
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val clipboardScope = rememberCoroutineScope()
     val addToHomeHandler = remember(context) { AddToHomeHandler(context) }
     val maxInnerCardHeight = configuration.screenHeightDp.dp * CONTACT_ACTIONS_MAX_CARD_HEIGHT_RATIO
 
@@ -336,7 +339,7 @@ internal fun ContactActionsPopup(
                                     interactionSource = remember { MutableInteractionSource() },
                                     onClick = {},
                                     onLongClick = {
-                                        clipboardManager.setText(AnnotatedString(phoneNumber))
+                                        clipboardScope.launch { clipboard.writeText(phoneNumber) }
                                     },
                                 ),
                         )

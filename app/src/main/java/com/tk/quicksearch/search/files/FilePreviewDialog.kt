@@ -15,22 +15,28 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,94 +58,148 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileTypeUtils
-import com.tk.quicksearch.shared.ui.components.AppBottomSheet
+import com.tk.quicksearch.search.utils.FileUtils
+import com.tk.quicksearch.shared.ui.components.PreserveHostKeyboardStateEffect
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private val PREVIEW_CORNER_RADIUS = 12.dp
+private val PREVIEW_CORNER_RADIUS = 16.dp
+private val DIALOG_MAX_WIDTH = 640.dp
+private const val DIALOG_HEIGHT_FRACTION = 0.85f
+private val ACTION_BUTTON_HEIGHT = 52.dp
+private val ACTION_ICON_SIZE = 20.dp
 private const val MIN_SCALE = 1f
 private const val MAX_SCALE = 8f
 
 @Composable
-fun FilePreviewBottomSheet(
+fun FilePreviewDialog(
     deviceFile: DeviceFile,
     onDismiss: () -> Unit,
     onOpen: () -> Unit,
     onShare: () -> Unit,
 ) {
-    AppBottomSheet(onDismissRequest = onDismiss) {
-        Column(
+    PreserveHostKeyboardStateEffect()
+    val dialogHeight = LocalConfiguration.current.screenHeightDp.dp * DIALOG_HEIGHT_FRACTION
+    val title = remember(deviceFile.displayName) {
+        FileUtils.getFileNameWithoutExtension(deviceFile.displayName)
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Surface(
             modifier = Modifier
+                .widthIn(max = DIALOG_MAX_WIDTH)
                 .fillMaxWidth()
-                .fillMaxHeight(0.85f),
+                .padding(horizontal = DesignTokens.SpacingLarge)
+                .height(dialogHeight),
+            shape = DesignTokens.ShapeXLarge,
+            color = AppColors.DialogBackground,
         ) {
-            Text(
-                text = deviceFile.displayName,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = DesignTokens.SpacingLarge),
+            Column(modifier = Modifier.fillMaxSize()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = DesignTokens.SpacingLarge,
+                            end = DesignTokens.SpacingXSmall,
+                            top = DesignTokens.SpacingXSmall,
+                        ),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = stringResource(R.string.common_close),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = DesignTokens.SpacingMedium)
+                        .clip(RoundedCornerShape(PREVIEW_CORNER_RADIUS))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                ) {
+                    when {
+                        FileTypeUtils.isPdf(deviceFile) -> PdfPreview(deviceFile)
+                        FileTypeUtils.isImage(deviceFile) -> ImagePreview(deviceFile)
+                    }
+                }
+
+                FilePreviewActions(onOpen = onOpen, onShare = onShare)
+            }
+        }
+    }
+}
+
+@Composable
+private fun FilePreviewActions(
+    onOpen: () -> Unit,
+    onShare: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(DesignTokens.SpacingMedium),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FilledTonalIconButton(
+            onClick = onShare,
+            modifier = Modifier.size(ACTION_BUTTON_HEIGHT),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Share,
+                contentDescription = stringResource(R.string.action_share),
+                modifier = Modifier.size(ACTION_ICON_SIZE),
             )
-
-            Spacer(modifier = Modifier.height(DesignTokens.SpacingMedium))
-
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = DesignTokens.SpacingLarge)
-                    .clip(RoundedCornerShape(PREVIEW_CORNER_RADIUS)),
-            ) {
-                when {
-                    FileTypeUtils.isPdf(deviceFile) -> PdfPreview(deviceFile)
-                    FileTypeUtils.isImage(deviceFile) -> ImagePreview(deviceFile)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(DesignTokens.SpacingMedium))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = DesignTokens.SpacingLarge)
-                    .padding(bottom = DesignTokens.SpacingLarge),
-                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-            ) {
-                OutlinedButton(
-                    onClick = onShare,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Share,
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = DesignTokens.SpacingXSmall),
-                    )
-                    Text(stringResource(R.string.action_share))
-                }
-                Button(
-                    onClick = onOpen,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = DesignTokens.SpacingXSmall),
-                    )
-                    Text(stringResource(R.string.action_open))
-                }
-            }
+        }
+        Button(
+            onClick = onOpen,
+            modifier = Modifier
+                .weight(1f)
+                .height(ACTION_BUTTON_HEIGHT),
+            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
+                contentDescription = null,
+                modifier = Modifier.size(ACTION_ICON_SIZE),
+            )
+            Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+            Text(
+                text = stringResource(R.string.action_open),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
     }
 }

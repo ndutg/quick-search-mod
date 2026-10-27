@@ -48,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -73,6 +72,8 @@ import com.tk.quicksearch.tools.aiSearch.TavilyWebSearchMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.platform.LocalClipboard
+import com.tk.quicksearch.shared.util.readText
 
 private val CardContentVerticalPadding = DesignTokens.CardVerticalPadding + DesignTokens.SpacingSmall
 
@@ -201,19 +202,21 @@ private fun TavilyApiKeyCard(
     onSaveApiKey: (String?) -> Unit,
     onModeChange: (TavilyWebSearchMode) -> Unit,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val clipboardScope = rememberCoroutineScope()
     var apiKeyInput by remember { mutableStateOf("") }
     val trimmedKey = apiKeyInput.trim()
     val hasSavedKey = apiKeyLast4 != null
 
     fun pasteFromClipboard() {
-        apiKeyInput =
-            clipboardManager
-                .getText()
-                ?.text
-                ?.trim()
-                ?.takeIf { it.isNotEmpty() }
-                .orEmpty()
+        clipboardScope.launch {
+            apiKeyInput =
+                clipboard
+                    .readText()
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                    .orEmpty()
+        }
     }
 
     SettingsCard(modifier = Modifier.fillMaxWidth()) {
@@ -401,7 +404,8 @@ private fun AddCustomProviderCard(
     isSaving: Boolean,
     onSave: (baseUrl: String, apiKey: String) -> Unit,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val clipboardScope = rememberCoroutineScope()
     var baseUrlInput by rememberSaveable { mutableStateOf("") }
     var apiKeyInput by rememberSaveable { mutableStateOf("") }
     var isExpanded by rememberSaveable { mutableStateOf(false) }
@@ -414,13 +418,14 @@ private fun AddCustomProviderCard(
             apiKeyInput.trim().isNotBlank()
 
     fun pasteKeyFromClipboard() {
-        apiKeyInput =
-            clipboardManager
-                .getText()
-                ?.text
-                ?.trim()
-                ?.takeIf { it.isNotEmpty() }
-                .orEmpty()
+        clipboardScope.launch {
+            apiKeyInput =
+                clipboard
+                    .readText()
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                    .orEmpty()
+        }
     }
 
     SettingsCard(modifier = Modifier.fillMaxWidth()) {

@@ -36,6 +36,8 @@ private fun <T : Parcelable> Intent.getParcelableExtraCompat(
         getParcelableExtra(key) as? T
     }
 
+// ACTION_CREATE_SHORTCUT pickers still return their result in the legacy EXTRA_SHORTCUT_* extras.
+@Suppress("DEPRECATION")
 fun parseCustomShortcutFromPickerResult(
     resultData: Intent?,
     context: Context,
@@ -86,6 +88,7 @@ fun parseCustomShortcutFromPickerResult(
     return filterShortcuts(listOf(shortcut), packageManager, context).firstOrNull()
 }
 
+@Suppress("DEPRECATION")
 private fun extractCustomShortcutIconBase64(data: Intent, context: Context): String? {
     val directBitmap =
         data.getParcelableExtraCompat(Intent.EXTRA_SHORTCUT_ICON, Bitmap::class.java)

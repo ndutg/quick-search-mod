@@ -361,74 +361,76 @@ internal fun PriorityReorderDialog(
                         )
                     },
                 ) { index, item, isDragging ->
-                    if (index > 0) {
-                        HorizontalDivider(color = AppColors.SettingsDivider)
-                    }
-                    Surface(
-                        color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Row(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .longPressDraggableHandle(
-                                        onDragStarted = {
-                                            performHapticFeedbackSafely(
-                                                view,
-                                                HapticFeedbackConstantsCompat.GESTURE_START,
-                                            )
-                                        },
-                                        onDragStopped = {
-                                            performHapticFeedbackSafely(
-                                                view,
-                                                HapticFeedbackConstantsCompat.GESTURE_END,
-                                            )
-                                        },
-                                    )
-                                    .padding(
-                                        vertical =
-                                            if (onItemEnabledChange != null) {
-                                                DesignTokens.SpacingXSmall
-                                            } else {
-                                                DesignTokens.SpacingMedium
-                                            },
-                                        horizontal = DesignTokens.SpacingSmall,
-                                    ),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                    ReorderableItem {
+                        if (index > 0) {
+                            HorizontalDivider(color = AppColors.SettingsDivider)
+                        }
+                        Surface(
+                            color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent,
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Icon(
-                                imageVector = Icons.Rounded.DragHandle,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Text(
-                                text =
-                                    stringResource(
-                                        SearchSectionUiMetadataRegistry
-                                            .metadataFor(item)
-                                            .sectionLabelRes,
-                                    ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.weight(1f),
-                            )
-                            if (onItemEnabledChange != null) Switch(
-                                modifier = Modifier.scale(0.7f),
-                                checked = item !in disabledSections,
-                                onCheckedChange = { enabled ->
-                                    if (!enabled && items.count { it !in disabledSections } <= 1 && item !in disabledSections) {
-                                        Toast.makeText(
-                                            view.context,
-                                            view.context.getString(R.string.settings_sections_at_least_one_required),
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                    } else {
-                                        onItemEnabledChange(item, enabled)
-                                    }
-                                },
-                            )
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .longPressDraggableHandle(
+                                            onDragStarted = {
+                                                performHapticFeedbackSafely(
+                                                    view,
+                                                    HapticFeedbackConstantsCompat.GESTURE_START,
+                                                )
+                                            },
+                                            onDragStopped = {
+                                                performHapticFeedbackSafely(
+                                                    view,
+                                                    HapticFeedbackConstantsCompat.GESTURE_END,
+                                                )
+                                            },
+                                        )
+                                        .padding(
+                                            vertical =
+                                                if (onItemEnabledChange != null) {
+                                                    DesignTokens.SpacingXSmall
+                                                } else {
+                                                    DesignTokens.SpacingMedium
+                                                },
+                                            horizontal = DesignTokens.SpacingSmall,
+                                        ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.DragHandle,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    text =
+                                        stringResource(
+                                            SearchSectionUiMetadataRegistry
+                                                .metadataFor(item)
+                                                .sectionLabelRes,
+                                        ),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                if (onItemEnabledChange != null) Switch(
+                                    modifier = Modifier.scale(0.7f),
+                                    checked = item !in disabledSections,
+                                    onCheckedChange = { enabled ->
+                                        if (!enabled && items.count { it !in disabledSections } <= 1 && item !in disabledSections) {
+                                            Toast.makeText(
+                                                view.context,
+                                                view.context.getString(R.string.settings_sections_at_least_one_required),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        } else {
+                                            onItemEnabledChange(item, enabled)
+                                        }
+                                    },
+                                )
+                            }
                         }
                     }
                 }

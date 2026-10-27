@@ -94,6 +94,8 @@ object SettingsBackupManager {
             STARTUP_SURFACE_PREFS_NAME,
             "app_cache",
             BasePreferences.ENCRYPTED_PREFS_NAME,
+            // API keys are exported in plain text only when the user opts in, via their own section.
+            BasePreferences.SECURE_PREFS_NAME,
             "app_launch_counts",
         )
 
