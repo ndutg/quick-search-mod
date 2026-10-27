@@ -161,100 +161,102 @@ fun SearchEngineListCard(
                     modifier = Modifier.fillMaxWidth(),
                 ) { index, engine, isDragging ->
                     key(engine.getId()) {
-                        val elevation by animateDpAsState(
-                            targetValue = if (isDragging) 4.dp else 0.dp,
-                            label = "elevation",
-                        )
+                        ReorderableItem {
+                            val elevation by animateDpAsState(
+                                targetValue = if (isDragging) 4.dp else 0.dp,
+                                label = "elevation",
+                            )
 
-                        Surface(
-                            shadowElevation = elevation,
-                            color = if (isDragging) MaterialTheme.colorScheme.surface else Color.Transparent,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Column {
-                                val engineInfo = (engine as? SearchTarget.Engine)?.engine
-                                val targetId = engine.getId()
-                                val shortcutCode = shortcutCodes[targetId].orEmpty()
-                                val isShortcutEnabled =
-                                    shortcutEnabled[targetId] ?: shortcutCode.isNotEmpty()
-                                SearchEngineRowContent(
-                                    engine = engine,
-                                    isEnabled = true,
-                                    onToggle = { enabled -> onToggleSearchEngine(engine, enabled) },
-                                    dragHandleModifier =
-                                        Modifier.longPressDraggableHandle(
-                                            onDragStarted = {
-                                                performHapticFeedbackSafely(
-                                                    view,
-                                                    HapticFeedbackConstantsCompat.GESTURE_START,
-                                                )
+                            Surface(
+                                shadowElevation = elevation,
+                                color = if (isDragging) MaterialTheme.colorScheme.surface else Color.Transparent,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Column {
+                                    val engineInfo = (engine as? SearchTarget.Engine)?.engine
+                                    val targetId = engine.getId()
+                                    val shortcutCode = shortcutCodes[targetId].orEmpty()
+                                    val isShortcutEnabled =
+                                        shortcutEnabled[targetId] ?: shortcutCode.isNotEmpty()
+                                    SearchEngineRowContent(
+                                        engine = engine,
+                                        isEnabled = true,
+                                        onToggle = { enabled -> onToggleSearchEngine(engine, enabled) },
+                                        dragHandleModifier =
+                                            Modifier.longPressDraggableHandle(
+                                                onDragStarted = {
+                                                    performHapticFeedbackSafely(
+                                                        view,
+                                                        HapticFeedbackConstantsCompat.GESTURE_START,
+                                                    )
+                                                },
+                                                onDragStopped = {
+                                                    performHapticFeedbackSafely(
+                                                        view,
+                                                        HapticFeedbackConstantsCompat.GESTURE_END,
+                                                    )
+                                                },
+                                            ),
+                                        allowDrag = true,
+                                        shortcutCode = shortcutCode,
+                                        shortcutEnabled = isShortcutEnabled,
+                                        onShortcutCodeChange =
+                                            setAliasCode?.let { { code -> it(engine, code) } },
+                                        onShortcutToggle =
+                                            engineInfo?.let {
+                                                setAliasEnabled?.let { { enabled -> it(engine, enabled) } }
                                             },
-                                            onDragStopped = {
-                                                performHapticFeedbackSafely(
-                                                    view,
-                                                    HapticFeedbackConstantsCompat.GESTURE_END,
-                                                )
+                                        showToggle = true,
+                                        switchEnabled = true,
+                                        amazonDomain =
+                                            if (engineInfo == SearchEngine.AMAZON) {
+                                                amazonDomain
+                                            } else {
+                                                null
                                             },
-                                        ),
-                                    allowDrag = true,
-                                    shortcutCode = shortcutCode,
-                                    shortcutEnabled = isShortcutEnabled,
-                                    onShortcutCodeChange =
-                                        setAliasCode?.let { { code -> it(engine, code) } },
-                                    onShortcutToggle =
-                                        engineInfo?.let {
-                                            setAliasEnabled?.let { { enabled -> it(engine, enabled) } }
-                                        },
-                                    showToggle = true,
-                                    switchEnabled = true,
-                                    amazonDomain =
-                                        if (engineInfo == SearchEngine.AMAZON) {
-                                            amazonDomain
-                                        } else {
-                                            null
-                                        },
-                                    onSetAmazonDomain =
-                                        if (engineInfo == SearchEngine.AMAZON) {
-                                            onSetAmazonDomain
-                                        } else {
-                                            null
-                                        },
-                                    onMoveToTop =
-                                        if (index > 0) {
-                                            {
-                                                val newOrder =
-                                                    enabledEngines.toMutableList().apply {
-                                                        add(0, removeAt(index))
-                                                    }
-                                                onReorderSearchEngines(newOrder + disabledEngines)
-                                            }
-                                        } else {
-                                            null
-                                        },
-                                    onMoveToBottom =
-                                        if (index < enabledEngines.lastIndex) {
-                                            {
-                                                val newOrder =
-                                                    enabledEngines.toMutableList().apply {
-                                                        add(enabledEngines.lastIndex, removeAt(index))
-                                                    }
-                                                onReorderSearchEngines(newOrder + disabledEngines)
-                                            }
-                                        } else {
-                                            null
-                                        },
-                                    onCustomEngineClick =
-                                        if (engine is SearchTarget.Custom) {
-                                            { customEngineToEdit = engine.custom }
-                                        } else {
-                                            null
-                                        },
-                                    existingShortcuts = shortcutCodes,
-                                    isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled,
-                                )
+                                        onSetAmazonDomain =
+                                            if (engineInfo == SearchEngine.AMAZON) {
+                                                onSetAmazonDomain
+                                            } else {
+                                                null
+                                            },
+                                        onMoveToTop =
+                                            if (index > 0) {
+                                                {
+                                                    val newOrder =
+                                                        enabledEngines.toMutableList().apply {
+                                                            add(0, removeAt(index))
+                                                        }
+                                                    onReorderSearchEngines(newOrder + disabledEngines)
+                                                }
+                                            } else {
+                                                null
+                                            },
+                                        onMoveToBottom =
+                                            if (index < enabledEngines.lastIndex) {
+                                                {
+                                                    val newOrder =
+                                                        enabledEngines.toMutableList().apply {
+                                                            add(enabledEngines.lastIndex, removeAt(index))
+                                                        }
+                                                    onReorderSearchEngines(newOrder + disabledEngines)
+                                                }
+                                            } else {
+                                                null
+                                            },
+                                        onCustomEngineClick =
+                                            if (engine is SearchTarget.Custom) {
+                                                { customEngineToEdit = engine.custom }
+                                            } else {
+                                                null
+                                            },
+                                        existingShortcuts = shortcutCodes,
+                                        isSearchEngineAliasSuffixEnabled = isSearchEngineAliasSuffixEnabled,
+                                    )
 
-                                if (index != enabledEngines.lastIndex) {
-                                    SearchEngineDivider()
+                                    if (index != enabledEngines.lastIndex) {
+                                        SearchEngineDivider()
+                                    }
                                 }
                             }
                         }

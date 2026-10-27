@@ -642,6 +642,8 @@ private fun jsonToIntents(array: JSONArray?): List<Intent> {
     return intents
 }
 
+// Extras can hold any type, so they are read untyped and matched below.
+@Suppress("DEPRECATION")
 private fun bundleToJson(bundle: android.os.Bundle?): JSONArray? {
     if (bundle == null || bundle.isEmpty) return null
     val extras = JSONArray()

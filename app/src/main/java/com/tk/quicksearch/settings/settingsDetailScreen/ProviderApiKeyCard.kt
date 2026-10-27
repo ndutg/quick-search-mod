@@ -43,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -72,6 +71,8 @@ import com.tk.quicksearch.tools.aiSearch.TavilyWebSearchMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.platform.LocalClipboard
+import com.tk.quicksearch.shared.util.readText
 
 @Composable
 internal fun ProviderApiKeyCard(
@@ -81,7 +82,8 @@ internal fun ProviderApiKeyCard(
     isSavingApiKey: Boolean,
     onSetApiKey: (AiSearchLlmProviderId, String?) -> Unit,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val clipboardScope = rememberCoroutineScope()
     val inputByProvider = remember { mutableStateMapOf<AiSearchLlmProviderId, String>() }
     var apiKeyInput by remember(providerId) {
         mutableStateOf(inputByProvider[providerId].orEmpty())
@@ -95,18 +97,19 @@ internal fun ProviderApiKeyCard(
             DesignTokens.CardVerticalPadding
         }
     fun pasteFromClipboard() {
-        val pasted =
-            clipboardManager
-                .getText()
-                ?.text
-                ?.trim()
-                ?.takeIf { it.isNotEmpty() }
-                .orEmpty()
-        apiKeyInput = pasted
-        if (pasted.isNotEmpty()) {
-            inputByProvider[providerId] = pasted
-        } else {
-            inputByProvider.remove(providerId)
+        clipboardScope.launch {
+            val pasted =
+                clipboard
+                    .readText()
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                    .orEmpty()
+            apiKeyInput = pasted
+            if (pasted.isNotEmpty()) {
+                inputByProvider[providerId] = pasted
+            } else {
+                inputByProvider.remove(providerId)
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 
 /**
@@ -50,8 +51,14 @@ class WidgetConfigureTrampolineActivity : Activity() {
 
     private fun finishWith(resultCode: Int) {
         setResult(resultCode)
-        finish()
-        overridePendingTransition(0, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+            finish()
+        } else {
+            finish()
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, 0)
+        }
     }
 
     companion object {

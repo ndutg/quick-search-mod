@@ -11,7 +11,9 @@
         <exclude domain="sharedpref" path="app_session_state.xml"/>
         <!-- Exclude app usage cache to avoid restoring stale usage history -->
         <exclude domain="sharedpref" path="app_cache.xml"/>
-        <!-- Exclude encrypted prefs that store Gemini API key -->
+        <!-- Exclude encrypted API keys and personal context: the Keystore key that decrypts them never leaves the device -->
+        <exclude domain="sharedpref" path="secure_user_preferences.xml"/>
+        <!-- Exclude the legacy encrypted prefs, kept only until they are migrated -->
         <exclude domain="sharedpref" path="encrypted_user_preferences.xml"/>
         <!-- Exclude app launch counts and statistics -->
         <exclude domain="sharedpref" path="app_launch_counts.xml"/>
@@ -27,7 +29,9 @@
         <exclude domain="sharedpref" path="app_session_state.xml"/>
         <!-- Exclude app usage cache to avoid restoring stale usage history -->
         <exclude domain="sharedpref" path="app_cache.xml"/>
-        <!-- Exclude encrypted prefs that store Gemini API key -->
+        <!-- Exclude encrypted API keys and personal context: the Keystore key that decrypts them never leaves the device -->
+        <exclude domain="sharedpref" path="secure_user_preferences.xml"/>
+        <!-- Exclude the legacy encrypted prefs, kept only until they are migrated -->
         <exclude domain="sharedpref" path="encrypted_user_preferences.xml"/>
         <!-- Exclude app launch counts and statistics -->
         <exclude domain="sharedpref" path="app_launch_counts.xml"/>

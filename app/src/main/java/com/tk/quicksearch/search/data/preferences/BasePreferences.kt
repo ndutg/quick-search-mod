@@ -5,8 +5,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.tk.quicksearch.search.models.FileType
 import org.json.JSONArray
 
@@ -221,24 +219,7 @@ abstract class BasePreferences(
     // Initialize only when needed so non-sensitive preference reads never hit keystore Binder work.
     // If encryption cannot be initialized, sensitive data will not be persisted.
     protected val encryptedPrefs: SharedPreferences? by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        try {
-            val masterKey =
-                MasterKey
-                    .Builder(appContext)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
-
-            EncryptedSharedPreferences.create(
-                appContext,
-                ENCRYPTED_PREFS_NAME,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to create EncryptedSharedPreferences", e)
-            null
-        }
+        SecurePreferencesStore.open(appContext)
     }
 
     // ============================================================================
@@ -433,7 +414,9 @@ abstract class BasePreferences(
         const val FIRST_LAUNCH_PREFS_NAME = "first_launch_state"
         const val TIMING_PREFS_NAME = "app_timing_state"
         const val SESSION_PREFS_NAME = "app_session_state"
+        // Old androidx.security-crypto store; read only to migrate existing secrets.
         const val ENCRYPTED_PREFS_NAME = "encrypted_user_preferences"
+        const val SECURE_PREFS_NAME = "secure_user_preferences"
 
         // App preferences keys
         const val KEY_HIDDEN_SUGGESTIONS = "hidden_packages_suggestions"

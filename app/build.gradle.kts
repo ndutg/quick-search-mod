@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.tk.quicksearch"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.tk.quicksearch"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 102
         versionName = "4.8"
         manifestPlaceholders["profileCaptureExported"] =
@@ -173,11 +173,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-// Gradle 8.13+ validates implicit task input/output dependencies.
-// The OSS licenses plugin’s cleanup task consumes the generated dependencies file,
-// so we explicitly wire the task dependency to keep builds deterministic.
-tasks.matching { it.name == "debugOssLicensesCleanUp" }.configureEach {
-    dependsOn("debugOssDependencyTask")
 }

@@ -10,7 +10,7 @@ import androidx.compose.material.icons.rounded.Cake
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.PhoneMissed
+import androidx.compose.material.icons.automirrored.rounded.PhoneMissed
 import androidx.compose.material.icons.rounded.Timer
 import com.tk.quicksearch.R
 import com.tk.quicksearch.customInfo.CustomInfoItem
@@ -293,7 +293,7 @@ internal class AtAGlanceWidgetRowLoader(
         return listOf(
             AtAGlanceWidgetRow(
                 key = "missed-calls",
-                icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.PhoneMissed),
+                icon = AtAGlanceWidgetIcon.Vector(Icons.AutoMirrored.Rounded.PhoneMissed),
                 title = title,
                 subtitle = calls.mapNotNull(::callerLabel).distinct().joinToString(", ").ifBlank { null },
                 tap =

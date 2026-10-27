@@ -467,6 +467,7 @@ open class MainActivity : FragmentActivity() {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             taskInfo.taskId
                         } else {
+                            @Suppress("DEPRECATION")
                             taskInfo.id
                         }
                     appTaskId == taskId
@@ -486,7 +487,11 @@ open class MainActivity : FragmentActivity() {
                     "text",
                 )
                 .asSequence()
-                .mapNotNull { key -> intent.extras?.get(key)?.toString()?.trim() }
+                // Callers put the query under any of these keys with any type, so read it untyped.
+                .mapNotNull { key ->
+                    @Suppress("DEPRECATION")
+                    intent.extras?.get(key)?.toString()?.trim()
+                }
                 .firstOrNull { it.isNotBlank() }
 
         return when (intent.action) {

@@ -38,10 +38,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.text.ClickableText
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.LinkAnnotation
 
 private sealed interface MarkdownBlock {
     data class Heading(val level: Int, val text: String) : MarkdownBlock
@@ -120,25 +120,19 @@ internal fun RenderMarkdownDocument(
                 }
 
                 is MarkdownBlock.Paragraph -> {
-                    val annotatedText = parseInlineMarkdown(block.text, linkColor)
-                    ClickableText(
+                    val annotatedText =
+                        parseInlineMarkdown(block.text, linkColor) { url ->
+                            runCatching {
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse(url)),
+                                )
+                            }
+                        }
+                    Text(
                         text = annotatedText,
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.onSurface,
                         ),
-                        onClick = { offset ->
-                            annotatedText.getStringAnnotations(
-                                tag = LINK_ANNOTATION_TAG,
-                                start = offset,
-                                end = offset,
-                            ).firstOrNull()?.let { annotation ->
-                                runCatching {
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item)),
-                                    )
-                                }
-                            }
-                        },
                     )
                 }
 
@@ -302,7 +296,6 @@ private fun extractSectionLinks(blocks: List<MarkdownBlock>): List<SectionLink> 
 }
 
 private const val VERSION_MARKDOWN_PREFIX = "**Version**"
-private const val LINK_ANNOTATION_TAG = "url"
 private const val SECTION_HEADING_LEVEL = 3
 private const val MAX_SECTION_HEADING_LEVEL = 4
 private val SECTION_SCROLL_TOP_OFFSET_DP = 4.dp
@@ -327,22 +320,12 @@ private fun MarkdownListItem(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(end = DesignTokens.SpacingMedium),
         )
-        val annotatedText = parseInlineMarkdown(text, linkColor)
-        ClickableText(
-            text = annotatedText,
+        Text(
+            text = parseInlineMarkdown(text, linkColor, onLinkClick),
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface,
             ),
             modifier = Modifier.weight(1f),
-            onClick = { offset ->
-                annotatedText.getStringAnnotations(
-                    tag = LINK_ANNOTATION_TAG,
-                    start = offset,
-                    end = offset,
-                ).firstOrNull()?.let { annotation ->
-                    onLinkClick(annotation.item)
-                }
-            },
         )
     }
 }
@@ -420,7 +403,12 @@ private fun isHorizontalRule(line: String): Boolean {
     return withoutSpaces.length >= 3 && withoutSpaces.all { it == withoutSpaces.first() }
 }
 
-private fun parseInlineMarkdown(text: String, linkColor: Color? = null): AnnotatedString {
+/** [onLinkClick], when set, makes `[text](url)` links tappable; otherwise links render as plain styled text. */
+private fun parseInlineMarkdown(
+    text: String,
+    linkColor: Color? = null,
+    onLinkClick: ((String) -> Unit)? = null,
+): AnnotatedString {
     return buildAnnotatedString {
         var index = 0
         while (index < text.length) {
@@ -434,10 +422,9 @@ private fun parseInlineMarkdown(text: String, linkColor: Color? = null): Annotat
                         if (closeParen > closeBracket + 1) {
                             val linkText = text.substring(index + 1, closeBracket)
                             val url = text.substring(closeBracket + 2, closeParen)
-                            pushStringAnnotation(
-                                tag = LINK_ANNOTATION_TAG,
-                                annotation = url,
-                            )
+                            if (onLinkClick != null) {
+                                pushLink(LinkAnnotation.Clickable(tag = url) { onLinkClick(url) })
+                            }
                             if (linkColor != null) {
                                 pushStyle(
                                     SpanStyle(
@@ -448,7 +435,7 @@ private fun parseInlineMarkdown(text: String, linkColor: Color? = null): Annotat
                             }
                             append(parseInlineMarkdown(linkText, linkColor))
                             if (linkColor != null) pop()
-                            pop()
+                            if (onLinkClick != null) pop()
                             index = closeParen + 1
                         } else {
                             append(text[index])
@@ -464,7 +451,7 @@ private fun parseInlineMarkdown(text: String, linkColor: Color? = null): Annotat
                     val end = text.indexOf("**", index + 2)
                     if (end > index + 1) {
                         pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-                        append(parseInlineMarkdown(text.substring(index + 2, end), linkColor))
+                        append(parseInlineMarkdown(text.substring(index + 2, end), linkColor, onLinkClick))
                         pop()
                         index = end + 2
                     } else {
@@ -477,7 +464,7 @@ private fun parseInlineMarkdown(text: String, linkColor: Color? = null): Annotat
                     val end = text.indexOf("*", index + 1)
                     if (end > index) {
                         pushStyle(SpanStyle(fontStyle = FontStyle.Italic))
-                        append(parseInlineMarkdown(text.substring(index + 1, end), linkColor))
+                        append(parseInlineMarkdown(text.substring(index + 1, end), linkColor, onLinkClick))
                         pop()
                         index = end + 1
                     } else {
