@@ -72,7 +72,7 @@ import com.tk.quicksearch.shared.util.isTablet
 import com.tk.quicksearch.shared.util.WallpaperUtils
 import kotlinx.coroutines.delay
 
-private const val OVERLAY_WIDTH_PERCENT = 0.9f
+private const val OVERLAY_WIDTH_PERCENT = 0.95f
 private const val OVERLAY_TABLET_PORTRAIT_WIDTH_PERCENT = 0.85f
 private const val OVERLAY_TABLET_WIDTH_PERCENT = 0.65f
 private const val OVERLAY_MAX_HEIGHT_PERCENT = 0.95f
