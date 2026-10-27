@@ -1,6 +1,7 @@
 package com.tk.quicksearch.searchEngines.inline
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
@@ -87,6 +88,13 @@ private val INSET_CORNER_RADIUS = 28.dp
  * strip paints the card both of them live in, so the bar's insets and the distance the strip has to
  * reach down behind it are derived from the same numbers instead of being tuned separately.
  */
+/**
+ * How far the full-bleed card reaches past the content padding. The overlay provides its own wider
+ * content padding so its card meets the overlay's edges instead of the screen's.
+ */
+val LocalInsetFullBleedHorizontalExtension =
+    staticCompositionLocalOf { InsetSearchBarGeometry.FullBleedHorizontalExtension }
+
 object InsetSearchBarGeometry {
     /**
      * Matches `TextFieldDefaults.MinHeight`. Only a starting point: a large font scale grows the
@@ -103,11 +111,16 @@ object InsetSearchBarGeometry {
      * Used while the keyboard is open: nothing reserves space for the gesture handle then, so the
      * resting inset would only read as an empty gap around the card.
      */
-    private val FullBleedHorizontalExtension = DesignTokens.SpacingLarge
+    val FullBleedHorizontalExtension = DesignTokens.SpacingLarge
 
     /** Horizontal extension of the card, [fullBleedFraction] of the way from resting to full bleed. */
+    @Composable
     fun containerHorizontalExtension(fullBleedFraction: Float): Dp =
-        lerp(ContainerHorizontalExtension, FullBleedHorizontalExtension, fullBleedFraction)
+        lerp(
+            ContainerHorizontalExtension,
+            LocalInsetFullBleedHorizontalExtension.current,
+            fullBleedFraction,
+        )
 
     /** Pulls the bar in from the card's side edges. */
     val BarHorizontalInset = DesignTokens.SpacingSmall
