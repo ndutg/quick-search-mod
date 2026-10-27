@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.PhoneMissed
+import androidx.compose.material.icons.automirrored.rounded.PhoneMissed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -66,7 +66,8 @@ internal fun MissedCallsRow(
         }
     // The newest call from each app, phone app first.
     val appCalls = remember(calls) { calls.distinctBy { it.packageName }.sortedByDescending { it.fromPhoneApp } }
-    // GlanceStatusRow's layout, but with the dismiss button beside the title rather than centered.
+    val hasAppChips = appCalls.size > 1
+    // GlanceStatusRow's layout, but with app chips the dismiss button stays beside the title rather than centered.
     Row(
         modifier =
             Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(
@@ -74,6 +75,7 @@ internal fun MissedCallsRow(
                 top = DesignTokens.SpacingMedium,
                 bottom = DesignTokens.SpacingMedium,
             ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             modifier = Modifier.weight(1f).clickable { openCallHistory(context, calls.first()) },
@@ -85,7 +87,7 @@ internal fun MissedCallsRow(
             ) {
                 Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = Icons.Rounded.PhoneMissed,
+                        imageVector = Icons.AutoMirrored.Rounded.PhoneMissed,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                     )
@@ -109,7 +111,7 @@ internal fun MissedCallsRow(
                     }
                 }
             }
-            if (appCalls.size > 1) {
+            if (hasAppChips) {
                 Row(
                     modifier = Modifier.padding(start = 24.dp + DesignTokens.SpacingMedium, top = DesignTokens.SpacingXSmall),
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
@@ -126,9 +128,7 @@ internal fun MissedCallsRow(
         // A single phone call gets the notification's call back action as a pill beside the dismiss button.
         val callBackIntent = calls.singleOrNull()?.takeIf { it.fromPhoneApp }?.callBackIntent
         if (callBackIntent != null) {
-            Box(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(start = DesignTokens.SpacingSmall),
-            ) {
+            Box(modifier = Modifier.padding(start = DesignTokens.SpacingSmall)) {
                 GlanceActionChip(
                     label = stringResource(R.string.contact_method_call_label),
                     onClick = { callBackIntent.sendFromUserTap() },
@@ -145,7 +145,7 @@ internal fun MissedCallsRow(
             onClick = onDismiss,
             modifier =
                 Modifier
-                    .align(Alignment.Top)
+                    .align(if (hasAppChips) Alignment.Top else Alignment.CenterVertically)
                     .padding(start = DesignTokens.SpacingSmall)
                     .size(GlanceDismissButtonSize),
         ) {

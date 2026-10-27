@@ -10,6 +10,8 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 class SearchWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = SearchWidget()
 
+    // ACTION_WALLPAPER_CHANGED is deprecated but still the broadcast that signals a new wallpaper.
+    @Suppress("DEPRECATION")
     override fun onReceive(
         context: Context,
         intent: Intent,

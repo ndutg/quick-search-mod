@@ -30,7 +30,7 @@ import androidx.compose.material.icons.rounded.Contacts
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Label
+import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.AutoAwesome
@@ -316,7 +316,7 @@ internal fun SearchOptionsCard(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_nicknames_title),
                             description = stringResource(R.string.settings_nicknames_desc),
-                            icon = Icons.Rounded.Label,
+                            icon = Icons.AutoMirrored.Rounded.Label,
                             actionOnPress = onNavigateToNicknames,
                         ),
                     contentPadding =

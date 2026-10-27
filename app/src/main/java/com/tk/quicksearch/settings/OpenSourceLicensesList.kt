@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +28,8 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.withLink
 
 internal data class OpenSourceLicenseEntry(
     val title: String,
@@ -117,31 +118,23 @@ internal fun OpenSourceLicensesList(
             buildLicenseAnnotatedText(
                 text = selectedEntry!!.text,
                 linkColor = MaterialTheme.colorScheme.primary,
+                onUrlClick = { url ->
+                    runCatching {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    }
+                },
             )
         Text(
             text = selectedEntry!!.title,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        ClickableText(
+        Text(
             text = annotatedLicenseText,
             style =
                 MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface,
                 ),
-            onClick = { offset ->
-                val annotation =
-                    annotatedLicenseText.getStringAnnotations(
-                        tag = URL_TAG,
-                        start = offset,
-                        end = offset,
-                    ).firstOrNull() ?: return@ClickableText
-                runCatching {
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item)),
-                    )
-                }
-            },
         )
     }
 }
@@ -184,12 +177,12 @@ private object OpenSourceLicenseParser {
     }
 }
 
-private const val URL_TAG = "url"
 private val URL_REGEX = Regex("""https?://[^\s)]+""")
 
 private fun buildLicenseAnnotatedText(
     text: String,
     linkColor: Color,
+    onUrlClick: (String) -> Unit,
 ) =
     buildAnnotatedString {
         var cursor = 0
@@ -198,17 +191,17 @@ private fun buildLicenseAnnotatedText(
                 append(text.substring(cursor, match.range.first))
             }
             val url = match.value
-            pushStringAnnotation(tag = URL_TAG, annotation = url)
-            withStyle(
-                style =
-                    SpanStyle(
-                        color = linkColor,
-                        textDecoration = TextDecoration.Underline,
-                    ),
-            ) {
-                append(url)
+            withLink(LinkAnnotation.Clickable(tag = url) { onUrlClick(url) }) {
+                withStyle(
+                    style =
+                        SpanStyle(
+                            color = linkColor,
+                            textDecoration = TextDecoration.Underline,
+                        ),
+                ) {
+                    append(url)
+                }
             }
-            pop()
             cursor = match.range.last + 1
         }
         if (cursor < text.length) {

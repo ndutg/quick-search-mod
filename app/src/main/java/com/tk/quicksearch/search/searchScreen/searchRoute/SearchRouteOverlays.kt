@@ -121,7 +121,7 @@ internal fun SearchRouteOverlays(
         )
 
         previewFile?.let { file ->
-            com.tk.quicksearch.search.files.FilePreviewBottomSheet(
+            com.tk.quicksearch.search.files.FilePreviewDialog(
                 deviceFile = file,
                 onDismiss = onPreviewDismiss,
                 onOpen = {

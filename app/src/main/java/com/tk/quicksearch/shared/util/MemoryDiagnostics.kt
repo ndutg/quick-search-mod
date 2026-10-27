@@ -161,7 +161,7 @@ object MemoryDiagnostics {
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
     }
 
-    @Suppress("DEPRECATION")
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     private object MemoryCallbacks : ComponentCallbacks2 {
         override fun onTrimMemory(level: Int) {
             recordAsync("trim-memory:$level")
