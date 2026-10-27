@@ -58,13 +58,14 @@ internal fun rememberSearchBarGeometry(
     // With the keyboard closed the card floats above the gesture handle, which the system keeps
     // clear anyway. With the keyboard open nothing reserves that space, so the card spreads to the
     // screen edges and down onto the keyboard. Keyed on the IME animation target so the card starts
-    // moving together with the keyboard in both directions instead of after it settles.
+    // moving together with the keyboard in both directions instead of after it settles. The overlay
+    // has no gesture handle to clear, so its card always spans the overlay's full width.
     @OptIn(ExperimentalLayoutApi::class)
     val isImeOpeningOrOpen = WindowInsets.imeAnimationTarget.getBottom(density) > 0
     val insetEngineStripFullBleedFraction by
             animateFloatAsState(
                     targetValue =
-                            if (useInsetEngineStrip && !isOverlayPresentation && isImeOpeningOrOpen) {
+                            if (useInsetEngineStrip && (isOverlayPresentation || isImeOpeningOrOpen)) {
                                 1f
                             } else {
                                 0f
