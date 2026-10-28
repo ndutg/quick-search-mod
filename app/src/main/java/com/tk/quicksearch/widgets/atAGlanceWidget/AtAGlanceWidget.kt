@@ -174,9 +174,11 @@ class AtAGlanceWidget : GlanceAppWidget() {
         val dayColors = NoteWidgetColors.forWidget(config, isSystemDark = false)
         val nightColors = NoteWidgetColors.forWidget(config, isSystemDark = true)
 
+        // With no rows and no date there is nothing to sit on the card, so leave the widget transparent.
+        val isBlank = snapshot.rows.isEmpty() && !config.showEmptyDate
         val backgroundModifier =
             when {
-                config.backgroundAlpha <= 0f -> GlanceModifier
+                config.backgroundAlpha <= 0f || isBlank -> GlanceModifier
                 // Day/night colors let the launcher switch the card with the system theme.
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
                     GlanceModifier
