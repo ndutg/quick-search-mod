@@ -16,6 +16,7 @@ import com.tk.quicksearch.search.apps.invalidateAppIconCache
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -40,6 +41,7 @@ internal class SearchStaticDataDelegate(
     private val refreshRecentItems: () -> Unit,
 ) {
     private val pinningHandler get() = handlersProvider().pinningHandler
+    private var todayEventsReloadJob: Job? = null
     private val appSearchManager get() = handlersProvider().appSearchManager
     private val settingsSearchHandler get() = handlersProvider().settingsSearchHandler
     private val appShortcutSearchHandler get() = handlersProvider().appShortcutSearchHandler
@@ -245,17 +247,9 @@ internal class SearchStaticDataDelegate(
             calendarRepository.getEventsByIds(pinnedIds)
                 .sortedByPinnedOrder(userPreferences.getPinnedCalendarEventOrder()) { it.eventId }
         val excluded = calendarRepository.getEventsByIds(excludedIds)
-        val showTodayEvents = userPreferences.getShowTodayEvents()
-        val archivedIds = userPreferences.getArchivedTodayEventIds()
-        val today = if (showTodayEvents) {
-            calendarRepository.getTodayEvents()
-                .filterNot { excludedIds.contains(it.eventId) }
-                .filterNot { archivedIds.contains(it.eventId) }
-                .distinctBy { it.eventId }
-                .sortedBy { it.startMillis }
-        } else {
-            emptyList()
-        }
+        val todayEvents = if (userPreferences.getShowTodayEvents()) userPreferences.getTodayGlanceEvents(calendarRepository) else null
+        val today = todayEvents?.visible.orEmpty()
+        scheduleTodayEventsReload(todayEvents?.nextVisibleAtMillis)
 
         updateResultsState {
             it.copy(
@@ -265,6 +259,17 @@ internal class SearchStaticDataDelegate(
             )
         }
         StartupTrace.mark("QS.Home.CalendarAvailable")
+    }
+
+    /** Reloads when an all-day event reaches its morning start. */
+    private fun scheduleTodayEventsReload(atMillis: Long?) {
+        todayEventsReloadJob?.cancel()
+        if (atMillis == null) return
+        todayEventsReloadJob =
+            scope.launch(Dispatchers.IO) {
+                delay((atMillis - System.currentTimeMillis()).coerceAtLeast(0L) + 1_000L)
+                loadPinnedAndExcludedCalendarEvents()
+            }
     }
 
     fun setAppShortcutEnabled(

@@ -27,10 +27,13 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.searchScreen.shared.InformationCard
+import com.tk.quicksearch.search.searchScreen.shared.LocalCardlessStackSpacing
+import com.tk.quicksearch.search.searchScreen.shared.LocalSearchCardLayoutEnabled
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -76,9 +79,12 @@ private fun ColumnWithContent(
 ) {
     @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
+    // Flat (compact) cards have no container to fill, so they size to the answer.
+    val cardMinHeight = if (LocalSearchCardLayoutEnabled.current) AiResultCardMinHeight else 0.dp
     val cardModifier =
             Modifier.fillMaxWidth()
-                    .heightIn(min = AiResultCardMinHeight)
+                    .heightIn(min = cardMinHeight)
+                    .padding(bottom = if (showAttribution) compactAttributionCardBottomPadding() else 0.dp)
                     .let { baseModifier ->
                         if (copyText.isNullOrBlank()) {
                             baseModifier
@@ -105,7 +111,7 @@ private fun ColumnWithContent(
 
         if (showAttribution) {
             AiProviderAttributionRow(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(top = compactAttributionTopPadding()),
                     usedModelId = usedModelId,
                     llmProviderId = llmProviderId,
                     isClickable = isAttributionClickable,
@@ -115,6 +121,43 @@ private fun ColumnWithContent(
         }
     }
 }
+
+/**
+ * Gap between a flat (compact) card's bottom divider and the attribution row below it. The cards
+ * above pad their content so the space over the divider looks the same once text leading is counted.
+ */
+private val CompactAttributionDividerGap = 18.dp
+
+/**
+ * Extra space above an attribution row that follows a flat (compact) card. The card's divider is
+ * drawn half the stack spacing below the card, which leaves it almost touching the attribution.
+ */
+@Composable
+internal fun compactAttributionTopPadding(): Dp {
+    if (LocalSearchCardLayoutEnabled.current) return 0.dp
+    return CompactAttributionDividerGap + LocalCardlessStackSpacing.current / 2 - DesignTokens.SpacingSmall
+}
+
+/**
+ * Extra bottom padding for a flat (compact) card followed by an attribution row, so the space above
+ * its divider matches [CompactAttributionDividerGap] below it. [extra] covers content that ends
+ * closer to the card edge than the usual [DesignTokens.SpacingLarge] inset.
+ */
+@Composable
+internal fun compactAttributionCardBottomPadding(extra: Dp = DesignTokens.SpacingXSmall): Dp =
+        if (LocalSearchCardLayoutEnabled.current) 0.dp else extra
+
+/**
+ * Lines the attribution up with the card's content. Flat (compact) cards bleed their content
+ * [DesignTokens.SpacingSmall] past the slot, so the row drops that much of its inset to match.
+ */
+@Composable
+private fun attributionHorizontalPadding(): Dp =
+        if (LocalSearchCardLayoutEnabled.current) {
+            DesignTokens.SpacingLarge
+        } else {
+            DesignTokens.SpacingLarge - DesignTokens.SpacingSmall
+        }
 
 @Composable
 private fun informationAttributionContentColor(): Color =
@@ -208,7 +251,7 @@ internal fun AiProviderAttributionRow(
     val rowModifier =
             if (isClickable) {
                 modifier
-                        .padding(horizontal = DesignTokens.SpacingLarge)
+                        .padding(horizontal = attributionHorizontalPadding())
                         .combinedClickable(
                                 interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                                 indication = null,
@@ -216,7 +259,7 @@ internal fun AiProviderAttributionRow(
                                 onLongClick = onLongClick,
                         )
             } else {
-                modifier.padding(horizontal = DesignTokens.SpacingLarge)
+                modifier.padding(horizontal = attributionHorizontalPadding())
             }
     Row(
             modifier = rowModifier,
@@ -342,7 +385,7 @@ internal fun CalculatorAttributionRow(
                 else -> MaterialSymbols.Calculate
             }
     Row(
-            modifier = modifier.padding(horizontal = DesignTokens.SpacingLarge),
+            modifier = modifier.padding(horizontal = attributionHorizontalPadding()),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {

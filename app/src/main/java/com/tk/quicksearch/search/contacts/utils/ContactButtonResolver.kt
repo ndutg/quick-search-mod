@@ -39,6 +39,11 @@ object ContactButtonResolver {
                         it is ContactMethod.WhatsAppCall ||
                         it is ContactMethod.WhatsAppVideoCall
                 }
+            ContactButtonAction.WHATSAPP_BUSINESS_MESSAGE ->
+                methods.any {
+                    it is ContactMethod.CustomApp &&
+                        it.packageName == PackageConstants.WHATSAPP_BUSINESS_PACKAGE
+                }
             ContactButtonAction.TELEGRAM_MESSAGE ->
                 methods.any {
                     it is ContactMethod.TelegramMessage ||
@@ -111,7 +116,12 @@ object ContactButtonResolver {
             ContactButtonAction.WHATSAPP_BUSINESS_CALL,
             ContactButtonAction.WHATSAPP_BUSINESS_VIDEO_CALL,
             ->
-                (findMethod(contactInfo, resolved, phoneNumber) as? ContactMethod.CustomApp)
+                // The synced number can differ in format from the contact's number (e.g. missing
+                // country code), so fall back to any WhatsApp Business row for this contact.
+                (
+                    findMethod(contactInfo, resolved, phoneNumber)
+                        ?: findMethod(contactInfo, resolved)
+                ).let { it as? ContactMethod.CustomApp }
                     ?.let { method ->
                         ContactCardAction.CustomApp(
                             phoneNumber = phoneNumber,

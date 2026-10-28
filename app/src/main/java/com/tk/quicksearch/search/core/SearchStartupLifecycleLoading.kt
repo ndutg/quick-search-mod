@@ -225,6 +225,8 @@ internal fun SearchStartupLifecycleDelegate.applyStartupPreferences(prefs: Start
                 settingsIconEnabled = snapshot.settingsIconEnabled,
                 topResultIndicatorEnabled = snapshot.topResultIndicatorEnabled,
                 openTopResultUsingKeyboardEnabled = snapshot.openTopResultUsingKeyboardEnabled,
+                accentColorMode = prefs.accentColorMode,
+                customAccentColorArgb = prefs.customAccentColorArgb,
                 openKeyboardOnLaunch = snapshot.openKeyboardOnLaunch,
                 clearQueryOnLaunch = snapshot.clearQueryOnLaunch,
                 autoCloseOverlay = snapshot.autoCloseOverlay,

@@ -43,6 +43,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.heightIn
 import com.tk.quicksearch.tools.aiSearch.CalculatorAttributionRow
+import com.tk.quicksearch.tools.aiSearch.compactAttributionCardBottomPadding
+import com.tk.quicksearch.tools.aiSearch.compactAttributionTopPadding
 
 private val unitResultRegex = Regex("^([+-]?(?:\\d+(?:\\.\\d+)?|\\.\\d+))(?:\\s+(.+))?$")
 private val dateNumberRegex = Regex("(\\d+)")
@@ -141,6 +143,14 @@ fun CalculatorResult(
                                     .combinedClickable(
                                             onClick = {},
                                             onLongClick = onCopy,
+                                    )
+                                    // The chips sit closer to the card edge than text content does.
+                                    .padding(
+                                            bottom =
+                                                    compactAttributionCardBottomPadding(
+                                                            if (onCopy != null) DesignTokens.SpacingSmall
+                                                            else DesignTokens.SpacingXSmall,
+                                                    ),
                                     ),
                     showWallpaperBackground = showWallpaperBackground,
             ) {
@@ -191,7 +201,7 @@ fun CalculatorResult(
         }
 
         CalculatorAttributionRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = compactAttributionTopPadding()),
                 toolType = calculatorState.toolType,
         )
     }

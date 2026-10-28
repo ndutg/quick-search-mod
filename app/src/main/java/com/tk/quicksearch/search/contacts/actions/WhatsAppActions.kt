@@ -61,6 +61,7 @@ object WhatsAppActions {
         context: Application,
         phoneNumber: String,
         onShowToast: ((Int) -> Unit)? = null,
+        packageName: String = WHATSAPP_PACKAGE,
     ) {
         if (!PhoneNumberUtils.isValidPhoneNumber(phoneNumber)) {
             Log.w("WhatsAppActions", "Invalid phone number for WhatsApp: $phoneNumber")
@@ -78,7 +79,7 @@ object WhatsAppActions {
             val smsIntent =
                 Intent(Intent.ACTION_SENDTO).apply {
                     data = Uri.parse("smsto:$cleanNumber")
-                    setPackage(WHATSAPP_PACKAGE)
+                    setPackage(packageName)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
             context.startActivity(smsIntent)
@@ -90,7 +91,7 @@ object WhatsAppActions {
                     Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
                         putExtra("jid", "$cleanNumber@s.whatsapp.net")
-                        setPackage(WHATSAPP_PACKAGE)
+                        setPackage(packageName)
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     }
                 context.startActivity(sendIntent)
@@ -101,7 +102,7 @@ object WhatsAppActions {
                     val messageIntent =
                         Intent(Intent.ACTION_VIEW).apply {
                             data = Uri.parse("sms:$cleanNumber")
-                            setPackage(WHATSAPP_PACKAGE)
+                            setPackage(packageName)
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
                     context.startActivity(messageIntent)

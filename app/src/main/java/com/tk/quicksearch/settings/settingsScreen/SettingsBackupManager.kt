@@ -5,6 +5,7 @@ import android.net.Uri
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.customInfo.CustomInfoScheduler
 import com.tk.quicksearch.reminders.ReminderScheduler
+import com.tk.quicksearch.search.apps.IconPackManager
 import com.tk.quicksearch.search.data.preferences.BasePreferences
 import com.tk.quicksearch.search.data.preferences.CustomLlmProviderPreferences
 import com.tk.quicksearch.search.data.preferences.GeminiPreferences
@@ -69,6 +70,8 @@ object SettingsBackupManager {
     private const val FIELD_CUSTOM_LLM_PROVIDERS = "customLlmProviders"
     private const val FIELD_SELECTED_EXPORT_ITEMS = "selectedExportItems"
     private const val FIELD_NOTES = "notes"
+    // The icon pack lives in session prefs, which aren't exported, so it travels as its own field.
+    private const val FIELD_SELECTED_ICON_PACK = "selectedIconPack"
     private const val FIELD_TYPE = "type"
     private const val FIELD_VALUE = "value"
 
@@ -160,6 +163,9 @@ object SettingsBackupManager {
                     }
                     if (options.includes(ExportItem.NOTES)) {
                         put(FIELD_NOTES, serializeNotes(NotesRepository(context).getAllNotes()))
+                    }
+                    if (options.includes(ExportItem.SETTINGS)) {
+                        userPreferences.getSelectedIconPackPackage()?.let { put(FIELD_SELECTED_ICON_PACK, it) }
                     }
                 }
 
@@ -264,6 +270,10 @@ object SettingsBackupManager {
             }
         }
 
+        if (selectedExportItems == null || ExportItem.SETTINGS in selectedExportItems) {
+            importSelectedIconPack(context, root)
+        }
+
         importAiProviders(
             context = context,
             root = root,
@@ -292,6 +302,19 @@ object SettingsBackupManager {
         if (importsCustomInfo) {
             CustomInfoScheduler.rescheduleAll(context)
             CustomInfoRepository.notifyChanged()
+        }
+    }
+
+    /** Applies the backed-up icon pack only when it is installed here; otherwise the current one stays. */
+    private fun importSelectedIconPack(
+        context: Context,
+        root: JSONObject,
+    ) {
+        val iconPackPackage = root.optString(FIELD_SELECTED_ICON_PACK).takeIf { it.isNotBlank() } ?: return
+        val isInstalled =
+            IconPackManager.findInstalledIconPacks(context).any { it.packageName == iconPackPackage }
+        if (isInstalled) {
+            UserAppPreferences(context).setSelectedIconPackPackage(iconPackPackage)
         }
     }
 

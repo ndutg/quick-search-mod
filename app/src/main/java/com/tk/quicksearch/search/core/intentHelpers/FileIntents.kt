@@ -20,6 +20,10 @@ import com.tk.quicksearch.search.models.DeviceFile
 internal object FileIntents {
     private const val EXTERNAL_STORAGE_DOCUMENTS_AUTHORITY = "com.android.externalstorage.documents"
 
+    /** System file managers that understand externalstorage document URIs. */
+    private val DOCUMENTS_UI_PACKAGES =
+        listOf("com.google.android.documentsui", "com.android.documentsui")
+
     /** Opens the folder containing the file, or the folder itself if it is a directory. */
     fun openContainingFolder(
         context: Application,
@@ -213,6 +217,18 @@ internal object FileIntents {
                             Intent.FLAG_GRANT_READ_URI_PERMISSION,
                     )
                 }
+            // Other apps also register for the directory MIME type (e.g. APK installers that
+            // throw on it), so hand the URI straight to the system file manager when it is there.
+            val handlers = resolveHandlerPackages(context, documentsIntent)
+            val documentsUiPackage = DOCUMENTS_UI_PACKAGES.firstOrNull { it in handlers }
+            if (documentsUiPackage != null) {
+                try {
+                    context.startActivity(Intent(documentsIntent).setPackage(documentsUiPackage))
+                    return
+                } catch (_: ActivityNotFoundException) {
+                } catch (_: SecurityException) {
+                }
+            }
 
             try {
                 context.startActivity(documentsIntent)
@@ -249,6 +265,16 @@ internal object FileIntents {
             onShowToast?.invoke(R.string.common_error_unable_to_open, deviceFile.displayName)
         }
     }
+
+    private fun resolveHandlerPackages(
+        context: Context,
+        intent: Intent,
+    ): List<String> =
+        runCatching {
+            context.packageManager
+                .queryIntentActivities(intent, 0)
+                .map { it.activityInfo.packageName }
+        }.getOrDefault(emptyList())
 
     private fun buildDocumentsDirectoryUri(
         context: Context,

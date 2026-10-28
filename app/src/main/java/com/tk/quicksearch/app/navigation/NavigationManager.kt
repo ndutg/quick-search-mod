@@ -511,15 +511,17 @@ private fun NavigationContent(
     ) { targetDestination ->
         when (targetDestination) {
             RootDestination.WidgetsPanel -> {
-                BackHandler {
+                val navigateToSearch: () -> Unit = {
                     rootAnimationDirectionOverride = SwipeAnimationDirection.LEFT
-                    onDestinationChange(RootDestination.Search)
-                }
-                WidgetsPanelScreen(
-                    onNavigateToSearch = {
-                        rootAnimationDirectionOverride = SwipeAnimationDirection.LEFT
+                    if (uiState.overlayModeEnabled) {
+                        onFinishActivity()
+                    } else {
                         onDestinationChange(RootDestination.Search)
-                    },
+                    }
+                }
+                BackHandler(onBack = navigateToSearch)
+                WidgetsPanelScreen(
+                    onNavigateToSearch = navigateToSearch,
                     uiState = uiState,
                 )
             }

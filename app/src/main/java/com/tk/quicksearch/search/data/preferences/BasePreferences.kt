@@ -469,6 +469,7 @@ abstract class BasePreferences(
         const val KEY_CUSTOM_CALENDAR_EVENT_ID_COUNTER = "custom_calendar_event_id_counter"
         const val KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS = "archived_today_calendar_event_ids"
         const val KEY_ARCHIVED_TODAY_CALENDAR_EVENT_DATE = "archived_today_calendar_event_date"
+        const val KEY_SNOOZED_TODAY_CALENDAR_EVENTS = "snoozed_today_calendar_events"
 
         // Notes preferences keys
         const val KEY_PINNED_NOTE_IDS = "pinned_note_ids"
