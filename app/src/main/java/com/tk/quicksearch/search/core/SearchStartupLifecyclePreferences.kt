@@ -44,6 +44,7 @@ internal fun SearchStartupLifecycleDelegate.onSettingsImported(
             val shortcutsState = aliasHandler.reloadFromPreferences()
             aiSearchHandler.reloadFromPreferences()
             val webSuggestionsEnabled = webSuggestionHandler.reloadFromPreferences()
+            iconPackHandler.reloadFromPreferences()
 
             val activeLlmApiKey = aiSearchHandler.getLlmApiKey()
             val personalContext = aiSearchHandler.getPersonalContext()

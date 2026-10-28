@@ -25,6 +25,12 @@ class IconPackService(
 
     fun getCurrentSelectedIconPackPackage(): String? = selectedIconPackPackage
 
+    /** Re-reads the saved selection (e.g. after a backup import) and revalidates it. */
+    fun reloadFromPreferences() {
+        selectedIconPackPackage = userPreferences.getSelectedIconPackPackage()
+        refreshIconPacks()
+    }
+
     fun refreshIconPacks() {
         scope.launch(Dispatchers.IO) {
             val packs = IconPackManager.findInstalledIconPacks(application)
