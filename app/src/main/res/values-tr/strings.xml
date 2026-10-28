@@ -306,6 +306,7 @@
 <string name="section_notes">Notlar</string>
 <string name="section_media">Medya Kontrolleri</string>
 <string name="section_settings">Cihaz ayarları</string>
+<string name="search_section_menu_title">Şurada ara</string>
 <string name="top_match_title">En iyi eşleşme</string>
 <string name="top_matches_count_label">Eşleşme sayısı</string>
 <string name="top_matches_priority_desc">En iyi eşleşmelerdeki öğelerin önceliğini değiştir ve devre dışı bırak</string>

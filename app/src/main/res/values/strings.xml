@@ -302,6 +302,7 @@
     <string name="section_notes">Notes</string>
     <string name="section_media">Media Controls</string>
     <string name="section_settings">Device Settings</string>
+    <string name="search_section_menu_title">Search in</string>
     <string name="top_match_title">Top Match</string>
     <string name="top_matches_count_label">No. of matches</string>
     <string name="top_matches_priority_desc">Change priority and disable items in top matches</string>

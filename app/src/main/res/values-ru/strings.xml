@@ -307,6 +307,7 @@
 <string name="section_notes">Заметки</string>
 <string name="section_media">Управление медиа</string>
 <string name="section_settings">Настройки устройства</string>
+<string name="search_section_menu_title">Искать в</string>
 <string name="top_match_title">Лучшее совпадение</string>
 <string name="top_matches_count_label">Количество совпадений</string>
 <string name="top_matches_priority_desc">Изменить приоритет и отключить элементы в лучших совпадениях</string>

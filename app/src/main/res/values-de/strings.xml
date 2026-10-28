@@ -307,6 +307,7 @@
     <string name="section_notes">Notizen</string>
     <string name="section_media">Mediensteuerung</string>
     <string name="section_settings">Geräteeinstellungen</string>
+    <string name="search_section_menu_title">Suchen in</string>
     <string name="top_match_title">Bestes Ergebnis</string>
     <string name="top_matches_count_label">Anzahl der Treffer</string>
     <string name="top_matches_priority_desc">Priorität ändern und Elemente in den Top-Ergebnissen deaktivieren</string>

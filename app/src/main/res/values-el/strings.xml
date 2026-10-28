@@ -307,6 +307,7 @@
     <string name="section_notes">Σημειώσεις</string>
     <string name="section_media">Χειριστήρια πολυμέσων</string>
     <string name="section_settings">Ρυθμίσεις συσκευής</string>
+    <string name="search_section_menu_title">Αναζήτηση σε</string>
     <string name="top_match_title">Καλύτερο αποτέλεσμα</string>
     <string name="top_matches_count_label">Αριθμός αποτελεσμάτων</string>
     <string name="top_matches_priority_desc">Αλλαγή προτεραιότητας και απενεργοποίηση στοιχείων στα κορυφαία αποτελέσματα</string>

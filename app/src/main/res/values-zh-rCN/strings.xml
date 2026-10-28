@@ -307,6 +307,7 @@
     <string name="section_notes">笔记</string>
     <string name="section_media">媒体控制</string>
     <string name="section_settings">设备设置</string>
+    <string name="search_section_menu_title">搜索范围</string>
     <string name="top_match_title">最佳匹配</string>
     <string name="top_matches_count_label">匹配项数量</string>
     <string name="top_matches_priority_desc">更改最佳匹配中的项目优先级或将其停用</string>

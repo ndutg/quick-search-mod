@@ -308,6 +308,7 @@
     <string name="section_notes">الملاحظات</string>
     <string name="section_media">عناصر التحكم بالوسائط</string>
     <string name="section_settings">إعدادات الجهاز</string>
+    <string name="search_section_menu_title">البحث في</string>
     <string name="top_match_title">أفضل مطابقة</string>
     <string name="top_matches_count_label">عدد التطابقات</string>
     <string name="top_matches_priority_desc">تغيير أولوية العناصر وتعطيلها في أفضل التطابقات</string>

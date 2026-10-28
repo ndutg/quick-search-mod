@@ -307,6 +307,7 @@
 <string name="section_notes">Notes</string>
 <string name="section_media">Contrôles multimédias</string>
 <string name="section_settings">Paramètres de l\'appareil</string>
+<string name="search_section_menu_title">Rechercher dans</string>
 <string name="top_match_title">Meilleur résultat</string>
 <string name="top_matches_count_label">Nb de correspondances</string>
 <string name="top_matches_priority_desc">Modifier la priorité et désactiver des éléments dans les meilleurs résultats</string>

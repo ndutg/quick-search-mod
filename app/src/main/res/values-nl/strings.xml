@@ -315,6 +315,7 @@
     <string name="section_notes">Notities</string>
     <string name="section_media">Mediabediening</string>
     <string name="section_settings">Apparaatinstellingen</string>
+    <string name="search_section_menu_title">Zoeken in</string>
     <string name="top_match_title">Beste overeenkomst</string>
     <string name="top_matches_count_label">Aantal resultaten</string>
     <string name="top_matches_priority_desc">Prioriteit wijzigen en items in topresultaten in- of uitschakelen</string>

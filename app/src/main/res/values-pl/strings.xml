@@ -308,6 +308,7 @@
     <string name="section_notes">Notatki</string>
     <string name="section_media">Sterowanie multimediami</string>
     <string name="section_settings">Ustawienia urządzenia</string>
+    <string name="search_section_menu_title">Szukaj w</string>
     <string name="top_match_title">Najlepsze dopasowanie</string>
     <string name="top_matches_count_label">Liczba dopasowań</string>
     <string name="top_matches_priority_desc">Zmień priorytet i wyłączaj elementy w najlepszych dopasowaniach</string>

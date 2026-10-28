@@ -306,6 +306,7 @@
     <string name="section_notes">Note</string>
     <string name="section_media">Controlli multimediali</string>
     <string name="section_settings">Impostazioni dispositivo</string>
+    <string name="search_section_menu_title">Cerca in</string>
     <string name="top_match_title">Migliore corrispondenza</string>
     <string name="top_matches_count_label">Numero di corrispondenze</string>
     <string name="top_matches_priority_desc">Modifica la priorità e disattiva elementi nelle migliori corrispondenze</string>

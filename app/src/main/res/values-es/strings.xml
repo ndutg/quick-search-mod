@@ -307,6 +307,7 @@
     <string name="section_notes">Notas</string>
     <string name="section_media">Controles multimedia</string>
     <string name="section_settings">Ajustes del dispositivo</string>
+    <string name="search_section_menu_title">Buscar en</string>
     <string name="top_match_title">Mejor resultado</string>
     <string name="top_matches_count_label">N.º de resultados</string>
     <string name="top_matches_priority_desc">Cambia la prioridad y desactiva elementos en los mejores resultados</string>

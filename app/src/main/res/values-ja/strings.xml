@@ -308,6 +308,7 @@
     <string name="section_notes">メモ</string>
     <string name="section_media">メディア操作</string>
     <string name="section_settings">端末の設定</string>
+    <string name="search_section_menu_title">検索対象</string>
     <string name="top_match_title">ベストマッチ</string>
     <string name="top_matches_count_label">表示件数</string>
     <string name="top_matches_priority_desc">ベストマッチの優先順位を変更し、項目を無効化</string>

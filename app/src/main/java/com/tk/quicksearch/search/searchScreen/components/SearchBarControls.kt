@@ -26,19 +26,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.window.PopupProperties
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -85,7 +80,6 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
-import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
@@ -280,38 +274,6 @@ internal fun detectConsumedPrefixAlias(
 }
 
 @Composable
-internal fun SearchBarSectionMenu(
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onSectionSelected: (SearchSection) -> Unit,
-) {
-    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = onDismiss,
-                        shape = RoundedCornerShape(24.dp),
-                        containerColor = AppColors.DialogBackground,
-                        properties = PopupProperties(focusable = false),
-                    ) {
-                        sectionMenuEntries.forEachIndexed { index, (section) ->
-                            val metadata = SearchSectionUiMetadataRegistry.metadataFor(section)
-                            if (index > 0) HorizontalDivider()
-                            DropdownMenuItem(
-                                text = { Text(stringResource(metadata.sectionLabelRes)) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = metadata.searchBarIcon,
-                                        contentDescription = null,
-                                    )
-                                },
-                                onClick = {
-                                    onSectionSelected(section)
-                                },
-                            )
-                        }
-                    }
-}
-
-@Composable
 internal fun SearchBarTrailingIcon(
     showClear: Boolean,
     showSettings: Boolean,
@@ -377,9 +339,3 @@ internal fun androidx.compose.foundation.layout.BoxScope.SearchBarAliasMorphText
 private const val AliasIconMorphEndScale = 0.5f
 
 private val AliasMorphTextStartPadding = DesignTokens.Spacing48 + DesignTokens.SpacingXSmall
-
-private data class SectionMenuEntry(
-    val section: SearchSection,
-)
-
-private val sectionMenuEntries = SearchSectionRegistry.orderedSections.map(::SectionMenuEntry)

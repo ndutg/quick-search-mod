@@ -307,6 +307,7 @@
     <string name="section_notes">नोट्स</string>
     <string name="section_media">मीडिया नियंत्रण</string>
     <string name="section_settings">डिवाइस सेटिंग्स</string>
+    <string name="search_section_menu_title">इसमें खोजें</string>
     <string name="top_match_title">टॉप मैच</string>
     <string name="top_matches_count_label">मैचों की संख्या</string>
     <string name="top_matches_priority_desc">टॉप मैच में प्राथमिकता बदलें और आइटम अक्षम करें</string>
