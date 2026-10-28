@@ -17,15 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.ZeroCornerSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Timer
-import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -45,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.searchEngines.extendToScreenEdges
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
@@ -147,7 +139,7 @@ internal fun PhoneCallPill(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Call,
+                    imageVector = MaterialSymbols.Call,
                     contentDescription = stringResource(R.string.contact_method_call_label),
                     tint = AppColors.ActionPhone,
                     modifier = Modifier.size(PhoneCallPillIconSize),
@@ -169,7 +161,7 @@ internal fun SetAlarmPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) = ClockActionPill(
-    icon = Icons.Rounded.Alarm,
+    icon = MaterialSymbols.Alarm,
     label = stringResource(R.string.set_alarm_action_label),
     onClick = onClick,
     modifier = modifier,
@@ -182,7 +174,7 @@ internal fun AllAppsPill(
 ) {
     Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         ClockActionPill(
-            icon = Icons.Rounded.Apps,
+            icon = MaterialSymbols.Apps,
             label = stringResource(R.string.settings_app_shortcuts_filter_all_apps),
             onClick = onClick,
         )
@@ -194,7 +186,7 @@ internal fun StartTimerPill(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) = ClockActionPill(
-    icon = Icons.Rounded.Timer,
+    icon = MaterialSymbols.Timer,
     label = stringResource(R.string.start_timer_action_label),
     onClick = onClick,
     modifier = modifier,
@@ -206,7 +198,7 @@ internal fun CreateReminderPill(
     useShortLabel: Boolean = false,
     modifier: Modifier = Modifier,
 ) = ClockActionPill(
-    icon = Icons.Rounded.Notifications,
+    icon = MaterialSymbols.Notifications,
     label = stringResource(if (useShortLabel) R.string.reminder_name_hint else R.string.app_setting_create_reminder),
     onClick = onClick,
     modifier = modifier,
@@ -295,7 +287,7 @@ internal fun OpenKeyboardAction(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Keyboard,
+                    imageVector = MaterialSymbols.Keyboard,
                     contentDescription = null,
                     tint = labelColor,
                     modifier = Modifier.size(DesignTokens.IconSize),
@@ -316,7 +308,7 @@ internal fun OpenKeyboardAction(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = Icons.Rounded.Mic,
+                        imageVector = MaterialSymbols.Mic,
                         contentDescription = stringResource(R.string.desc_voice_search_icon),
                         tint = labelColor,
                         modifier = Modifier.size(DesignTokens.IconSize),
@@ -357,7 +349,7 @@ internal fun OverlayExpandPill(
             )
             Spacer(modifier = Modifier.size(DesignTokens.SpacingXSmall))
             Icon(
-                imageVector = Icons.Rounded.ExpandMore,
+                imageVector = MaterialSymbols.ExpandMore,
                 contentDescription = stringResource(R.string.desc_expand),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(14.dp),

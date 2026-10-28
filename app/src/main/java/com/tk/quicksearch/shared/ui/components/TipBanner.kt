@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -30,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -154,7 +153,7 @@ fun TipBanner(
             } else if (showDismissButton && onDismiss != null) {
                 IconButton(onClick = onDismiss) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.common_close),
                         tint = AppColors.Accent,
                     )

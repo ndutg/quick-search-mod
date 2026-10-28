@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.provider.Settings
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -22,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 /** Do Not Disturb while it is on. */
 internal class DoNotDisturbGlance(
@@ -108,7 +107,7 @@ internal fun DoNotDisturbRow(glance: DoNotDisturbGlance) {
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.DoNotDisturbOn,
+                imageVector = MaterialSymbols.DoNotDisturbOn,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )

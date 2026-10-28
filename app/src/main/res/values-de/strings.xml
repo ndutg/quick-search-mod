@@ -1199,6 +1199,7 @@
     <string name="widget_text_icon_color_white">Weiß</string>
     <string name="widget_text_color">Textfarbe</string>
     <string name="widget_toggle_show_label">Quick Search-Text</string>
+    <string name="widget_toggle_show_empty_date">Datum anzeigen, wenn keine Elemente vorhanden sind</string>
     <string name="widgets_panel_title">Widgets</string>
     <string name="widgets_picker_empty">Keine Widgets gefunden.</string>
     <string name="widgets_picker_loading">Widgets werden geladen...</string>

@@ -13,17 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.KeyboardHide
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,6 +52,7 @@ import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
 import com.tk.quicksearch.shared.permissions.LockScreenAccessibilityDisclosureDialog
 import com.tk.quicksearch.shared.permissions.shouldShowAccessibilityDisclosure
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
@@ -187,7 +177,7 @@ fun GesturesSettingsSection(
                     item = SettingsCardItem(
                         title = stringResource(R.string.action_open_keyboard),
                         description = stringResource(state.keyboardGestureDirection(SwipeGestureAction.OPEN_KEYBOARD)?.titleResId ?: R.string.settings_gesture_none),
-                        icon = Icons.Rounded.Keyboard,
+                        icon = MaterialSymbols.Keyboard,
                         actionOnPress = { state.selectedKeyboardAction = SwipeGestureAction.OPEN_KEYBOARD },
                     ),
                     contentPadding = PaddingValues(horizontal = DesignTokens.CardHorizontalPadding, vertical = DesignTokens.CardVerticalPadding),
@@ -197,7 +187,7 @@ fun GesturesSettingsSection(
                     item = SettingsCardItem(
                         title = stringResource(R.string.settings_gesture_close_keyboard),
                         description = stringResource(state.keyboardGestureDirection(SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS)?.titleResId ?: R.string.settings_gesture_none),
-                        icon = Icons.Rounded.KeyboardHide,
+                        icon = MaterialSymbols.KeyboardHide,
                         actionOnPress = { state.selectedKeyboardAction = SwipeGestureAction.CLOSE_KEYBOARD_OR_NOTIFICATIONS },
                     ),
                     contentPadding = PaddingValues(horizontal = DesignTokens.CardHorizontalPadding, vertical = DesignTokens.CardVerticalPadding),

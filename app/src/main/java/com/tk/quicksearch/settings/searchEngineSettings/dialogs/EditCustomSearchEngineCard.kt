@@ -13,10 +13,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -149,7 +148,7 @@ fun EditCustomSearchEngineDialog(
                 )
                 IconButton(onClick = onDelete) {
                     Icon(
-                        imageVector = Icons.Rounded.Delete,
+                        imageVector = MaterialSymbols.Delete,
                         contentDescription = stringResource(R.string.dialog_delete),
                         tint = MaterialTheme.colorScheme.error,
                     )

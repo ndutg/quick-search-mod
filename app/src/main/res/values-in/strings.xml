@@ -1203,6 +1203,7 @@
     <string name="widget_text_icon_color_white">Putih</string>
     <string name="widget_text_color">Warna Teks</string>
     <string name="widget_toggle_show_label">Teks Quick Search</string>
+    <string name="widget_toggle_show_empty_date">Tampilkan tanggal saat tidak ada item</string>
     <string name="widgets_panel_title">Widget</string>
     <string name="widgets_picker_empty">Widget tidak ditemukan.</string>
     <string name="widgets_picker_loading">Memuat Widget…</string>

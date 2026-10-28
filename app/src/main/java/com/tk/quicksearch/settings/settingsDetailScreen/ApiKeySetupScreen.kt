@@ -21,10 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -63,6 +59,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.components.TipBanner
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import androidx.compose.runtime.LaunchedEffect
@@ -118,7 +115,7 @@ fun ApiKeySetupScreen(
                         append(stringResource(R.string.settings_free_api_key_tip_description))
                     },
                 onContentClick = openFreeApiKeyGuide,
-                actionIcon = Icons.AutoMirrored.Rounded.OpenInNew,
+                actionIcon = MaterialSymbols.OpenInNew,
                 actionContentDescription = stringResource(R.string.settings_open_free_api_key_guide),
                 onActionClick = openFreeApiKeyGuide,
                 showDismissButton = false,
@@ -264,7 +261,7 @@ private fun TavilyApiKeyCard(
                         },
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Delete,
+                            imageVector = MaterialSymbols.Delete,
                             contentDescription = stringResource(R.string.settings_gemini_api_key_reset),
                             tint = MaterialTheme.colorScheme.error,
                         )
@@ -455,7 +452,7 @@ private fun AddCustomProviderCard(
                 }
                 IconButton(onClick = { isExpanded = !isExpanded }) {
                     Icon(
-                        imageVector = Icons.Rounded.ExpandMore,
+                        imageVector = MaterialSymbols.ExpandMore,
                         contentDescription =
                             stringResource(
                                 if (isExpanded) R.string.desc_collapse else R.string.desc_expand,

@@ -9,10 +9,6 @@ import android.os.Environment
 import android.os.StatFs
 import android.provider.Settings
 import android.text.format.Formatter
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.BatteryChargingFull
-import androidx.compose.material.icons.rounded.BatteryFull
-import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -26,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.data.preferences.GlancePreferences.Companion.LOW_STORAGE_THRESHOLD_PERCENT
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -62,7 +59,7 @@ internal fun ChargingRow(glance: ChargingGlance) {
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = if (glance.isFull) Icons.Rounded.BatteryFull else Icons.Rounded.BatteryChargingFull,
+                imageVector = if (glance.isFull) MaterialSymbols.BatteryFull else MaterialSymbols.BatteryChargingFull,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -190,7 +187,7 @@ internal fun LowStorageRow(glance: LowStorageGlance) {
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Storage,
+                imageVector = MaterialSymbols.Storage,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.error,
             )

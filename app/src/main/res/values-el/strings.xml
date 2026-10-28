@@ -1199,6 +1199,7 @@
     <string name="widget_text_icon_color_white">Λευκό</string>
     <string name="widget_text_color">Χρώμα κειμένου</string>
     <string name="widget_toggle_show_label">Κείμενο Quick Search</string>
+    <string name="widget_toggle_show_empty_date">Εμφάνιση ημερομηνίας όταν δεν υπάρχουν στοιχεία</string>
     <string name="widgets_panel_title">Widgets</string>
     <string name="widgets_picker_empty">Δεν βρέθηκαν widgets.</string>
     <string name="widgets_picker_loading">Φόρτωση widgets...</string>

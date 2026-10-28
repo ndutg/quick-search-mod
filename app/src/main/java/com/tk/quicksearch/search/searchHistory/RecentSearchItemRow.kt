@@ -20,11 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -82,6 +77,7 @@ import com.tk.quicksearch.search.searchScreen.components.ExpandableResultsCard
 import com.tk.quicksearch.search.searchScreen.components.ExpandButton
 import com.tk.quicksearch.searchEngines.SearchTargetQueryShortcutActivity
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -261,7 +257,7 @@ internal fun RecentSearchItemRow(
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.action_remove_from_history)) },
                 leadingIcon = {
-                    Icon(imageVector = Icons.Rounded.Close, contentDescription = null)
+                    Icon(imageVector = MaterialSymbols.Close, contentDescription = null)
                 },
                 onClick = {
                     showRemoveMenu = false
@@ -348,7 +344,7 @@ private fun RecentNoteRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Rounded.Description,
+            imageVector = MaterialSymbols.Description,
             contentDescription = null,
             tint = iconColor,
             modifier =

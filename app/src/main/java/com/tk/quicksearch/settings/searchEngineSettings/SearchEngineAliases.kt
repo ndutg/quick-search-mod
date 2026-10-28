@@ -2,8 +2,6 @@ package com.tk.quicksearch.settings.searchEngineSettings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +20,7 @@ import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.searchEngines.AliasValidator.hasExactAliasConflict
 import com.tk.quicksearch.searchEngines.AliasValidator.isValidGeneralAliasCode
 import com.tk.quicksearch.settings.searchEngineSettings.dialogs.AliasInfoType
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.settings.shared.AliasPill
@@ -115,7 +114,7 @@ internal fun AliasCodeDisplay(
                     },
                 textStyle = MaterialTheme.typography.bodySmall,
                 textColor = AppColors.LinkColor,
-                leadingIcon = Icons.Rounded.Bolt,
+                leadingIcon = MaterialSymbols.Bolt,
                 onClick = if (allowAliasDialog) ({ showDialog = true }) else null,
                 onClearClick =
                     if (allowClearAction && shortcutCode.isNotBlank() && onCodeChange != null) {
@@ -144,7 +143,7 @@ internal fun AliasCodeDisplay(
                     },
                 textColor = AppColors.LinkColor,
                 showBackground = false,
-                leadingIcon = Icons.Rounded.Bolt,
+                leadingIcon = MaterialSymbols.Bolt,
                 iconTextSpacing =
                     if (isCustomEngine) {
                         DesignTokens.SpacingXSmall

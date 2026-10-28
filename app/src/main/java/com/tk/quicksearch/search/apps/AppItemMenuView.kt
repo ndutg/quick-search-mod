@@ -15,24 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.HorizontalSplit
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Block
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Image as IconImage
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.LockOpen
-import androidx.compose.material.icons.rounded.PinEnd
-import androidx.compose.material.icons.rounded.Spa
-import androidx.compose.material.icons.rounded.SwipeDown
-import androidx.compose.material.icons.rounded.SwipeUp
-import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -88,6 +70,7 @@ import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
 import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.components.itemMenuRemoveOption
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
@@ -193,7 +176,7 @@ fun AppItemDropdownMenu(
         if (!isCurrentApp) {
             add(ItemMenuTile(
                 label = stringResource(R.string.action_add_trigger),
-                icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                icon = { Icon(imageVector = MaterialSymbols.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                 onClick = { onDismiss(); onTriggerClick() },
                 longPressOption = removeTriggerOption,
             ))
@@ -201,14 +184,14 @@ fun AppItemDropdownMenu(
         if (!isCurrentApp) {
             add(ItemMenuTile(
                 label = stringResource(R.string.common_nickname),
-                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                icon = { Icon(imageVector = MaterialSymbols.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                 onClick = { onDismiss(); onNicknameClick() },
                 longPressOption = removeNicknameOption,
             ))
         }
         add(ItemMenuTile(
             label = stringResource(R.string.action_exclude_generic),
-            icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+            icon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
             onClick = { onDismiss(); onHideApp() },
         ))
     }
@@ -219,7 +202,7 @@ fun AppItemDropdownMenu(
                 label = stringResource(R.string.speed_bump_title),
                 icon = {
                     Icon(
-                        imageVector = Icons.Rounded.Spa,
+                        imageVector = MaterialSymbols.Spa,
                         contentDescription = null,
                         tint = if (speedBumpEnabled) AppColors.ItemMenuActiveIconTint else LocalContentColor.current,
                     )
@@ -253,7 +236,7 @@ fun AppItemDropdownMenu(
                 ),
                 icon = {
                     Icon(
-                        imageVector = if (appLockEnabled) Icons.Rounded.LockOpen else Icons.Rounded.Lock,
+                        imageVector = if (appLockEnabled) MaterialSymbols.LockOpen else MaterialSymbols.Lock,
                         contentDescription = null,
                         tint = if (appLockEnabled) AppColors.ItemMenuActiveIconTint else LocalContentColor.current,
                     )
@@ -294,7 +277,7 @@ fun AppItemDropdownMenu(
                     if (isPinnedToNotifications) {
                         Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null, tint = AppColors.ItemMenuActiveIconTint)
                     } else {
-                        Icon(imageVector = Icons.Rounded.PinEnd, contentDescription = null)
+                        Icon(imageVector = MaterialSymbols.PinEnd, contentDescription = null)
                     }
                 },
                 onClick = { onDismiss(); PinnedNotifications.toggle(context, notificationAction) },
@@ -313,14 +296,14 @@ fun AppItemDropdownMenu(
         if (isLaunchableApp && appInfo.userHandleId == null) {
             add(ItemMenuRow(
                 label = stringResource(R.string.action_open_in_split_screen),
-                icon = { Icon(imageVector = Icons.Rounded.HorizontalSplit, contentDescription = null) },
+                icon = { Icon(imageVector = MaterialSymbols.HorizontalSplit, contentDescription = null) },
                 onClick = { onDismiss(); onOpenInSplitScreen() },
             ))
         }
         if (!isCurrentApp) {
             add(ItemMenuRow(
                 label = stringResource(R.string.action_change_icon),
-                icon = { Icon(imageVector = Icons.Rounded.IconImage, contentDescription = null, tint = if (hasIconOverride) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                icon = { Icon(imageVector = MaterialSymbols.Image, contentDescription = null, tint = if (hasIconOverride) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                 onClick = { onDismiss(); showIconPicker.value = true },
             ))
         }
@@ -330,7 +313,7 @@ fun AppItemDropdownMenu(
         if (isLaunchableApp && !isDefaultLauncher) {
             add(ItemMenuRow(
                 label = stringResource(R.string.action_add_to_home),
-                icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                icon = { Icon(imageVector = MaterialSymbols.Home, contentDescription = null) },
                 onClick = { onDismiss(); onAddToHome() },
             ))
         }
@@ -354,7 +337,7 @@ fun AppItemDropdownMenu(
                     icon = {
                         Icon(
                             imageVector =
-                                if (direction == AppSwipeDirection.UP) Icons.Rounded.SwipeUp else Icons.Rounded.SwipeDown,
+                                if (direction == AppSwipeDirection.UP) MaterialSymbols.SwipeUp else MaterialSymbols.SwipeDown,
                             contentDescription = null,
                             tint = if (assignedAction != null) AppColors.ItemMenuActiveIconTint else LocalContentColor.current,
                         )
@@ -381,13 +364,13 @@ fun AppItemDropdownMenu(
     val footerButtons = buildList {
         add(ItemMenuRow(
             label = stringResource(R.string.action_app_info),
-            icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
+            icon = { Icon(imageVector = MaterialSymbols.Info, contentDescription = null) },
             onClick = { onDismiss(); onAppInfoClick() },
         ))
         if (showUninstall) {
             add(ItemMenuRow(
                 label = stringResource(R.string.action_uninstall_app),
-                icon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                icon = { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
                 onClick = { onDismiss(); onUninstallClick() },
                 destructive = true,
             ))
@@ -395,7 +378,7 @@ fun AppItemDropdownMenu(
         openAppSettingDestination?.let { openDestination ->
             add(ItemMenuRow(
                 label = stringResource(R.string.action_manage_all_apps),
-                icon = { Icon(imageVector = Icons.Rounded.Settings, contentDescription = null) },
+                icon = { Icon(imageVector = MaterialSymbols.Settings, contentDescription = null) },
                 onClick = { onDismiss(); openDestination(AppSettingsDestination.APP_MANAGEMENT) },
                 iconOnly = true,
             ))
@@ -438,7 +421,7 @@ fun AppItemDropdownMenu(
                 onClick = { onShortcutClick(shortcut); onDismiss() },
                 longPressOption = ItemMenuLongPressOption(
                     label = disableShortcutLabel,
-                    icon = Icons.Rounded.Block,
+                    icon = MaterialSymbols.Block,
                     // Keeps the app menu open; the disabled shortcut drops out of the grid.
                     onClick = { onDisableShortcut(shortcut) },
                 ),
@@ -570,7 +553,7 @@ private fun AppSwipeActionDropdown(
             )
             DropdownMenuItem(
                 text = { Text(text = stringResource(R.string.action_remove)) },
-                leadingIcon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
+                leadingIcon = { Icon(imageVector = MaterialSymbols.Close, contentDescription = null) },
                 onClick = onClear,
             )
         }

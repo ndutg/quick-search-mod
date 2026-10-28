@@ -21,10 +21,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -57,6 +53,7 @@ import com.tk.quicksearch.settings.settingsDetailScreen.CalendarSettingsBarCorne
 import com.tk.quicksearch.settings.settingsDetailScreen.SettingsDetailHeader
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
@@ -170,7 +167,7 @@ private fun AppNotificationsScreen(
                 text = { Text(text = stringResource(R.string.app_notifications_add_app)) },
                 icon = {
                     Icon(
-                        imageVector = Icons.Rounded.Add,
+                        imageVector = MaterialSymbols.Add,
                         contentDescription = null,
                         modifier = Modifier.size(AddAppIconSize),
                     )
@@ -298,7 +295,7 @@ private fun SourceRow(
             )
         }
         Icon(
-            imageVector = Icons.Rounded.ChevronRight,
+            imageVector = MaterialSymbols.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -306,7 +303,7 @@ private fun SourceRow(
             VerticalDivider(modifier = Modifier.height(DesignTokens.IconSize), color = AppColors.SettingsDivider)
             IconButton(onClick = onRemove) {
                 Icon(
-                    imageVector = Icons.Rounded.DeleteOutline,
+                    imageVector = MaterialSymbols.DeleteOutline,
                     contentDescription = stringResource(R.string.app_notifications_remove_app, title),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

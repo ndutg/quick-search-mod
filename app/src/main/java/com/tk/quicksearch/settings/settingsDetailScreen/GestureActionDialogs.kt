@@ -13,19 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Keyboard
-import androidx.compose.material.icons.rounded.KeyboardHide
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.SwipeDown
-import androidx.compose.material.icons.rounded.SwipeUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,6 +58,7 @@ import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
 import com.tk.quicksearch.search.searchScreen.LockScreenAccessibilityService
 import com.tk.quicksearch.shared.permissions.LockScreenAccessibilityDisclosureDialog
 import com.tk.quicksearch.shared.permissions.shouldShowAccessibilityDisclosure
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.isDefaultHomeApp
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
@@ -112,20 +100,20 @@ internal fun LauncherSwipeRightActionDialog(
 
 internal fun SwipeDirection.gestureIcon() =
     when (this) {
-        SwipeDirection.RIGHT -> Icons.AutoMirrored.Rounded.ArrowForward
-        SwipeDirection.LEFT -> Icons.AutoMirrored.Rounded.ArrowBack
-        SwipeDirection.UP -> Icons.Rounded.ArrowUpward
-        SwipeDirection.DOWN -> Icons.Rounded.ArrowDownward
+        SwipeDirection.RIGHT -> MaterialSymbols.ArrowForward
+        SwipeDirection.LEFT -> MaterialSymbols.ArrowBack
+        SwipeDirection.UP -> MaterialSymbols.ArrowUpward
+        SwipeDirection.DOWN -> MaterialSymbols.ArrowDownward
     }
 
 internal fun HomeGesture.icon() =
     when (this) {
-        HomeGesture.SWIPE_UP -> Icons.Rounded.ArrowUpward
+        HomeGesture.SWIPE_UP -> MaterialSymbols.ArrowUpward
         HomeGesture.SWIPE_DOWN,
         HomeGesture.DOUBLE_TAP,
-        -> Icons.Rounded.ArrowDownward
-        HomeGesture.TWO_FINGER_SWIPE_UP -> Icons.Rounded.SwipeUp
-        HomeGesture.TWO_FINGER_SWIPE_DOWN -> Icons.Rounded.SwipeDown
+        -> MaterialSymbols.ArrowDownward
+        HomeGesture.TWO_FINGER_SWIPE_UP -> MaterialSymbols.SwipeUp
+        HomeGesture.TWO_FINGER_SWIPE_DOWN -> MaterialSymbols.SwipeDown
     }
 
 @Composable
@@ -377,7 +365,7 @@ internal fun GestureActionRow(
         }
         onDelete?.let {
             IconButton(onClick = it) {
-                Icon(Icons.Rounded.Delete, contentDescription = stringResource(R.string.action_remove))
+                Icon(MaterialSymbols.Delete, contentDescription = stringResource(R.string.action_remove))
             }
         }
     }
@@ -403,11 +391,11 @@ internal fun GesturePickerActions(
         color = Color.Transparent,
     ) {
         Column {
-            GesturePickerRow(stringResource(R.string.settings_gesture_custom), Icons.Rounded.Add, onPickCustom)
+            GesturePickerRow(stringResource(R.string.settings_gesture_custom), MaterialSymbols.Add, onPickCustom)
             HorizontalDivider(color = AppColors.SettingsDivider)
-            GesturePickerRow(stringResource(R.string.settings_app_shortcuts_filter_search_engines), Icons.Rounded.Search, onPickSearchEngine)
+            GesturePickerRow(stringResource(R.string.settings_app_shortcuts_filter_search_engines), MaterialSymbols.Search, onPickSearchEngine)
             HorizontalDivider(color = AppColors.SettingsDivider)
-            GesturePickerRow(stringResource(R.string.settings_tools_title), Icons.Rounded.Build, onPickTool)
+            GesturePickerRow(stringResource(R.string.settings_tools_title), MaterialSymbols.Build, onPickTool)
         }
     }
 }
@@ -582,8 +570,8 @@ internal fun GestureToolPickerDialog(
     val tools = ToolSettingsRegistry.definitions.mapNotNull { definition ->
         definition.aliasFeatureId?.let { GestureToolItem(it, stringResource(definition.titleResId), definition.icon) }
     } +
-        state.customTools.filterNot { it.id in state.disabledCustomToolIds }.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) } +
-        state.taskerIntentTools.map { GestureToolItem(it.id, it.name, Icons.Rounded.Build) }
+        state.customTools.filterNot { it.id in state.disabledCustomToolIds }.map { GestureToolItem(it.id, it.name, MaterialSymbols.Build) } +
+        state.taskerIntentTools.map { GestureToolItem(it.id, it.name, MaterialSymbols.Build) }
     AppPickerDrawer(
         title = stringResource(R.string.settings_tools_title),
         onDismiss = onDismiss,

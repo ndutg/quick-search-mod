@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.searchScreen
 
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.material3.HorizontalDivider
@@ -13,9 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -234,7 +232,7 @@ private fun TopMatchesHeader() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Rounded.AutoAwesome,
+            imageVector = MaterialSymbols.AutoAwesome,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.92f),
             modifier = Modifier.size(14.dp),
@@ -556,7 +554,7 @@ private fun TopMatchAppRow(
                         modifier = Modifier.size(APP_ICON_SIZE.dp),
                     )
                 } ?: Icon(
-                    imageVector = Icons.Rounded.Apps,
+                    imageVector = MaterialSymbols.Apps,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),

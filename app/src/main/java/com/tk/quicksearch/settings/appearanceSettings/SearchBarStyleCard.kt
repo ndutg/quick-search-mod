@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -46,6 +44,7 @@ import com.tk.quicksearch.search.searchScreen.components.borderColor
 import com.tk.quicksearch.search.searchScreen.components.borderWidth
 import com.tk.quicksearch.search.searchScreen.components.cornerRadius
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
@@ -273,7 +272,7 @@ private fun SearchBarStylePreview(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = Icons.Rounded.Search,
+                imageVector = MaterialSymbols.Search,
                 contentDescription = null,
                 tint = AppColors.getSearchBarSecondaryIconTint(showWallpaperBackground),
             )

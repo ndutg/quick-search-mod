@@ -5,8 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.layout.Box
@@ -39,6 +37,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.notificationDots.AppNotificationDot
 import com.tk.quicksearch.search.core.AppIconShape
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppIsDarkTheme
 import com.tk.quicksearch.shared.ui.theme.LocalDeviceDynamicColorsActive
@@ -300,7 +299,7 @@ internal fun AppIconSurface(
             }
             if (showPinnedIndicator) {
                 Icon(
-                        imageVector = Icons.Rounded.PushPin,
+                        imageVector = MaterialSymbols.PushPin,
                         contentDescription = null,
                         modifier =
                                 Modifier

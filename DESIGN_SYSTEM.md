@@ -98,6 +98,15 @@ drag/spring constants (`DragAlpha`, `SpringDampingRatio`, `SpringStiffness`).
 (`DistributionTypography.kt`): `standard` bundles Google Sans, `fdroid` uses the system font. Check
 both flavors when changing typography.
 
+## Icons (`shared/ui/icons/MaterialSymbols.kt`)
+
+UI icons are Material Symbols Rounded (weight 400, grade 0, 24dp), filled by default; a name ending
+in `Outlined` is the unfilled variant. Use `MaterialSymbols.<Name>` wherever an `ImageVector` is
+expected; don't add `material-icons-*` back. Directional icons (arrows, send, label, missed call)
+set `autoMirror` so they flip in RTL. To add one, copy its path data from
+[fonts.google.com/icons](https://fonts.google.com/icons) with the same style settings and add a
+property in sorted order.
+
 ## Shared components
 
 | Component | Use for |

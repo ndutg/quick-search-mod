@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +28,7 @@ import com.tk.quicksearch.settings.shared.ProvideSettingsColors
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.shared.ui.components.AppBottomSheet
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 
@@ -51,7 +49,7 @@ fun AtAGlanceWidgetItemsSection(
                 SettingsCardItem(
                     title = stringResource(R.string.widget_at_a_glance_items_title),
                     description = stringResource(R.string.widget_at_a_glance_items_summary),
-                    icon = Icons.Rounded.Today,
+                    icon = MaterialSymbols.Today,
                     actionOnPress = { showDrawer = true },
                 ),
             contentPadding =
@@ -118,7 +116,7 @@ private fun AtAGlanceWidgetItemsDrawer(
                 }
                 IconButton(onClick = dismiss) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.common_close),
                     )
                 }

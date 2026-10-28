@@ -30,23 +30,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.FormatListBulleted
-import androidx.compose.material.icons.automirrored.rounded.ManageSearch
-import androidx.compose.material.icons.rounded.AdminPanelSettings
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.Layers
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.RocketLaunch
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Swipe
-import androidx.compose.material.icons.rounded.Today
-import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material.icons.rounded.Translate
-import androidx.compose.material.icons.rounded.Upload
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.ButtonDefaults
 import com.tk.quicksearch.settings.shared.SettingsCard
@@ -88,6 +71,7 @@ import com.tk.quicksearch.shared.featureFlags.FeatureFlag
 import com.tk.quicksearch.shared.featureFlags.FeatureFlags
 import com.tk.quicksearch.shared.permissions.LockScreenAccessibilityDisclosureDialog
 import com.tk.quicksearch.shared.ui.components.TipBanner
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.AppLanguageManager
@@ -233,7 +217,7 @@ fun SettingsScreen(
                         checked = state.overlayModeEnabled,
                         enabled = !isOverlayModeBlockedByLauncher,
                         onCheckedChange = callbacks.onToggleOverlayMode,
-                        leadingIcon = Icons.Rounded.Layers,
+                        leadingIcon = MaterialSymbols.Layers,
                         isFirstItem = true,
                         isLastItem = true,
                         showDivider = false,
@@ -276,7 +260,7 @@ fun SettingsScreen(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_appearance_title),
                             description = stringResource(R.string.settings_appearance_desc),
-                            icon = Icons.Rounded.Palette,
+                            icon = MaterialSymbols.Palette,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.APPEARANCE)
                             },
@@ -286,7 +270,7 @@ fun SettingsScreen(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_at_a_glance_title),
                             description = stringResource(R.string.settings_at_a_glance_desc),
-                            icon = Icons.Rounded.Today,
+                            icon = MaterialSymbols.Today,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.AT_A_GLANCE)
                             },
@@ -296,7 +280,7 @@ fun SettingsScreen(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_search_results_title),
                             description = stringResource(R.string.settings_search_results_desc),
-                            icon = Icons.Rounded.Search,
+                            icon = MaterialSymbols.Search,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.SEARCH_RESULTS)
                             },
@@ -306,7 +290,7 @@ fun SettingsScreen(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_app_shortcuts_filter_search_engines),
                             description = stringResource(R.string.settings_search_engines_desc),
-                            icon = Icons.AutoMirrored.Rounded.ManageSearch,
+                            icon = MaterialSymbols.ManageSearch,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.SEARCH_ENGINES)
                             },
@@ -316,7 +300,7 @@ fun SettingsScreen(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_tools_title),
                             description = stringResource(R.string.settings_tools_desc),
-                            icon = Icons.Rounded.Build,
+                            icon = MaterialSymbols.Build,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.TOOLS)
                             },
@@ -342,7 +326,7 @@ fun SettingsScreen(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_gestures_title),
                             description = stringResource(R.string.settings_gestures_desc),
-                            icon = Icons.Rounded.Swipe,
+                            icon = MaterialSymbols.Swipe,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.GESTURES)
                             },
@@ -352,7 +336,7 @@ fun SettingsScreen(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_more_options_title),
                             description = stringResource(R.string.settings_more_options_desc),
-                            icon = Icons.Rounded.Tune,
+                            icon = MaterialSymbols.Tune,
                             actionOnPress = {
                                 onNavigateToDetail(SettingsDetailType.MORE_OPTIONS)
                             },
@@ -398,7 +382,7 @@ fun SettingsScreen(
                             SettingsCardItem(
                                 title = stringResource(R.string.settings_launch_options_title),
                                 description = stringResource(R.string.settings_launch_options_desc),
-                                icon = Icons.Rounded.RocketLaunch,
+                                icon = MaterialSymbols.RocketLaunch,
                                 actionOnPress = {
                                     onNavigateToDetail(SettingsDetailType.LAUNCH_OPTIONS)
                                 },
@@ -419,7 +403,7 @@ fun SettingsScreen(
                             SettingsCardItem(
                                 title = stringResource(R.string.settings_permissions_title),
                                 description = stringResource(R.string.settings_permissions_desc),
-                                icon = Icons.Rounded.AdminPanelSettings,
+                                icon = MaterialSymbols.AdminPanelSettings,
                                 actionOnPress = {
                                     onNavigateToDetail(SettingsDetailType.PERMISSIONS)
                                 },
@@ -444,7 +428,7 @@ fun SettingsScreen(
                                         R.string.settings_app_language_desc,
                                         selectedLanguageLabel,
                                     ),
-                                icon = Icons.Rounded.Translate,
+                                icon = MaterialSymbols.Translate,
                                 actionOnPress = {
                                     showLanguageDialog = true
                                 },

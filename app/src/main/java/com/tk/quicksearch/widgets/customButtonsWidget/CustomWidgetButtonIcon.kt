@@ -5,10 +5,6 @@ import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.contacts.components.ContactAvatar
 import com.tk.quicksearch.search.data.appShortcutRepository.rememberShortcutIcon
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.util.Locale
 
 @Composable
@@ -69,7 +66,7 @@ fun CustomWidgetButtonIcon(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Apps,
+                    imageVector = MaterialSymbols.Apps,
                     contentDescription = action.contentDescription(),
                     tint = tintColor,
                     modifier = modifier.size(iconSize),
@@ -165,7 +162,7 @@ fun CustomWidgetButtonIcon(
 
         is CustomWidgetButtonAction.Setting -> {
             Icon(
-                imageVector = Icons.Rounded.Settings,
+                imageVector = MaterialSymbols.Settings,
                 contentDescription = action.contentDescription(),
                 tint = tintColor,
                 modifier = modifier.size(iconSize),
@@ -174,7 +171,7 @@ fun CustomWidgetButtonIcon(
 
         is CustomWidgetButtonAction.Note -> {
             Icon(
-                imageVector = Icons.Rounded.Description,
+                imageVector = MaterialSymbols.Description,
                 contentDescription = action.contentDescription(),
                 tint = tintColor,
                 modifier = modifier.size(iconSize),

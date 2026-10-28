@@ -2,10 +2,6 @@ package com.tk.quicksearch.search.contacts.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.contacts.models.ContactButtonAction
 import com.tk.quicksearch.shared.ui.components.AppVoiceCallIcon
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -50,21 +47,21 @@ internal fun ContactButtonActionIcon(
     when (action) {
         ContactButtonAction.CALL ->
             Icon(
-                imageVector = Icons.Rounded.Call,
+                imageVector = MaterialSymbols.Call,
                 contentDescription = label,
                 tint = callIconTint,
                 modifier = Modifier.size(iconSize),
             )
         ContactButtonAction.SMS ->
             Icon(
-                imageVector = Icons.Rounded.Sms,
+                imageVector = MaterialSymbols.Sms,
                 contentDescription = label,
                 tint = callIconTint,
                 modifier = Modifier.size((ContactUiConstants.ACTION_ICON_SIZE * 0.9f).dp),
             )
         ContactButtonAction.EMAIL ->
             Icon(
-                imageVector = Icons.Rounded.Email,
+                imageVector = MaterialSymbols.Email,
                 contentDescription = label,
                 tint = callIconTint,
                 modifier = Modifier.size(iconSize),

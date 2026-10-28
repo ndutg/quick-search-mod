@@ -29,13 +29,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Search
 import com.tk.quicksearch.shared.ui.components.AppBottomSheet
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import androidx.compose.material3.DropdownMenu
@@ -79,7 +72,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material.icons.rounded.Info
 import com.tk.quicksearch.shared.ui.components.TipBanner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchUiState
@@ -95,6 +87,7 @@ import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.media.MediaCommand
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
@@ -304,7 +297,7 @@ private fun CustomButtonsRow(
                                 DropdownMenuItem(
                                     text = { Text(text = stringResource(R.string.action_change_icon)) },
                                     leadingIcon = {
-                                        Icon(imageVector = Icons.Rounded.Image, contentDescription = null)
+                                        Icon(imageVector = MaterialSymbols.Image, contentDescription = null)
                                     },
                                     onClick = {
                                         showMenu = false
@@ -320,7 +313,7 @@ private fun CustomButtonsRow(
                                         },
                                         leadingIcon = {
                                             Icon(
-                                                imageVector = Icons.Rounded.Palette,
+                                                imageVector = MaterialSymbols.Palette,
                                                 contentDescription = null,
                                             )
                                         },
@@ -333,7 +326,7 @@ private fun CustomButtonsRow(
                                 DropdownMenuItem(
                                     text = { Text(text = stringResource(R.string.action_remove)) },
                                     leadingIcon = {
-                                        Icon(imageVector = Icons.Rounded.Close, contentDescription = null)
+                                        Icon(imageVector = MaterialSymbols.Close, contentDescription = null)
                                     },
                                     onClick = {
                                         showMenu = false
@@ -447,7 +440,7 @@ private fun CustomButtonsRow(
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.action_change_icon)) },
                             leadingIcon = {
-                                Icon(imageVector = Icons.Rounded.Image, contentDescription = null)
+                                Icon(imageVector = MaterialSymbols.Image, contentDescription = null)
                             },
                             onClick = {
                                 showMenu = false
@@ -463,7 +456,7 @@ private fun CustomButtonsRow(
                                 },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = Icons.Rounded.Palette,
+                                        imageVector = MaterialSymbols.Palette,
                                         contentDescription = null,
                                     )
                                 },
@@ -476,7 +469,7 @@ private fun CustomButtonsRow(
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.action_remove)) },
                             leadingIcon = {
-                                Icon(imageVector = Icons.Rounded.Close, contentDescription = null)
+                                Icon(imageVector = MaterialSymbols.Close, contentDescription = null)
                             },
                             onClick = {
                                 showMenu = false
@@ -528,7 +521,7 @@ private fun CustomButtonSlotContent(
         ) {
             if (action == null) {
                 Icon(
-                    imageVector = Icons.Rounded.Add,
+                    imageVector = MaterialSymbols.Add,
                     contentDescription = stringResource(R.string.widget_custom_button_add_desc),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(iconSize),

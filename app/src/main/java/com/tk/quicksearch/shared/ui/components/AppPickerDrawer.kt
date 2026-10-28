@@ -17,12 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Android
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -156,7 +151,7 @@ fun AppPickerDrawer(
                     },
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.common_close),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -188,10 +183,10 @@ private fun AppPickerDrawerSearchField(
         shape = if (search.onSubmit != null) DesignTokens.ShapeLarge else RoundedCornerShape(50.dp),
         leadingIcon = {
             if (search.onSubmit != null) {
-                Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+                Icon(imageVector = MaterialSymbols.Add, contentDescription = null)
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Search,
+                    imageVector = MaterialSymbols.Search,
                     contentDescription = stringResource(R.string.common_search),
                 )
             }
@@ -200,7 +195,7 @@ private fun AppPickerDrawerSearchField(
             if (search.query.text.isNotBlank()) {
                 IconButton(onClick = { search.onQueryChange(TextFieldValue("")) }) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.desc_clear_search),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -305,7 +300,7 @@ fun appPickerDrawerItemBackground(
 @Composable
 fun AppPickerDrawerSelectedCheck() {
     Icon(
-        imageVector = Icons.Rounded.Check,
+        imageVector = MaterialSymbols.Check,
         contentDescription = stringResource(R.string.desc_selected),
         tint = AppColors.Accent,
         modifier = Modifier.size(SELECTED_CHECK_SIZE),
@@ -343,7 +338,7 @@ fun AppPickerDrawerAppIcon(packageName: String) {
             modifier = Modifier.size(AppPickerDrawerLeadingSize),
         )
     } else {
-        AppPickerDrawerIconBadge(icon = Icons.Rounded.Android)
+        AppPickerDrawerIconBadge(icon = MaterialSymbols.Android)
     }
 }
 

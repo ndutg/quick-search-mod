@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -26,6 +24,7 @@ import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.HomeTextColor
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.util.hapticToggle
 import kotlin.math.abs
@@ -55,7 +54,7 @@ fun FontSizeCard(
                     subtitle = stringResource(R.string.settings_use_system_font_desc),
                     checked = useSystemFont,
                     onCheckedChange = onUseSystemFontChange,
-                    leadingIcon = Icons.Rounded.TextFields,
+                    leadingIcon = MaterialSymbols.TextFields,
                     horizontalPadding = 4.dp,
                     showDivider = false,
             )

@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.MailOutline
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -33,6 +31,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AiSearchState
 import com.tk.quicksearch.search.core.AiSearchStatus
 import com.tk.quicksearch.shared.ui.components.TipBanner
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import androidx.compose.ui.graphics.Color
 import com.tk.quicksearch.shared.util.FeedbackUtils
@@ -175,7 +174,7 @@ private fun QuickSearchHelpContactButton(
         contentPadding = PaddingValues(horizontal = DesignTokens.SpacingMedium, vertical = 0.dp),
     ) {
         Icon(
-            imageVector = Icons.Rounded.MailOutline,
+            imageVector = MaterialSymbols.MailOutline,
             contentDescription = null,
             modifier = Modifier.size(16.dp),
         )

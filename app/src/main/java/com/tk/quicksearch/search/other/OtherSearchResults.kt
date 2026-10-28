@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -41,6 +38,7 @@ import com.tk.quicksearch.search.core.ScreenTimeAppUsage
 import com.tk.quicksearch.search.core.ScreenTimeState
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.AppColors
 
@@ -195,7 +193,7 @@ internal fun ScreenTimeResultCard(
                 text = { Text(text = stringResource(R.string.action_exclude_generic)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Rounded.VisibilityOff,
+                        imageVector = MaterialSymbols.VisibilityOff,
                         contentDescription = null,
                     )
                 },
@@ -236,7 +234,7 @@ private fun ScreenTimeAppUsageRow(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Apps,
+                    imageVector = MaterialSymbols.Apps,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,

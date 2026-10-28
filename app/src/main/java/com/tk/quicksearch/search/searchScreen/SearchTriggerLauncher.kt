@@ -1,6 +1,5 @@
 package com.tk.quicksearch.search.searchScreen
 
-import androidx.compose.material.icons.rounded.Search
 import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.SectionRenderingState
 import kotlinx.coroutines.launch

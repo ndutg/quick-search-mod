@@ -16,11 +16,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.tk.quicksearch.R
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.search.contacts.contactInitials
 import com.tk.quicksearch.search.contacts.models.ContactButtonAction
@@ -445,7 +441,7 @@ private fun ContactActionIconForButton(
                 // Calls -> Phone Icon
                 is com.tk.quicksearch.search.contacts.models.ContactCardAction.Phone -> {
                         Icon(
-                                imageVector = Icons.Rounded.Call, // Explicit request for phone icon
+                                imageVector = MaterialSymbols.Call, // Explicit request for phone icon
                                 contentDescription = null,
                                 tint = callIconTint,
                                 modifier = modifier,
@@ -485,7 +481,7 @@ private fun ContactActionIconForButton(
                 // Messaging / Meet -> App Icon
                 is com.tk.quicksearch.search.contacts.models.ContactCardAction.Sms -> {
                         Icon(
-                                imageVector = Icons.Rounded.Sms,
+                                imageVector = MaterialSymbols.Sms,
                                 contentDescription = null,
                                 tint = callIconTint,
                                 modifier = smsModifier,
@@ -540,7 +536,7 @@ private fun ContactActionIconForButton(
                 }
                 is com.tk.quicksearch.search.contacts.models.ContactCardAction.Email -> {
                         Icon(
-                                imageVector = Icons.Rounded.Email,
+                                imageVector = MaterialSymbols.Email,
                                 contentDescription = null,
                                 tint = callIconTint,
                                 modifier = modifier,
@@ -562,7 +558,7 @@ private fun ContactActionIconForButton(
                 }
                 is com.tk.quicksearch.search.contacts.models.ContactCardAction.ViewInContactsApp -> {
                         Icon(
-                                imageVector = Icons.Rounded.Person,
+                                imageVector = MaterialSymbols.Person,
                                 contentDescription = null,
                                 tint = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = modifier,
@@ -599,7 +595,7 @@ private fun AppPackageIcon(
                         )
         } else {
                 Icon(
-                        imageVector = Icons.Rounded.Call,
+                        imageVector = MaterialSymbols.Call,
                         contentDescription = null,
                         tint =
                                 if (enabled) {

@@ -18,13 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.Public
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import androidx.compose.material3.Checkbox
@@ -43,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -142,7 +136,7 @@ fun EditCustomShortcutDialog(
                 Text(text = stringResource(R.string.settings_app_shortcuts_edit_dialog_title))
                 IconButton(onClick = onDelete) {
                     Icon(
-                        imageVector = Icons.Rounded.Delete,
+                        imageVector = MaterialSymbols.Delete,
                         contentDescription = stringResource(R.string.settings_app_shortcuts_delete_action),
                         tint = MaterialTheme.colorScheme.error,
                     )
@@ -188,7 +182,7 @@ fun EditCustomShortcutDialog(
                             }
                             else -> {
                                 Icon(
-                                    imageVector = Icons.Rounded.Public,
+                                    imageVector = MaterialSymbols.Public,
                                     contentDescription = trimmedName,
                                     modifier =
                                         Modifier
@@ -208,7 +202,7 @@ fun EditCustomShortcutDialog(
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Edit,
+                                imageVector = MaterialSymbols.Edit,
                                 contentDescription = stringResource(R.string.settings_edit_label),
                                 modifier = Modifier.size(10.dp),
                                 tint = MaterialTheme.colorScheme.primary,
@@ -395,7 +389,7 @@ fun AppShortcutCardHeader(
         }
 
         Icon(
-            imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+            imageVector = if (isExpanded) MaterialSymbols.ExpandLess else MaterialSymbols.ExpandMore,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
@@ -477,7 +471,7 @@ fun ShortcutToggleRow(
         if (onEditClick != null) {
             IconButton(onClick = onEditClick) {
                 Icon(
-                    imageVector = Icons.Rounded.Edit,
+                    imageVector = MaterialSymbols.Edit,
                     contentDescription = stringResource(R.string.settings_edit_label),
                     tint = MaterialTheme.colorScheme.primary,
                 )

@@ -24,8 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,6 +45,7 @@ import com.tk.quicksearch.search.core.intentHelpers.IntentHelpers
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.shared.ui.components.AppBottomPopup
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import kotlinx.coroutines.Dispatchers
@@ -123,7 +122,7 @@ fun AppIconOverrideDrawer(
                         onValueChange = { query = it },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
+                        leadingIcon = { Icon(MaterialSymbols.Search, contentDescription = null) },
                         placeholder = { Text(stringResource(R.string.icon_picker_search)) },
                         shape = RoundedCornerShape(32.dp),
                         colors =

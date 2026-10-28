@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,6 +33,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -91,7 +90,7 @@ internal fun CustomInfoRepeatRow(
             onCheckedChange = {},
             onRowClick = { menuExpanded = true },
             showSwitch = false,
-            leadingIcon = Icons.Rounded.Repeat,
+            leadingIcon = MaterialSymbols.Repeat,
             titleTextStyle = MaterialTheme.typography.bodyLarge,
             horizontalPadding = DesignTokens.CardHorizontalPadding,
             trailingAction = { CustomInfoRowChevron() },

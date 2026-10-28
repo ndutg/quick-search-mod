@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Sms
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +40,7 @@ import com.tk.quicksearch.shared.permissions.PermissionSettingsDialog
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -323,7 +322,7 @@ private fun MessagingOptionIcon(app: MessagingApp) {
     when (app) {
         MessagingApp.MESSAGES -> {
             Icon(
-                imageVector = Icons.Rounded.Sms,
+                imageVector = MaterialSymbols.Sms,
                 contentDescription = null,
                 tint = AppColors.IconTintSecondary,
                 modifier = Modifier.size(MessagingSpacing.iconSize),

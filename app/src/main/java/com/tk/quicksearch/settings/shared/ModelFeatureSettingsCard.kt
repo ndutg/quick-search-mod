@@ -5,9 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.draw.clip
@@ -21,7 +18,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.ModelPickerDialog
@@ -163,7 +160,7 @@ fun ModelFeatureSettingsCard(
                     )
                 }
                 Icon(
-                    imageVector = Icons.Rounded.UnfoldMore,
+                    imageVector = MaterialSymbols.UnfoldMore,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -255,7 +252,7 @@ private fun ProviderIconTile(providerId: AiSearchLlmProviderId) {
             )
         } else {
             Icon(
-                imageVector = Icons.Rounded.AutoAwesome,
+                imageVector = MaterialSymbols.AutoAwesome,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp),
@@ -320,7 +317,7 @@ private fun ModelFeatureChip(
             if (selected) {
                 {
                     Icon(
-                        imageVector = Icons.Rounded.Check,
+                        imageVector = MaterialSymbols.Check,
                         contentDescription = null,
                         modifier = Modifier.size(FilterChipDefaults.IconSize),
                     )

@@ -10,24 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.AudioFile
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.PinEnd
-import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material.icons.rounded.Storage
-import androidx.compose.material.icons.rounded.VideoLibrary
-import androidx.compose.material.icons.rounded.VisibilityOff
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -64,6 +46,7 @@ import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
 import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.components.itemMenuRemoveOption
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
@@ -168,25 +151,25 @@ fun FileInfoDialog(
                     Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingLarge)) {
                         Row {
                             FileInfoSection(
-                                    icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
+                                    icon = MaterialSymbols.InsertDriveFile,
                                     label = stringResource(R.string.file_info_type),
                                     value = extension ?: "—",
                                     modifier = Modifier.weight(1f),
                             )
                             FileInfoSection(
-                                    icon = Icons.Rounded.Storage,
+                                    icon = MaterialSymbols.Storage,
                                     label = stringResource(R.string.file_info_size),
                                     value = fileSizeBytes?.let { formatFileSize(it) } ?: "—",
                                     modifier = Modifier.weight(1f),
                             )
                         }
                         FileInfoSection(
-                                icon = Icons.Rounded.Folder,
+                                icon = MaterialSymbols.Folder,
                                 label = stringResource(R.string.file_info_path),
                                 value = locationText ?: "—",
                         )
                         FileInfoSection(
-                                icon = Icons.Rounded.Schedule,
+                                icon = MaterialSymbols.Schedule,
                                 label = stringResource(R.string.file_info_modified),
                                 value = modifiedText ?: "—",
                         )
@@ -289,23 +272,23 @@ fun FileDropdownMenu(
             if (!deviceFile.isDirectory) {
                 add(FileMenuItem(
                         textResId = R.string.action_share,
-                        icon = { Icon(imageVector = Icons.Rounded.Share, contentDescription = null) },
+                        icon = { Icon(imageVector = MaterialSymbols.Share, contentDescription = null) },
                         onClick = { onDismissRequest(); onShareClick() },
                 ))
                 add(FileMenuItem(
                         textResId = R.string.action_open_folder,
-                        icon = { Icon(imageVector = Icons.Rounded.Folder, contentDescription = null) },
+                        icon = { Icon(imageVector = MaterialSymbols.Folder, contentDescription = null) },
                         onClick = { onDismissRequest(); onOpenFolderClick() },
                 ))
             }
             add(FileMenuItem(
                     textResId = R.string.action_move_up,
-                    icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.ArrowUpward, contentDescription = null) },
                     onClick = { onDismissRequest(); onMoveUp() },
             ))
             add(FileMenuItem(
                     textResId = R.string.action_move_down,
-                    icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.ArrowDownward, contentDescription = null) },
                     onClick = { onDismissRequest(); onMoveDown() },
             ))
             return@buildList
@@ -314,7 +297,7 @@ fun FileDropdownMenu(
         if (!deviceFile.isDirectory) {
             add(FileMenuItem(
                     textResId = R.string.action_share,
-                    icon = { Icon(imageVector = Icons.Rounded.Share, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.Share, contentDescription = null) },
                     onClick = { onDismissRequest(); onShareClick() },
             ))
         }
@@ -331,19 +314,19 @@ fun FileDropdownMenu(
         ))
         add(FileMenuItem(
                 textResId = R.string.action_add_trigger,
-                icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                icon = { Icon(imageVector = MaterialSymbols.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                 onClick = { onDismissRequest(); onTriggerClick() },
                 longPressOption = removeTriggerOption,
         ))
         add(FileMenuItem(
                 textResId = R.string.action_exclude_generic,
-                icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+                icon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
                 onClick = { onDismissRequest(); onExclude() },
         ))
 
         add(FileMenuItem(
                 textResId = R.string.common_nickname,
-                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                icon = { Icon(imageVector = MaterialSymbols.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                 onClick = { onDismissRequest(); onNicknameClick() },
                 group = FileMenuGroup.ROWS,
                 longPressOption = removeNicknameOption,
@@ -351,7 +334,7 @@ fun FileDropdownMenu(
         if (!deviceFile.isDirectory) {
             add(FileMenuItem(
                     textResId = R.string.action_open_folder,
-                    icon = { Icon(imageVector = Icons.Rounded.Folder, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.Folder, contentDescription = null) },
                     onClick = { onDismissRequest(); onOpenFolderClick() },
                     group = FileMenuGroup.ROWS,
             ))
@@ -362,7 +345,7 @@ fun FileDropdownMenu(
                     if (isPinnedToNotifications) {
                         Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null, tint = AppColors.ItemMenuActiveIconTint)
                     } else {
-                        Icon(imageVector = Icons.Rounded.PinEnd, contentDescription = null)
+                        Icon(imageVector = MaterialSymbols.PinEnd, contentDescription = null)
                     }
                 },
                 onClick = {
@@ -377,7 +360,7 @@ fun FileDropdownMenu(
         if (!isDefaultLauncher) {
             add(FileMenuItem(
                     textResId = R.string.action_add_to_home,
-                    icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.Home, contentDescription = null) },
                     onClick = { onDismissRequest(); onAddToHome() },
                     group = FileMenuGroup.ROWS,
             ))
@@ -385,7 +368,7 @@ fun FileDropdownMenu(
         if (!deviceFile.isDirectory) {
             add(FileMenuItem(
                     textResId = R.string.action_file_info,
-                    icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.Info, contentDescription = null) },
                     onClick = { onDismissRequest(); onFileInfoClick() },
                     group = FileMenuGroup.ROWS,
             ))
@@ -394,7 +377,7 @@ fun FileDropdownMenu(
             add(FileMenuItem(
                     textResId = R.string.action_exclude_extension,
                     textArg = fileExtension,
-                    icon = { Icon(imageVector = Icons.Rounded.VisibilityOff, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.VisibilityOff, contentDescription = null) },
                     onClick = { onDismissRequest(); onExcludeExtension() },
                     group = FileMenuGroup.ROWS,
             ))
@@ -402,7 +385,7 @@ fun FileDropdownMenu(
         openAppSettingDestination?.let { openDestination ->
             add(FileMenuItem(
                     textResId = R.string.action_files_settings,
-                    icon = { Icon(imageVector = Icons.Rounded.Settings, contentDescription = null) },
+                    icon = { Icon(imageVector = MaterialSymbols.Settings, contentDescription = null) },
                     onClick = { onDismissRequest(); openDestination(AppSettingsDestination.FILES) },
                     group = FileMenuGroup.ROWS,
             ))
@@ -441,11 +424,11 @@ fun FileDropdownMenu(
     }
 
     val fileIcon = when {
-        deviceFile.isDirectory -> Icons.Rounded.Folder
-        deviceFile.mimeType?.startsWith("image/") == true -> Icons.Rounded.Image
-        deviceFile.mimeType?.startsWith("video/") == true -> Icons.Rounded.VideoLibrary
-        deviceFile.mimeType?.startsWith("audio/") == true -> Icons.Rounded.AudioFile
-        else -> Icons.AutoMirrored.Rounded.InsertDriveFile
+        deviceFile.isDirectory -> MaterialSymbols.Folder
+        deviceFile.mimeType?.startsWith("image/") == true -> MaterialSymbols.Image
+        deviceFile.mimeType?.startsWith("video/") == true -> MaterialSymbols.VideoLibrary
+        deviceFile.mimeType?.startsWith("audio/") == true -> MaterialSymbols.AudioFile
+        else -> MaterialSymbols.InsertDriveFile
     }
 
     if (expanded) {

@@ -23,13 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Repeat
-import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -88,6 +81,7 @@ import com.tk.quicksearch.settings.shared.SettingsManagementSearchBar
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.SimpleDateFormat
@@ -270,7 +264,7 @@ internal fun ReminderFormDialog(
                             shape = RoundedCornerShape(12.dp),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.CalendarMonth,
+                                imageVector = MaterialSymbols.CalendarMonth,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp),
                             )
@@ -292,7 +286,7 @@ internal fun ReminderFormDialog(
                                 shape = RoundedCornerShape(12.dp),
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Schedule,
+                                    imageVector = MaterialSymbols.Schedule,
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp),
                                 )
@@ -306,7 +300,7 @@ internal fun ReminderFormDialog(
                                     modifier = Modifier.size(24.dp),
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Rounded.Close,
+                                        imageVector = MaterialSymbols.Close,
                                         contentDescription = null,
                                         modifier = Modifier.size(16.dp),
                                     )
@@ -319,7 +313,7 @@ internal fun ReminderFormDialog(
                                 shape = RoundedCornerShape(12.dp),
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Schedule,
+                                    imageVector = MaterialSymbols.Schedule,
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp),
                                 )

@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +28,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.util.Locale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -146,7 +144,7 @@ internal fun HomeSectionHeaderRow(
         }
         if (isExpanded != null) {
             Icon(
-                imageVector = if (isExpanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                imageVector = if (isExpanded) MaterialSymbols.ExpandLess else MaterialSymbols.ExpandMore,
                 contentDescription = stringResource(
                     if (isExpanded) R.string.desc_collapse else R.string.desc_expand,
                 ),

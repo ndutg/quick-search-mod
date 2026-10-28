@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.NorthWest
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.searchScreen.LocalOverlayDividerColor
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -142,11 +140,11 @@ private fun WebSuggestionItem(
     ) {
         val icon =
             when {
-                isShortcutDetected -> Icons.Rounded.Search
-                else -> Icons.Rounded.NorthWest
+                isShortcutDetected -> MaterialSymbols.Search
+                else -> MaterialSymbols.NorthWest
             }
 
-        val iconSize = if (icon == Icons.Rounded.NorthWest) SUGGESTION_ARROW_ICON_SIZE else SUGGESTION_ICON_SIZE
+        val iconSize = if (icon == MaterialSymbols.NorthWest) SUGGESTION_ARROW_ICON_SIZE else SUGGESTION_ICON_SIZE
 
         Icon(
             imageVector = icon,

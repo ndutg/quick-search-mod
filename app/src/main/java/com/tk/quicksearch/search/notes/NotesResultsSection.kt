@@ -13,13 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.PinEnd
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -59,6 +52,7 @@ import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPaddin
 import com.tk.quicksearch.search.searchScreen.components.LocalSearchResultQuery
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
@@ -239,7 +233,7 @@ internal fun NoteRow(
             verticalAlignment = Alignment.Top,
         ) {
             Icon(
-                imageVector = Icons.Rounded.Description,
+                imageVector = MaterialSymbols.Description,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 7.dp, top = 1.dp).size(24.dp),
@@ -292,7 +286,7 @@ internal fun NoteRow(
                             showMenu = false
                             onMovePinned(note, true)
                         },
-                        leadingIcon = { Icon(Icons.Rounded.ArrowUpward, contentDescription = null) },
+                        leadingIcon = { Icon(MaterialSymbols.ArrowUpward, contentDescription = null) },
                     )
                     HorizontalDivider()
                     DropdownMenuItem(
@@ -301,7 +295,7 @@ internal fun NoteRow(
                             showMenu = false
                             onMovePinned(note, false)
                         },
-                        leadingIcon = { Icon(Icons.Rounded.ArrowDownward, contentDescription = null) },
+                        leadingIcon = { Icon(MaterialSymbols.ArrowDownward, contentDescription = null) },
                     )
                 } else {
                 DropdownMenuItem(
@@ -351,7 +345,7 @@ internal fun NoteRow(
                         showMenu = false
                         onTriggerClick(note)
                     },
-                    leadingIcon = { Icon(Icons.Rounded.Bolt, contentDescription = null) },
+                    leadingIcon = { Icon(MaterialSymbols.Bolt, contentDescription = null) },
                 )
                 HorizontalDivider()
                 DropdownMenuItem(
@@ -368,7 +362,7 @@ internal fun NoteRow(
                             )
                         } else {
                             Icon(
-                                imageVector = Icons.Rounded.PinEnd,
+                                imageVector = MaterialSymbols.PinEnd,
                                 contentDescription = null,
                             )
                         }
@@ -381,7 +375,7 @@ internal fun NoteRow(
                         showMenu = false
                         showDeleteConfirm = true
                     },
-                    leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
+                    leadingIcon = { Icon(MaterialSymbols.Delete, contentDescription = null) },
                 )
                 }
             }

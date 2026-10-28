@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.Paint
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
@@ -14,6 +12,7 @@ import androidx.compose.ui.graphics.vector.VectorGroup
 import androidx.compose.ui.graphics.vector.VectorNode
 import androidx.compose.ui.graphics.vector.VectorPath
 import androidx.core.graphics.drawable.toBitmap
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlin.math.roundToInt
 
 /** Every row icon is parceled into the widget's RemoteViews, so icons stay small. */
@@ -56,7 +55,7 @@ internal object AtAGlanceWidgetIcons {
         }
     }
 
-    fun fallbackAppIcon(context: Context): Bitmap = vector(context, Icons.Rounded.Apps)
+    fun fallbackAppIcon(context: Context): Bitmap = vector(context, MaterialSymbols.Apps)
 
     private fun renderVector(
         vector: ImageVector,
@@ -72,14 +71,26 @@ internal object AtAGlanceWidgetIcons {
         return bitmap
     }
 
-    /** Material icons are flat filled paths, so group transforms and strokes are not drawn. */
+    /**
+     * Material icons are filled paths, so strokes and clip paths are not drawn. Group transforms
+     * are, since Material Symbols shift their paths into the viewport with a group translation.
+     */
     private fun drawNode(
         canvas: Canvas,
         node: VectorNode,
         paint: Paint,
     ) {
         when (node) {
-            is VectorGroup -> node.forEach { drawNode(canvas, it, paint) }
+            is VectorGroup -> {
+                canvas.save()
+                // The same order as Compose's VectorGroup: translate, rotate and scale around the pivot.
+                canvas.translate(node.translationX + node.pivotX, node.translationY + node.pivotY)
+                canvas.rotate(node.rotation)
+                canvas.scale(node.scaleX, node.scaleY)
+                canvas.translate(-node.pivotX, -node.pivotY)
+                node.forEach { drawNode(canvas, it, paint) }
+                canvas.restore()
+            }
             is VectorPath -> {
                 val path = PathParser().addPathNodes(node.pathData).toPath()
                 path.fillType = node.pathFillType

@@ -23,8 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -32,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -182,7 +181,7 @@ fun AppBottomPopup(
                             if (showCloseButton) {
                                 IconButton(onClick = onDismiss, modifier = Modifier.size(40.dp)) {
                                     Icon(
-                                        imageVector = Icons.Rounded.Close,
+                                        imageVector = MaterialSymbols.Close,
                                         contentDescription = stringResource(R.string.dialog_cancel),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )

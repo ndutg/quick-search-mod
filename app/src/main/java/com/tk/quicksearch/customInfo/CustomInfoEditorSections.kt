@@ -14,13 +14,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.NotificationsNone
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,6 +36,7 @@ import com.tk.quicksearch.search.searchScreen.searchScreenLayout.GlanceStatusRow
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.ui.components.CardTextField
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.MarkdownText
@@ -90,7 +84,7 @@ internal fun CustomInfoContentCard(
                 modifier = Modifier.height(32.dp),
                 contentPadding = PaddingValues(start = DesignTokens.SpacingMedium, end = DesignTokens.SpacingLarge),
             ) {
-                Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(MaterialSymbols.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
                 Box(Modifier.width(DesignTokens.SpacingXSmall))
                 Text(stringResource(R.string.custom_info_preview), style = MaterialTheme.typography.labelMedium)
             }
@@ -110,7 +104,7 @@ internal fun CustomInfoPreviewCard(
         Box(Modifier.padding(horizontal = DesignTokens.SpacingSmall, vertical = DesignTokens.SpacingXSmall)) {
             GlanceStatusRow(
                 icon = {
-                    Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Icon(MaterialSymbols.AutoAwesome, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 },
                 title = title.ifBlank { stringResource(R.string.custom_info_title) },
                 onClick = {},
@@ -151,7 +145,7 @@ internal fun CustomInfoScheduleCard(
             onCheckedChange = {},
             onRowClick = onDateClick,
             showSwitch = false,
-            leadingIcon = Icons.Rounded.CalendarMonth,
+            leadingIcon = MaterialSymbols.CalendarMonth,
             titleTextStyle = MaterialTheme.typography.bodyLarge,
             horizontalPadding = DesignTokens.CardHorizontalPadding,
             isFirstItem = true,
@@ -162,7 +156,7 @@ internal fun CustomInfoScheduleCard(
             title = stringResource(R.string.custom_info_send_notification),
             checked = sendNotification,
             onCheckedChange = onSendNotificationChange,
-            leadingIcon = Icons.Rounded.NotificationsNone,
+            leadingIcon = MaterialSymbols.NotificationsNone,
             titleTextStyle = MaterialTheme.typography.bodyLarge,
             horizontalPadding = DesignTokens.CardHorizontalPadding,
             isLastItem = true,
@@ -178,7 +172,7 @@ internal fun CustomInfoScheduleCard(
 internal fun CustomInfoRowChevron() {
     Box(modifier = Modifier.height(48.dp), contentAlignment = Alignment.Center) {
         Icon(
-            Icons.Rounded.ChevronRight,
+            MaterialSymbols.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -198,7 +192,7 @@ internal fun CustomInfoSavedIndicator(savedCount: Int) {
     AnimatedVisibility(visible = visible, enter = fadeIn(), exit = fadeOut()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                Icons.Rounded.Check,
+                MaterialSymbols.Check,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp),

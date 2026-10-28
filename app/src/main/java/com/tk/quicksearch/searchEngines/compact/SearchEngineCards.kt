@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +36,7 @@ import com.tk.quicksearch.search.searchScreen.PredictedSubmitTarget
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCard
 import com.tk.quicksearch.search.searchScreen.shared.SearchResultCardDefaults
 import com.tk.quicksearch.search.searchScreen.predictedSubmitHighlight
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.hapticConfirm
 
 /**
@@ -199,7 +197,7 @@ fun SearchEngineCard(
                     modifier = Modifier.size(24.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        imageVector = MaterialSymbols.Close,
                         contentDescription = stringResource(R.string.desc_clear_search),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(SearchTargetConstants.CLEAR_ICON_SIZE),
@@ -312,7 +310,7 @@ private fun CustomizeSearchEnginesCard(
             horizontalArrangement = Arrangement.Start,
         ) {
             Icon(
-                imageVector = Icons.Rounded.Settings,
+                imageVector = MaterialSymbols.Settings,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,

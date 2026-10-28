@@ -3,8 +3,6 @@ package com.tk.quicksearch.settings.settingsDetailScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +22,7 @@ import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerMessage
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRow
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerSearch
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -103,6 +102,6 @@ private fun FolderSearchResultRow(
         enabled = !alreadySelected,
         selected = alreadySelected,
         onClick = onSelect,
-        leading = { AppPickerDrawerIconBadge(icon = Icons.Rounded.Folder) },
+        leading = { AppPickerDrawerIconBadge(icon = MaterialSymbols.Folder) },
     )
 }

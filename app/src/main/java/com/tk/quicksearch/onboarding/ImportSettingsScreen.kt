@@ -24,10 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.FileDownload
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,6 +51,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.settings.settingsScreen.SettingsBackupManager
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.io.File
@@ -163,9 +160,9 @@ fun ImportSettingsScreen(
                         ) { state ->
                             Icon(
                                 imageVector = when (state) {
-                                    ImportScreenState.Success -> Icons.Rounded.CheckCircle
-                                    ImportScreenState.Error -> Icons.Rounded.ErrorOutline
-                                    else -> Icons.Rounded.FileDownload
+                                    ImportScreenState.Success -> MaterialSymbols.CheckCircle
+                                    ImportScreenState.Error -> MaterialSymbols.ErrorOutline
+                                    else -> MaterialSymbols.FileDownload
                                 },
                                 contentDescription = null,
                                 modifier = Modifier.size(DesignTokens.IconSizeXLarge),
@@ -257,7 +254,7 @@ fun ImportSettingsScreen(
                             ),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.FileDownload,
+                                imageVector = MaterialSymbols.FileDownload,
                                 contentDescription = null,
                                 modifier = Modifier.size(DesignTokens.IconSize),
                             )
@@ -283,7 +280,7 @@ fun ImportSettingsScreen(
                             ),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.FileDownload,
+                                imageVector = MaterialSymbols.FileDownload,
                                 contentDescription = null,
                                 modifier = Modifier.size(DesignTokens.IconSize),
                             )

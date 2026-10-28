@@ -17,11 +17,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Public
-import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -103,7 +99,7 @@ internal fun AppShortcutIconEditDialog(
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
-                        imageVector = Icons.Rounded.Image,
+                        imageVector = MaterialSymbols.Image,
                         contentDescription = null,
                         modifier = Modifier.size(DesignTokens.LargeIconSize),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -176,7 +172,7 @@ internal fun AppShortcutIconEditDialog(
                             horizontalArrangement = Arrangement.Center,
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Replay,
+                                imageVector = MaterialSymbols.Replay,
                                 contentDescription = null,
                                 modifier = Modifier.size(DesignTokens.IconSizeSmall),
                             )
@@ -242,7 +238,7 @@ private fun ShortcutIconPreviewContent(
             }
             else -> {
                 Icon(
-                    imageVector = Icons.Rounded.Public,
+                    imageVector = MaterialSymbols.Public,
                     contentDescription = title,
                     modifier = Modifier.size(DesignTokens.LargeIconSize),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -260,7 +256,7 @@ private fun ShortcutIconPreviewContent(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Rounded.Edit,
+                imageVector = MaterialSymbols.Edit,
                 contentDescription = stringResource(R.string.settings_edit_label),
                 modifier = Modifier.size(12.dp),
                 tint = MaterialTheme.colorScheme.onPrimary,
