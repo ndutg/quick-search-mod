@@ -24,7 +24,6 @@ import com.tk.quicksearch.search.data.preferences.GlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ReminderInfo
-import com.tk.quicksearch.search.notes.NotesTextUtils
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.englishOrdinal
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.text.NumberFormat
@@ -528,9 +527,8 @@ internal class AtAGlanceWidgetRowLoader(
                         if (isError) {
                             string(R.string.direct_search_error_generic)
                         } else {
-                            NotesTextUtils.firstLinesPreview(item.answer, maxLines = 4)
+                            item.answer.trimEnd()
                         },
-                    subtitleMaxLines = 4,
                     tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.CUSTOM_INFO, id = item.id.toLong()),
                     dismiss = AtAGlanceWidgetDismissType.CUSTOM_INFO,
                 )

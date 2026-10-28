@@ -32,7 +32,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -92,7 +91,7 @@ fun AtAGlanceWidgetPreview(
                 Column(
                     modifier =
                         Modifier.padding(
-                            horizontal = AtAGlanceWidgetDimens.HORIZONTAL_PADDING,
+                            horizontal = AtAGlanceWidgetDimens.rowListHorizontalPadding(state.backgroundAlpha),
                             vertical = AtAGlanceWidgetDimens.LIST_VERTICAL_PADDING,
                         ),
                 ) {
@@ -135,15 +134,11 @@ private fun PreviewRow(
                         fontSize = AtAGlanceWidgetDimens.TITLE_FONT_SIZE * textScale,
                         fontWeight = FontWeight.Medium,
                     ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
             )
             row.subtitle?.takeIf { it.isNotBlank() }?.let { subtitle ->
                 Text(
                     text = subtitle,
                     style = TextStyle(color = colors.body, fontSize = AtAGlanceWidgetDimens.SUBTITLE_FONT_SIZE * textScale),
-                    maxLines = row.subtitleMaxLines,
-                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }

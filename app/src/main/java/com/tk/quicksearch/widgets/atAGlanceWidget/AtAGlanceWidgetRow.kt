@@ -75,7 +75,6 @@ internal class AtAGlanceWidgetRow(
     val icon: AtAGlanceWidgetIcon,
     val title: String,
     val subtitle: String? = null,
-    val subtitleMaxLines: Int = 2,
     val tap: AtAGlanceWidgetTap,
     /** Shows a close button that hides the item as on home; it reads the tap's key and id. */
     val dismiss: AtAGlanceWidgetDismissType? = null,

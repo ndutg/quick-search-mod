@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.SizeF
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,7 +75,7 @@ private const val DEFAULT_HEIGHT_DP = 110f
 /** Shared by the placed widget and the configure-screen preview so both render the same rows. */
 internal object AtAGlanceWidgetDimens {
     val ICON_SIZE = 24.dp
-    val ICON_TEXT_SPACING = 12.dp
+    val ICON_TEXT_SPACING = 10.dp
     val HORIZONTAL_PADDING = 16.dp
     val LIST_VERTICAL_PADDING = 4.dp
     val ROW_VERTICAL_PADDING = 10.dp
@@ -85,6 +86,9 @@ internal object AtAGlanceWidgetDimens {
     val SUBTITLE_FONT_SIZE = 12.sp
     val EMPTY_DATE_FONT_SIZE = 16.sp
     const val DIVIDER_ALPHA = 0.15f
+
+    /** Rows sit close to the edges, and closer still without a card to inset them from. */
+    fun rowListHorizontalPadding(backgroundAlpha: Float) = if (backgroundAlpha <= 0f) 4.dp else 10.dp
 }
 
 /**
@@ -198,7 +202,14 @@ class AtAGlanceWidget : GlanceAppWidget() {
             if (snapshot.rows.isEmpty()) {
                 EmptyContent(context, dayColors, nightColors, config.textScale, config.showEmptyDate)
             } else {
-                RowList(context, snapshot.rows, dayColors, nightColors, config.textScale)
+                RowList(
+                    context,
+                    snapshot.rows,
+                    dayColors,
+                    nightColors,
+                    config.textScale,
+                    AtAGlanceWidgetDimens.rowListHorizontalPadding(config.backgroundAlpha),
+                )
             }
         }
     }
@@ -210,6 +221,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
         dayColors: NoteWidgetColors,
         nightColors: NoteWidgetColors,
         textScale: Float,
+        horizontalPadding: Dp,
     ) {
         val titleColor = DayNightColorProvider(day = dayColors.title, night = nightColors.title)
         val subtitleColor = DayNightColorProvider(day = dayColors.body, night = nightColors.body)
@@ -224,7 +236,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
                 GlanceModifier
                     .fillMaxSize()
                     .padding(
-                        horizontal = AtAGlanceWidgetDimens.HORIZONTAL_PADDING,
+                        horizontal = horizontalPadding,
                         vertical = AtAGlanceWidgetDimens.LIST_VERTICAL_PADDING,
                     ),
         ) {
@@ -275,13 +287,11 @@ class AtAGlanceWidget : GlanceAppWidget() {
                             fontSize = AtAGlanceWidgetDimens.TITLE_FONT_SIZE * textScale,
                             fontWeight = FontWeight.Medium,
                         ),
-                    maxLines = 2,
                 )
                 row.subtitle?.takeIf { it.isNotBlank() }?.let { subtitle ->
                     Text(
                         text = subtitle,
                         style = TextStyle(color = subtitleColor, fontSize = AtAGlanceWidgetDimens.SUBTITLE_FONT_SIZE * textScale),
-                        maxLines = row.subtitleMaxLines,
                     )
                 }
             }
