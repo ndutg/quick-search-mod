@@ -400,8 +400,11 @@ internal fun PersistentSearchBar(
     }
     // Navigating to settings/widgets and back rebuilds this field from scratch, so a keyboard the
     // user opened by hand is only restored when the ViewModel says it was open on the way out.
-    LaunchedEffect(restoreKeyboardOnEnter, hasLaidOutSearchField) {
-        if (!restoreKeyboardOnEnter || !hasLaidOutSearchField) return@LaunchedEffect
+    // The request is read once on entry: it is set while the outgoing field is still composed for
+    // the exit animation, and reacting there reopens the keyboard over the page being opened.
+    val restoreKeyboardOnThisEntry = remember { restoreKeyboardOnEnter }
+    LaunchedEffect(restoreKeyboardOnThisEntry, hasLaidOutSearchField) {
+        if (!restoreKeyboardOnThisEntry || !hasLaidOutSearchField) return@LaunchedEffect
         focusRequester.requestFocus()
         keyboardController?.show()
         onRestoreKeyboardHandled()
