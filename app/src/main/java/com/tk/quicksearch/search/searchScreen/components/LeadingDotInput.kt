@@ -5,18 +5,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 
 /**
  * Keyboards auto-insert a space after punctuation, turning a typed ".mkv" into ". mkv", which
- * breaks file extension queries. Detects that inserted space right after a leading dot.
+ * breaks file extension queries. Detects a space newly appearing right after a leading dot, whether
+ * the keyboard adds it on its own edit, with the next character, or on a later composing edit.
  */
 internal fun hasAutoSpaceAfterLeadingDot(
     previousText: String,
     newText: String,
 ): Boolean =
-    when {
-        previousText.isEmpty() -> newText == ". "
-        previousText == "." ->
-            newText.length > 2 && newText.startsWith(". ") && !newText[2].isWhitespace()
-        else -> false
-    }
+    newText.startsWith(". ") &&
+        !previousText.startsWith(". ") &&
+        (previousText.isEmpty() || previousText.startsWith("."))
 
 internal fun TextFieldValue.withoutAutoSpaceAfterLeadingDot(previousText: String): TextFieldValue {
     if (!hasAutoSpaceAfterLeadingDot(previousText, text)) return this

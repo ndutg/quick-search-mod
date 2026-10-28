@@ -1372,7 +1372,7 @@
     <string name="home_upcoming_alarm_hide_app">Hide alarms from %1$s</string>
     <string name="home_low_battery_saver_off">Tap to turn on Battery Saver</string>
     <string name="home_low_battery_saver_on">Battery Saver is on</string>
-    <string name="home_critical_battery_title">Battery critically low</string>
+    <string name="home_critical_battery_title">Battery Critically Low</string>
     <string name="home_critical_battery_charge_now">Charge now</string>
     <string name="home_charged">Fully Charged</string>
     <string name="home_charging_full_in">Full in %1$s</string>

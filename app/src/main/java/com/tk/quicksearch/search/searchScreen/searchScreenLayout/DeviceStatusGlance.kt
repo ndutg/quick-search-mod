@@ -36,7 +36,6 @@ internal class ChargingGlance(
     /** Plugged in but not charging, such as when held at a charge limit; no time to full then. */
     val isPaused: Boolean,
     val timeToFullMillis: Long?,
-    val open: () -> Unit,
     /** Hides the row until the phone is unplugged and plugged in again. */
     val dismiss: () -> Unit,
 )
@@ -79,7 +78,7 @@ internal fun ChargingRow(glance: ChargingGlance) {
                 container = MaterialTheme.colorScheme.primaryContainer,
                 content = MaterialTheme.colorScheme.onPrimaryContainer,
             ),
-        onClick = glance.open,
+        onClick = null,
         onDismiss = glance.dismiss,
     )
 }

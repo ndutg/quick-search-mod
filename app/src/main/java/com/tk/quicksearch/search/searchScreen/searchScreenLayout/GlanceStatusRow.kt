@@ -88,7 +88,8 @@ internal fun glanceNeutralPillColors() =
 internal fun GlanceStatusRow(
     icon: @Composable () -> Unit,
     title: String,
-    onClick: () -> Unit,
+    /** Null leaves the row without a tap target. */
+    onClick: (() -> Unit)?,
     onLongClick: (() -> Unit)? = null,
     titleStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     titleMaxLines: Int = 1,
@@ -113,7 +114,10 @@ internal fun GlanceStatusRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
-            modifier = Modifier.weight(1f).combinedClickable(onClick = onClick, onLongClick = onLongClick),
+            modifier =
+                Modifier.weight(1f).then(
+                    if (onClick != null) Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick) else Modifier,
+                ),
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {

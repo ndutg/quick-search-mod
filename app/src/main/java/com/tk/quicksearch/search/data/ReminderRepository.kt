@@ -112,6 +112,7 @@ class ReminderRepository(context: Context) {
         return readReminders()
             .filter { reminder ->
                 !reminder.isDone &&
+                    !reminder.isDismissedFromHome &&
                     !reminder.isDismissedFromHomeToday(nowMillis) &&
                     (snoozedUntil[reminder.reminderId] ?: 0L) <= nowMillis &&
                     reminder.dueMillis - HOME_CARD_LEAD_MILLIS <= nowMillis
@@ -217,6 +218,19 @@ class ReminderRepository(context: Context) {
         val reminder = getReminderById(reminderId) ?: return
         preferences.setHomeSnoozedUntil(reminderId, reminder.dueMillis, nowMillis)
         notifyChanged()
+    }
+
+    /**
+     * The widget's close button: a reminder that isn't due yet comes back at its due time, as with
+     * [hideFromHomeUntilDue]; dismissing it once due keeps it off the Home card.
+     */
+    fun dismissFromHome(reminderId: Long, nowMillis: Long = System.currentTimeMillis()) {
+        val reminder = getReminderById(reminderId) ?: return
+        if (nowMillis < reminder.dueMillis) {
+            hideFromHomeUntilDue(reminderId, nowMillis)
+        } else {
+            updateOne(reminderId) { it.copy(isDismissedFromHome = true) }
+        }
     }
 
     /** Undoes [snooze]; re-posts the notification when [restoreNotification] (it was showing before). */

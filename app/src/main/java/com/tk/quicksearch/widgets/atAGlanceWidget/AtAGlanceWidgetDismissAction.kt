@@ -7,10 +7,13 @@ import androidx.glance.action.actionParametersOf
 import androidx.glance.appwidget.action.ActionCallback
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.customInfo.CustomInfoScheduler
+import com.tk.quicksearch.search.data.CalendarRepository
 import com.tk.quicksearch.search.data.GlanceNotificationsStore
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.data.UpcomingAlarmRepository
+import com.tk.quicksearch.search.data.dismissTodayGlanceEvent
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
+import com.tk.quicksearch.search.data.preferences.CalendarPreferences
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.WifiSignInDismissal
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.freePercent
@@ -52,7 +55,7 @@ class AtAGlanceWidgetDismissAction : ActionCallback {
                 repository.nextWithinFortyFiveMinutes(now)?.let(repository::dismiss)
                     ?: repository.tomorrowsFirstAlarm(now)?.let(repository::dismissTomorrow)
             }
-            AtAGlanceWidgetDismissType.REMINDER -> ReminderRepository(context).hideFromHomeUntilDue(id)
+            AtAGlanceWidgetDismissType.REMINDER -> ReminderRepository(context).dismissFromHome(id)
             AtAGlanceWidgetDismissType.MISSED_CALLS -> {
                 val dismissedAt = glancePreferences.getMissedCallsDismissedAt()
                 val calls = GlanceNotificationsStore.missedCalls.value.filter { it.callTime > dismissedAt }
@@ -68,6 +71,7 @@ class AtAGlanceWidgetDismissAction : ActionCallback {
             AtAGlanceWidgetDismissType.BIRTHDAY -> glancePreferences.dismissBirthday(LocalDate.now().toString(), id)
             AtAGlanceWidgetDismissType.TOMORROW_EVENT ->
                 glancePreferences.dismissTomorrowEvent(LocalDate.now().plusDays(1).toString(), id)
+            AtAGlanceWidgetDismissType.TODAY_EVENT -> dismissTodayGlanceEvent(CalendarRepository(context), CalendarPreferences(context), id)
             AtAGlanceWidgetDismissType.CUSTOM_INFO -> {
                 CustomInfoScheduler.cancelNotification(context.applicationContext, id.toInt())
                 CustomInfoRepository(context).update(id.toInt()) { it.copy(showOnHome = false) }

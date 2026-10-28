@@ -238,7 +238,6 @@ internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
                     isFull = it.isFull,
                     isPaused = it.isPaused,
                     timeToFullMillis = it.chargeTimeRemainingMillis,
-                    open = { openBatteryUsage(context) },
                     dismiss = {
                         preferences.dismissCharging(it.percent)
                         chargingDismissedPercent = it.percent
@@ -255,10 +254,6 @@ internal fun openBatterySettings(context: Context) {
         Intent(Intent.ACTION_POWER_USAGE_SUMMARY),
         Intent(Settings.ACTION_SETTINGS),
     )
-}
-
-internal fun openBatteryUsage(context: Context) {
-    openFirstAvailable(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY), Intent(Settings.ACTION_SETTINGS))
 }
 
 /** Starts the first of [intents] that resolves, for settings screens that vary by device. */
@@ -323,16 +318,14 @@ internal fun LowBatteryRow(glance: LowBatteryGlance) {
                 modifier =
                     Modifier
                         .clip(CircleShape)
-                        .background(
-                            if (glance.isCritical) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.errorContainer,
-                        )
+                        .background(MaterialTheme.colorScheme.error)
                         .padding(horizontal = 10.dp, vertical = 4.dp),
             ) {
                 Text(
                     text = percentLabel,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (glance.isCritical) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onErrorContainer,
+                    color = MaterialTheme.colorScheme.onError,
                 )
             }
         }

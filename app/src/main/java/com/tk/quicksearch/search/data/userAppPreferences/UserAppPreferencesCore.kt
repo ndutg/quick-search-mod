@@ -10,6 +10,9 @@ import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.AppSuggestionTabType
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
+import com.tk.quicksearch.search.data.CalendarRepository
+import com.tk.quicksearch.search.data.TodayGlanceEvents
+import com.tk.quicksearch.search.data.loadTodayGlanceEvents
 import com.tk.quicksearch.search.data.preferences.*
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.searchHistory.SearchHistoryPreferences
@@ -386,9 +389,10 @@ open class UserAppPreferencesCore(protected val context: Context) {
     fun setDefaultCalendarPackage(packageName: String?) =
         calendarPreferences.setDefaultCalendarPackage(packageName)
 
-    fun getArchivedTodayEventIds(): Set<Long> = calendarPreferences.getArchivedTodayEventIds()
-
     fun archiveTodayCalendarEvent(eventId: Long): Set<Long> = calendarPreferences.archiveTodayEvent(eventId)
+
+    internal fun getTodayGlanceEvents(repository: CalendarRepository): TodayGlanceEvents =
+        loadTodayGlanceEvents(repository, calendarPreferences, applySnoozes = false)
 
     // ============================================================================
     // Notes Preferences

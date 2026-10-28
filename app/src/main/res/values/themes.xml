@@ -24,4 +24,10 @@
         <item name="android:windowIsTranslucent">false</item>
     </style>
 
+
+    <!-- Glance draws every widget list with this style; only the At a Glance widget has one, and it
+         scrolls without a scrollbar. -->
+    <style name="Glance.AppWidget.List" parent="">
+        <item name="android:scrollbars">none</item>
+    </style>
 </resources>
