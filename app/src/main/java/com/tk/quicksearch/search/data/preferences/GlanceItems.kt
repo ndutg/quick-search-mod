@@ -136,6 +136,13 @@ class AppGlanceItemSettings(
 }
 
 /**
+ * A new At a Glance widget's overrides: none, so it follows [app], unless [app] shows no items at all,
+ * in which case every item starts on so the widget has something to show until the user configures it.
+ */
+fun newWidgetGlanceItems(app: GlanceItemSettings): Map<String, Boolean> =
+    if (GlanceItem.entries.any(app::isShown)) emptyMap() else GlanceItem.entries.associate { it.key to true }
+
+/**
  * An At a Glance widget's settings: [overrides] holds what the user changed for the widget, and
  * everything else follows [app]. A Custom Info item the app turned off never runs, so the widget
  * can only hide one the app shows. [onChange] receives the updated overrides.

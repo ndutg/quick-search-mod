@@ -9,7 +9,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -109,11 +108,6 @@ private fun AtAGlanceWidgetItemsDrawer(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f),
                 )
-                if (items.isNotEmpty()) {
-                    TextButton(onClick = { onItemsChange(emptyMap()) }) {
-                        Text(text = stringResource(R.string.dialog_reset))
-                    }
-                }
                 IconButton(onClick = dismiss) {
                     Icon(
                         imageVector = MaterialSymbols.Close,
