@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shown on the home screen until AtAGlanceWidget first draws: the empty card, so no sample rows
+     appear as if they were the user's. The launcher picker keeps widget_at_a_glance_placeholder. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_note_placeholder_background" />

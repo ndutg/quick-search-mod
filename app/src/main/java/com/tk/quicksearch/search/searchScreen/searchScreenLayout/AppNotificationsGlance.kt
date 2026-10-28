@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +32,7 @@ import com.tk.quicksearch.search.data.AppNotification
 import com.tk.quicksearch.search.data.AppNotificationsConfig
 import com.tk.quicksearch.search.data.AppNotificationsSettings
 import com.tk.quicksearch.search.data.GlanceNotificationsStore
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -161,7 +160,7 @@ internal fun ShowMoreAppNotificationsRow(glance: AppNotificationsGlance) {
     ) {
         Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
             Icon(
-                imageVector = Icons.Rounded.ExpandMore,
+                imageVector = MaterialSymbols.ExpandMore,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -5,13 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.rounded.PushPin
-import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Button
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.settings.shared.SettingsCheckboxRow
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 @Composable
@@ -50,7 +44,7 @@ fun SettingsExportDialog(
                     description = "",
                     checked = true,
                     onCheckedChange = {},
-                    icon = Icons.Rounded.Tune,
+                    icon = MaterialSymbols.Tune,
                     isLastItem =
                         !selectionState.showPinnedItemsOption &&
                             !selectionState.showNotesOption &&
@@ -75,7 +69,7 @@ fun SettingsExportDialog(
                         onCheckedChange = {
                             onSelectionStateChange(selectionState.copy(includePinnedItems = it))
                         },
-                        icon = Icons.Rounded.PushPin,
+                        icon = MaterialSymbols.PushPin,
                         isLastItem =
                             !selectionState.showNotesOption &&
                                 !selectionState.showCalendarEventsOption &&
@@ -90,7 +84,7 @@ fun SettingsExportDialog(
                         onCheckedChange = {
                             onSelectionStateChange(selectionState.copy(includeNotes = it))
                         },
-                        icon = Icons.Rounded.Description,
+                        icon = MaterialSymbols.Description,
                         isLastItem = !selectionState.showCalendarEventsOption && !selectionState.showRemindersOption && !selectionState.showApiKeysOption,
                     )
                 }
@@ -102,7 +96,7 @@ fun SettingsExportDialog(
                         onCheckedChange = {
                             onSelectionStateChange(selectionState.copy(includeCalendarEvents = it))
                         },
-                        icon = Icons.Rounded.CalendarMonth,
+                        icon = MaterialSymbols.CalendarMonth,
                         isLastItem = !selectionState.showRemindersOption && !selectionState.showApiKeysOption,
                     )
                 }
@@ -114,7 +108,7 @@ fun SettingsExportDialog(
                         onCheckedChange = {
                             onSelectionStateChange(selectionState.copy(includeReminders = it))
                         },
-                        icon = Icons.Rounded.NotificationsActive,
+                        icon = MaterialSymbols.NotificationsActive,
                         isLastItem = !selectionState.showApiKeysOption,
                     )
                 }
@@ -126,7 +120,7 @@ fun SettingsExportDialog(
                         onCheckedChange = {
                             onSelectionStateChange(selectionState.copy(includeApiKeys = it))
                         },
-                        icon = Icons.Rounded.Key,
+                        icon = MaterialSymbols.Key,
                         isLastItem = true,
                     )
                 }

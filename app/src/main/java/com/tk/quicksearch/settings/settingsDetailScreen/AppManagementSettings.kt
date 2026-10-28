@@ -22,11 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.ExpandMore
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -62,6 +57,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.models.AppInfo
 import com.tk.quicksearch.settings.appShortcutsSettings.shortcutMatchPriority
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.io.File
@@ -300,7 +296,7 @@ fun AppManagementSettingsSection(
                         color = AppColors.LinkColor,
                     )
                     Icon(
-                        imageVector = Icons.Rounded.ExpandMore,
+                        imageVector = MaterialSymbols.ExpandMore,
                         contentDescription = null,
                         tint = AppColors.LinkColor,
                     )
@@ -334,9 +330,9 @@ fun AppManagementSettingsSection(
                 Icon(
                     imageVector =
                         if (isSortAscending) {
-                            Icons.Rounded.ArrowUpward
+                            MaterialSymbols.ArrowUpward
                         } else {
-                            Icons.Rounded.ArrowDownward
+                            MaterialSymbols.ArrowDownward
                         },
                     contentDescription =
                         if (isSortAscending) {
@@ -439,7 +435,7 @@ fun AppManagementSettingsSection(
                     contentColor = MaterialTheme.colorScheme.onError,
                     icon = {
                         Icon(
-                            imageVector = Icons.Rounded.Delete,
+                            imageVector = MaterialSymbols.Delete,
                             contentDescription = null,
                         )
                     },

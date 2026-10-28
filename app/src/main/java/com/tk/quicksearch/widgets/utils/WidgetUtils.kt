@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
@@ -100,7 +101,6 @@ suspend fun refreshCountdownWidgets(context: Context) {
     refreshWidgets(context, CountdownWidgetReceiver::class.java, CountdownWidget())
 }
 
-/** Redraws placed At a Glance widgets, e.g. when a notification, device state or reminder changes. */
 /**
  * How much the launcher shrinks or grows a placed widget's content. Samsung One UI Home draws
  * widgets scaled to its grid and reports the factor in the widget's options; other launchers draw
@@ -119,8 +119,12 @@ fun launcherWidgetContentScale(
 
 private const val ONE_UI_RESIZE_RATIO_OPTION = "hsResizeRatio"
 
+/** Redraws placed At a Glance widgets, e.g. when a notification, device state or reminder changes. */
 suspend fun refreshAtAGlanceWidgets(context: Context) {
-    refreshWidgets(context, AtAGlanceWidgetReceiver::class.java, AtAGlanceWidget())
+    val widget = AtAGlanceWidget()
+    refreshWidgets(context, AtAGlanceWidgetReceiver::class.java, widget) { appWidgetId, glanceId ->
+        widget.drawNow(context, appWidgetId, glanceId)
+    }
 }
 
 /** Fire-and-forget [refreshNoteWidgets] for callers outside a coroutine. */
@@ -153,6 +157,7 @@ private suspend fun refreshWidgets(
     context: Context,
     receiverClass: Class<*>,
     widget: GlanceAppWidget,
+    beforeUpdate: suspend (appWidgetId: Int, glanceId: GlanceId) -> Unit = { _, _ -> },
 ) {
     val appWidgetManager = AppWidgetManager.getInstance(context)
     val componentName = ComponentName(context, receiverClass)
@@ -169,6 +174,7 @@ private suspend fun refreshWidgets(
                     preferences[MediaPlaybackRevisionKey] =
                         (preferences[MediaPlaybackRevisionKey] ?: 0L) + 1L
                 }
+                beforeUpdate(appWidgetId, glanceId)
                 widget.update(context, glanceId)
             }
     }

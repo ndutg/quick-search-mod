@@ -7,16 +7,6 @@ import android.net.ConnectivityManager
 import android.os.BatteryManager
 import android.os.PowerManager
 import android.text.format.Formatter
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AirplanemodeActive
-import androidx.compose.material.icons.rounded.BatteryAlert
-import androidx.compose.material.icons.rounded.BatteryChargingFull
-import androidx.compose.material.icons.rounded.BatteryFull
-import androidx.compose.material.icons.rounded.DoNotDisturbOn
-import androidx.compose.material.icons.rounded.FlashlightOn
-import androidx.compose.material.icons.rounded.Storage
-import androidx.compose.material.icons.rounded.WifiPassword
-import androidx.compose.material.icons.rounded.WifiTethering
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
@@ -33,6 +23,7 @@ import com.tk.quicksearch.search.searchScreen.searchScreenLayout.isLowStorage
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.needsCaptivePortalSignIn
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.readInternalStorage
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.updateLowStorageDismissal
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.text.NumberFormat
 
 /** The sticky battery broadcast, read without registering a receiver. */
@@ -78,7 +69,7 @@ internal fun AtAGlanceWidgetRowLoader.lowBatteryRows(): List<AtAGlanceWidgetRow>
     return listOf(
         deviceRow(
             type = AtAGlanceWidgetTapType.LOW_BATTERY,
-            icon = Icons.Rounded.BatteryAlert,
+            icon = MaterialSymbols.BatteryAlert,
             title =
                 string(
                     if (isCritical) R.string.home_critical_battery_title else R.string.settings_at_a_glance_low_battery_title,
@@ -99,7 +90,7 @@ internal fun AtAGlanceWidgetRowLoader.wifiSignInRows(): List<AtAGlanceWidgetRow>
     return listOf(
         deviceRow(
             AtAGlanceWidgetTapType.WIFI_SIGN_IN,
-            Icons.Rounded.WifiPassword,
+            MaterialSymbols.WifiPassword,
             string(R.string.home_wifi_sign_in),
             dismiss = AtAGlanceWidgetDismissType.WIFI_SIGN_IN,
         ),
@@ -115,13 +106,13 @@ internal fun AtAGlanceWidgetRowLoader.deviceStateRows(): List<AtAGlanceWidgetRow
             notificationManager != null &&
             isDoNotDisturbOn(notificationManager.currentInterruptionFilter)
         ) {
-            add(deviceRow(AtAGlanceWidgetTapType.DO_NOT_DISTURB, Icons.Rounded.DoNotDisturbOn, string(R.string.home_dnd_on)))
+            add(deviceRow(AtAGlanceWidgetTapType.DO_NOT_DISTURB, MaterialSymbols.DoNotDisturbOn, string(R.string.home_dnd_on)))
         }
         if (items.isShown(GlanceItem.AIRPLANE_MODE) && isAirplaneModeOn(context)) {
             add(
                 deviceRow(
                     AtAGlanceWidgetTapType.AIRPLANE_MODE,
-                    Icons.Rounded.AirplanemodeActive,
+                    MaterialSymbols.AirplanemodeActive,
                     string(R.string.home_airplane_mode_on),
                 ),
             )
@@ -129,11 +120,11 @@ internal fun AtAGlanceWidgetRowLoader.deviceStateRows(): List<AtAGlanceWidgetRow
         if (items.isShown(GlanceItem.HOTSPOT)) {
             val stateIntent = runCatching { context.registerReceiver(null, IntentFilter(ACTION_WIFI_AP_STATE_CHANGED)) }.getOrNull()
             if (isHotspotOn(context, stateIntent)) {
-                add(deviceRow(AtAGlanceWidgetTapType.HOTSPOT, Icons.Rounded.WifiTethering, string(R.string.home_hotspot_on)))
+                add(deviceRow(AtAGlanceWidgetTapType.HOTSPOT, MaterialSymbols.WifiTethering, string(R.string.home_hotspot_on)))
             }
         }
         if (items.isShown(GlanceItem.FLASHLIGHT) && AtAGlanceWidgetUpdater.litCameraIds.value.isNotEmpty()) {
-            add(deviceRow(AtAGlanceWidgetTapType.FLASHLIGHT, Icons.Rounded.FlashlightOn, string(R.string.home_flashlight_on)))
+            add(deviceRow(AtAGlanceWidgetTapType.FLASHLIGHT, MaterialSymbols.FlashlightOn, string(R.string.home_flashlight_on)))
         }
         addAll(chargingRows())
         addAll(lowStorageRows())
@@ -161,7 +152,7 @@ private fun AtAGlanceWidgetRowLoader.chargingRows(): List<AtAGlanceWidgetRow> {
     return listOf(
         deviceRow(
             type = AtAGlanceWidgetTapType.CHARGING,
-            icon = if (battery.isFull) Icons.Rounded.BatteryFull else Icons.Rounded.BatteryChargingFull,
+            icon = if (battery.isFull) MaterialSymbols.BatteryFull else MaterialSymbols.BatteryChargingFull,
             title = title,
             subtitle = listOfNotNull(formatPercent(battery.percent), timeToFull).joinToString(" • "),
             dismiss = AtAGlanceWidgetDismissType.CHARGING,
@@ -176,7 +167,7 @@ private fun AtAGlanceWidgetRowLoader.lowStorageRows(): List<AtAGlanceWidgetRow> 
     return listOf(
         deviceRow(
             type = AtAGlanceWidgetTapType.LOW_STORAGE,
-            icon = Icons.Rounded.Storage,
+            icon = MaterialSymbols.Storage,
             title = string(R.string.home_storage_almost_full),
             subtitle =
                 string(

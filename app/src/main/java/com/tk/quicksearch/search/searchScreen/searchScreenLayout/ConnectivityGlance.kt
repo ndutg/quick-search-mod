@@ -12,10 +12,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AirplanemodeActive
-import androidx.compose.material.icons.rounded.WifiPassword
-import androidx.compose.material.icons.rounded.WifiTethering
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -29,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 /** Airplane mode while it is on; apps can't turn it off, so a tap opens its settings. */
 internal class AirplaneModeGlance(
@@ -274,7 +271,7 @@ internal fun AirplaneModeRow(glance: AirplaneModeGlance) {
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.AirplanemodeActive,
+                imageVector = MaterialSymbols.AirplanemodeActive,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -290,7 +287,7 @@ internal fun HotspotRow(glance: HotspotGlance) {
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.WifiTethering,
+                imageVector = MaterialSymbols.WifiTethering,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -306,7 +303,7 @@ internal fun WifiSignInRow(glance: WifiSignInGlance) {
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.WifiPassword,
+                imageVector = MaterialSymbols.WifiPassword,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )

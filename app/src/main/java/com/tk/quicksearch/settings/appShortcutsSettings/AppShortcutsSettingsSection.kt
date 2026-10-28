@@ -15,9 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.UnfoldLess
-import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import com.tk.quicksearch.settings.shared.SettingsCard
@@ -27,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -62,6 +58,7 @@ import com.tk.quicksearch.search.data.appShortcutRepository.shortcutDisplayName
 import com.tk.quicksearch.search.data.appShortcutRepository.shortcutKey
 import com.tk.quicksearch.searchEngines.getDisplayName
 import com.tk.quicksearch.searchEngines.isSearchTargetShortcutPackageName
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
@@ -414,7 +411,7 @@ val context = LocalContext.current
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                                 Icon(
-                                    imageVector = Icons.Rounded.ExpandMore,
+                                    imageVector = MaterialSymbols.ExpandMore,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
                                 )
@@ -448,7 +445,7 @@ val context = LocalContext.current
                             },
                         ) {
                             Icon(
-                                imageVector = if (allExpanded) Icons.Rounded.UnfoldLess else Icons.Rounded.UnfoldMore,
+                                imageVector = if (allExpanded) MaterialSymbols.UnfoldLess else MaterialSymbols.UnfoldMore,
                                 contentDescription =
                                     if (allExpanded) {
                                         stringResource(R.string.settings_app_shortcuts_collapse_all)

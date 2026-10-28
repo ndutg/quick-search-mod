@@ -2,15 +2,6 @@ package com.tk.quicksearch.search.contacts.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.PinEnd
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -39,6 +30,7 @@ import com.tk.quicksearch.shared.ui.components.ItemMenuPopup
 import com.tk.quicksearch.shared.ui.components.ItemMenuRow
 import com.tk.quicksearch.shared.ui.components.ItemMenuTile
 import com.tk.quicksearch.shared.ui.components.itemMenuRemoveOption
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 
@@ -104,7 +96,7 @@ fun ContactDropdownMenu(
                 add(
                         ContactMenuItem(
                                 textResId = R.string.action_move_up,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowUpward, contentDescription = null) },
                                 onClick = {
                                     onDismissRequest()
                                     onMoveUp()
@@ -114,7 +106,7 @@ fun ContactDropdownMenu(
                 add(
                         ContactMenuItem(
                                 textResId = R.string.action_move_down,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowDownward, contentDescription = null) },
                                 onClick = {
                                     onDismissRequest()
                                     onMoveDown()
@@ -152,7 +144,7 @@ fun ContactDropdownMenu(
                             textResId =
                                     R.string.action_add_trigger,
                             icon = {
-                                Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current)
+                                Icon(imageVector = MaterialSymbols.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current)
                             },
                             onClick = {
                                 onDismissRequest()
@@ -167,7 +159,7 @@ fun ContactDropdownMenu(
                             textResId =
                                     R.string.common_nickname,
                             icon = {
-                                Icon(imageVector = Icons.Rounded.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current)
+                                Icon(imageVector = MaterialSymbols.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current)
                             },
                             onClick = {
                                 onDismissRequest()
@@ -182,7 +174,7 @@ fun ContactDropdownMenu(
                             textResId = R.string.action_exclude_generic,
                             icon = {
                                 Icon(
-                                        imageVector = Icons.Rounded.VisibilityOff,
+                                        imageVector = MaterialSymbols.VisibilityOff,
                                         contentDescription = null
                                 )
                             },
@@ -200,7 +192,7 @@ fun ContactDropdownMenu(
                                 if (isPinnedToNotifications) {
                                     Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null, tint = AppColors.ItemMenuActiveIconTint)
                                 } else {
-                                    Icon(imageVector = Icons.Rounded.PinEnd, contentDescription = null)
+                                    Icon(imageVector = MaterialSymbols.PinEnd, contentDescription = null)
                                 }
                             },
                             onClick = { onDismissRequest(); onPinToNotifications() },
@@ -211,7 +203,7 @@ fun ContactDropdownMenu(
                         ContactMenuItem(
                                 textResId = R.string.action_add_to_home,
                                 icon = {
-                                    Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
+                                    Icon(imageVector = MaterialSymbols.Home, contentDescription = null)
                                 },
                                 onClick = {
                                     onDismissRequest()
@@ -225,7 +217,7 @@ fun ContactDropdownMenu(
                         ContactMenuItem(
                                 textResId = R.string.action_contacts_settings,
                                 icon = {
-                                    Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
+                                    Icon(imageVector = MaterialSymbols.Settings, contentDescription = null)
                                 },
                                 onClick = {
                                     onDismissRequest()

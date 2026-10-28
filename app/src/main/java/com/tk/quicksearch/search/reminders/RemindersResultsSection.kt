@@ -14,11 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -55,6 +50,7 @@ import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlighte
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContainer
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticConfirm
@@ -254,11 +250,11 @@ internal fun ReminderRow(
                         addItem(R.string.action_unpin_app, pinIcon) { onTogglePin(reminder) }
                         addItem(
                             R.string.action_move_up,
-                            { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                            { Icon(imageVector = MaterialSymbols.ArrowUpward, contentDescription = null) },
                         ) { onMovePinned(reminder, true) }
                         addItem(
                             R.string.action_move_down,
-                            { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                            { Icon(imageVector = MaterialSymbols.ArrowDownward, contentDescription = null) },
                         ) { onMovePinned(reminder, false) }
                     } else {
                         addItem(
@@ -269,12 +265,12 @@ internal fun ReminderRow(
                     if (!reminder.isDone) {
                         addItem(
                             R.string.action_mark_as_done,
-                            { Icon(imageVector = Icons.Rounded.Check, contentDescription = null) },
+                            { Icon(imageVector = MaterialSymbols.Check, contentDescription = null) },
                         ) { onMarkDone(reminder) }
                     }
                     addItem(
                         R.string.dialog_delete,
-                        { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                        { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
                     ) { onDelete(reminder) }
                 }
 
@@ -343,7 +339,7 @@ fun reminderScheduleLabel(reminder: ReminderInfo): String {
 @Composable
 fun ReminderDoneIcon(modifier: Modifier = Modifier) {
     Icon(
-        imageVector = Icons.Rounded.Check,
+        imageVector = MaterialSymbols.Check,
         contentDescription = stringResource(R.string.reminder_status_done),
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.size(14.dp),

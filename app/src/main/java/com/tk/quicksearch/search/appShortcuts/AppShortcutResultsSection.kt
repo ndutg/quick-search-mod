@@ -18,18 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Block
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.PinEnd
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -87,6 +75,7 @@ import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContaine
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -563,12 +552,12 @@ private fun AppShortcutDropdownMenu(
                         ))
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_move_up,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowUpward, contentDescription = null) },
                                 onClick = { onDismissRequest(); onMoveUp() },
                         ))
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_move_down,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowDownward, contentDescription = null) },
                                 onClick = { onDismissRequest(); onMoveDown() },
                         ))
                         return@buildList
@@ -586,33 +575,33 @@ private fun AppShortcutDropdownMenu(
                 ))
                 add(AppShortcutMenuItem(
                         textResId = R.string.action_add_trigger,
-                        icon = { Icon(imageVector = Icons.Rounded.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                        icon = { Icon(imageVector = MaterialSymbols.Bolt, contentDescription = null, tint = if (triggerSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                         onClick = { onDismissRequest(); onTriggerClick() },
                         longPressOption = removeTriggerOption,
                 ))
                 add(AppShortcutMenuItem(
                         textResId = R.string.common_nickname,
-                        icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                        icon = { Icon(imageVector = MaterialSymbols.Edit, contentDescription = null, tint = if (nicknameSet) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                         onClick = { onDismissRequest(); onNicknameClick() },
                         longPressOption = removeNicknameOption,
                 ))
                 add(AppShortcutMenuItem(
                         textResId = R.string.action_disable_app_shortcut,
-                        icon = { Icon(imageVector = Icons.Rounded.Block, contentDescription = null) },
+                        icon = { Icon(imageVector = MaterialSymbols.Block, contentDescription = null) },
                         onClick = { onDismissRequest(); onDisable() },
                 ))
 
                 if (isUserCreated) {
                         add(AppShortcutMenuItem(
                                 textResId = R.string.settings_edit_label,
-                                icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.Edit, contentDescription = null) },
                                 onClick = { onDismissRequest(); onEditCustomShortcut(shortcut) },
                                 group = ItemMenuGroup.APPEARANCE,
                         ))
                 } else {
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_edit_icon,
-                                icon = { Icon(imageVector = Icons.Rounded.Image, contentDescription = null, tint = if (hasIconOverride) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
+                                icon = { Icon(imageVector = MaterialSymbols.Image, contentDescription = null, tint = if (hasIconOverride) AppColors.ItemMenuActiveIconTint else LocalContentColor.current) },
                                 onClick = { onDismissRequest(); onEditShortcutIcon(shortcut) },
                                 group = ItemMenuGroup.APPEARANCE,
                         ))
@@ -623,7 +612,7 @@ private fun AppShortcutDropdownMenu(
                             if (isPinnedToNotifications) {
                                 Icon(painter = painterResource(R.drawable.ic_unpin), contentDescription = null, tint = AppColors.ItemMenuActiveIconTint)
                             } else {
-                                Icon(imageVector = Icons.Rounded.PinEnd, contentDescription = null)
+                                Icon(imageVector = MaterialSymbols.PinEnd, contentDescription = null)
                             }
                         },
                         onClick = { onDismissRequest(); PinnedNotifications.toggle(context, notificationAction) },
@@ -633,21 +622,21 @@ private fun AppShortcutDropdownMenu(
                 if (!isDefaultLauncher) {
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_add_to_home,
-                                icon = { Icon(imageVector = Icons.Rounded.Home, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.Home, contentDescription = null) },
                                 onClick = { onDismissRequest(); onAddToHome() },
                                 group = ItemMenuGroup.BEHAVIOR,
                         ))
                 }
                 add(AppShortcutMenuItem(
                         textResId = R.string.action_app_info,
-                        icon = { Icon(imageVector = Icons.Rounded.Info, contentDescription = null) },
+                        icon = { Icon(imageVector = MaterialSymbols.Info, contentDescription = null) },
                         onClick = { onDismissRequest(); onAppInfoClick() },
                         group = ItemMenuGroup.BEHAVIOR,
                 ))
                 openAppSettingDestination?.let { openDestination ->
                         add(AppShortcutMenuItem(
                                 textResId = R.string.action_app_shortcuts_settings,
-                                icon = { Icon(imageVector = Icons.Rounded.Settings, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.Settings, contentDescription = null) },
                                 onClick = { onDismissRequest(); openDestination(AppSettingsDestination.APP_SHORTCUTS) },
                                 group = ItemMenuGroup.BEHAVIOR,
                         ))
@@ -655,7 +644,7 @@ private fun AppShortcutDropdownMenu(
                 add(AppShortcutMenuItem(
                         textResId = R.string.action_disable_all_app_shortcuts_named,
                         textArg = shortcut.appLabel,
-                        icon = { Icon(imageVector = Icons.Rounded.Block, contentDescription = null) },
+                        icon = { Icon(imageVector = MaterialSymbols.Block, contentDescription = null) },
                         onClick = { onDismissRequest(); onDisableAllForApp() },
                         group = ItemMenuGroup.SYSTEM,
                 ))
@@ -664,7 +653,7 @@ private fun AppShortcutDropdownMenu(
                         add(AppShortcutMenuItem(
                                 textResId = if (appLabel != null) R.string.action_uninstall_named else R.string.action_uninstall_app,
                                 textArg = appLabel,
-                                icon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
                                 onClick = {
                                         onDismissRequest()
                                         AppLockGate.runAfterUnlock(context, shortcut.packageName, shortcut.appLabel) {

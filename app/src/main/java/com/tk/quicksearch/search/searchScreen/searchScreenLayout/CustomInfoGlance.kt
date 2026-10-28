@@ -3,10 +3,6 @@ package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -26,6 +22,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.customInfo.CustomInfoScheduler
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.util.MarkdownText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -80,7 +77,7 @@ internal fun CustomInfoRow(
         var retrying by remember(item.lastRunMillis) { mutableStateOf(false) }
         GlanceStatusRow(
             icon = {
-                Icon(Icons.Rounded.ErrorOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+                Icon(MaterialSymbols.ErrorOutline, contentDescription = null, tint = MaterialTheme.colorScheme.error)
             },
             title = item.title,
             subtitle = stringResource(R.string.direct_search_error_generic),
@@ -103,7 +100,7 @@ internal fun CustomInfoRow(
                         modifier = Modifier.size(40.dp),
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Refresh,
+                            imageVector = MaterialSymbols.Refresh,
                             contentDescription = stringResource(R.string.action_retry),
                             modifier = Modifier.size(20.dp),
                         )
@@ -117,7 +114,7 @@ internal fun CustomInfoRow(
         val copiedMessage = stringResource(R.string.home_copied)
         GlanceStatusRow(
             icon = {
-                Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Icon(MaterialSymbols.AutoAwesome, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             },
             title = item.title,
             onClick = {},

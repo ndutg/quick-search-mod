@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +26,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.deviceSettings.DeviceSetting
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsRepository
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import java.util.Locale
 import kotlinx.coroutines.Dispatchers
@@ -87,7 +85,7 @@ fun DeviceSettingsSettingsSection(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Settings,
+                        imageVector = MaterialSymbols.Settings,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(24.dp),
@@ -113,7 +111,7 @@ fun DeviceSettingsSettingsSection(
                     }
 
                     Icon(
-                        imageVector = Icons.Rounded.ChevronRight,
+                        imageVector = MaterialSymbols.ChevronRight,
                         contentDescription = stringResource(R.string.desc_navigate_forward),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

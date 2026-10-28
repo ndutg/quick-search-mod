@@ -3,19 +3,11 @@ package com.tk.quicksearch.widgets.atAGlanceWidget
 import android.app.AlarmManager
 import android.content.Context
 import android.text.format.DateFormat
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.AvTimer
-import androidx.compose.material.icons.rounded.Cake
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.ErrorOutline
-import androidx.compose.material.icons.automirrored.rounded.PhoneMissed
-import androidx.compose.material.icons.rounded.Timer
 import com.tk.quicksearch.R
 import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
+import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
 import com.tk.quicksearch.search.data.AppNotificationsSettings
 import com.tk.quicksearch.search.data.CalendarRepository
 import com.tk.quicksearch.search.data.ContactBirthday
@@ -34,6 +26,7 @@ import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.notes.NotesTextUtils
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.englishOrdinal
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -42,6 +35,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
 
 /** Matches the home card: at most this many ongoing and finished progress notifications. */
 private const val MAX_PROGRESS_ROWS = 3
@@ -58,15 +52,22 @@ private const val TOMORROW_MORNING_END_HOUR = 12
 /** The upcoming alarm row shows from this long before the alarm, as on home. */
 private const val ALARM_LEAD_MILLIS = 45L * 60L * 1000L
 
+/** A reminder reads "Now" for this long after it is due before turning overdue, as on home. */
+private const val REMINDER_NOW_WINDOW_MILLIS = 60L * 1000L
+
+private const val MINUTE_MILLIS = 60L * 1000L
+private const val HOUR_MILLIS = 60L * MINUTE_MILLIS
+private const val DAY_MILLIS = 24L * HOUR_MILLIS
+
 /** RemoteViews collections are sent in one parcel, so the widget stops well short of its size limit. */
 private const val MAX_ROWS = 30
 
 /**
  * Reads the home At a Glance items without Compose, in the home card's order: the time-critical
  * items, then things due soon, what needs a look, today's and tomorrow's context, passive device
- * states, and today's calendar events last. Media keeps its own widget. Rows carry absolute times
- * rather than "in 5 min", which the widget could not keep current. [items] decides which items the
- * widget shows. Blocking; call off the main thread.
+ * states, and today's calendar events last. Media keeps its own widget. Relative times such as
+ * "in 5 min" schedule a refresh for when they next change. [items] decides which items the widget
+ * shows. Blocking; call off the main thread.
  */
 internal fun loadAtAGlanceWidgetSnapshot(
     context: Context,
@@ -130,6 +131,14 @@ internal class AtAGlanceWidgetRowLoader(
 
     fun formatTime(millis: Long): String = timeFormat.format(Date(millis))
 
+    /** Home's "in 5 min" or "2 hours ago" label, refreshed when its count of minutes or hours changes. */
+    fun relativeTime(targetMillis: Long): String {
+        val delta = targetMillis - nowMillis
+        val step = if (abs(delta) >= HOUR_MILLIS) HOUR_MILLIS else MINUTE_MILLIS
+        changesAt(if (delta >= 0) nowMillis + delta % step + 1 else nowMillis + step - (-delta) % step)
+        return calendarRelativeTimeLabel(context.resources, targetMillis, nowMillis)
+    }
+
     fun appLabel(packageName: String): String =
         appLabels.getOrPut(packageName) {
             val packageManager = context.packageManager
@@ -167,7 +176,7 @@ internal class AtAGlanceWidgetRowLoader(
                         packageName = call.packageName,
                         title = string(R.string.home_ongoing_call),
                         subtitle = call.caller ?: appLabel(call.packageName),
-                        icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.Call),
+                        icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.Call),
                     )
                 }
             } else {
@@ -208,7 +217,7 @@ internal class AtAGlanceWidgetRowLoader(
                         packageName = timer.packageName,
                         title = kind,
                         subtitle = detail,
-                        icon = AtAGlanceWidgetIcon.Vector(if (timer.isCountDown) Icons.Rounded.Timer else Icons.Rounded.AvTimer),
+                        icon = AtAGlanceWidgetIcon.Vector(if (timer.isCountDown) MaterialSymbols.Timer else MaterialSymbols.AvTimer),
                     )
                 }
             } else {
@@ -233,9 +242,9 @@ internal class AtAGlanceWidgetRowLoader(
         return listOf(
             AtAGlanceWidgetRow(
                 key = "alarm",
-                icon = packageName?.let { AtAGlanceWidgetIcon.App(it) } ?: AtAGlanceWidgetIcon.Vector(Icons.Rounded.Timer),
+                icon = packageName?.let { AtAGlanceWidgetIcon.App(it) } ?: AtAGlanceWidgetIcon.Vector(MaterialSymbols.Timer),
                 title = string(R.string.home_upcoming_alarm),
-                subtitle = if (soon == null) "$time • ${string(R.string.calendar_relative_tomorrow)}" else time,
+                subtitle = "$time • ${if (soon == null) string(R.string.calendar_relative_tomorrow) else relativeTime(alarm.triggerTime)}",
                 tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.ALARM, packageName = packageName),
                 dismiss = AtAGlanceWidgetDismissType.ALARM,
             ),
@@ -252,17 +261,38 @@ internal class AtAGlanceWidgetRowLoader(
             changesAt(reminder.dueMillis)
         }
         return reminders.map { reminder ->
-            val schedule = reminderSchedule(reminder)
             AtAGlanceWidgetRow(
                 key = "reminder-${reminder.reminderId}",
                 icon = AtAGlanceWidgetIcon.Drawable(R.drawable.ic_reminder),
                 title = reminder.title,
-                subtitle =
-                    if (reminder.isOverdue(nowMillis)) "$schedule • ${string(R.string.reminder_status_overdue)}" else schedule,
+                subtitle = reminderSubtitle(reminder),
                 tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.REMINDER, id = reminder.reminderId),
                 // As on home, only a reminder not yet due can be put off until it is.
                 dismiss = AtAGlanceWidgetDismissType.REMINDER.takeIf { reminder.dueMillis > nowMillis },
             )
+        }
+    }
+
+    /**
+     * As on home: an upcoming reminder's time and how soon it is due, then "Now" for a minute, then
+     * "Overdue" with its time, or its date once a day late.
+     */
+    private fun reminderSubtitle(reminder: ReminderInfo): String {
+        val sinceDue = nowMillis - reminder.dueMillis
+        val isNow = reminder.hasTime && sinceDue in 0 until REMINDER_NOW_WINDOW_MILLIS
+        val isOverdue = reminder.isOverdue(nowMillis) && !isNow
+        if (isNow) changesAt(reminder.dueMillis + REMINDER_NOW_WINDOW_MILLIS)
+        if (isOverdue && reminder.hasTime) changesAt(reminder.dueMillis + DAY_MILLIS)
+        val time = formatTime(reminder.dueMillis)
+        return when {
+            !reminder.hasTime -> reminderSchedule(reminder)
+            !isOverdue && !isNow -> "$time • ${relativeTime(reminder.dueMillis)}"
+            sinceDue < DAY_MILLIS -> time
+            else -> reminderSchedule(reminder)
+        } + when {
+            isNow -> " • ${string(R.string.calendar_relative_now)}"
+            isOverdue -> " • ${string(R.string.reminder_status_overdue)}"
+            else -> ""
         }
     }
 
@@ -293,7 +323,7 @@ internal class AtAGlanceWidgetRowLoader(
         return listOf(
             AtAGlanceWidgetRow(
                 key = "missed-calls",
-                icon = AtAGlanceWidgetIcon.Vector(Icons.AutoMirrored.Rounded.PhoneMissed),
+                icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.PhoneMissed),
                 title = title,
                 subtitle = calls.mapNotNull(::callerLabel).distinct().joinToString(", ").ifBlank { null },
                 tap =
@@ -418,7 +448,7 @@ internal class AtAGlanceWidgetRowLoader(
         return repository.birthdaysOn(today).filterNot { it.contactId in dismissed }.map { birthday ->
             AtAGlanceWidgetRow(
                 key = "birthday-${birthday.contactId}-${birthday.isAnniversary}",
-                icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.Cake),
+                icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.Cake),
                 title = birthdayTitle(birthday),
                 subtitle = string(R.string.home_birthday_wish),
                 tap =
@@ -492,7 +522,7 @@ internal class AtAGlanceWidgetRowLoader(
                 val isError = item.status == CustomInfoItem.ERROR
                 AtAGlanceWidgetRow(
                     key = "custom-info-${item.id}",
-                    icon = AtAGlanceWidgetIcon.Vector(if (isError) Icons.Rounded.ErrorOutline else Icons.Rounded.AutoAwesome),
+                    icon = AtAGlanceWidgetIcon.Vector(if (isError) MaterialSymbols.ErrorOutline else MaterialSymbols.AutoAwesome),
                     title = item.title,
                     subtitle =
                         if (isError) {
@@ -524,10 +554,17 @@ internal class AtAGlanceWidgetRowLoader(
             calendarEventRow(
                 prefix = "today-event",
                 event = event,
-                subtitle =
-                    if (event.allDay) todayLabel else "${formatTime(event.startMillis)} – ${formatTime(event.endMillis)}",
+                subtitle = if (event.allDay) todayLabel else todayEventSchedule(event),
             )
         }
+    }
+
+    /** As on home: the start time, then "Now" while the event is on, or how far off its start is. */
+    private fun todayEventSchedule(event: CalendarEventInfo): String {
+        val start = formatTime(event.startMillis)
+        if (nowMillis in event.startMillis..event.endMillis) return "$start • ${string(R.string.calendar_relative_now)}"
+        changesAt(event.startMillis)
+        return "$start • ${relativeTime(event.startMillis)}"
     }
 
     private fun calendarEventRow(
@@ -537,7 +574,7 @@ internal class AtAGlanceWidgetRowLoader(
         dismiss: AtAGlanceWidgetDismissType? = null,
     ) = AtAGlanceWidgetRow(
         key = "$prefix-${event.eventId}",
-        icon = AtAGlanceWidgetIcon.Vector(Icons.Rounded.CalendarMonth),
+        icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.CalendarMonth),
         title = event.title,
         subtitle = subtitle,
         tap =

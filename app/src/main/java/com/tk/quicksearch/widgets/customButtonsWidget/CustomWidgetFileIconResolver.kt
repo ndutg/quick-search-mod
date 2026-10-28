@@ -2,13 +2,6 @@ package com.tk.quicksearch.widgets.customButtonsWidget
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.Android
-import androidx.compose.material.icons.rounded.AudioFile
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -16,6 +9,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.search.models.FileTypeUtils
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 private val WORD_EXTENSIONS = setOf("doc", "docx")
 private val SHEET_EXTENSIONS = setOf("xls", "xlsx")
@@ -45,15 +39,15 @@ fun customWidgetFileIconRes(action: CustomWidgetButtonAction.File): Int? {
 
 @Composable
 fun widgetFileIconVector(action: CustomWidgetButtonAction.File): ImageVector {
-    if (action.isDirectory) return Icons.Rounded.Folder
+    if (action.isDirectory) return MaterialSymbols.Folder
     customWidgetFileIconRes(action)?.let { return ImageVector.vectorResource(it) }
 
     return when (FileTypeUtils.getFileType(deviceFileFromAction(action))) {
-        FileType.AUDIO -> Icons.Rounded.AudioFile
-        FileType.PICTURES -> Icons.Rounded.Image
-        FileType.VIDEOS -> Icons.Rounded.VideoLibrary
-        FileType.APKS -> Icons.Rounded.Android
-        else -> Icons.AutoMirrored.Rounded.InsertDriveFile
+        FileType.AUDIO -> MaterialSymbols.AudioFile
+        FileType.PICTURES -> MaterialSymbols.Image
+        FileType.VIDEOS -> MaterialSymbols.VideoLibrary
+        FileType.APKS -> MaterialSymbols.Android
+        else -> MaterialSymbols.InsertDriveFile
     }
 }
 

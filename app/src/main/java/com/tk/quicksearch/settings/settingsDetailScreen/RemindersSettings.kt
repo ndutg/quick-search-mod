@@ -11,13 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -59,6 +52,7 @@ import com.tk.quicksearch.search.reminders.reminderScheduleLabel
 import com.tk.quicksearch.settings.appShortcutsSettings.shortcutMatchPriority
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.time.LocalDate
@@ -165,7 +159,7 @@ fun RemindersSettingsSection(
                     horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.NotificationsOff,
+                        imageVector = MaterialSymbols.NotificationsOff,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(DesignTokens.IconSize),
@@ -178,7 +172,7 @@ fun RemindersSettingsSection(
                     )
                     IconButton(onClick = { permissionHintDismissed = true }) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = MaterialSymbols.Close,
                             contentDescription = stringResource(R.string.common_close),
                             tint = AppColors.Accent,
                         )
@@ -201,7 +195,7 @@ fun RemindersSettingsSection(
                     reminderPreferences.setIncludePastReminders(enabled)
                     ReminderRepository.notifyChanged()
                 },
-                leadingIcon = Icons.Rounded.History,
+                leadingIcon = MaterialSymbols.History,
                 isFirstItem = true,
                 isLastItem = true,
                 showDivider = false,
@@ -227,7 +221,7 @@ fun RemindersSettingsSection(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Icon(
-                        imageVector = Icons.Rounded.ExpandMore,
+                        imageVector = MaterialSymbols.ExpandMore,
                         contentDescription = null,
                         tint = AppColors.Accent,
                     )
@@ -340,7 +334,7 @@ private fun ReminderManagementRow(
             isPast ->
                 IconButton(onClick = onDelete) {
                     Icon(
-                        imageVector = Icons.Rounded.Delete,
+                        imageVector = MaterialSymbols.Delete,
                         contentDescription = stringResource(R.string.dialog_delete),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -348,7 +342,7 @@ private fun ReminderManagementRow(
             isOverdue ->
                 IconButton(onClick = onMarkDone) {
                     Icon(
-                        imageVector = Icons.Rounded.Check,
+                        imageVector = MaterialSymbols.Check,
                         contentDescription = stringResource(R.string.action_mark_as_done),
                         tint = AppColors.Accent,
                     )

@@ -1,18 +1,10 @@
 package com.tk.quicksearch.settings.settingsDetailScreen
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.MenuBook
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.CurrencyExchange
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Cloud
-import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.appSettings.AppSettingsToggleKey
 import com.tk.quicksearch.searchEngines.AliasHandler
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 enum class ToolSettingId {
     CALCULATOR,
@@ -51,7 +43,7 @@ object ToolSettingsRegistry {
                 aliasFeatureId = AliasHandler.CALCULATOR_ALIAS_FEATURE_ID,
                 titleResId = R.string.calculator_toggle_title,
                 defaultDescriptionResId = R.string.calculator_toggle_desc,
-                icon = Icons.Rounded.Calculate,
+                icon = MaterialSymbols.Calculate,
                 toggleKey = AppSettingsToggleKey.CALCULATOR,
             ),
             ToolSettingDefinition(
@@ -59,7 +51,7 @@ object ToolSettingsRegistry {
                 aliasFeatureId = AliasHandler.UNIT_CONVERTER_ALIAS_FEATURE_ID,
                 titleResId = R.string.unit_converter_info_title,
                 defaultDescriptionResId = R.string.date_calculator_toggle_desc,
-                icon = Icons.Rounded.Straighten,
+                icon = MaterialSymbols.Straighten,
                 toggleKey = AppSettingsToggleKey.UNIT_CONVERTER,
                 infoDestination = SettingsDetailType.UNIT_CONVERTER_INFO,
             ),
@@ -68,7 +60,7 @@ object ToolSettingsRegistry {
                 aliasFeatureId = AliasHandler.DATE_CALCULATOR_ALIAS_FEATURE_ID,
                 titleResId = R.string.date_calculator_info_title,
                 defaultDescriptionResId = R.string.date_calculator_toggle_desc,
-                icon = Icons.Rounded.CalendarMonth,
+                icon = MaterialSymbols.CalendarMonth,
                 toggleKey = AppSettingsToggleKey.DATE_CALCULATOR,
                 infoDestination = SettingsDetailType.DATE_CALCULATOR_INFO,
             ),
@@ -77,7 +69,7 @@ object ToolSettingsRegistry {
                 aliasFeatureId = AliasHandler.DICTIONARY_ALIAS_FEATURE_ID,
                 titleResId = R.string.dictionary_toggle_title,
                 defaultDescriptionResId = R.string.dictionary_toggle_desc,
-                icon = Icons.AutoMirrored.Rounded.MenuBook,
+                icon = MaterialSymbols.MenuBook,
                 toggleKey = AppSettingsToggleKey.DICTIONARY,
             ),
             ToolSettingDefinition(
@@ -85,14 +77,14 @@ object ToolSettingsRegistry {
                 aliasFeatureId = AliasHandler.CURRENCY_CONVERTER_ALIAS_FEATURE_ID,
                 titleResId = R.string.currency_converter_toggle_title,
                 defaultDescriptionResId = R.string.currency_converter_toggle_desc,
-                icon = Icons.Rounded.CurrencyExchange,
+                icon = MaterialSymbols.CurrencyExchange,
                 toggleKey = AppSettingsToggleKey.CURRENCY_CONVERTER,
             ),
             ToolSettingDefinition(
                 id = ToolSettingId.COLOR_VISUALIZER,
                 titleResId = R.string.color_visualizer_toggle_title,
                 defaultDescriptionResId = R.string.color_visualizer_toggle_desc,
-                icon = Icons.Rounded.Palette,
+                icon = MaterialSymbols.Palette,
                 toggleKey = AppSettingsToggleKey.COLOR_VISUALIZER,
             ),
             ToolSettingDefinition(
@@ -102,7 +94,7 @@ object ToolSettingsRegistry {
                 defaultDescriptionResId = R.string.world_clock_toggle_desc,
                 requiresLlmApiKey = true,
                 requiresLlmApiKeyDescriptionResId = R.string.currency_converter_requires_gemini_key,
-                icon = Icons.Rounded.AccessTime,
+                icon = MaterialSymbols.AccessTime,
                 toggleKey = AppSettingsToggleKey.WORLD_CLOCK,
                 aiBackedModelConfigurable = true,
             ),
@@ -113,7 +105,7 @@ object ToolSettingsRegistry {
                 defaultDescriptionResId = R.string.weather_toggle_desc,
                 requiresLlmApiKey = true,
                 requiresLlmApiKeyDescriptionResId = R.string.currency_converter_requires_gemini_key,
-                icon = Icons.Rounded.Cloud,
+                icon = MaterialSymbols.Cloud,
                 toggleKey = AppSettingsToggleKey.WEATHER,
                 aiBackedModelConfigurable = true,
             ),

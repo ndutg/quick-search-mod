@@ -1,8 +1,10 @@
 package com.tk.quicksearch.search.calendar
 
+import android.content.res.Resources
 import android.text.format.DateFormat
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -176,19 +178,30 @@ internal fun calendarRelativeTimeLabel(
     eventStartMillis: Long,
     nowMillis: Long,
 ): String {
+    // Read so the label follows locale changes, as stringResource does.
+    LocalConfiguration.current
+    return calendarRelativeTimeLabel(LocalContext.current.resources, eventStartMillis, nowMillis)
+}
+
+/** "in 5 minutes" or "2 hours ago": whole minutes, or whole hours from an hour away. */
+internal fun calendarRelativeTimeLabel(
+    resources: Resources,
+    eventStartMillis: Long,
+    nowMillis: Long,
+): String {
     val minutes = (kotlin.math.abs(eventStartMillis - nowMillis) / MILLIS_PER_MINUTE).coerceAtLeast(1L)
     val hours = (minutes / 60).toInt()
     val duration =
         if (hours > 0) {
-            pluralStringResource(R.plurals.calendar_relative_hours, hours, hours)
+            resources.getQuantityString(R.plurals.calendar_relative_hours, hours, hours)
         } else {
-            pluralStringResource(R.plurals.calendar_relative_minutes, minutes.toInt(), minutes.toInt())
+            resources.getQuantityString(R.plurals.calendar_relative_minutes, minutes.toInt(), minutes.toInt())
         }
 
     return if (eventStartMillis >= nowMillis) {
-        stringResource(R.string.calendar_relative_in_format, duration)
+        resources.getString(R.string.calendar_relative_in_format, duration)
     } else {
-        stringResource(R.string.calendar_relative_ago_format, duration)
+        resources.getString(R.string.calendar_relative_ago_format, duration)
     }
 }
 

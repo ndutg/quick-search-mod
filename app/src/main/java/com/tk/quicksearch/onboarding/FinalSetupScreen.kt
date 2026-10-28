@@ -14,13 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Android
-import androidx.compose.material.icons.rounded.AudioFile
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.draw.scale
@@ -44,6 +37,7 @@ import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.MessagingApp
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.models.FileType
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.settings.settingsDetailScreen.MessagingSection
 import com.tk.quicksearch.settings.shared.SettingsCard
@@ -52,12 +46,12 @@ import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 /** Gets the icon for a file type. */
 private fun getFileTypeIcon(fileType: FileType): androidx.compose.ui.graphics.vector.ImageVector =
     when (fileType) {
-        FileType.DOCUMENTS -> Icons.AutoMirrored.Rounded.InsertDriveFile
-        FileType.PICTURES -> Icons.Rounded.Image
-        FileType.VIDEOS -> Icons.Rounded.VideoLibrary
-        FileType.AUDIO -> Icons.Rounded.AudioFile
-        FileType.APKS -> Icons.Rounded.Android
-        FileType.OTHER -> Icons.AutoMirrored.Rounded.InsertDriveFile
+        FileType.DOCUMENTS -> MaterialSymbols.InsertDriveFile
+        FileType.PICTURES -> MaterialSymbols.Image
+        FileType.VIDEOS -> MaterialSymbols.VideoLibrary
+        FileType.AUDIO -> MaterialSymbols.AudioFile
+        FileType.APKS -> MaterialSymbols.Android
+        FileType.OTHER -> MaterialSymbols.InsertDriveFile
     }
 
 /**
@@ -226,8 +220,7 @@ fun FinalSetupScreen(
                             ) {
                                 Icon(
                                     imageVector =
-                                        Icons.Rounded
-                                            .Folder,
+                                        MaterialSymbols.Folder,
                                     contentDescription = null,
                                     tint =
                                         MaterialTheme

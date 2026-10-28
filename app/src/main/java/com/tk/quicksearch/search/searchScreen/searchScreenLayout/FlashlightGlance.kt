@@ -3,8 +3,6 @@ package com.tk.quicksearch.search.searchScreen.searchScreenLayout
 import android.hardware.camera2.CameraManager
 import android.os.Handler
 import android.os.Looper
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FlashlightOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -17,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 /** The flashlight while it is on; a tap turns it off. */
 internal class FlashlightGlance(
@@ -77,7 +76,7 @@ internal fun FlashlightRow(glance: FlashlightGlance) {
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.FlashlightOn,
+                imageVector = MaterialSymbols.FlashlightOn,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )

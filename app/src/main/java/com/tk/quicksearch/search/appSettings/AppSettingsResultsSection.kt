@@ -17,10 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -55,6 +51,7 @@ import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContaine
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.AppLanguageManager
@@ -355,14 +352,14 @@ internal fun AppSettingResultRow(
             )
         } else if (setting.destination == AppSettingsDestination.AI_MODEL) {
             Icon(
-                imageVector = Icons.Rounded.UnfoldMore,
+                imageVector = MaterialSymbols.UnfoldMore,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(end = 6.dp),
             )
         } else if (setting.id == THEME_MODE_SETTING_ID) {
             Icon(
-                imageVector = Icons.Rounded.ChevronRight,
+                imageVector = MaterialSymbols.ChevronRight,
                 contentDescription = stringResource(R.string.desc_navigate_forward),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(end = 6.dp),
@@ -373,7 +370,7 @@ internal fun AppSettingResultRow(
             if (setting.isNavigationToggle) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Rounded.ChevronRight,
+                        imageVector = MaterialSymbols.ChevronRight,
                         contentDescription = stringResource(R.string.desc_navigate_forward),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -407,7 +404,7 @@ internal fun AppSettingResultRow(
                 setting.destination == AppSettingsDestination.RELOAD_CONTACTS ||
                 setting.destination == AppSettingsDestination.RELOAD_FILES
             Icon(
-                imageVector = if (isReloadDestination) Icons.Rounded.Refresh else Icons.Rounded.ChevronRight,
+                imageVector = if (isReloadDestination) MaterialSymbols.Refresh else MaterialSymbols.ChevronRight,
                 contentDescription = stringResource(R.string.desc_navigate_forward),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(end = 6.dp),

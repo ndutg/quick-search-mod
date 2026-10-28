@@ -21,8 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -122,7 +121,7 @@ fun AliasPill(
 
             if (onClearClick != null) {
                 Icon(
-                    imageVector = Icons.Rounded.Close,
+                    imageVector = MaterialSymbols.Close,
                     contentDescription = null,
                     tint = resolvedTextColor,
                     modifier =

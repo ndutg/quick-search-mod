@@ -1,16 +1,19 @@
 package com.tk.quicksearch.widgets.atAGlanceWidget
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Bundle
+import android.util.SizeF
 import android.text.format.DateFormat
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.ColorFilter
+import androidx.glance.ExperimentalGlanceApi
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
@@ -26,6 +29,8 @@ import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
+import androidx.glance.appwidget.runComposition
+import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
@@ -47,6 +52,7 @@ import androidx.glance.color.ColorProvider as DayNightColorProvider
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetColors
 import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.WidgetBitmapUtils
@@ -55,6 +61,7 @@ import com.tk.quicksearch.widgets.utils.WidgetVariant
 import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
 import com.tk.quicksearch.widgets.utils.hasStoredWidgetConfig
 import com.tk.quicksearch.widgets.utils.toWidgetPreferences
+import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -94,6 +101,49 @@ class AtAGlanceWidget : GlanceAppWidget() {
     ) {
         AtAGlanceWidgetUpdater.start(context)
         provideContent { WidgetBody() }
+    }
+
+    /**
+     * Draws [appWidgetId] and hands it to the host right away. [update] alone waits for Glance's
+     * session worker, which WorkManager can hold back for many seconds, so a saved setting or a
+     * changed row would otherwise show up late. The session still redraws the same state after.
+     */
+    @OptIn(ExperimentalGlanceApi::class)
+    suspend fun drawNow(
+        context: Context,
+        appWidgetId: Int,
+        glanceId: GlanceId,
+    ) {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+        // If this fails, the session's update still draws the widget, only later.
+        runCatching {
+            val state = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
+            val remoteViews =
+                runComposition(context, glanceId, options, listOf(placedSize(options)), state).first()
+            appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
+        }
+    }
+
+    /** The placed size the host reported, or the default size before it reports one. */
+    private fun placedSize(options: Bundle): DpSize {
+        val reported =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                @Suppress("DEPRECATION")
+                options.getParcelableArrayList<SizeF>(AppWidgetManager.OPTION_APPWIDGET_SIZES)?.firstOrNull()
+            } else {
+                null
+            }
+        if (reported != null && reported.width > 0f && reported.height > 0f) {
+            return DpSize(reported.width.dp, reported.height.dp)
+        }
+        val width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+        val height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
+        return if (width > 0 && height > 0) {
+            DpSize(width.dp, height.dp)
+        } else {
+            DpSize(DEFAULT_WIDTH_DP.dp, DEFAULT_HEIGHT_DP.dp)
+        }
     }
 
     @Composable
@@ -146,7 +196,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
 
         Column(modifier = GlanceModifier.fillMaxSize().then(backgroundModifier)) {
             if (snapshot.rows.isEmpty()) {
-                EmptyContent(context, dayColors, nightColors, config.textScale)
+                EmptyContent(context, dayColors, nightColors, config.textScale, config.showEmptyDate)
             } else {
                 RowList(context, snapshot.rows, dayColors, nightColors, config.textScale)
             }
@@ -259,7 +309,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
             contentAlignment = Alignment.Center,
         ) {
             Image(
-                provider = ImageProvider(AtAGlanceWidgetIcons.vector(context, Icons.Rounded.Close)),
+                provider = ImageProvider(AtAGlanceWidgetIcons.vector(context, MaterialSymbols.Close)),
                 contentDescription = context.getString(R.string.common_close),
                 modifier = GlanceModifier.size(AtAGlanceWidgetDimens.DISMISS_ICON_SIZE),
                 colorFilter = ColorFilter.tint(tint),
@@ -301,13 +351,14 @@ class AtAGlanceWidget : GlanceAppWidget() {
         }
     }
 
-    /** Nothing to show, so today's day and date; a tap opens Quick Search. */
+    /** Nothing to show, so today's day and date, or nothing when [showDate] is off; a tap opens Quick Search. */
     @Composable
     private fun EmptyContent(
         context: Context,
         dayColors: NoteWidgetColors,
         nightColors: NoteWidgetColors,
         textScale: Float,
+        showDate: Boolean,
     ) {
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         Box(
@@ -322,6 +373,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
                     },
             contentAlignment = Alignment.Center,
         ) {
+            if (!showDate) return@Box
             Text(
                 text = atAGlanceWidgetEmptyDate(),
                 style =

@@ -4,8 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -19,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.searchScreen.LocalOverlayActionColor
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 private const val RETRY_ICON_SIZE = 18
 
@@ -48,7 +47,7 @@ internal fun RetryAiSearchButton(
             ),
     ) {
         Icon(
-            imageVector = Icons.Rounded.Refresh,
+            imageVector = MaterialSymbols.Refresh,
             contentDescription = stringResource(R.string.action_retry),
             tint = contentColor,
             modifier = Modifier.size(RETRY_ICON_SIZE.dp),

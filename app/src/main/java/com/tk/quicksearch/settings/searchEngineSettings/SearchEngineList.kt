@@ -13,12 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material.icons.rounded.ExpandLess
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -56,6 +50,7 @@ import com.tk.quicksearch.settings.searchEngineSettings.dialogs.AddSearchEngineC
 import com.tk.quicksearch.settings.searchEngineSettings.dialogs.EditAmazonDomainDialog
 import com.tk.quicksearch.settings.searchEngineSettings.dialogs.EditCustomSearchEngineDialog
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
@@ -304,7 +299,7 @@ fun SearchEngineListCard(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Icon(
-                        imageVector = Icons.Rounded.ExpandLess,
+                        imageVector = MaterialSymbols.ExpandLess,
                         contentDescription = stringResource(R.string.desc_collapse),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(24.dp),
@@ -335,7 +330,7 @@ fun SearchEngineListCard(
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Icon(
-                            imageVector = Icons.Rounded.ExpandMore,
+                            imageVector = MaterialSymbols.ExpandMore,
                             contentDescription = stringResource(R.string.desc_expand),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(24.dp),
@@ -474,7 +469,7 @@ private fun SearchEngineRowContent(
     ) {
         if (showToggle && allowDrag && dragHandleModifier != null) {
             Icon(
-                imageVector = Icons.Rounded.DragHandle,
+                imageVector = MaterialSymbols.DragHandle,
                 contentDescription = stringResource(R.string.settings_action_reorder),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier =
@@ -542,7 +537,7 @@ private fun SearchEngineRowContent(
                             text = { Text(stringResource(R.string.settings_action_move_up)) },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowUpward,
+                                    imageVector = MaterialSymbols.ArrowUpward,
                                     contentDescription = null,
                                 )
                             },
@@ -562,7 +557,7 @@ private fun SearchEngineRowContent(
                             text = { Text(stringResource(R.string.settings_action_move_down)) },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowDownward,
+                                    imageVector = MaterialSymbols.ArrowDownward,
                                     contentDescription = null,
                                 )
                             },

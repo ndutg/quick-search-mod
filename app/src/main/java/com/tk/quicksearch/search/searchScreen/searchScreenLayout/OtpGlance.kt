@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.OtpNotification
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.delay
 
@@ -110,7 +108,7 @@ internal fun OtpCodeRow(
                     maxLines = 1,
                 )
                 Icon(
-                    imageVector = if (copied) Icons.Rounded.Check else Icons.Rounded.ContentCopy,
+                    imageVector = if (copied) MaterialSymbols.Check else MaterialSymbols.ContentCopy,
                     contentDescription = stringResource(if (copied) R.string.home_copied else R.string.calculator_copy_result),
                     tint = if (copied) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),

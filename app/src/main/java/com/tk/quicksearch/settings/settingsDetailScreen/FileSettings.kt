@@ -9,17 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Android
-import androidx.compose.material.icons.rounded.AudioFile
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.VideoLibrary
-import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +33,7 @@ import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.models.FileType
 import com.tk.quicksearch.settings.shared.*
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -111,12 +101,12 @@ private fun getFileTypeDisplayName(fileType: FileType): String =
 /** Gets the icon for a file type. */
 private fun getFileTypeIcon(fileType: FileType): androidx.compose.ui.graphics.vector.ImageVector =
     when (fileType) {
-        FileType.DOCUMENTS -> Icons.AutoMirrored.Rounded.InsertDriveFile
-        FileType.PICTURES -> Icons.Rounded.Image
-        FileType.VIDEOS -> Icons.Rounded.VideoLibrary
-        FileType.AUDIO -> Icons.Rounded.AudioFile
-        FileType.APKS -> Icons.Rounded.Android
-        FileType.OTHER -> Icons.AutoMirrored.Rounded.InsertDriveFile
+        FileType.DOCUMENTS -> MaterialSymbols.InsertDriveFile
+        FileType.PICTURES -> MaterialSymbols.Image
+        FileType.VIDEOS -> MaterialSymbols.VideoLibrary
+        FileType.AUDIO -> MaterialSymbols.AudioFile
+        FileType.APKS -> MaterialSymbols.Android
+        FileType.OTHER -> MaterialSymbols.InsertDriveFile
     }
 
 /** Small chip component for displaying excluded file extensions with remove functionality. */
@@ -141,7 +131,7 @@ private fun ExcludedExtensionChip(
                 modifier = Modifier.size(FileTypesSpacing.chipButtonSize),
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Close,
+                    imageVector = MaterialSymbols.Close,
                     contentDescription = stringResource(R.string.action_remove),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(FileTypesSpacing.chipIconSize),
@@ -215,7 +205,7 @@ fun FileTypesSection(
             subtitle = stringResource(R.string.settings_file_previews_description),
             checked = filePreviewsEnabled,
             onCheckedChange = onToggleFilePreviews,
-            leadingIcon = Icons.Rounded.Visibility,
+            leadingIcon = MaterialSymbols.Visibility,
             isFirstItem = true,
             isLastItem = true,
         )
@@ -229,7 +219,7 @@ fun FileTypesSection(
                 title = stringResource(R.string.settings_folders_toggle),
                 checked = showFolders,
                 onCheckedChange = onToggleFolders,
-                leadingIcon = Icons.Rounded.Folder,
+                leadingIcon = MaterialSymbols.Folder,
                 isFirstItem = true,
             )
 
@@ -260,7 +250,7 @@ fun FileTypesSection(
                 title = stringResource(R.string.settings_system_files_toggle),
                 checked = showSystemFiles,
                 onCheckedChange = onToggleSystemFiles,
-                leadingIcon = Icons.Rounded.Visibility,
+                leadingIcon = MaterialSymbols.Visibility,
                 isFirstItem = false,
                 isLastItem = excludedExtensions.isEmpty(),
             )
@@ -464,7 +454,7 @@ private fun FolderFilterList(
                 ),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Add,
+                imageVector = MaterialSymbols.Add,
                 contentDescription = null,
                 modifier = Modifier.size(ButtonDefaults.IconSize),
             )
@@ -489,7 +479,7 @@ private fun FolderFilterRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Rounded.Folder,
+            imageVector = MaterialSymbols.Folder,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
@@ -512,7 +502,7 @@ private fun FolderFilterRow(
         }
         IconButton(onClick = onRemove) {
             Icon(
-                imageVector = Icons.Rounded.Delete,
+                imageVector = MaterialSymbols.Delete,
                 contentDescription = stringResource(R.string.action_remove),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )

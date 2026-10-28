@@ -52,6 +52,7 @@ import com.tk.quicksearch.widgets.customButtonsWidget.CustomButtonsWidgetReceive
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsWidgetReceiver
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetPickerScreen
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetReceiver
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidget
 import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetReceiver
 import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.glanceWidgetFor
@@ -200,7 +201,9 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
         updateAppWidgetState(context = this, glanceId = glanceId) { mutablePrefs ->
             mutablePrefs.applyWidgetPreferences(constrainedPrefs, this@SearchWidgetConfigureActivity)
         }
-        glanceWidgetFor(widgetVariant).update(this, glanceId)
+        val widget = glanceWidgetFor(widgetVariant)
+        (widget as? AtAGlanceWidget)?.drawNow(this, appWidgetId, glanceId)
+        widget.update(this, glanceId)
     }
 
     private fun createResultIntent(): Intent = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

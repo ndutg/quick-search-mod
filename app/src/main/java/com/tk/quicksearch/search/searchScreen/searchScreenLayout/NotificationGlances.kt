@@ -26,19 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.AvTimer
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.CallEnd
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Flag
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.RestartAlt
-import androidx.compose.material.icons.rounded.Stop
-import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
@@ -82,6 +69,7 @@ import com.tk.quicksearch.search.data.TimerNotification
 import com.tk.quicksearch.search.data.WeatherNotification
 import com.tk.quicksearch.search.data.WorkoutNotification
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.sendFromUserTap
 import java.text.NumberFormat
@@ -269,7 +257,7 @@ internal fun TimerRow(
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = if (timer.isCountDown) Icons.Rounded.Timer else Icons.Rounded.AvTimer,
+                imageVector = if (timer.isCountDown) MaterialSymbols.Timer else MaterialSymbols.AvTimer,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -341,13 +329,13 @@ private fun TimerActionButton(action: GlanceNotificationAction) {
 /** A Material icon for a clock app button that has none, matched by its (English) label. */
 private fun timerActionIcon(title: String): ImageVector? =
     when (title.trim().lowercase()) {
-        "pause" -> Icons.Rounded.Pause
-        "resume", "start", "play", "continue" -> Icons.Rounded.PlayArrow
-        "reset", "restart" -> Icons.Rounded.RestartAlt
-        "stop" -> Icons.Rounded.Stop
-        "delete", "remove" -> Icons.Rounded.Delete
-        "lap" -> Icons.Rounded.Flag
-        "dismiss", "cancel" -> Icons.Rounded.Close
+        "pause" -> MaterialSymbols.Pause
+        "resume", "start", "play", "continue" -> MaterialSymbols.PlayArrow
+        "reset", "restart" -> MaterialSymbols.RestartAlt
+        "stop" -> MaterialSymbols.Stop
+        "delete", "remove" -> MaterialSymbols.Delete
+        "lap" -> MaterialSymbols.Flag
+        "dismiss", "cancel" -> MaterialSymbols.Close
         else -> null
     }
 
@@ -392,7 +380,7 @@ internal fun OngoingCallRow(
     GlanceStatusRow(
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Call,
+                imageVector = MaterialSymbols.Call,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )
@@ -417,7 +405,7 @@ internal fun OngoingCallRow(
                             ),
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.CallEnd,
+                            imageVector = MaterialSymbols.CallEnd,
                             contentDescription = stringResource(R.string.home_ongoing_call_hang_up),
                             modifier = Modifier.size(18.dp),
                         )
@@ -541,7 +529,7 @@ internal fun NotificationAppIcon(packageName: String) {
         )
     } else {
         Icon(
-            imageVector = Icons.Rounded.Apps,
+            imageVector = MaterialSymbols.Apps,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )

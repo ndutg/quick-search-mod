@@ -26,21 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.automirrored.rounded.MenuBook
-import androidx.compose.material.icons.automirrored.rounded.Shortcut
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.CurrencyExchange
-import androidx.compose.material.icons.rounded.Cloud
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -106,6 +91,7 @@ import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.searchEngines.shared.IconRenderStyle
 import com.tk.quicksearch.searchEngines.shared.SearchTargetIcon
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.app.startup.StartupTrace
@@ -123,7 +109,7 @@ internal fun SearchBarLeadingIcon(
     when (iconState) {
         LeadingIconState.Calculator -> {
             Icon(
-                imageVector = Icons.Rounded.Calculate,
+                imageVector = MaterialSymbols.Calculate,
                 contentDescription = stringResource(R.string.calculator_toggle_title),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -132,7 +118,7 @@ internal fun SearchBarLeadingIcon(
 
         LeadingIconState.UnitConverter -> {
             Icon(
-                imageVector = Icons.Rounded.Straighten,
+                imageVector = MaterialSymbols.Straighten,
                 contentDescription = stringResource(R.string.unit_converter_info_title),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -141,7 +127,7 @@ internal fun SearchBarLeadingIcon(
 
         LeadingIconState.CurrencyConverter -> {
             Icon(
-                imageVector = Icons.Rounded.CurrencyExchange,
+                imageVector = MaterialSymbols.CurrencyExchange,
                 contentDescription = stringResource(R.string.currency_converter_toggle_title),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -150,7 +136,7 @@ internal fun SearchBarLeadingIcon(
 
         LeadingIconState.WorldClock -> {
             Icon(
-                imageVector = Icons.Rounded.AccessTime,
+                imageVector = MaterialSymbols.AccessTime,
                 contentDescription = stringResource(R.string.world_clock_toggle_title),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -159,7 +145,7 @@ internal fun SearchBarLeadingIcon(
 
         LeadingIconState.Dictionary -> {
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.MenuBook,
+                imageVector = MaterialSymbols.MenuBook,
                 contentDescription = stringResource(R.string.dictionary_toggle_title),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -168,7 +154,7 @@ internal fun SearchBarLeadingIcon(
 
         LeadingIconState.Weather -> {
             Icon(
-                imageVector = Icons.Rounded.Cloud,
+                imageVector = MaterialSymbols.Cloud,
                 contentDescription = stringResource(R.string.weather_toggle_title),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -201,7 +187,7 @@ internal fun SearchBarLeadingIcon(
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Rounded.Settings,
+                        imageVector = MaterialSymbols.Settings,
                         contentDescription = stringResource(R.string.common_search),
                         tint = iconTint,
                         modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -220,7 +206,7 @@ internal fun SearchBarLeadingIcon(
 
         LeadingIconState.Search -> {
             Icon(
-                imageVector = Icons.Rounded.Search,
+                imageVector = MaterialSymbols.Search,
                 contentDescription = stringResource(R.string.common_search),
                 tint = iconTint,
                 modifier = Modifier.padding(start = DesignTokens.SpacingXSmall),
@@ -342,7 +328,7 @@ internal fun SearchBarTrailingIcon(
         if (showClear) {
             IconButton(onClick = onClear) {
                 Icon(
-                    imageVector = Icons.Rounded.Close,
+                    imageVector = MaterialSymbols.Close,
                     contentDescription = stringResource(R.string.desc_clear_search),
                     tint = accentColor,
                 )
@@ -350,7 +336,7 @@ internal fun SearchBarTrailingIcon(
         } else if (showSettings) {
             IconButton(onClick = onSettings) {
                 Icon(
-                    imageVector = Icons.Rounded.Settings,
+                    imageVector = MaterialSymbols.Settings,
                     contentDescription = stringResource(R.string.desc_open_settings),
                     tint = iconColor,
                 )

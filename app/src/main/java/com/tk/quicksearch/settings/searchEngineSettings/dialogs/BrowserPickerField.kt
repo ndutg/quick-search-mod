@@ -23,9 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.graphics.Color
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.BrowserApp
 import com.tk.quicksearch.searchEngines.IN_APP_BROWSER_PACKAGE
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -113,7 +111,7 @@ fun BrowserPickerField(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Language,
+                imageVector = MaterialSymbols.Language,
                 contentDescription = null,
                 tint = if (expanded) accentColor else onSurfaceVariant,
                 modifier = Modifier.size(16.dp),
@@ -131,7 +129,7 @@ fun BrowserPickerField(
                 )
             }
             Icon(
-                imageVector = Icons.Rounded.UnfoldMore,
+                imageVector = MaterialSymbols.UnfoldMore,
                 contentDescription = null,
                 tint = if (expanded) accentColor else onSurfaceVariant,
                 modifier = Modifier

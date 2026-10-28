@@ -22,15 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.rounded.Android
-import androidx.compose.material.icons.rounded.AudioFile
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,6 +71,7 @@ import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPaddin
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
 import com.tk.quicksearch.search.utils.FileUtils
 import com.tk.quicksearch.shared.ui.components.AppPill
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalAppTheme
@@ -469,15 +461,15 @@ private fun customFileIconSpec(deviceFile: DeviceFile): CustomFileIconSpec? {
 private fun fileResultIcon(deviceFile: DeviceFile): ImageVector {
     val customIcon = customFileIconSpec(deviceFile)
     return when {
-        deviceFile.isDirectory -> Icons.Rounded.Folder
+        deviceFile.isDirectory -> MaterialSymbols.Folder
         customIcon != null -> ImageVector.vectorResource(customIcon.drawableRes)
         else ->
                 when (FileTypeUtils.getFileType(deviceFile)) {
-                    FileType.AUDIO -> Icons.Rounded.AudioFile
-                    FileType.PICTURES -> Icons.Rounded.Image
-                    FileType.VIDEOS -> Icons.Rounded.VideoLibrary
-                    FileType.APKS -> Icons.Rounded.Android
-                    else -> Icons.AutoMirrored.Rounded.InsertDriveFile
+                    FileType.AUDIO -> MaterialSymbols.AudioFile
+                    FileType.PICTURES -> MaterialSymbols.Image
+                    FileType.VIDEOS -> MaterialSymbols.VideoLibrary
+                    FileType.APKS -> MaterialSymbols.Android
+                    else -> MaterialSymbols.InsertDriveFile
                 }
     }
 }
@@ -701,7 +693,7 @@ internal fun FileResultRow(
                             folderLabel?.let {
                                 AppPill(
                                         text = it,
-                                        leadingIcon = Icons.Rounded.Folder,
+                                        leadingIcon = MaterialSymbols.Folder,
                                         compact = true,
                                         modifier = Modifier.weight(1f, fill = false),
                                 )
@@ -713,7 +705,7 @@ internal fun FileResultRow(
                 if (!deviceFile.isDirectory) {
                     IconButton(onClick = { showFileInfoDialog = true }) {
                         Icon(
-                                imageVector = Icons.Outlined.Info,
+                                imageVector = MaterialSymbols.InfoOutlined,
                                 contentDescription = stringResource(R.string.action_file_info),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 modifier = Modifier.size(18.dp),

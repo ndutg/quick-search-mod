@@ -11,11 +11,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -57,6 +52,7 @@ import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.reminders.reminderOverdueColor
 import com.tk.quicksearch.search.reminders.reminderScheduleLabel
 import com.tk.quicksearch.search.searchScreen.searchRoute.LocalShowUndoSnackbar
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.util.Date
@@ -145,13 +141,13 @@ internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingReminder
         nowMillis = nowMillis,
         markDone = { reminder ->
             act(
-                reminder, doneMessage, Icons.Rounded.Check,
+                reminder, doneMessage, MaterialSymbols.Check,
                 readBefore = {}, action = { setDone(reminder.reminderId, true) }, undo = { restore(reminder) },
             )
         },
         snooze = { reminder ->
             act(
-                reminder, snoozedMessage, Icons.Rounded.Snooze,
+                reminder, snoozedMessage, MaterialSymbols.Snooze,
                 readBefore = { isNotificationShowing(reminder.reminderId) },
                 action = { snooze(reminder.reminderId) },
                 undo = { notificationWasShowing -> unsnooze(reminder.reminderId, notificationWasShowing) },
@@ -165,7 +161,7 @@ internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingReminder
         },
         delete = { reminder ->
             act(
-                reminder, deletedMessage, Icons.Rounded.Delete,
+                reminder, deletedMessage, MaterialSymbols.Delete,
                 readBefore = { getPinnedReminderOrder() },
                 action = { deleteReminder(reminder.reminderId) },
                 undo = { pinnedOrder -> restore(reminder, pinnedOrder) },
@@ -269,7 +265,7 @@ internal fun UpcomingReminderRow(
             ) {
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.action_mark_as_done)) },
-                    leadingIcon = { Icon(imageVector = Icons.Rounded.Check, contentDescription = null) },
+                    leadingIcon = { Icon(imageVector = MaterialSymbols.Check, contentDescription = null) },
                     onClick = {
                         showMenu = false
                         onDone()
@@ -280,7 +276,7 @@ internal fun UpcomingReminderRow(
                 if (nowMillis >= reminder.dueMillis) {
                     DropdownMenuItem(
                         text = { Text(text = stringResource(R.string.reminder_notification_action_snooze)) },
-                        leadingIcon = { Icon(imageVector = Icons.Rounded.Snooze, contentDescription = null) },
+                        leadingIcon = { Icon(imageVector = MaterialSymbols.Snooze, contentDescription = null) },
                         onClick = {
                             showMenu = false
                             onSnooze()
@@ -289,7 +285,7 @@ internal fun UpcomingReminderRow(
                 } else {
                     DropdownMenuItem(
                         text = { Text(text = stringResource(R.string.reminders_home_card_dismiss_for_now)) },
-                        leadingIcon = { Icon(imageVector = Icons.Rounded.Close, contentDescription = null) },
+                        leadingIcon = { Icon(imageVector = MaterialSymbols.Close, contentDescription = null) },
                         onClick = {
                             showMenu = false
                             onDismiss()
@@ -299,7 +295,7 @@ internal fun UpcomingReminderRow(
                 HorizontalDivider()
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.dialog_delete)) },
-                    leadingIcon = { Icon(imageVector = Icons.Rounded.Delete, contentDescription = null) },
+                    leadingIcon = { Icon(imageVector = MaterialSymbols.Delete, contentDescription = null) },
                     onClick = {
                         showMenu = false
                         onDelete()
@@ -312,7 +308,7 @@ internal fun UpcomingReminderRow(
             modifier = Modifier.size(UpcomingReminderDismissSize),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Check,
+                imageVector = MaterialSymbols.Check,
                 contentDescription = stringResource(R.string.action_mark_as_done),
                 tint = AppColors.Accent,
                 modifier = Modifier.size(20.dp),

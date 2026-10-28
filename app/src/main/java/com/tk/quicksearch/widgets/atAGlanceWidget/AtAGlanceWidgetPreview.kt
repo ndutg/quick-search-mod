@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -39,6 +37,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetColors
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
@@ -150,7 +149,7 @@ private fun PreviewRow(
         }
         if (row.dismiss != null) {
             Box(modifier = Modifier.size(AtAGlanceWidgetDimens.DISMISS_BUTTON_SIZE), contentAlignment = Alignment.Center) {
-                PreviewIcon(AtAGlanceWidgetIcon.Vector(Icons.Rounded.Close), colors.body, AtAGlanceWidgetDimens.DISMISS_ICON_SIZE)
+                PreviewIcon(AtAGlanceWidgetIcon.Vector(MaterialSymbols.Close), colors.body, AtAGlanceWidgetDimens.DISMISS_ICON_SIZE)
             }
         }
     }

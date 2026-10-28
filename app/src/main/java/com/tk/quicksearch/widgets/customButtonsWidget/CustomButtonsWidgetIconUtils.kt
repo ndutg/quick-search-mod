@@ -11,8 +11,6 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.Typeface
 import android.net.Uri
 import android.util.Base64
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.luminance
@@ -29,6 +27,7 @@ import com.tk.quicksearch.search.data.MediaPlaybackRepository
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.apps.IconPackManager
 import com.tk.quicksearch.search.utils.UserHandleUtils
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 
 data class WidgetButtonIcon(
@@ -319,7 +318,7 @@ private fun loadContactBitmap(
     val initials = contactInitials(action.displayName)
 
     if (initials.isBlank()) {
-        return createVectorBitmap(Icons.Rounded.Person, iconSizePx)
+        return createVectorBitmap(MaterialSymbols.Person, iconSizePx)
     }
 
     // Use Material Theme colors to match the preview (ContactAvatar component)

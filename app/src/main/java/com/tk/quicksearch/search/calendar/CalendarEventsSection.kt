@@ -13,14 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Visibility
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -55,6 +47,7 @@ import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContaine
 import com.tk.quicksearch.search.searchScreen.components.topPredictedRowContentPadding
 import com.tk.quicksearch.search.searchScreen.components.resultRowVerticalPadding
 import com.tk.quicksearch.search.searchScreen.components.rememberQueryHighlightedText
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.delay
@@ -292,7 +285,7 @@ internal fun CalendarEventRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = Icons.Rounded.CalendarMonth,
+            imageVector = MaterialSymbols.CalendarMonth,
             contentDescription = null,
             // At a Glance rows use the accent, like the other glance icons.
             tint =
@@ -351,7 +344,7 @@ internal fun CalendarEventRow(
                 listOf(
                     CalendarMenuItem(
                         textResId = R.string.dialog_done,
-                        icon = { Icon(imageVector = Icons.Rounded.Check, contentDescription = null) },
+                        icon = { Icon(imageVector = MaterialSymbols.Check, contentDescription = null) },
                         onClick = {
                             showMenu = false
                             onArchive(event)
@@ -374,7 +367,7 @@ internal fun CalendarEventRow(
                         add(
                             CalendarMenuItem(
                                 textResId = R.string.action_move_up,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowUpward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowUpward, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     onMovePinned(event, true)
@@ -384,7 +377,7 @@ internal fun CalendarEventRow(
                         add(
                             CalendarMenuItem(
                                 textResId = R.string.action_move_down,
-                                icon = { Icon(imageVector = Icons.Rounded.ArrowDownward, contentDescription = null) },
+                                icon = { Icon(imageVector = MaterialSymbols.ArrowDownward, contentDescription = null) },
                                 onClick = {
                                     showMenu = false
                                     onMovePinned(event, false)
@@ -432,9 +425,9 @@ internal fun CalendarEventRow(
                                 Icon(
                                     imageVector =
                                         if (isExcluded) {
-                                            Icons.Rounded.Visibility
+                                            MaterialSymbols.Visibility
                                         } else {
-                                            Icons.Rounded.VisibilityOff
+                                            MaterialSymbols.VisibilityOff
                                         },
                                     contentDescription = null,
                                 )
@@ -453,7 +446,7 @@ internal fun CalendarEventRow(
                                 } else {
                                     R.string.common_nickname
                                 },
-                            icon = { Icon(imageVector = Icons.Rounded.Edit, contentDescription = null) },
+                            icon = { Icon(imageVector = MaterialSymbols.Edit, contentDescription = null) },
                             onClick = {
                                 showMenu = false
                                 onNicknameClick(event)

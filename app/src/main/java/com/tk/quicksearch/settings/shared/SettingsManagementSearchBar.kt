@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -23,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 
 @Composable
@@ -58,7 +56,7 @@ fun SettingsManagementSearchBar(
         singleLine = true,
         leadingIcon = {
             Icon(
-                imageVector = Icons.Rounded.Search,
+                imageVector = MaterialSymbols.Search,
                 contentDescription = stringResource(R.string.common_search),
                 modifier = Modifier.offset(x = 2.dp),
             )
@@ -71,7 +69,7 @@ fun SettingsManagementSearchBar(
                         modifier = Modifier.offset(x = (-2).dp),
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = MaterialSymbols.Close,
                             contentDescription = stringResource(R.string.common_close),
                         )
                     }

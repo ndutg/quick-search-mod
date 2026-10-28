@@ -23,21 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Contacts
-import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material.icons.rounded.UnfoldMore
-import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.automirrored.rounded.Label
-import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Reorder
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -80,6 +65,7 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonType
 import com.tk.quicksearch.settings.shared.*
@@ -171,7 +157,7 @@ internal fun SearchOptionsCard(
                 title = stringResource(R.string.web_search_suggestions_title),
                 checked = webSuggestionsEnabled,
                 onCheckedChange = onWebSuggestionsToggle,
-                leadingIcon = Icons.Rounded.Language,
+                leadingIcon = MaterialSymbols.Language,
                 sliderDetails =
                     if (webSuggestionsEnabled) {
                         SettingsToggleSliderDetails(
@@ -200,7 +186,7 @@ internal fun SearchOptionsCard(
                 subtitle = stringResource(R.string.recent_queries_toggle_desc),
                 checked = recentQueriesEnabled,
                 onCheckedChange = onRecentQueriesToggle,
-                leadingIcon = Icons.Rounded.History,
+                leadingIcon = MaterialSymbols.History,
                 sliderDetails =
                     if (recentQueriesEnabled) {
                         SettingsToggleSliderDetails(
@@ -232,7 +218,7 @@ internal fun SearchOptionsCard(
                     subtitle = stringResource(R.string.fuzzy_search_toggle_desc),
                     checked = fuzzySearchEnabled,
                     onCheckedChange = onFuzzySearchToggle,
-                    leadingIcon = Icons.Rounded.AutoAwesome,
+                    leadingIcon = MaterialSymbols.AutoAwesome,
                     isFirstItem = false,
                     isLastItem = false,
                     showDivider = false,
@@ -245,7 +231,7 @@ internal fun SearchOptionsCard(
                     SettingsCardItem(
                         title = stringResource(R.string.secondary_ranking_title),
                         description = secondaryRankingDescription(secondaryRankingSignal),
-                        icon = Icons.Rounded.Reorder,
+                        icon = MaterialSymbols.Reorder,
                         actionOnPress = { showSecondaryRankingDialog = true },
                     ),
                 contentPadding =
@@ -269,7 +255,7 @@ internal fun SearchOptionsCard(
                 subtitle = stringResource(R.string.app_suggestions_toggle_desc),
                 checked = appSuggestionsEnabled,
                 onCheckedChange = onAppSuggestionsToggle,
-                leadingIcon = Icons.Rounded.Apps,
+                leadingIcon = MaterialSymbols.Apps,
                 isFirstItem = false,
                 isLastItem = false,
                 showTipBanner = appSuggestionsEnabled && !hasUsagePermission && !appSuggestionsTipDismissed,
@@ -293,7 +279,7 @@ internal fun SearchOptionsCard(
                         SettingsCardItem(
                             title = stringResource(R.string.notification_pinned_items_title),
                             description = stringResource(R.string.notification_pinned_items_description),
-                            icon = Icons.Rounded.Notifications,
+                            icon = MaterialSymbols.Notifications,
                             actionOnPress = { showPinnedNotificationItemsDialog = true },
                         ),
                     contentPadding =
@@ -316,7 +302,7 @@ internal fun SearchOptionsCard(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_nicknames_title),
                             description = stringResource(R.string.settings_nicknames_desc),
-                            icon = Icons.AutoMirrored.Rounded.Label,
+                            icon = MaterialSymbols.Label,
                             actionOnPress = onNavigateToNicknames,
                         ),
                     contentPadding =
@@ -337,7 +323,7 @@ internal fun SearchOptionsCard(
                         SettingsCardItem(
                             title = stringResource(R.string.settings_triggers_title),
                             description = stringResource(R.string.settings_triggers_desc),
-                            icon = Icons.Rounded.Bolt,
+                            icon = MaterialSymbols.Bolt,
                             actionOnPress = onNavigateToTriggers,
                         ),
                     contentPadding =
@@ -358,7 +344,7 @@ internal fun SearchOptionsCard(
                         SettingsCardItem(
                             title = excludedItemsTitle,
                             description = excludedItemsDescription,
-                            icon = Icons.Rounded.VisibilityOff,
+                            icon = MaterialSymbols.VisibilityOff,
                             actionOnPress = onNavigateToExcludedItems,
                         ),
                     contentPadding =
@@ -458,7 +444,7 @@ private fun AppResultRowsSelector(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
         ) {
             Icon(
-                imageVector = Icons.Rounded.Apps,
+                imageVector = MaterialSymbols.Apps,
                 contentDescription = null,
                 modifier = Modifier.size(DesignTokens.IconSizeSmall),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -579,7 +565,7 @@ internal fun PinnedNotificationItemsDialog(
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Rounded.DragHandle,
+                                        imageVector = MaterialSymbols.DragHandle,
                                         contentDescription = stringResource(R.string.settings_action_reorder),
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier =
@@ -619,7 +605,7 @@ internal fun PinnedNotificationItemsDialog(
                                     }
                                     IconButton(onClick = { onRemove(action) }) {
                                         Icon(
-                                            imageVector = Icons.Rounded.Delete,
+                                            imageVector = MaterialSymbols.Delete,
                                             contentDescription = stringResource(
                                                 R.string.notification_pinned_items_remove,
                                                 action.displayLabel(),
@@ -699,7 +685,7 @@ private fun AppSuggestionTabsPickerRow(
             )
         }
         Icon(
-            imageVector = Icons.Rounded.UnfoldMore,
+            imageVector = MaterialSymbols.UnfoldMore,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )

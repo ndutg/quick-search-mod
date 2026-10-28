@@ -26,17 +26,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Block
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -82,6 +71,7 @@ import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.search.searchScreen.AppThemeColors
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.WallpaperUtils
@@ -237,7 +227,7 @@ fun WallpaperCard(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                             ) {
                                 Icon(
-                                        imageVector = Icons.Rounded.Info,
+                                        imageVector = MaterialSymbols.Info,
                                         contentDescription =
                                                 stringResource(
                                                         R.string.permission_required_title,
@@ -359,7 +349,7 @@ fun WallpaperCard(
                                 contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                    imageVector = Icons.Rounded.Edit,
+                                    imageVector = MaterialSymbols.Edit,
                                     contentDescription =
                                             stringResource(
                                                     R.string.settings_overlay_source_edit_custom
@@ -370,7 +360,7 @@ fun WallpaperCard(
                         }
                     } else {
                         Icon(
-                                imageVector = Icons.Rounded.Add,
+                                imageVector = MaterialSymbols.Add,
                                 contentDescription =
                                         stringResource(R.string.settings_overlay_source_add_custom),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -476,7 +466,7 @@ fun WallpaperCard(
                 ) {
                     AppModeOption(
                             label = stringResource(R.string.settings_accent_color_none),
-                            icon = Icons.Rounded.Block,
+                            icon = MaterialSymbols.Block,
                             selected = accentColorMode == AccentColorMode.NONE,
                             onClick = { selectAccentMode(AccentColorMode.NONE) },
                             iconLabelSpacing = DesignTokens.SpacingSmall,
@@ -486,7 +476,7 @@ fun WallpaperCard(
                     if (wallpaperPixelEffectsAvailable) {
                         AppModeOption(
                                 label = stringResource(R.string.settings_accent_color_from_wallpaper),
-                                icon = Icons.Rounded.Image,
+                                icon = MaterialSymbols.Image,
                                 selected = accentColorMode == AccentColorMode.FROM_WALLPAPER,
                                 onClick = { selectAccentMode(AccentColorMode.FROM_WALLPAPER) },
                                 iconLabelSpacing = DesignTokens.SpacingSmall,
@@ -496,7 +486,7 @@ fun WallpaperCard(
                     }
                     AppModeOption(
                             label = stringResource(R.string.common_custom),
-                            icon = Icons.Rounded.Palette,
+                            icon = MaterialSymbols.Palette,
                             selected = accentColorMode == AccentColorMode.CUSTOM,
                             onClick = { selectAccentMode(AccentColorMode.CUSTOM) },
                             iconLabelSpacing = DesignTokens.SpacingSmall,

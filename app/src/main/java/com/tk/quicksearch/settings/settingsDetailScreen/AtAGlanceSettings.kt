@@ -14,9 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -65,8 +62,10 @@ import com.tk.quicksearch.settings.shared.SettingsNestedCheckbox
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.permissions.PermissionHelper
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetUpdater
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -534,6 +533,7 @@ fun AtAGlanceSettingsSection(
             packageNames = hiddenAlarmPackages,
             onUnhide = { packageName ->
                 hiddenAlarmPackages = alarmPreferences.unhidePackage(packageName)
+                AtAGlanceWidgetUpdater.startIfPlaced(appContext)
                 if (hiddenAlarmPackages.isEmpty()) showHiddenAlarmAppsDialog = false
             },
             onDismiss = { showHiddenAlarmAppsDialog = false },
@@ -631,13 +631,13 @@ private fun CustomInfoActions(
         AliasPill(
             text = AnnotatedString(stringResource(R.string.settings_edit_label)),
             textColor = AppColors.LinkColor,
-            leadingIcon = Icons.Rounded.Edit,
+            leadingIcon = MaterialSymbols.Edit,
             onClick = onEdit,
         )
         AliasPill(
             text = AnnotatedString(stringResource(R.string.dialog_delete)),
             textColor = MaterialTheme.colorScheme.error,
-            leadingIcon = Icons.Rounded.Delete,
+            leadingIcon = MaterialSymbols.Delete,
             onClick = onDelete,
         )
     }

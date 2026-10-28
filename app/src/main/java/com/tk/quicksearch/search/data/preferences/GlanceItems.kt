@@ -4,6 +4,7 @@ import android.content.Context
 import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoScheduler
 import com.tk.quicksearch.search.data.AppNotificationsSettings
+import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetUpdater
 
 /** An At a Glance toggle; [key] names it in the At a Glance widget's stored overrides. */
 enum class GlanceItem(
@@ -119,6 +120,8 @@ class AppGlanceItemSettings(
             GlanceItem.CHARGING -> battery.setShowChargingEnabled(shown)
             GlanceItem.LOW_STORAGE -> glance.setShowLowStorageEnabled(shown)
         }
+        // Placed widgets follow these settings unless overridden, and nothing else reports the change.
+        AtAGlanceWidgetUpdater.startIfPlaced(appContext)
     }
 
     override fun isCustomInfoShown(item: CustomInfoItem): Boolean = item.enabled
@@ -126,7 +129,10 @@ class AppGlanceItemSettings(
     override fun setCustomInfoShown(
         item: CustomInfoItem,
         shown: Boolean,
-    ) = CustomInfoScheduler.setEnabled(appContext, item.id, shown)
+    ) {
+        CustomInfoScheduler.setEnabled(appContext, item.id, shown)
+        AtAGlanceWidgetUpdater.startIfPlaced(appContext)
+    }
 }
 
 /**

@@ -1,16 +1,9 @@
 package com.tk.quicksearch.search.searchScreen
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.HelpOutline
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.Construction
-import androidx.compose.material.icons.rounded.CurrencyExchange
-import androidx.compose.material.icons.rounded.Cloud
-import androidx.compose.material.icons.rounded.QuestionAnswer
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.tk.quicksearch.R
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 @Composable
 internal fun toolCardConfig(
@@ -44,25 +37,25 @@ internal fun toolCardConfig(
                     showAiFollowUpAction ->
                             ToolCardConfig(
                                     label = stringResource(R.string.direct_search_ask_follow_up),
-                                    icon = Icons.Rounded.QuestionAnswer,
+                                    icon = MaterialSymbols.QuestionAnswer,
                                     onClick = { onShowAiFollowUpInput() },
                             )
                     showQuickSearchHelpCard ->
                             ToolCardConfig(
                                     label = stringResource(R.string.quick_search_help_action),
-                                    icon = Icons.AutoMirrored.Rounded.HelpOutline,
+                                    icon = MaterialSymbols.HelpOutline,
                                     onClick = onQuickSearchHelpClick,
                             )
                     showCurrencyConverterSearchCard ->
                             ToolCardConfig(
                                     label = stringResource(R.string.get_currency_value),
-                                    icon = Icons.Rounded.CurrencyExchange,
+                                    icon = MaterialSymbols.CurrencyExchange,
                                     onClick = onCurrencyConversionClick,
                             )
                     showDictionarySearchCard ->
                             ToolCardConfig(
                                     label = stringResource(R.string.search_in_dictionary),
-                                    icon = Icons.Rounded.Search,
+                                    icon = MaterialSymbols.Search,
                                     onClick = onDictionarySearchClick,
                             )
                     showWeatherSearchCard ->
@@ -76,13 +69,13 @@ internal fun toolCardConfig(
                                         } else {
                                             stringResource(R.string.get_weather)
                                         },
-                                    icon = Icons.Rounded.Cloud,
+                                    icon = MaterialSymbols.Cloud,
                                     onClick = onWeatherSearchClick,
                             )
                     showCustomToolSearchCard ->
                             ToolCardConfig(
                                     label = customToolName.orEmpty(),
-                                    icon = Icons.Rounded.Construction,
+                                    icon = MaterialSymbols.Construction,
                                     onClick = onCustomToolSearchClick,
                             )
                     showTaskerIntentCard ->
@@ -97,7 +90,7 @@ internal fun toolCardConfig(
                     showWorldClockSearchCard ->
                             ToolCardConfig(
                                     label = stringResource(R.string.get_time),
-                                    icon = Icons.Rounded.AccessTime,
+                                    icon = MaterialSymbols.AccessTime,
                                     onClick = onWorldClockSearchClick,
                             )
                     else -> null

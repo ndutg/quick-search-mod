@@ -23,21 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Contacts
-import androidx.compose.material.icons.rounded.DragHandle
-import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Label
-import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Reorder
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -80,6 +65,7 @@ import com.tk.quicksearch.search.core.SearchSection
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.search.models.SecondaryRankingSignal
 import com.tk.quicksearch.pinnedNotifications.PinnedNotifications
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonType
 import com.tk.quicksearch.settings.shared.*
@@ -238,7 +224,7 @@ private fun TopMatchesCard(
                 subtitle = stringResource(R.string.top_matches_toggle_desc),
                 checked = topMatchesEnabled,
                 onCheckedChange = onTopMatchesToggle,
-                leadingIcon = Icons.Rounded.AutoAwesome,
+                leadingIcon = MaterialSymbols.AutoAwesome,
                 enabled = !isLocked,
                 isFirstItem = true,
                 isLastItem = !topMatchesEnabled,
@@ -250,7 +236,7 @@ private fun TopMatchesCard(
                         SettingsCardItem(
                             title = stringResource(R.string.top_matches_priority_title),
                             description = stringResource(R.string.top_matches_priority_desc),
-                            icon = Icons.Rounded.Reorder,
+                            icon = MaterialSymbols.Reorder,
                             actionOnPress = { showPriorityDialog = true },
                         ),
                     contentPadding =
@@ -400,7 +386,7 @@ internal fun PriorityReorderDialog(
                                 horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.DragHandle,
+                                    imageVector = MaterialSymbols.DragHandle,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -491,7 +477,7 @@ private fun LaunchOptionsCard(
                         verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Apps,
+                            imageVector = MaterialSymbols.Apps,
                             contentDescription = null,
                             modifier = Modifier.size(DesignTokens.IconSizeSmall),
                         )
@@ -517,7 +503,7 @@ private fun LaunchOptionsCard(
                             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Contacts,
+                                imageVector = MaterialSymbols.Contacts,
                                 contentDescription = null,
                                 modifier = Modifier.size(DesignTokens.IconSizeSmall),
                             )
@@ -544,7 +530,7 @@ private fun LaunchOptionsCard(
                             verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
                         ) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.InsertDriveFile,
+                                imageVector = MaterialSymbols.InsertDriveFile,
                                 contentDescription = null,
                                 modifier = Modifier.size(DesignTokens.IconSizeSmall),
                             )

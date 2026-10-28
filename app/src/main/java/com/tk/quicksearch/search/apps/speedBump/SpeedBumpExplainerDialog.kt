@@ -2,8 +2,6 @@ package com.tk.quicksearch.search.apps.speedBump
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -34,7 +33,7 @@ fun SpeedBumpExplainerDialog(
 ) {
     AppAlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(imageVector = Icons.Rounded.Spa, contentDescription = null) },
+        icon = { Icon(imageVector = MaterialSymbols.Spa, contentDescription = null) },
         // Material's default icon tint is the secondary colour, which reads as purple here.
         iconContentColor = AppColors.DialogText,
         title = { Text(text = stringResource(R.string.speed_bump_title)) },

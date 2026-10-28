@@ -13,10 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -47,6 +43,7 @@ import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.search.notes.NotesTextUtils
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsManagementSearchBar
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.utils.WidgetConfigConstants
@@ -102,7 +99,7 @@ fun NoteWidgetPickerScreen(
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(
-                            imageVector = Icons.Rounded.Close,
+                            imageVector = MaterialSymbols.Close,
                             contentDescription = stringResource(R.string.dialog_cancel),
                         )
                     }
@@ -148,7 +145,7 @@ fun NoteWidgetPickerScreen(
                             itemsIndexed(items = filteredNotes, key = { _, note -> note.noteId }) { index, note ->
                                 NoteRow(
                                     note = note,
-                                    trailingIcon = Icons.Rounded.Check.takeIf { note.noteId == selectedNoteId },
+                                    trailingIcon = MaterialSymbols.Check.takeIf { note.noteId == selectedNoteId },
                                     trailingIconDescription = stringResource(R.string.desc_selected),
                                     onClick = { onSelect(note) },
                                 )
@@ -179,7 +176,7 @@ fun NoteWidgetSelectedNoteSection(
             if (note != null) {
                 NoteRow(
                     note = note,
-                    trailingIcon = Icons.Rounded.ChevronRight,
+                    trailingIcon = MaterialSymbols.ChevronRight,
                     trailingIconDescription = null,
                     onClick = onChangeNote,
                     showLeadingIcon = true,
@@ -246,7 +243,7 @@ private fun NoteRow(
                 imageVector = it,
                 contentDescription = trailingIconDescription,
                 tint =
-                    if (it == Icons.Rounded.Check) {
+                    if (it == MaterialSymbols.Check) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant

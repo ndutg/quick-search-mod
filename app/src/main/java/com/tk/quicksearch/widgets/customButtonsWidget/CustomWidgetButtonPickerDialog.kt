@@ -23,10 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -59,7 +55,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material.icons.rounded.Info
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerRowSpacing
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerMessage
@@ -80,6 +75,7 @@ import com.tk.quicksearch.search.models.NoteInfo
 import com.tk.quicksearch.media.MediaCommand
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.hapticToggle
@@ -180,7 +176,7 @@ fun CustomWidgetButtonPickerDialog(
                     tipText?.let {
                         TipBanner(
                             text = it,
-                            icon = Icons.Rounded.Info,
+                            icon = MaterialSymbols.Info,
                             showDismissButton = false,
                         )
                     }

@@ -20,10 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,6 +54,7 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
 import com.tk.quicksearch.shared.ui.components.TipBanner
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import androidx.compose.foundation.selection.selectable
@@ -166,7 +163,7 @@ internal fun ProviderApiKeyCard(
                         },
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Delete,
+                            imageVector = MaterialSymbols.Delete,
                             contentDescription = stringResource(R.string.settings_gemini_api_key_reset),
                             tint = MaterialTheme.colorScheme.error,
                         )

@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,6 +52,7 @@ import com.tk.quicksearch.settings.shared.SettingsScreenBackground
 import com.tk.quicksearch.settings.shared.settingsRoute.SettingsScreenState
 import com.tk.quicksearch.settings.shared.SettingsManagementSearchBar
 import com.tk.quicksearch.settings.shared.settingsContentWidth
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.settings.NoteDeleteConfirmationDialog
 import com.tk.quicksearch.settings.NotesBulkDeleteConfirmationDialog
@@ -225,7 +223,7 @@ internal fun SettingsNestedDetailScreen(
                             {
                                 IconButton(onClick = { showNotificationHistoryAppFilter = true }) {
                                     Icon(
-                                        imageVector = Icons.Rounded.MoreVert,
+                                        imageVector = MaterialSymbols.MoreVert,
                                         contentDescription =
                                             stringResource(R.string.notification_history_app_filter_title),
                                         tint = MaterialTheme.colorScheme.onSurface,
@@ -244,7 +242,7 @@ internal fun SettingsNestedDetailScreen(
                                         callbacks.onBack()
                                     }) {
                                         Icon(
-                                            imageVector = Icons.Rounded.Delete,
+                                            imageVector = MaterialSymbols.Delete,
                                             contentDescription = stringResource(R.string.settings_custom_tool_delete_button),
                                             tint = MaterialTheme.colorScheme.onSurface,
                                         )
@@ -646,7 +644,7 @@ internal fun SettingsNestedDetailScreen(
                 contentColor = MaterialTheme.colorScheme.onError,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Delete,
+                    imageVector = MaterialSymbols.Delete,
                     contentDescription = stringResource(R.string.settings_action_clear_all),
                     modifier = Modifier.size(24.dp),
                 )

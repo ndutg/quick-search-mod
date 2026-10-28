@@ -23,13 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Repeat
-import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -73,7 +66,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
-import androidx.compose.material.icons.rounded.Android
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerIconBadge
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawerAppIcon
 import com.tk.quicksearch.shared.ui.components.AppPickerDrawer
@@ -91,6 +83,7 @@ import com.tk.quicksearch.settings.shared.SettingsCardItem
 import com.tk.quicksearch.settings.shared.SettingsManagementSearchBar
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsToggleRow
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import java.text.SimpleDateFormat
@@ -360,7 +353,7 @@ internal fun DefaultCalendarDialog(
                 AppPickerDrawerRow(
                     title = stringResource(R.string.common_theme_system),
                     selected = selectedPackageName == null,
-                    leading = { AppPickerDrawerIconBadge(icon = Icons.Rounded.Android) },
+                    leading = { AppPickerDrawerIconBadge(icon = MaterialSymbols.Android) },
                     onClick = { onCalendarSelected(null) },
                 )
             }
@@ -469,7 +462,7 @@ fun CalendarEventsBottomBar(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Add,
+                        imageVector = MaterialSymbols.Add,
                         contentDescription = stringResource(newItemLabelResId),
                         modifier = Modifier.size(24.dp),
                     )
@@ -482,7 +475,7 @@ fun CalendarEventsBottomBar(
                 shape = CalendarSettingsBarCornerShape,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Search,
+                    imageVector = MaterialSymbols.Search,
                     contentDescription = stringResource(R.string.common_search),
                     modifier = Modifier.size(22.dp),
                 )
@@ -498,7 +491,7 @@ fun CalendarEventsBottomBar(
                     text = { Text(text = stringResource(newItemLabelResId)) },
                     icon = {
                         Icon(
-                            imageVector = Icons.Rounded.Add,
+                            imageVector = MaterialSymbols.Add,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp),
                         )
@@ -537,7 +530,7 @@ private fun CalendarEventManagementRow(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.ItemRowSpacing),
     ) {
         Icon(
-            imageVector = Icons.Rounded.CalendarMonth,
+            imageVector = MaterialSymbols.CalendarMonth,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(DesignTokens.IconSize),
@@ -564,7 +557,7 @@ private fun CalendarEventManagementRow(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Repeat,
+                        imageVector = MaterialSymbols.Repeat,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(12.dp),

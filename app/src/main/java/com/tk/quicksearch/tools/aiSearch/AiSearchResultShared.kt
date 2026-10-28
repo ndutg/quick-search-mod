@@ -12,11 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Calculate
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Palette
-import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.searchScreen.shared.InformationCard
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
@@ -339,11 +335,11 @@ internal fun CalculatorAttributionRow(
             }
     val icon =
             when (toolType) {
-                SearchToolType.UNIT_CONVERTER -> Icons.Rounded.Straighten
-                SearchToolType.DATE_CALCULATOR -> Icons.Rounded.CalendarMonth
-                SearchToolType.COLOR_VISUALIZER -> Icons.Rounded.Palette
-                SearchToolType.CALCULATOR -> Icons.Rounded.Calculate
-                else -> Icons.Rounded.Calculate
+                SearchToolType.UNIT_CONVERTER -> MaterialSymbols.Straighten
+                SearchToolType.DATE_CALCULATOR -> MaterialSymbols.CalendarMonth
+                SearchToolType.COLOR_VISUALIZER -> MaterialSymbols.Palette
+                SearchToolType.CALCULATOR -> MaterialSymbols.Calculate
+                else -> MaterialSymbols.Calculate
             }
     Row(
             modifier = modifier.padding(horizontal = DesignTokens.SpacingLarge),

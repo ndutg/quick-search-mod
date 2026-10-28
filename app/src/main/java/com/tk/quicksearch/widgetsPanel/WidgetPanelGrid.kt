@@ -46,11 +46,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -104,6 +99,7 @@ import com.tk.quicksearch.search.core.SearchUiState
 import com.tk.quicksearch.search.data.preferences.NotesPreferences
 import com.tk.quicksearch.search.searchScreen.searchRoute.SearchScreenWallpaperLogic
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.ui.theme.LocalHomeTextColorOverride
 import com.tk.quicksearch.shared.ui.theme.LocalImageBackgroundIsDark
@@ -152,7 +148,7 @@ internal fun WidgetsPanelHeader(
                 colors = IconButtonDefaults.iconButtonColors(contentColor = mutedColor),
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Add,
+                    imageVector = MaterialSymbols.Add,
                     contentDescription = stringResource(R.string.common_action_add),
                     modifier = Modifier.size(22.dp),
                 )

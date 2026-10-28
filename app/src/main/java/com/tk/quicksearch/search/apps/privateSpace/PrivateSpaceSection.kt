@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.models.AppInfo
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 
 /** Creates a [PrivateSpaceController] that watches the Private Space while in composition. */
@@ -71,7 +69,7 @@ private fun PrivateSpaceHeader(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
     ) {
         Icon(
-            imageVector = if (isLocked) Icons.Rounded.Lock else Icons.Rounded.LockOpen,
+            imageVector = if (isLocked) MaterialSymbols.Lock else MaterialSymbols.LockOpen,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(18.dp),

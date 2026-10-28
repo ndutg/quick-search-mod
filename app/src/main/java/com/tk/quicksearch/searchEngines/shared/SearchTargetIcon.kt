@@ -6,8 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Public
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -32,6 +30,7 @@ import com.tk.quicksearch.searchEngines.getDrawableResId
 import com.tk.quicksearch.searchEngines.getIconColorPolicy
 import com.tk.quicksearch.searchEngines.isInstallOnlyEngine
 import com.tk.quicksearch.searchEngines.SearchEngineIconColorPolicy
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 
 /**
  * Configuration for rendering search target icons with different styles.
@@ -196,7 +195,7 @@ fun SearchTargetIcon(
         is SearchTarget.Browser -> {
             if (isInAppBrowserPackage(target.app.packageName)) {
                 Icon(
-                    imageVector = Icons.Rounded.Public,
+                    imageVector = MaterialSymbols.Public,
                     contentDescription = target.app.label,
                     modifier = modifier.size(iconSize),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -225,7 +224,7 @@ fun SearchTargetIcon(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Public,
+                    imageVector = MaterialSymbols.Public,
                     contentDescription = target.app.label,
                     modifier = modifier.size(iconSize),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -253,7 +252,7 @@ fun SearchTargetIcon(
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Rounded.Public,
+                    imageVector = MaterialSymbols.Public,
                     contentDescription = target.custom.name,
                     modifier = modifier.size(iconSize),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,

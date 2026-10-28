@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -36,6 +34,7 @@ import com.tk.quicksearch.search.data.preferences.ResultTrigger
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import com.tk.quicksearch.shared.ui.components.AppAlertDialog
 import com.tk.quicksearch.shared.ui.components.dialogTextFieldColors
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import kotlinx.coroutines.delay
 
 @Composable
@@ -134,7 +133,7 @@ fun TriggerDialog(
                         if (triggerText.text.isNotEmpty()) {
                             IconButton(onClick = { triggerText = TextFieldValue("") }) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Close,
+                                    imageVector = MaterialSymbols.Close,
                                     contentDescription = stringResource(R.string.desc_clear_search),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
