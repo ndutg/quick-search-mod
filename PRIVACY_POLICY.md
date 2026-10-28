@@ -1,6 +1,6 @@
 # Quick Search – Privacy Policy
 
-Last updated: 2026-09-29
+Last updated: 2026-10-28
 
 Quick Search is an Android app and optional home screen launcher that lets you search apps, contacts, calendar events, device files, notes, settings, notifications, and the web from a single screen, and to see an optional At a Glance summary, reminders, and widgets on your Home screen. This policy explains what data the app accesses, how it is used, and your choices.
 
@@ -23,7 +23,8 @@ Quick Search is an Android app and optional home screen launcher that lets you s
 - Accessibility service (optional): When you enable the Lock Screen gesture, Quick Search uses Android's AccessibilityService API only to perform the system Lock Screen action after you double-tap the Home screen. Through this service, Quick Search does not read, collect, store, or share screen content or other personal data.
 - App lock (optional): If you lock apps, Quick Search uses Android's system biometric or screen-lock prompt to confirm it is you. The prompt is handled by Android; Quick Search only receives whether authentication succeeded and never accesses your fingerprint, face, or PIN data.
 - Preferences: Hidden/pinned apps, contacts, files, nicknames, section order, layout choices, aliases, custom search engines, custom tools, pinned notification shortcuts, At a Glance options, Home widget panel layout, and widget settings stored locally. Sensitive items such as AI provider API keys are stored with EncryptedSharedPreferences when available.
-- AI features (optional): If you add an API key for an AI provider (Google Gemini, OpenAI, Anthropic, Groq, Meta, or a custom OpenAI-compatible endpoint you configure) and use AI answers, `@help` questions, custom tools, or AI-powered tools (such as weather and dictionary lookups), your query and any personal context you provide are sent to that provider to generate a response. For weather, the location you enter or save is included. Scheduled Custom Info items in At a Glance send their saved prompt to the provider you chose at the times you schedule, in the background. Custom endpoints on your local network may use unencrypted HTTP if you enter an http:// address. Request details may be logged to your device's logcat for troubleshooting, with API keys redacted, and are not sent to the developer.
+- AI features (optional): If you add an API key for an AI provider (Google Gemini, OpenAI, Anthropic, Groq, Meta, or a custom OpenAI-compatible endpoint you configure) and use AI answers, `@help` questions, custom tools, or AI-powered tools (such as weather lookups), your query and any personal context you provide are sent to that provider to generate a response. For weather, the location you enter or save is included. Scheduled Custom Info items in At a Glance send their saved prompt to the provider you chose at the times you schedule, in the background. Custom endpoints on your local network may use unencrypted HTTP if you enter an http:// address. Request details may be logged to your device's logcat for troubleshooting, with API keys redacted, and are not sent to the developer.
+- Dictionary (optional): When the dictionary tool is enabled and you search for a definition (for example "define serendipity"), the word you look up is sent to the Free Dictionary API (api.dictionaryapi.dev) to fetch its definition. No API key or other personal data is included.
 - AI web search (optional): If you add a Tavily API key, your AI search query may be sent to Tavily (api.tavily.com) to fetch web results for the answer.
 - Device status (At a Glance): Battery charging state, free storage, Do Not Disturb, airplane mode, hotspot, flashlight, and whether your Wi-Fi network needs a sign-in page. This is read on-device only to show At a Glance items and is not stored or shared.
 - Home widgets: If you add other apps' widgets to the Home widget panel, those widgets are provided and run by their own apps under their policies.
@@ -44,7 +45,7 @@ Quick Search is an Android app and optional home screen launcher that lets you s
 - Queries you open with other search engines are sent to those providers at your direction.
 - Diagnostic logs (optional): Quick Search never sends logs automatically. If you choose to share a log from the app, for example to report a bug, it is shared through the app you pick, such as your email app. The log includes your device model, Android version, app version, memory details, the time, and Quick Search's own recent log output, which can include details of recent AI requests (with API keys redacted). Review the log before sending if you're concerned about its contents.
 - The app also makes these requests that do not include your personal data:
-  - Daily currency exchange rates from the European Central Bank (ecb.europa.eu) for the currency converter.
+  - Daily currency exchange rates for the currency converter, from the open currency-api dataset (served from cdn.jsdelivr.net, with latest.currency-api.pages.dev as a mirror) and, as a last fallback, the European Central Bank (ecb.europa.eu).
   - Release notes from GitHub (api.github.com).
   - Website icons from Google (google.com/s2/favicons) when you add a custom search engine.
   - In the Google Play version, Google Play's in-app review and update services.
@@ -69,7 +70,7 @@ Quick Search is an Android app and optional home screen launcher that lets you s
 - Request app uninstall: Used to open Android's uninstall dialog when you choose to uninstall an app. Android always asks you to confirm.
 - Biometric: Used through Android's system prompt for app lock, as described above.
 - Vibration: Used for haptic feedback.
-- Network: Used for web suggestions, AI features, currency rates, release notes, website icons, and external searches, as described above.
+- Network: Used for web suggestions, AI features, dictionary lookups, currency rates, release notes, website icons, and external searches, as described above.
 - Network and Wi-Fi state: Used only for At a Glance items that show Wi-Fi sign-in and hotspot status.
 
 ## Security
