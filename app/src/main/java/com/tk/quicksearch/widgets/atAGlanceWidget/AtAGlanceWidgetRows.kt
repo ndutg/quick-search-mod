@@ -3,6 +3,7 @@ package com.tk.quicksearch.widgets.atAGlanceWidget
 import android.app.AlarmManager
 import android.content.Context
 import android.text.format.DateFormat
+import android.text.format.DateUtils
 import com.tk.quicksearch.R
 import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoRepository
@@ -17,6 +18,7 @@ import com.tk.quicksearch.search.data.MissedCallNotification
 import com.tk.quicksearch.search.data.OtpNotifications
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.data.UpcomingAlarmRepository
+import com.tk.quicksearch.search.data.loadTodayGlanceEvents
 import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.CalendarPreferences
 import com.tk.quicksearch.search.data.preferences.GlanceItem
@@ -25,7 +27,9 @@ import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.models.CalendarEventInfo
 import com.tk.quicksearch.search.models.ReminderInfo
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.englishOrdinal
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.timerActionIcon
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
+import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -57,6 +61,9 @@ private const val REMINDER_NOW_WINDOW_MILLIS = 60L * 1000L
 private const val MINUTE_MILLIS = 60L * 1000L
 private const val HOUR_MILLIS = 60L * MINUTE_MILLIS
 private const val DAY_MILLIS = 24L * HOUR_MILLIS
+
+/** A notification reads "Now" for this long after it is posted, as on home. */
+private const val JUST_NOW_MILLIS = 60L * 1000L
 
 /** RemoteViews collections are sent in one parcel, so the widget stops well short of its size limit. */
 private const val MAX_ROWS = 30
@@ -146,6 +153,23 @@ internal class AtAGlanceWidgetRowLoader(
             }.getOrDefault(packageName)
         }
 
+    /** Home's notification age: "Now" for a minute, then "5 min ago", refreshed when it changes. */
+    private fun notificationAge(postTime: Long): String {
+        val age = nowMillis - postTime
+        if (age < JUST_NOW_MILLIS) {
+            changesAt(postTime + JUST_NOW_MILLIS)
+            return string(R.string.calendar_relative_now)
+        }
+        changesAt(nowMillis + MINUTE_MILLIS - age % MINUTE_MILLIS)
+        return DateUtils.getRelativeTimeSpanString(
+            postTime,
+            nowMillis,
+            DateUtils.MINUTE_IN_MILLIS,
+            DateUtils.FORMAT_ABBREV_RELATIVE,
+        ).toString().replace(".", "")
+    }
+
+    /** A notification's row, which wraps its title in full as on home. */
     private fun notificationRow(
         prefix: String,
         key: String,
@@ -154,6 +178,14 @@ internal class AtAGlanceWidgetRowLoader(
         subtitle: String?,
         icon: AtAGlanceWidgetIcon = AtAGlanceWidgetIcon.App(packageName),
         dismiss: AtAGlanceWidgetDismissType? = null,
+        titleStyle: AtAGlanceWidgetTitleStyle = AtAGlanceWidgetTitleStyle.BODY,
+        titleMaxLines: Int = Int.MAX_VALUE,
+        largeSubtitle: Boolean = false,
+        pill: String? = null,
+        footer: String? = null,
+        progress: Float? = null,
+        trailing: List<AtAGlanceWidgetButton> = emptyList(),
+        dismissAtTop: Boolean = false,
     ) = AtAGlanceWidgetRow(
         key = "$prefix-$key",
         icon = icon,
@@ -161,6 +193,14 @@ internal class AtAGlanceWidgetRowLoader(
         subtitle = subtitle,
         tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.NOTIFICATION, key = key, packageName = packageName),
         dismiss = dismiss,
+        titleStyle = titleStyle,
+        titleMaxLines = titleMaxLines,
+        largeSubtitle = largeSubtitle,
+        pill = pill?.let { AtAGlanceWidgetPill(it) },
+        footer = footer,
+        progress = progress,
+        trailing = trailing,
+        dismissAtTop = dismissAtTop,
     )
 
     /** Ongoing calls, the newest one-time code and running timers. */
@@ -169,13 +209,26 @@ internal class AtAGlanceWidgetRowLoader(
         val calls =
             if (items.isShown(GlanceItem.ONGOING_CALL)) {
                 GlanceNotificationsStore.ongoingCalls.value.map { call ->
-                    notificationRow(
-                        prefix = "ongoing-call",
-                        key = call.key,
-                        packageName = call.packageName,
+                    AtAGlanceWidgetRow(
+                        key = "ongoing-call-${call.key}",
+                        icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.Call),
                         title = string(R.string.home_ongoing_call),
                         subtitle = call.caller ?: appLabel(call.packageName),
-                        icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.Call),
+                        tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.NOTIFICATION, key = call.key, packageName = call.packageName),
+                        trailing =
+                            listOfNotNull(
+                                AtAGlanceWidgetButton(
+                                    tap =
+                                        AtAGlanceWidgetTap(
+                                            AtAGlanceWidgetTapType.HANG_UP_CALL,
+                                            key = call.key,
+                                            packageName = call.packageName,
+                                        ),
+                                    style = AtAGlanceWidgetButtonStyle.HANG_UP,
+                                    label = string(R.string.home_ongoing_call_hang_up),
+                                    icon = MaterialSymbols.CallEnd,
+                                ).takeIf { call.hangUpIntent != null || call.endsThroughTelecom },
+                            ),
                     )
                 }
             } else {
@@ -189,13 +242,16 @@ internal class AtAGlanceWidgetRowLoader(
         val otpRows =
             listOfNotNull(
                 otp?.let {
+                    // As on home, the row opens the message and the code below copies.
                     AtAGlanceWidgetRow(
                         key = "otp-${it.key}",
                         icon = AtAGlanceWidgetIcon.App(it.packageName),
-                        title = it.code,
-                        subtitle = string(R.string.home_otp_from, it.sender ?: appLabel(it.packageName)),
-                        tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.OTP, key = it.key, packageName = it.packageName),
+                        title = "${string(R.string.home_otp_from, it.sender ?: appLabel(it.packageName))} • ${notificationAge(it.postTime)}",
+                        tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.NOTIFICATION, key = it.key, packageName = it.packageName),
                         dismiss = AtAGlanceWidgetDismissType.OTP,
+                        titleStyle = AtAGlanceWidgetTitleStyle.SMALL,
+                        titleMaxLines = Int.MAX_VALUE,
+                        code = it.code,
                     )
                 },
             )
@@ -203,10 +259,18 @@ internal class AtAGlanceWidgetRowLoader(
             if (items.isShown(GlanceItem.TIMERS)) {
                 GlanceNotificationsStore.timers.value.map { timer ->
                     val kind = string(if (timer.isCountDown) R.string.home_timer else R.string.home_stopwatch)
-                    // A ticking clock can't be kept current in a widget, so the row says when a running timer ends.
+                    val paused = timer.pausedMillis
+                    // A ticking clock can't be kept current in a widget, so only a paused timer shows its
+                    // time as on home; a running one says when it ends.
+                    val title =
+                        if (paused != null) {
+                            DateUtils.formatElapsedTime(if (timer.isCountDown) (paused + 999L) / 1_000L else paused / 1_000L)
+                        } else {
+                            kind
+                        }
                     val detail =
                         when {
-                            timer.pausedMillis != null -> string(R.string.home_timer_paused)
+                            paused != null -> "$kind • ${string(R.string.home_timer_paused)}"
                             timer.isCountDown && timer.chronometerBase > nowMillis -> formatTime(timer.chronometerBase)
                             else -> appLabel(timer.packageName)
                         }
@@ -214,9 +278,35 @@ internal class AtAGlanceWidgetRowLoader(
                         prefix = "timer",
                         key = timer.key,
                         packageName = timer.packageName,
-                        title = kind,
+                        title = title,
                         subtitle = detail,
                         icon = AtAGlanceWidgetIcon.Vector(if (timer.isCountDown) MaterialSymbols.Timer else MaterialSymbols.AvTimer),
+                        titleStyle = if (paused != null) AtAGlanceWidgetTitleStyle.LARGE else AtAGlanceWidgetTitleStyle.BODY,
+                        titleMaxLines = 1,
+                        trailing =
+                            timer.actions.mapIndexed { index, action ->
+                                val tap =
+                                    AtAGlanceWidgetTap(
+                                        AtAGlanceWidgetTapType.TIMER_ACTION,
+                                        key = timer.key,
+                                        packageName = timer.packageName,
+                                        id = index.toLong(),
+                                    )
+                                val fallbackIcon = timerActionIcon(action.title)
+                                // As on home, a button with no icon of either kind shows its label.
+                                AtAGlanceWidgetButton(
+                                    tap = tap,
+                                    style =
+                                        if (action.icon == null && fallbackIcon == null) {
+                                            AtAGlanceWidgetButtonStyle.OUTLINED_CHIP
+                                        } else {
+                                            AtAGlanceWidgetButtonStyle.TONAL
+                                        },
+                                    label = action.title,
+                                    icon = fallbackIcon,
+                                    appIcon = action.icon,
+                                )
+                            },
                     )
                 }
             } else {
@@ -241,7 +331,7 @@ internal class AtAGlanceWidgetRowLoader(
         return listOf(
             AtAGlanceWidgetRow(
                 key = "alarm",
-                icon = packageName?.let { AtAGlanceWidgetIcon.App(it) } ?: AtAGlanceWidgetIcon.Vector(MaterialSymbols.Timer),
+                icon = packageName?.let { AtAGlanceWidgetIcon.App(it) } ?: AtAGlanceWidgetIcon.Vector(MaterialSymbols.Alarm),
                 title = string(R.string.home_upcoming_alarm),
                 subtitle = "$time • ${if (soon == null) string(R.string.calendar_relative_tomorrow) else relativeTime(alarm.triggerTime)}",
                 tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.ALARM, packageName = packageName),
@@ -266,14 +356,23 @@ internal class AtAGlanceWidgetRowLoader(
                 title = reminder.title,
                 subtitle = reminderSubtitle(reminder),
                 tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.REMINDER, id = reminder.reminderId),
-                // As on home, only a reminder not yet due can be put off until it is.
-                dismiss = AtAGlanceWidgetDismissType.REMINDER.takeIf { reminder.dueMillis > nowMillis },
+                titleMaxLines = Int.MAX_VALUE,
+                dismiss = AtAGlanceWidgetDismissType.REMINDER,
+                trailing =
+                    listOf(
+                        AtAGlanceWidgetButton(
+                            tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.REMINDER_DONE, id = reminder.reminderId),
+                            style = AtAGlanceWidgetButtonStyle.ICON,
+                            label = string(R.string.action_mark_as_done),
+                            icon = MaterialSymbols.Check,
+                        ),
+                    ),
             )
         }
     }
 
     /**
-     * As on home: an upcoming reminder's time and how soon it is due, then "Now" for a minute, then
+     * An upcoming reminder's time (home also says how soon it is due), then "Now" for a minute, then
      * "Overdue" with its time, or its date once a day late.
      */
     private fun reminderSubtitle(reminder: ReminderInfo): String {
@@ -285,7 +384,6 @@ internal class AtAGlanceWidgetRowLoader(
         val time = formatTime(reminder.dueMillis)
         return when {
             !reminder.hasTime -> reminderSchedule(reminder)
-            !isOverdue && !isNow -> "$time • ${relativeTime(reminder.dueMillis)}"
             sinceDue < DAY_MILLIS -> time
             else -> reminderSchedule(reminder)
         } + when {
@@ -319,15 +417,39 @@ internal class AtAGlanceWidgetRowLoader(
             } else {
                 string(R.string.home_missed_calls_count, NumberFormat.getIntegerInstance().format(calls.size))
             }
+        // As on home: with calls from several apps, a chip per app opens its newest call, phone app first.
+        val appCalls = calls.distinctBy { it.packageName }.sortedByDescending { it.fromPhoneApp }
+        val chips =
+            appCalls.takeIf { it.size > 1 }.orEmpty().map { call ->
+                AtAGlanceWidgetButton(
+                    tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.MISSED_CALLS, key = call.key, packageName = call.packageName),
+                    style = AtAGlanceWidgetButtonStyle.OUTLINED_CHIP,
+                    label = appLabel(call.packageName),
+                    appPackage = call.packageName,
+                )
+            }
+        // A single phone call gets the notification's call back button.
+        val callBack =
+            calls.singleOrNull()?.takeIf { it.fromPhoneApp && it.callBackIntent != null }?.let { call ->
+                AtAGlanceWidgetButton(
+                    tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.MISSED_CALL_BACK, key = call.key, packageName = call.packageName),
+                    style = AtAGlanceWidgetButtonStyle.CHIP,
+                    label = string(R.string.contact_method_call_label),
+                    icon = MaterialSymbols.Call,
+                )
+            }
         return listOf(
             AtAGlanceWidgetRow(
                 key = "missed-calls",
-                icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.PhoneMissed),
+                icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.PhoneMissed, AtAGlanceWidgetTint.ERROR),
                 title = title,
                 subtitle = calls.mapNotNull(::callerLabel).distinct().joinToString(", ").ifBlank { null },
                 tap =
                     AtAGlanceWidgetTap(AtAGlanceWidgetTapType.MISSED_CALLS, key = latest.key, packageName = latest.packageName),
                 dismiss = AtAGlanceWidgetDismissType.MISSED_CALLS,
+                chips = chips,
+                trailing = listOfNotNull(callBack),
+                dismissAtTop = chips.isNotEmpty(),
             ),
         )
     }
@@ -354,8 +476,10 @@ internal class AtAGlanceWidgetRowLoader(
                     key = notification.key,
                     packageName = notification.packageName,
                     title = notification.title ?: notification.text ?: appLabel,
-                    subtitle = listOfNotNull(notification.text.takeIf { notification.title != null }, appLabel).joinToString(" • "),
+                    subtitle = notification.text.takeIf { notification.title != null },
                     dismiss = AtAGlanceWidgetDismissType.APP_NOTIFICATION,
+                    footer = "$appLabel • ${notificationAge(notification.postTime)}",
+                    dismissAtTop = true,
                 )
             }
     }
@@ -368,18 +492,17 @@ internal class AtAGlanceWidgetRowLoader(
         val percentFormat = NumberFormat.getPercentInstance()
         return progress.map { notification ->
             val appLabel = appLabel(notification.packageName)
-            val status =
-                if (notification.progressMax > 0) {
-                    percentFormat.format(notification.progress.toDouble() / notification.progressMax)
-                } else {
-                    notification.shortCriticalText
-                }
+            // A Live Update without a bar, such as a ride's "Driver 3 min away", shows its short text instead.
+            val fraction =
+                notification.progress.toFloat().div(notification.progressMax).takeIf { notification.progressMax > 0 }
             notificationRow(
                 prefix = "progress",
                 key = notification.key,
                 packageName = notification.packageName,
                 title = notification.title ?: appLabel,
-                subtitle = listOfNotNull(status, notification.text ?: appLabel.takeIf { notification.title != null }).joinToString(" • "),
+                subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+                pill = fraction?.let { percentFormat.format(it.toDouble()) } ?: notification.shortCriticalText,
+                progress = fraction,
             )
         } +
             finished.map { notification ->
@@ -389,11 +512,8 @@ internal class AtAGlanceWidgetRowLoader(
                     key = notification.key,
                     packageName = notification.packageName,
                     title = notification.title ?: appLabel,
-                    subtitle =
-                        listOfNotNull(
-                            string(R.string.reminder_status_done),
-                            notification.text ?: appLabel.takeIf { notification.title != null },
-                        ).joinToString(" • "),
+                    subtitle = notification.text ?: appLabel.takeIf { notification.title != null },
+                    pill = string(R.string.reminder_status_done),
                     dismiss = AtAGlanceWidgetDismissType.FINISHED_PROGRESS,
                 )
             }
@@ -410,10 +530,9 @@ internal class AtAGlanceWidgetRowLoader(
                         key = workout.key,
                         packageName = workout.packageName,
                         title = workout.title ?: appLabel,
-                        subtitle =
-                            listOfNotNull(workout.stats ?: appLabel.takeIf { workout.title != null }, workout.duration)
-                                .joinToString(" • ")
-                                .ifBlank { null },
+                        subtitle = workout.stats ?: appLabel.takeIf { workout.title != null },
+                        largeSubtitle = true,
+                        pill = workout.duration,
                     )
                 }
             } else {
@@ -430,6 +549,7 @@ internal class AtAGlanceWidgetRowLoader(
                         title = weather.title ?: appLabel,
                         subtitle = weather.text ?: appLabel.takeIf { weather.title != null },
                         dismiss = AtAGlanceWidgetDismissType.WEATHER,
+                        dismissAtTop = true,
                     )
                 }
             } else {
@@ -521,7 +641,12 @@ internal class AtAGlanceWidgetRowLoader(
                 val isError = item.status == CustomInfoItem.ERROR
                 AtAGlanceWidgetRow(
                     key = "custom-info-${item.id}",
-                    icon = AtAGlanceWidgetIcon.Vector(if (isError) MaterialSymbols.ErrorOutline else MaterialSymbols.AutoAwesome),
+                    icon =
+                        if (isError) {
+                            AtAGlanceWidgetIcon.Vector(MaterialSymbols.ErrorOutline, AtAGlanceWidgetTint.ERROR)
+                        } else {
+                            AtAGlanceWidgetIcon.Vector(MaterialSymbols.AutoAwesome)
+                        },
                     title = item.title,
                     subtitle =
                         if (isError) {
@@ -531,6 +656,16 @@ internal class AtAGlanceWidgetRowLoader(
                         },
                     tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.CUSTOM_INFO, id = item.id.toLong()),
                     dismiss = AtAGlanceWidgetDismissType.CUSTOM_INFO,
+                    trailing =
+                        listOfNotNull(
+                            AtAGlanceWidgetButton(
+                                tap = AtAGlanceWidgetTap(AtAGlanceWidgetTapType.CUSTOM_INFO_RETRY, id = item.id.toLong()),
+                                style = AtAGlanceWidgetButtonStyle.TONAL,
+                                label = string(R.string.action_retry),
+                                icon = MaterialSymbols.Refresh,
+                                size = 40.dp,
+                            ).takeIf { isError },
+                        ),
                 )
             }
 
@@ -538,14 +673,9 @@ internal class AtAGlanceWidgetRowLoader(
     fun todayEventRows(): List<AtAGlanceWidgetRow> {
         val repository = CalendarRepository(context)
         if (!items.isShown(GlanceItem.TODAY_EVENTS) || !repository.hasPermission()) return emptyList()
-        val excluded = calendarPreferences.getExcludedEventIds()
-        val archived = calendarPreferences.getArchivedTodayEventIds()
-        val events =
-            repository.getTodayEvents()
-                .filterNot { it.eventId in excluded || it.eventId in archived }
-                .distinctBy { it.eventId }
-                .sortedBy { it.startMillis }
-                .filter { it.allDay || it.endMillis >= nowMillis }
+        val todayEvents = loadTodayGlanceEvents(repository, calendarPreferences, nowMillis)
+        todayEvents.nextVisibleAtMillis?.let(::changesAt)
+        val events = todayEvents.visible
         events.forEach { if (!it.allDay) changesAt(it.endMillis + 1_000L) }
         val todayLabel = string(R.string.calendar_relative_today)
         return events.map { event ->
@@ -553,16 +683,19 @@ internal class AtAGlanceWidgetRowLoader(
                 prefix = "today-event",
                 event = event,
                 subtitle = if (event.allDay) todayLabel else todayEventSchedule(event),
+                dismiss = AtAGlanceWidgetDismissType.TODAY_EVENT,
+                titleMaxLines = 2,
+                subtitleMaxLines = 1,
             )
         }
     }
 
-    /** As on home: the start time, then "Now" while the event is on, or how far off its start is. */
+    /** The start time, then "Now" while the event is on; unlike home, no "in 5 min". */
     private fun todayEventSchedule(event: CalendarEventInfo): String {
         val start = formatTime(event.startMillis)
         if (nowMillis in event.startMillis..event.endMillis) return "$start • ${string(R.string.calendar_relative_now)}"
         changesAt(event.startMillis)
-        return "$start • ${relativeTime(event.startMillis)}"
+        return start
     }
 
     private fun calendarEventRow(
@@ -570,6 +703,8 @@ internal class AtAGlanceWidgetRowLoader(
         event: CalendarEventInfo,
         subtitle: String,
         dismiss: AtAGlanceWidgetDismissType? = null,
+        titleMaxLines: Int = 1,
+        subtitleMaxLines: Int = Int.MAX_VALUE,
     ) = AtAGlanceWidgetRow(
         key = "$prefix-${event.eventId}",
         icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.CalendarMonth),
@@ -582,6 +717,8 @@ internal class AtAGlanceWidgetRowLoader(
                 packageName = calendarPreferences.getDefaultCalendarPackage(),
             ),
         dismiss = dismiss,
+        titleMaxLines = titleMaxLines,
+        subtitleMaxLines = subtitleMaxLines,
     )
 }
 

@@ -57,6 +57,67 @@ internal object AtAGlanceWidgetIcons {
 
     fun fallbackAppIcon(context: Context): Bitmap = vector(context, MaterialSymbols.Apps)
 
+    /** Home's low battery outline and nub, as a mask. */
+    @Synchronized
+    fun batteryOutline(context: Context): Bitmap {
+        val sizePx = iconSizePx(context)
+        return vectorBitmaps.getOrPut("battery-outline@$sizePx") {
+            renderBattery(sizePx, context.resources.displayMetrics.density, fillPercent = null)
+        }
+    }
+
+    /** Home's low battery fill for [percent], as a mask. */
+    @Synchronized
+    fun batteryFill(
+        context: Context,
+        percent: Int,
+    ): Bitmap {
+        val sizePx = iconSizePx(context)
+        return vectorBitmaps.getOrPut("battery-fill-$percent@$sizePx") {
+            renderBattery(sizePx, context.resources.displayMetrics.density, fillPercent = percent)
+        }
+    }
+
+    /** The same shapes as home's BatteryLevelIcon: the outline when [fillPercent] is null, else the fill. */
+    private fun renderBattery(
+        sizePx: Int,
+        density: Float,
+        fillPercent: Int?,
+    ): Bitmap {
+        val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ALPHA_8)
+        val canvas = Canvas(bitmap)
+        val size = sizePx.toFloat()
+        val stroke = 1.5f * density
+        val nubWidth = 2f * density
+        val bodyWidth = size - nubWidth - density
+        val bodyHeight = size * 0.5f
+        val top = (size - bodyHeight) / 2f
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        if (fillPercent == null) {
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = stroke
+            val radius = 3f * density
+            canvas.drawRoundRect(stroke / 2f, top, bodyWidth - stroke / 2f, top + bodyHeight, radius, radius, paint)
+            paint.style = Paint.Style.FILL
+            canvas.drawRoundRect(
+                bodyWidth,
+                top + bodyHeight * 0.3f,
+                bodyWidth + nubWidth,
+                top + bodyHeight * 0.7f,
+                density,
+                density,
+                paint,
+            )
+        } else {
+            val inset = stroke + 1.5f * density
+            // Keep a sliver visible at 0-1% so the icon never reads as an empty outline.
+            val fillWidth = (bodyWidth - inset * 2) * (fillPercent / 100f).coerceIn(0.08f, 1f)
+            val radius = minOf(1.5f * density, fillWidth / 2f)
+            canvas.drawRoundRect(inset, top + inset, inset + fillWidth, top + bodyHeight - inset, radius, radius, paint)
+        }
+        return bitmap
+    }
+
     private fun renderVector(
         vector: ImageVector,
         sizePx: Int,

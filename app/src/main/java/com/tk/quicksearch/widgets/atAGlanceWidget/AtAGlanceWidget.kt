@@ -13,18 +13,15 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
-import androidx.glance.ColorFilter
 import androidx.glance.ExperimentalGlanceApi
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
@@ -37,23 +34,17 @@ import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
-import androidx.glance.layout.Row
-import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
-import androidx.glance.layout.size
-import androidx.glance.layout.width
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.color.ColorProvider as DayNightColorProvider
-import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
-import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetColors
 import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.WidgetBitmapUtils
@@ -75,15 +66,28 @@ private const val DEFAULT_HEIGHT_DP = 110f
 /** Shared by the placed widget and the configure-screen preview so both render the same rows. */
 internal object AtAGlanceWidgetDimens {
     val ICON_SIZE = 24.dp
-    val ICON_TEXT_SPACING = 10.dp
+    val ICON_TEXT_SPACING = 12.dp
+    val TEXT_SPACING = 2.dp
+    val BUTTON_SPACING = 8.dp
+    val CHIP_TOP_SPACING = 6.dp
     val HORIZONTAL_PADDING = 16.dp
     val LIST_VERTICAL_PADDING = 4.dp
-    val ROW_VERTICAL_PADDING = 10.dp
+    val ROW_VERTICAL_PADDING = 12.dp
     val DIVIDER_HEIGHT = 1.dp
     val DISMISS_BUTTON_SIZE = 28.dp
     val DISMISS_ICON_SIZE = 16.dp
+    val HANG_UP_BUTTON_SIZE = 36.dp
+    val BUTTON_ICON_SIZE = 20.dp
+    val CHIP_ICON_SIZE = 16.dp
+
+    // Home's bodyMedium, bodySmall, bodyLarge, headlineSmall, labelMedium and labelSmall.
     val TITLE_FONT_SIZE = 14.sp
     val SUBTITLE_FONT_SIZE = 12.sp
+    val LARGE_TITLE_FONT_SIZE = 16.sp
+    val LARGE_SUBTITLE_FONT_SIZE = 20.sp
+    val CODE_FONT_SIZE = 24.sp
+    val LABEL_FONT_SIZE = 12.sp
+    val FOOTER_FONT_SIZE = 11.sp
     val EMPTY_DATE_FONT_SIZE = 16.sp
     const val DIVIDER_ALPHA = 0.15f
 
@@ -225,8 +229,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
         textScale: Float,
         horizontalPadding: Dp,
     ) {
-        val titleColor = DayNightColorProvider(day = dayColors.title, night = nightColors.title)
-        val subtitleColor = DayNightColorProvider(day = dayColors.body, night = nightColors.body)
+        val rowColors = AtAGlanceWidgetRowColors(dayColors, nightColors)
         val dividerColor =
             DayNightColorProvider(
                 day = dayColors.title.copy(alpha = AtAGlanceWidgetDimens.DIVIDER_ALPHA),
@@ -244,7 +247,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
         ) {
             items(rows, itemId = { it.key.hashCode().toLong() }) { row ->
                 Column(modifier = GlanceModifier.fillMaxWidth()) {
-                    GlanceRow(context, row, titleColor, subtitleColor, textScale)
+                    AtAGlanceWidgetRowContent(context, row, rowColors, textScale)
                     if (row.key != lastKey) {
                         Box(
                             modifier =
@@ -255,110 +258,6 @@ class AtAGlanceWidget : GlanceAppWidget() {
                         ) {}
                     }
                 }
-            }
-        }
-    }
-
-    @Composable
-    private fun GlanceRow(
-        context: Context,
-        row: AtAGlanceWidgetRow,
-        titleColor: androidx.glance.unit.ColorProvider,
-        subtitleColor: androidx.glance.unit.ColorProvider,
-        textScale: Float,
-    ) {
-        Row(
-            modifier =
-                GlanceModifier
-                    .fillMaxWidth()
-                    .padding(vertical = AtAGlanceWidgetDimens.ROW_VERTICAL_PADDING)
-                    .clickable(
-                        onClick = actionStartActivity(AtAGlanceWidgetActionActivity.createIntent(context, row)),
-                        rippleOverride = android.R.color.transparent,
-                    ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            RowIcon(context, row.icon, titleColor)
-            Spacer(modifier = GlanceModifier.width(AtAGlanceWidgetDimens.ICON_TEXT_SPACING))
-            Column(modifier = GlanceModifier.defaultWeight()) {
-                Text(
-                    text = row.title,
-                    style =
-                        TextStyle(
-                            color = titleColor,
-                            fontSize = AtAGlanceWidgetDimens.TITLE_FONT_SIZE * textScale,
-                            fontWeight = FontWeight.Medium,
-                        ),
-                )
-                row.subtitle?.takeIf { it.isNotBlank() }?.let { subtitle ->
-                    Text(
-                        text = subtitle,
-                        style = TextStyle(color = subtitleColor, fontSize = AtAGlanceWidgetDimens.SUBTITLE_FONT_SIZE * textScale),
-                    )
-                }
-            }
-            if (row.dismiss != null) DismissButton(context, row, subtitleColor)
-        }
-    }
-
-    /** Home's close button; the nested clickable keeps its tap from also opening the row. */
-    @Composable
-    private fun DismissButton(
-        context: Context,
-        row: AtAGlanceWidgetRow,
-        tint: androidx.glance.unit.ColorProvider,
-    ) {
-        Box(
-            modifier =
-                GlanceModifier
-                    .size(AtAGlanceWidgetDimens.DISMISS_BUTTON_SIZE)
-                    .cornerRadius(AtAGlanceWidgetDimens.DISMISS_BUTTON_SIZE / 2)
-                    .clickable(
-                        onClick =
-                            actionRunCallback<AtAGlanceWidgetDismissAction>(AtAGlanceWidgetDismissAction.parameters(row)),
-                        rippleOverride = android.R.color.transparent,
-                    ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Image(
-                provider = ImageProvider(AtAGlanceWidgetIcons.vector(context, MaterialSymbols.Close)),
-                contentDescription = context.getString(R.string.common_close),
-                modifier = GlanceModifier.size(AtAGlanceWidgetDimens.DISMISS_ICON_SIZE),
-                colorFilter = ColorFilter.tint(tint),
-            )
-        }
-    }
-
-    @Composable
-    private fun RowIcon(
-        context: Context,
-        icon: AtAGlanceWidgetIcon,
-        tint: androidx.glance.unit.ColorProvider,
-    ) {
-        val modifier = GlanceModifier.size(AtAGlanceWidgetDimens.ICON_SIZE)
-        when (icon) {
-            is AtAGlanceWidgetIcon.Vector ->
-                Image(
-                    provider = ImageProvider(AtAGlanceWidgetIcons.vector(context, icon.vector)),
-                    contentDescription = null,
-                    modifier = modifier,
-                    colorFilter = ColorFilter.tint(tint),
-                )
-            is AtAGlanceWidgetIcon.Drawable ->
-                Image(
-                    provider = ImageProvider(icon.resId),
-                    contentDescription = null,
-                    modifier = modifier,
-                    colorFilter = ColorFilter.tint(tint),
-                )
-            is AtAGlanceWidgetIcon.App -> {
-                val appIcon = AtAGlanceWidgetIcons.app(context, icon.packageName)
-                Image(
-                    provider = ImageProvider(appIcon ?: AtAGlanceWidgetIcons.fallbackAppIcon(context)),
-                    contentDescription = null,
-                    modifier = modifier,
-                    colorFilter = if (appIcon == null) ColorFilter.tint(tint) else null,
-                )
             }
         }
     }

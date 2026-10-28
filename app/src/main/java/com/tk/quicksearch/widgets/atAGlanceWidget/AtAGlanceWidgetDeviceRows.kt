@@ -37,20 +37,33 @@ internal fun AtAGlanceWidgetRowLoader.batteryStatus(): BatteryStatus? =
 
 private fun formatPercent(percent: Int): String = NumberFormat.getPercentInstance().format(percent / 100.0)
 
-private fun AtAGlanceWidgetRowLoader.deviceRow(
+private fun deviceRow(
     type: AtAGlanceWidgetTapType,
-    icon: ImageVector,
+    icon: AtAGlanceWidgetIcon,
     title: String,
     subtitle: String? = null,
     dismiss: AtAGlanceWidgetDismissType? = null,
+    tappable: Boolean = true,
+    titleStyle: AtAGlanceWidgetTitleStyle = AtAGlanceWidgetTitleStyle.BODY,
+    pill: AtAGlanceWidgetPill? = null,
 ) = AtAGlanceWidgetRow(
     key = type.name,
-    icon = AtAGlanceWidgetIcon.Vector(icon),
+    icon = icon,
     title = title,
     subtitle = subtitle,
     tap = AtAGlanceWidgetTap(type),
     dismiss = dismiss,
+    tappable = tappable,
+    titleStyle = titleStyle,
+    pill = pill,
 )
+
+/** A device state that is on, with home's "Turn off" pill. */
+private fun AtAGlanceWidgetRowLoader.turnOffRow(
+    type: AtAGlanceWidgetTapType,
+    icon: ImageVector,
+    title: Int,
+) = deviceRow(type, AtAGlanceWidgetIcon.Vector(icon), string(title), pill = AtAGlanceWidgetPill(string(R.string.home_turn_off)))
 
 internal fun AtAGlanceWidgetRowLoader.lowBatteryRows(): List<AtAGlanceWidgetRow> {
     if (!items.isShown(GlanceItem.LOW_BATTERY)) return emptyList()
@@ -69,12 +82,14 @@ internal fun AtAGlanceWidgetRowLoader.lowBatteryRows(): List<AtAGlanceWidgetRow>
     return listOf(
         deviceRow(
             type = AtAGlanceWidgetTapType.LOW_BATTERY,
-            icon = MaterialSymbols.BatteryAlert,
+            icon = AtAGlanceWidgetIcon.Battery(battery.percent, isCritical),
             title =
                 string(
                     if (isCritical) R.string.home_critical_battery_title else R.string.settings_at_a_glance_low_battery_title,
                 ),
-            subtitle = "${formatPercent(battery.percent)} • $detail",
+            subtitle = detail,
+            titleStyle = if (isCritical) AtAGlanceWidgetTitleStyle.CRITICAL else AtAGlanceWidgetTitleStyle.BODY,
+            pill = AtAGlanceWidgetPill(formatPercent(battery.percent), AtAGlanceWidgetPillStyle.ERROR),
         ),
     )
 }
@@ -90,7 +105,7 @@ internal fun AtAGlanceWidgetRowLoader.wifiSignInRows(): List<AtAGlanceWidgetRow>
     return listOf(
         deviceRow(
             AtAGlanceWidgetTapType.WIFI_SIGN_IN,
-            MaterialSymbols.WifiPassword,
+            AtAGlanceWidgetIcon.Vector(MaterialSymbols.WifiPassword),
             string(R.string.home_wifi_sign_in),
             dismiss = AtAGlanceWidgetDismissType.WIFI_SIGN_IN,
         ),
@@ -106,25 +121,19 @@ internal fun AtAGlanceWidgetRowLoader.deviceStateRows(): List<AtAGlanceWidgetRow
             notificationManager != null &&
             isDoNotDisturbOn(notificationManager.currentInterruptionFilter)
         ) {
-            add(deviceRow(AtAGlanceWidgetTapType.DO_NOT_DISTURB, MaterialSymbols.DoNotDisturbOn, string(R.string.home_dnd_on)))
+            add(turnOffRow(AtAGlanceWidgetTapType.DO_NOT_DISTURB, MaterialSymbols.DoNotDisturbOn, R.string.home_dnd_on))
         }
         if (items.isShown(GlanceItem.AIRPLANE_MODE) && isAirplaneModeOn(context)) {
-            add(
-                deviceRow(
-                    AtAGlanceWidgetTapType.AIRPLANE_MODE,
-                    MaterialSymbols.AirplanemodeActive,
-                    string(R.string.home_airplane_mode_on),
-                ),
-            )
+            add(turnOffRow(AtAGlanceWidgetTapType.AIRPLANE_MODE, MaterialSymbols.AirplanemodeActive, R.string.home_airplane_mode_on))
         }
         if (items.isShown(GlanceItem.HOTSPOT)) {
             val stateIntent = runCatching { context.registerReceiver(null, IntentFilter(ACTION_WIFI_AP_STATE_CHANGED)) }.getOrNull()
             if (isHotspotOn(context, stateIntent)) {
-                add(deviceRow(AtAGlanceWidgetTapType.HOTSPOT, MaterialSymbols.WifiTethering, string(R.string.home_hotspot_on)))
+                add(turnOffRow(AtAGlanceWidgetTapType.HOTSPOT, MaterialSymbols.WifiTethering, R.string.home_hotspot_on))
             }
         }
         if (items.isShown(GlanceItem.FLASHLIGHT) && AtAGlanceWidgetUpdater.litCameraIds.value.isNotEmpty()) {
-            add(deviceRow(AtAGlanceWidgetTapType.FLASHLIGHT, MaterialSymbols.FlashlightOn, string(R.string.home_flashlight_on)))
+            add(turnOffRow(AtAGlanceWidgetTapType.FLASHLIGHT, MaterialSymbols.FlashlightOn, R.string.home_flashlight_on))
         }
         addAll(chargingRows())
         addAll(lowStorageRows())
@@ -152,10 +161,12 @@ private fun AtAGlanceWidgetRowLoader.chargingRows(): List<AtAGlanceWidgetRow> {
     return listOf(
         deviceRow(
             type = AtAGlanceWidgetTapType.CHARGING,
-            icon = if (battery.isFull) MaterialSymbols.BatteryFull else MaterialSymbols.BatteryChargingFull,
+            icon = AtAGlanceWidgetIcon.Vector(if (battery.isFull) MaterialSymbols.BatteryFull else MaterialSymbols.BatteryChargingFull),
             title = title,
-            subtitle = listOfNotNull(formatPercent(battery.percent), timeToFull).joinToString(" • "),
+            subtitle = timeToFull,
             dismiss = AtAGlanceWidgetDismissType.CHARGING,
+            tappable = false,
+            pill = AtAGlanceWidgetPill(formatPercent(battery.percent)),
         ),
     )
 }
@@ -167,7 +178,7 @@ private fun AtAGlanceWidgetRowLoader.lowStorageRows(): List<AtAGlanceWidgetRow> 
     return listOf(
         deviceRow(
             type = AtAGlanceWidgetTapType.LOW_STORAGE,
-            icon = MaterialSymbols.Storage,
+            icon = AtAGlanceWidgetIcon.Vector(MaterialSymbols.Storage, AtAGlanceWidgetTint.ERROR),
             title = string(R.string.home_storage_almost_full),
             subtitle =
                 string(

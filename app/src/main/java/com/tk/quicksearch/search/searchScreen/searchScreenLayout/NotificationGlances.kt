@@ -327,7 +327,7 @@ private fun TimerActionButton(action: GlanceNotificationAction) {
 }
 
 /** A Material icon for a clock app button that has none, matched by its (English) label. */
-private fun timerActionIcon(title: String): ImageVector? =
+internal fun timerActionIcon(title: String): ImageVector? =
     when (title.trim().lowercase()) {
         "pause" -> MaterialSymbols.Pause
         "resume", "start", "play", "continue" -> MaterialSymbols.PlayArrow
@@ -418,7 +418,7 @@ internal fun OngoingCallRow(
 /** Ends the current phone call; false when it can't, such as without the permission. */
 @Suppress("DEPRECATION")
 @SuppressLint("MissingPermission")
-private fun endCallThroughTelecom(context: Context): Boolean =
+internal fun endCallThroughTelecom(context: Context): Boolean =
     runCatching { context.getSystemService(TelecomManager::class.java)?.endCall() == true }.getOrDefault(false)
 
 /** A workout in progress with its live stats and the duration the app last posted. */

@@ -65,6 +65,25 @@ class CalendarPreferences(
         return pinLongItem(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS, eventId)
     }
 
+    /** Today's events dismissed early, mapped to when they show on home again; cleared with the archive each day. */
+    fun getSnoozedTodayEvents(): Map<Long, Long> {
+        clearArchivedTodayEventsIfStale()
+        return getStringSet(BasePreferences.KEY_SNOOZED_TODAY_CALENDAR_EVENTS).mapNotNull { entry ->
+            val id = entry.substringBefore(':').toLongOrNull() ?: return@mapNotNull null
+            val until = entry.substringAfter(':').toLongOrNull() ?: return@mapNotNull null
+            id to until
+        }.toMap()
+    }
+
+    fun snoozeTodayEvent(eventId: Long, untilMillis: Long) {
+        clearArchivedTodayEventsIfStale()
+        val entries = getSnoozedTodayEvents() + (eventId to untilMillis)
+        prefs.edit()
+            .putString(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_DATE, todayDateKey())
+            .putStringSet(BasePreferences.KEY_SNOOZED_TODAY_CALENDAR_EVENTS, entries.map { (id, until) -> "$id:$until" }.toSet())
+            .apply()
+    }
+
     /** Calendar events created inside Quick Search before reminders replaced them; read only to migrate them. */
     fun getCustomEventsJson(): String = prefs.getString(BasePreferences.KEY_CUSTOM_CALENDAR_EVENTS_DATA, null).orEmpty()
 
@@ -80,6 +99,7 @@ class CalendarPreferences(
         prefs.edit()
             .remove(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_DATE)
             .putStringSet(BasePreferences.KEY_ARCHIVED_TODAY_CALENDAR_EVENT_IDS, emptySet())
+            .putStringSet(BasePreferences.KEY_SNOOZED_TODAY_CALENDAR_EVENTS, emptySet())
             .apply()
     }
 

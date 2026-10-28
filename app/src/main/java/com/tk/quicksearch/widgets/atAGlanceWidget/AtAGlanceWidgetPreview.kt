@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -123,7 +122,7 @@ private fun PreviewRow(
         modifier = Modifier.fillMaxWidth().padding(vertical = AtAGlanceWidgetDimens.ROW_VERTICAL_PADDING),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PreviewIcon(row.icon, colors.title)
+        PreviewIcon(row.icon, colors)
         Spacer(modifier = Modifier.width(AtAGlanceWidgetDimens.ICON_TEXT_SPACING))
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -132,10 +131,10 @@ private fun PreviewRow(
                     TextStyle(
                         color = colors.title,
                         fontSize = AtAGlanceWidgetDimens.TITLE_FONT_SIZE * textScale,
-                        fontWeight = FontWeight.Medium,
                     ),
             )
             row.subtitle?.takeIf { it.isNotBlank() }?.let { subtitle ->
+                Spacer(modifier = Modifier.height(AtAGlanceWidgetDimens.TEXT_SPACING))
                 Text(
                     text = subtitle,
                     style = TextStyle(color = colors.body, fontSize = AtAGlanceWidgetDimens.SUBTITLE_FONT_SIZE * textScale),
@@ -144,7 +143,11 @@ private fun PreviewRow(
         }
         if (row.dismiss != null) {
             Box(modifier = Modifier.size(AtAGlanceWidgetDimens.DISMISS_BUTTON_SIZE), contentAlignment = Alignment.Center) {
-                PreviewIcon(AtAGlanceWidgetIcon.Vector(MaterialSymbols.Close), colors.body, AtAGlanceWidgetDimens.DISMISS_ICON_SIZE)
+                PreviewIcon(
+                    AtAGlanceWidgetIcon.Vector(MaterialSymbols.Close, AtAGlanceWidgetTint.SUBTITLE),
+                    colors,
+                    AtAGlanceWidgetDimens.DISMISS_ICON_SIZE,
+                )
             }
         }
     }
@@ -153,25 +156,31 @@ private fun PreviewRow(
 @Composable
 private fun PreviewIcon(
     icon: AtAGlanceWidgetIcon,
-    tint: Color,
+    colors: NoteWidgetColors,
     size: Dp = AtAGlanceWidgetDimens.ICON_SIZE,
 ) {
     val context = LocalContext.current
     val modifier = Modifier.size(size)
+    fun tint(tint: AtAGlanceWidgetTint) =
+        when (tint) {
+            AtAGlanceWidgetTint.TITLE -> colors.title
+            AtAGlanceWidgetTint.SUBTITLE -> colors.body
+            AtAGlanceWidgetTint.ERROR -> atAGlanceWidgetErrorScheme(colors).error
+        }
     when (icon) {
         is AtAGlanceWidgetIcon.Vector ->
             Image(
                 bitmap = AtAGlanceWidgetIcons.vector(context, icon.vector).asImageBitmap(),
                 contentDescription = null,
                 modifier = modifier,
-                colorFilter = ColorFilter.tint(tint),
+                colorFilter = ColorFilter.tint(tint(icon.tint)),
             )
         is AtAGlanceWidgetIcon.Drawable ->
             Image(
                 painter = painterResource(icon.resId),
                 contentDescription = null,
                 modifier = modifier,
-                colorFilter = ColorFilter.tint(tint),
+                colorFilter = ColorFilter.tint(tint(icon.tint)),
             )
         is AtAGlanceWidgetIcon.App -> {
             val appIcon = AtAGlanceWidgetIcons.app(context, icon.packageName)
@@ -179,9 +188,11 @@ private fun PreviewIcon(
                 bitmap = (appIcon ?: AtAGlanceWidgetIcons.fallbackAppIcon(context)).asImageBitmap(),
                 contentDescription = null,
                 modifier = modifier,
-                colorFilter = if (appIcon == null) ColorFilter.tint(tint) else null,
+                colorFilter = if (appIcon == null) ColorFilter.tint(colors.body) else null,
             )
         }
+        // The sample rows have no battery row.
+        is AtAGlanceWidgetIcon.Battery -> Unit
     }
 }
 
@@ -197,9 +208,10 @@ private fun atAGlanceWidgetSampleRows(context: Context): List<AtAGlanceWidgetRow
         subtitle: Int,
         tap: AtAGlanceWidgetTapType,
         dismiss: AtAGlanceWidgetDismissType,
+        tint: AtAGlanceWidgetTint = AtAGlanceWidgetTint.TITLE,
     ) = AtAGlanceWidgetRow(
         key = key,
-        icon = AtAGlanceWidgetIcon.Drawable(icon),
+        icon = AtAGlanceWidgetIcon.Drawable(icon, tint),
         title = context.getString(title),
         subtitle = context.getString(subtitle),
         tap = AtAGlanceWidgetTap(tap),
@@ -229,6 +241,7 @@ private fun atAGlanceWidgetSampleRows(context: Context): List<AtAGlanceWidgetRow
             R.string.widget_at_a_glance_sample_caller,
             AtAGlanceWidgetTapType.MISSED_CALLS,
             AtAGlanceWidgetDismissType.MISSED_CALLS,
+            AtAGlanceWidgetTint.ERROR,
         ),
     )
 }
