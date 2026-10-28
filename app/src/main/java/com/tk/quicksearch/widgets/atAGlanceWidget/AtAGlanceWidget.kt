@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.SizeF
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -88,7 +89,7 @@ internal object AtAGlanceWidgetDimens {
     val CODE_FONT_SIZE = 24.sp
     val LABEL_FONT_SIZE = 12.sp
     val FOOTER_FONT_SIZE = 11.sp
-    val EMPTY_DATE_FONT_SIZE = 16.sp
+    val EMPTY_DATE_FONT_SIZE = 22.sp
     const val DIVIDER_ALPHA = 0.15f
 
     /** Rows sit close to the edges, and closer still without a card to inset them from. */
@@ -182,7 +183,9 @@ class AtAGlanceWidget : GlanceAppWidget() {
         val isBlank = snapshot.rows.isEmpty() && !config.showEmptyDate
         val backgroundModifier =
             when {
-                config.backgroundAlpha <= 0f || isBlank -> GlanceModifier
+                // Launchers reapply an update onto the views they already have, so a missing background
+                // would leave the old card showing; clear it explicitly instead.
+                config.backgroundAlpha <= 0f || isBlank -> GlanceModifier.background(Color.Transparent)
                 // Day/night colors let the launcher switch the card with the system theme.
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
                     GlanceModifier
@@ -262,7 +265,10 @@ class AtAGlanceWidget : GlanceAppWidget() {
         }
     }
 
-    /** Nothing to show, so today's day and date, or nothing when [showDate] is off; a tap opens Quick Search. */
+    /**
+     * Nothing to show, so today's day and date, where a tap opens Quick Search. With [showDate] off the
+     * widget stays empty and ignores taps.
+     */
     @Composable
     private fun EmptyContent(
         context: Context,
@@ -271,6 +277,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
         textScale: Float,
         showDate: Boolean,
     ) {
+        if (!showDate) return
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         Box(
             modifier =
@@ -284,7 +291,6 @@ class AtAGlanceWidget : GlanceAppWidget() {
                     },
             contentAlignment = Alignment.Center,
         ) {
-            if (!showDate) return@Box
             Text(
                 text = atAGlanceWidgetEmptyDate(),
                 style =
