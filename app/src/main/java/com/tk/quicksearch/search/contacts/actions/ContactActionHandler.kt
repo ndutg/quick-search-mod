@@ -352,6 +352,17 @@ class ContactActionHandler(
             ContactButtonAction.SMS -> performSms(number)
             ContactButtonAction.WHATSAPP_MESSAGE ->
                 ContactIntentHelpers.openWhatsAppChat(context, number) { resId -> showToastCallback(resId) }
+            ContactButtonAction.WHATSAPP_BUSINESS_MESSAGE -> {
+                val method =
+                    ContactButtonResolver
+                        .findMethod(contactInfo, resolvedAction, number)
+                        ?.takeIf { it.dataId != null }
+                if (method != null) {
+                    handleContactMethod(contactInfo, method, trackHistory = false)
+                } else {
+                    ContactIntentHelpers.openWhatsAppBusinessChat(context, number) { resId -> showToastCallback(resId) }
+                }
+            }
             ContactButtonAction.TELEGRAM_MESSAGE ->
                 ContactIntentHelpers.openTelegramChat(context, number) { resId -> showToastCallback(resId) }
             ContactButtonAction.SIGNAL_MESSAGE ->
@@ -567,7 +578,6 @@ class ContactActionHandler(
         val ACTIONS_WITHOUT_DATA_ID =
             setOf(
                 ContactButtonAction.EMAIL,
-                ContactButtonAction.WHATSAPP_BUSINESS_MESSAGE,
                 ContactButtonAction.TELEGRAM_VIDEO_CALL,
             )
     }

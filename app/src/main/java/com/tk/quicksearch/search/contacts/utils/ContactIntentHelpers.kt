@@ -59,6 +59,17 @@ object ContactIntentHelpers {
         onShowToast: ((Int) -> Unit)? = null,
     ) = WhatsAppActions.openWhatsAppChat(context, phoneNumber, onShowToast)
 
+    fun openWhatsAppBusinessChat(
+        context: android.app.Application,
+        phoneNumber: String,
+        onShowToast: ((Int) -> Unit)? = null,
+    ) = WhatsAppActions.openWhatsAppChat(
+        context,
+        phoneNumber,
+        onShowToast,
+        packageName = com.tk.quicksearch.shared.util.PackageConstants.WHATSAPP_BUSINESS_PACKAGE,
+    )
+
     fun openWhatsAppCall(
         context: android.app.Application,
         dataId: Long?,
