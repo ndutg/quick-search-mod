@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,6 +58,8 @@ import com.tk.quicksearch.shared.util.CrashLogManager
 import com.tk.quicksearch.widgets.searchWidget.SearchWidget
 import com.tk.quicksearch.widgets.searchWidget.MicAction
 import com.tk.quicksearch.widgets.searchWidget.VoiceSearchHandler
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -302,7 +305,13 @@ open class MainActivity : FragmentActivity() {
 
     private fun setupContent() {
         setContent {
-            val uiState by searchViewModel.uiState.collectAsStateWithLifecycle()
+            val rootStateFlow =
+                remember {
+                    searchViewModel.uiState.map(MainRootState::from).distinctUntilChanged()
+                }
+            val uiState by rootStateFlow.collectAsStateWithLifecycle(
+                initialValue = MainRootState.from(searchViewModel.uiState.value),
+            )
             LaunchedEffect(uiState.showInRecents) {
                 updateRecentsVisibility(showInRecents = uiState.showInRecents)
             }
@@ -377,16 +386,8 @@ open class MainActivity : FragmentActivity() {
                         }
                     }
 
-                    LaunchedEffect(
-                        uiState.recentApps,
-                        uiState.pinnedApps,
-                        uiState.appSuggestionsEnabled,
-                    ) {
-                        val suggestionsReady =
-                            !uiState.appSuggestionsEnabled ||
-                                uiState.recentApps.isNotEmpty() ||
-                                uiState.pinnedApps.isNotEmpty()
-                        if (suggestionsReady && !hasSuggestionsReadyTraced) {
+                    LaunchedEffect(uiState.appSuggestionsReady) {
+                        if (uiState.appSuggestionsReady && !hasSuggestionsReadyTraced) {
                             hasSuggestionsReadyTraced = true
                             Trace.beginSection(TRACE_SUGGESTIONS_READY)
                             Trace.endSection()
@@ -398,19 +399,15 @@ open class MainActivity : FragmentActivity() {
                         uiState.startupBackgroundPreviewPath,
                         uiState.wallpaperAvailable,
                         uiState.backgroundSource,
-                        uiState.recentApps,
-                        uiState.pinnedApps,
+                        uiState.appSuggestionsReady,
                     ) {
                         val backgroundReady =
                             uiState.backgroundSource == com.tk.quicksearch.search.core.BackgroundSource.THEME ||
                                 uiState.startupBackgroundPreviewPath != null ||
                                 uiState.wallpaperAvailable
-                        val suggestionsReady =
-                            !uiState.appSuggestionsEnabled ||
-                                uiState.recentApps.isNotEmpty() ||
-                                uiState.pinnedApps.isNotEmpty()
                         val ready =
-                            uiState.isStartupCoreSurfaceReady || (backgroundReady && suggestionsReady)
+                            uiState.isStartupCoreSurfaceReady ||
+                                (backgroundReady && uiState.appSuggestionsReady)
                         if (ready && !hasCoreSurfaceReadyTraced) {
                             hasCoreSurfaceReadyTraced = true
                             searchViewModel.markStartupCoreSurfaceReady()

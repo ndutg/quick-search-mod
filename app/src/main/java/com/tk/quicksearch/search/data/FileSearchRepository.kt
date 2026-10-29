@@ -1,5 +1,6 @@
 package com.tk.quicksearch.search.data
 
+import android.app.ActivityManager
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -25,6 +26,9 @@ class FileSearchRepository(
 ) {
     private val contentResolver = context.contentResolver
     private val recentFilesByUri = buildRecentFilesCache()
+    private val isLowRamDevice by lazy {
+        context.getSystemService(ActivityManager::class.java)?.isLowRamDevice == true
+    }
 
     // The newest files, which fuzzy search scores on every keystroke; read once per typing session
     // rather than scanning MediaStore again each time.
@@ -82,6 +86,7 @@ class FileSearchRepository(
     fun refreshFilesProviderSnapshot(): Boolean {
         if (!hasPermission()) return false
         synchronized(this) { recentFilesSnapshotAtMillis = 0L }
+        FileNameIndex.invalidate()
 
         val projection = arrayOf(MediaStore.Files.FileColumns._ID)
         return runCatching {
@@ -180,6 +185,8 @@ class FileSearchRepository(
 
         val queryTokens = if (query.isBlank()) emptyList() else normalizeQueryTokens(query)
         if (queryTokens.isEmpty() && extension == null) return emptyList()
+        searchIndexedFiles(queryTokens, extension, foldersOnly = false, limit, cancellationSignal)
+            ?.let { return it }
         val nameSelection =
             if (queryTokens.isEmpty()) {
                 null
@@ -245,6 +252,8 @@ class FileSearchRepository(
 
         val queryTokens = normalizeQueryTokens(query)
         if (queryTokens.isEmpty()) return emptyList()
+        searchIndexedFiles(queryTokens, extension = null, foldersOnly = true, limit, cancellationSignal = null)
+            ?.let { return it }
         val displayNameTokenSelection =
             queryTokens.joinToString(" AND ") {
                 "${MediaStore.Files.FileColumns.DISPLAY_NAME} GLOB ?"
@@ -337,6 +346,38 @@ class FileSearchRepository(
             recentFilesSnapshotAtMillis = now
         }
         return files
+    }
+
+    /** Matches names in memory, then reads full rows for matched ids; null falls back to a provider scan. */
+    private fun searchIndexedFiles(
+        queryTokens: List<String>,
+        extension: String?,
+        foldersOnly: Boolean,
+        limit: Int,
+        cancellationSignal: CancellationSignal?,
+    ): List<DeviceFile>? {
+        if (isLowRamDevice) return null
+        val uri = getFilesContentUri()
+        val index = FileNameIndex.get(contentResolver, uri) ?: return null
+        val ids = index.matchingIds(queryTokens, extension, foldersOnly, limit, cancellationSignal)
+        if (ids.isEmpty()) return emptyList()
+
+        val filesById = HashMap<Long, DeviceFile>(ids.size)
+        ids.chunked(BATCH_ID_QUERY_CHUNK_SIZE).forEach { chunkIds ->
+            val selection = "${MediaStore.Files.FileColumns._ID} IN (${chunkIds.joinToString(",")})"
+            contentResolver
+                .query(uri, FILE_PROJECTION, selection, null, null, cancellationSignal)
+                ?.use { cursor ->
+                    val columnIndices = getColumnIndices(cursor)
+                    while (cursor.moveToNext()) {
+                        val file = createDeviceFileFromCursor(cursor, uri, columnIndices) ?: continue
+                        filesById[cursor.getLong(columnIndices.idIndex)] = file
+                    }
+                }
+        }
+        val results = ids.mapNotNull(filesById::get)
+        cacheFiles(results)
+        return results
     }
 
     private fun normalizeQuery(query: String): String =
