@@ -331,6 +331,7 @@ fun OverlayRoot(
                                         initialValue = null,
                                         key1 = uiState.backgroundSource,
                                         key2 = uiState.customImageUri,
+                                        key3 = WallpaperUtils.wallpaperDivisorForBlur(uiState.wallpaperBlurRadius),
                                 ) {
                                         value =
                                                 if (
@@ -340,6 +341,9 @@ fun OverlayRoot(
                                                         WallpaperUtils.getOverlayCustomImageBitmap(
                                                                 context,
                                                                 uiState.customImageUri,
+                                                                WallpaperUtils.wallpaperDivisorForBlur(
+                                                                        uiState.wallpaperBlurRadius,
+                                                                ),
                                                         )
                                                 } else {
                                                         null

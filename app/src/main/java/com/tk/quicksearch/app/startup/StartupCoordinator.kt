@@ -160,6 +160,12 @@ class StartupCoordinator(
         )
     }
 
+    private fun preloadCustomImageDivisor(): Int =
+        minOf(
+            WallpaperUtils.wallpaperDivisorForBlur(userPreferences.getWallpaperBlurRadius(isDarkMode = false)),
+            WallpaperUtils.wallpaperDivisorForBlur(userPreferences.getWallpaperBlurRadius(isDarkMode = true)),
+        )
+
     private fun scheduleBackgroundPreload() {
         lifecycleScope.launch(Dispatchers.IO) {
             val backgroundSource = userPreferences.getBackgroundSource()
@@ -172,6 +178,7 @@ class StartupCoordinator(
                         WallpaperUtils.preloadCustomImage(
                             context = context,
                             uriString = userPreferences.getCustomImageUri(),
+                            divisor = preloadCustomImageDivisor(),
                         )
                     BackgroundSource.THEME -> Unit
                 }

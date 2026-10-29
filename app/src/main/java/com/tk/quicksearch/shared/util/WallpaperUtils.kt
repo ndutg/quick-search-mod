@@ -45,6 +45,9 @@ object WallpaperUtils {
     private var cachedOverlayCustomUri: String? = null
     @Volatile
     private var cachedOverlayCustomBitmap: Bitmap? = null
+    /** How much [cachedOverlayCustomBitmap] was scaled down from its bounded decode; see [wallpaperDivisorForBlur]. */
+    @Volatile
+    private var cachedOverlayCustomDivisor: Int = 1
     @Volatile
     private var cachedWallpaperAppearance: ImageAppearance? = null
     @Volatile
@@ -141,6 +144,8 @@ object WallpaperUtils {
      */
     fun wallpaperDivisorForBlur(blurRadiusDp: Float): Int =
         when {
+            // Compose blur only renders from Android 12; before that the image is drawn sharp.
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.S -> 1
             blurRadiusDp >= 16f -> 4
             blurRadiusDp >= 8f -> 2
             else -> 1
@@ -152,6 +157,13 @@ object WallpaperUtils {
      */
     fun getCachedWallpaperBitmap(maxDivisor: Int = 1): Bitmap? =
         cachedBitmap?.takeIf { cachedBitmapDivisor <= maxDivisor }
+
+    /** Gets the cached custom background synchronously, or null when [uriString] isn't the cached one. */
+    fun getCachedOverlayCustomImageBitmap(uriString: String?): ImageBitmap? {
+        val normalized = uriString?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val cached = cachedOverlayCustomBitmap ?: return null
+        return cached.takeIf { cachedOverlayCustomUri == normalized }?.asImageBitmap()
+    }
 
     fun copyImageToInternalStorage(context: Context, sourceUri: Uri): String? =
         runCatching {
@@ -186,6 +198,7 @@ object WallpaperUtils {
         invalidateWallpaperCache()
         cachedOverlayCustomUri = null
         cachedOverlayCustomBitmap = null
+        cachedOverlayCustomDivisor = 1
         cachedOverlayCustomAppearanceUri = null
         cachedOverlayCustomAppearance = null
     }
@@ -304,34 +317,63 @@ object WallpaperUtils {
     suspend fun preloadCustomImage(
         context: Context,
         uriString: String?,
+        divisor: Int = 1,
     ) {
         val normalized = uriString?.trim()?.takeIf { it.isNotEmpty() } ?: return
         if (cachedOverlayCustomUri == normalized && cachedOverlayCustomBitmap != null) return
-        getOverlayCustomImageBitmap(context, normalized)
+        getOverlayCustomImageBitmap(context, normalized, divisor)
     }
 
+    /**
+     * Loads the custom background scaled down by [divisor] and keeps only that one in memory, the
+     * same way [getWallpaperBitmapResult] does for the system wallpaper.
+     */
     suspend fun getOverlayCustomImageBitmap(
         context: Context,
         uriString: String?,
+        divisor: Int = 1,
     ): ImageBitmap? =
         customImageBitmapMutex.withLock {
-            getOverlayCustomImageBitmapLocked(context, uriString)
+            getOverlayCustomImageBitmapLocked(context, uriString, divisor.coerceAtLeast(1))
         }
 
     private suspend fun getOverlayCustomImageBitmapLocked(
         context: Context,
         uriString: String?,
+        divisor: Int,
     ): ImageBitmap? {
         val normalized = uriString?.trim()?.takeIf { it.isNotEmpty() } ?: return null
-        if (cachedOverlayCustomUri == normalized && cachedOverlayCustomBitmap != null) {
-            return cachedOverlayCustomBitmap?.asImageBitmap()
+        val cached = cachedOverlayCustomBitmap
+        if (cachedOverlayCustomUri == normalized && cached != null) {
+            val cachedDivisor = cachedOverlayCustomDivisor
+            if (cachedDivisor == divisor) return cached.asImageBitmap()
+            // A sharper cached image can be scaled down; a blurrier one has to be decoded again.
+            if (cachedDivisor < divisor) {
+                val scale = cachedDivisor.toFloat() / divisor
+                val scaled =
+                    withContext(Dispatchers.Default) {
+                        runCatching {
+                            Bitmap.createScaledBitmap(
+                                cached,
+                                (cached.width * scale).toInt().coerceAtLeast(1),
+                                (cached.height * scale).toInt().coerceAtLeast(1),
+                                true,
+                            )
+                        }.getOrNull()
+                    }
+                if (scaled != null) {
+                    cachedOverlayCustomBitmap = scaled
+                    cachedOverlayCustomDivisor = divisor
+                    return scaled.asImageBitmap()
+                }
+            }
         }
 
         val bitmap =
             withContext(Dispatchers.IO) {
                 runCatching {
                     val uri = Uri.parse(normalized)
-                    decodeBitmapWithOrientation(context, uri)
+                    decodeBitmapWithOrientation(context, uri, divisor)
                 }.getOrNull()
             } ?: return null
 
@@ -341,6 +383,7 @@ object WallpaperUtils {
         }
         cachedOverlayCustomUri = normalized
         cachedOverlayCustomBitmap = bitmap
+        cachedOverlayCustomDivisor = divisor
         return bitmap.asImageBitmap()
     }
 
@@ -385,10 +428,11 @@ object WallpaperUtils {
                         val normalized = customImageUri?.trim()?.takeIf { it.isNotEmpty() }
                         if (normalized == null) {
                             null
-                        } else if (cachedOverlayCustomUri == normalized && cachedOverlayCustomBitmap != null) {
-                            cachedOverlayCustomBitmap
                         } else {
-                            runCatching {
+                            cachedOverlayCustomBitmap?.takeIf {
+                                cachedOverlayCustomUri == normalized &&
+                                    maxOf(it.width, it.height) >= STARTUP_PREVIEW_MAX_DIMENSION
+                            } ?: runCatching {
                                 decodeBitmapWithOrientation(context, Uri.parse(normalized))
                             }.getOrNull()
                         }
@@ -487,6 +531,7 @@ object WallpaperUtils {
                         }
                         cachedOverlayCustomUri = normalizedUri
                         cachedOverlayCustomBitmap = decoded
+                        cachedOverlayCustomDivisor = 1
                     }
                 }
             } ?: return null
@@ -499,19 +544,23 @@ object WallpaperUtils {
         }
     }
 
+    /** Decodes within the background bounds, then [divisor] times smaller still for blurred backgrounds. */
     private fun decodeBitmapWithOrientation(
         context: Context,
         uri: Uri,
+        divisor: Int = 1,
     ): Bitmap? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            decodeBitmapWithImageDecoder(context, uri) ?: decodeBitmapWithBitmapFactory(context, uri)
+            decodeBitmapWithImageDecoder(context, uri, divisor)
+                ?: decodeBitmapWithBitmapFactory(context, uri, divisor)
         } else {
-            decodeBitmapWithBitmapFactory(context, uri)
+            decodeBitmapWithBitmapFactory(context, uri, divisor)
         }
 
     private fun decodeBitmapWithImageDecoder(
         context: Context,
         uri: Uri,
+        divisor: Int,
     ): Bitmap? =
         runCatching {
             val source = ImageDecoder.createSource(context.contentResolver, uri)
@@ -521,7 +570,7 @@ object WallpaperUtils {
                     val width = info.size.width
                     val height = info.size.height
                     if (width > 0 && height > 0) {
-                        decoder.setTargetSampleSize(computeSampleSize(width, height))
+                        decoder.setTargetSampleSize(computeSampleSize(width, height) * divisor)
                     }
                 }
             clampBitmapToBounds(decoded)
@@ -532,6 +581,7 @@ object WallpaperUtils {
     private fun decodeBitmapWithBitmapFactory(
         context: Context,
         uri: Uri,
+        divisor: Int,
     ): Bitmap? {
         val boundsOptions =
             BitmapFactory.Options().apply {
@@ -547,7 +597,7 @@ object WallpaperUtils {
 
         val decodeOptions =
             BitmapFactory.Options().apply {
-                inSampleSize = computeSampleSize(sourceWidth, sourceHeight)
+                inSampleSize = computeSampleSize(sourceWidth, sourceHeight) * divisor
                 inPreferredConfig = Bitmap.Config.ARGB_8888
             }
         val decoded =

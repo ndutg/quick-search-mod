@@ -78,6 +78,7 @@ internal class FileNameIndex(
         private val changeGeneration = AtomicLong()
         private val isObserverRegistered = AtomicBoolean(false)
         private val loadLock = Any()
+        private val releaseHandler by lazy { Handler(Looper.getMainLooper()) }
         @Volatile private var cached: Cached? = null
 
         /** The current index, or null when the library is too large to index or the read failed. */
@@ -92,13 +93,29 @@ internal class FileNameIndex(
                 currentOrNull()?.let { return it.index }
                 val generation = changeGeneration.get()
                 val index = runCatching { load(contentResolver, filesUri) }.getOrNull()
-                cached = Cached(index, SystemClock.elapsedRealtime(), generation)
+                val snapshot = Cached(index, SystemClock.elapsedRealtime(), generation)
+                cached = snapshot
+                scheduleRelease(snapshot)
                 return index
             }
         }
 
         fun invalidate() {
             changeGeneration.incrementAndGet()
+            release()
+        }
+
+        /** Drops the index; the next file search rebuilds it. */
+        fun release() {
+            cached = null
+        }
+
+        // A stale index is never reused, so free it when it expires rather than at the next search.
+        private fun scheduleRelease(snapshot: Cached) {
+            releaseHandler.postDelayed(
+                { if (cached === snapshot) cached = null },
+                MAX_AGE_MILLIS,
+            )
         }
 
         private fun currentOrNull(): Cached? {
@@ -156,7 +173,7 @@ internal class FileNameIndex(
             val observer =
                 object : ContentObserver(Handler(Looper.getMainLooper())) {
                     override fun onChange(selfChange: Boolean) {
-                        changeGeneration.incrementAndGet()
+                        invalidate()
                     }
                 }
             val registered =

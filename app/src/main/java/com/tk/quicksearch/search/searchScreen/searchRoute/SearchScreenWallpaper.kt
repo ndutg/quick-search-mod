@@ -195,23 +195,29 @@ internal fun SearchScreenWallpaperLogic(
                 }
             }
         }
+    val customImageDivisor = WallpaperUtils.wallpaperDivisorForBlur(state.wallpaperBlurRadius)
     val sourceCustomBitmap =
         produceState(
-            initialValue = CustomBitmapState(imageBitmap = null, isLoadFinished = false),
-            key1 = state.backgroundSource,
-            key2 = state.customImageUri,
-            key3 = state.startupBackgroundPreviewPath,
+            CustomBitmapState(imageBitmap = null, isLoadFinished = false),
+            state.backgroundSource,
+            state.customImageUri,
+            state.startupBackgroundPreviewPath,
+            customImageDivisor,
         ) {
             if (state.backgroundSource != BackgroundSource.CUSTOM_IMAGE) {
                 value = CustomBitmapState(imageBitmap = null, isLoadFinished = true)
                 return@produceState
             }
 
-            WallpaperUtils.loadStartupBackgroundPreviewBitmap(
-                previewPath = state.startupBackgroundPreviewPath,
-            )?.asImageBitmap()?.let { value = value.copy(imageBitmap = it) }
+            // A blur change only reloads the image at a new size; keep showing the current one.
+            if (value.imageBitmap == null) {
+                WallpaperUtils.loadStartupBackgroundPreviewBitmap(
+                    previewPath = state.startupBackgroundPreviewPath,
+                )?.asImageBitmap()?.let { value = value.copy(imageBitmap = it) }
+            }
 
-            val customBitmap = WallpaperUtils.getOverlayCustomImageBitmap(context, state.customImageUri)
+            val customBitmap =
+                WallpaperUtils.getOverlayCustomImageBitmap(context, state.customImageUri, customImageDivisor)
             value =
                 CustomBitmapState(
                     imageBitmap = customBitmap ?: value.imageBitmap,

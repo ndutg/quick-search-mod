@@ -148,13 +148,13 @@ class OverlayActivity : FragmentActivity() {
         if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW &&
             level != ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
         ) {
-            UiSurfaceMemoryManager.clearBitmapMemoryCaches()
+            UiSurfaceMemoryManager.clearMemoryCaches()
         }
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        UiSurfaceMemoryManager.clearBitmapMemoryCaches()
+        UiSurfaceMemoryManager.clearMemoryCaches()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

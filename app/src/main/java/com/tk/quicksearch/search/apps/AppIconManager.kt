@@ -85,8 +85,9 @@ private object AppIconCache {
     private const val BYTES_PER_PIXEL = 4
 
     // Sized from the heap so a full app list stays cached on most devices without risking OOM.
+    // Bitmap pixels live outside the Java heap from Android 8, so a larger share is safe there.
     private val cacheSizeBytes =
-        (Runtime.getRuntime().maxMemory() / 8)
+        (Runtime.getRuntime().maxMemory() / if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) 4 else 8)
             .coerceIn(MIN_CACHE_SIZE_BYTES, MAX_CACHE_SIZE_BYTES)
             .toInt()
 
@@ -110,6 +111,10 @@ private object AppIconCache {
         entry: AppIconEntry,
     ) {
         cache.put(cacheKey, entry)
+    }
+
+    fun remove(cacheKey: String) {
+        cache.remove(cacheKey)
     }
 
     fun clear() {
@@ -166,8 +171,9 @@ fun rememberAppIcon(
         else UserAppPreferences(context).isIconPackUnsupportedIconMaskEnabled()
     val iconOverride = UserAppPreferences(context).getAppIconOverride(packageName)
     val bitmapSize = appIconBitmapSize(context, UserAppPreferences(context))
+    val includeMonochrome = UserAppPreferences(context).isThemedIconsEnabled()
     val cacheEpoch by appIconCacheEpoch.collectAsState()
-    val cacheKey =
+    fun cacheKeyFor(monochrome: Boolean) =
         buildCacheKey(
             packageName = packageName,
             iconPackPackage = iconPackPackage,
@@ -178,13 +184,26 @@ fun rememberAppIcon(
             cacheEpoch = cacheEpoch,
             forceCircularMask = forceCircularMask,
             includeArchived = includeArchived,
+            includeMonochrome = monochrome,
         )
+    val cacheKey = cacheKeyFor(includeMonochrome)
     val cachedInitial = AppIconCache.get(cacheKey)
+    // Toggling themed icons switches cache keys; the other variant keeps the icon on screen
+    // instead of a placeholder, and already holds everything the non-themed variant needs.
+    val alternateKey = cacheKeyFor(!includeMonochrome)
+    val alternateEntry =
+        if (cachedInitial == null) {
+            AppIconCache.get(alternateKey)?.let { entry ->
+                if (includeMonochrome) entry else entry.copy(monochromeData = null)
+            }
+        } else {
+            null
+        }
 
     val iconState =
         produceState<AppIconResult>(
             initialValue =
-                cachedInitial?.let(AppIconEntry::toResult)
+                (cachedInitial ?: alternateEntry)?.toResult()
                     ?: AppIconResult(null, false),
             key1 = cacheKey,
         ) {
@@ -196,6 +215,13 @@ fun rememberAppIcon(
             val cached = AppIconCache.get(cacheKey)
             if (cached != null) {
                 value = cached.toResult()
+                return@produceState
+            }
+
+            if (!includeMonochrome && alternateEntry != null) {
+                AppIconCache.put(cacheKey, alternateEntry)
+                AppIconCache.remove(alternateKey)
+                value = alternateEntry.toResult()
                 return@produceState
             }
 
@@ -211,6 +237,7 @@ fun rememberAppIcon(
                         targetSize = bitmapSize,
                         forceCircularMask = forceCircularMask,
                         includeArchived = includeArchived,
+                        includeMonochrome = includeMonochrome,
                     )
                 }
 
@@ -235,6 +262,7 @@ private fun loadAppIconEntry(
     targetSize: Int,
     forceCircularMask: Boolean,
     includeArchived: Boolean = true,
+    includeMonochrome: Boolean = false,
 ): AppIconEntry? {
     val iconPackBitmap =
         iconOverride?.takeUnless { it.useSystemDefault }?.let { override ->
@@ -287,6 +315,7 @@ private fun loadAppIconEntry(
                 targetSize = targetSize,
                 forceCircularMask = forceCircularMask,
                 includeArchived = includeArchived,
+                includeMonochrome = includeMonochrome,
             )
     }
 }
@@ -359,6 +388,7 @@ private fun loadSystemAppIcon(
     targetSize: Int,
     forceCircularMask: Boolean,
     includeArchived: Boolean,
+    includeMonochrome: Boolean,
 ): AppIconEntry? =
     runCatching {
         val drawable =
@@ -376,7 +406,8 @@ private fun loadSystemAppIcon(
                     targetSize = targetSize,
                     forceCircularMask = forceCircularMask,
                 ).asImageBitmap()
-            val monochromeData = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Only themed icons draw the monochrome layer, so skip rasterizing it otherwise.
+            val monochromeData = if (includeMonochrome && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 extractMonochromeBitmap(drawable)?.asImageBitmap()
             } else null
             AppIconEntry(bitmap, isLegacy = false, monochromeData = monochromeData)
@@ -563,6 +594,7 @@ suspend fun prefetchAppIconRequests(
         else userPreferences.isIconPackUnsupportedIconMaskEnabled()
     val densityDpi = context.resources.displayMetrics.densityDpi
     val bitmapSize = appIconBitmapSize(context, userPreferences)
+    val includeMonochrome = userPreferences.isThemedIconsEnabled()
 
     val requestsToLoad =
         requests
@@ -582,6 +614,7 @@ suspend fun prefetchAppIconRequests(
                         bitmapSize = bitmapSize,
                         forceCircularMask = forceCircularMask,
                         includeArchived = includeArchived,
+                        includeMonochrome = includeMonochrome,
                     ),
                     iconOverride,
                 )
@@ -611,6 +644,7 @@ suspend fun prefetchAppIconRequests(
                                 targetSize = bitmapSize,
                                 forceCircularMask = forceCircularMask,
                                 includeArchived = includeArchived,
+                                includeMonochrome = includeMonochrome,
                             )
                         if (entry != null) {
                             AppIconCache.put(cacheKey, entry)
@@ -631,6 +665,7 @@ private fun buildCacheKey(
     cacheEpoch: Long = appIconCacheEpoch.value,
     forceCircularMask: Boolean = false,
     includeArchived: Boolean = true,
+    includeMonochrome: Boolean = false,
 ): String {
     val prefix = iconPackPackage ?: "system"
     val maskSuffix = if (iconPackPackage != null) ":mask:$maskUnsupportedIconPackIcons" else ""
@@ -638,5 +673,6 @@ private fun buildCacheKey(
     val shapeSuffix = if (forceCircularMask) ":circle" else ""
     val overrideSuffix = iconOverride?.let { ":override:${it.iconPackPackage}:${it.drawableName}" }.orEmpty()
     val archivedSuffix = if (includeArchived) "" else ":installedOnly"
-    return "$cacheEpoch:$bitmapSize:$prefix$maskSuffix:$packageName$suffix$shapeSuffix$overrideSuffix$archivedSuffix"
+    val monochromeSuffix = if (includeMonochrome) ":mono" else ""
+    return "$cacheEpoch:$bitmapSize:$prefix$maskSuffix:$packageName$suffix$shapeSuffix$overrideSuffix$archivedSuffix$monochromeSuffix"
 }
