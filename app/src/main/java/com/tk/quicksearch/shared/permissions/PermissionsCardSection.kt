@@ -358,6 +358,7 @@ fun PermissionsCardSection(
                             onRequestUsagePermission()
                         }
                     },
+                    onGrantedClick = { PermissionHelper.launchUsageAccessRequest(context) },
                 ),
             )
             add(
@@ -376,6 +377,7 @@ fun PermissionsCardSection(
                             }
                         }
                     },
+                    onGrantedClick = { PermissionHelper.launchAppSettingsRequest(context) },
                 ),
             )
             add(
@@ -396,6 +398,7 @@ fun PermissionsCardSection(
                             onRequestFilePermission()
                         }
                     },
+                    onGrantedClick = { PermissionHelper.launchFilesAccessSettings(context) },
                 ),
             )
             if (showCalendarPermission) {
@@ -415,6 +418,7 @@ fun PermissionsCardSection(
                                 }
                             }
                         },
+                        onGrantedClick = { PermissionHelper.launchAppSettingsRequest(context) },
                     ),
                 )
             }
@@ -431,6 +435,11 @@ fun PermissionsCardSection(
                             } else {
                                 context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                             }
+                        }
+                    },
+                    onGrantedClick = {
+                        runCatching {
+                            context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                         }
                     },
                 ),
@@ -452,6 +461,7 @@ fun PermissionsCardSection(
                                 }
                             }
                         },
+                        onGrantedClick = { PermissionHelper.launchAppSettingsRequest(context) },
                     ),
                 )
             }
@@ -476,6 +486,11 @@ fun PermissionsCardSection(
                                 }
                             }
                         },
+                        onGrantedClick = {
+                            if (!ReminderPermissions.openNotificationSettings(context)) {
+                                PermissionHelper.launchAppSettingsRequest(context)
+                            }
+                        },
                     ),
                 )
             }
@@ -492,6 +507,11 @@ fun PermissionsCardSection(
                                 ReminderPermissions.openExactAlarmSettings(context)
                             }
                         },
+                        onGrantedClick = {
+                            if (!ReminderPermissions.openExactAlarmSettings(context)) {
+                                PermissionHelper.launchAppSettingsRequest(context)
+                            }
+                        },
                     ),
                 )
             }
@@ -506,6 +526,7 @@ fun PermissionsCardSection(
                             NotificationDotsPermission.openNotificationListenerSettings(context)
                         }
                     },
+                    onGrantedClick = { NotificationDotsPermission.openNotificationListenerSettings(context) },
                 ),
             )
             if (showBackgroundUsage) {

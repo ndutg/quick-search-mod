@@ -26,19 +26,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.ui.window.PopupProperties
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -85,7 +80,6 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchSection
-import com.tk.quicksearch.search.core.SearchSectionRegistry
 import com.tk.quicksearch.search.core.SearchSectionUiMetadataRegistry
 import com.tk.quicksearch.search.core.SearchToolType
 import com.tk.quicksearch.search.core.SearchTarget
@@ -279,46 +273,38 @@ internal fun detectConsumedPrefixAlias(
     return aliasToken
 }
 
-@Composable
-internal fun SearchBarSectionMenu(
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onSectionSelected: (SearchSection) -> Unit,
-) {
-    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = onDismiss,
-                        shape = RoundedCornerShape(24.dp),
-                        containerColor = AppColors.DialogBackground,
-                        properties = PopupProperties(focusable = false),
-                    ) {
-                        sectionMenuEntries.forEachIndexed { index, (section) ->
-                            val metadata = SearchSectionUiMetadataRegistry.metadataFor(section)
-                            if (index > 0) HorizontalDivider()
-                            DropdownMenuItem(
-                                text = { Text(stringResource(metadata.sectionLabelRes)) },
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = metadata.searchBarIcon,
-                                        contentDescription = null,
-                                    )
-                                },
-                                onClick = {
-                                    onSectionSelected(section)
-                                },
-                            )
-                        }
-                    }
-}
+/** True while an alias, tool or shortcut owns the bar, which swaps its trailing icon to clear. */
+internal fun isSearchBarAliasActive(
+    detectedShortcutTarget: SearchTarget?,
+    detectedAliasSearchSection: SearchSection?,
+    activeToolType: SearchToolType?,
+    isCurrencyConverterAliasMode: Boolean,
+    isWorldClockAliasMode: Boolean,
+    isDictionaryAliasMode: Boolean,
+    isWeatherAliasMode: Boolean,
+    detectedCustomToolId: String?,
+    detectedTaskerIntentId: String?,
+): Boolean =
+    detectedShortcutTarget != null ||
+        detectedAliasSearchSection != null ||
+        activeToolType != null ||
+        isCurrencyConverterAliasMode ||
+        isWorldClockAliasMode ||
+        isDictionaryAliasMode ||
+        isWeatherAliasMode ||
+        detectedCustomToolId != null ||
+        detectedTaskerIntentId != null
 
 @Composable
 internal fun SearchBarTrailingIcon(
     showClear: Boolean,
     showSettings: Boolean,
+    showMic: Boolean,
     accentColor: Color,
     iconColor: Color,
     onClear: () -> Unit,
     onSettings: () -> Unit,
+    onMic: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -331,6 +317,14 @@ internal fun SearchBarTrailingIcon(
                     imageVector = MaterialSymbols.Close,
                     contentDescription = stringResource(R.string.desc_clear_search),
                     tint = accentColor,
+                )
+            }
+        } else if (showMic) {
+            IconButton(onClick = onMic) {
+                Icon(
+                    imageVector = MaterialSymbols.Mic,
+                    contentDescription = stringResource(R.string.desc_voice_search_icon),
+                    tint = iconColor,
                 )
             }
         } else if (showSettings) {
@@ -377,9 +371,3 @@ internal fun androidx.compose.foundation.layout.BoxScope.SearchBarAliasMorphText
 private const val AliasIconMorphEndScale = 0.5f
 
 private val AliasMorphTextStartPadding = DesignTokens.Spacing48 + DesignTokens.SpacingXSmall
-
-private data class SectionMenuEntry(
-    val section: SearchSection,
-)
-
-private val sectionMenuEntries = SearchSectionRegistry.orderedSections.map(::SectionMenuEntry)

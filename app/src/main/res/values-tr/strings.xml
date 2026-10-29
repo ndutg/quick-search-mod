@@ -306,6 +306,7 @@
 <string name="section_notes">Notlar</string>
 <string name="section_media">Medya Kontrolleri</string>
 <string name="section_settings">Cihaz ayarları</string>
+<string name="search_section_menu_title">Şurada ara</string>
 <string name="top_match_title">En iyi eşleşme</string>
 <string name="top_matches_count_label">Eşleşme sayısı</string>
 <string name="top_matches_priority_desc">En iyi eşleşmelerdeki öğelerin önceliğini değiştir ve devre dışı bırak</string>
@@ -755,7 +756,10 @@
 <string name="settings_home_screen_widget_confirm_message">Ana ekranına Quick Search widget\'ı eklemek üzeresin. Birçok özelleştirme seçeneği sunan widget ayarları sayfasına erişmek için widget\'a basılı tut.</string>
 <string name="settings_home_screen_widget_desc">Ana ekranına Quick Search widget\'ı ekle.</string>
 <string name="settings_home_screen_widget_title">Ana ekran widget\'ı</string>
-<string name="settings_icon_desc">Arama çubuğundaki ayarlar (dişli) simgesini göster/gizle. Sola kaydırarak veya arama yaparak ayarlara istediğin zaman erişebilirsin.</string>
+<string name="settings_icon_desc">Ayarlar (dişli) simgesini göster veya gizle.</string>
+<string name="settings_icon_off_desc">Sola kaydırarak veya arama yaparak ayarlara istediğin zaman erişebilirsin.</string>
+<string name="settings_mic_icon_title">Mikrofon simgesi</string>
+<string name="settings_mic_icon_desc">Sesli aramayı arama çubuğundan başlat.</string>
 <string name="settings_icon_required_by_gesture_desc">Bu simgeyi kapatmak için Sola Kaydırma Hareketini \"Ayarları Aç\" olarak ayarlayın.</string>
 <string name="settings_icon_pack_empty">Simge paketi bulunamadı.</string>
 <string name="settings_icon_pack_description_no_packs">Uygulama simgeleri için bir simge paketi ayarlayın.</string>
@@ -1162,7 +1166,6 @@
 <string name="widget_at_a_glance_widget_title">Bir Bakışta Widget\'ı</string>
 <string name="widget_at_a_glance_items_title">Bir Bakışta öğeleri</string>
 <string name="widget_at_a_glance_items_summary">Bu widget\'ın ne göstereceğini seçin</string>
-<string name="widget_at_a_glance_app_notifications_setup">Önce Bir Bakışta ayarlarında Uygulama bildirimlerini açın</string>
 <string name="widget_at_a_glance_sample_alarm">Yarın, 07:00</string>
 <string name="widget_at_a_glance_sample_birthday">Alex doğum günü</string>
 <string name="widget_at_a_glance_sample_caller">Annem</string>

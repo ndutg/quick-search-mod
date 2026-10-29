@@ -152,7 +152,7 @@ internal object StartupHomeSurfaceSnapshotJson {
     }
 
     private fun contactMethodToJson(method: ContactMethod) = JSONObject().apply {
-        put(TYPE, method.javaClass.simpleName)
+        put(TYPE, contactMethodType(method))
         put("displayLabel", method.displayLabel)
         put("data", method.data)
         method.dataId?.let { put("dataId", it) }
@@ -166,6 +166,27 @@ internal object StartupHomeSurfaceSnapshotJson {
             else -> Unit
         }
     }
+
+    /** Spelled out rather than the class name, which R8 renames in release builds. */
+    private fun contactMethodType(method: ContactMethod): String =
+        when (method) {
+            is ContactMethod.Phone -> "Phone"
+            is ContactMethod.Sms -> "Sms"
+            is ContactMethod.WhatsAppCall -> "WhatsAppCall"
+            is ContactMethod.WhatsAppMessage -> "WhatsAppMessage"
+            is ContactMethod.WhatsAppVideoCall -> "WhatsAppVideoCall"
+            is ContactMethod.TelegramMessage -> "TelegramMessage"
+            is ContactMethod.TelegramCall -> "TelegramCall"
+            is ContactMethod.TelegramVideoCall -> "TelegramVideoCall"
+            is ContactMethod.SignalMessage -> "SignalMessage"
+            is ContactMethod.SignalCall -> "SignalCall"
+            is ContactMethod.SignalVideoCall -> "SignalVideoCall"
+            is ContactMethod.Email -> "Email"
+            is ContactMethod.VideoCall -> "VideoCall"
+            is ContactMethod.GoogleMeet -> "GoogleMeet"
+            is ContactMethod.CustomApp -> "CustomApp"
+            is ContactMethod.ViewInContactsApp -> "ViewInContactsApp"
+        }
 
     private fun contactMethodFromJson(json: JSONObject): ContactMethod? {
         val label = json.optString("displayLabel")

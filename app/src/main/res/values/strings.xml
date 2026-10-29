@@ -302,6 +302,7 @@
     <string name="section_notes">Notes</string>
     <string name="section_media">Media Controls</string>
     <string name="section_settings">Device Settings</string>
+    <string name="search_section_menu_title">Search in</string>
     <string name="top_match_title">Top Match</string>
     <string name="top_matches_count_label">No. of matches</string>
     <string name="top_matches_priority_desc">Change priority and disable items in top matches</string>
@@ -755,7 +756,10 @@
     <string name="settings_home_screen_widget_confirm_message">You are about to add Quick Search widget to your home screen. Long press on the widget to access widget settings page that has many customization options.</string>
     <string name="settings_home_screen_widget_desc">Add Quick Search widget to your home screen.</string>
     <string name="settings_home_screen_widget_title">Home Screen Widget</string>
-    <string name="settings_icon_desc">Show/hide the gear icon in the search bar. Access settings anytime by swiping left or by searching.</string>
+    <string name="settings_icon_desc">Show or hide the gear icon.</string>
+    <string name="settings_icon_off_desc">Access settings anytime by swiping left or by searching.</string>
+    <string name="settings_mic_icon_title">Mic Icon</string>
+    <string name="settings_mic_icon_desc">Start voice search from the search bar.</string>
     <string name="settings_icon_required_by_gesture_desc">Set Swipe Left Gesture to Open Settings to turn this icon off.</string>
     <string name="settings_icon_pack_empty">No icon packs found.</string>
     <string name="settings_icon_pack_description_no_packs">Set an icon pack for the app icons.</string>
@@ -1172,7 +1176,6 @@
     <string name="widget_at_a_glance_widget_title">At a Glance Widget</string>
     <string name="widget_at_a_glance_items_title">At a Glance Items</string>
     <string name="widget_at_a_glance_items_summary">Choose what this widget shows</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Turn on App Notifications in At a Glance settings first</string>
     <string name="widget_at_a_glance_sample_alarm">Tomorrow, 7:00 AM</string>
     <string name="widget_at_a_glance_sample_birthday">Alex\'s birthday</string>
     <string name="widget_at_a_glance_sample_caller">Mom</string>

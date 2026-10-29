@@ -18,6 +18,7 @@ import com.tk.quicksearch.search.searchHistory.RecentSearchItem
 import com.tk.quicksearch.search.utils.RecentResultRankingUtils
 import com.tk.quicksearch.tools.aiSearch.AiSearchLlmProviderId
 import com.tk.quicksearch.tools.aiSearch.GeminiModelCatalog
+import com.tk.quicksearch.tools.aiTools.DictionarySense
 import com.tk.quicksearch.tools.aiSearch.LlmTextModel
 import com.tk.quicksearch.tools.tasker.TaskerIntentTool
 
@@ -260,10 +261,7 @@ data class WorldClockState(
 data class DictionaryState(
         val status: DictionaryStatus = DictionaryStatus.Idle,
         val word: String? = null,
-        val partOfSpeech: String? = null,
-        val meaning: String? = null,
-        val example: String? = null,
-        val synonyms: List<String> = emptyList(),
+        val senses: List<DictionarySense> = emptyList(),
         val activeQuery: String? = null,
         val errorMessage: String? = null,
 )

@@ -12,8 +12,11 @@ internal data class AppNotificationsConfig(
     val enabled: Boolean,
     val filters: AppNotificationFilters,
 ) {
-    /** Whether any notification could show, so matching is worth doing. */
-    val isActive: Boolean get() = enabled && !filters.isEmpty
+    /** Whether apps or keywords are set, so matching is worth doing for Home or an At a Glance widget. */
+    val hasFilters: Boolean get() = !filters.isEmpty
+
+    /** Whether Home's At a Glance shows any notification. */
+    val isActive: Boolean get() = enabled && hasFilters
 }
 
 /**

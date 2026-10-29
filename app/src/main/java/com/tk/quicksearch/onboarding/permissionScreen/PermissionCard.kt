@@ -39,6 +39,8 @@ data class PermissionCardItem(
     val onToggleChange: (Boolean) -> Unit,
     val isNavigationItem: Boolean = false,
     val onNavigationClick: () -> Unit = {},
+    /** Opens the matching system settings page when the permission is already granted. */
+    val onGrantedClick: (() -> Unit)? = null,
 )
 
 @Composable
@@ -67,6 +69,7 @@ fun PermissionCard(
                     onToggleChange = item.onToggleChange,
                     isNavigationItem = item.isNavigationItem,
                     onNavigationClick = item.onNavigationClick,
+                    onGrantedClick = item.onGrantedClick,
                     contentPadding = itemContentPadding,
                 )
 
@@ -96,14 +99,19 @@ fun PermissionItem(
     isNavigationItem: Boolean,
     onNavigationClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onGrantedClick: (() -> Unit)? = null,
     contentPadding: PaddingValues = PaddingValues(DesignTokens.SpacingXLarge),
 ) {
     val view = LocalView.current
+    val grantedClick = onGrantedClick?.takeIf { !isNavigationItem && permissionState.isGranted }
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clickable(enabled = isNavigationItem, onClick = onNavigationClick)
+                .clickable(
+                    enabled = isNavigationItem || grantedClick != null,
+                    onClick = grantedClick ?: onNavigationClick,
+                )
                 .padding(contentPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,

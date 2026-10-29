@@ -9,7 +9,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.search.data.AppNotificationFilters
 import com.tk.quicksearch.settings.settingsDetailScreen.AtAGlanceSettingsSection
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
@@ -63,6 +63,8 @@ fun AtAGlanceWidgetItemsSection(
         AtAGlanceWidgetItemsDrawer(
             items = state.glanceItems,
             onItemsChange = { onStateChange(state.copy(glanceItems = it)) },
+            appNotificationFilters = state.glanceAppNotificationFilters,
+            onAppNotificationFiltersChange = { onStateChange(state.copy(glanceAppNotificationFilters = it)) },
             onDismissRequest = { showDrawer = false },
             searchViewModel = searchViewModel,
         )
@@ -74,6 +76,8 @@ fun AtAGlanceWidgetItemsSection(
 private fun AtAGlanceWidgetItemsDrawer(
     items: Map<String, Boolean>,
     onItemsChange: (Map<String, Boolean>) -> Unit,
+    appNotificationFilters: AppNotificationFilters?,
+    onAppNotificationFiltersChange: (AppNotificationFilters) -> Unit,
     onDismissRequest: () -> Unit,
     searchViewModel: SearchViewModel,
 ) {
@@ -109,11 +113,6 @@ private fun AtAGlanceWidgetItemsDrawer(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f),
                 )
-                if (items.isNotEmpty()) {
-                    TextButton(onClick = { onItemsChange(emptyMap()) }) {
-                        Text(text = stringResource(R.string.dialog_reset))
-                    }
-                }
                 IconButton(onClick = dismiss) {
                     Icon(
                         imageVector = MaterialSymbols.Close,
@@ -133,6 +132,8 @@ private fun AtAGlanceWidgetItemsDrawer(
                         ),
                 widgetItems = items,
                 onWidgetItemsChange = onItemsChange,
+                widgetAppNotificationFilters = appNotificationFilters,
+                onWidgetAppNotificationFiltersChange = onAppNotificationFiltersChange,
             )
         }
     }

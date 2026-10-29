@@ -93,17 +93,12 @@ internal object GlanceNotificationsStore {
     private val otpsState = MutableStateFlow<List<OtpNotification>>(emptyList())
     private val weatherState = MutableStateFlow<List<WeatherNotification>>(emptyList())
     private val appNotificationsState = MutableStateFlow<List<AppNotification>>(emptyList())
+    private val appNotificationCandidatesState = MutableStateFlow<List<AppNotification>>(emptyList())
     private var clockPackages: Set<String>? = null
 
-    /** The last posted notifications and the keys other rows show, to re-match when App notifications' settings change. */
-    private class AppNotificationInputs(
-        val posted: List<StatusBarNotification>,
-        val coveredKeys: Set<String>,
-    )
-
-    /** Written with [appNotificationsState] under [appNotificationsLock]; read alone by [isAppNotificationCandidate]. */
+    /** The keys other rows show. Written with [appNotificationsState] under [appNotificationsLock]; read alone by [isAppNotificationCandidate]. */
     @Volatile
-    private var appNotificationInputs = AppNotificationInputs(emptyList(), emptySet())
+    private var coveredKeys = emptySet<String>()
     private val appNotificationsLock = Any()
 
     /** Timers read from custom chronometer views, by notification key, reused until the notification changes. */
@@ -121,8 +116,18 @@ internal object GlanceNotificationsStore {
     val otps: StateFlow<List<OtpNotification>> = otpsState.asStateFlow()
     val weather: StateFlow<List<WeatherNotification>> = weatherState.asStateFlow()
 
-    /** What App notifications shows, newest first; the rows other sources show are left out. */
+    /** What Home's App notifications shows, newest first; the rows other sources show are left out. */
     val appNotifications: StateFlow<List<AppNotification>> = appNotificationsState.asStateFlow()
+
+    /**
+     * Every notification App notifications could show, whatever the apps and keywords, for At a Glance
+     * widgets with their own and for Recent matches; the rows other sources show are left out.
+     */
+    val appNotificationCandidates: StateFlow<List<AppNotification>> = appNotificationCandidatesState.asStateFlow()
+
+    /** The notifications [filters] matches, newest first, for an At a Glance widget with its own apps and keywords. */
+    fun appNotificationsMatching(filters: AppNotificationFilters): List<AppNotification> =
+        AppNotifications.select(appNotificationCandidatesState.value, emptySet(), AppNotificationsConfig(enabled = true, filters))
 
     fun update(
         context: Context,
@@ -162,9 +167,10 @@ internal object GlanceNotificationsStore {
                 progressTracker.progress.map { it.key } + progressTracker.finished.map { it.key } + weather.map { it.key }
         val config = AppNotificationsSettings.load(context)
         synchronized(appNotificationsLock) {
-            val inputs = AppNotificationInputs(posted, coveredKeys)
-            appNotificationInputs = inputs
-            appNotificationsState.value = AppNotifications.parse(inputs.posted, inputs.coveredKeys, config)
+            this.coveredKeys = coveredKeys
+            val candidates = AppNotifications.candidates(posted, coveredKeys)
+            appNotificationCandidatesState.value = candidates
+            appNotificationsState.value = AppNotifications.select(candidates, emptySet(), config)
         }
     }
 
@@ -172,8 +178,7 @@ internal object GlanceNotificationsStore {
     fun refreshAppNotifications() {
         val config = AppNotificationsSettings.config.value ?: return
         synchronized(appNotificationsLock) {
-            val inputs = appNotificationInputs
-            appNotificationsState.value = AppNotifications.parse(inputs.posted, inputs.coveredKeys, config)
+            appNotificationsState.value = AppNotifications.select(appNotificationCandidatesState.value, emptySet(), config)
         }
     }
 
@@ -187,7 +192,7 @@ internal object GlanceNotificationsStore {
     ): Boolean =
         sbn.packageName != context.packageName &&
             sbn.notification.flags and Notification.FLAG_GROUP_SUMMARY == 0 &&
-            sbn.key !in appNotificationInputs.coveredKeys &&
+            sbn.key !in coveredKeys &&
             AppNotifications.isCandidate(sbn)
 
     /** Drops cached state when notification access is lost; clock apps are resolved again on reconnect. */
@@ -200,7 +205,8 @@ internal object GlanceNotificationsStore {
         WeatherNotifications.clear()
         AppNotifications.clear()
         synchronized(appNotificationsLock) {
-            appNotificationInputs = AppNotificationInputs(emptyList(), emptySet())
+            coveredKeys = emptySet()
+            appNotificationCandidatesState.value = emptyList()
             appNotificationsState.value = emptyList()
         }
         timersState.value = emptyList()
@@ -228,6 +234,7 @@ internal object GlanceNotificationsStore {
         NotificationDotsListenerService.cancelNotification(notification.key)
         synchronized(appNotificationsLock) {
             AppNotifications.dismiss(notification)
+            appNotificationCandidatesState.value = appNotificationCandidatesState.value.filter { it.key != notification.key }
             appNotificationsState.value = appNotificationsState.value.filter { it.key != notification.key }
         }
     }

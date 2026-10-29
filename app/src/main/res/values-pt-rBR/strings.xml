@@ -307,6 +307,7 @@
     <string name="section_notes">Notas</string>
     <string name="section_media">Controles de mídia</string>
     <string name="section_settings">Configurações do dispositivo</string>
+    <string name="search_section_menu_title">Pesquisar em</string>
     <string name="top_match_title">Melhor correspondência</string>
     <string name="top_matches_count_label">Nº de correspondências</string>
     <string name="top_matches_priority_desc">Alterar prioridade e desativar itens nas melhores correspondências</string>
@@ -756,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">Você está prestes a adicionar o widget do Quick Search à sua tela inicial. Pressione e segure o widget para acessar a página de configurações dele, que possui muitas opções de personalização.</string>
     <string name="settings_home_screen_widget_desc">Adicione o widget do Quick Search à sua tela inicial.</string>
     <string name="settings_home_screen_widget_title">Widget da tela inicial</string>
-    <string name="settings_icon_desc">Mostrar/ocultar o ícone de engrenagem na barra de pesquisa. Acesse as configurações a qualquer momento deslizando para a esquerda ou pesquisando.</string>
+    <string name="settings_icon_desc">Mostrar ou ocultar o ícone de engrenagem.</string>
+    <string name="settings_icon_off_desc">Acesse as configurações a qualquer momento deslizando para a esquerda ou pesquisando.</string>
+    <string name="settings_mic_icon_title">Ícone de microfone</string>
+    <string name="settings_mic_icon_desc">Inicie a pesquisa por voz pela barra de pesquisa.</string>
     <string name="settings_icon_required_by_gesture_desc">Defina o gesto de Deslizar para a Esquerda como \"Abrir Configurações\" para desativar este ícone.</string>
     <string name="settings_icon_pack_empty">Nenhum pacote de ícones encontrado.</string>
     <string name="settings_icon_pack_description_no_packs">Defina um pacote de ícones para os ícones dos apps.</string>
@@ -1163,7 +1167,6 @@
     <string name="widget_at_a_glance_widget_title">Widget Visão rápida</string>
     <string name="widget_at_a_glance_items_title">Itens da Visão rápida</string>
     <string name="widget_at_a_glance_items_summary">Escolha o que este widget mostra</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Primeiro ative Notificações de apps nas configurações da Visão rápida</string>
     <string name="widget_at_a_glance_sample_alarm">Amanhã, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Aniversário de Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mãe</string>

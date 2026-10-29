@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.SizeF
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,8 @@ import androidx.glance.text.TextStyle
 import androidx.glance.color.ColorProvider as DayNightColorProvider
 import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
+import com.tk.quicksearch.search.data.preferences.newWidgetGlanceItems
+import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsSnapshot
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetColors
 import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.WidgetBitmapUtils
@@ -58,6 +61,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.roundToInt
+
+/** The Now Playing item's list key, in the same style as rows' own keys such as "alarm" and "missed-calls". */
+private const val NOW_PLAYING_ITEM_KEY = "now_playing"
 
 /** Default size (3 columns by 2 rows) used until the host reports the placed widget's size. */
 private const val DEFAULT_WIDTH_DP = 180f
@@ -74,7 +80,8 @@ internal object AtAGlanceWidgetDimens {
     val LIST_VERTICAL_PADDING = 4.dp
     val ROW_VERTICAL_PADDING = 12.dp
     val DIVIDER_HEIGHT = 1.dp
-    val DISMISS_BUTTON_SIZE = 28.dp
+    // The 16dp icon sits in a larger box so taps near it don't land on the row and open it instead.
+    val DISMISS_BUTTON_SIZE = 36.dp
     val DISMISS_ICON_SIZE = 16.dp
     val HANG_UP_BUTTON_SIZE = 36.dp
     val BUTTON_ICON_SIZE = 20.dp
@@ -88,7 +95,7 @@ internal object AtAGlanceWidgetDimens {
     val CODE_FONT_SIZE = 24.sp
     val LABEL_FONT_SIZE = 12.sp
     val FOOTER_FONT_SIZE = 11.sp
-    val EMPTY_DATE_FONT_SIZE = 16.sp
+    val EMPTY_DATE_FONT_SIZE = 22.sp
     const val DIVIDER_ALPHA = 0.15f
 
     /** Rows sit close to the edges, and closer still without a card to inset them from. */
@@ -161,11 +168,19 @@ class AtAGlanceWidget : GlanceAppWidget() {
         val prefs = currentState<Preferences>()
         val context = LocalContext.current
         val storedConfig = prefs.toWidgetPreferences(context).enforceVariantConstraints(WidgetVariant.AT_A_GLANCE)
-        // Until the configure screen saves, show the look it starts from.
-        val config = if (prefs.hasStoredWidgetConfig()) storedConfig else storedConfig.withNoteWidgetDefaults()
-        val items = WidgetGlanceItemSettings(config.glanceItems, AppGlanceItemSettings(context))
-        val snapshot = loadAtAGlanceWidgetSnapshot(context, items)
+        val appItems = AppGlanceItemSettings(context)
+        // Until the configure screen saves, show the look and items it starts from.
+        val config =
+            if (prefs.hasStoredWidgetConfig()) {
+                storedConfig
+            } else {
+                storedConfig.withNoteWidgetDefaults().copy(glanceItems = newWidgetGlanceItems(appItems))
+            }
+        val items = WidgetGlanceItemSettings(config.glanceItems, appItems)
+        val snapshot = loadAtAGlanceWidgetSnapshot(context, items, config.glanceAppNotificationFilters)
         AtAGlanceWidgetReceiver.scheduleRefresh(context, snapshot.nextChangeMillis)
+        val nowPlaying = loadAtAGlanceWidgetNowPlaying(context, items)
+        val isEmpty = snapshot.rows.isEmpty() && nowPlaying == null
 
         val size = LocalSize.current
         val widthDp = WidgetLayoutUtils.resolveOr(size.width, DEFAULT_WIDTH_DP.dp)
@@ -179,10 +194,12 @@ class AtAGlanceWidget : GlanceAppWidget() {
         val nightColors = NoteWidgetColors.forWidget(config, isSystemDark = true)
 
         // With no rows and no date there is nothing to sit on the card, so leave the widget transparent.
-        val isBlank = snapshot.rows.isEmpty() && !config.showEmptyDate
+        val isBlank = isEmpty && !config.showEmptyDate
         val backgroundModifier =
             when {
-                config.backgroundAlpha <= 0f || isBlank -> GlanceModifier
+                // Launchers reapply an update onto the views they already have, so a missing background
+                // would leave the old card showing; clear it explicitly instead.
+                config.backgroundAlpha <= 0f || isBlank -> GlanceModifier.background(Color.Transparent)
                 // Day/night colors let the launcher switch the card with the system theme.
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
                     GlanceModifier
@@ -205,16 +222,20 @@ class AtAGlanceWidget : GlanceAppWidget() {
             }
 
         Column(modifier = GlanceModifier.fillMaxSize().then(backgroundModifier)) {
-            if (snapshot.rows.isEmpty()) {
+            if (isEmpty) {
                 EmptyContent(context, dayColors, nightColors, config.textScale, config.showEmptyDate)
             } else {
                 RowList(
                     context,
+                    nowPlaying,
                     snapshot.rows,
                     dayColors,
                     nightColors,
                     config.textScale,
                     AtAGlanceWidgetDimens.rowListHorizontalPadding(config.backgroundAlpha),
+                    widthDp,
+                    // Bitmaps can't follow the day/night switch, so they take the current theme's color.
+                    (if (isDark) nightColors else dayColors).title,
                 )
             }
         }
@@ -223,11 +244,14 @@ class AtAGlanceWidget : GlanceAppWidget() {
     @Composable
     private fun RowList(
         context: Context,
+        nowPlaying: MediaControlsSnapshot?,
         rows: List<AtAGlanceWidgetRow>,
         dayColors: NoteWidgetColors,
         nightColors: NoteWidgetColors,
         textScale: Float,
         horizontalPadding: Dp,
+        widthDp: Dp,
+        shapeColor: Color,
     ) {
         val rowColors = AtAGlanceWidgetRowColors(dayColors, nightColors)
         val dividerColor =
@@ -235,7 +259,17 @@ class AtAGlanceWidget : GlanceAppWidget() {
                 day = dayColors.title.copy(alpha = AtAGlanceWidgetDimens.DIVIDER_ALPHA),
                 night = nightColors.title.copy(alpha = AtAGlanceWidgetDimens.DIVIDER_ALPHA),
             )
-        val lastKey = rows.last().key
+        val lastKey = rows.lastOrNull()?.key
+        val divider =
+            @Composable {
+                Box(
+                    modifier =
+                        GlanceModifier
+                            .fillMaxWidth()
+                            .height(AtAGlanceWidgetDimens.DIVIDER_HEIGHT)
+                            .background(dividerColor),
+                ) {}
+            }
         LazyColumn(
             modifier =
                 GlanceModifier
@@ -245,24 +279,28 @@ class AtAGlanceWidget : GlanceAppWidget() {
                         vertical = AtAGlanceWidgetDimens.LIST_VERTICAL_PADDING,
                     ),
         ) {
+            // Media leads, as home's Now Playing card sits above the other rows.
+            if (nowPlaying != null) {
+                item(itemId = NOW_PLAYING_ITEM_KEY.hashCode().toLong()) {
+                    Column(modifier = GlanceModifier.fillMaxWidth()) {
+                        AtAGlanceWidgetNowPlayingRow(context, nowPlaying, rowColors, textScale, widthDp - horizontalPadding * 2, shapeColor)
+                        if (lastKey != null) divider()
+                    }
+                }
+            }
             items(rows, itemId = { it.key.hashCode().toLong() }) { row ->
                 Column(modifier = GlanceModifier.fillMaxWidth()) {
                     AtAGlanceWidgetRowContent(context, row, rowColors, textScale)
-                    if (row.key != lastKey) {
-                        Box(
-                            modifier =
-                                GlanceModifier
-                                    .fillMaxWidth()
-                                    .height(AtAGlanceWidgetDimens.DIVIDER_HEIGHT)
-                                    .background(dividerColor),
-                        ) {}
-                    }
+                    if (row.key != lastKey) divider()
                 }
             }
         }
     }
 
-    /** Nothing to show, so today's day and date, or nothing when [showDate] is off; a tap opens Quick Search. */
+    /**
+     * Nothing to show, so today's day and date, where a tap opens Quick Search. With [showDate] off the
+     * widget stays empty and ignores taps.
+     */
     @Composable
     private fun EmptyContent(
         context: Context,
@@ -271,6 +309,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
         textScale: Float,
         showDate: Boolean,
     ) {
+        if (!showDate) return
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         Box(
             modifier =
@@ -284,7 +323,6 @@ class AtAGlanceWidget : GlanceAppWidget() {
                     },
             contentAlignment = Alignment.Center,
         ) {
-            if (!showDate) return@Box
             Text(
                 text = atAGlanceWidgetEmptyDate(),
                 style =

@@ -6,7 +6,7 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 
 /** A posted notification that App notifications can match. */
-internal class AppNotification(
+internal data class AppNotification(
     val key: String,
     val packageName: String,
     val title: String?,
@@ -28,37 +28,31 @@ internal object AppNotifications {
     private val dismissed = mutableMapOf<String, Long>()
 
     /**
-     * The notifications [config] shows, newest first; nothing when it is off or has no apps or
-     * keywords, and then no notification is read. [excludedKeys] are notifications another At a
-     * Glance row already shows. Apps that can't match are skipped before their text is read.
+     * Every notification of [posted] that App notifications could show, whatever the apps and
+     * keywords, so Home and each At a Glance widget can match their own. [excludedKeys] are
+     * notifications another At a Glance row already shows.
      */
-    fun parse(
+    fun candidates(
         posted: List<StatusBarNotification>,
         excludedKeys: Set<String>,
-        config: AppNotificationsConfig,
     ): List<AppNotification> {
         val postedKeys = posted.map { it.key }.toSet()
         synchronized(dismissed) { dismissed.keys.retainAll(postedKeys) }
-        if (!config.isActive) return emptyList()
-        val candidates =
-            posted.mapNotNull { sbn ->
-                sbn.takeIf {
-                    it.key !in excludedKeys && config.filters.couldMatch(it.packageName) && isCandidate(it)
-                }?.toAppNotification()
-            }
-        return select(candidates, excludedKeys, config)
+        return posted.mapNotNull { sbn ->
+            sbn.takeIf { it.key !in excludedKeys && isCandidate(it) }?.toAppNotification()
+        }
     }
 
     /**
      * Of [notifications], those [config] shows, newest first, leaving out [excludedKeys] and the
-     * ones hidden from At a Glance. Nothing when [config] is off or has no apps or keywords.
+     * ones hidden from At a Glance. Nothing when [config] has no apps or keywords.
      */
     fun select(
         notifications: List<AppNotification>,
         excludedKeys: Set<String>,
         config: AppNotificationsConfig,
     ): List<AppNotification> {
-        if (!config.isActive) return emptyList()
+        if (!config.hasFilters) return emptyList()
         val hidden = synchronized(dismissed) { dismissed.toMap() }
         return notifications
             .filter {

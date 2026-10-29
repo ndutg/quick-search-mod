@@ -409,6 +409,7 @@ class UiPreferences(context: Context) : UiPreferencesFeatures(context) {
         const val KEY_SEARCH_BAR_BACKGROUND_COLOR_ARGB = "search_bar_background_color_argb"
         const val KEY_SEARCH_BAR_BACKGROUND_TRANSPARENCY = "search_bar_background_transparency"
         const val KEY_SEARCH_BAR_CORNER_RADIUS_DP = "search_bar_corner_radius_dp"
+        const val KEY_SEARCH_BAR_SHOW_MIC_ICON = "search_bar_show_mic_icon"
         const val KEY_BACKGROUND_SOURCE = "background_source"
         const val KEY_CUSTOM_IMAGE_URI = "custom_image_uri"
         const val KEY_SELECTED_ICON_PACK = "selected_icon_pack"

@@ -107,6 +107,8 @@ internal fun SearchViewModel.applySettingsCommand(command: SettingsCommand) {
                 AppSettingsToggleKey.SHOW_STATUS_BAR -> setStatusBarVisible(command.enabled)
                 AppSettingsToggleKey.SEARCH_HINTS -> setSearchHintsEnabled(command.enabled)
                 AppSettingsToggleKey.SETTINGS_ICON -> setSettingsIconEnabled(command.enabled)
+                AppSettingsToggleKey.MIC_ICON ->
+                    setSearchBarStyle(uiState.value.searchBarStyle.copy(showMicIcon = command.enabled))
                 AppSettingsToggleKey.APP_LABELS -> setShowAppLabels(command.enabled)
                 AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE ->
                     setSearchEngineCompactMode(command.enabled)
@@ -229,6 +231,7 @@ internal fun SearchUiState.isAppSettingToggleEnabled(toggleKey: AppSettingsToggl
         AppSettingsToggleKey.SHOW_STATUS_BAR -> showStatusBar
         AppSettingsToggleKey.SEARCH_HINTS -> searchHintsEnabled
         AppSettingsToggleKey.SETTINGS_ICON -> settingsIconEnabled
+        AppSettingsToggleKey.MIC_ICON -> searchBarStyle.showMicIcon
         AppSettingsToggleKey.APP_LABELS -> showAppLabels
         AppSettingsToggleKey.SEARCH_ENGINE_COMPACT_MODE -> isSearchEngineCompactMode
         AppSettingsToggleKey.SEARCH_ENGINE_ALIAS_SUFFIX -> isSearchEngineAliasSuffixEnabled

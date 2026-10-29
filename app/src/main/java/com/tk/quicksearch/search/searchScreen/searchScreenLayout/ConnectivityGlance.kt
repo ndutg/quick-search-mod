@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
@@ -166,52 +167,28 @@ internal fun rememberWifiSignInGlance(enabled: Boolean): WifiSignInGlance? {
             } else {
                 null
             }
-        needsSignIn =
-            connectivityManager != null &&
-            runCatching {
-                needsCaptivePortalSignIn(connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork))
-            }.getOrDefault(false)
+        needsSignIn = connectivityManager != null && hasCaptivePortalWifi(connectivityManager)
         if (show && !needsSignIn) WifiSignInDismissal.dismissed = false
 
         // Callbacks arrive on a system thread; state is only written on the main thread.
         val mainHandler = Handler(Looper.getMainLooper())
         var disposed = false
-        val post = { value: Boolean ->
-            mainHandler.post {
-                if (!disposed) {
-                    needsSignIn = value
-                    if (!value) WifiSignInDismissal.dismissed = false
-                }
-            }
-        }
         val callback =
-            object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    post(
-                        runCatching {
-                            needsCaptivePortalSignIn(connectivityManager?.getNetworkCapabilities(network))
-                        }.getOrDefault(false),
-                    )
-                }
-
-                override fun onCapabilitiesChanged(
-                    network: Network,
-                    networkCapabilities: NetworkCapabilities,
-                ) {
-                    post(needsCaptivePortalSignIn(networkCapabilities))
-                }
-
-                override fun onLost(network: Network) {
-                    post(false)
+            connectivityManager?.let {
+                CaptivePortalWifiCallback(it) { value ->
+                    mainHandler.post {
+                        if (!disposed) {
+                            needsSignIn = value
+                            if (!value) WifiSignInDismissal.dismissed = false
+                        }
+                    }
                 }
             }
-        val registered =
-            connectivityManager != null &&
-                runCatching { connectivityManager.registerDefaultNetworkCallback(callback) }.isSuccess
+        val registered = callback != null && registerWifiNetworkCallback(connectivityManager, callback)
         onDispose {
             disposed = true
             mainHandler.removeCallbacksAndMessages(null)
-            if (registered) runCatching { connectivityManager?.unregisterNetworkCallback(callback) }
+            if (registered && callback != null) runCatching { connectivityManager?.unregisterNetworkCallback(callback) }
         }
     }
 
@@ -236,6 +213,60 @@ internal fun needsCaptivePortalSignIn(capabilities: NetworkCapabilities?): Boole
     capabilities != null &&
         capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
         capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)
+
+/**
+ * Whether any connected Wi-Fi network needs a sign-in. Not only the default network: while Wi-Fi is
+ * behind a portal it is unvalidated, so mobile data stays the default network.
+ */
+internal fun hasCaptivePortalWifi(connectivityManager: ConnectivityManager): Boolean =
+    runCatching {
+        @Suppress("DEPRECATION")
+        connectivityManager.allNetworks.any { needsCaptivePortalSignIn(connectivityManager.getNetworkCapabilities(it)) }
+    }.getOrDefault(false)
+
+/** Follows every Wi-Fi network, as [hasCaptivePortalWifi] reads it; register with [registerWifiNetworkCallback]. */
+internal fun registerWifiNetworkCallback(
+    connectivityManager: ConnectivityManager,
+    callback: ConnectivityManager.NetworkCallback,
+): Boolean =
+    runCatching {
+        val request = NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build()
+        connectivityManager.registerNetworkCallback(request, callback)
+    }.isSuccess
+
+/**
+ * Tracks which Wi-Fi networks need a sign-in and reports whether any does after each change, on the
+ * system callback thread.
+ */
+internal class CaptivePortalWifiCallback(
+    private val connectivityManager: ConnectivityManager,
+    private val onChange: (needsSignIn: Boolean) -> Unit,
+) : ConnectivityManager.NetworkCallback() {
+    private val captiveNetworks = mutableSetOf<Network>()
+
+    // Before API 26 capabilities are not always reported right after a network becomes available.
+    override fun onAvailable(network: Network) =
+        update(network, runCatching { connectivityManager.getNetworkCapabilities(network) }.getOrNull())
+
+    override fun onCapabilitiesChanged(
+        network: Network,
+        networkCapabilities: NetworkCapabilities,
+    ) = update(network, networkCapabilities)
+
+    override fun onLost(network: Network) = update(network, null)
+
+    private fun update(
+        network: Network,
+        capabilities: NetworkCapabilities?,
+    ) {
+        val value =
+            synchronized(captiveNetworks) {
+                if (needsCaptivePortalSignIn(capabilities)) captiveNetworks.add(network) else captiveNetworks.remove(network)
+                captiveNetworks.isNotEmpty()
+            }
+        onChange(value)
+    }
+}
 
 internal fun isHotspotOn(
     context: Context,

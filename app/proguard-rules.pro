@@ -37,3 +37,10 @@
 -keep class androidx.work.ArrayCreatingInputMerger {
     public <init>();
 }
+
+# Glance instantiates action callbacks (widget buttons like At a Glance's close button) by class
+# name. Glance's consumer rule keeps the classes but not their no-arg constructors, so R8 removes
+# them and the tap silently does nothing in release builds.
+-keep class * implements androidx.glance.appwidget.action.ActionCallback {
+    public <init>();
+}

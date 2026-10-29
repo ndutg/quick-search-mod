@@ -307,6 +307,7 @@
 <string name="section_notes">Notes</string>
 <string name="section_media">Contrôles multimédias</string>
 <string name="section_settings">Paramètres de l\'appareil</string>
+<string name="search_section_menu_title">Rechercher dans</string>
 <string name="top_match_title">Meilleur résultat</string>
 <string name="top_matches_count_label">Nb de correspondances</string>
 <string name="top_matches_priority_desc">Modifier la priorité et désactiver des éléments dans les meilleurs résultats</string>
@@ -756,7 +757,10 @@
 <string name="settings_home_screen_widget_confirm_message">Vous êtes sur le point d\'ajouter le widget Quick Search à votre écran d\'accueil. Appuyez longuement sur le widget pour accéder à sa page de paramètres qui propose de nombreuses options de personnalisation.</string>
 <string name="settings_home_screen_widget_desc">Ajouter le widget Quick Search à votre écran d\'accueil.</string>
 <string name="settings_home_screen_widget_title">Widget d\'écran d\'accueil</string>
-<string name="settings_icon_desc">Afficher/masquer l\'icône d\'engrenage dans la barre de recherche. Accédez aux paramètres à tout moment en glissant vers la gauche ou en effectuant une recherche.</string>
+<string name="settings_icon_desc">Afficher ou masquer l’icône d’engrenage.</string>
+<string name="settings_icon_off_desc">Accédez aux paramètres à tout moment en glissant vers la gauche ou en effectuant une recherche.</string>
+<string name="settings_mic_icon_title">Icône du micro</string>
+<string name="settings_mic_icon_desc">Lancez la recherche vocale depuis la barre de recherche.</string>
 <string name="settings_icon_required_by_gesture_desc">Définissez le geste \"Balayer vers la gauche\" sur \"Ouvrir les paramètres\" pour masquer cette icône.</string>
 <string name="settings_icon_pack_empty">Aucun pack d\'icônes trouvé.</string>
 <string name="settings_icon_pack_description_no_packs">Définissez un pack d\'icônes pour les icônes des applications.</string>
@@ -1163,7 +1167,6 @@
 <string name="widget_at_a_glance_widget_title">Widget En un coup d\'œil</string>
 <string name="widget_at_a_glance_items_title">Éléments En un coup d\'œil</string>
 <string name="widget_at_a_glance_items_summary">Choisissez ce qu\'affiche ce widget</string>
-<string name="widget_at_a_glance_app_notifications_setup">Activez d\'abord Notifications d\'applications dans les paramètres En un coup d\'œil</string>
 <string name="widget_at_a_glance_sample_alarm">Demain, 7:00</string>
 <string name="widget_at_a_glance_sample_birthday">Anniversaire d\'Alex</string>
 <string name="widget_at_a_glance_sample_caller">Maman</string>

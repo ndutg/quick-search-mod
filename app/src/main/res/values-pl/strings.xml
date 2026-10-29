@@ -308,6 +308,7 @@
     <string name="section_notes">Notatki</string>
     <string name="section_media">Sterowanie multimediami</string>
     <string name="section_settings">Ustawienia urządzenia</string>
+    <string name="search_section_menu_title">Szukaj w</string>
     <string name="top_match_title">Najlepsze dopasowanie</string>
     <string name="top_matches_count_label">Liczba dopasowań</string>
     <string name="top_matches_priority_desc">Zmień priorytet i wyłączaj elementy w najlepszych dopasowaniach</string>
@@ -784,7 +785,10 @@
     <string name="settings_home_screen_widget_confirm_message">Zamierzasz dodać widżet Quick Search do ekranu głównego. Przytrzymaj widżet, aby przejść do strony ustawień widżetu z wieloma opcjami dostosowywania.</string>
     <string name="settings_home_screen_widget_desc">Dodaj widżet Quick Search do ekranu głównego.</string>
     <string name="settings_home_screen_widget_title">Widżet ekranu głównego</string>
-    <string name="settings_icon_desc">Pokaż/ukryj ikonę koła zębatego na pasku wyszukiwania. Przejdź do ustawień w dowolnym momencie przesuwając w lewo lub przez wyszukiwanie.</string>
+    <string name="settings_icon_desc">Pokaż lub ukryj ikonę koła zębatego.</string>
+    <string name="settings_icon_off_desc">Przejdź do ustawień w dowolnym momencie przesuwając w lewo lub przez wyszukiwanie.</string>
+    <string name="settings_mic_icon_title">Ikona mikrofonu</string>
+    <string name="settings_mic_icon_desc">Uruchamiaj wyszukiwanie głosowe z paska wyszukiwania.</string>
     <string name="settings_icon_required_by_gesture_desc">Ustaw gest przesunięcia w lewo na Otwórz ustawienia, aby wyłączyć tę ikonę.</string>
     <string name="settings_icon_pack_empty">Nie znaleziono pakietów ikon.</string>
     <string name="settings_icon_pack_description_no_packs">Ustaw pakiet ikon dla ikon aplikacji.</string>
@@ -1200,7 +1204,6 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_at_a_glance_widget_title">Widżet W skrócie</string>
     <string name="widget_at_a_glance_items_title">Elementy W skrócie</string>
     <string name="widget_at_a_glance_items_summary">Wybierz, co pokazuje ten widżet</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Najpierw włącz Powiadomienia aplikacji w ustawieniach W skrócie</string>
     <string name="widget_at_a_glance_sample_alarm">Jutro, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Urodziny: Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mama</string>

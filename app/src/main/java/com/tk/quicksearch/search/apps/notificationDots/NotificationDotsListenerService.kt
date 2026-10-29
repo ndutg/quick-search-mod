@@ -19,6 +19,7 @@ import com.tk.quicksearch.search.notificationHistory.NotificationHistoryAccess
 import com.tk.quicksearch.search.notificationHistory.NotificationHistoryStore
 import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetUpdater
 import com.tk.quicksearch.widgets.utils.refreshAllWidgets
+import com.tk.quicksearch.widgets.utils.refreshAtAGlanceWidgets
 import com.tk.quicksearch.widgets.utils.refreshMediaControlsWidgets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -150,20 +151,32 @@ class NotificationDotsListenerService : NotificationListenerService() {
             if (sessionCallbacks.containsKey(controller.sessionToken)) return@forEach
             val callback =
                 object : MediaController.Callback() {
+                    // Sessions also report position updates as state changes, which At a Glance
+                    // widgets don't show and are too costly to redraw for every second.
+                    private var lastGlanceState: Pair<Int, List<String>>? = null
+
                     override fun onPlaybackStateChanged(state: PlaybackState?) {
                         // The callback is delivered as the session commits its new state. Do not
                         // immediately re-read controller.playbackState and suppress the update:
                         // that read can still expose the previous state (especially on pause),
                         // leaving the widget icon stuck on Pause.
                         refreshWidgets()
+                        val glanceState =
+                            (state?.state ?: PlaybackState.STATE_NONE) to
+                                state?.customActions.orEmpty().map { it.action }
+                        if (glanceState != lastGlanceState) {
+                            lastGlanceState = glanceState
+                            refreshGlanceWidgets()
+                        }
                     }
 
-                    // Only the media controls widget shows the track, so a new title or artwork
-                    // does not need to redraw the search widgets.
+                    // Only the media controls and At a Glance widgets show the track, so a new
+                    // title or artwork does not need to redraw the search widgets.
                     override fun onMetadataChanged(metadata: MediaMetadata?) {
                         widgetRefreshScope.launch {
                             refreshMediaControlsWidgets(this@NotificationDotsListenerService)
                         }
+                        refreshGlanceWidgets()
                     }
 
                     override fun onSessionDestroyed() {
@@ -174,6 +187,14 @@ class NotificationDotsListenerService : NotificationListenerService() {
             sessionCallbacks[controller.sessionToken] = controller to callback
         }
         refreshWidgets()
+        refreshGlanceWidgets()
+    }
+
+    /** Redraws At a Glance widgets for their Now Playing row. */
+    private fun refreshGlanceWidgets() {
+        widgetRefreshScope.launch {
+            refreshAtAGlanceWidgets(this@NotificationDotsListenerService)
+        }
     }
 
     private fun refreshWidgets() {

@@ -27,12 +27,19 @@ class AppNotificationsTest {
     fun tearDown() = AppNotifications.clear()
 
     @Test
-    fun offOrEmptyConfigMatchesNothing() {
+    fun emptyConfigMatchesNothing() {
         val posted = listOf(notification("a", 1))
-        assertTrue(AppNotifications.select(posted, emptySet(), active.copy(enabled = false)).isEmpty())
         val enabledWithoutFilters = AppNotificationsConfig(enabled = true, filters = AppNotificationFilters())
         assertFalse(enabledWithoutFilters.isActive)
         assertTrue(AppNotifications.select(posted, emptySet(), enabledWithoutFilters).isEmpty())
+    }
+
+    @Test
+    fun matchesWithHomeToggleOffForWidgets() {
+        val posted = listOf(notification("a", 1))
+        val off = active.copy(enabled = false)
+        assertFalse(off.isActive)
+        assertEquals(listOf("a"), keys(AppNotifications.select(posted, emptySet(), off)))
     }
 
     @Test
