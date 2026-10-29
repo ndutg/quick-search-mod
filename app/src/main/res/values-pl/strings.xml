@@ -785,7 +785,10 @@
     <string name="settings_home_screen_widget_confirm_message">Zamierzasz dodać widżet Quick Search do ekranu głównego. Przytrzymaj widżet, aby przejść do strony ustawień widżetu z wieloma opcjami dostosowywania.</string>
     <string name="settings_home_screen_widget_desc">Dodaj widżet Quick Search do ekranu głównego.</string>
     <string name="settings_home_screen_widget_title">Widżet ekranu głównego</string>
-    <string name="settings_icon_desc">Pokaż/ukryj ikonę koła zębatego na pasku wyszukiwania. Przejdź do ustawień w dowolnym momencie przesuwając w lewo lub przez wyszukiwanie.</string>
+    <string name="settings_icon_desc">Pokaż lub ukryj ikonę koła zębatego.</string>
+    <string name="settings_icon_off_desc">Przejdź do ustawień w dowolnym momencie przesuwając w lewo lub przez wyszukiwanie.</string>
+    <string name="settings_mic_icon_title">Ikona mikrofonu</string>
+    <string name="settings_mic_icon_desc">Uruchamiaj wyszukiwanie głosowe z paska wyszukiwania.</string>
     <string name="settings_icon_required_by_gesture_desc">Ustaw gest przesunięcia w lewo na Otwórz ustawienia, aby wyłączyć tę ikonę.</string>
     <string name="settings_icon_pack_empty">Nie znaleziono pakietów ikon.</string>
     <string name="settings_icon_pack_description_no_packs">Ustaw pakiet ikon dla ikon aplikacji.</string>

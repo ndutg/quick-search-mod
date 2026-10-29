@@ -757,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">आप अपने होम स्क्रीन पर Quick Search विजेट जोड़ने वाले हैं। विजेट सेटिंग्स पेज खोलने के लिए विजेट पर थोड़ी देर दबाकर रखें, जहां कई कस्टमाइज़ेशन विकल्प हैं।</string>
     <string name="settings_home_screen_widget_desc">अपने होम स्क्रीन पर Quick Search विजेट जोड़ें।</string>
     <string name="settings_home_screen_widget_title">होम स्क्रीन विजेट</string>
-    <string name="settings_icon_desc">सर्च बार में गियर आइकन दिखाएं/छिपाएं। बाएं स्वाइप करके या खोजकर कभी भी सेटिंग्स खोलें।</string>
+    <string name="settings_icon_desc">गियर आइकन दिखाएं या छिपाएं।</string>
+    <string name="settings_icon_off_desc">बाएं स्वाइप करके या खोजकर कभी भी सेटिंग्स खोलें।</string>
+    <string name="settings_mic_icon_title">माइक आइकन</string>
+    <string name="settings_mic_icon_desc">सर्च बार से वॉइस खोज शुरू करें।</string>
     <string name="settings_icon_required_by_gesture_desc">इस आइकन को बंद करने के लिए \"सेटिंग्स खोलें\" पर स्वाइप लेफ्ट जेस्चर सेट करें।</string>
     <string name="settings_icon_pack_empty">कोई आइकन पैक नहीं मिला।</string>
     <string name="settings_icon_pack_description_no_packs">ऐप आइकन के लिए एक आइकन पैक सेट करें।</string>

@@ -756,7 +756,10 @@
     <string name="settings_home_screen_widget_confirm_message">Stai per aggiungere il widget Quick Search alla schermata iniziale. Tieni premuto sul widget per accedere alla pagina delle sue impostazioni, che offre molte opzioni di personalizzazione.</string>
     <string name="settings_home_screen_widget_desc">Aggiungi il widget Quick Search alla schermata iniziale.</string>
     <string name="settings_home_screen_widget_title">Widget schermata iniziale</string>
-    <string name="settings_icon_desc">Mostra/nascondi l\u2019icona dell\u2019ingranaggio nella barra di ricerca. Accedi alle impostazioni in qualsiasi momento scorrendo a sinistra o tramite la ricerca.</string>
+    <string name="settings_icon_desc">Mostra o nascondi l’icona dell’ingranaggio.</string>
+    <string name="settings_icon_off_desc">Accedi alle impostazioni in qualsiasi momento scorrendo a sinistra o tramite la ricerca.</string>
+    <string name="settings_mic_icon_title">Icona microfono</string>
+    <string name="settings_mic_icon_desc">Avvia la ricerca vocale dalla barra di ricerca.</string>
     <string name="settings_icon_required_by_gesture_desc">Imposta il gesto \"Scorri a sinistra\" su \"Apri impostazioni\" per nascondere questa icona.</string>
     <string name="settings_icon_pack_empty">Nessun pacchetto di icone trovato.</string>
     <string name="settings_icon_pack_description_no_packs">Imposta un pacchetto di icone per le icone delle app.</string>

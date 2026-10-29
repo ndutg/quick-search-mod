@@ -757,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">Du bist dabei, das Quick Search-Widget zum Startbildschirm hinzuzufügen. Halte das Widget gedrückt, um auf die Widget-Einstellungsseite mit vielen Anpassungsoptionen zuzugreifen.</string>
     <string name="settings_home_screen_widget_desc">Quick Search-Widget zum Startbildschirm hinzufügen.</string>
     <string name="settings_home_screen_widget_title">Startbildschirm-Widget</string>
-    <string name="settings_icon_desc">Zahnrad-Symbol in der Suchleiste ein-/ausblenden. Einstellungen jederzeit durch Wischen nach links oder per Suche aufrufen.</string>
+    <string name="settings_icon_desc">Zahnrad-Symbol ein- oder ausblenden.</string>
+    <string name="settings_icon_off_desc">Einstellungen jederzeit durch Wischen nach links oder per Suche aufrufen.</string>
+    <string name="settings_mic_icon_title">Mikrofonsymbol</string>
+    <string name="settings_mic_icon_desc">Sprachsuche direkt aus der Suchleiste starten.</string>
     <string name="settings_icon_required_by_gesture_desc">Legen Sie die Geste \"Nach links wischen\" auf \"Einstellungen öffnen\" fest, um dieses Symbol auszublenden.</string>
     <string name="settings_icon_pack_empty">Keine Icon-Packs gefunden.</string>
     <string name="settings_icon_pack_description_no_packs">Lege ein Icon-Pack für die App-Symbole fest.</string>

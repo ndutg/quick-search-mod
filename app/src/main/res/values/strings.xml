@@ -756,7 +756,10 @@
     <string name="settings_home_screen_widget_confirm_message">You are about to add Quick Search widget to your home screen. Long press on the widget to access widget settings page that has many customization options.</string>
     <string name="settings_home_screen_widget_desc">Add Quick Search widget to your home screen.</string>
     <string name="settings_home_screen_widget_title">Home Screen Widget</string>
-    <string name="settings_icon_desc">Show/hide the gear icon in the search bar. Access settings anytime by swiping left or by searching.</string>
+    <string name="settings_icon_desc">Show or hide the gear icon.</string>
+    <string name="settings_icon_off_desc">Access settings anytime by swiping left or by searching.</string>
+    <string name="settings_mic_icon_title">Mic Icon</string>
+    <string name="settings_mic_icon_desc">Start voice search from the search bar.</string>
     <string name="settings_icon_required_by_gesture_desc">Set Swipe Left Gesture to Open Settings to turn this icon off.</string>
     <string name="settings_icon_pack_empty">No icon packs found.</string>
     <string name="settings_icon_pack_description_no_packs">Set an icon pack for the app icons.</string>

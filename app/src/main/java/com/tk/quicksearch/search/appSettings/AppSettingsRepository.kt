@@ -500,6 +500,13 @@ class AppSettingsRepository(
                 toggleKey = AppSettingsToggleKey.SETTINGS_ICON,
             )
             addToggle(
+                id = "app_toggle_mic_icon",
+                titleRes = R.string.settings_mic_icon_title,
+                descriptionRes = R.string.settings_mic_icon_desc,
+                toggleKey = AppSettingsToggleKey.MIC_ICON,
+                keywords = listOf("voice", "microphone", "speech"),
+            )
+            addToggle(
                 id = "app_toggle_app_labels",
                 titleRes = R.string.settings_show_app_labels_title,
                 descriptionRes = R.string.settings_show_app_labels_desc,

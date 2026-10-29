@@ -273,14 +273,38 @@ internal fun detectConsumedPrefixAlias(
     return aliasToken
 }
 
+/** True while an alias, tool or shortcut owns the bar, which swaps its trailing icon to clear. */
+internal fun isSearchBarAliasActive(
+    detectedShortcutTarget: SearchTarget?,
+    detectedAliasSearchSection: SearchSection?,
+    activeToolType: SearchToolType?,
+    isCurrencyConverterAliasMode: Boolean,
+    isWorldClockAliasMode: Boolean,
+    isDictionaryAliasMode: Boolean,
+    isWeatherAliasMode: Boolean,
+    detectedCustomToolId: String?,
+    detectedTaskerIntentId: String?,
+): Boolean =
+    detectedShortcutTarget != null ||
+        detectedAliasSearchSection != null ||
+        activeToolType != null ||
+        isCurrencyConverterAliasMode ||
+        isWorldClockAliasMode ||
+        isDictionaryAliasMode ||
+        isWeatherAliasMode ||
+        detectedCustomToolId != null ||
+        detectedTaskerIntentId != null
+
 @Composable
 internal fun SearchBarTrailingIcon(
     showClear: Boolean,
     showSettings: Boolean,
+    showMic: Boolean,
     accentColor: Color,
     iconColor: Color,
     onClear: () -> Unit,
     onSettings: () -> Unit,
+    onMic: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -293,6 +317,14 @@ internal fun SearchBarTrailingIcon(
                     imageVector = MaterialSymbols.Close,
                     contentDescription = stringResource(R.string.desc_clear_search),
                     tint = accentColor,
+                )
+            }
+        } else if (showMic) {
+            IconButton(onClick = onMic) {
+                Icon(
+                    imageVector = MaterialSymbols.Mic,
+                    contentDescription = stringResource(R.string.desc_voice_search_icon),
+                    tint = iconColor,
                 )
             }
         } else if (showSettings) {

@@ -757,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">Πρόκειται να προσθέσετε το widget Quick Search στην αρχική σας οθόνη. Πατήστε παρατεταμένα στο widget για να μεταβείτε στη σελίδα ρυθμίσεων του widget που διαθέτει πολλές επιλογές προσαρμογής.</string>
     <string name="settings_home_screen_widget_desc">Προσθήκη του widget Quick Search στην αρχική σας οθόνη.</string>
     <string name="settings_home_screen_widget_title">Widget αρχικής οθόνης</string>
-    <string name="settings_icon_desc">Εμφάνιση/απόκρυψη του εικονιδίου γραναζιού στη γραμμή αναζήτησης. Αποκτήστε πρόσβαση στις ρυθμίσεις ανά πάσα στιγμή κάνοντας σάρωση προς τα αριστερά ή μέσω αναζήτησης.</string>
+    <string name="settings_icon_desc">Εμφάνιση ή απόκρυψη του εικονιδίου γραναζιού.</string>
+    <string name="settings_icon_off_desc">Αποκτήστε πρόσβαση στις ρυθμίσεις ανά πάσα στιγμή κάνοντας σάρωση προς τα αριστερά ή μέσω αναζήτησης.</string>
+    <string name="settings_mic_icon_title">Εικονίδιο μικροφώνου</string>
+    <string name="settings_mic_icon_desc">Ξεκινήστε φωνητική αναζήτηση από τη γραμμή αναζήτησης.</string>
     <string name="settings_icon_required_by_gesture_desc">Ορίστε τη χειρονομία \"Σάρωση αριστερά\" σε \"Άνοιγμα ρυθμίσεων\" για να απενεργοποιήσετε αυτό το εικονίδιο.</string>
     <string name="settings_icon_pack_empty">Δεν βρέθηκαν πακέτα εικονιδίων.</string>
     <string name="settings_icon_pack_description_no_packs">Ορίστε ένα πακέτο εικονιδίων για τα εικονίδια εφαρμογών.</string>

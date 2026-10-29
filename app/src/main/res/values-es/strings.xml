@@ -757,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">Vas a añadir el widget de Quick Search a tu pantalla de inicio. Mantén presionado el widget para acceder a su página de configuración, que incluye muchas opciones de personalización.</string>
     <string name="settings_home_screen_widget_desc">Añade el widget de Quick Search a tu pantalla de inicio.</string>
     <string name="settings_home_screen_widget_title">Widget de pantalla de inicio</string>
-    <string name="settings_icon_desc">Muestra u oculta el icono de engranaje en la barra de búsqueda. Entra en ajustes en cualquier momento deslizando hacia la izquierda o buscando.</string>
+    <string name="settings_icon_desc">Muestra u oculta el icono de engranaje.</string>
+    <string name="settings_icon_off_desc">Entra en ajustes en cualquier momento deslizando hacia la izquierda o buscando.</string>
+    <string name="settings_mic_icon_title">Icono de micrófono</string>
+    <string name="settings_mic_icon_desc">Inicia la búsqueda por voz desde la barra de búsqueda.</string>
     <string name="settings_icon_required_by_gesture_desc">Establece el gesto \"Deslizar a la izquierda\" en \"Abrir ajustes\" para desactivar este icono.</string>
     <string name="settings_icon_pack_empty">No se encontraron paquetes de iconos.</string>
     <string name="settings_icon_pack_description_no_packs">Configura un paquete de iconos para los iconos de las aplicaciones.</string>

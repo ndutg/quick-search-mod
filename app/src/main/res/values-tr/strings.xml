@@ -756,7 +756,10 @@
 <string name="settings_home_screen_widget_confirm_message">Ana ekranına Quick Search widget\'ı eklemek üzeresin. Birçok özelleştirme seçeneği sunan widget ayarları sayfasına erişmek için widget\'a basılı tut.</string>
 <string name="settings_home_screen_widget_desc">Ana ekranına Quick Search widget\'ı ekle.</string>
 <string name="settings_home_screen_widget_title">Ana ekran widget\'ı</string>
-<string name="settings_icon_desc">Arama çubuğundaki ayarlar (dişli) simgesini göster/gizle. Sola kaydırarak veya arama yaparak ayarlara istediğin zaman erişebilirsin.</string>
+<string name="settings_icon_desc">Ayarlar (dişli) simgesini göster veya gizle.</string>
+<string name="settings_icon_off_desc">Sola kaydırarak veya arama yaparak ayarlara istediğin zaman erişebilirsin.</string>
+<string name="settings_mic_icon_title">Mikrofon simgesi</string>
+<string name="settings_mic_icon_desc">Sesli aramayı arama çubuğundan başlat.</string>
 <string name="settings_icon_required_by_gesture_desc">Bu simgeyi kapatmak için Sola Kaydırma Hareketini \"Ayarları Aç\" olarak ayarlayın.</string>
 <string name="settings_icon_pack_empty">Simge paketi bulunamadı.</string>
 <string name="settings_icon_pack_description_no_packs">Uygulama simgeleri için bir simge paketi ayarlayın.</string>

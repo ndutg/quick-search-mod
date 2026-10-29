@@ -583,6 +583,7 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
                                             com.tk.quicksearch.search.core.SearchBarStyle.MIN_CORNER_RADIUS_DP,
                                             com.tk.quicksearch.search.core.SearchBarStyle.MAX_CORNER_RADIUS_DP,
                                     ),
+                    showMicIcon = prefs.getBoolean(UiPreferences.KEY_SEARCH_BAR_SHOW_MIC_ICON, false),
             )
 
     fun setSearchBarStyle(style: com.tk.quicksearch.search.core.SearchBarStyle) {
@@ -590,6 +591,7 @@ open class UiPreferencesCore(context: Context) : BasePreferences(context) {
                 .putFloat(UiPreferences.KEY_SEARCH_BAR_BORDER_WIDTH_DP, style.borderWidthDp)
                 .putFloat(UiPreferences.KEY_SEARCH_BAR_BACKGROUND_TRANSPARENCY, style.backgroundTransparency)
                 .putFloat(UiPreferences.KEY_SEARCH_BAR_CORNER_RADIUS_DP, style.cornerRadiusDp)
+                .putBoolean(UiPreferences.KEY_SEARCH_BAR_SHOW_MIC_ICON, style.showMicIcon)
                 .apply {
                     style.borderColorArgb?.let { putInt(UiPreferences.KEY_SEARCH_BAR_BORDER_COLOR_ARGB, it) }
                             ?: remove(UiPreferences.KEY_SEARCH_BAR_BORDER_COLOR_ARGB)

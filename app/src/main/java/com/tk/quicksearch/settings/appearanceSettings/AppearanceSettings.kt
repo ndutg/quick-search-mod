@@ -228,6 +228,9 @@ fun AppearanceSettingsSection(
                 searchBarStyle = searchBarStyle,
                 onSetSearchBarStyle = onSetSearchBarStyle,
                 showWallpaperBackground = backgroundSource != BackgroundSource.THEME,
+                settingsIconEnabled = settingsIconEnabled,
+                settingsIconRequired = settingsIconRequired,
+                onToggleSettingsIcon = onToggleSettingsIcon,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -265,21 +268,6 @@ fun AppearanceSettingsSection(
                         subtitle = stringResource(R.string.settings_compact_layout_desc),
                         checked = compactLayoutEnabled,
                         onCheckedChange = onToggleCompactLayout,
-                        extraVerticalPadding = 8.dp,
-                )
-                SettingsToggleRow(
-                        title = stringResource(R.string.settings_icon_title),
-                        subtitle =
-                            stringResource(
-                                if (settingsIconRequired) {
-                                    R.string.settings_icon_required_by_gesture_desc
-                                } else {
-                                    R.string.settings_icon_desc
-                                },
-                            ),
-                        checked = settingsIconEnabled,
-                        onCheckedChange = onToggleSettingsIcon,
-                        enabled = !settingsIconRequired,
                         extraVerticalPadding = 8.dp,
                 )
                 SettingsToggleRow(

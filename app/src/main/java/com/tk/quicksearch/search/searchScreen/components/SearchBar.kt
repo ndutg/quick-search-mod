@@ -95,8 +95,8 @@ private const val LeadingIconEnterInitialScale = 0.88f
 private const val LeadingIconExitTargetScale = 0.88f
 private const val PlaceholderHintTransitionDurationMs = 700
 private const val PlaceholderHintTransitionDelayMs = 120
-private const val LightSearchBarShadowAmbientAlpha = 0.38f
-private const val LightSearchBarShadowSpotAlpha = 0.62f
+internal const val LightSearchBarShadowAmbientAlpha = 0.38f
+internal const val LightSearchBarShadowSpotAlpha = 0.62f
 /** Resting radius of the standalone bar, matching [DesignTokens.ShapeXXLarge]. */
 private val DefaultSearchBarCornerRadius = DesignTokens.Spacing28
 
@@ -115,6 +115,7 @@ internal fun PersistentSearchBar(
     onClearQuery: () -> Unit,
     onSettingsClick: () -> Unit,
     showSettingsIcon: Boolean = true,
+    onVoiceClick: () -> Unit = {},
     dismissKeyboardBeforeSettingsClick: Boolean = false,
     enabledTargets: List<SearchTarget>,
     shortcutCodes: Map<String, String> = emptyMap(),
@@ -177,15 +178,17 @@ internal fun PersistentSearchBar(
     val lightWallpaperSearchBar = !isDarkTheme && showWallpaperBackground
     val searchBarIconColor = AppColors.getSearchBarSecondaryIconTint(showWallpaperBackground)
     val isAliasDetected =
-            detectedShortcutTarget != null ||
-            detectedAliasSearchSection != null ||
-            activeToolType != null ||
-            isCurrencyConverterAliasMode ||
-            isWorldClockAliasMode ||
-            isDictionaryAliasMode ||
-            isWeatherAliasMode ||
-            detectedCustomToolId != null
-            || detectedTaskerIntentId != null
+        isSearchBarAliasActive(
+            detectedShortcutTarget = detectedShortcutTarget,
+            detectedAliasSearchSection = detectedAliasSearchSection,
+            activeToolType = activeToolType,
+            isCurrencyConverterAliasMode = isCurrencyConverterAliasMode,
+            isWorldClockAliasMode = isWorldClockAliasMode,
+            isDictionaryAliasMode = isDictionaryAliasMode,
+            isWeatherAliasMode = isWeatherAliasMode,
+            detectedCustomToolId = detectedCustomToolId,
+            detectedTaskerIntentId = detectedTaskerIntentId,
+        )
     val aliasVisualTransformation =
         rememberAliasHighlightVisualTransformation(
             enabledTargets = enabledTargets,
@@ -725,7 +728,8 @@ internal fun PersistentSearchBar(
             trailingIcon = {
                 SearchBarTrailingIcon(
                     showClear = isAliasDetected || query.isNotEmpty(),
-                    showSettings = showSettingsIcon,
+                    showSettings = showSettingsIcon && !searchBarStyle.showMicIcon,
+                    showMic = searchBarStyle.showMicIcon,
                     accentColor = accentColor,
                     iconColor = searchBarIconColor,
                     onClear = {
@@ -743,6 +747,10 @@ internal fun PersistentSearchBar(
                             keyboardController?.hide()
                         }
                         onSettingsClick()
+                    },
+                    onMic = {
+                        hapticStrong(view)()
+                        onVoiceClick()
                     },
                 )
             },

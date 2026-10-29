@@ -757,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">మీరు మీ హోమ్ స్క్రీన్‌కు Quick Search విడ్జెట్‌ను జోడించబోతున్నారు. అనేక అనుకూలీకరణ ఎంపికలను కలిగి ఉన్న విడ్జెట్ సెట్టింగ్‌ల పేజీని తెరవడానికి విడ్జెట్‌పై నొక్కి పట్టుకోండి.</string>
     <string name="settings_home_screen_widget_desc">మీ హోమ్ స్క్రీన్‌కు Quick Search విడ్జెట్‌ను జోడించండి.</string>
     <string name="settings_home_screen_widget_title">హోమ్ స్క్రీన్ విడ్జెట్</string>
-    <string name="settings_icon_desc">శోధన పట్టీలో గేర్ ఐకాన్‌ను చూపించు/దాచు. ఎడమవైపుకు స్వైప్ చేయడం ద్వారా లేదా శోధించడం ద్వారా ఎప్పుడైనా సెట్టింగ్‌లను యాక్సెస్ చేయండి.</string>
+    <string name="settings_icon_desc">గేర్ ఐకాన్‌ను చూపించు లేదా దాచు.</string>
+    <string name="settings_icon_off_desc">ఎడమవైపుకు స్వైప్ చేయడం ద్వారా లేదా శోధించడం ద్వారా ఎప్పుడైనా సెట్టింగ్‌లను యాక్సెస్ చేయండి.</string>
+    <string name="settings_mic_icon_title">మైక్ ఐకాన్</string>
+    <string name="settings_mic_icon_desc">శోధన పట్టీ నుండి వాయిస్ శోధనను ప్రారంభించండి.</string>
     <string name="settings_icon_required_by_gesture_desc">ఈ చిహ్నాన్ని నిలిపివేయడానికి \"సెట్టింగులను తెరవండి\" కి ఎడమకు స్వైప్ హావాభావాన్ని సెట్ చేయండి.</string>
     <string name="settings_icon_pack_empty">ఐకాన్ ప్యాక్‌లు ఏవీ కనుగొనబడలేదు.</string>
     <string name="settings_icon_pack_description_no_packs">యాప్ చిహ్నాల కోసం ఒక ఐకాన్ ప్యాక్‌ను సెట్ చేయండి.</string>

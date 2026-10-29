@@ -777,7 +777,10 @@
     <string name="settings_home_screen_widget_confirm_message">Вы собираетесь добавить виджет Quick Search на главный экран. Нажмите и удерживайте его, чтобы открыть экран настроек со множеством параметров кастомизации.</string>
 <string name="settings_home_screen_widget_desc">Добавить виджет Quick Search на главный экран.</string>
 <string name="settings_home_screen_widget_title">Виджет на главный экран</string>
-    <string name="settings_icon_desc">Показывать/скрывать значок шестерёнки в поисковой строке. Вы всегда можете перейти в настройки свайпом влево или через поиск.</string>
+    <string name="settings_icon_desc">Показывать или скрывать значок шестерёнки.</string>
+    <string name="settings_icon_off_desc">Вы всегда можете перейти в настройки свайпом влево или через поиск.</string>
+    <string name="settings_mic_icon_title">Значок микрофона</string>
+    <string name="settings_mic_icon_desc">Запускайте голосовой поиск из поисковой строки.</string>
     <string name="settings_icon_required_by_gesture_desc">Установите жест \"Смахивание влево\" на \"Открыть настройки\", чтобы скрыть этот значок.</string>
 <string name="settings_icon_pack_empty">Пакеты значков не найдены.</string>
 <string name="settings_icon_pack_description_no_packs">Установите пакет значков для значков приложений.</string>

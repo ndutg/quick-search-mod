@@ -747,7 +747,10 @@
     <string name="settings_home_screen_widget_confirm_message">您即将将 Quick Search 小部件添加到主屏幕。长按该小部件可访问包含丰富自定义选项的设置页面。</string>
     <string name="settings_home_screen_widget_desc">将 Quick Search 小部件添加到主屏幕。</string>
     <string name="settings_home_screen_widget_title">主屏幕小部件</string>
-    <string name="settings_icon_desc">在搜索栏中显示/隐藏齿轮设置图标。您随时可以通过向左滑动或进行搜索来访问设置。</string>
+    <string name="settings_icon_desc">显示或隐藏齿轮设置图标。</string>
+    <string name="settings_icon_off_desc">您随时可以通过向左滑动或进行搜索来访问设置。</string>
+    <string name="settings_mic_icon_title">麦克风图标</string>
+    <string name="settings_mic_icon_desc">从搜索栏启动语音搜索。</string>
     <string name="settings_icon_required_by_gesture_desc">将“向左滑动手势”设置为“打开设置”即可关闭此图标。</string>
     <string name="settings_icon_pack_empty">未找到任何图标包。</string>
     <string name="settings_icon_pack_description_no_packs">为应用图标设置图标包。</string>

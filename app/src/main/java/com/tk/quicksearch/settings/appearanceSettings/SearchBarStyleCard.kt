@@ -1,5 +1,6 @@
 package com.tk.quicksearch.settings.appearanceSettings
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -35,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tk.quicksearch.R
@@ -44,6 +47,7 @@ import com.tk.quicksearch.search.searchScreen.components.borderColor
 import com.tk.quicksearch.search.searchScreen.components.borderWidth
 import com.tk.quicksearch.search.searchScreen.components.cornerRadius
 import com.tk.quicksearch.settings.shared.SettingsCard
+import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
@@ -70,6 +74,9 @@ fun SearchBarStyleCard(
     searchBarStyle: SearchBarStyle,
     onSetSearchBarStyle: (SearchBarStyle) -> Unit,
     showWallpaperBackground: Boolean,
+    settingsIconEnabled: Boolean,
+    settingsIconRequired: Boolean,
+    onToggleSettingsIcon: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val view = LocalView.current
@@ -112,6 +119,7 @@ fun SearchBarStyleCard(
             SearchBarStylePreview(
                 style = previewStyle,
                 showWallpaperBackground = showWallpaperBackground,
+                showSettingsIcon = settingsIconEnabled,
                 modifier = Modifier.padding(bottom = DesignTokens.SpacingMedium),
             )
 
@@ -197,9 +205,40 @@ fun SearchBarStyleCard(
                 },
             )
 
+            // Grouped without the column's spacing so the rows' own padding sets the gaps.
+            Column {
+                SettingsToggleRow(
+                    title = stringResource(R.string.settings_icon_title),
+                    subtitle =
+                        when {
+                            settingsIconRequired -> stringResource(R.string.settings_icon_required_by_gesture_desc)
+                            settingsIconEnabled -> stringResource(R.string.settings_icon_desc)
+                            else -> stringResource(R.string.settings_icon_off_desc)
+                        },
+                    checked = settingsIconEnabled,
+                    onCheckedChange = onToggleSettingsIcon,
+                    enabled = !settingsIconRequired,
+                    horizontalPadding = 0.dp,
+                    showDivider = false,
+                )
+                SettingsToggleRow(
+                    title = stringResource(R.string.settings_mic_icon_title),
+                    subtitle = stringResource(R.string.settings_mic_icon_desc),
+                    checked = searchBarStyle.showMicIcon,
+                    onCheckedChange = { enabled ->
+                        onSetSearchBarStyle(searchBarStyle.copy(showMicIcon = enabled))
+                    },
+                    horizontalPadding = 0.dp,
+                    showDivider = false,
+                )
+            }
+
             TextButton(
-                onClick = { onSetSearchBarStyle(SearchBarStyle()) },
-                enabled = !previewStyle.isDefault,
+                onClick = {
+                    onSetSearchBarStyle(SearchBarStyle())
+                    if (!settingsIconEnabled) onToggleSettingsIcon(true)
+                },
+                enabled = !previewStyle.isDefault || !settingsIconEnabled,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(R.string.settings_launcher_icon_reset_default))
@@ -247,42 +286,90 @@ fun SearchBarStyleCard(
 private fun SearchBarStylePreview(
     style: SearchBarStyle,
     showWallpaperBackground: Boolean,
+    showSettingsIcon: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(style.cornerRadius())
     val iconAndTextColor = AppColors.getSearchBarTextAndIconColor(showWallpaperBackground)
-    Box(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .height(PreviewHeight)
-                .then(
-                    if (style.borderWidthDp > 0f) {
-                        Modifier.border(style.borderWidth(), style.borderColor(AppColors.Accent), shape)
-                    } else {
-                        Modifier
-                    },
-                ).clip(shape)
-                .background(style.backgroundColor(AppColors.getSearchBarBackground(showWallpaperBackground))),
-        contentAlignment = Alignment.CenterStart,
+    val iconTint = AppColors.getSearchBarSecondaryIconTint(showWallpaperBackground)
+    val showSettingsOutside = showSettingsIcon && style.showMicIcon
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = DesignTokens.SpacingLarge),
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .height(PreviewHeight)
+                    .searchBarPreviewSurface(style, showWallpaperBackground),
+            contentAlignment = Alignment.CenterStart,
         ) {
-            Icon(
-                imageVector = MaterialSymbols.Search,
-                contentDescription = null,
-                tint = AppColors.getSearchBarSecondaryIconTint(showWallpaperBackground),
-            )
-            Text(
-                text = stringResource(R.string.common_search),
-                style = MaterialTheme.typography.titleMedium,
-                color = iconAndTextColor.copy(alpha = DesignTokens.SearchFieldPlaceholderAlpha),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = DesignTokens.SpacingLarge),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = MaterialSymbols.Search,
+                    contentDescription = null,
+                    tint = iconTint,
+                )
+                Text(
+                    text = stringResource(R.string.common_search),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = iconAndTextColor.copy(alpha = DesignTokens.SearchFieldPlaceholderAlpha),
+                    modifier = Modifier.weight(1f),
+                )
+                val trailingIcon =
+                    when {
+                        style.showMicIcon -> MaterialSymbols.Mic
+                        showSettingsIcon -> MaterialSymbols.Settings
+                        else -> null
+                    }
+                trailingIcon?.let { icon ->
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconTint,
+                    )
+                }
+            }
+        }
+        if (showSettingsOutside) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(PreviewHeight)
+                        .searchBarPreviewSurface(style, showWallpaperBackground),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = MaterialSymbols.Settings,
+                    contentDescription = null,
+                    tint = iconTint,
+                )
+            }
         }
     }
+}
+
+/** Outline, corner radius and fill shared by the preview bar and its outside settings button. */
+@Composable
+private fun Modifier.searchBarPreviewSurface(
+    style: SearchBarStyle,
+    showWallpaperBackground: Boolean,
+): Modifier {
+    val shape = RoundedCornerShape(style.cornerRadius())
+    return this
+        .then(
+            if (style.borderWidthDp > 0f) {
+                Modifier.border(style.borderWidth(), style.borderColor(AppColors.Accent), shape)
+            } else {
+                Modifier
+            },
+        ).clip(shape)
+        .background(style.backgroundColor(AppColors.getSearchBarBackground(showWallpaperBackground)))
 }
 
 @Composable
@@ -366,10 +453,9 @@ private fun ColorChoiceChip(
     modifier: Modifier = Modifier,
     swatchColor: Color? = null,
 ) {
-    FilterChip(
-        selected = selected,
+    AssistChip(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.semantics { this.selected = selected },
         label = {
             Text(
                 text = label,
@@ -391,12 +477,16 @@ private fun ColorChoiceChip(
                 }
             },
         shape = DesignTokens.ShapeFull,
+        border =
+            BorderStroke(
+                if (selected) 1.5.dp else 1.dp,
+                if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else AppColors.SettingsDivider,
+            ),
         colors =
-            FilterChipDefaults.filterChipColors(
+            AssistChipDefaults.assistChipColors(
                 containerColor = Color.Transparent,
-                labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                selectedLabelColor = MaterialTheme.colorScheme.onSurface,
+                labelColor =
+                    if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             ),
     )
 }

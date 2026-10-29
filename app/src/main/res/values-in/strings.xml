@@ -761,7 +761,10 @@
     <string name="settings_home_screen_widget_confirm_message">Anda akan menambahkan widget Quick Search ke layar utama. Tekan lama widget untuk membuka pengaturan widget dengan beragam opsi penyesuaian.</string>
     <string name="settings_home_screen_widget_desc">Tambahkan widget Quick Search ke layar utama Anda.</string>
     <string name="settings_home_screen_widget_title">Widget Layar Utama</string>
-    <string name="settings_icon_desc">Tampilkan/sembunyikan ikon pengaturan di bilah pencarian. Buka pengaturan kapan saja dengan menggeser ke kiri atau melalui pencarian.</string>
+    <string name="settings_icon_desc">Tampilkan atau sembunyikan ikon pengaturan.</string>
+    <string name="settings_icon_off_desc">Buka pengaturan kapan saja dengan menggeser ke kiri atau melalui pencarian.</string>
+    <string name="settings_mic_icon_title">Ikon Mikrofon</string>
+    <string name="settings_mic_icon_desc">Mulai pencarian suara dari bilah pencarian.</string>
     <string name="settings_icon_required_by_gesture_desc">Atur Gestur Geser ke Kiri ke "Buka Pengaturan" untuk menonaktifkan ikon ini.</string>
     <string name="settings_icon_pack_empty">Paket ikon tidak ditemukan.</string>
     <string name="settings_icon_pack_description_no_packs">Atur paket ikon untuk ikon aplikasi.</string>

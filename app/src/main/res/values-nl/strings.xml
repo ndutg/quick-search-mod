@@ -790,7 +790,10 @@
     <string name="settings_home_screen_widget_confirm_message">Je staat op het punt de Quick Search-widget toe te voegen aan je startscherm. Houd de widget ingedrukt om naar de instellingenpagina van de widget te gaan met vele aanpassingsopties.</string>
     <string name="settings_home_screen_widget_desc">Voeg de Quick Search-widget toe aan je startscherm.</string>
     <string name="settings_home_screen_widget_title">Startscherm-widget</string>
-    <string name="settings_icon_desc">Toon/verberg het tandwiel-icoon in de zoekbalk. Open instellingen altijd door naar links te vegen of door te zoeken.</string>
+    <string name="settings_icon_desc">Toon of verberg het tandwiel-icoon.</string>
+    <string name="settings_icon_off_desc">Open instellingen altijd door naar links te vegen of door te zoeken.</string>
+    <string name="settings_mic_icon_title">Microfoon-icoon</string>
+    <string name="settings_mic_icon_desc">Start spraakgestuurd zoeken vanuit de zoekbalk.</string>
     <string name="settings_icon_required_by_gesture_desc">Stel het gebaar \'Naar links vegen\' in op \'Instellingen openen\' om dit icoon uit te schakelen.</string>
     <string name="settings_icon_pack_empty">Geen icoonpakketten gevonden.</string>
     <string name="settings_icon_pack_description_no_packs">Stel een icoonpakket in voor de app-iconen.</string>
