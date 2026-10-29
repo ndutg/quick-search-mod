@@ -23,8 +23,10 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
+import com.tk.quicksearch.search.data.preferences.UiPreferences
 import com.tk.quicksearch.search.utils.UserHandleUtils
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
+import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -59,16 +61,20 @@ private const val CircularAdaptiveIconContentScale = 1.42f
 private const val MaxAppIconBitmapSize = 512
 
 /**
- * Largest size an app icon is drawn at (64dp app icon surface at the max icon size step).
- * Icons are rasterized at this size instead of their intrinsic size so far more of them fit in
- * [AppIconCache], which keeps long lists like the all apps dialog from reloading while scrolling.
+ * Icons are rasterized at the size the app grid draws them (the 64dp app icon surface scaled by
+ * the user's icon size step) instead of their intrinsic size, so far more of them fit in
+ * [AppIconCache] and long lists like the all apps dialog don't reload while scrolling. Smaller
+ * steps keep the default size so the 64dp surfaces elsewhere stay sharp.
  */
-private const val MaxAppIconDisplaySizeDp = 80f
-
-private fun appIconBitmapSize(context: Context): Int =
-    kotlin.math.ceil(MaxAppIconDisplaySizeDp * context.resources.displayMetrics.density)
+private fun appIconBitmapSize(
+    context: Context,
+    userPreferences: UserAppPreferences,
+): Int {
+    val sizeScale = UiPreferences.appIconSizeScale(userPreferences.getAppIconSizeStep()).coerceAtLeast(1f)
+    return kotlin.math.ceil(DesignTokens.AppIconSize.value * sizeScale * context.resources.displayMetrics.density)
         .toInt()
         .coerceIn(1, MaxAppIconBitmapSize)
+}
 
 /**
  * In-memory cache for app icons to avoid repeated loading.
@@ -159,6 +165,7 @@ fun rememberAppIcon(
         if (iconPackPackage == null) false
         else UserAppPreferences(context).isIconPackUnsupportedIconMaskEnabled()
     val iconOverride = UserAppPreferences(context).getAppIconOverride(packageName)
+    val bitmapSize = appIconBitmapSize(context, UserAppPreferences(context))
     val cacheEpoch by appIconCacheEpoch.collectAsState()
     val cacheKey =
         buildCacheKey(
@@ -167,6 +174,7 @@ fun rememberAppIcon(
             iconOverride = iconOverride,
             maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons,
             userHandleId = userHandleId,
+            bitmapSize = bitmapSize,
             cacheEpoch = cacheEpoch,
             forceCircularMask = forceCircularMask,
             includeArchived = includeArchived,
@@ -200,6 +208,7 @@ fun rememberAppIcon(
                         iconOverride = iconOverride,
                         userHandleId = userHandleId,
                         densityDpi = densityDpi,
+                        targetSize = bitmapSize,
                         forceCircularMask = forceCircularMask,
                         includeArchived = includeArchived,
                     )
@@ -223,10 +232,10 @@ private fun loadAppIconEntry(
     iconOverride: com.tk.quicksearch.search.data.preferences.AppIconOverride?,
     userHandleId: Int?,
     densityDpi: Int,
+    targetSize: Int,
     forceCircularMask: Boolean,
     includeArchived: Boolean = true,
 ): AppIconEntry? {
-    val targetSize = appIconBitmapSize(context)
     val iconPackBitmap =
         iconOverride?.takeUnless { it.useSystemDefault }?.let { override ->
             IconPackManager.loadDrawableBitmap(
@@ -553,6 +562,7 @@ suspend fun prefetchAppIconRequests(
         if (iconPackPackage == null) false
         else userPreferences.isIconPackUnsupportedIconMaskEnabled()
     val densityDpi = context.resources.displayMetrics.densityDpi
+    val bitmapSize = appIconBitmapSize(context, userPreferences)
 
     val requestsToLoad =
         requests
@@ -569,6 +579,7 @@ suspend fun prefetchAppIconRequests(
                         iconOverride = iconOverride,
                         maskUnsupportedIconPackIcons = maskUnsupportedIconPackIcons,
                         userHandleId = request.userHandleId,
+                        bitmapSize = bitmapSize,
                         forceCircularMask = forceCircularMask,
                         includeArchived = includeArchived,
                     ),
@@ -597,6 +608,7 @@ suspend fun prefetchAppIconRequests(
                                 iconOverride = iconOverride,
                                 userHandleId = request.userHandleId,
                                 densityDpi = densityDpi,
+                                targetSize = bitmapSize,
                                 forceCircularMask = forceCircularMask,
                                 includeArchived = includeArchived,
                             )
@@ -615,6 +627,7 @@ private fun buildCacheKey(
     iconOverride: com.tk.quicksearch.search.data.preferences.AppIconOverride? = null,
     maskUnsupportedIconPackIcons: Boolean = true,
     userHandleId: Int? = null,
+    bitmapSize: Int,
     cacheEpoch: Long = appIconCacheEpoch.value,
     forceCircularMask: Boolean = false,
     includeArchived: Boolean = true,
@@ -625,5 +638,5 @@ private fun buildCacheKey(
     val shapeSuffix = if (forceCircularMask) ":circle" else ""
     val overrideSuffix = iconOverride?.let { ":override:${it.iconPackPackage}:${it.drawableName}" }.orEmpty()
     val archivedSuffix = if (includeArchived) "" else ":installedOnly"
-    return "$cacheEpoch:$prefix$maskSuffix:$packageName$suffix$shapeSuffix$overrideSuffix$archivedSuffix"
+    return "$cacheEpoch:$bitmapSize:$prefix$maskSuffix:$packageName$suffix$shapeSuffix$overrideSuffix$archivedSuffix"
 }

@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.search.core.ItemPriorityConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -309,10 +310,14 @@ internal fun rememberHomePinnedWidgets(enabled: Boolean): List<PanelWidgetInfo> 
 @Composable
 internal fun rememberHomeWidgetHost(): WidgetPanelHost {
     val appContext = LocalContext.current.applicationContext
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
     val host = remember(appContext) { WidgetPanelHost(appContext, QUICK_SEARCH_WIDGET_HOST_ID) }
-    DisposableEffect(host) {
-        host.startListeningShared()
-        onDispose { host.release() }
+    DisposableEffect(host, lifecycle) {
+        val stopFollowingLifecycle = host.listenWhileStarted(lifecycle)
+        onDispose {
+            stopFollowingLifecycle()
+            host.release()
+        }
     }
     return host
 }

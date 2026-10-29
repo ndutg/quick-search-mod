@@ -1,5 +1,8 @@
 package com.tk.quicksearch.search.calendar
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.search.searchScreen.shared.compactEdgeToEdge
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -121,10 +124,13 @@ fun CalendarEventsSection(
             ?.sortedBy { it.startMillis }
             ?: events
     }
+    val lifecycleOwner = LocalLifecycleOwner.current
     val nowMillis by produceState(initialValue = System.currentTimeMillis()) {
-        while (true) {
-            delay(30_000)
-            value = System.currentTimeMillis()
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                value = System.currentTimeMillis()
+                delay(30_000)
+            }
         }
     }
     val collapsedDisplayEvents =

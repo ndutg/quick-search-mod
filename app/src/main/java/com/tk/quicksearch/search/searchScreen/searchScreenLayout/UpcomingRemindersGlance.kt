@@ -44,6 +44,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.reminders.ReminderEditorRequests
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
@@ -104,10 +105,13 @@ internal fun rememberUpcomingRemindersGlance(enabled: Boolean): UpcomingReminder
             reminders = emptyList()
             return@LaunchedEffect
         }
-        while (true) {
-            nowMillis = System.currentTimeMillis()
-            reminders = withContext(Dispatchers.IO) { repository.getHomeCardReminders(nowMillis) }
-            delay(10_000)
+        // Home stays composed while another app is in front; only poll while it can be seen.
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                nowMillis = System.currentTimeMillis()
+                reminders = withContext(Dispatchers.IO) { repository.getHomeCardReminders(nowMillis) }
+                delay(10_000)
+            }
         }
     }
 

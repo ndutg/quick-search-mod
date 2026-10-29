@@ -129,6 +129,9 @@ internal object GlanceNotificationsStore {
     fun appNotificationsMatching(filters: AppNotificationFilters): List<AppNotification> =
         AppNotifications.select(appNotificationCandidatesState.value, emptySet(), AppNotificationsConfig(enabled = true, filters))
 
+    // The listener updates from its rescan thread while dismissals come from the UI, so everything
+    // that touches the parsers' and trackers' state holds this object's lock.
+    @Synchronized
     fun update(
         context: Context,
         notifications: Array<StatusBarNotification>?,
@@ -196,6 +199,7 @@ internal object GlanceNotificationsStore {
             AppNotifications.isCandidate(sbn)
 
     /** Drops cached state when notification access is lost; clock apps are resolved again on reconnect. */
+    @Synchronized
     fun clear() {
         clockPackages = null
         remoteTimerCache.clear()
@@ -221,6 +225,7 @@ internal object GlanceNotificationsStore {
     }
 
     /** Hides a one-time code and any older ones from At a Glance, leaving their notifications posted. */
+    @Synchronized
     fun dismissOtp(otp: OtpNotification) {
         OtpNotifications.dismiss(otp)
         otpsState.value = otpsState.value.filter { it.postTime > otp.postTime }
@@ -230,6 +235,7 @@ internal object GlanceNotificationsStore {
      * Clears one App notifications notification from the shade and hides it from At a Glance; the
      * app's other matches stay. Hiding covers notifications the app won't let us clear.
      */
+    @Synchronized
     fun dismissAppNotification(notification: AppNotification) {
         NotificationDotsListenerService.cancelNotification(notification.key)
         synchronized(appNotificationsLock) {
@@ -245,6 +251,7 @@ internal object GlanceNotificationsStore {
     }
 
     /** Hides a weather notification from At a Glance and clears it from the shade when the app allows. */
+    @Synchronized
     fun dismissWeather(key: String) {
         WeatherNotifications.dismiss(key)
         weatherState.value = weatherState.value.filter { it.key != key }
@@ -252,6 +259,7 @@ internal object GlanceNotificationsStore {
     }
 
     /** Hides a finished progress notification from At a Glance, leaving it posted. */
+    @Synchronized
     fun dismissFinishedProgress(key: String) {
         progressTracker.dismiss(key)
         finishedProgressState.value = progressTracker.finished

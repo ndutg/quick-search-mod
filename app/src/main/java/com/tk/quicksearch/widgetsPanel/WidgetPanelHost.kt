@@ -12,6 +12,8 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewOutlineProvider
 import android.widget.RemoteViews
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.CrashLogManager
 import com.tk.quicksearch.shared.util.MemoryDiagnostics
@@ -105,9 +107,37 @@ internal class WidgetPanelHost(
         startListening()
     }
 
-    fun release() {
+    /**
+     * Listens for widget updates only while [lifecycle] is started, so a hidden surface does not
+     * apply other apps' widget updates in the background; the system sends the missed ones when
+     * listening starts again. Returns how to stop following [lifecycle].
+     */
+    fun listenWhileStarted(lifecycle: Lifecycle): () -> Unit {
+        val observer =
+            LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_START -> startListeningShared()
+                    Lifecycle.Event.ON_STOP -> pauseListening()
+                    else -> Unit
+                }
+            }
+        lifecycle.addObserver(observer)
+        return { lifecycle.removeObserver(observer) }
+    }
+
+    /** Stops this host's updates, handing them back to the previous surface if it was the listener. */
+    private fun pauseListening() {
         val wasActiveListener = activeHosts.lastOrNull() === this
         activeHosts.remove(this)
+        val nextListener = activeHosts.lastOrNull()
+        if (nextListener == null) {
+            stopListening()
+        } else if (wasActiveListener) {
+            nextListener.startListening()
+        }
+    }
+
+    fun release() {
         val releasedViewCount = liveViews.size
         liveViews.toList().forEach { it.releaseCallbacks() }
         liveViews.clear()
@@ -117,12 +147,7 @@ internal class WidgetPanelHost(
         onWidgetTouch = null
         onWidgetContentChanged = null
         isScrollInProgressProvider = { false }
-        val nextListener = activeHosts.lastOrNull()
-        if (nextListener == null) {
-            stopListening()
-        } else if (wasActiveListener) {
-            nextListener.startListening()
-        }
+        pauseListening()
         clearViews()
         MemoryDiagnostics.widgetViewsReleased(releasedViewCount)
         MemoryDiagnostics.widgetHostReleased()

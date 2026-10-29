@@ -10,6 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.search.appSettings.AppSettingsResultsSection
 import com.tk.quicksearch.search.appShortcuts.AppShortcutResultsSection
 import com.tk.quicksearch.search.apps.AppGridView
@@ -364,10 +367,13 @@ private fun renderCalendarSection(
     context: SectionRenderContext,
 ) {
     val calendarParams = params.calendarParams ?: return
+    val lifecycleOwner = LocalLifecycleOwner.current
     val nowMillis by produceState(initialValue = System.currentTimeMillis()) {
-        while (true) {
-            delay(30_000)
-            value = System.currentTimeMillis()
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                value = System.currentTimeMillis()
+                delay(30_000)
+            }
         }
     }
     val visibleTodayCalendarEvents =

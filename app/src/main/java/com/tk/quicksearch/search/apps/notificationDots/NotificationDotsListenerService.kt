@@ -21,10 +21,13 @@ import com.tk.quicksearch.widgets.atAGlanceWidget.AtAGlanceWidgetUpdater
 import com.tk.quicksearch.widgets.utils.refreshAllWidgets
 import com.tk.quicksearch.widgets.utils.refreshAtAGlanceWidgets
 import com.tk.quicksearch.widgets.utils.refreshMediaControlsWidgets
+import java.util.concurrent.Executors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class NotificationDotsListenerService : NotificationListenerService() {
@@ -32,6 +35,13 @@ class NotificationDotsListenerService : NotificationListenerService() {
     private var activeSessionsListener: MediaSessionManager.OnActiveSessionsChangedListener? = null
     private val sessionCallbacks = mutableMapOf<MediaSession.Token, Pair<MediaController, MediaController.Callback>>()
     private val widgetRefreshScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    // Rescans run on one background thread so the binder read of every posted notification does
+    // not block the UI sharing this process, and a burst of updates (progress, navigation) collapses
+    // into a single rescan. Postings wait here so they are recorded after the rescan they came with.
+    private val rescanExecutor = Executors.newSingleThreadExecutor()
+    private val pendingPostings = mutableListOf<StatusBarNotification>()
+    private var isRescanQueued = false
 
     /** Ends a charging row dismissal on unplug, even while home is not showing to see it. */
     private val powerDisconnectedReceiver =
@@ -45,13 +55,15 @@ class NotificationDotsListenerService : NotificationListenerService() {
     override fun onListenerConnected() {
         super.onListenerConnected()
         connected = this
-        val active = runCatching { activeNotifications }.getOrNull()
-        NotificationDotsStore.updateFromNotifications(active)
-        GlanceNotificationsStore.update(this, active)
+        onRescanThread {
+            val active = runCatching { activeNotifications }.getOrNull()
+            NotificationDotsStore.updateFromNotifications(active)
+            GlanceNotificationsStore.update(this, active)
+            NotificationHistoryStore.seed(this, active, ::isAppNotificationCandidate)
+        }
         // A process started for the listener has no widget drawing yet to start the updater.
         AtAGlanceWidgetUpdater.startIfPlaced(this)
         NotificationHistoryAccess.set(true)
-        NotificationHistoryStore.seed(this, active, ::isAppNotificationCandidate)
         startMediaPlaybackMonitoring()
         if (!isPowerReceiverRegistered) {
             isPowerReceiverRegistered =
@@ -75,8 +87,10 @@ class NotificationDotsListenerService : NotificationListenerService() {
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
         if (connected === this) connected = null
-        NotificationDotsStore.clear()
-        GlanceNotificationsStore.clear()
+        onRescanThread {
+            NotificationDotsStore.clear()
+            GlanceNotificationsStore.clear()
+        }
         NotificationHistoryAccess.set(false)
         stopMediaPlaybackMonitoring()
         unregisterPowerReceiver()
@@ -85,17 +99,40 @@ class NotificationDotsListenerService : NotificationListenerService() {
     override fun onDestroy() {
         if (connected === this) connected = null
         widgetRefreshScope.cancel()
+        rescanExecutor.shutdown()
         unregisterPowerReceiver()
         super.onDestroy()
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        updateActiveNotificationStores()
-        NotificationHistoryStore.record(this, sbn, ::isAppNotificationCandidate)
+        requestRescan(sbn)
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
-        updateActiveNotificationStores()
+        requestRescan(null)
+    }
+
+    /** Queues one rescan for any number of changes that arrive before it runs. */
+    private fun requestRescan(posted: StatusBarNotification?) {
+        synchronized(pendingPostings) {
+            if (posted != null) pendingPostings += posted
+            if (isRescanQueued) return
+            isRescanQueued = true
+        }
+        onRescanThread {
+            val postings =
+                synchronized(pendingPostings) {
+                    isRescanQueued = false
+                    pendingPostings.toList().also { pendingPostings.clear() }
+                }
+            updateActiveNotificationStores()
+            postings.forEach { NotificationHistoryStore.record(this, it, ::isAppNotificationCandidate) }
+        }
+    }
+
+    private fun onRescanThread(block: () -> Unit) {
+        // Rejected once the service is destroyed, when there is nothing left to update.
+        runCatching { rescanExecutor.execute { runCatching(block) } }
     }
 
     // Asked after the stores update, so notifications other At a Glance rows show are known.
@@ -151,23 +188,35 @@ class NotificationDotsListenerService : NotificationListenerService() {
             if (sessionCallbacks.containsKey(controller.sessionToken)) return@forEach
             val callback =
                 object : MediaController.Callback() {
-                    // Sessions also report position updates as state changes, which At a Glance
-                    // widgets don't show and are too costly to redraw for every second.
-                    private var lastGlanceState: Pair<Int, List<String>>? = null
+                    // Sessions also report position updates as state changes, which no widget
+                    // shows and which are too costly to redraw for every second.
+                    private var lastWidgetState: Triple<Int, Long, List<String>>? = null
+                    private var settleRefresh: Job? = null
 
                     override fun onPlaybackStateChanged(state: PlaybackState?) {
-                        // The callback is delivered as the session commits its new state. Do not
-                        // immediately re-read controller.playbackState and suppress the update:
-                        // that read can still expose the previous state (especially on pause),
-                        // leaving the widget icon stuck on Pause.
+                        // Compare the delivered state, not a re-read of controller.playbackState:
+                        // as the session commits its new state that read can still expose the
+                        // previous one (especially on pause), leaving the widget icon stuck on Pause.
+                        // The state, supported actions (seeking) and custom buttons are all the
+                        // widgets show of it.
+                        val widgetState =
+                            Triple(
+                                state?.state ?: PlaybackState.STATE_NONE,
+                                state?.actions ?: 0L,
+                                state?.customActions.orEmpty().map { it.action },
+                            )
+                        if (widgetState == lastWidgetState) return
+                        lastWidgetState = widgetState
                         refreshWidgets()
-                        val glanceState =
-                            (state?.state ?: PlaybackState.STATE_NONE) to
-                                state?.customActions.orEmpty().map { it.action }
-                        if (glanceState != lastGlanceState) {
-                            lastGlanceState = glanceState
-                            refreshGlanceWidgets()
-                        }
+                        refreshGlanceWidgets()
+                        // The widgets read the controller when they draw, so redraw once more after
+                        // the session has settled in case the first draw saw the previous state.
+                        settleRefresh?.cancel()
+                        settleRefresh =
+                            widgetRefreshScope.launch {
+                                delay(PLAYBACK_SETTLE_REFRESH_DELAY_MS)
+                                refreshAllWidgets(this@NotificationDotsListenerService)
+                            }
                     }
 
                     // Only the media controls and At a Glance widgets show the track, so a new
@@ -204,6 +253,8 @@ class NotificationDotsListenerService : NotificationListenerService() {
     }
 
     companion object {
+        private const val PLAYBACK_SETTLE_REFRESH_DELAY_MS = 750L
+
         @Volatile
         private var connected: NotificationDotsListenerService? = null
 
