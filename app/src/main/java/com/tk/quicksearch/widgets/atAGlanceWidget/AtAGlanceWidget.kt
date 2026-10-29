@@ -76,7 +76,8 @@ internal object AtAGlanceWidgetDimens {
     val LIST_VERTICAL_PADDING = 4.dp
     val ROW_VERTICAL_PADDING = 12.dp
     val DIVIDER_HEIGHT = 1.dp
-    val DISMISS_BUTTON_SIZE = 28.dp
+    // The 16dp icon sits in a larger box so taps near it don't land on the row and open it instead.
+    val DISMISS_BUTTON_SIZE = 36.dp
     val DISMISS_ICON_SIZE = 16.dp
     val HANG_UP_BUTTON_SIZE = 36.dp
     val BUTTON_ICON_SIZE = 20.dp
