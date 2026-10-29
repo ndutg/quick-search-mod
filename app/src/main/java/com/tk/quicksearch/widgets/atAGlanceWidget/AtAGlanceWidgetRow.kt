@@ -129,6 +129,7 @@ internal enum class AtAGlanceWidgetTapType {
 
 /** What the row's close button hides, matching the rows home lets the user dismiss. */
 internal enum class AtAGlanceWidgetDismissType {
+    NOW_PLAYING,
     OTP,
     ALARM,
     REMINDER,

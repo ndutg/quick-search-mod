@@ -13,12 +13,15 @@ object CalculatorUtils {
             option = RegexOption.IGNORE_CASE,
         )
 
+    // 'x' counts as multiplication only between operands (e.g. "3x4", "(2) X 5"), so words stay text.
+    private val letterMultiplyRegex = Regex("""(?<=[\d.)])\s*[xX]\s*(?=[\d.(])""")
+
     /**
      * Checks if a string looks like a math expression.
      * A math expression should contain at least one operator (+, -, *, /) or brackets.
      */
     fun isMathExpression(query: String): Boolean {
-        val trimmed = query.trim()
+        val trimmed = normalizeLetterMultiply(query.trim())
         if (trimmed.isEmpty()) return false
         if (isPercentPhrase(trimmed)) return true
 
@@ -74,6 +77,8 @@ object CalculatorUtils {
             null
         }
 
+    private fun normalizeLetterMultiply(expression: String): String = letterMultiplyRegex.replace(expression, "*")
+
     private fun isPercentPhrase(query: String): Boolean = percentPhraseRegex.matches(query)
 
     private fun evaluatePercentPhrase(expression: String): Double? {
@@ -94,7 +99,7 @@ object CalculatorUtils {
      * Cleans the expression by normalizing operators and removing extra spaces.
      */
     private fun cleanExpression(expression: String): String =
-        expression
+        normalizeLetterMultiply(expression)
             .replace("×", "*")
             .replace("÷", "/")
             .replace("·", "*")

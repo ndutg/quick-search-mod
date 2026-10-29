@@ -359,15 +359,11 @@ fun AtAGlanceSettingsSection(
         }
     val toggles =
         customInfoToggles + listOfNotNull(
-            if (isWidget) {
-                null
-            } else {
-                notificationToggle(
-                    item = GlanceItem.NOW_PLAYING,
-                    title = stringResource(R.string.section_media),
-                    description = stringResource(R.string.settings_now_playing_desc),
-                )
-            },
+            notificationToggle(
+                item = GlanceItem.NOW_PLAYING,
+                title = stringResource(R.string.section_media),
+                description = stringResource(R.string.settings_now_playing_desc),
+            ),
             permissionToggle(
                 item = GlanceItem.TODAY_EVENTS,
                 title = stringResource(R.string.section_calendar),

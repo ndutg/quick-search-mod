@@ -72,9 +72,9 @@ private const val MAX_ROWS = 30
 /**
  * Reads the home At a Glance items without Compose, in the home card's order: the time-critical
  * items, then things due soon, what needs a look, today's and tomorrow's context, passive device
- * states, and today's calendar events last. Media keeps its own widget. Relative times such as
- * "in 5 min" schedule a refresh for when they next change. [items] decides which items the widget
- * shows. Blocking; call off the main thread.
+ * states, and today's calendar events last. Now Playing is read apart, by
+ * [loadAtAGlanceWidgetNowPlaying]. Relative times such as "in 5 min" schedule a refresh for when
+ * they next change. [items] decides which items the widget shows. Blocking; call off the main thread.
  */
 internal fun loadAtAGlanceWidgetSnapshot(
     context: Context,

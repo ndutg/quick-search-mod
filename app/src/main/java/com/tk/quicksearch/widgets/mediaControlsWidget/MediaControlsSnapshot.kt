@@ -9,6 +9,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.media.MediaMetadata
+import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import android.os.Build
 import com.tk.quicksearch.media.AppSeekAction
@@ -38,6 +39,10 @@ internal data class MediaControlsSnapshot(
     /** [appSeek]'s icons from the media app's resources, rasterized at the control icon size. */
     val appSeekBackIcon: Bitmap? = null,
     val appSeekForwardIcon: Bitmap? = null,
+    /** Identifies the session, so a dismissal or a pause from a widget applies to it alone. */
+    val sessionToken: MediaSession.Token? = null,
+    /** The session's [PlaybackState] code, or null when it reports none. */
+    val playbackState: Int? = null,
 ) {
     val hasSession: Boolean
         get() = title != null
@@ -98,6 +103,8 @@ internal fun readMediaControlsSnapshot(context: Context): MediaControlsSnapshot 
         appSeek = appSeek,
         appSeekBackIcon = appSeekIcon(appSeek?.back),
         appSeekForwardIcon = appSeekIcon(appSeek?.forward),
+        sessionToken = controller.sessionToken,
+        playbackState = playbackState?.state,
     )
 }
 

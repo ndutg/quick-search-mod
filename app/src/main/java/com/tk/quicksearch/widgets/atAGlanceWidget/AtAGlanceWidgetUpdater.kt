@@ -10,8 +10,6 @@ import android.content.IntentFilter
 import android.database.ContentObserver
 import android.hardware.camera2.CameraManager
 import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import android.os.Handler
 import android.os.Looper
@@ -23,7 +21,8 @@ import com.tk.quicksearch.search.data.AppNotificationsSettings
 import com.tk.quicksearch.search.data.GlanceNotificationsStore
 import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.ACTION_WIFI_AP_STATE_CHANGED
-import com.tk.quicksearch.search.searchScreen.searchScreenLayout.needsCaptivePortalSignIn
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.CaptivePortalWifiCallback
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.registerWifiNetworkCallback
 import com.tk.quicksearch.widgets.utils.refreshAtAGlanceWidgets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +30,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +62,14 @@ internal object AtAGlanceWidgetUpdater {
 
     fun requestRefresh() {
         requests.tryEmit(Unit)
+    }
+
+    /** [requestRefresh] once [delayMillis] has passed, such as when a held row is due to go. */
+    fun requestRefreshAfter(delayMillis: Long) {
+        scope.launch {
+            delay(delayMillis)
+            requestRefresh()
+        }
     }
 
     /** Starts watching and redraws, for callers that change what the rows show while no widget is drawing. */
@@ -162,24 +170,16 @@ internal object AtAGlanceWidgetUpdater {
         val connectivityManager = runCatching { context.getSystemService(ConnectivityManager::class.java) }.getOrNull()
         var needsSignIn: Boolean? = null
         val networkCallback =
-            object : ConnectivityManager.NetworkCallback() {
-                private fun update(value: Boolean) {
+            connectivityManager?.let {
+                CaptivePortalWifiCallback(it) { value ->
                     mainHandler.post {
                         if (needsSignIn != null && needsSignIn != value) requestRefresh()
                         needsSignIn = value
                     }
                 }
-
-                override fun onCapabilitiesChanged(
-                    network: Network,
-                    networkCapabilities: NetworkCapabilities,
-                ) = update(needsCaptivePortalSignIn(networkCapabilities))
-
-                override fun onLost(network: Network) = update(false)
             }
         val networkRegistered =
-            connectivityManager != null &&
-                runCatching { connectivityManager.registerDefaultNetworkCallback(networkCallback) }.isSuccess
+            networkCallback != null && registerWifiNetworkCallback(connectivityManager, networkCallback)
 
         val cameraManager = runCatching { context.getSystemService(CameraManager::class.java) }.getOrNull()
         val torchCallback =
@@ -217,7 +217,9 @@ internal object AtAGlanceWidgetUpdater {
 
         return {
             if (receiverRegistered) runCatching { context.unregisterReceiver(receiver) }
-            if (networkRegistered) runCatching { connectivityManager?.unregisterNetworkCallback(networkCallback) }
+            if (networkRegistered && networkCallback != null) {
+                runCatching { connectivityManager?.unregisterNetworkCallback(networkCallback) }
+            }
             if (torchRegistered) runCatching { cameraManager?.unregisterTorchCallback(torchCallback) }
             if (calendarRegistered) runCatching { context.contentResolver.unregisterContentObserver(calendarObserver) }
         }
