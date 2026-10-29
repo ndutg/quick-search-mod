@@ -36,12 +36,23 @@ class NotificationDotsListenerService : NotificationListenerService() {
     private val sessionCallbacks = mutableMapOf<MediaSession.Token, Pair<MediaController, MediaController.Callback>>()
     private val widgetRefreshScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    // Rescans run on one background thread so the binder read of every posted notification does
-    // not block the UI sharing this process, and a burst of updates (progress, navigation) collapses
-    // into a single rescan. Postings wait here so they are recorded after the rescan they came with.
+    // Rescans run on one background thread so they do not block the UI sharing this process, and a
+    // burst of updates (progress, navigation) collapses into a single rescan. Changes wait here, in
+    // the order they arrived, and postings are recorded after the rescan they came with.
     private val rescanExecutor = Executors.newSingleThreadExecutor()
-    private val pendingPostings = mutableListOf<StatusBarNotification>()
+    private val pendingChanges = mutableListOf<NotificationChange>()
     private var isRescanQueued = false
+
+    // The posted notifications by key, kept current from the callbacks so a change costs no binder
+    // read of every active notification (with their extras and images). Only the rescan thread
+    // touches it; it is read in full once per connection.
+    private val activeByKey = LinkedHashMap<String, StatusBarNotification>()
+
+    private sealed interface NotificationChange {
+        data class Posted(val sbn: StatusBarNotification) : NotificationChange
+
+        data class Removed(val key: String) : NotificationChange
+    }
 
     /** Ends a charging row dismissal on unplug, even while home is not showing to see it. */
     private val powerDisconnectedReceiver =
@@ -57,8 +68,9 @@ class NotificationDotsListenerService : NotificationListenerService() {
         connected = this
         onRescanThread {
             val active = runCatching { activeNotifications }.getOrNull()
-            NotificationDotsStore.updateFromNotifications(active)
-            GlanceNotificationsStore.update(this, active)
+            activeByKey.clear()
+            active?.forEach { activeByKey[it.key] = it }
+            updateActiveNotificationStores()
             NotificationHistoryStore.seed(this, active, ::isAppNotificationCandidate)
         }
         // A process started for the listener has no widget drawing yet to start the updater.
@@ -88,6 +100,7 @@ class NotificationDotsListenerService : NotificationListenerService() {
         super.onListenerDisconnected()
         if (connected === this) connected = null
         onRescanThread {
+            activeByKey.clear()
             NotificationDotsStore.clear()
             GlanceNotificationsStore.clear()
         }
@@ -105,28 +118,38 @@ class NotificationDotsListenerService : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        requestRescan(sbn)
+        sbn?.let { requestRescan(NotificationChange.Posted(it)) }
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
-        requestRescan(null)
+        sbn?.let { requestRescan(NotificationChange.Removed(it.key)) }
     }
 
     /** Queues one rescan for any number of changes that arrive before it runs. */
-    private fun requestRescan(posted: StatusBarNotification?) {
-        synchronized(pendingPostings) {
-            if (posted != null) pendingPostings += posted
+    private fun requestRescan(change: NotificationChange) {
+        synchronized(pendingChanges) {
+            pendingChanges += change
             if (isRescanQueued) return
             isRescanQueued = true
         }
         onRescanThread {
-            val postings =
-                synchronized(pendingPostings) {
+            val changes =
+                synchronized(pendingChanges) {
                     isRescanQueued = false
-                    pendingPostings.toList().also { pendingPostings.clear() }
+                    pendingChanges.toList().also { pendingChanges.clear() }
                 }
+            changes.forEach { change ->
+                when (change) {
+                    is NotificationChange.Posted -> activeByKey[change.sbn.key] = change.sbn
+                    is NotificationChange.Removed -> activeByKey.remove(change.key)
+                }
+            }
             updateActiveNotificationStores()
-            postings.forEach { NotificationHistoryStore.record(this, it, ::isAppNotificationCandidate) }
+            changes.forEach { change ->
+                if (change is NotificationChange.Posted) {
+                    NotificationHistoryStore.record(this, change.sbn, ::isAppNotificationCandidate)
+                }
+            }
         }
     }
 
@@ -140,7 +163,7 @@ class NotificationDotsListenerService : NotificationListenerService() {
         GlanceNotificationsStore.isAppNotificationCandidate(this, sbn)
 
     private fun updateActiveNotificationStores() {
-        val active = runCatching { activeNotifications }.getOrNull()
+        val active = activeByKey.values.toTypedArray()
         NotificationDotsStore.updateFromNotifications(active)
         GlanceNotificationsStore.update(this, active)
     }

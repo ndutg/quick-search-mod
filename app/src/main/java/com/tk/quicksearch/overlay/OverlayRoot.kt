@@ -297,10 +297,11 @@ fun OverlayRoot(
 
                         val overlayWallpaperBitmap by
                                 produceState<ImageBitmap?>(
-                                        initialValue = null,
-                                        key1 = uiState.backgroundSource,
-                                        key2 = wallpaperChangeVersion,
-                                        key3 = uiState.wallpaperAvailable,
+                                        null,
+                                        uiState.backgroundSource,
+                                        wallpaperChangeVersion,
+                                        uiState.wallpaperAvailable,
+                                        uiState.wallpaperBlurRadius,
                                 ) {
                                         value =
                                                 if (
@@ -309,9 +310,12 @@ fun OverlayRoot(
                                                                                 .SYSTEM_WALLPAPER
                                                 ) {
                                                         val bitmap =
-                                                                WallpaperUtils.getCachedWallpaperBitmap()
-                                                                        ?: WallpaperUtils
-                                                                                .getWallpaperBitmap(context)
+                                                                WallpaperUtils.getWallpaperBitmap(
+                                                                        context,
+                                                                        WallpaperUtils.wallpaperDivisorForBlur(
+                                                                                uiState.wallpaperBlurRadius,
+                                                                        ),
+                                                                )
                                                         if (bitmap != null &&
                                                                 !uiState.wallpaperAvailable
                                                         ) {

@@ -7,7 +7,7 @@ import android.os.Build
 import android.service.notification.StatusBarNotification
 
 /** A workout being tracked by a fitness app, with the live stats its notification shows. */
-internal class WorkoutNotification(
+internal data class WorkoutNotification(
     val key: String,
     val packageName: String,
     /** Such as "Walk in progress". */

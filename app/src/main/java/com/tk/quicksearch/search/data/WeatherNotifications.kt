@@ -7,7 +7,7 @@ import android.os.Build
 import android.service.notification.StatusBarNotification
 
 /** Current conditions or an alert posted by a weather app. */
-internal class WeatherNotification(
+internal data class WeatherNotification(
     val key: String,
     val packageName: String,
     /** Such as "72° Partly cloudy" or "Rain starting in 15 min". */

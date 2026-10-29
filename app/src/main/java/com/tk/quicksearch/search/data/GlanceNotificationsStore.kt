@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.abs
 
 /** A notification's own button, such as a timer's Pause or Stop. */
-internal class GlanceNotificationAction(
+internal data class GlanceNotificationAction(
     val title: String,
     val intent: PendingIntent,
     /** The button's icon from the posting app, when it has one. */
@@ -33,7 +33,7 @@ internal class GlanceNotificationAction(
 )
 
 /** A running timer or stopwatch posted by a clock app, counted from [chronometerBase]. */
-internal class TimerNotification(
+internal data class TimerNotification(
     val key: String,
     val packageName: String,
     val isCountDown: Boolean,
@@ -47,7 +47,7 @@ internal class TimerNotification(
 )
 
 /** A missed call notification; [caller] is usually the name or number. */
-internal class MissedCallNotification(
+internal data class MissedCallNotification(
     val key: String,
     val packageName: String,
     /** Posted by the default phone app rather than a calling app such as WhatsApp. */
@@ -61,7 +61,7 @@ internal class MissedCallNotification(
 )
 
 /** A call in progress; [caller] is usually the name or number. */
-internal class OngoingCallNotification(
+internal data class OngoingCallNotification(
     val key: String,
     val packageName: String,
     val caller: String?,
@@ -202,6 +202,7 @@ internal object GlanceNotificationsStore {
     @Synchronized
     fun clear() {
         clockPackages = null
+        dialerPackageReadAtMillis = 0L
         remoteTimerCache.clear()
         remoteCallStartCache.clear()
         WorkoutNotifications.clear()
@@ -265,8 +266,19 @@ internal object GlanceNotificationsStore {
         finishedProgressState.value = progressTracker.finished
     }
 
-    private fun defaultDialerPackage(context: Context): String? =
-        runCatching { context.getSystemService(TelecomManager::class.java)?.defaultDialerPackage }.getOrNull()
+    // Asked on every notification change, so the binder call is made at most once per interval.
+    private var dialerPackage: String? = null
+    private var dialerPackageReadAtMillis = 0L
+
+    private fun defaultDialerPackage(context: Context): String? {
+        val now = SystemClock.elapsedRealtime()
+        if (dialerPackageReadAtMillis == 0L || now - dialerPackageReadAtMillis > DIALER_PACKAGE_REFRESH_MILLIS) {
+            dialerPackage =
+                runCatching { context.getSystemService(TelecomManager::class.java)?.defaultDialerPackage }.getOrNull()
+            dialerPackageReadAtMillis = now
+        }
+        return dialerPackage
+    }
 
     /**
      * Phone apps mark missed calls with the missed call category (Android 10+), and older ones at
@@ -425,6 +437,7 @@ internal object GlanceNotificationsStore {
      * [Notification.EXTRA_CALL_TYPE] with its values, [Notification.EXTRA_CALL_PERSON] and
      * [Notification.EXTRA_HANG_UP_INTENT]; only defined from Android 12.
      */
+    private const val DIALER_PACKAGE_REFRESH_MILLIS = 10 * 60 * 1000L
     private const val EXTRA_CALL_TYPE = "android.callType"
     private const val EXTRA_CALL_PERSON = "android.callPerson"
     private const val EXTRA_HANG_UP_INTENT = "android.hangUpIntent"

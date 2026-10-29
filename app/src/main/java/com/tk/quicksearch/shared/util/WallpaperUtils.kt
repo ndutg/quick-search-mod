@@ -36,6 +36,9 @@ object WallpaperUtils {
     // In-memory cache for the wallpaper bitmap
     @Volatile
     private var cachedBitmap: Bitmap? = null
+    /** How much [cachedBitmap] was scaled down from the full wallpaper; see [wallpaperDivisorForBlur]. */
+    @Volatile
+    private var cachedBitmapDivisor: Int = 1
     @Volatile
     private var cachedSystemWallpaperId: Int? = null
     @Volatile
@@ -127,10 +130,28 @@ object WallpaperUtils {
     }
 
     /**
-     * Gets the cached wallpaper bitmap synchronously.
-     * Returns null if not cached yet.
+     * Only enough pixels to read the wallpaper's colors, for surfaces where Android composites the
+     * wallpaper itself and the bitmap is never drawn.
      */
-    fun getCachedWallpaperBitmap(): Bitmap? = cachedBitmap
+    const val WALLPAPER_THUMBNAIL_DIVISOR = 8
+
+    /**
+     * How far the wallpaper can be scaled down before it is drawn under [blurRadiusDp] of blur
+     * without the loss showing: a blurred image needs far fewer pixels than a sharp one.
+     */
+    fun wallpaperDivisorForBlur(blurRadiusDp: Float): Int =
+        when {
+            blurRadiusDp >= 16f -> 4
+            blurRadiusDp >= 8f -> 2
+            else -> 1
+        }
+
+    /**
+     * Gets the cached wallpaper bitmap synchronously, or null when nothing is cached yet or the
+     * cached one was scaled down further than [maxDivisor].
+     */
+    fun getCachedWallpaperBitmap(maxDivisor: Int = 1): Bitmap? =
+        cachedBitmap?.takeIf { cachedBitmapDivisor <= maxDivisor }
 
     fun copyImageToInternalStorage(context: Context, sourceUri: Uri): String? =
         runCatching {
@@ -156,6 +177,7 @@ object WallpaperUtils {
 
     fun invalidateWallpaperCache() {
         cachedBitmap = null
+        cachedBitmapDivisor = 1
         cachedSystemWallpaperId = null
         cachedWallpaperAppearance = null
     }
@@ -173,20 +195,33 @@ object WallpaperUtils {
      * Returns cached bitmap if available, otherwise loads from system.
      * Returns null if wallpaper cannot be retrieved.
      */
-    suspend fun getWallpaperBitmap(context: Context): Bitmap? =
-        when (val result = getWallpaperBitmapResult(context)) {
+    suspend fun getWallpaperBitmap(
+        context: Context,
+        divisor: Int = 1,
+    ): Bitmap? =
+        when (val result = getWallpaperBitmapResult(context, divisor)) {
             is WallpaperLoadResult.Success -> result.bitmap
             else -> null
         }
 
-    suspend fun getWallpaperBitmapResult(context: Context): WallpaperLoadResult =
+    /**
+     * Loads the wallpaper scaled down by [divisor] and keeps only that one in memory, so a blurred or
+     * system-composited wallpaper does not hold a full-size bitmap for the life of the process.
+     */
+    suspend fun getWallpaperBitmapResult(
+        context: Context,
+        divisor: Int = 1,
+    ): WallpaperLoadResult =
         withContext(Dispatchers.IO) {
             wallpaperBitmapMutex.withLock {
-                getWallpaperBitmapResultLocked(context)
+                getWallpaperBitmapResultLocked(context, divisor.coerceAtLeast(1))
             }
         }
 
-    private suspend fun getWallpaperBitmapResultLocked(context: Context): WallpaperLoadResult {
+    private suspend fun getWallpaperBitmapResultLocked(
+        context: Context,
+        divisor: Int,
+    ): WallpaperLoadResult {
         // System wallpaper compositing does not require file access, but reading its
         // pixels does. Never call WallpaperManager.drawable without that permission.
         if (!hasWallpaperAccessPermission(context)) {
@@ -203,15 +238,36 @@ object WallpaperUtils {
                     else -> currentWallpaperId == cachedWallpaperId
                 }
             if (shouldReuseCached) {
-                return WallpaperLoadResult.Success(cached)
+                val cachedDivisor = cachedBitmapDivisor
+                if (cachedDivisor == divisor) return WallpaperLoadResult.Success(cached)
+                // A finer bitmap only needs scaling down; a coarser one is reloaded below.
+                if (cachedDivisor < divisor) {
+                    val scale = cachedDivisor.toFloat() / divisor
+                    val scaled =
+                        runCatching {
+                            Bitmap.createScaledBitmap(
+                                cached,
+                                (cached.width * scale).toInt().coerceAtLeast(1),
+                                (cached.height * scale).toInt().coerceAtLeast(1),
+                                true,
+                            )
+                        }.getOrNull()
+                    if (scaled != null) {
+                        cachedBitmap = scaled
+                        cachedBitmapDivisor = divisor
+                        return WallpaperLoadResult.Success(scaled)
+                    }
+                }
+            } else {
+                invalidateWallpaperCache()
             }
-            invalidateWallpaperCache()
         }
 
         return try {
-            val bitmap = loadWallpaperBitmap(context)
+            val bitmap = loadWallpaperBitmap(context, divisor)
             if (bitmap != null) {
                 cachedBitmap = bitmap
+                cachedBitmapDivisor = divisor
                 cachedSystemWallpaperId = currentWallpaperId ?: getCurrentSystemWallpaperId(context)
                 WallpaperLoadResult.Success(bitmap)
             } else {
@@ -236,9 +292,12 @@ object WallpaperUtils {
      * This should be called early in the app lifecycle to ensure
      * the wallpaper is ready when needed.
      */
-    suspend fun preloadWallpaper(context: Context) {
+    suspend fun preloadWallpaper(
+        context: Context,
+        divisor: Int = 1,
+    ) {
         if (cachedBitmap == null) {
-            getWallpaperBitmap(context)
+            getWallpaperBitmap(context, divisor)
         }
     }
 
@@ -318,12 +377,10 @@ object WallpaperUtils {
         withContext(Dispatchers.IO) {
             val sourceBitmap =
                 when (backgroundSource) {
+                    // The cached bitmap may be a thumbnail; then a preview-sized one is read just for this.
                     BackgroundSource.SYSTEM_WALLPAPER ->
-                        cachedBitmap
-                            ?: when (val wallpaperResult = getWallpaperBitmapResult(context)) {
-                                is WallpaperLoadResult.Success -> wallpaperResult.bitmap
-                                else -> null
-                            }
+                        cachedBitmap?.takeIf { maxOf(it.width, it.height) >= STARTUP_PREVIEW_MAX_DIMENSION }
+                            ?: loadUncachedWallpaperBitmap(context, maxDimension = STARTUP_PREVIEW_MAX_DIMENSION)
                     BackgroundSource.CUSTOM_IMAGE -> {
                         val normalized = customImageUri?.trim()?.takeIf { it.isNotEmpty() }
                         if (normalized == null) {
@@ -359,11 +416,21 @@ object WallpaperUtils {
             if (writeSucceeded) file.absolutePath else null
         }
 
-    private fun loadWallpaperBitmap(context: Context): Bitmap? {
+    private fun loadWallpaperBitmap(
+        context: Context,
+        divisor: Int = 1,
+        maxDimension: Int = MAX_BACKGROUND_BITMAP_DIMENSION,
+    ): Bitmap? {
         return try {
             val wallpaperManager = WallpaperManager.getInstance(context)
             val wallpaperDrawable = wallpaperManager.drawable
-            wallpaperDrawable?.toBitmap()
+            try {
+                wallpaperDrawable?.toBitmap(divisor, maxDimension)
+            } finally {
+                // WallpaperManager keeps the full-size decode in a process-wide cache until told to
+                // forget it, doubling the memory of the copy kept here.
+                runCatching { wallpaperManager.forgetLoadedWallpaper() }
+            }
         } catch (exception: SecurityException) {
             throw exception
         } catch (_: Exception) {
@@ -371,9 +438,25 @@ object WallpaperUtils {
         }
     }
 
+    /** Reads the wallpaper without replacing the cached one, for one-off uses like previews. */
+    private fun loadUncachedWallpaperBitmap(
+        context: Context,
+        divisor: Int = 1,
+        maxDimension: Int = MAX_BACKGROUND_BITMAP_DIMENSION,
+    ): Bitmap? {
+        if (!hasWallpaperAccessPermission(context)) return null
+        return runCatching { loadWallpaperBitmap(context, divisor, maxDimension) }.getOrNull()
+    }
+
     private suspend fun getWallpaperAppearance(context: Context): ImageAppearance? {
         cachedWallpaperAppearance?.let { return it }
-        val bitmap = cachedBitmap ?: getWallpaperBitmap(context) ?: return null
+        // Analysis samples the image down to a few dozen pixels, so a thumbnail is enough.
+        val bitmap =
+            cachedBitmap
+                ?: withContext(Dispatchers.IO) {
+                    loadUncachedWallpaperBitmap(context, divisor = WALLPAPER_THUMBNAIL_DIVISOR)
+                }
+                ?: return null
         return withContext(Dispatchers.Default) {
             ImageAppearanceUtils.analyze(bitmap)
         }.also { appearance ->
@@ -604,7 +687,10 @@ object WallpaperUtils {
  * Converts a Drawable to a Bitmap.
  * Uses the drawable's intrinsic dimensions if available, otherwise falls back to standard HD resolution.
  */
-private fun Drawable.toBitmap(): Bitmap? =
+private fun Drawable.toBitmap(
+    divisor: Int = 1,
+    maxDimension: Int = MAX_BACKGROUND_BITMAP_DIMENSION,
+): Bitmap? =
     runCatching {
         // Use drawable's intrinsic dimensions if available, otherwise use standard HD resolution.
         val sourceWidth = intrinsicWidth.takeIf { it > 0 } ?: 1920
@@ -612,13 +698,13 @@ private fun Drawable.toBitmap(): Bitmap? =
         val scale =
             minOf(
                 1f,
-                MAX_BACKGROUND_BITMAP_DIMENSION.toFloat() / sourceWidth,
-                MAX_BACKGROUND_BITMAP_DIMENSION.toFloat() / sourceHeight,
+                maxDimension.toFloat() / sourceWidth,
+                maxDimension.toFloat() / sourceHeight,
                 kotlin.math.sqrt(
                     MAX_BACKGROUND_BITMAP_PIXELS.toFloat() /
                         (sourceWidth.toFloat() * sourceHeight.toFloat()),
                 ).coerceAtMost(1f),
-            )
+            ) / divisor.coerceAtLeast(1)
         val width = (sourceWidth * scale).toInt().coerceAtLeast(1)
         val height = (sourceHeight * scale).toInt().coerceAtLeast(1)
 

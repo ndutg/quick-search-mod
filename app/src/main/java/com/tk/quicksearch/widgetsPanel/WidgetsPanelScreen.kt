@@ -169,7 +169,8 @@ fun WidgetsPanelScreen(
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, QUICK_SEARCH_WIDGET_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
     val notesPreferences = remember(appContext) { NotesPreferences(appContext) }
-    val wallpaperState = SearchScreenWallpaperLogic(state = uiState)
+    // The panel's opaque background covers Home, so it draws the wallpaper image itself.
+    val wallpaperState = SearchScreenWallpaperLogic(state = uiState, allowUnblurredSystemBackdrop = false)
     val imageBackgroundIsDark =
         remember(wallpaperState.imageBitmap, wallpaperState.usesWallpaperBackground) {
             if (wallpaperState.usesWallpaperBackground && wallpaperState.imageBitmap != null) {
