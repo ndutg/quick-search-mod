@@ -35,6 +35,8 @@ import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppThemeMode
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.data.notes.NotesRoomStore
+import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
+import com.tk.quicksearch.search.data.preferences.newWidgetGlanceItems
 import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
@@ -273,7 +275,11 @@ class SearchWidgetConfigureActivity : ComponentActivity() {
                     noteId == null ||
                     withContext(Dispatchers.IO) { NotesRoomStore(this@SearchWidgetConfigureActivity).getById(noteId) } == null
             } else if (!loaded.hasStoredConfig && widgetVariant == WidgetVariant.AT_A_GLANCE) {
-                config = config.withNoteWidgetDefaults()
+                val glanceItems =
+                    withContext(Dispatchers.IO) {
+                        newWidgetGlanceItems(AppGlanceItemSettings(this@SearchWidgetConfigureActivity))
+                    }
+                config = config.withNoteWidgetDefaults().copy(glanceItems = glanceItems)
             } else if (!loaded.hasStoredConfig && widgetVariant == WidgetVariant.MEDIA_CONTROLS) {
                 config = config.copy(theme = WidgetTheme.DARK, backgroundColor = null)
             } else if (!loaded.hasStoredConfig && deviceThemeEnabled) {

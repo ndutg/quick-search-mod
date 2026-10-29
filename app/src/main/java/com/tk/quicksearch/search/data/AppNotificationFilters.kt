@@ -1,23 +1,27 @@
 package com.tk.quicksearch.search.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONObject
 
 /** An app whose notifications show at a glance: all of them, or only those mentioning [keywords]. */
+@Parcelize
 data class AppNotificationApp(
     val packageName: String,
     val keywords: List<String> = emptyList(),
-)
+) : Parcelable
 
 /**
  * What App notifications shows at a glance: notifications from [apps] (each narrowed by its own
  * keywords when it has any), plus notifications from any app that mention one of [keywords].
  * Keywords match whole words in the title and text, ignoring case.
  */
+@Parcelize
 data class AppNotificationFilters(
     val apps: List<AppNotificationApp> = emptyList(),
     val keywords: List<String> = emptyList(),
-) {
+) : Parcelable {
     val isEmpty: Boolean get() = apps.isEmpty() && keywords.isEmpty()
 
     /** Whether anything from [packageName] could match, checked before reading its text. */

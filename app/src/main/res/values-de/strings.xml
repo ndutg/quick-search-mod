@@ -307,6 +307,7 @@
     <string name="section_notes">Notizen</string>
     <string name="section_media">Mediensteuerung</string>
     <string name="section_settings">Geräteeinstellungen</string>
+    <string name="search_section_menu_title">Suchen in</string>
     <string name="top_match_title">Bestes Ergebnis</string>
     <string name="top_matches_count_label">Anzahl der Treffer</string>
     <string name="top_matches_priority_desc">Priorität ändern und Elemente in den Top-Ergebnissen deaktivieren</string>
@@ -756,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">Du bist dabei, das Quick Search-Widget zum Startbildschirm hinzuzufügen. Halte das Widget gedrückt, um auf die Widget-Einstellungsseite mit vielen Anpassungsoptionen zuzugreifen.</string>
     <string name="settings_home_screen_widget_desc">Quick Search-Widget zum Startbildschirm hinzufügen.</string>
     <string name="settings_home_screen_widget_title">Startbildschirm-Widget</string>
-    <string name="settings_icon_desc">Zahnrad-Symbol in der Suchleiste ein-/ausblenden. Einstellungen jederzeit durch Wischen nach links oder per Suche aufrufen.</string>
+    <string name="settings_icon_desc">Zahnrad-Symbol ein- oder ausblenden.</string>
+    <string name="settings_icon_off_desc">Einstellungen jederzeit durch Wischen nach links oder per Suche aufrufen.</string>
+    <string name="settings_mic_icon_title">Mikrofonsymbol</string>
+    <string name="settings_mic_icon_desc">Sprachsuche direkt aus der Suchleiste starten.</string>
     <string name="settings_icon_required_by_gesture_desc">Legen Sie die Geste \"Nach links wischen\" auf \"Einstellungen öffnen\" fest, um dieses Symbol auszublenden.</string>
     <string name="settings_icon_pack_empty">Keine Icon-Packs gefunden.</string>
     <string name="settings_icon_pack_description_no_packs">Lege ein Icon-Pack für die App-Symbole fest.</string>
@@ -1163,7 +1167,6 @@
     <string name="widget_at_a_glance_widget_title">Auf-einen-Blick-Widget</string>
     <string name="widget_at_a_glance_items_title">Auf einen Blick: Elemente</string>
     <string name="widget_at_a_glance_items_summary">Wähle, was dieses Widget anzeigt</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Aktiviere zuerst App-Benachrichtigungen in den Auf-einen-Blick-Einstellungen</string>
     <string name="widget_at_a_glance_sample_alarm">Morgen, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Geburtstag von Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mama</string>

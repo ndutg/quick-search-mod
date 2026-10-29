@@ -308,6 +308,7 @@
     <string name="section_notes">メモ</string>
     <string name="section_media">メディア操作</string>
     <string name="section_settings">端末の設定</string>
+    <string name="search_section_menu_title">検索対象</string>
     <string name="top_match_title">ベストマッチ</string>
     <string name="top_matches_count_label">表示件数</string>
     <string name="top_matches_priority_desc">ベストマッチの優先順位を変更し、項目を無効化</string>
@@ -764,7 +765,10 @@
     <string name="settings_home_screen_widget_confirm_message">ホーム画面にQuick Searchウィジェットを追加しようとしています。ウィジェットを長押しすると、多くのカスタマイズオプションがあるウィジェット設定ページにアクセスできます。</string>
     <string name="settings_home_screen_widget_desc">ホーム画面にQuick Searchウィジェットを追加します。</string>
     <string name="settings_home_screen_widget_title">ホーム画面ウィジェット</string>
-    <string name="settings_icon_desc">検索バーの歯車アイコンを表示/非表示にします。左スワイプまたは検索からいつでも設定にアクセスできます。</string>
+    <string name="settings_icon_desc">歯車アイコンを表示または非表示にします。</string>
+    <string name="settings_icon_off_desc">左スワイプまたは検索からいつでも設定にアクセスできます。</string>
+    <string name="settings_mic_icon_title">マイクアイコン</string>
+    <string name="settings_mic_icon_desc">検索バーから音声検索を開始します。</string>
     <string name="settings_icon_required_by_gesture_desc">このアイコンを非表示にするには、左スワイプジェスチャーを「設定を開く」に設定してください。</string>
     <string name="settings_icon_pack_empty">アイコンパックが見つかりません。</string>
     <string name="settings_icon_pack_description_no_packs">アプリアイコンのアイコンパックを設定します。</string>
@@ -1174,7 +1178,6 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_at_a_glance_widget_title">ひと目で確認ウィジェット</string>
     <string name="widget_at_a_glance_items_title">ひと目で確認の項目</string>
     <string name="widget_at_a_glance_items_summary">このウィジェットに表示する項目を選択</string>
-    <string name="widget_at_a_glance_app_notifications_setup">先に「ひと目で確認」の設定でアプリの通知をオンにしてください</string>
     <string name="widget_at_a_glance_sample_alarm">明日 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">アレックスさんの誕生日</string>
     <string name="widget_at_a_glance_sample_caller">お母さん</string>

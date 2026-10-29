@@ -536,6 +536,7 @@ internal fun SearchScreenContent(
                 onClearQuery = onClearQuery,
                 onSettingsClick = onSettingsClick,
                 showSettingsIcon = state.settingsIconEnabled,
+                onVoiceClick = onVoiceClick,
                 dismissKeyboardBeforeSettingsClick = isOverlayPresentation,
                 enabledTargets = enabledTargets,
                 shortcutCodes = state.shortcutCodes,

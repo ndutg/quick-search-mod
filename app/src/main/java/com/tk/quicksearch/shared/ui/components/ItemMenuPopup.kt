@@ -280,7 +280,7 @@ private fun ItemMenuTileGrid(tiles: List<ItemMenuTile>) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ItemMenuTileButton(
+internal fun ItemMenuTileButton(
     tile: ItemMenuTile,
     modifier: Modifier = Modifier,
 ) {

@@ -2,6 +2,7 @@ package com.tk.quicksearch.appNotifications
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tk.quicksearch.search.data.AppNotificationApp
 import com.tk.quicksearch.search.data.AppNotificationFilters
@@ -26,16 +27,25 @@ internal class AppNotificationPickerApp(
 /**
  * State and edits for [AppNotificationsActivity]: the saved apps and keywords, read off the main
  * thread, and every installed app for the Add App picker. Edits save through
- * [AppNotificationsSettings], which Home follows.
+ * [AppNotificationsSettings], which Home follows, or, when the activity was started with an At a
+ * Glance widget's list, stay in [savedStateHandle] until the activity returns them.
  */
 internal class AppNotificationsViewModel(
     application: Application,
+    private val savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(application) {
+    /** Whether this edits an At a Glance widget's own list rather than the app's. */
+    val isWidget: Boolean = savedStateHandle.contains(EXTRA_WIDGET_FILTERS)
+
     /** Null until the settings have been read. */
     val filters: StateFlow<AppNotificationFilters?> =
-        AppNotificationsSettings.config
-            .map { it?.filters }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, AppNotificationsSettings.config.value?.filters)
+        if (isWidget) {
+            savedStateHandle.getStateFlow<AppNotificationFilters?>(EXTRA_WIDGET_FILTERS, null)
+        } else {
+            AppNotificationsSettings.config
+                .map { it?.filters }
+                .stateIn(viewModelScope, SharingStarted.Eagerly, AppNotificationsSettings.config.value?.filters)
+        }
 
     private val installedAppsState = MutableStateFlow<List<AppNotificationPickerApp>?>(null)
 
@@ -43,7 +53,7 @@ internal class AppNotificationsViewModel(
     val installedApps: StateFlow<List<AppNotificationPickerApp>?> = installedAppsState.asStateFlow()
 
     init {
-        if (AppNotificationsSettings.config.value == null) {
+        if (!isWidget && AppNotificationsSettings.config.value == null) {
             viewModelScope.launch(Dispatchers.IO) { AppNotificationsSettings.load(application) }
         }
     }
@@ -81,7 +91,12 @@ internal class AppNotificationsViewModel(
     private fun edit(change: (AppNotificationFilters) -> AppNotificationFilters) {
         val current = filters.value ?: return
         val updated = change(current)
-        if (updated != current) AppNotificationsSettings.setFilters(getApplication(), updated)
+        if (updated == current) return
+        if (isWidget) {
+            savedStateHandle[EXTRA_WIDGET_FILTERS] = updated
+        } else {
+            AppNotificationsSettings.setFilters(getApplication(), updated)
+        }
     }
 
     private suspend fun readInstalledApps(): List<AppNotificationPickerApp> {

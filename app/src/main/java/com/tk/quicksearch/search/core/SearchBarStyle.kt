@@ -7,6 +7,8 @@ package com.tk.quicksearch.search.core
  * @property borderColorArgb custom outline color, or null to follow the accent color.
  * @property backgroundColorArgb custom fill color, or null to follow the theme.
  * @property backgroundTransparency 0 keeps the fill's own alpha, 1 makes it fully clear.
+ * @property showMicIcon shows a voice search button in the bar, which moves the settings icon
+ *   outside to the bar's right. Off by default.
  */
 data class SearchBarStyle(
     val borderWidthDp: Float = DEFAULT_BORDER_WIDTH_DP,
@@ -14,6 +16,7 @@ data class SearchBarStyle(
     val backgroundColorArgb: Int? = null,
     val backgroundTransparency: Float = DEFAULT_BACKGROUND_TRANSPARENCY,
     val cornerRadiusDp: Float = DEFAULT_CORNER_RADIUS_DP,
+    val showMicIcon: Boolean = false,
 ) {
     val isDefault: Boolean
         get() = this == SearchBarStyle()

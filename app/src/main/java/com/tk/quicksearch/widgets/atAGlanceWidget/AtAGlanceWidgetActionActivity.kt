@@ -136,7 +136,7 @@ class AtAGlanceWidgetActionActivity : FragmentActivity() {
             GlanceNotificationsStore.ongoingCalls.value.firstOrNull { it.key == key }?.contentIntent
                 ?: GlanceNotificationsStore.otps.value.firstOrNull { it.key == key }?.contentIntent
                 ?: GlanceNotificationsStore.timers.value.firstOrNull { it.key == key }?.contentIntent
-                ?: GlanceNotificationsStore.appNotifications.value.firstOrNull { it.key == key }?.contentIntent
+                ?: GlanceNotificationsStore.appNotificationCandidates.value.firstOrNull { it.key == key }?.contentIntent
                 ?: GlanceNotificationsStore.progress.value.firstOrNull { it.key == key }?.contentIntent
                 ?: GlanceNotificationsStore.finishedProgress.value.firstOrNull { it.key == key }?.contentIntent
                 ?: GlanceNotificationsStore.workouts.value.firstOrNull { it.key == key }?.contentIntent

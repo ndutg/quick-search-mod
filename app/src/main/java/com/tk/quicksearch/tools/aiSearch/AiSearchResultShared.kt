@@ -1,5 +1,7 @@
 package com.tk.quicksearch.tools.aiSearch
 
+import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +52,7 @@ internal fun GeminiResultCard(
         onGeminiModelInfoClick: () -> Unit = {},
         onOpenAiSearchConfigure: () -> Unit = {},
         copyText: String? = null,
+        toolAttribution: ToolAttribution? = null,
         content: @Composable () -> Unit,
 ) {
     ColumnWithContent(
@@ -62,8 +65,15 @@ internal fun GeminiResultCard(
             onGeminiModelInfoClick = onGeminiModelInfoClick,
             onOpenAiSearchConfigure = onOpenAiSearchConfigure,
             copyText = copyText,
+            toolAttribution = toolAttribution,
     )
 }
+
+/** Tool branding shown under a result card in place of the AI provider attribution. */
+internal data class ToolAttribution(
+        val icon: ImageVector,
+        @param:StringRes val titleRes: Int,
+)
 
 @Composable
 private fun ColumnWithContent(
@@ -76,7 +86,9 @@ private fun ColumnWithContent(
         onGeminiModelInfoClick: () -> Unit,
         onOpenAiSearchConfigure: () -> Unit,
         copyText: String?,
+        toolAttribution: ToolAttribution?,
 ) {
+    val hasAttribution = showAttribution || toolAttribution != null
     @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
     // Flat (compact) cards have no container to fill, so they size to the answer.
@@ -84,7 +96,7 @@ private fun ColumnWithContent(
     val cardModifier =
             Modifier.fillMaxWidth()
                     .heightIn(min = cardMinHeight)
-                    .padding(bottom = if (showAttribution) compactAttributionCardBottomPadding() else 0.dp)
+                    .padding(bottom = if (hasAttribution) compactAttributionCardBottomPadding() else 0.dp)
                     .let { baseModifier ->
                         if (copyText.isNullOrBlank()) {
                             baseModifier
@@ -109,7 +121,13 @@ private fun ColumnWithContent(
             content()
         }
 
-        if (showAttribution) {
+        if (toolAttribution != null) {
+            ToolAttributionRow(
+                    modifier = Modifier.fillMaxWidth().padding(top = compactAttributionTopPadding()),
+                    icon = toolAttribution.icon,
+                    titleRes = toolAttribution.titleRes,
+            )
+        } else if (showAttribution) {
             AiProviderAttributionRow(
                     modifier = Modifier.fillMaxWidth().padding(top = compactAttributionTopPadding()),
                     usedModelId = usedModelId,
@@ -367,7 +385,6 @@ internal fun CalculatorAttributionRow(
         modifier: Modifier = Modifier,
         toolType: SearchToolType = SearchToolType.CALCULATOR,
 ) {
-    val contentColor = informationAttributionContentColor()
     val titleRes =
             when (toolType) {
                 SearchToolType.UNIT_CONVERTER -> R.string.unit_converter_info_title
@@ -384,6 +401,17 @@ internal fun CalculatorAttributionRow(
                 SearchToolType.CALCULATOR -> MaterialSymbols.Calculate
                 else -> MaterialSymbols.Calculate
             }
+    ToolAttributionRow(modifier = modifier, icon = icon, titleRes = titleRes)
+}
+
+/** Attribution row showing a tool's icon and name. */
+@Composable
+internal fun ToolAttributionRow(
+        icon: ImageVector,
+        @StringRes titleRes: Int,
+        modifier: Modifier = Modifier,
+) {
+    val contentColor = informationAttributionContentColor()
     Row(
             modifier = modifier.padding(horizontal = attributionHorizontalPadding()),
             verticalAlignment = Alignment.CenterVertically,

@@ -307,6 +307,7 @@
     <string name="section_notes">नोट्स</string>
     <string name="section_media">मीडिया नियंत्रण</string>
     <string name="section_settings">डिवाइस सेटिंग्स</string>
+    <string name="search_section_menu_title">इसमें खोजें</string>
     <string name="top_match_title">टॉप मैच</string>
     <string name="top_matches_count_label">मैचों की संख्या</string>
     <string name="top_matches_priority_desc">टॉप मैच में प्राथमिकता बदलें और आइटम अक्षम करें</string>
@@ -756,7 +757,10 @@
     <string name="settings_home_screen_widget_confirm_message">आप अपने होम स्क्रीन पर Quick Search विजेट जोड़ने वाले हैं। विजेट सेटिंग्स पेज खोलने के लिए विजेट पर थोड़ी देर दबाकर रखें, जहां कई कस्टमाइज़ेशन विकल्प हैं।</string>
     <string name="settings_home_screen_widget_desc">अपने होम स्क्रीन पर Quick Search विजेट जोड़ें।</string>
     <string name="settings_home_screen_widget_title">होम स्क्रीन विजेट</string>
-    <string name="settings_icon_desc">सर्च बार में गियर आइकन दिखाएं/छिपाएं। बाएं स्वाइप करके या खोजकर कभी भी सेटिंग्स खोलें।</string>
+    <string name="settings_icon_desc">गियर आइकन दिखाएं या छिपाएं।</string>
+    <string name="settings_icon_off_desc">बाएं स्वाइप करके या खोजकर कभी भी सेटिंग्स खोलें।</string>
+    <string name="settings_mic_icon_title">माइक आइकन</string>
+    <string name="settings_mic_icon_desc">सर्च बार से वॉइस खोज शुरू करें।</string>
     <string name="settings_icon_required_by_gesture_desc">इस आइकन को बंद करने के लिए \"सेटिंग्स खोलें\" पर स्वाइप लेफ्ट जेस्चर सेट करें।</string>
     <string name="settings_icon_pack_empty">कोई आइकन पैक नहीं मिला।</string>
     <string name="settings_icon_pack_description_no_packs">ऐप आइकन के लिए एक आइकन पैक सेट करें।</string>
@@ -1163,7 +1167,6 @@
     <string name="widget_at_a_glance_widget_title">एक नज़र में विजेट</string>
     <string name="widget_at_a_glance_items_title">एक नज़र में आइटम</string>
     <string name="widget_at_a_glance_items_summary">चुनें कि यह विजेट क्या दिखाए</string>
-    <string name="widget_at_a_glance_app_notifications_setup">पहले एक नज़र में सेटिंग्स में ऐप सूचनाएं चालू करें</string>
     <string name="widget_at_a_glance_sample_alarm">कल, सुबह 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">एलेक्स का जन्मदिन</string>
     <string name="widget_at_a_glance_sample_caller">माँ</string>

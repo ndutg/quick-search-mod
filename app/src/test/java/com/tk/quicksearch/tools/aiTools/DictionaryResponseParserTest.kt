@@ -6,24 +6,39 @@ import org.junit.Test
 
 class DictionaryResponseParserTest {
     @Test
-    fun parsesFirstDefinitionWithExampleAndSynonyms() {
+    fun groupsDefinitionsByPartOfSpeechAcrossEntries() {
         val body =
                 """
-                [{"word":"serendipity","meanings":[
+                [{"word":"serene","phonetic":"/səˈɹiːn/","meanings":[
                   {"partOfSpeech":"noun","definitions":[
-                    {"definition":"A combination of events which have come together by chance.","synonyms":["chance"]},
-                    {"definition":"Unsought discovery.","example":"Finding it was pure serendipity."}
-                  ],"synonyms":["luck","chance"]}
+                    {"definition":"Serenity; clearness; calmness.","synonyms":[]}
+                  ],"synonyms":[]},
+                  {"partOfSpeech":"verb","definitions":[{"definition":"To make serene."}]},
+                  {"partOfSpeech":"adjective","definitions":[
+                    {"definition":"Peaceful, calm, unruffled.","example":"A serene mentality.","synonyms":["calm"]},
+                    {"definition":"Without worry or anxiety."},
+                    {"definition":"Fair and unclouded."}
+                  ],"synonyms":["tranquil","calm"]}
+                ]},
+                {"word":"serene","meanings":[
+                  {"partOfSpeech":"noun","definitions":[{"definition":"A fine rain after sunset."}],"synonyms":["serein"]},
+                  {"partOfSpeech":"interjection","definitions":[{"definition":"Dropped past the cap."}]}
                 ]}]
                 """.trimIndent()
 
         val result = parseDictionaryEntries(body)!!
 
-        assertEquals("serendipity", result.word)
-        assertEquals("noun", result.partOfSpeech)
-        assertEquals("A combination of events which have come together by chance.", result.meaning)
-        assertEquals("Finding it was pure serendipity.", result.example)
-        assertEquals(listOf("chance", "luck"), result.synonyms)
+        assertEquals("serene", result.word)
+        assertEquals(listOf("noun", "verb", "adjective"), result.senses.map { it.partOfSpeech })
+        assertEquals(
+                listOf("Serenity; clearness; calmness.", "A fine rain after sunset."),
+                result.senses[0].definitions.map { it.text },
+        )
+        assertEquals(listOf("serein"), result.senses[0].synonyms)
+        val adjective = result.senses[2]
+        assertEquals(2, adjective.definitions.size)
+        assertEquals("A serene mentality.", adjective.definitions[0].example)
+        assertEquals(listOf("calm", "tranquil"), adjective.synonyms)
     }
 
     @Test

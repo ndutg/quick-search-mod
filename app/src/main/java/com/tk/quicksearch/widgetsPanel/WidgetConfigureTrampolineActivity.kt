@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import com.tk.quicksearch.shared.util.pendingIntentSenderOptions
 
 /**
  * Invisible activity that opens a hosted widget's configure screen through
@@ -35,7 +36,9 @@ class WidgetConfigureTrampolineActivity : Activity() {
                         appWidgetId,
                         0,
                         REQUEST_CONFIGURE,
-                        null,
+                        // Without the opt-in, Android 14+ can abort the launch and report it as
+                        // cancelled, which drops the widget before its configure screen appears.
+                        pendingIntentSenderOptions(),
                     )
             }.onFailure { error ->
                 if (error !is ActivityNotFoundException && error !is SecurityException) throw error

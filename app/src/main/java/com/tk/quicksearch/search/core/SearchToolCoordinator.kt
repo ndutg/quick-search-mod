@@ -486,10 +486,7 @@ internal class SearchToolCoordinator(
                                     DictionaryState(
                                         status = DictionaryStatus.Success,
                                         word = parsed.word,
-                                        partOfSpeech = parsed.partOfSpeech,
-                                        meaning = parsed.meaning,
-                                        example = parsed.example,
-                                        synonyms = parsed.synonyms,
+                                        senses = parsed.senses,
                                         activeQuery = trimmedQuery,
                                     ),
                             )

@@ -308,6 +308,7 @@
     <string name="section_notes">Catatan</string>
     <string name="section_media">Kontrol Media</string>
     <string name="section_settings">Pengaturan Perangkat</string>
+    <string name="search_section_menu_title">Cari di</string>
     <string name="top_match_title">Kecocokan Teratas</string>
     <string name="top_matches_count_label">Jumlah kecocokan</string>
     <string name="top_matches_priority_desc">Ubah prioritas dan nonaktifkan item dalam kecocokan teratas</string>
@@ -760,7 +761,10 @@
     <string name="settings_home_screen_widget_confirm_message">Anda akan menambahkan widget Quick Search ke layar utama. Tekan lama widget untuk membuka pengaturan widget dengan beragam opsi penyesuaian.</string>
     <string name="settings_home_screen_widget_desc">Tambahkan widget Quick Search ke layar utama Anda.</string>
     <string name="settings_home_screen_widget_title">Widget Layar Utama</string>
-    <string name="settings_icon_desc">Tampilkan/sembunyikan ikon pengaturan di bilah pencarian. Buka pengaturan kapan saja dengan menggeser ke kiri atau melalui pencarian.</string>
+    <string name="settings_icon_desc">Tampilkan atau sembunyikan ikon pengaturan.</string>
+    <string name="settings_icon_off_desc">Buka pengaturan kapan saja dengan menggeser ke kiri atau melalui pencarian.</string>
+    <string name="settings_mic_icon_title">Ikon Mikrofon</string>
+    <string name="settings_mic_icon_desc">Mulai pencarian suara dari bilah pencarian.</string>
     <string name="settings_icon_required_by_gesture_desc">Atur Gestur Geser ke Kiri ke "Buka Pengaturan" untuk menonaktifkan ikon ini.</string>
     <string name="settings_icon_pack_empty">Paket ikon tidak ditemukan.</string>
     <string name="settings_icon_pack_description_no_packs">Atur paket ikon untuk ikon aplikasi.</string>
@@ -1167,7 +1171,6 @@
     <string name="widget_at_a_glance_widget_title">Widget Sekilas</string>
     <string name="widget_at_a_glance_items_title">Item Sekilas</string>
     <string name="widget_at_a_glance_items_summary">Pilih apa yang ditampilkan widget ini</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Aktifkan Notifikasi aplikasi di pengaturan Sekilas terlebih dahulu</string>
     <string name="widget_at_a_glance_sample_alarm">Besok, 07.00</string>
     <string name="widget_at_a_glance_sample_birthday">Ulang tahun Alex</string>
     <string name="widget_at_a_glance_sample_caller">Ibu</string>

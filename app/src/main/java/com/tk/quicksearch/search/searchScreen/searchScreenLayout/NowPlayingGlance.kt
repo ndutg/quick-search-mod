@@ -58,7 +58,7 @@ import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import kotlinx.coroutines.delay
 
 /** States a session passes through while loading or switching tracks; the card stays up through them. */
-private val NowPlayingTransitionStates =
+internal val NowPlayingTransitionStates =
     setOf(
         PlaybackState.STATE_BUFFERING,
         PlaybackState.STATE_CONNECTING,

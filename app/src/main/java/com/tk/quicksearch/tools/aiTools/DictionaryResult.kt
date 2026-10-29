@@ -12,14 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.DictionaryState
 import com.tk.quicksearch.search.core.DictionaryStatus
+import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.tools.aiSearch.GeminiLoadingAnimation
 import com.tk.quicksearch.tools.aiSearch.GeminiResultCard
+import com.tk.quicksearch.tools.aiSearch.ToolAttribution
 import java.util.Locale
 
 @Composable
@@ -42,6 +45,9 @@ fun DictionaryResult(
             showAttribution = false,
             usedModelId = null,
             copyText = copyText,
+            toolAttribution =
+                    ToolAttribution(MaterialSymbols.MenuBook, R.string.dictionary_toggle_title)
+                            .takeIf { dictionaryState.status == DictionaryStatus.Success },
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -53,56 +59,7 @@ fun DictionaryResult(
                         GeminiLoadingAnimation()
                     }
                     DictionaryStatus.Success -> {
-                        val word = dictionaryState.word.orEmpty().capitalizeFirstCharacter()
-                        val part = dictionaryState.partOfSpeech.orEmpty()
-                        val meaning = dictionaryState.meaning.orEmpty()
-                        val example = dictionaryState.example.orEmpty()
-                        val synonyms =
-                                if (dictionaryState.synonyms.isEmpty()) {
-                                    ""
-                                } else {
-                                    dictionaryState.synonyms.joinToString(", ")
-                                }
-                        Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement =
-                                        Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
-                        ) {
-                            Text(
-                                    text = if (part.isBlank()) word else "$word ($part)",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                            )
-                            HorizontalDivider(
-                                    modifier =
-                                            Modifier.padding(vertical = DesignTokens.SpacingXXSmall),
-                                    color = MaterialTheme.colorScheme.outlineVariant,
-                            )
-                            Text(
-                                    text = meaning,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                            )
-                            if (example.isNotBlank()) {
-                                Text(
-                                        text =
-                                                "\n${stringResource(R.string.dictionary_example_label, example)}\n",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            if (synonyms.isNotBlank()) {
-                                Text(
-                                        text =
-                                                stringResource(
-                                                        R.string.dictionary_synonyms_label,
-                                                        synonyms,
-                                                ),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        }
+                        DictionaryEntryContent(dictionaryState)
                     }
                     DictionaryStatus.Error -> {
                         Column(
@@ -132,22 +89,78 @@ fun DictionaryResult(
     }
 }
 
+@Composable
+private fun DictionaryEntryContent(dictionaryState: DictionaryState) {
+    val word = dictionaryState.word.orEmpty().capitalizeFirstCharacter()
+    Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall),
+    ) {
+        Text(
+                text = word,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+        )
+        HorizontalDivider(
+                modifier = Modifier.padding(vertical = DesignTokens.SpacingXXSmall),
+                color = MaterialTheme.colorScheme.outlineVariant,
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium)) {
+            dictionaryState.senses.forEach { sense -> DictionarySenseContent(sense) }
+        }
+    }
+}
+
+@Composable
+private fun DictionarySenseContent(sense: DictionarySense) {
+    val numbered = sense.definitions.size > 1
+    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingXXSmall)) {
+        if (sense.partOfSpeech.isNotBlank()) {
+            Text(
+                    text = sense.partOfSpeech,
+                    style = MaterialTheme.typography.labelLarge.copy(fontStyle = FontStyle.Italic),
+                    color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        sense.definitions.forEachIndexed { index, definition ->
+            Text(
+                    text = if (numbered) "${index + 1}. ${definition.text}" else definition.text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (definition.example.isNotBlank()) {
+                Text(
+                        text = stringResource(R.string.dictionary_example_label, definition.example),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        if (sense.synonyms.isNotEmpty()) {
+            Text(
+                    text = stringResource(R.string.dictionary_synonyms_label, sense.synonyms.joinToString(", ")),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
 private fun String.capitalizeFirstCharacter(): String =
         replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
-private fun DictionaryState.copyText(): String {
-    val word = word.orEmpty().capitalizeFirstCharacter()
-    val part = partOfSpeech.orEmpty()
-    val meaning = meaning.orEmpty()
-    val example = example.orEmpty()
-    val synonyms = synonyms.joinToString(", ")
-
-    return buildString {
-        append(word)
-        if (part.isNotBlank()) append(" ($part)")
-        append('\n')
-        append(meaning)
-        if (example.isNotBlank()) append("\n\nExample: $example\n")
-        if (synonyms.isNotBlank()) append("\nSynonyms: $synonyms")
-    }
-}
+private fun DictionaryState.copyText(): String =
+        buildString {
+            append(word.orEmpty().capitalizeFirstCharacter())
+            senses.forEach { sense ->
+                append("\n\n")
+                if (sense.partOfSpeech.isNotBlank()) append(sense.partOfSpeech).append('\n')
+                sense.definitions.forEachIndexed { index, definition ->
+                    if (index > 0) append('\n')
+                    if (sense.definitions.size > 1) append("${index + 1}. ")
+                    append(definition.text)
+                    if (definition.example.isNotBlank()) append("\n   Example: ${definition.example}")
+                }
+                if (sense.synonyms.isNotEmpty()) append("\nSynonyms: ${sense.synonyms.joinToString(", ")}")
+            }
+        }

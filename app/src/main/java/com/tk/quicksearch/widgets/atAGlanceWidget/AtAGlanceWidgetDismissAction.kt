@@ -63,7 +63,7 @@ class AtAGlanceWidgetDismissAction : ActionCallback {
                 calls.maxOfOrNull { it.callTime }?.let(glancePreferences::setMissedCallsDismissedAt)
             }
             AtAGlanceWidgetDismissType.APP_NOTIFICATION ->
-                GlanceNotificationsStore.appNotifications.value
+                GlanceNotificationsStore.appNotificationCandidates.value
                     .firstOrNull { it.key == key }
                     ?.let(GlanceNotificationsStore::dismissAppNotification)
             AtAGlanceWidgetDismissType.WEATHER -> key?.let(GlanceNotificationsStore::dismissWeather)
@@ -76,6 +76,7 @@ class AtAGlanceWidgetDismissAction : ActionCallback {
                 CustomInfoScheduler.cancelNotification(context.applicationContext, id.toInt())
                 CustomInfoRepository(context).update(id.toInt()) { it.copy(showOnHome = false) }
             }
+            AtAGlanceWidgetDismissType.NOW_PLAYING -> dismissAtAGlanceWidgetNowPlaying(context)
             AtAGlanceWidgetDismissType.WIFI_SIGN_IN -> WifiSignInDismissal.dismissed = true
             AtAGlanceWidgetDismissType.CHARGING ->
                 AtAGlanceWidgetRowLoader(context, System.currentTimeMillis())
@@ -92,6 +93,9 @@ class AtAGlanceWidgetDismissAction : ActionCallback {
         private val TYPE_KEY = ActionParameters.Key<String>("dismiss_type")
         private val KEY_KEY = ActionParameters.Key<String>("dismiss_key")
         private val ID_KEY = ActionParameters.Key<Long>("dismiss_id")
+
+        /** For a close button that is not on an [AtAGlanceWidgetRow], such as Now Playing's. */
+        fun parameters(type: AtAGlanceWidgetDismissType): ActionParameters = actionParametersOf(TYPE_KEY to type.name)
 
         fun parameters(row: AtAGlanceWidgetRow): ActionParameters =
             actionParametersOf(

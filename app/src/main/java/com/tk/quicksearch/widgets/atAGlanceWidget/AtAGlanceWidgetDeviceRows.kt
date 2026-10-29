@@ -16,11 +16,11 @@ import com.tk.quicksearch.search.searchScreen.searchScreenLayout.ACTION_WIFI_AP_
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.BatteryStatus
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.WifiSignInDismissal
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.formatShortDuration
+import com.tk.quicksearch.search.searchScreen.searchScreenLayout.hasCaptivePortalWifi
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.isAirplaneModeOn
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.isDoNotDisturbOn
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.isHotspotOn
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.isLowStorage
-import com.tk.quicksearch.search.searchScreen.searchScreenLayout.needsCaptivePortalSignIn
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.readInternalStorage
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.updateLowStorageDismissal
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
@@ -97,10 +97,7 @@ internal fun AtAGlanceWidgetRowLoader.lowBatteryRows(): List<AtAGlanceWidgetRow>
 internal fun AtAGlanceWidgetRowLoader.wifiSignInRows(): List<AtAGlanceWidgetRow> {
     if (!items.isShown(GlanceItem.WIFI_SIGN_IN)) return emptyList()
     val connectivityManager = context.getSystemService(ConnectivityManager::class.java) ?: return emptyList()
-    val needsSignIn =
-        runCatching {
-            needsCaptivePortalSignIn(connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork))
-        }.getOrDefault(false)
+    val needsSignIn = hasCaptivePortalWifi(connectivityManager)
     if (!needsSignIn || WifiSignInDismissal.dismissed) return emptyList()
     return listOf(
         deviceRow(

@@ -14,6 +14,8 @@ class CalculatorUtilsTest {
         assertTrue(CalculatorUtils.isMathExpression("6×7"))
         assertTrue(CalculatorUtils.isMathExpression("9÷3"))
         assertTrue(CalculatorUtils.isMathExpression("-5"))
+        assertTrue(CalculatorUtils.isMathExpression("3x4"))
+        assertTrue(CalculatorUtils.isMathExpression("(2+1) X 5"))
     }
 
     @Test
@@ -25,6 +27,8 @@ class CalculatorUtilsTest {
         assertFalse(CalculatorUtils.isMathExpression("wi-fi"))
         assertFalse(CalculatorUtils.isMathExpression("2+x"))
         assertFalse(CalculatorUtils.isMathExpression("50%"))
+        assertFalse(CalculatorUtils.isMathExpression("x-ray"))
+        assertFalse(CalculatorUtils.isMathExpression("2x"))
     }
 
     @Test
@@ -48,6 +52,9 @@ class CalculatorUtilsTest {
         assertEquals("42", CalculatorUtils.evaluateExpression("6 × 7"))
         assertEquals("3", CalculatorUtils.evaluateExpression("9 ÷ 3"))
         assertEquals("10", CalculatorUtils.evaluateExpression("2·5"))
+        assertEquals("12", CalculatorUtils.evaluateExpression("3x4"))
+        assertEquals("15", CalculatorUtils.evaluateExpression("(2+1) X 5"))
+        assertEquals("1", CalculatorUtils.evaluateExpression("0.5x2"))
     }
 
     @Test

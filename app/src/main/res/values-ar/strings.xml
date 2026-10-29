@@ -308,6 +308,7 @@
     <string name="section_notes">الملاحظات</string>
     <string name="section_media">عناصر التحكم بالوسائط</string>
     <string name="section_settings">إعدادات الجهاز</string>
+    <string name="search_section_menu_title">البحث في</string>
     <string name="top_match_title">أفضل مطابقة</string>
     <string name="top_matches_count_label">عدد التطابقات</string>
     <string name="top_matches_priority_desc">تغيير أولوية العناصر وتعطيلها في أفضل التطابقات</string>
@@ -757,7 +758,10 @@
     <string name="settings_home_screen_widget_confirm_message">أنت على وشك إضافة عنصر واجهة مستخدم Quick Search إلى الشاشة الرئيسية. اضغط مطولاً على العنصر للوصول لصفحة الإعدادات الخاصة به والتي تحتوي على خيارات تخصيص متعددة.</string>
     <string name="settings_home_screen_widget_desc">إضافة عنصر واجهة مستخدم Quick Search إلى الشاشة الرئيسية.</string>
     <string name="settings_home_screen_widget_title">عنصر واجهة مستخدم للشاشة الرئيسية</string>
-    <string name="settings_icon_desc">إظهار أو إخفاء أيقونة الإعدادات (الترس) في شريط البحث. يمكنك دائماً الوصول للإعدادات بالسحب يساراً أو عبر البحث عنها.</string>
+    <string name="settings_icon_desc">إظهار أو إخفاء أيقونة الإعدادات (الترس).</string>
+    <string name="settings_icon_off_desc">يمكنك دائماً الوصول للإعدادات بالسحب يساراً أو عبر البحث عنها.</string>
+    <string name="settings_mic_icon_title">أيقونة الميكروفون</string>
+    <string name="settings_mic_icon_desc">ابدأ البحث الصوتي من شريط البحث.</string>
     <string name="settings_icon_required_by_gesture_desc">اضبط إيماءة السحب لليسار لفتح الإعدادات لإيقاف تشغيل هذا الرمز.</string>
     <string name="settings_icon_pack_empty">لم يتم العثور على أي حزم أيقونات.</string>
     <string name="settings_icon_pack_description_no_packs">عيّن حزمة أيقونات لأيقونات التطبيقات.</string>
@@ -1164,7 +1168,6 @@
     <string name="widget_at_a_glance_widget_title">أداة نظرة سريعة</string>
     <string name="widget_at_a_glance_items_title">عناصر نظرة سريعة</string>
     <string name="widget_at_a_glance_items_summary">اختر ما تعرضه هذه الأداة</string>
-    <string name="widget_at_a_glance_app_notifications_setup">شغّل إشعارات التطبيقات في إعدادات نظرة سريعة أولاً</string>
     <string name="widget_at_a_glance_sample_alarm">غداً، 7:00 ص</string>
     <string name="widget_at_a_glance_sample_birthday">عيد ميلاد أليكس</string>
     <string name="widget_at_a_glance_sample_caller">أمي</string>

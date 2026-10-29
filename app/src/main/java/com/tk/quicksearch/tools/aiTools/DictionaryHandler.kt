@@ -12,6 +12,8 @@ import org.json.JSONObject
 // Free English dictionary (Wiktionary data); no API key needed.
 private const val DICTIONARY_API_URL = "https://api.dictionaryapi.dev/api/v2/entries/en/"
 private const val MAX_SYNONYMS = 5
+private const val MAX_PARTS_OF_SPEECH = 3
+private const val MAX_DEFINITIONS_PER_PART = 2
 
 class DictionaryHandler(
         private val context: Context,
@@ -44,35 +46,48 @@ class DictionaryHandler(
     private fun unavailableMessage(): String = context.getString(R.string.dictionary_unavailable)
 }
 
-/** Returns null when the body isn't a usable entry list (e.g. a Cloudflare challenge page). */
+/**
+ * Merges every entry for the word, grouping definitions by part of speech in API order.
+ * Returns null when the body isn't a usable entry list (e.g. a Cloudflare challenge page).
+ */
 internal fun parseDictionaryEntries(body: String): DictionaryModelResult? = runCatching {
-    val entries = JSONArray(body)
-    for (i in 0 until entries.length()) {
-        val entry = entries.optJSONObject(i) ?: continue
-        val word = entry.optString("word").trim()
-        val meanings = entry.optJSONArray("meanings") ?: continue
-        for (j in 0 until meanings.length()) {
-            val meaning = meanings.optJSONObject(j) ?: continue
-            val definitions = meaning.optJSONArray("definitions") ?: continue
-            val definition = definitions.objects().firstOrNull { it.optString("definition").isNotBlank() }
+    val entries = JSONArray(body).objects()
+    val word = entries.map { it.optString("word").trim() }.firstOrNull { it.isNotBlank() }
+            ?: return@runCatching null
+
+    val definitionsByPart = linkedMapOf<String, MutableList<DictionaryDefinition>>()
+    val synonymsByPart = linkedMapOf<String, MutableList<String>>()
+    for (entry in entries) {
+        if (!entry.optString("word").trim().equals(word, ignoreCase = true)) continue
+        val meanings = entry.optJSONArray("meanings")?.objects() ?: continue
+        for (meaning in meanings) {
+            val part = meaning.optString("partOfSpeech").trim()
+            val definitions = meaning.optJSONArray("definitions")?.objects()
+                    ?.filter { it.optString("definition").isNotBlank() }
                     ?: continue
-            val example = definitions.objects().map { it.optString("example").trim() }
-                    .firstOrNull { it.isNotBlank() }
-                    .orEmpty()
-            val synonyms = (definition.stringList("synonyms") + meaning.stringList("synonyms"))
-                    .distinct()
-                    .take(MAX_SYNONYMS)
-            if (word.isBlank()) return@runCatching null
-            return@runCatching DictionaryModelResult(
-                    word = word,
-                    partOfSpeech = meaning.optString("partOfSpeech").trim(),
-                    meaning = definition.optString("definition").trim(),
-                    example = example,
-                    synonyms = synonyms,
-            )
+            if (definitions.isEmpty()) continue
+            definitionsByPart.getOrPut(part) { mutableListOf() } += definitions.map {
+                DictionaryDefinition(
+                        text = it.optString("definition").trim(),
+                        example = it.optString("example").trim(),
+                )
+            }
+            synonymsByPart.getOrPut(part) { mutableListOf() } +=
+                    definitions.flatMap { it.stringList("synonyms") } + meaning.stringList("synonyms")
         }
     }
-    null
+    if (definitionsByPart.isEmpty()) return@runCatching null
+
+    DictionaryModelResult(
+            word = word,
+            senses = definitionsByPart.entries.take(MAX_PARTS_OF_SPEECH).map { (part, definitions) ->
+                DictionarySense(
+                        partOfSpeech = part,
+                        definitions = definitions.distinctBy { it.text }.take(MAX_DEFINITIONS_PER_PART),
+                        synonyms = synonymsByPart[part].orEmpty().distinct().take(MAX_SYNONYMS),
+                )
+            },
+    )
 }.getOrNull()
 
 private fun JSONArray.objects(): List<JSONObject> = List(length()) { optJSONObject(it) }.filterNotNull()
@@ -84,8 +99,16 @@ private fun JSONObject.stringList(key: String): List<String> =
 
 data class DictionaryModelResult(
         val word: String,
+        val senses: List<DictionarySense>,
+)
+
+data class DictionarySense(
         val partOfSpeech: String,
-        val meaning: String,
-        val example: String,
+        val definitions: List<DictionaryDefinition>,
         val synonyms: List<String>,
+)
+
+data class DictionaryDefinition(
+        val text: String,
+        val example: String,
 )

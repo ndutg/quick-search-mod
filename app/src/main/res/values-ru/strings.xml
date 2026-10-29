@@ -307,6 +307,7 @@
 <string name="section_notes">Заметки</string>
 <string name="section_media">Управление медиа</string>
 <string name="section_settings">Настройки устройства</string>
+<string name="search_section_menu_title">Искать в</string>
 <string name="top_match_title">Лучшее совпадение</string>
 <string name="top_matches_count_label">Количество совпадений</string>
 <string name="top_matches_priority_desc">Изменить приоритет и отключить элементы в лучших совпадениях</string>
@@ -776,7 +777,10 @@
     <string name="settings_home_screen_widget_confirm_message">Вы собираетесь добавить виджет Quick Search на главный экран. Нажмите и удерживайте его, чтобы открыть экран настроек со множеством параметров кастомизации.</string>
 <string name="settings_home_screen_widget_desc">Добавить виджет Quick Search на главный экран.</string>
 <string name="settings_home_screen_widget_title">Виджет на главный экран</string>
-    <string name="settings_icon_desc">Показывать/скрывать значок шестерёнки в поисковой строке. Вы всегда можете перейти в настройки свайпом влево или через поиск.</string>
+    <string name="settings_icon_desc">Показывать или скрывать значок шестерёнки.</string>
+    <string name="settings_icon_off_desc">Вы всегда можете перейти в настройки свайпом влево или через поиск.</string>
+    <string name="settings_mic_icon_title">Значок микрофона</string>
+    <string name="settings_mic_icon_desc">Запускайте голосовой поиск из поисковой строки.</string>
     <string name="settings_icon_required_by_gesture_desc">Установите жест \"Смахивание влево\" на \"Открыть настройки\", чтобы скрыть этот значок.</string>
 <string name="settings_icon_pack_empty">Пакеты значков не найдены.</string>
 <string name="settings_icon_pack_description_no_packs">Установите пакет значков для значков приложений.</string>
@@ -1187,7 +1191,6 @@
 <string name="widget_at_a_glance_widget_title">Виджет «Кратко»</string>
 <string name="widget_at_a_glance_items_title">Элементы «Кратко»</string>
 <string name="widget_at_a_glance_items_summary">Выберите, что показывает этот виджет</string>
-<string name="widget_at_a_glance_app_notifications_setup">Сначала включите «Уведомления приложений» в настройках «Кратко»</string>
 <string name="widget_at_a_glance_sample_alarm">Завтра, 7:00</string>
 <string name="widget_at_a_glance_sample_birthday">День рождения: Алекс</string>
 <string name="widget_at_a_glance_sample_caller">Мама</string>
