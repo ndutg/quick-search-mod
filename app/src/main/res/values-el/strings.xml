@@ -1164,7 +1164,6 @@
     <string name="widget_at_a_glance_widget_title">Γραφικό στοιχείο Με μια ματιά</string>
     <string name="widget_at_a_glance_items_title">Στοιχεία Με μια ματιά</string>
     <string name="widget_at_a_glance_items_summary">Επιλέξτε τι εμφανίζει αυτό το widget</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Ενεργοποιήστε πρώτα τις Ειδοποιήσεις εφαρμογών στις ρυθμίσεις Με μια ματιά</string>
     <string name="widget_at_a_glance_sample_alarm">Αύριο, 7:00 π.μ.</string>
     <string name="widget_at_a_glance_sample_birthday">Γενέθλια: Άλεξ</string>
     <string name="widget_at_a_glance_sample_caller">Μαμά</string>

@@ -1,12 +1,17 @@
 package com.tk.quicksearch.appNotifications
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.viewModels
+import androidx.core.content.IntentCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -60,14 +65,42 @@ import com.tk.quicksearch.shared.ui.theme.QuickSearchTheme
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.setSystemBarsDark
 
+/** Holds the At a Glance widget's list that [AppNotificationsActivity] edits and returns. */
+internal const val EXTRA_WIDGET_FILTERS = "com.tk.quicksearch.appNotifications.WIDGET_FILTERS"
+
+/**
+ * Opens [AppNotificationsActivity] on an At a Glance widget's own apps and keywords, starting from
+ * the given list, and returns the list as left; null if the activity closed without one.
+ */
+internal object EditWidgetAppNotificationFilters : ActivityResultContract<AppNotificationFilters, AppNotificationFilters?>() {
+    override fun createIntent(
+        context: Context,
+        input: AppNotificationFilters,
+    ): Intent = Intent(context, AppNotificationsActivity::class.java).putExtra(EXTRA_WIDGET_FILTERS, input)
+
+    override fun parseResult(
+        resultCode: Int,
+        intent: Intent?,
+    ): AppNotificationFilters? =
+        intent
+            ?.takeIf { resultCode == Activity.RESULT_OK }
+            ?.let { IntentCompat.getParcelableExtra(it, EXTRA_WIDGET_FILTERS, AppNotificationFilters::class.java) }
+}
+
 /**
  * App notifications settings for At a Glance: the apps to show (each optionally narrowed by
  * keywords) and keywords that match any app. Changes save to [GlancePreferences] through
- * [AppNotificationsViewModel] as they're made, and Home picks them up right away.
+ * [AppNotificationsViewModel] as they're made, and Home picks them up right away. Started through
+ * [EditWidgetAppNotificationFilters], it edits an At a Glance widget's list and returns it instead.
  */
 class AppNotificationsActivity : ComponentActivity() {
+    private val viewModel: AppNotificationsViewModel by viewModels()
+
     @Suppress("DEPRECATION")
     private fun finishWithSlide() {
+        if (viewModel.isWidget) {
+            viewModel.filters.value?.let { setResult(RESULT_OK, Intent().putExtra(EXTRA_WIDGET_FILTERS, it)) }
+        }
         finish()
         overridePendingTransition(R.anim.custom_info_slide_in_left, R.anim.custom_info_slide_out_right)
     }
@@ -112,7 +145,7 @@ class AppNotificationsActivity : ComponentActivity() {
                     amoledThemeEnabled = preferences.isAmoledThemeEnabled(),
                     modifier = Modifier.background(MaterialTheme.colorScheme.background),
                 ) {
-                    AppNotificationsScreen(onBack = ::finishWithSlide)
+                    AppNotificationsScreen(onBack = ::finishWithSlide, viewModel = viewModel)
                 }
             }
         }

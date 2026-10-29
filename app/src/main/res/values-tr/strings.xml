@@ -1163,7 +1163,6 @@
 <string name="widget_at_a_glance_widget_title">Bir Bakışta Widget\'ı</string>
 <string name="widget_at_a_glance_items_title">Bir Bakışta öğeleri</string>
 <string name="widget_at_a_glance_items_summary">Bu widget\'ın ne göstereceğini seçin</string>
-<string name="widget_at_a_glance_app_notifications_setup">Önce Bir Bakışta ayarlarında Uygulama bildirimlerini açın</string>
 <string name="widget_at_a_glance_sample_alarm">Yarın, 07:00</string>
 <string name="widget_at_a_glance_sample_birthday">Alex doğum günü</string>
 <string name="widget_at_a_glance_sample_caller">Annem</string>

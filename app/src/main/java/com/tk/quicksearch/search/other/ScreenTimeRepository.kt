@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.PowerManager
 import com.tk.quicksearch.search.core.ScreenTimeAppUsage
+import com.tk.quicksearch.search.data.TodayAppUsage
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -20,10 +21,66 @@ class ScreenTimeRepository(context: Context) {
 
     fun getTodayScreenTime(nowMillis: Long = System.currentTimeMillis()): ScreenTimeUsageSummary {
         val startOfToday = startOfCurrentDayMillis(nowMillis)
-        val queryStart = startOfPreviousDayMillis(startOfToday)
-        val usageEvents = usageStatsManager?.queryEvents(queryStart, nowMillis)
+        val deviceUsageEvents = queryDeviceUsageEvents(startOfToday, nowMillis)
             ?: return ScreenTimeUsageSummary(0L, emptyList())
-        val deviceUsageEvents = buildList {
+        val usage = calculateForegroundAppUsage(
+            startMillis = startOfToday,
+            endMillis = nowMillis,
+            events = deviceUsageEvents,
+            excludedPackages = excludedScreenTimePackages(),
+            currentInteractiveFallback = powerManager?.isInteractive == true,
+        )
+        val topApps =
+            usage.durationByPackage.entries
+                .asSequence()
+                .filter { it.value > 0L }
+                .sortedByDescending { it.value }
+                .take(3)
+                .map { (packageName, durationMillis) ->
+                    ScreenTimeAppUsage(
+                        packageName = packageName,
+                        appName = resolveAppName(packageName),
+                        durationMillis = durationMillis,
+                    )
+                }
+                .toList()
+        return ScreenTimeUsageSummary(
+            durationMillis = usage.totalDurationMillis,
+            topApps = topApps,
+        )
+    }
+
+    /**
+     * Today's foreground time and open count for one app, computed from usage events clipped to
+     * local midnight so it matches the system screen-time dashboard rather than the daily
+     * UsageStats buckets, which aren't aligned to local midnight.
+     */
+    fun getTodayAppUsage(
+        packageName: String,
+        nowMillis: Long = System.currentTimeMillis(),
+    ): TodayAppUsage? {
+        val startOfToday = startOfCurrentDayMillis(nowMillis)
+        val deviceUsageEvents = queryDeviceUsageEvents(startOfToday, nowMillis) ?: return null
+        val usage = calculateForegroundAppUsage(
+            startMillis = startOfToday,
+            endMillis = nowMillis,
+            events = deviceUsageEvents,
+            currentInteractiveFallback = powerManager?.isInteractive == true,
+        )
+        return TodayAppUsage(
+            openedCount = countAppOpens(startOfToday, nowMillis, deviceUsageEvents, packageName),
+            foregroundTimeMillis = usage.durationByPackage[packageName] ?: 0L,
+        )
+    }
+
+    private fun queryDeviceUsageEvents(
+        startOfTodayMillis: Long,
+        nowMillis: Long,
+    ): List<DeviceUsageEvent>? {
+        // Start a day early so the screen state at midnight is known.
+        val queryStart = startOfPreviousDayMillis(startOfTodayMillis)
+        val usageEvents = usageStatsManager?.queryEvents(queryStart, nowMillis) ?: return null
+        return buildList {
             val event = UsageEvents.Event()
             while (usageEvents.hasNextEvent()) {
                 usageEvents.getNextEvent(event)
@@ -50,36 +107,12 @@ class ScreenTimeRepository(context: Context) {
                                 packageName = event.packageName.orEmpty(),
                                 instanceToken = event.instanceToken(),
                                 isForeground = false,
+                                isStopped = event.eventType == UsageEvents.Event.ACTIVITY_STOPPED,
                             ),
                         )
                 }
             }
         }
-        val usage = calculateForegroundAppUsage(
-            startMillis = startOfToday,
-            endMillis = nowMillis,
-            events = deviceUsageEvents,
-            excludedPackages = excludedScreenTimePackages(),
-            currentInteractiveFallback = powerManager?.isInteractive == true,
-        )
-        val topApps =
-            usage.durationByPackage.entries
-                .asSequence()
-                .filter { it.value > 0L }
-                .sortedByDescending { it.value }
-                .take(3)
-                .map { (packageName, durationMillis) ->
-                    ScreenTimeAppUsage(
-                        packageName = packageName,
-                        appName = resolveAppName(packageName),
-                        durationMillis = durationMillis,
-                    )
-                }
-                .toList()
-        return ScreenTimeUsageSummary(
-            durationMillis = usage.totalDurationMillis,
-            topApps = topApps,
-        )
     }
 
     private fun resolveAppName(packageName: String): String {
@@ -145,6 +178,8 @@ internal sealed interface DeviceUsageEvent {
         val packageName: String,
         val instanceToken: String,
         val isForeground: Boolean,
+        /** True for a stop, which means the activity is no longer visible at all. */
+        val isStopped: Boolean = false,
     ) : DeviceUsageEvent
 }
 
@@ -209,7 +244,7 @@ internal fun calculateForegroundAppUsage(
             activeActivities[event.instanceToken] = event.packageName
         }
 
-        val foregroundPackage = activeActivities.values.lastOrNull { it !in excludedPackages }
+        val foregroundPackage = activeActivities.topCountedPackage(excludedPackages)
         val screenIsInteractive = isScreenInteractive ?: currentInteractiveFallback
         if (screenIsInteractive && foregroundPackage != null) {
             durationByPackage[foregroundPackage] =
@@ -228,10 +263,11 @@ internal fun calculateForegroundAppUsage(
             is DeviceUsageEvent.ActivityState -> {
                 seenActivityTokens += event.instanceToken
                 if (event.isForeground) {
-                    // On a phone, the newly resumed activity becomes the foreground surface.
-                    // Replacing the previous entry prevents missing pause events from making
-                    // foreground time continue indefinitely.
-                    activeActivities.clear()
+                    // The newly resumed activity goes on top. Activities below it stay active
+                    // until they pause, so a brief resume/pause from another surface (such as
+                    // the launcher during a recents gesture) hands foreground time back to the
+                    // app underneath.
+                    activeActivities.remove(event.instanceToken)
                     activeActivities[event.instanceToken] = event.packageName
                 } else {
                     activeActivities.remove(event.instanceToken)
@@ -240,7 +276,7 @@ internal fun calculateForegroundAppUsage(
         }
     }
 
-    val foregroundPackage = activeActivities.values.lastOrNull { it !in excludedPackages }
+    val foregroundPackage = activeActivities.topCountedPackage(excludedPackages)
     val screenIsInteractive = isScreenInteractive ?: currentInteractiveFallback
     if (screenIsInteractive && foregroundPackage != null) {
         durationByPackage[foregroundPackage] =
@@ -252,6 +288,43 @@ internal fun calculateForegroundAppUsage(
         totalDurationMillis = totalMillis,
         durationByPackage = durationByPackage.toMap(),
     )
+}
+
+/** The most recently resumed activity's package, or null when it is excluded (such as home). */
+private fun Map<String, String>.topCountedPackage(excludedPackages: Set<String>): String? =
+    values.lastOrNull()?.takeUnless { it in excludedPackages }
+
+/**
+ * Counts how many times [packageName] was opened today: each resume while none of its activities
+ * were still started. Moving between the app's own activities isn't a new open because the
+ * previous activity stops only after the next one resumes; returning after the app fully stopped,
+ * even with no other app in between, is.
+ */
+internal fun countAppOpens(
+    startMillis: Long,
+    endMillis: Long,
+    events: List<DeviceUsageEvent>,
+    packageName: String,
+): Int {
+    val startedTokens = mutableSetOf<String>()
+    var opens = 0
+    events.sortedBy { it.timestampMillis }.forEach { event ->
+        if (event.timestampMillis > endMillis) return@forEach
+        when (event) {
+            is DeviceUsageEvent.ScreenState ->
+                if (!event.isInteractive) startedTokens.clear()
+            is DeviceUsageEvent.ActivityState -> {
+                if (event.packageName != packageName) return@forEach
+                if (event.isForeground) {
+                    if (startedTokens.isEmpty() && event.timestampMillis >= startMillis) opens++
+                    startedTokens += event.instanceToken
+                } else if (event.isStopped) {
+                    startedTokens -= event.instanceToken
+                }
+            }
+        }
+    }
+    return opens
 }
 
 internal fun startOfCurrentDayMillis(

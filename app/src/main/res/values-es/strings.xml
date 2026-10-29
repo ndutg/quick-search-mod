@@ -1164,7 +1164,6 @@
     <string name="widget_at_a_glance_widget_title">Widget De un vistazo</string>
     <string name="widget_at_a_glance_items_title">Elementos de De un vistazo</string>
     <string name="widget_at_a_glance_items_summary">Elige qué muestra este widget</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Primero activa Notificaciones de apps en los ajustes de De un vistazo</string>
     <string name="widget_at_a_glance_sample_alarm">Mañana, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Cumpleaños de Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mamá</string>

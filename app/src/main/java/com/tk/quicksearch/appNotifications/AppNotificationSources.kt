@@ -59,7 +59,7 @@ private class RecentNotification(
 }
 
 /**
- * Notifications App notifications could have shown, newest first: those showing on Home now plus
+ * Notifications App notifications could have shown, newest first: those posted now plus
  * notification history, leaving out the kinds it never shows (ongoing, media, calls, progress and
  * other rows' notifications) and this app's own. A posting in both counts once, as on Home.
  */
@@ -67,7 +67,7 @@ private class RecentNotification(
 private fun rememberRecentNotifications(): List<RecentNotification> {
     val context = LocalContext.current
     val history by remember(context) { NotificationHistoryStore.entries(context) }.collectAsState(initial = emptyList())
-    val live by GlanceNotificationsStore.appNotifications.collectAsState()
+    val live by GlanceNotificationsStore.appNotificationCandidates.collectAsState()
     return remember(history, live) {
         val fromShade = live.map { RecentNotification(it.key, it.packageName, it.title, it.text, it.postTime) }
         val fromHistory = history

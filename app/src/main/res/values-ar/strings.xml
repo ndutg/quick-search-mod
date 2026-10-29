@@ -1165,7 +1165,6 @@
     <string name="widget_at_a_glance_widget_title">أداة نظرة سريعة</string>
     <string name="widget_at_a_glance_items_title">عناصر نظرة سريعة</string>
     <string name="widget_at_a_glance_items_summary">اختر ما تعرضه هذه الأداة</string>
-    <string name="widget_at_a_glance_app_notifications_setup">شغّل إشعارات التطبيقات في إعدادات نظرة سريعة أولاً</string>
     <string name="widget_at_a_glance_sample_alarm">غداً، 7:00 ص</string>
     <string name="widget_at_a_glance_sample_birthday">عيد ميلاد أليكس</string>
     <string name="widget_at_a_glance_sample_caller">أمي</string>

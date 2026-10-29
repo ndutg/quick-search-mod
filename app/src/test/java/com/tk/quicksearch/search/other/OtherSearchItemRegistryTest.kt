@@ -326,4 +326,54 @@ class OtherSearchItemRegistryTest {
             ),
         )
     }
+
+    @Test
+    fun appOpensIgnoreInAppActivityChangesAndCountReturns() {
+        val hour = 60L * 60L * 1000L
+        fun stop(time: Long, pkg: String, token: String) =
+            DeviceUsageEvent.ActivityState(time, pkg, token, isForeground = false, isStopped = true)
+        val events =
+            listOf(
+                // Opened yesterday; still foreground at midnight, so not an open today.
+                DeviceUsageEvent.ActivityState(-hour, "app.one", "main", isForeground = true),
+                // In-app navigation: the previous activity stops after the next one resumes.
+                DeviceUsageEvent.ActivityState(hour, "app.one", "detail", isForeground = true),
+                stop(hour + 1, "app.one", "main"),
+                DeviceUsageEvent.ActivityState(2 * hour, "app.two", "main", isForeground = true),
+                stop(2 * hour + 1, "app.one", "detail"),
+                DeviceUsageEvent.ActivityState(3 * hour, "app.one", "main", isForeground = true),
+                // Fully stopped and resumed with no other app in between still counts.
+                stop(3 * hour + 1, "app.one", "main"),
+                DeviceUsageEvent.ActivityState(3 * hour + 2, "app.one", "main", isForeground = true),
+                DeviceUsageEvent.ScreenState(4 * hour, isInteractive = false),
+                DeviceUsageEvent.ScreenState(5 * hour, isInteractive = true),
+                DeviceUsageEvent.ActivityState(5 * hour, "app.one", "main", isForeground = true),
+            )
+
+        assertEquals(3, countAppOpens(0L, 6 * hour, events, "app.one"))
+    }
+
+    @Test
+    fun screenTimeReturnsToAppAfterBriefOverlayingResume() {
+        val minute = 60L * 1000L
+        val events =
+            listOf(
+                DeviceUsageEvent.ScreenState(-minute, isInteractive = true),
+                DeviceUsageEvent.ActivityState(0L, "app.one", "one", isForeground = true),
+                // The launcher flickers in and out while the app never pauses.
+                DeviceUsageEvent.ActivityState(10 * minute, "launcher", "home", isForeground = true),
+                DeviceUsageEvent.ActivityState(10 * minute, "launcher", "home", isForeground = false),
+                DeviceUsageEvent.ActivityState(15 * minute, "app.one", "one", isForeground = false),
+            )
+
+        val usage =
+            calculateForegroundAppUsage(
+                startMillis = 0L,
+                endMillis = 20 * minute,
+                events = events,
+                excludedPackages = setOf("launcher"),
+            )
+
+        assertEquals(15 * minute, usage.durationByPackage["app.one"])
+    }
 }

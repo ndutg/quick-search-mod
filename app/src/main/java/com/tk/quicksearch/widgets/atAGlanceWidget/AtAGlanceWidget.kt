@@ -172,7 +172,7 @@ class AtAGlanceWidget : GlanceAppWidget() {
                 storedConfig.withNoteWidgetDefaults().copy(glanceItems = newWidgetGlanceItems(appItems))
             }
         val items = WidgetGlanceItemSettings(config.glanceItems, appItems)
-        val snapshot = loadAtAGlanceWidgetSnapshot(context, items)
+        val snapshot = loadAtAGlanceWidgetSnapshot(context, items, config.glanceAppNotificationFilters)
         AtAGlanceWidgetReceiver.scheduleRefresh(context, snapshot.nextChangeMillis)
 
         val size = LocalSize.current

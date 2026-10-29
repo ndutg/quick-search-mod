@@ -1164,7 +1164,6 @@
     <string name="widget_at_a_glance_widget_title">Auf-einen-Blick-Widget</string>
     <string name="widget_at_a_glance_items_title">Auf einen Blick: Elemente</string>
     <string name="widget_at_a_glance_items_summary">Wähle, was dieses Widget anzeigt</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Aktiviere zuerst App-Benachrichtigungen in den Auf-einen-Blick-Einstellungen</string>
     <string name="widget_at_a_glance_sample_alarm">Morgen, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Geburtstag von Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mama</string>

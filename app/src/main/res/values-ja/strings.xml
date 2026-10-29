@@ -1175,7 +1175,6 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_at_a_glance_widget_title">ひと目で確認ウィジェット</string>
     <string name="widget_at_a_glance_items_title">ひと目で確認の項目</string>
     <string name="widget_at_a_glance_items_summary">このウィジェットに表示する項目を選択</string>
-    <string name="widget_at_a_glance_app_notifications_setup">先に「ひと目で確認」の設定でアプリの通知をオンにしてください</string>
     <string name="widget_at_a_glance_sample_alarm">明日 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">アレックスさんの誕生日</string>
     <string name="widget_at_a_glance_sample_caller">お母さん</string>

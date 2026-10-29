@@ -96,6 +96,7 @@ internal object AtAGlanceWidgetUpdater {
                 GlanceNotificationsStore.otps,
                 GlanceNotificationsStore.weather,
                 GlanceNotificationsStore.appNotifications,
+                GlanceNotificationsStore.appNotificationCandidates,
                 ReminderRepository.changes,
                 CustomInfoRepository.changes,
                 AppNotificationsSettings.config,

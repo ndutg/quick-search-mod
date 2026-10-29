@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchViewModel
+import com.tk.quicksearch.search.data.AppNotificationFilters
 import com.tk.quicksearch.settings.settingsDetailScreen.AtAGlanceSettingsSection
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.SettingsCardItem
@@ -62,6 +63,8 @@ fun AtAGlanceWidgetItemsSection(
         AtAGlanceWidgetItemsDrawer(
             items = state.glanceItems,
             onItemsChange = { onStateChange(state.copy(glanceItems = it)) },
+            appNotificationFilters = state.glanceAppNotificationFilters,
+            onAppNotificationFiltersChange = { onStateChange(state.copy(glanceAppNotificationFilters = it)) },
             onDismissRequest = { showDrawer = false },
             searchViewModel = searchViewModel,
         )
@@ -73,6 +76,8 @@ fun AtAGlanceWidgetItemsSection(
 private fun AtAGlanceWidgetItemsDrawer(
     items: Map<String, Boolean>,
     onItemsChange: (Map<String, Boolean>) -> Unit,
+    appNotificationFilters: AppNotificationFilters?,
+    onAppNotificationFiltersChange: (AppNotificationFilters) -> Unit,
     onDismissRequest: () -> Unit,
     searchViewModel: SearchViewModel,
 ) {
@@ -127,6 +132,8 @@ private fun AtAGlanceWidgetItemsDrawer(
                         ),
                 widgetItems = items,
                 onWidgetItemsChange = onItemsChange,
+                widgetAppNotificationFilters = appNotificationFilters,
+                onWidgetAppNotificationFiltersChange = onAppNotificationFiltersChange,
             )
         }
     }

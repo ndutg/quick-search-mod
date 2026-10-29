@@ -63,7 +63,7 @@ class AtAGlanceWidgetDismissAction : ActionCallback {
                 calls.maxOfOrNull { it.callTime }?.let(glancePreferences::setMissedCallsDismissedAt)
             }
             AtAGlanceWidgetDismissType.APP_NOTIFICATION ->
-                GlanceNotificationsStore.appNotifications.value
+                GlanceNotificationsStore.appNotificationCandidates.value
                     .firstOrNull { it.key == key }
                     ?.let(GlanceNotificationsStore::dismissAppNotification)
             AtAGlanceWidgetDismissType.WEATHER -> key?.let(GlanceNotificationsStore::dismissWeather)

@@ -40,8 +40,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.appNotifications.AppNotificationsSettingsRow
+import com.tk.quicksearch.appNotifications.WidgetAppNotificationsSettingsRow
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.apps.notificationDots.rememberNotificationDotsCheckedChange
+import com.tk.quicksearch.search.data.AppNotificationFilters
 import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
 import com.tk.quicksearch.search.data.preferences.GlanceItem
@@ -54,7 +56,6 @@ import com.tk.quicksearch.customInfo.customInfoRepeatLabel
 import com.tk.quicksearch.search.data.preferences.GlancePreferences
 import com.tk.quicksearch.search.data.preferences.UpcomingAlarmPreferences
 import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
-import com.tk.quicksearch.search.searchScreen.searchScreenLayout.rememberAppNotificationsConfig
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.settings.shared.SettingsCard
 import com.tk.quicksearch.settings.shared.AliasPill
@@ -172,6 +173,8 @@ fun AtAGlanceSettingsSection(
     searchQuery: String = "",
     widgetItems: Map<String, Boolean>? = null,
     onWidgetItemsChange: (Map<String, Boolean>) -> Unit = {},
+    widgetAppNotificationFilters: AppNotificationFilters? = null,
+    onWidgetAppNotificationFiltersChange: (AppNotificationFilters) -> Unit = {},
 ) {
     val context = LocalContext.current
     val appContext = context.applicationContext
@@ -341,10 +344,12 @@ fun AtAGlanceSettingsSection(
     val appNotificationsToggle =
         GlanceToggle("$appNotificationsTitle $appNotificationsDescription") { isFirst, isLast ->
             if (isWidget) {
-                WidgetAppNotificationsRow(
+                WidgetAppNotificationsSettingsRow(
                     hasNotificationAccess = hasNotificationAccess,
                     checked = isShown(GlanceItem.APP_NOTIFICATIONS),
                     onCheckedChange = { setShown(GlanceItem.APP_NOTIFICATIONS, it) },
+                    widgetFilters = widgetAppNotificationFilters,
+                    onFiltersChange = onWidgetAppNotificationFiltersChange,
                     isFirstItem = isFirst,
                     isLastItem = isLast,
                 )
@@ -641,36 +646,6 @@ private fun CustomInfoActions(
             onClick = onDelete,
         )
     }
-}
-
-/**
- * App notifications in a widget's items: it shows what the app's App notifications matches, so it
- * can be turned on only once that is on and set up.
- */
-@Composable
-private fun WidgetAppNotificationsRow(
-    hasNotificationAccess: Boolean,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    isFirstItem: Boolean,
-    isLastItem: Boolean,
-) {
-    val isActiveInApp = rememberAppNotificationsConfig()?.isActive == true
-    val enabled = hasNotificationAccess && isActiveInApp
-    SettingsToggleRow(
-        title = stringResource(R.string.settings_at_a_glance_app_notifications_title),
-        subtitle =
-            when {
-                !hasNotificationAccess -> stringResource(R.string.settings_overlay_source_needs_permission)
-                !isActiveInApp -> stringResource(R.string.widget_at_a_glance_app_notifications_setup)
-                else -> stringResource(R.string.settings_at_a_glance_app_notifications_desc)
-            },
-        checked = checked && enabled,
-        onCheckedChange = onCheckedChange,
-        enabled = enabled,
-        isFirstItem = isFirstItem,
-        isLastItem = isLastItem,
-    )
 }
 
 /** Lists the apps whose alarms were hidden from At a Glance, each with an Unhide action. */

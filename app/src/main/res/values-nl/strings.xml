@@ -1210,7 +1210,6 @@ www.google.com/search?q={{query}}</string>
     <string name="widget_at_a_glance_widget_title">In één oogopslag-widget</string>
     <string name="widget_at_a_glance_items_title">In één oogopslag-items</string>
     <string name="widget_at_a_glance_items_summary">Kies wat deze widget toont</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Zet eerst App-meldingen aan in de In één oogopslag-instellingen</string>
     <string name="widget_at_a_glance_sample_alarm">Morgen, 7:00</string>
     <string name="widget_at_a_glance_sample_birthday">Verjaardag van Alex</string>
     <string name="widget_at_a_glance_sample_caller">Mama</string>

@@ -12,6 +12,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tk.quicksearch.shared.ui.theme.AppColors
+import com.tk.quicksearch.search.data.AppNotificationFilters
+import com.tk.quicksearch.search.data.AppNotificationFiltersCodec
 import com.tk.quicksearch.search.data.assets.ManagedAssetStore
 import com.tk.quicksearch.widgets.customButtonsWidget.CustomWidgetButtonAction
 import com.tk.quicksearch.widgets.searchWidget.MicAction
@@ -145,6 +147,7 @@ private object WidgetKeys {
     val CUSTOM_BUTTON_5 = stringPreferencesKey("quick_search_widget_custom_button_5")
     val NOTE_ID = longPreferencesKey("quick_search_widget_note_id")
     val GLANCE_ITEMS = stringPreferencesKey("quick_search_widget_glance_items")
+    val GLANCE_APP_NOTIFICATION_FILTERS = stringPreferencesKey("quick_search_widget_glance_app_notification_filters")
     val SHOW_EMPTY_DATE = booleanPreferencesKey("quick_search_widget_show_empty_date")
 }
 
@@ -178,6 +181,8 @@ data class WidgetPreferences(
     val noteId: Long? = null,
     /** The At a Glance widget's own item toggles by key; items not in it follow the app's. */
     val glanceItems: Map<String, Boolean> = emptyMap(),
+    /** The At a Glance widget's own App notifications apps and keywords; null to follow the app's. */
+    val glanceAppNotificationFilters: AppNotificationFilters? = null,
     /** Whether the At a Glance widget shows today's date when it has no items, or stays blank. */
     val showEmptyDate: Boolean = WidgetDefaults.SHOW_EMPTY_DATE,
 ) : Parcelable {
@@ -330,6 +335,7 @@ fun Preferences.toWidgetPreferences(context: Context): WidgetPreferences {
         customButtons = customButtons,
         noteId = this[WidgetKeys.NOTE_ID],
         glanceItems = decodeGlanceItems(this[WidgetKeys.GLANCE_ITEMS]),
+        glanceAppNotificationFilters = this[WidgetKeys.GLANCE_APP_NOTIFICATION_FILTERS]?.let(AppNotificationFiltersCodec::decode),
         showEmptyDate = this[WidgetKeys.SHOW_EMPTY_DATE] ?: WidgetDefaults.SHOW_EMPTY_DATE,
     ).coerceToValidRanges()
 }
@@ -379,6 +385,8 @@ fun MutablePreferences.applyWidgetPreferences(
     } else {
         this[WidgetKeys.GLANCE_ITEMS] = org.json.JSONObject(validated.glanceItems).toString()
     }
+    validated.glanceAppNotificationFilters?.let { this[WidgetKeys.GLANCE_APP_NOTIFICATION_FILTERS] = AppNotificationFiltersCodec.encode(it) }
+        ?: remove(WidgetKeys.GLANCE_APP_NOTIFICATION_FILTERS)
     this[WidgetKeys.SHOW_EMPTY_DATE] = validated.showEmptyDate
 }
 

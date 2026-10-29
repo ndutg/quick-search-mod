@@ -1173,7 +1173,6 @@
     <string name="widget_at_a_glance_widget_title">At a Glance Widget</string>
     <string name="widget_at_a_glance_items_title">At a Glance Items</string>
     <string name="widget_at_a_glance_items_summary">Choose what this widget shows</string>
-    <string name="widget_at_a_glance_app_notifications_setup">Turn on App Notifications in At a Glance settings first</string>
     <string name="widget_at_a_glance_sample_alarm">Tomorrow, 7:00 AM</string>
     <string name="widget_at_a_glance_sample_birthday">Alex\'s birthday</string>
     <string name="widget_at_a_glance_sample_caller">Mom</string>

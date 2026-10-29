@@ -1188,7 +1188,6 @@
 <string name="widget_at_a_glance_widget_title">Виджет «Кратко»</string>
 <string name="widget_at_a_glance_items_title">Элементы «Кратко»</string>
 <string name="widget_at_a_glance_items_summary">Выберите, что показывает этот виджет</string>
-<string name="widget_at_a_glance_app_notifications_setup">Сначала включите «Уведомления приложений» в настройках «Кратко»</string>
 <string name="widget_at_a_glance_sample_alarm">Завтра, 7:00</string>
 <string name="widget_at_a_glance_sample_birthday">День рождения: Алекс</string>
 <string name="widget_at_a_glance_sample_caller">Мама</string>

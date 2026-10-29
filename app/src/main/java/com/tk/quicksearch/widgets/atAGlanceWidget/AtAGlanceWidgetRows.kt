@@ -9,6 +9,7 @@ import com.tk.quicksearch.customInfo.CustomInfoItem
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
+import com.tk.quicksearch.search.data.AppNotificationFilters
 import com.tk.quicksearch.search.data.AppNotificationsSettings
 import com.tk.quicksearch.search.data.CalendarRepository
 import com.tk.quicksearch.search.data.ContactBirthday
@@ -78,9 +79,10 @@ private const val MAX_ROWS = 30
 internal fun loadAtAGlanceWidgetSnapshot(
     context: Context,
     items: GlanceItemSettings,
+    appNotificationFilters: AppNotificationFilters? = null,
     nowMillis: Long = System.currentTimeMillis(),
 ): AtAGlanceWidgetSnapshot {
-    val loader = AtAGlanceWidgetRowLoader(context.applicationContext, nowMillis, items)
+    val loader = AtAGlanceWidgetRowLoader(context.applicationContext, nowMillis, items, appNotificationFilters)
     val rows =
         with(loader) {
             buildList {
@@ -107,6 +109,8 @@ internal class AtAGlanceWidgetRowLoader(
     val context: Context,
     val nowMillis: Long,
     val items: GlanceItemSettings = AppGlanceItemSettings(context),
+    /** The widget's own App notifications apps and keywords; null to show what Home's match. */
+    private val appNotificationFilters: AppNotificationFilters? = null,
 ) {
     val glancePreferences = GlancePreferences(context)
     private val calendarPreferences = CalendarPreferences(context)
@@ -460,13 +464,17 @@ internal class AtAGlanceWidgetRowLoader(
         return call.caller?.let { string(R.string.home_missed_call_from_app, it, appLabel) } ?: appLabel
     }
 
-    /** Every notification matching the App Notifications apps and keywords; the widget scrolls instead of folding them. */
+    /**
+     * Every notification matching the widget's App notifications apps and keywords, or the app's when it
+     * has none of its own; the widget scrolls instead of folding them. The widget's toggle, not Home's, decides.
+     */
     fun appNotificationRows(): List<AtAGlanceWidgetRow> {
-        if (!hasNotificationAccess) return emptyList()
-        val config = AppNotificationsSettings.config.value ?: AppNotificationsSettings.load(context)
-        if (!config.isActive || !items.isShown(GlanceItem.APP_NOTIFICATIONS)) return emptyList()
+        if (!hasNotificationAccess || !items.isShown(GlanceItem.APP_NOTIFICATIONS)) return emptyList()
+        val filters =
+            appNotificationFilters
+                ?: (AppNotificationsSettings.config.value ?: AppNotificationsSettings.load(context)).filters
         val otpKey = GlanceNotificationsStore.otps.value.firstOrNull()?.key
-        return GlanceNotificationsStore.appNotifications.value
+        return GlanceNotificationsStore.appNotificationsMatching(filters)
             .filter { it.key != otpKey }
             .sortedByDescending { it.postTime }
             .map { notification ->

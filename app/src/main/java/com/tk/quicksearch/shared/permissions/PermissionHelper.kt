@@ -247,6 +247,23 @@ object PermissionHelper {
             launchIfResolvable(context, createAppSettingsIntent(context)) ||
             launchIfResolvable(context, createGeneralSettingsIntent())
 
+    /** Opens the special "All files access" page on Android 11+, otherwise the app's settings. */
+    fun launchFilesAccessSettings(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val opened =
+                launchIfResolvable(
+                    context,
+                    createAllFilesAccessIntent(context).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                ) ||
+                    launchIfResolvable(
+                        context,
+                        createAllFilesAccessFallbackIntent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                    )
+            if (opened) return true
+        }
+        return launchAppSettingsRequest(context)
+    }
+
     fun launchAppSettingsRequest(context: Context): Boolean =
         launchIfResolvable(context, createAppSettingsIntent(context)) ||
             launchIfResolvable(context, createGeneralSettingsIntent())
