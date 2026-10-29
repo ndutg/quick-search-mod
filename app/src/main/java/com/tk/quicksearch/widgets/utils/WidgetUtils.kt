@@ -166,16 +166,25 @@ private suspend fun refreshWidgets(
     appWidgetIds.forEach { appWidgetId ->
         runCatching { glanceManager.getGlanceIdBy(appWidgetId) }
             .getOrNull()
-            ?.let { glanceId ->
-                // The widgets observe their Glance preferences. Advancing this otherwise-private
-                // revision makes an already running Glance composition re-read live data (playback,
-                // notes) instead of coalescing the request as an unchanged update.
-                updateAppWidgetState(context, glanceId) { preferences ->
-                    preferences[MediaPlaybackRevisionKey] =
-                        (preferences[MediaPlaybackRevisionKey] ?: 0L) + 1L
-                }
-                beforeUpdate(appWidgetId, glanceId)
-                widget.update(context, glanceId)
-            }
+            ?.let { glanceId -> refreshWidget(context, widget, appWidgetId, glanceId, beforeUpdate) }
     }
+}
+
+/** Redraws one placed widget, as [refreshAtAGlanceWidgets] and the others do for each of theirs. */
+internal suspend fun refreshWidget(
+    context: Context,
+    widget: GlanceAppWidget,
+    appWidgetId: Int,
+    glanceId: GlanceId,
+    beforeUpdate: suspend (appWidgetId: Int, glanceId: GlanceId) -> Unit = { _, _ -> },
+) {
+    // The widgets observe their Glance preferences. Advancing this otherwise-private
+    // revision makes an already running Glance composition re-read live data (playback,
+    // notes) instead of coalescing the request as an unchanged update.
+    updateAppWidgetState(context, glanceId) { preferences ->
+        preferences[MediaPlaybackRevisionKey] =
+            (preferences[MediaPlaybackRevisionKey] ?: 0L) + 1L
+    }
+    beforeUpdate(appWidgetId, glanceId)
+    widget.update(context, glanceId)
 }
