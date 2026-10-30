@@ -15,6 +15,7 @@ internal fun openMatchingSearchTrigger(
     settingsParams: SettingsSectionParams,
     notesParams: NotesSectionParams,
     getAllContactActionTriggers: () -> Map<com.tk.quicksearch.search.data.preferences.ContactActionTriggerKey, com.tk.quicksearch.search.data.preferences.ResultTrigger>,
+    triggerWords: Collection<String>,
     onContactActionTrigger: (Long, com.tk.quicksearch.search.contacts.models.ContactCardAction) -> Unit,
     onAppClick: (com.tk.quicksearch.search.models.AppInfo) -> Unit,
 ): Boolean {
@@ -34,6 +35,16 @@ internal fun openMatchingSearchTrigger(
     }
 
     fun openMatchingTrigger(query: String): Boolean {
+        // This runs on the main thread for every results update while typing. The preloaded
+        // trigger words rule out almost every query before the per-item lookups below, which
+        // read preferences and parse JSON once per app, shortcut, contact, and file.
+        val hasMatchingTriggerWord =
+            triggerWords.any { word ->
+                matchesTrigger(query, word, triggerAfterSpace = false) ||
+                    matchesTrigger(query, word, triggerAfterSpace = true)
+            }
+        if (!hasMatchingTriggerWord) return false
+
         // App catalogs also load asynchronously. Search results can be ready first, so use both
         // sources and retry when either one changes.
         (state.allApps + renderingState.displayApps)

@@ -484,6 +484,7 @@ internal fun SearchScreenContent(
             settingsParams = settingsParams,
             notesParams = notesParams,
             getAllContactActionTriggers = getAllContactActionTriggers,
+            triggerWords = triggerWords,
             onContactActionTrigger = onContactActionTrigger,
             onAppClick = onAppClick,
         )
@@ -505,7 +506,7 @@ internal fun SearchScreenContent(
         renderingState.calendarEvents,
         renderingState.noteResults,
         state.pinnedNotes,
-        state.nicknameUpdateVersion,
+        triggerWords,
     ) {
         if (state.query == lastTriggeredQuery) return@LaunchedEffect
         lastTriggeredQuery = null

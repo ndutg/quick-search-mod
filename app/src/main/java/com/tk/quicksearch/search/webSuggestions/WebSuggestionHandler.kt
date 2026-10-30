@@ -54,7 +54,8 @@ class WebSuggestionHandler(
         }
 
         webSuggestionsJob?.cancel()
-        uiStateUpdater { it.copy(webSuggestionsLoading = true) }
+        // No UI reads webSuggestionsLoading, so flagging it true here would only cost a full
+        // search-screen recomposition per keystroke.
 
         webSuggestionsJob =
             scope.launch(Dispatchers.IO) {

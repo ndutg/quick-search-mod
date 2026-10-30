@@ -124,596 +124,594 @@ internal fun buildSectionParams(
     onUpdateExpandedSection: (ExpandedSection) -> Unit,
     expandedSection: ExpandedSection,
     reminderActions: ReminderSectionActions = ReminderSectionActions(),
-) = remember(
-    state,
-    reminderActions,
-    derivedState,
-    expandedSection,
-    onFileClick,
-    onOpenFolder,
-    onPinFile,
-    onUnpinFile,
-    onMovePinnedFile,
-    onExcludeFile,
-    onExcludeFileExtension,
-    onAliasFileTypeFilterChange,
-    onOpenStorageAccessSettings,
-    onSettingClick,
-    onAppSettingClick,
-    onAppSettingToggle,
-    onAppSettingWebSuggestionsCountChange,
-    isAppSettingToggleChecked,
-    appSettingWebSuggestionsCount,
-    appSettingPhoneAppGridColumns,
-    onAppSettingPhoneAppGridColumnsChange,
-    onPinSetting,
-    onUnpinSetting,
-    onMovePinnedSetting,
-    onExcludeSetting,
-    onAppShortcutClick,
-    onPinAppShortcut,
-    onUnpinAppShortcut,
-    onMovePinnedAppShortcut,
-    onDisableAppShortcut,
-    onDisableAllAppShortcutsForApp,
-    onAppShortcutAppInfoClick,
-    onEditCustomAppShortcut,
-    onEditAppShortcutIcon,
-    onContactClick,
-    onShowContactMethods,
-    onCallContact,
-    onSmsContact,
-    onContactMethodClick,
-    onPinContact,
-    onUnpinContact,
-    onMovePinnedContact,
-    onExcludeContact,
-    onCalendarEventClick,
-    onPinCalendarEvent,
-    onUnpinCalendarEvent,
-    onMovePinnedCalendarEvent,
-    onExcludeCalendarEvent,
-    onIncludeCalendarEvent,
-    onArchiveTodayCalendarEvent,
-    onOpenCalendarPermissionSettings,
-    onMovePinnedNote,
-    onOpenAppSettings,
-    getPrimaryContactCardAction,
-    getSecondaryContactCardAction,
-    onPrimaryActionLongPress,
-    onSecondaryActionLongPress,
-    onCustomAction,
-    onContactActionHintDismissed,
-    onAppClick,
-    onOpenInSplitScreen,
-    onAppInfoClick,
-    onUninstallClick,
-    onHideApp,
-    onPinApp,
-    onUnpinApp,
-    onSuggestionTabSelected,
-    getFileNickname,
-    getContactNickname,
-    getSettingNickname,
-    getAppNickname,
-    getAppShortcutNickname,
-    getCalendarEventNickname,
-    onUpdateNicknameDialogState,
-    onUpdateTriggerDialogState,
-    getAppTrigger,
-    getContactTrigger,
-    getContactActionTrigger,
-    getFileTrigger,
-    getAppShortcutTrigger,
-    getSettingTrigger,
-    getNoteTrigger,
-    onUpdateExpandedSection,
-) {
+): SectionParams {
     val filesParams =
-        FilesSectionParams(
-            files = state.fileResults,
-            hasPermission = state.hasFilePermission,
-            isExpanded = expandedSection == ExpandedSection.FILES,
-            pinnedFileUris = derivedState.pinnedFileUris,
-            onFileClick = onFileClick,
-            onOpenFolder = onOpenFolder,
-            onRequestPermission = onOpenStorageAccessSettings,
-            onTogglePin = { file ->
-                if (derivedState.pinnedFileUris.contains(
-                        file.uri.toString(),
-                    )
-                ) {
-                    onUnpinFile(file)
-                } else {
-                    onPinFile(file)
-                }
-            },
-            onMovePinned = onMovePinnedFile,
-            onExclude = onExcludeFile,
-            onExcludeExtension = onExcludeFileExtension,
-            onAliasFileTypeFilterChange = onAliasFileTypeFilterChange,
-            onNicknameClick = { file ->
-                onUpdateNicknameDialogState(
-                    NicknameDialogState.File(
-                        file = file,
-                        currentNickname =
-                            getFileNickname(
-                                file.uri.toString(),
-                            ),
-                        itemName = file.displayName,
-                    ),
-                )
-            },
-            onTriggerClick = { file ->
-                onUpdateTriggerDialogState(
-                    TriggerDialogState.File(
-                        file = file,
-                        currentTrigger = getFileTrigger(file.uri.toString()),
-                        itemName = file.displayName,
-                    ),
-                )
-            },
-            getFileNickname = getFileNickname,
-            getFileTrigger = getFileTrigger,
-            showAllResults = false,
-            showExpandControls = derivedState.isSearching,
-            onExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.FILES) {
-                        ExpandedSection.NONE
+        remember(
+            state.fileResults, state.hasFilePermission, derivedState.pinnedFileUris,
+            derivedState.isSearching, state.showWallpaperBackground, onFileClick, onOpenFolder, onPinFile,
+            onUnpinFile, onMovePinnedFile, onExcludeFile, onExcludeFileExtension,
+            onAliasFileTypeFilterChange, onOpenStorageAccessSettings, getFileNickname,
+            onUpdateNicknameDialogState, onUpdateTriggerDialogState, getFileTrigger, onUpdateExpandedSection,
+            expandedSection,
+        ) {
+            FilesSectionParams(
+                files = state.fileResults,
+                hasPermission = state.hasFilePermission,
+                isExpanded = expandedSection == ExpandedSection.FILES,
+                pinnedFileUris = derivedState.pinnedFileUris,
+                onFileClick = onFileClick,
+                onOpenFolder = onOpenFolder,
+                onRequestPermission = onOpenStorageAccessSettings,
+                onTogglePin = { file ->
+                    if (derivedState.pinnedFileUris.contains(
+                            file.uri.toString(),
+                        )
+                    ) {
+                        onUnpinFile(file)
                     } else {
-                        ExpandedSection.FILES
-                    },
-                )
-            },
-            permissionDisabledCard = {
-                title,
-                message,
-                actionLabel,
-                onActionClick,
-                ->
-                PermissionDisabledCard(
-                    title = title,
-                    message = message,
-                    actionLabel = actionLabel,
-                    onActionClick = onActionClick,
-                )
-            },
-            showWallpaperBackground = state.showWallpaperBackground,
-        )
+                        onPinFile(file)
+                    }
+                },
+                onMovePinned = onMovePinnedFile,
+                onExclude = onExcludeFile,
+                onExcludeExtension = onExcludeFileExtension,
+                onAliasFileTypeFilterChange = onAliasFileTypeFilterChange,
+                onNicknameClick = { file ->
+                    onUpdateNicknameDialogState(
+                        NicknameDialogState.File(
+                            file = file,
+                            currentNickname =
+                                getFileNickname(
+                                    file.uri.toString(),
+                                ),
+                            itemName = file.displayName,
+                        ),
+                    )
+                },
+                onTriggerClick = { file ->
+                    onUpdateTriggerDialogState(
+                        TriggerDialogState.File(
+                            file = file,
+                            currentTrigger = getFileTrigger(file.uri.toString()),
+                            itemName = file.displayName,
+                        ),
+                    )
+                },
+                getFileNickname = getFileNickname,
+                getFileTrigger = getFileTrigger,
+                showAllResults = false,
+                showExpandControls = derivedState.isSearching,
+                onExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.FILES) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.FILES
+                        },
+                    )
+                },
+                permissionDisabledCard = {
+                    title,
+                    message,
+                    actionLabel,
+                    onActionClick,
+                    ->
+                    PermissionDisabledCard(
+                        title = title,
+                        message = message,
+                        actionLabel = actionLabel,
+                        onActionClick = onActionClick,
+                    )
+                },
+                showWallpaperBackground = state.showWallpaperBackground,
+            )
+        }
 
     val appShortcutParams =
-        AppShortcutsSectionParams(
-            shortcuts = state.appShortcutResults,
-            isExpanded = expandedSection == ExpandedSection.APP_SHORTCUTS,
-            pinnedShortcutIds = derivedState.pinnedAppShortcutIds,
-            excludedShortcutIds =
-                state.excludedAppShortcuts.map { shortcutKey(it) }.toSet(),
-            onShortcutClick = onAppShortcutClick,
-            onTogglePin = { shortcut ->
-                if (derivedState.pinnedAppShortcutIds.contains(
-                        shortcutKey(shortcut),
-                    )
-                ) {
-                    onUnpinAppShortcut(shortcut)
-                } else {
-                    onPinAppShortcut(shortcut)
-                }
-            },
-            onMovePinned = onMovePinnedAppShortcut,
-            onDisable = onDisableAppShortcut,
-            onDisableAllForApp = onDisableAllAppShortcutsForApp,
-            onAppInfoClick = onAppShortcutAppInfoClick,
-            onNicknameClick = { shortcut ->
-                onUpdateNicknameDialogState(
-                    NicknameDialogState.AppShortcut(
-                        shortcut = shortcut,
-                        currentNickname =
-                            getAppShortcutNickname(
-                                shortcutKey(shortcut),
-                            ),
-                        itemName =
-                            shortcutDisplayName(shortcut),
-                    ),
-                )
-            },
-            onTriggerClick = { shortcut ->
-                onUpdateTriggerDialogState(
-                    TriggerDialogState.AppShortcut(
-                        shortcut = shortcut,
-                        currentTrigger = getAppShortcutTrigger(shortcutKey(shortcut)),
-                        itemName = shortcutDisplayName(shortcut),
-                    ),
-                )
-            },
-            onEditCustomShortcut = onEditCustomAppShortcut,
-            onEditShortcutIcon = onEditAppShortcutIcon,
-            getShortcutNickname = getAppShortcutNickname,
-            getShortcutTrigger = getAppShortcutTrigger,
-            showAllResults = false,
-            showExpandControls = derivedState.isSearching,
-            onExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.APP_SHORTCUTS) {
-                        ExpandedSection.NONE
+        remember(
+            state.appShortcutResults, derivedState.pinnedAppShortcutIds, state.excludedAppShortcuts,
+            derivedState.isSearching, state.selectedIconPackPackage, state.showWallpaperBackground,
+            onAppShortcutClick, onPinAppShortcut, onUnpinAppShortcut, onMovePinnedAppShortcut,
+            onDisableAppShortcut, onDisableAllAppShortcutsForApp, onAppShortcutAppInfoClick,
+            onEditCustomAppShortcut, onEditAppShortcutIcon, getAppShortcutNickname,
+            onUpdateNicknameDialogState, onUpdateTriggerDialogState, getAppShortcutTrigger,
+            onUpdateExpandedSection, expandedSection,
+        ) {
+            AppShortcutsSectionParams(
+                shortcuts = state.appShortcutResults,
+                isExpanded = expandedSection == ExpandedSection.APP_SHORTCUTS,
+                pinnedShortcutIds = derivedState.pinnedAppShortcutIds,
+                excludedShortcutIds =
+                    state.excludedAppShortcuts.map { shortcutKey(it) }.toSet(),
+                onShortcutClick = onAppShortcutClick,
+                onTogglePin = { shortcut ->
+                    if (derivedState.pinnedAppShortcutIds.contains(
+                            shortcutKey(shortcut),
+                        )
+                    ) {
+                        onUnpinAppShortcut(shortcut)
                     } else {
-                        ExpandedSection.APP_SHORTCUTS
-                    },
-                )
-            },
-            iconPackPackage = state.selectedIconPackPackage,
-            showWallpaperBackground = state.showWallpaperBackground,
-        )
+                        onPinAppShortcut(shortcut)
+                    }
+                },
+                onMovePinned = onMovePinnedAppShortcut,
+                onDisable = onDisableAppShortcut,
+                onDisableAllForApp = onDisableAllAppShortcutsForApp,
+                onAppInfoClick = onAppShortcutAppInfoClick,
+                onNicknameClick = { shortcut ->
+                    onUpdateNicknameDialogState(
+                        NicknameDialogState.AppShortcut(
+                            shortcut = shortcut,
+                            currentNickname =
+                                getAppShortcutNickname(
+                                    shortcutKey(shortcut),
+                                ),
+                            itemName =
+                                shortcutDisplayName(shortcut),
+                        ),
+                    )
+                },
+                onTriggerClick = { shortcut ->
+                    onUpdateTriggerDialogState(
+                        TriggerDialogState.AppShortcut(
+                            shortcut = shortcut,
+                            currentTrigger = getAppShortcutTrigger(shortcutKey(shortcut)),
+                            itemName = shortcutDisplayName(shortcut),
+                        ),
+                    )
+                },
+                onEditCustomShortcut = onEditCustomAppShortcut,
+                onEditShortcutIcon = onEditAppShortcutIcon,
+                getShortcutNickname = getAppShortcutNickname,
+                getShortcutTrigger = getAppShortcutTrigger,
+                showAllResults = false,
+                showExpandControls = derivedState.isSearching,
+                onExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.APP_SHORTCUTS) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.APP_SHORTCUTS
+                        },
+                    )
+                },
+                iconPackPackage = state.selectedIconPackPackage,
+                showWallpaperBackground = state.showWallpaperBackground,
+            )
+        }
 
     val settingsParams =
-        SettingsSectionParams(
-            settings = state.settingResults,
-            appSettings = state.appSettingResults,
-            isExpanded = expandedSection == ExpandedSection.SETTINGS,
-            pinnedSettingIds = derivedState.pinnedSettingIds,
-            onSettingClick = onSettingClick,
-            onAppSettingClick = onAppSettingClick,
-            onAppSettingToggle = onAppSettingToggle,
-            onAppSettingWebSuggestionsCountChange = onAppSettingWebSuggestionsCountChange,
-            isAppSettingToggleChecked = isAppSettingToggleChecked,
-            appSettingWebSuggestionsCount = appSettingWebSuggestionsCount,
-            appSettingPhoneAppGridColumns = appSettingPhoneAppGridColumns,
-            onAppSettingPhoneAppGridColumnsChange = onAppSettingPhoneAppGridColumnsChange,
-            appSettingAppResultRowCount = appSettingAppResultRowCount,
-            onAppSettingAppResultRowCountChange = onAppSettingAppResultRowCountChange,
-            onTogglePin = { setting ->
-                if (derivedState.pinnedSettingIds.contains(setting.id)) {
-                    onUnpinSetting(setting)
-                } else {
-                    onPinSetting(setting)
-                }
-            },
-            onMovePinned = onMovePinnedSetting,
-            onExclude = onExcludeSetting,
-            onNicknameClick = { setting ->
-                onUpdateNicknameDialogState(
-                    NicknameDialogState.Setting(
-                        setting = setting,
-                        currentNickname =
-                            getSettingNickname(setting.id),
-                        itemName = setting.title,
-                    ),
-                )
-            },
-            onTriggerClick = { setting ->
-                onUpdateTriggerDialogState(
-                    TriggerDialogState.Setting(
-                        setting = setting,
-                        currentTrigger = getSettingTrigger(setting.id),
-                        itemName = setting.title,
-                    ),
-                )
-            },
-            getSettingNickname = getSettingNickname,
-            getSettingTrigger = getSettingTrigger,
-            showAllResults = false,
-            showExpandControls = derivedState.isSearching,
-            onExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.SETTINGS) {
-                        ExpandedSection.NONE
+        remember(
+            state.settingResults, state.appSettingResults, derivedState.pinnedSettingIds,
+            derivedState.isSearching, state.showWallpaperBackground, onSettingClick, onAppSettingClick,
+            onAppSettingToggle, onAppSettingWebSuggestionsCountChange, isAppSettingToggleChecked,
+            appSettingWebSuggestionsCount, appSettingPhoneAppGridColumns,
+            onAppSettingPhoneAppGridColumnsChange, appSettingAppResultRowCount,
+            onAppSettingAppResultRowCountChange, onPinSetting, onUnpinSetting, onMovePinnedSetting,
+            onExcludeSetting, getSettingNickname, onUpdateNicknameDialogState, onUpdateTriggerDialogState,
+            getSettingTrigger, onUpdateExpandedSection, expandedSection,
+        ) {
+            SettingsSectionParams(
+                settings = state.settingResults,
+                appSettings = state.appSettingResults,
+                isExpanded = expandedSection == ExpandedSection.SETTINGS,
+                pinnedSettingIds = derivedState.pinnedSettingIds,
+                onSettingClick = onSettingClick,
+                onAppSettingClick = onAppSettingClick,
+                onAppSettingToggle = onAppSettingToggle,
+                onAppSettingWebSuggestionsCountChange = onAppSettingWebSuggestionsCountChange,
+                isAppSettingToggleChecked = isAppSettingToggleChecked,
+                appSettingWebSuggestionsCount = appSettingWebSuggestionsCount,
+                appSettingPhoneAppGridColumns = appSettingPhoneAppGridColumns,
+                onAppSettingPhoneAppGridColumnsChange = onAppSettingPhoneAppGridColumnsChange,
+                appSettingAppResultRowCount = appSettingAppResultRowCount,
+                onAppSettingAppResultRowCountChange = onAppSettingAppResultRowCountChange,
+                onTogglePin = { setting ->
+                    if (derivedState.pinnedSettingIds.contains(setting.id)) {
+                        onUnpinSetting(setting)
                     } else {
-                        ExpandedSection.SETTINGS
-                    },
-                )
-            },
-            onAppSettingExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.APP_SETTINGS) {
-                        ExpandedSection.NONE
-                    } else {
-                        ExpandedSection.APP_SETTINGS
-                    },
-                )
-            },
-            showWallpaperBackground = state.showWallpaperBackground,
-        )
+                        onPinSetting(setting)
+                    }
+                },
+                onMovePinned = onMovePinnedSetting,
+                onExclude = onExcludeSetting,
+                onNicknameClick = { setting ->
+                    onUpdateNicknameDialogState(
+                        NicknameDialogState.Setting(
+                            setting = setting,
+                            currentNickname =
+                                getSettingNickname(setting.id),
+                            itemName = setting.title,
+                        ),
+                    )
+                },
+                onTriggerClick = { setting ->
+                    onUpdateTriggerDialogState(
+                        TriggerDialogState.Setting(
+                            setting = setting,
+                            currentTrigger = getSettingTrigger(setting.id),
+                            itemName = setting.title,
+                        ),
+                    )
+                },
+                getSettingNickname = getSettingNickname,
+                getSettingTrigger = getSettingTrigger,
+                showAllResults = false,
+                showExpandControls = derivedState.isSearching,
+                onExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.SETTINGS) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.SETTINGS
+                        },
+                    )
+                },
+                onAppSettingExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.APP_SETTINGS) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.APP_SETTINGS
+                        },
+                    )
+                },
+                showWallpaperBackground = state.showWallpaperBackground,
+            )
+        }
 
     val contactsParams =
-        ContactsSectionParams(
-            contacts = state.contactResults,
-            hasPermission = state.hasContactPermission,
-            isExpanded = expandedSection == ExpandedSection.CONTACTS,
-            primaryContactButton = state.primaryContactButton,
-            secondaryContactButton = state.secondaryContactButton,
-            pinnedContactIds = derivedState.pinnedContactIds,
-            onContactClick = onContactClick,
-            onShowContactMethods = onShowContactMethods,
-            onCallContact = onCallContact,
-            onSmsContact = onSmsContact,
-            onContactMethodClick = onContactMethodClick,
-            onTogglePin = { contact ->
-                if (derivedState.pinnedContactIds.contains(
-                        contact.contactId,
-                    )
-                ) {
-                    onUnpinContact(contact)
-                } else {
-                    onPinContact(contact)
-                }
-            },
-            onMovePinned = onMovePinnedContact,
-            onExclude = onExcludeContact,
-            onNicknameClick = { contact ->
-                onUpdateNicknameDialogState(
-                    NicknameDialogState.Contact(
-                        contact = contact,
-                        currentNickname =
-                            getContactNickname(
-                                contact.contactId,
-                            ),
-                        itemName = contact.displayName,
-                    ),
-                )
-            },
-            onTriggerClick = { contact ->
-                onUpdateTriggerDialogState(
-                    TriggerDialogState.Contact(
-                        contact = contact,
-                        currentTrigger = getContactTrigger(contact.contactId),
-                        itemName = contact.displayName,
-                    ),
-                )
-            },
-            getContactNickname = getContactNickname,
-            getContactTrigger = getContactTrigger,
-            getContactActionTrigger = getContactActionTrigger,
-            getPrimaryContactCardAction = getPrimaryContactCardAction,
-            getSecondaryContactCardAction = getSecondaryContactCardAction,
-            onPrimaryActionLongPress = onPrimaryActionLongPress,
-            onSecondaryActionLongPress = onSecondaryActionLongPress,
-            onCustomAction = onCustomAction,
-            showContactActionHint = state.showContactActionHint,
-            onContactActionHintDismissed = onContactActionHintDismissed,
-            onOpenAppSettings = onOpenAppSettings,
-            showAllResults = false,
-            showExpandControls = derivedState.isSearching,
-            onExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.CONTACTS) {
-                        ExpandedSection.NONE
+        remember(
+            state.contactResults, state.hasContactPermission, state.primaryContactButton,
+            state.secondaryContactButton, derivedState.pinnedContactIds, state.showContactActionHint,
+            derivedState.isSearching, state.showWallpaperBackground, onContactClick, onShowContactMethods,
+            onCallContact, onSmsContact, onContactMethodClick, onPinContact, onUnpinContact,
+            onMovePinnedContact, onExcludeContact, getPrimaryContactCardAction,
+            getSecondaryContactCardAction, onPrimaryActionLongPress, onSecondaryActionLongPress,
+            onCustomAction, onContactActionHintDismissed, onOpenAppSettings, getContactNickname,
+            onUpdateNicknameDialogState, onUpdateTriggerDialogState, getContactTrigger,
+            getContactActionTrigger, onUpdateExpandedSection, expandedSection,
+        ) {
+            ContactsSectionParams(
+                contacts = state.contactResults,
+                hasPermission = state.hasContactPermission,
+                isExpanded = expandedSection == ExpandedSection.CONTACTS,
+                primaryContactButton = state.primaryContactButton,
+                secondaryContactButton = state.secondaryContactButton,
+                pinnedContactIds = derivedState.pinnedContactIds,
+                onContactClick = onContactClick,
+                onShowContactMethods = onShowContactMethods,
+                onCallContact = onCallContact,
+                onSmsContact = onSmsContact,
+                onContactMethodClick = onContactMethodClick,
+                onTogglePin = { contact ->
+                    if (derivedState.pinnedContactIds.contains(
+                            contact.contactId,
+                        )
+                    ) {
+                        onUnpinContact(contact)
                     } else {
-                        ExpandedSection.CONTACTS
-                    },
-                )
-            },
-            permissionDisabledCard = {
-                title,
-                message,
-                actionLabel,
-                onActionClick,
-                ->
-                PermissionDisabledCard(
-                    title = title,
-                    message = message,
-                    actionLabel = actionLabel,
-                    onActionClick = onActionClick,
-                )
-            },
-            showWallpaperBackground = state.showWallpaperBackground,
-        )
-    val suggestionExcludedKeys = state.suggestionExcludedApps.map { it.launchCountKey() }.toSet()
+                        onPinContact(contact)
+                    }
+                },
+                onMovePinned = onMovePinnedContact,
+                onExclude = onExcludeContact,
+                onNicknameClick = { contact ->
+                    onUpdateNicknameDialogState(
+                        NicknameDialogState.Contact(
+                            contact = contact,
+                            currentNickname =
+                                getContactNickname(
+                                    contact.contactId,
+                                ),
+                            itemName = contact.displayName,
+                        ),
+                    )
+                },
+                onTriggerClick = { contact ->
+                    onUpdateTriggerDialogState(
+                        TriggerDialogState.Contact(
+                            contact = contact,
+                            currentTrigger = getContactTrigger(contact.contactId),
+                            itemName = contact.displayName,
+                        ),
+                    )
+                },
+                getContactNickname = getContactNickname,
+                getContactTrigger = getContactTrigger,
+                getContactActionTrigger = getContactActionTrigger,
+                getPrimaryContactCardAction = getPrimaryContactCardAction,
+                getSecondaryContactCardAction = getSecondaryContactCardAction,
+                onPrimaryActionLongPress = onPrimaryActionLongPress,
+                onSecondaryActionLongPress = onSecondaryActionLongPress,
+                onCustomAction = onCustomAction,
+                showContactActionHint = state.showContactActionHint,
+                onContactActionHintDismissed = onContactActionHintDismissed,
+                onOpenAppSettings = onOpenAppSettings,
+                showAllResults = false,
+                showExpandControls = derivedState.isSearching,
+                onExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.CONTACTS) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.CONTACTS
+                        },
+                    )
+                },
+                permissionDisabledCard = {
+                    title,
+                    message,
+                    actionLabel,
+                    onActionClick,
+                    ->
+                    PermissionDisabledCard(
+                        title = title,
+                        message = message,
+                        actionLabel = actionLabel,
+                        onActionClick = onActionClick,
+                    )
+                },
+                showWallpaperBackground = state.showWallpaperBackground,
+            )
+        }
     val allSuggestionApps =
-        state.allApps.filter { app ->
-            app.hasLaunchIntent && !suggestionExcludedKeys.contains(app.launchCountKey())
+        remember(state.suggestionExcludedApps, state.allApps) {
+            val suggestionExcludedKeys = state.suggestionExcludedApps.map { it.launchCountKey() }.toSet()
+            state.allApps.filter { app ->
+                app.hasLaunchIntent && !suggestionExcludedKeys.contains(app.launchCountKey())
+            }
         }
     val appsParams =
-        AppsSectionParams(
-            apps = derivedState.displayApps,
-            allApps = allSuggestionApps,
-            pinnedAndRecentApps = derivedState.pinnedAndRecentApps,
-            pinnedApps = state.pinnedApps,
-            newOrUpdatedApps = derivedState.newOrUpdatedApps,
-            mostUsedApps = derivedState.mostUsedApps,
-            appShortcuts = state.allAppShortcuts,
-            isSearching = derivedState.isSearching,
-            hasUsagePermission = state.hasUsagePermission,
-            selectedSuggestionTab = state.selectedAppSuggestionTab,
-            enabledSuggestionTabs =
-                if (state.appSuggestionsEnabled) {
-                    state.enabledAppSuggestionTabs
-                } else {
-                    setOf(AppSuggestionTabType.PINNED)
+        remember(
+            derivedState.displayApps, derivedState.pinnedAndRecentApps, state.pinnedApps,
+            derivedState.newOrUpdatedApps, derivedState.mostUsedApps, state.allAppShortcuts,
+            derivedState.isSearching, state.hasUsagePermission, state.selectedAppSuggestionTab,
+            state.appSuggestionsEnabled, state.enabledAppSuggestionTabs, derivedState.hasAppResults,
+            state.showAllAppsButton, derivedState.pinnedPackageNames, state.disabledAppShortcutIds,
+            derivedState.visibleRowCount, state.phoneAppGridColumns, state.appIconSizeStep,
+            state.selectedIconPackPackage, state.appIconShape, state.themedIconsEnabled, state.showAppLabels,
+            state.oneHandedMode, state.isInitializing, state.startupPhase, state.showWallpaperBackground,
+            state.notificationDotsEnabled, state.showUpdateCard, state.isUpdateReadyToInstall,
+            state.pinnedAppShortcutsInAppGrid, state.pinnedAppShortcuts, state.pinnedAppGridOrder,
+            state.appFolders, isOverlayPresentation, onAppShortcutClick, onDisableAppShortcut, onAppClick,
+            onOpenInSplitScreen, onAppInfoClick, onUninstallClick, onHideApp, onPinApp, onUnpinApp,
+            onReorderPinnedApps, onReorderPinnedAppGrid, appFolderActions, onSuggestionTabSelected,
+            onUpdateClick, onUpdateNotNowClick, getAppNickname, onUpdateNicknameDialogState,
+            onUpdateTriggerDialogState, getAppTrigger, allSuggestionApps, appShortcutParams,
+        ) {
+            AppsSectionParams(
+                apps = derivedState.displayApps,
+                allApps = allSuggestionApps,
+                pinnedAndRecentApps = derivedState.pinnedAndRecentApps,
+                pinnedApps = state.pinnedApps,
+                newOrUpdatedApps = derivedState.newOrUpdatedApps,
+                mostUsedApps = derivedState.mostUsedApps,
+                appShortcuts = state.allAppShortcuts,
+                isSearching = derivedState.isSearching,
+                hasUsagePermission = state.hasUsagePermission,
+                selectedSuggestionTab = state.selectedAppSuggestionTab,
+                enabledSuggestionTabs =
+                    if (state.appSuggestionsEnabled) {
+                        state.enabledAppSuggestionTabs
+                    } else {
+                        setOf(AppSuggestionTabType.PINNED)
+                    },
+                onSuggestionTabSelected = onSuggestionTabSelected,
+                hasAppResults = derivedState.hasAppResults,
+                showAllAppsButton = state.showAllAppsButton,
+                pinnedPackageNames = derivedState.pinnedPackageNames,
+                disabledAppShortcutIds = state.disabledAppShortcutIds,
+                onAppClick = onAppClick,
+                onAppShortcutClick = onAppShortcutClick,
+                onOpenInSplitScreen = onOpenInSplitScreen,
+                onAppInfoClick = onAppInfoClick,
+                onUninstallClick = onUninstallClick,
+                onHideApp = onHideApp,
+                onDisableAppShortcut = onDisableAppShortcut,
+                onPinApp = onPinApp,
+                onUnpinApp = onUnpinApp,
+                onReorderPinnedApps = onReorderPinnedApps,
+                onNicknameClick = { app ->
+                    onUpdateNicknameDialogState(
+                        NicknameDialogState.App(
+                            app = app,
+                            currentNickname =
+                                getAppNickname(app.launchCountKey()),
+                            itemName = app.appName,
+                        ),
+                    )
                 },
-            onSuggestionTabSelected = onSuggestionTabSelected,
-            hasAppResults = derivedState.hasAppResults,
-            showAllAppsButton = state.showAllAppsButton,
-            pinnedPackageNames = derivedState.pinnedPackageNames,
-            disabledAppShortcutIds = state.disabledAppShortcutIds,
-            onAppClick = onAppClick,
-            onAppShortcutClick = onAppShortcutClick,
-            onOpenInSplitScreen = onOpenInSplitScreen,
-            onAppInfoClick = onAppInfoClick,
-            onUninstallClick = onUninstallClick,
-            onHideApp = onHideApp,
-            onDisableAppShortcut = onDisableAppShortcut,
-            onPinApp = onPinApp,
-            onUnpinApp = onUnpinApp,
-            onReorderPinnedApps = onReorderPinnedApps,
-            onNicknameClick = { app ->
-                onUpdateNicknameDialogState(
-                    NicknameDialogState.App(
-                        app = app,
-                        currentNickname =
-                            getAppNickname(app.launchCountKey()),
-                        itemName = app.appName,
-                    ),
-                )
-            },
-            onTriggerClick = { app ->
-                onUpdateTriggerDialogState(
-                    TriggerDialogState.App(
-                        app = app,
-                        currentTrigger = getAppTrigger(app.packageName),
-                        itemName = app.appName,
-                    ),
-                )
-            },
-            getAppNickname = getAppNickname,
-            getAppTrigger = getAppTrigger,
-            rowCount = derivedState.visibleRowCount,
-            phoneColumnOverride = state.phoneAppGridColumns,
-            appIconSizeStep = state.appIconSizeStep,
-            iconPackPackage = state.selectedIconPackPackage,
-            appIconShape = state.appIconShape,
-            themedIconsEnabled = state.themedIconsEnabled,
-            showAppLabels = state.showAppLabels,
-            oneHandedMode = state.oneHandedMode,
-            isInitializing = state.isInitializing,
-            startupPhase = state.startupPhase,
-            isOverlayPresentation = isOverlayPresentation,
-            showWallpaperBackground = state.showWallpaperBackground,
-            notificationDotsEnabled = state.notificationDotsEnabled,
-            showUpdateCard = state.showUpdateCard && !derivedState.isSearching && !isOverlayPresentation,
-            isUpdateReadyToInstall = state.isUpdateReadyToInstall,
-            onUpdateClick = onUpdateClick,
-            onUpdateNotNowClick = onUpdateNotNowClick,
-            pinnedGridAppShortcuts =
-                if (state.pinnedAppShortcutsInAppGrid && !derivedState.isSearching) {
-                    state.pinnedAppShortcuts
-                } else {
-                    emptyList()
+                onTriggerClick = { app ->
+                    onUpdateTriggerDialogState(
+                        TriggerDialogState.App(
+                            app = app,
+                            currentTrigger = getAppTrigger(app.packageName),
+                            itemName = app.appName,
+                        ),
+                    )
                 },
-            pinnedAppGridOrder = state.pinnedAppGridOrder,
-            onReorderPinnedAppGrid = onReorderPinnedAppGrid,
-            appFolders = state.appFolders,
-            appFolderActions = appFolderActions,
-            pinnedGridShortcutActions =
-                com.tk.quicksearch.search.apps.AppGridShortcutActions(
-                    onTogglePin = appShortcutParams.onTogglePin,
-                    onDisable = appShortcutParams.onDisable,
-                    onDisableAllForApp = appShortcutParams.onDisableAllForApp,
-                    onAppInfoClick = appShortcutParams.onAppInfoClick,
-                    onNicknameClick = appShortcutParams.onNicknameClick,
-                    onTriggerClick = appShortcutParams.onTriggerClick,
-                    onEditCustomShortcut = appShortcutParams.onEditCustomShortcut,
-                    onEditShortcutIcon = appShortcutParams.onEditShortcutIcon,
-                    getNickname = appShortcutParams.getShortcutNickname,
-                    getTrigger = appShortcutParams.getShortcutTrigger,
-                ),
-        )
+                getAppNickname = getAppNickname,
+                getAppTrigger = getAppTrigger,
+                rowCount = derivedState.visibleRowCount,
+                phoneColumnOverride = state.phoneAppGridColumns,
+                appIconSizeStep = state.appIconSizeStep,
+                iconPackPackage = state.selectedIconPackPackage,
+                appIconShape = state.appIconShape,
+                themedIconsEnabled = state.themedIconsEnabled,
+                showAppLabels = state.showAppLabels,
+                oneHandedMode = state.oneHandedMode,
+                isInitializing = state.isInitializing,
+                startupPhase = state.startupPhase,
+                isOverlayPresentation = isOverlayPresentation,
+                showWallpaperBackground = state.showWallpaperBackground,
+                notificationDotsEnabled = state.notificationDotsEnabled,
+                showUpdateCard = state.showUpdateCard && !derivedState.isSearching && !isOverlayPresentation,
+                isUpdateReadyToInstall = state.isUpdateReadyToInstall,
+                onUpdateClick = onUpdateClick,
+                onUpdateNotNowClick = onUpdateNotNowClick,
+                pinnedGridAppShortcuts =
+                    if (state.pinnedAppShortcutsInAppGrid && !derivedState.isSearching) {
+                        state.pinnedAppShortcuts
+                    } else {
+                        emptyList()
+                    },
+                pinnedAppGridOrder = state.pinnedAppGridOrder,
+                onReorderPinnedAppGrid = onReorderPinnedAppGrid,
+                appFolders = state.appFolders,
+                appFolderActions = appFolderActions,
+                pinnedGridShortcutActions =
+                    com.tk.quicksearch.search.apps.AppGridShortcutActions(
+                        onTogglePin = appShortcutParams.onTogglePin,
+                        onDisable = appShortcutParams.onDisable,
+                        onDisableAllForApp = appShortcutParams.onDisableAllForApp,
+                        onAppInfoClick = appShortcutParams.onAppInfoClick,
+                        onNicknameClick = appShortcutParams.onNicknameClick,
+                        onTriggerClick = appShortcutParams.onTriggerClick,
+                        onEditCustomShortcut = appShortcutParams.onEditCustomShortcut,
+                        onEditShortcutIcon = appShortcutParams.onEditShortcutIcon,
+                        getNickname = appShortcutParams.getShortcutNickname,
+                        getTrigger = appShortcutParams.getShortcutTrigger,
+                    ),
+            )
+        }
 
     val calendarParams =
-        CalendarSectionParams(
-            events = state.calendarEvents,
-            hasPermission = state.hasCalendarPermission,
-            isExpanded = expandedSection == ExpandedSection.CALENDAR,
-            pinnedEventIds = state.pinnedCalendarEvents.map { it.eventId }.toSet(),
-            excludedEventIds = state.excludedCalendarEvents.map { it.eventId }.toSet(),
-            onEventClick = onCalendarEventClick,
-            onRequestPermission = onOpenCalendarPermissionSettings,
-            onTogglePin = { event ->
-                if (state.pinnedCalendarEvents.any { it.eventId == event.eventId }) {
-                    onUnpinCalendarEvent(event)
-                } else {
-                    onPinCalendarEvent(event)
-                }
-            },
-            onMovePinned = onMovePinnedCalendarEvent,
-            onExclude = onExcludeCalendarEvent,
-            onInclude = onIncludeCalendarEvent,
-            onArchiveTodayEvent = onArchiveTodayCalendarEvent,
-            onNicknameClick = { event ->
-                onUpdateNicknameDialogState(
-                    NicknameDialogState.CalendarEvent(
-                        event = event,
-                        currentNickname = getCalendarEventNickname(event.eventId),
-                        itemName = event.title,
-                    ),
-                )
-            },
-            getEventNickname = getCalendarEventNickname,
-            showAllResults = false,
-            showExpandControls = derivedState.isSearching,
-            onExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.CALENDAR) {
-                        ExpandedSection.NONE
+        remember(
+            state.calendarEvents, state.hasCalendarPermission, state.pinnedCalendarEvents,
+            state.excludedCalendarEvents, derivedState.isSearching, state.showWallpaperBackground,
+            onCalendarEventClick, onPinCalendarEvent, onUnpinCalendarEvent, onMovePinnedCalendarEvent,
+            onExcludeCalendarEvent, onIncludeCalendarEvent, onArchiveTodayCalendarEvent,
+            onOpenCalendarPermissionSettings, getCalendarEventNickname, onUpdateNicknameDialogState,
+            onUpdateExpandedSection, expandedSection,
+        ) {
+            CalendarSectionParams(
+                events = state.calendarEvents,
+                hasPermission = state.hasCalendarPermission,
+                isExpanded = expandedSection == ExpandedSection.CALENDAR,
+                pinnedEventIds = state.pinnedCalendarEvents.map { it.eventId }.toSet(),
+                excludedEventIds = state.excludedCalendarEvents.map { it.eventId }.toSet(),
+                onEventClick = onCalendarEventClick,
+                onRequestPermission = onOpenCalendarPermissionSettings,
+                onTogglePin = { event ->
+                    if (state.pinnedCalendarEvents.any { it.eventId == event.eventId }) {
+                        onUnpinCalendarEvent(event)
                     } else {
-                        ExpandedSection.CALENDAR
-                    },
-                )
-            },
-            permissionDisabledCard = { title, message, actionLabel, onActionClick ->
-                PermissionDisabledCard(
-                    title = title,
-                    message = message,
-                    actionLabel = actionLabel,
-                    onActionClick = onActionClick,
-                )
-            },
-            showWallpaperBackground = state.showWallpaperBackground,
-        )
+                        onPinCalendarEvent(event)
+                    }
+                },
+                onMovePinned = onMovePinnedCalendarEvent,
+                onExclude = onExcludeCalendarEvent,
+                onInclude = onIncludeCalendarEvent,
+                onArchiveTodayEvent = onArchiveTodayCalendarEvent,
+                onNicknameClick = { event ->
+                    onUpdateNicknameDialogState(
+                        NicknameDialogState.CalendarEvent(
+                            event = event,
+                            currentNickname = getCalendarEventNickname(event.eventId),
+                            itemName = event.title,
+                        ),
+                    )
+                },
+                getEventNickname = getCalendarEventNickname,
+                showAllResults = false,
+                showExpandControls = derivedState.isSearching,
+                onExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.CALENDAR) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.CALENDAR
+                        },
+                    )
+                },
+                permissionDisabledCard = { title, message, actionLabel, onActionClick ->
+                    PermissionDisabledCard(
+                        title = title,
+                        message = message,
+                        actionLabel = actionLabel,
+                        onActionClick = onActionClick,
+                    )
+                },
+                showWallpaperBackground = state.showWallpaperBackground,
+            )
+        }
 
     val notesParams =
-        NotesSectionParams(
-            pinnedNoteIds = state.pinnedNotes.map { it.noteId }.toSet(),
-            onNoteClick = onNoteClick,
-            onTogglePin = { note ->
-                if (state.pinnedNotes.any { it.noteId == note.noteId }) {
-                    onUnpinNote(note)
-                } else {
-                    onPinNote(note)
-                }
-            },
-            onMovePinned = onMovePinnedNote,
-            onDelete = onDeleteNote,
-            onTriggerClick = { note ->
-                onUpdateTriggerDialogState(
-                    TriggerDialogState.Note(
-                        note = note,
-                        currentTrigger = getNoteTrigger(note.noteId),
-                        itemName = note.title,
-                    ),
-                )
-            },
-            getNoteTrigger = getNoteTrigger,
-            showExpandControls = derivedState.isSearching,
-            onExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.NOTES) {
-                        ExpandedSection.NONE
+        remember(
+            state.pinnedNotes, derivedState.isSearching, state.showWallpaperBackground, onNoteClick,
+            onPinNote, onUnpinNote, onMovePinnedNote, onDeleteNote, onUpdateTriggerDialogState,
+            getNoteTrigger, onUpdateExpandedSection, expandedSection,
+        ) {
+            NotesSectionParams(
+                pinnedNoteIds = state.pinnedNotes.map { it.noteId }.toSet(),
+                onNoteClick = onNoteClick,
+                onTogglePin = { note ->
+                    if (state.pinnedNotes.any { it.noteId == note.noteId }) {
+                        onUnpinNote(note)
                     } else {
-                        ExpandedSection.NOTES
-                    },
-                )
-            },
-            showWallpaperBackground = state.showWallpaperBackground,
-        )
+                        onPinNote(note)
+                    }
+                },
+                onMovePinned = onMovePinnedNote,
+                onDelete = onDeleteNote,
+                onTriggerClick = { note ->
+                    onUpdateTriggerDialogState(
+                        TriggerDialogState.Note(
+                            note = note,
+                            currentTrigger = getNoteTrigger(note.noteId),
+                            itemName = note.title,
+                        ),
+                    )
+                },
+                getNoteTrigger = getNoteTrigger,
+                showExpandControls = derivedState.isSearching,
+                onExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.NOTES) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.NOTES
+                        },
+                    )
+                },
+                showWallpaperBackground = state.showWallpaperBackground,
+            )
+        }
 
     val remindersParams =
-        RemindersSectionParams(
-            pinnedReminderIds = state.pinnedReminders.map { it.reminderId }.toSet(),
-            onReminderClick = ReminderEditorRequests::openEdit,
-            onTogglePin = { reminder ->
-                if (state.pinnedReminders.any { it.reminderId == reminder.reminderId }) {
-                    reminderActions.onUnpin(reminder)
-                } else {
-                    reminderActions.onPin(reminder)
-                }
-            },
-            onMovePinned = reminderActions.onMovePinned,
-            onMarkDone = reminderActions.onMarkDone,
-            onDelete = reminderActions.onDelete,
-            showExpandControls = derivedState.isSearching,
-            onExpandClick = {
-                onUpdateExpandedSection(
-                    if (expandedSection == ExpandedSection.REMINDERS) {
-                        ExpandedSection.NONE
+        remember(
+            state.pinnedReminders, derivedState.isSearching, state.showWallpaperBackground,
+            onUpdateExpandedSection, expandedSection, reminderActions,
+        ) {
+            RemindersSectionParams(
+                pinnedReminderIds = state.pinnedReminders.map { it.reminderId }.toSet(),
+                onReminderClick = ReminderEditorRequests::openEdit,
+                onTogglePin = { reminder ->
+                    if (state.pinnedReminders.any { it.reminderId == reminder.reminderId }) {
+                        reminderActions.onUnpin(reminder)
                     } else {
-                        ExpandedSection.REMINDERS
-                    },
-                )
-            },
-            showWallpaperBackground = state.showWallpaperBackground,
-        )
+                        reminderActions.onPin(reminder)
+                    }
+                },
+                onMovePinned = reminderActions.onMovePinned,
+                onMarkDone = reminderActions.onMarkDone,
+                onDelete = reminderActions.onDelete,
+                showExpandControls = derivedState.isSearching,
+                onExpandClick = {
+                    onUpdateExpandedSection(
+                        if (expandedSection == ExpandedSection.REMINDERS) {
+                            ExpandedSection.NONE
+                        } else {
+                            ExpandedSection.REMINDERS
+                        },
+                    )
+                },
+                showWallpaperBackground = state.showWallpaperBackground,
+            )
+        }
 
-    SectionParams(
+    return SectionParams(
         filesParams = filesParams,
         appShortcutsParams = appShortcutParams,
         settingsParams = settingsParams,

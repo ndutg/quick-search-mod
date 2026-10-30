@@ -8,22 +8,27 @@ import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,6 +41,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,14 +51,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -81,6 +84,7 @@ private val ACTION_BUTTON_HEIGHT = 52.dp
 private val ACTION_ICON_SIZE = 20.dp
 private const val MIN_SCALE = 1f
 private const val MAX_SCALE = 8f
+private const val DEFAULT_PAGE_ASPECT_RATIO = 1f / 1.414f
 
 @Composable
 fun FilePreviewDialog(
@@ -94,6 +98,7 @@ fun FilePreviewDialog(
     val title = remember(deviceFile.displayName) {
         FileUtils.getFileNameWithoutExtension(deviceFile.displayName)
     }
+    val isPdf = remember(deviceFile) { FileTypeUtils.isPdf(deviceFile) }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -104,11 +109,15 @@ fun FilePreviewDialog(
                 .widthIn(max = DIALOG_MAX_WIDTH)
                 .fillMaxWidth()
                 .padding(horizontal = DesignTokens.SpacingLarge)
-                .height(dialogHeight),
+                // PDFs wrap to the page's aspect ratio; images keep a fixed viewport
+                .then(if (isPdf) Modifier.heightIn(max = dialogHeight) else Modifier.height(dialogHeight)),
             shape = DesignTokens.ShapeXLarge,
             color = AppColors.DialogBackground,
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,17 +146,23 @@ fun FilePreviewDialog(
                     }
                 }
 
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(horizontal = DesignTokens.SpacingMedium)
-                        .clip(RoundedCornerShape(PREVIEW_CORNER_RADIUS))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest),
-                ) {
-                    when {
-                        FileTypeUtils.isPdf(deviceFile) -> PdfPreview(deviceFile)
-                        FileTypeUtils.isImage(deviceFile) -> ImagePreview(deviceFile)
+                if (isPdf) {
+                    PdfPreview(
+                        deviceFile = deviceFile,
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .padding(horizontal = DesignTokens.SpacingMedium),
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(horizontal = DesignTokens.SpacingMedium)
+                            .clip(RoundedCornerShape(PREVIEW_CORNER_RADIUS))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+                    ) {
+                        if (FileTypeUtils.isImage(deviceFile)) ImagePreview(deviceFile)
                     }
                 }
 
@@ -260,7 +275,10 @@ private fun ImagePreview(deviceFile: DeviceFile) {
 }
 
 @Composable
-private fun PdfPreview(deviceFile: DeviceFile) {
+private fun PdfPreview(
+    deviceFile: DeviceFile,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val density = LocalDensity.current
     var pages by remember(deviceFile.uri) { mutableStateOf<List<Bitmap>>(emptyList()) }
@@ -270,14 +288,6 @@ private fun PdfPreview(deviceFile: DeviceFile) {
     val offsetXState = remember { mutableFloatStateOf(0f) }
     val offsetYState = remember { mutableFloatStateOf(0f) }
 
-    // Consume LazyColumn's scroll when zoomed so single-finger drag pans instead
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
-                if (scaleState.floatValue > MIN_SCALE) available else Offset.Zero
-        }
-    }
-
     val pageWidthPx = with(density) { 360.dp.roundToPx() }
 
     LaunchedEffect(deviceFile.uri) {
@@ -285,53 +295,74 @@ private fun PdfPreview(deviceFile: DeviceFile) {
         loading = false
     }
 
+    val pagerState = rememberPagerState(pageCount = { pages.size })
+
+    // Reset zoom when moving to another page
+    LaunchedEffect(pagerState.currentPage) {
+        scaleState.floatValue = MIN_SCALE
+        offsetXState.floatValue = 0f
+        offsetYState.floatValue = 0f
+    }
+
+    // The preview takes the first page's shape so the dialog hugs the document
+    val aspectRatio = pages.firstOrNull()?.let { it.width.toFloat() / it.height } ?: DEFAULT_PAGE_ASPECT_RATIO
+
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier
+            .aspectRatio(aspectRatio)
+            .clip(RoundedCornerShape(PREVIEW_CORNER_RADIUS)),
         contentAlignment = Alignment.Center,
     ) {
         when {
             loading -> CircularProgressIndicator()
-            pages.isNotEmpty() -> Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clipToBounds()
-                    .nestedScroll(nestedScrollConnection)
-                    .pointerInput(Unit) {
-                        detectTransformGestures { _, pan, zoom, _ ->
-                            val newScale = (scaleState.floatValue * zoom).coerceIn(MIN_SCALE, MAX_SCALE)
-                            scaleState.floatValue = newScale
-                            if (newScale > MIN_SCALE) {
-                                offsetXState.floatValue += pan.x
-                                offsetYState.floatValue += pan.y
-                            } else {
-                                offsetXState.floatValue = 0f
-                                offsetYState.floatValue = 0f
-                            }
-                        }
-                    },
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            scaleX = scaleState.floatValue
-                            scaleY = scaleState.floatValue
-                            translationX = offsetXState.floatValue
-                            translationY = offsetYState.floatValue
-                        },
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.SpacingSmall),
-                    contentPadding = PaddingValues(DesignTokens.SpacingSmall),
-                ) {
-                    itemsIndexed(pages) { _, page ->
+            pages.isNotEmpty() -> {
+                // Scrolling between pages is disabled while zoomed so drags pan the page instead
+                VerticalPager(
+                    state = pagerState,
+                    userScrollEnabled = scaleState.floatValue <= MIN_SCALE,
+                    modifier = Modifier.fillMaxSize(),
+                ) { index ->
+                    val isCurrent = index == pagerState.currentPage
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clipToBounds()
+                            .pdfPageZoom(scaleState, offsetXState, offsetYState),
+                        contentAlignment = Alignment.Center,
+                    ) {
                         Image(
-                            bitmap = page.asImageBitmap(),
+                            bitmap = pages[index].asImageBitmap(),
                             contentDescription = null,
-                            contentScale = ContentScale.FillWidth,
+                            contentScale = ContentScale.Fit,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.White),
+                                .background(Color.White)
+                                .graphicsLayer {
+                                    if (isCurrent) {
+                                        scaleX = scaleState.floatValue
+                                        scaleY = scaleState.floatValue
+                                        translationX = offsetXState.floatValue
+                                        translationY = offsetYState.floatValue
+                                    }
+                                },
                         )
                     }
+                }
+                if (pages.size > 1) {
+                    Text(
+                        text = stringResource(
+                            R.string.file_preview_page_counter,
+                            pagerState.currentPage + 1,
+                            pages.size,
+                        ),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(DesignTokens.SpacingMedium)
+                            .clip(RoundedCornerShape(PREVIEW_CORNER_RADIUS))
+                            .background(MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.8f))
+                            .padding(horizontal = DesignTokens.SpacingMedium, vertical = DesignTokens.SpacingXSmall),
+                    )
                 }
             }
             else -> Text(
@@ -340,6 +371,37 @@ private fun PdfPreview(deviceFile: DeviceFile) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+/**
+ * Pinch-to-zoom and pan for a PDF page. Single-finger drags at 1x are left unconsumed
+ * so the pager can scroll between pages.
+ */
+private fun Modifier.pdfPageZoom(
+    scaleState: MutableFloatState,
+    offsetXState: MutableFloatState,
+    offsetYState: MutableFloatState,
+): Modifier = pointerInput(Unit) {
+    awaitEachGesture {
+        awaitFirstDown(requireUnconsumed = false)
+        do {
+            val event = awaitPointerEvent()
+            val multiTouch = event.changes.count { it.pressed } > 1
+            if (multiTouch || scaleState.floatValue > MIN_SCALE) {
+                val newScale = (scaleState.floatValue * event.calculateZoom()).coerceIn(MIN_SCALE, MAX_SCALE)
+                scaleState.floatValue = newScale
+                if (newScale > MIN_SCALE) {
+                    val pan = event.calculatePan()
+                    offsetXState.floatValue += pan.x
+                    offsetYState.floatValue += pan.y
+                } else {
+                    offsetXState.floatValue = 0f
+                    offsetYState.floatValue = 0f
+                }
+                event.changes.forEach { if (it.positionChanged()) it.consume() }
+            }
+        } while (event.changes.any { it.pressed })
     }
 }
 
