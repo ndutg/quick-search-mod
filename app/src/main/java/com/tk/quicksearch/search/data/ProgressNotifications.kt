@@ -10,7 +10,7 @@ import android.service.notification.StatusBarNotification
  * Android 16 Live Update (a promoted ongoing notification) such as a ride's "Driver 3 min away",
  * which need not have a bar.
  */
-internal class ProgressNotification(
+internal data class ProgressNotification(
     val key: String,
     val packageName: String,
     val title: String?,
@@ -28,7 +28,7 @@ internal class ProgressNotification(
  * The notification an app left once a [ProgressNotification] finished, such as "Download complete".
  * It shows until the app removes it or it is dismissed from At a Glance.
  */
-internal class FinishedProgressNotification(
+internal data class FinishedProgressNotification(
     val key: String,
     val packageName: String,
     val title: String?,

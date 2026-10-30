@@ -7,6 +7,7 @@ import android.view.Window
 import android.view.ViewTreeObserver
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.tk.quicksearch.app.UpdateHelper
+import com.tk.quicksearch.app.HomeActivity
 import com.tk.quicksearch.search.core.BackgroundSource
 import com.tk.quicksearch.search.core.SearchViewModel
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
@@ -142,17 +143,42 @@ class StartupCoordinator(
         scheduleBackgroundPreload()
     }
 
+    /**
+     * The search screen picks its size once the theme is known; preloading the finer of the light and
+     * dark sizes lets it only scale down. Without blur Home lets Android draw the wallpaper.
+     */
+    private fun preloadWallpaperDivisor(): Int {
+        val lightBlur = userPreferences.getWallpaperBlurRadius(isDarkMode = false)
+        val darkBlur = userPreferences.getWallpaperBlurRadius(isDarkMode = true)
+        val showsSystemBackdrop = (activity as? HomeActivity)?.canShowSystemWallpaperBackdrop == true
+        if (showsSystemBackdrop && lightBlur <= 0f && darkBlur <= 0f) {
+            return WallpaperUtils.WALLPAPER_THUMBNAIL_DIVISOR
+        }
+        return minOf(
+            WallpaperUtils.wallpaperDivisorForBlur(lightBlur),
+            WallpaperUtils.wallpaperDivisorForBlur(darkBlur),
+        )
+    }
+
+    private fun preloadCustomImageDivisor(): Int =
+        minOf(
+            WallpaperUtils.wallpaperDivisorForBlur(userPreferences.getWallpaperBlurRadius(isDarkMode = false)),
+            WallpaperUtils.wallpaperDivisorForBlur(userPreferences.getWallpaperBlurRadius(isDarkMode = true)),
+        )
+
     private fun scheduleBackgroundPreload() {
         lifecycleScope.launch(Dispatchers.IO) {
             val backgroundSource = userPreferences.getBackgroundSource()
             Trace.beginSection(TRACE_BACKGROUND_PRELOAD)
             try {
                 when (backgroundSource) {
-                    BackgroundSource.SYSTEM_WALLPAPER -> WallpaperUtils.preloadWallpaper(context)
+                    BackgroundSource.SYSTEM_WALLPAPER ->
+                        WallpaperUtils.preloadWallpaper(context, preloadWallpaperDivisor())
                     BackgroundSource.CUSTOM_IMAGE ->
                         WallpaperUtils.preloadCustomImage(
                             context = context,
                             uriString = userPreferences.getCustomImageUri(),
+                            divisor = preloadCustomImageDivisor(),
                         )
                     BackgroundSource.THEME -> Unit
                 }

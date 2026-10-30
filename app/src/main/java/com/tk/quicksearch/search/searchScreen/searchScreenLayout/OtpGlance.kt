@@ -31,6 +31,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.OtpNotification
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
@@ -62,11 +65,14 @@ internal fun OtpCodeRow(
             copied = false
         }
     }
+    val lifecycleOwner = LocalLifecycleOwner.current
     var nowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(otp.key) {
-        while (true) {
-            nowMillis = System.currentTimeMillis()
-            delay(1_000)
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                nowMillis = System.currentTimeMillis()
+                delay(1_000)
+            }
         }
     }
     val copyLabel = stringResource(R.string.calculator_copy_result)

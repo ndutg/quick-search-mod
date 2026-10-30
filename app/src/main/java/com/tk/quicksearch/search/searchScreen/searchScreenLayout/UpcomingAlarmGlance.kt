@@ -39,6 +39,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.rememberAppIcon
 import com.tk.quicksearch.search.calendar.calendarRelativeTimeLabel
@@ -68,7 +69,7 @@ internal class UpcomingAlarmGlance(
 
 /**
  * Polls the next alarm within 45 minutes, or else tomorrow's first alarm in the evening, while
- * [enabled]; refreshes on resume and every 10 seconds.
+ * [enabled]; refreshes on resume and every 10 seconds while visible.
  */
 @Composable
 internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance? {
@@ -92,12 +93,15 @@ internal fun rememberUpcomingAlarmGlance(enabled: Boolean): UpcomingAlarmGlance?
             alarm = null
             return@LaunchedEffect
         }
-        while (true) {
-            nowMillis = System.currentTimeMillis()
-            val soon = repository.nextWithinFortyFiveMinutes(nowMillis)
-            alarm = soon ?: repository.tomorrowsFirstAlarm(nowMillis)
-            isTomorrow = soon == null && alarm != null
-            delay(10_000)
+        // Home stays composed while another app is in front; only poll while it can be seen.
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                nowMillis = System.currentTimeMillis()
+                val soon = repository.nextWithinFortyFiveMinutes(nowMillis)
+                alarm = soon ?: repository.tomorrowsFirstAlarm(nowMillis)
+                isTomorrow = soon == null && alarm != null
+                delay(10_000)
+            }
         }
     }
 

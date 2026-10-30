@@ -56,6 +56,7 @@ class AppsRepository(
     private val userManager: UserManager? =
         context.getSystemService(Context.USER_SERVICE) as? UserManager
     private val appCache = AppCache(context)
+    private val usageRefreshTracker = AppUsageRefreshTracker(usageStatsManager)
     private val currentUserHandleId = UserHandleUtils.getIdentifier(Process.myUserHandle())
     @Volatile private var appCatalogInvalidated = false
     private var launcherAppsCallback: LauncherApps.Callback? = null
@@ -225,6 +226,7 @@ class AppsRepository(
     ): List<AppInfo> {
         val startedAtElapsedMs = SystemClock.elapsedRealtime()
         val usageMap = queryUsageStatsMap()
+        if (usageMap.isNotEmpty()) usageRefreshTracker.markFullRefresh(startedAtElapsedMs, System.currentTimeMillis())
         val usageLoadedAtElapsedMs = SystemClock.elapsedRealtime()
         val profileApps = queryLaunchableAppsFromAllProfiles()
         val launcherAppsQueriedAtElapsedMs = SystemClock.elapsedRealtime()
@@ -295,8 +297,23 @@ class AppsRepository(
     ): List<AppInfo> {
         if (apps.isEmpty()) return apps
 
+        val nowElapsedMs = SystemClock.elapsedRealtime()
+        val nowWallMs = System.currentTimeMillis()
+        if (!usageRefreshTracker.shouldRunFullRefresh(nowElapsedMs, nowWallMs)) {
+            val lastUsedByPackage = usageRefreshTracker.readLastUsedSinceLastRefresh(nowWallMs)
+            if (lastUsedByPackage != null) {
+                val updatedApps = applyLastUsedTimes(apps, lastUsedByPackage)
+                val removedAppKeys = appCache.removedAppKeys()
+                if (updatedApps === apps && removedAppKeys.isEmpty()) return apps
+                val availableApps = filterRemovedApps(updatedApps, removedAppKeys)
+                appCache.saveApps(availableApps, catalogReconciled = false)
+                return availableApps
+            }
+        }
+
         val usageMap = queryUsageStatsMap()
         if (usageMap.isEmpty()) return apps
+        usageRefreshTracker.markFullRefresh(nowElapsedMs, nowWallMs)
 
         val refreshedApps =
             apps.map { app ->

@@ -47,12 +47,28 @@ internal fun SearchScreenWallpaperLogic(
     onWallpaperUnavailable: (() -> Unit)? = null,
     onSystemWallpaperChanged: (() -> Unit)? = null,
     isOverlayPresentation: Boolean = false,
+    /** False for surfaces drawn over other content, which need an opaque wallpaper image. */
+    allowUnblurredSystemBackdrop: Boolean = true,
 ): SearchScreenWallpaperState {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val canShowSystemWallpaperBackdrop =
         !isOverlayPresentation &&
             (context as? HomeActivity)?.canShowSystemWallpaperBackdrop == true
+    // Without blur Android composites the same wallpaper behind the window, so the bitmap is only
+    // read for its colors and a thumbnail is enough. Blurred wallpapers are drawn from a bitmap
+    // scaled to what the blur leaves visible.
+    val usesUnblurredSystemBackdrop =
+        allowUnblurredSystemBackdrop &&
+            canShowSystemWallpaperBackdrop &&
+            state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER &&
+            state.wallpaperBlurRadius <= 0f
+    val wallpaperDivisor =
+        if (usesUnblurredSystemBackdrop) {
+            WallpaperUtils.WALLPAPER_THUMBNAIL_DIVISOR
+        } else {
+            WallpaperUtils.wallpaperDivisorForBlur(state.wallpaperBlurRadius)
+        }
     var wallpaperChangeVersion by remember { mutableIntStateOf(0) }
 
     DisposableEffect(context, state.backgroundSource) {
@@ -118,7 +134,7 @@ internal fun SearchScreenWallpaperLogic(
             initialValue =
                 if (state.backgroundSource == BackgroundSource.SYSTEM_WALLPAPER) {
                     if (WallpaperUtils.hasWallpaperAccessPermission(context)) {
-                        WallpaperUtils.getCachedWallpaperBitmap()?.let {
+                        WallpaperUtils.getCachedWallpaperBitmap(wallpaperDivisor)?.let {
                             WallpaperBitmapState(
                                 imageBitmap = it.asImageBitmap(),
                                 loadResult = WallpaperUtils.WallpaperLoadResult.Success(it),
@@ -138,6 +154,7 @@ internal fun SearchScreenWallpaperLogic(
             state.wallpaperAvailable,
             state.startupBackgroundPreviewPath,
             wallpaperChangeVersion,
+            wallpaperDivisor,
         ) {
             if (state.backgroundSource != BackgroundSource.SYSTEM_WALLPAPER) {
                 value = WallpaperBitmapState(imageBitmap = null, loadResult = null)
@@ -146,7 +163,7 @@ internal fun SearchScreenWallpaperLogic(
 
             if (WallpaperUtils.hasWallpaperAccessPermission(context)) {
                 // Render from memory immediately. File decode remains off the composition thread.
-                val cachedWallpaper = WallpaperUtils.getCachedWallpaperBitmap()?.asImageBitmap()
+                val cachedWallpaper = WallpaperUtils.getCachedWallpaperBitmap(wallpaperDivisor)?.asImageBitmap()
                 if (cachedWallpaper != null) {
                     value = WallpaperBitmapState(imageBitmap = cachedWallpaper, loadResult = null)
                 } else if (shouldUseStartupPreview) {
@@ -158,7 +175,7 @@ internal fun SearchScreenWallpaperLogic(
                 }
             }
 
-            when (val result = WallpaperUtils.getWallpaperBitmapResult(context)) {
+            when (val result = WallpaperUtils.getWallpaperBitmapResult(context, wallpaperDivisor)) {
                 is WallpaperUtils.WallpaperLoadResult.Success -> {
                     value =
                         WallpaperBitmapState(
@@ -178,23 +195,29 @@ internal fun SearchScreenWallpaperLogic(
                 }
             }
         }
+    val customImageDivisor = WallpaperUtils.wallpaperDivisorForBlur(state.wallpaperBlurRadius)
     val sourceCustomBitmap =
         produceState(
-            initialValue = CustomBitmapState(imageBitmap = null, isLoadFinished = false),
-            key1 = state.backgroundSource,
-            key2 = state.customImageUri,
-            key3 = state.startupBackgroundPreviewPath,
+            CustomBitmapState(imageBitmap = null, isLoadFinished = false),
+            state.backgroundSource,
+            state.customImageUri,
+            state.startupBackgroundPreviewPath,
+            customImageDivisor,
         ) {
             if (state.backgroundSource != BackgroundSource.CUSTOM_IMAGE) {
                 value = CustomBitmapState(imageBitmap = null, isLoadFinished = true)
                 return@produceState
             }
 
-            WallpaperUtils.loadStartupBackgroundPreviewBitmap(
-                previewPath = state.startupBackgroundPreviewPath,
-            )?.asImageBitmap()?.let { value = value.copy(imageBitmap = it) }
+            // A blur change only reloads the image at a new size; keep showing the current one.
+            if (value.imageBitmap == null) {
+                WallpaperUtils.loadStartupBackgroundPreviewBitmap(
+                    previewPath = state.startupBackgroundPreviewPath,
+                )?.asImageBitmap()?.let { value = value.copy(imageBitmap = it) }
+            }
 
-            val customBitmap = WallpaperUtils.getOverlayCustomImageBitmap(context, state.customImageUri)
+            val customBitmap =
+                WallpaperUtils.getOverlayCustomImageBitmap(context, state.customImageUri, customImageDivisor)
             value =
                 CustomBitmapState(
                     imageBitmap = customBitmap ?: value.imageBitmap,
@@ -228,7 +251,9 @@ internal fun SearchScreenWallpaperLogic(
             canShowSystemWallpaperBackdrop &&
             (sourceWallpaperState.value.loadResult ==
                 WallpaperUtils.WallpaperLoadResult.PermissionRequired ||
-                sourceWallpaperState.value.loadResult == WallpaperUtils.WallpaperLoadResult.SecurityError)
+                sourceWallpaperState.value.loadResult == WallpaperUtils.WallpaperLoadResult.SecurityError ||
+                (usesUnblurredSystemBackdrop &&
+                    sourceWallpaperState.value.loadResult != WallpaperUtils.WallpaperLoadResult.Unavailable))
     val useBitmapBackground =
         WallpaperUtils.shouldUseImageBackground(
             backgroundSource = state.backgroundSource,

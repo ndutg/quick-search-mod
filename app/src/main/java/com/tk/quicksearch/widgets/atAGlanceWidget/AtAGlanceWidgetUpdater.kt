@@ -11,11 +11,15 @@ import android.database.ContentObserver
 import android.hardware.camera2.CameraManager
 import android.net.ConnectivityManager
 import android.os.BatteryManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.provider.CalendarContract
 import androidx.core.content.ContextCompat
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.getAppWidgetState
+import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tk.quicksearch.customInfo.CustomInfoRepository
 import com.tk.quicksearch.search.data.AppNotificationsSettings
 import com.tk.quicksearch.search.data.GlanceNotificationsStore
@@ -23,7 +27,8 @@ import com.tk.quicksearch.search.data.ReminderRepository
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.ACTION_WIFI_AP_STATE_CHANGED
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.CaptivePortalWifiCallback
 import com.tk.quicksearch.search.searchScreen.searchScreenLayout.registerWifiNetworkCallback
-import com.tk.quicksearch.widgets.utils.refreshAtAGlanceWidgets
+import com.tk.quicksearch.widgets.utils.refreshWidget
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -41,6 +46,8 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /** Bursts of changes (a notification update, a calendar sync) redraw the widget once. */
 private const val REFRESH_DEBOUNCE_MILLIS = 500L
@@ -56,6 +63,10 @@ internal object AtAGlanceWidgetUpdater {
     private val litCameraIdsState = MutableStateFlow(emptySet<String>())
     private var job: Job? = null
     private var unregisterListeners: (() -> Unit)? = null
+    private val isRefreshPending = AtomicBoolean(false)
+
+    /** One redraw at a time, as Glance fails a second composition of the same widget running alongside. */
+    private val refreshMutex = Mutex()
 
     /** Cameras whose torch is on, which the system only reports through a callback. */
     val litCameraIds: StateFlow<Set<String>> = litCameraIdsState.asStateFlow()
@@ -114,8 +125,57 @@ internal object AtAGlanceWidgetUpdater {
             scope.launch {
                 merge(requests, *sources.map { flow -> flow.map { } }.toTypedArray())
                     .debounce(REFRESH_DEBOUNCE_MILLIS)
-                    .collect { runCatching { refreshAtAGlanceWidgets(appContext) } }
+                    .collect { refreshWhenVisible(appContext) }
             }
+    }
+
+    /**
+     * Redraws the widgets whose content changed. With the screen off no widget can be seen, so
+     * changes then (a night of notifications) only mark a redraw for when the screen turns on.
+     */
+    private suspend fun refreshWhenVisible(context: Context) {
+        val powerManager = runCatching { context.getSystemService(PowerManager::class.java) }.getOrNull()
+        if (powerManager != null && !powerManager.isInteractive) {
+            isRefreshPending.set(true)
+            // The screen may have turned on before the flag was set, too late for its broadcast to see it.
+            if (!powerManager.isInteractive || !isRefreshPending.getAndSet(false)) return
+        } else {
+            isRefreshPending.set(false)
+        }
+        refreshMutex.withLock { refreshChanged(context) }
+    }
+
+    /**
+     * Draws each placed widget unless it already shows what it would draw now. On Android 12L+ a
+     * direct draw is the whole update, as lists travel with the views; earlier versions serve
+     * lists from Glance's session, so that is updated too.
+     */
+    private suspend fun refreshChanged(context: Context) {
+        val appWidgetIds =
+            runCatching {
+                AppWidgetManager
+                    .getInstance(context)
+                    .getAppWidgetIds(ComponentName(context, AtAGlanceWidgetReceiver::class.java))
+            }.getOrNull()
+        if (appWidgetIds == null || appWidgetIds.isEmpty()) return
+        val glanceManager = GlanceAppWidgetManager(context)
+        val widget = AtAGlanceWidget()
+        appWidgetIds.forEach { appWidgetId ->
+            runCatching {
+                val glanceId = glanceManager.getGlanceIdBy(appWidgetId)
+                val prefs = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
+                val isCurrent = AtAGlanceWidgetContent.isShowingCurrent(context, glanceId, prefs)
+                val drawn =
+                    isCurrent ||
+                        (
+                            Build.VERSION.SDK_INT > Build.VERSION_CODES.S &&
+                                widget.drawNow(context, appWidgetId, glanceId, allSizes = true)
+                        )
+                if (!drawn) {
+                    refreshWidget(context, widget, appWidgetId, glanceId) { id, gid -> widget.drawNow(context, id, gid) }
+                }
+            }
+        }
     }
 
     @Synchronized
@@ -125,6 +185,7 @@ internal object AtAGlanceWidgetUpdater {
         unregisterListeners?.invoke()
         unregisterListeners = null
         litCameraIdsState.value = emptySet()
+        isRefreshPending.set(false)
     }
 
     /** Registers the device-state listeners and returns how to unregister them. */
@@ -138,6 +199,13 @@ internal object AtAGlanceWidgetUpdater {
                     context: Context,
                     intent: Intent,
                 ) {
+                    if (intent.action == Intent.ACTION_SCREEN_ON) {
+                        // Drawn right away rather than after the debounce, as home may show any moment.
+                        if (isRefreshPending.getAndSet(false)) {
+                            scope.launch { refreshMutex.withLock { refreshChanged(context.applicationContext) } }
+                        }
+                        return
+                    }
                     if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
                         val state =
                             Triple(
@@ -157,6 +225,7 @@ internal object AtAGlanceWidgetUpdater {
         val filter =
             IntentFilter().apply {
                 addAction(Intent.ACTION_BATTERY_CHANGED)
+                addAction(Intent.ACTION_SCREEN_ON)
                 addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
                 addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
                 addAction(NotificationManager.ACTION_INTERRUPTION_FILTER_CHANGED)

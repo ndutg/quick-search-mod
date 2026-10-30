@@ -267,12 +267,14 @@ internal fun OpenKeyboardAction(
     onVoiceClick: () -> Unit,
     showWallpaperBackground: Boolean,
     modifier: Modifier = Modifier,
+    showMic: Boolean = true,
 ) = com.tk.quicksearch.search.searchScreen.components.OpenKeyboardAction(
     text = text,
     onClick = onClick,
     onVoiceClick = onVoiceClick,
     showWallpaperBackground = showWallpaperBackground,
     modifier = modifier,
+    showMic = showMic,
 )
 
 @Composable

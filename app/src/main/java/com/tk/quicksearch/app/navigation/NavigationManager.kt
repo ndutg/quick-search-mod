@@ -681,7 +681,7 @@ private fun SettingsNavigationContent(
     onFinishActivity: () -> Unit,
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val configState by viewModel.configState.collectAsStateWithLifecycle()
     val settingsScrollState = rememberScrollState()
     val detailScrollStates = remember { mutableStateMapOf<SettingsDetailType, androidx.compose.foundation.ScrollState>() }
 
@@ -746,7 +746,7 @@ private fun SettingsNavigationContent(
                 onNavigateToSearch = {
                     onRootAnimationDirectionChange(SwipeAnimationDirection.LEFT)
                     onSettingsDetailTypeChange(null)
-                    if (uiState.overlayModeEnabled) {
+                    if (configState.overlayModeEnabled) {
                         onFinishActivity()
                     } else {
                         onDestinationChange(RootDestination.Search)
@@ -763,7 +763,7 @@ private fun SettingsNavigationContent(
         } else {
             SettingsRoute(
                 onBack = {
-                    if (uiState.overlayModeEnabled) {
+                    if (configState.overlayModeEnabled) {
                         onFinishActivity()
                     } else {
                         onDestinationChange(RootDestination.Search)

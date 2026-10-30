@@ -7,7 +7,7 @@ import android.service.notification.StatusBarNotification
 import androidx.core.app.NotificationCompat
 
 /** A one-time code read from a message or email notification. */
-internal class OtpNotification(
+internal data class OtpNotification(
     val key: String,
     val packageName: String,
     /** Upper case, without spaces or hyphens. */

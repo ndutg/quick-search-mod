@@ -17,6 +17,8 @@ class LockScreenAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         instance = this
+        // Nothing reads window events; the XML's subscription only woke the app on every screen change.
+        runCatching { serviceInfo = serviceInfo?.apply { eventTypes = 0 } }
         edgeGestureOverlay =
             EdgeGestureOverlay(this).also { overlay ->
                 overlay.setPreviewVisible(edgeGesturePreviewVisible)

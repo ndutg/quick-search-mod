@@ -41,6 +41,9 @@ object NotificationHistoryStore {
     private const val KEY_HIDDEN_PACKAGES = "hidden_packages"
     private const val MAX_ENTRIES = 500
 
+    // An identical re-post within this window (a silent update) does not refresh the row's time.
+    private const val REPEAT_POSTING_WINDOW_MILLIS = 60_000L
+
     // Hidden until the user opts in; System UI mostly posts transient status notifications.
     // Always listed in the app filter so it can be enabled before it has any history.
     val DEFAULT_HIDDEN_PACKAGES = setOf("com.android.systemui")
@@ -56,6 +59,16 @@ object NotificationHistoryStore {
         object : LinkedHashMap<String, Pair<String, PendingIntent>>() {
             override fun removeEldestEntry(
                 eldest: MutableMap.MutableEntry<String, Pair<String, PendingIntent>>?,
+            ): Boolean = size > MAX_ENTRIES
+        }
+
+    // Last posting recorded per notification key in this process, bounded like the log. Ongoing and
+    // progress notifications (downloads, navigation, media) re-post constantly; only their first
+    // posting is kept, so their updates neither flood the log nor each cost a database write.
+    private val lastRecorded =
+        object : LinkedHashMap<String, NotificationHistoryEntry>() {
+            override fun removeEldestEntry(
+                eldest: MutableMap.MutableEntry<String, NotificationHistoryEntry>?,
             ): Boolean = size > MAX_ENTRIES
         }
 
@@ -135,6 +148,7 @@ object NotificationHistoryStore {
         val entry = notification?.toHistoryEntry(isAppNotificationCandidate) ?: return
         ensureLoaded(context)
         if (entry.packageName in hiddenPackagesState.value) return
+        if (isRedundantPosting(entry, notification)) return
         rememberContentIntent(entry, notification)
         append(listOf(entry))
     }
@@ -154,7 +168,10 @@ object NotificationHistoryStore {
             notifications.orEmpty().mapNotNull { notification ->
                 notification.toHistoryEntry(isAppNotificationCandidate)
                     ?.takeUnless { it.packageName in hidden }
-                    ?.also { rememberContentIntent(it, notification) }
+                    ?.also { entry ->
+                        synchronized(lastRecorded) { lastRecorded[entry.key] = entry }
+                        rememberContentIntent(entry, notification)
+                    }
             }
         if (seeded.isEmpty()) return
         append(seeded)
@@ -172,6 +189,7 @@ object NotificationHistoryStore {
 
     fun clear(context: Context) {
         ensureLoaded(context)
+        synchronized(lastRecorded) { lastRecorded.clear() }
         synchronized(contentIntents) { contentIntents.clear() }
         onDatabaseThread { deleteAll() }
     }
@@ -180,6 +198,27 @@ object NotificationHistoryStore {
         val rows = additions.map(NotificationHistoryEntry::toEntity)
         onDatabaseThread { record(rows, MAX_ENTRIES) }
     }
+
+    /** Whether [entry] repeats the last recorded posting of its notification; otherwise remembers it. */
+    private fun isRedundantPosting(
+        entry: NotificationHistoryEntry,
+        notification: StatusBarNotification,
+    ): Boolean =
+        synchronized(lastRecorded) {
+            val previous = lastRecorded[entry.key]
+            val redundant =
+                previous != null &&
+                    (
+                        notification.isOngoingOrProgress() ||
+                            (
+                                previous.title == entry.title &&
+                                    previous.text == entry.text &&
+                                    entry.postTime - previous.postTime < REPEAT_POSTING_WINDOW_MILLIS
+                            )
+                    )
+            if (!redundant) lastRecorded[entry.key] = entry
+            redundant
+        }
 
     private fun rememberContentIntent(
         entry: NotificationHistoryEntry,
@@ -203,6 +242,14 @@ object NotificationHistoryStore {
     }
 
     private const val TAG = "NotificationHistory"
+}
+
+private fun StatusBarNotification.isOngoingOrProgress(): Boolean {
+    val posted = runCatching { notification }.getOrNull() ?: return false
+    if (posted.flags and Notification.FLAG_ONGOING_EVENT != 0) return true
+    val extras = runCatching { posted.extras }.getOrNull() ?: return false
+    return extras.getInt(Notification.EXTRA_PROGRESS_MAX, 0) > 0 ||
+        extras.getBoolean(Notification.EXTRA_PROGRESS_INDETERMINATE, false)
 }
 
 private fun StatusBarNotification.toHistoryEntry(

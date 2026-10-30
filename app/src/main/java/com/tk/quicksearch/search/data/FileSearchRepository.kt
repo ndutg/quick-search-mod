@@ -1,11 +1,15 @@
 package com.tk.quicksearch.search.data
 
+import android.app.ActivityManager
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.mtp.MtpConstants
 import android.net.Uri
 import android.os.Build
+import android.os.CancellationSignal
+import android.os.OperationCanceledException
+import android.os.SystemClock
 import android.provider.MediaStore
 import com.tk.quicksearch.search.models.DeviceFile
 import com.tk.quicksearch.search.utils.FileSearchTextNormalizer
@@ -13,12 +17,24 @@ import com.tk.quicksearch.search.utils.PermissionUtils
 import com.tk.quicksearch.search.utils.SearchTextNormalizer
 import java.util.LinkedHashMap
 import java.util.Locale
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class FileSearchRepository(
     private val context: Context,
 ) {
     private val contentResolver = context.contentResolver
     private val recentFilesByUri = buildRecentFilesCache()
+    private val isLowRamDevice by lazy {
+        context.getSystemService(ActivityManager::class.java)?.isLowRamDevice == true
+    }
+
+    // The newest files, which fuzzy search scores on every keystroke; read once per typing session
+    // rather than scanning MediaStore again each time.
+    private var recentFilesSnapshot: List<DeviceFile> = emptyList()
+    private var recentFilesSnapshotLimit = 0
+    private var recentFilesSnapshotAtMillis = 0L
 
     companion object {
         private const val COLUMN_FORMAT = "format"
@@ -29,6 +45,7 @@ class FileSearchRepository(
         private const val SQL_HYPHEN = "'-'"
         private const val SQL_SPACE = "' '"
         private const val SQL_UNDERSCORE = "'_'"
+        private const val RECENT_FILES_SNAPSHOT_MAX_AGE_MILLIS = 30_000L
 
         private val FILE_PROJECTION = buildFileProjection()
 
@@ -68,6 +85,8 @@ class FileSearchRepository(
      */
     fun refreshFilesProviderSnapshot(): Boolean {
         if (!hasPermission()) return false
+        synchronized(this) { recentFilesSnapshotAtMillis = 0L }
+        FileNameIndex.invalidate()
 
         val projection = arrayOf(MediaStore.Files.FileColumns._ID)
         return runCatching {
@@ -160,11 +179,14 @@ class FileSearchRepository(
         query: String,
         limit: Int,
         extension: String? = null,
+        cancellationSignal: CancellationSignal? = null,
     ): List<DeviceFile> {
         if ((query.isBlank() && extension == null) || !hasPermission()) return emptyList()
 
         val queryTokens = if (query.isBlank()) emptyList() else normalizeQueryTokens(query)
         if (queryTokens.isEmpty() && extension == null) return emptyList()
+        searchIndexedFiles(queryTokens, extension, foldersOnly = false, limit, cancellationSignal)
+            ?.let { return it }
         val nameSelection =
             if (queryTokens.isEmpty()) {
                 null
@@ -205,10 +227,12 @@ class FileSearchRepository(
                 selection,
                 selectionArgs,
                 DATE_MODIFIED_SORT,
+                cancellationSignal,
             )?.use { cursor ->
                 val columnIndices = getColumnIndices(cursor)
 
                 while (cursor.moveToNext() && results.size < limit) {
+                    cancellationSignal?.throwIfCanceled()
                     val file = createDeviceFileFromCursor(cursor, uri, columnIndices)
                     if (file != null) {
                         results.add(file)
@@ -228,6 +252,8 @@ class FileSearchRepository(
 
         val queryTokens = normalizeQueryTokens(query)
         if (queryTokens.isEmpty()) return emptyList()
+        searchIndexedFiles(queryTokens, extension = null, foldersOnly = true, limit, cancellationSignal = null)
+            ?.let { return it }
         val displayNameTokenSelection =
             queryTokens.joinToString(" AND ") {
                 "${MediaStore.Files.FileColumns.DISPLAY_NAME} GLOB ?"
@@ -269,6 +295,7 @@ class FileSearchRepository(
     /** Newest-modified files first; [include] is applied while scanning so [limit] counts matches. */
     fun getRecentFiles(
         limit: Int,
+        cancellationSignal: CancellationSignal? = null,
         include: (DeviceFile) -> Boolean = { true },
     ): List<DeviceFile> {
         if (limit <= 0 || !hasPermission()) return emptyList()
@@ -282,9 +309,11 @@ class FileSearchRepository(
                 null,
                 null,
                 DATE_MODIFIED_SORT,
+                cancellationSignal,
             )?.use { cursor ->
                 val columnIndices = getColumnIndices(cursor)
                 while (cursor.moveToNext() && results.size < limit) {
+                    cancellationSignal?.throwIfCanceled()
                     val file = createDeviceFileFromCursor(cursor, uri, columnIndices)
                     if (file != null && include(file)) {
                         results.add(file)
@@ -292,6 +321,61 @@ class FileSearchRepository(
                 }
             }
 
+        cacheFiles(results)
+        return results
+    }
+
+    /** [getRecentFiles] without a filter, reused for a short while across keystrokes. */
+    fun getRecentFilesSnapshot(
+        limit: Int,
+        cancellationSignal: CancellationSignal? = null,
+    ): List<DeviceFile> {
+        val now = SystemClock.elapsedRealtime()
+        synchronized(this) {
+            if (recentFilesSnapshotLimit >= limit &&
+                recentFilesSnapshotAtMillis != 0L &&
+                now - recentFilesSnapshotAtMillis < RECENT_FILES_SNAPSHOT_MAX_AGE_MILLIS
+            ) {
+                return recentFilesSnapshot.take(limit)
+            }
+        }
+        val files = getRecentFiles(limit, cancellationSignal)
+        synchronized(this) {
+            recentFilesSnapshot = files
+            recentFilesSnapshotLimit = limit
+            recentFilesSnapshotAtMillis = now
+        }
+        return files
+    }
+
+    /** Matches names in memory, then reads full rows for matched ids; null falls back to a provider scan. */
+    private fun searchIndexedFiles(
+        queryTokens: List<String>,
+        extension: String?,
+        foldersOnly: Boolean,
+        limit: Int,
+        cancellationSignal: CancellationSignal?,
+    ): List<DeviceFile>? {
+        if (isLowRamDevice) return null
+        val uri = getFilesContentUri()
+        val index = FileNameIndex.get(contentResolver, uri) ?: return null
+        val ids = index.matchingIds(queryTokens, extension, foldersOnly, limit, cancellationSignal)
+        if (ids.isEmpty()) return emptyList()
+
+        val filesById = HashMap<Long, DeviceFile>(ids.size)
+        ids.chunked(BATCH_ID_QUERY_CHUNK_SIZE).forEach { chunkIds ->
+            val selection = "${MediaStore.Files.FileColumns._ID} IN (${chunkIds.joinToString(",")})"
+            contentResolver
+                .query(uri, FILE_PROJECTION, selection, null, null, cancellationSignal)
+                ?.use { cursor ->
+                    val columnIndices = getColumnIndices(cursor)
+                    while (cursor.moveToNext()) {
+                        val file = createDeviceFileFromCursor(cursor, uri, columnIndices) ?: continue
+                        filesById[cursor.getLong(columnIndices.idIndex)] = file
+                    }
+                }
+        }
+        val results = ids.mapNotNull(filesById::get)
         cacheFiles(results)
         return results
     }
@@ -518,3 +602,26 @@ class FileSearchRepository(
         )
     }
 }
+
+/**
+ * Runs a blocking MediaStore read with a [CancellationSignal] that is cancelled with the calling
+ * coroutine, so a superseded keystroke's query stops instead of running to the end.
+ */
+internal suspend fun <T> withQueryCancellation(block: (CancellationSignal) -> T): T =
+    coroutineScope {
+        val signal = CancellationSignal()
+        val result =
+            async {
+                try {
+                    block(signal)
+                } catch (e: OperationCanceledException) {
+                    throw CancellationException("MediaStore query cancelled").apply { initCause(e) }
+                }
+            }
+        try {
+            result.await()
+        } catch (e: CancellationException) {
+            signal.cancel()
+            throw e
+        }
+    }
