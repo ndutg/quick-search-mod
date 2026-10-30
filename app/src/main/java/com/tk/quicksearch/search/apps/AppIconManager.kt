@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -166,12 +167,14 @@ fun rememberAppIcon(
 ): AppIconResult {
     val context = LocalContext.current
     val densityDpi = context.resources.displayMetrics.densityDpi
+    // One instance per icon; building UserAppPreferences on every recomposition showed up in typing profiles.
+    val userPreferences = remember(context) { UserAppPreferences(context.applicationContext) }
     val maskUnsupportedIconPackIcons =
         if (iconPackPackage == null) false
-        else UserAppPreferences(context).isIconPackUnsupportedIconMaskEnabled()
-    val iconOverride = UserAppPreferences(context).getAppIconOverride(packageName)
-    val bitmapSize = appIconBitmapSize(context, UserAppPreferences(context))
-    val includeMonochrome = UserAppPreferences(context).isThemedIconsEnabled()
+        else userPreferences.isIconPackUnsupportedIconMaskEnabled()
+    val iconOverride = userPreferences.getAppIconOverride(packageName)
+    val bitmapSize = appIconBitmapSize(context, userPreferences)
+    val includeMonochrome = userPreferences.isThemedIconsEnabled()
     val cacheEpoch by appIconCacheEpoch.collectAsState()
     fun cacheKeyFor(monochrome: Boolean) =
         buildCacheKey(

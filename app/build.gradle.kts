@@ -15,8 +15,8 @@ android {
         applicationId = "com.tk.quicksearch"
         minSdk = 24
         targetSdk = 37
-        versionCode = 102
-        versionName = "4.8"
+        versionCode = 103
+        versionName = "4.9"
         manifestPlaceholders["profileCaptureExported"] =
             providers.gradleProperty("profileCapture").orElse("false").get().toBoolean()
 
@@ -145,7 +145,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.profileinstaller)
@@ -154,12 +153,10 @@ dependencies {
     implementation(libs.okhttp)
     "standardImplementation"(libs.play.review.ktx)
     "standardImplementation"(libs.play.app.update)
-    "standardImplementation"(libs.play.app.update.ktx)
     implementation(libs.libphonenumber)
     implementation(libs.reorderable)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.kotlin.parcelize.runtime)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
@@ -167,9 +164,4 @@ dependencies {
     testImplementation(libs.org.json)
     androidTestImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 }

@@ -20,6 +20,9 @@ class TriggerPreferences(
         val snapshot = customizationStore.snapshot()
         return buildMap {
             snapshot.forEach { (key, value) ->
+                // The store also holds nicknames and other plain strings; skip them before the
+                // JSON parse, which throws (and is caught) for every non-trigger value.
+                if (!key.startsWith(KEY_TRIGGER_COMMON_PREFIX)) return@forEach
                 val trigger = readTriggerValue(value) ?: return@forEach
                 when {
                     key.startsWith(BasePreferences.KEY_TRIGGER_APP_SHORTCUT_PREFIX) ->
@@ -258,6 +261,8 @@ class TriggerPreferences(
         "${BasePreferences.KEY_TRIGGER_CONTACT_ACTION_PREFIX}$contactId$KEY_SEPARATOR${action.toSerializedString()}"
 
     private companion object {
+        // Shared by every BasePreferences.KEY_TRIGGER_*_PREFIX.
+        const val KEY_TRIGGER_COMMON_PREFIX = "trigger_"
         const val KEY_SEPARATOR = "|"
         const val KEY_WORD = "word"
         const val KEY_AFTER_SPACE = "afterSpace"

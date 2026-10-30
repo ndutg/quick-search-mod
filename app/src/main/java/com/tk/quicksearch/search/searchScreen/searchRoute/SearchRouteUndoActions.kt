@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -54,6 +56,8 @@ internal fun rememberRouteUndoActions(
     overlaySnackbarHostState: SnackbarHostState?,
 ): RouteUndoActions {
     val context = LocalContext.current
+    // Read at click time so the action lambdas stay stable across search state updates.
+    val latestUiState by rememberUpdatedState(uiState)
     val snackbarHostState = remember { SnackbarHostState() }
     val effectiveSnackbarHostState = overlaySnackbarHostState ?: snackbarHostState
     val snackbarScope = rememberCoroutineScope()
@@ -123,7 +127,7 @@ internal fun rememberRouteUndoActions(
     }
 
     val onHideAppWithUndo: (AppInfo) -> Unit = @Suppress("LocalContextGetResourceValueCall") { app ->
-        val isSearching = uiState.query.isNotBlank()
+        val isSearching = latestUiState.query.isNotBlank()
         viewModel.hideApp(app)
         val messageRes =
             if (isSearching) {
@@ -241,7 +245,7 @@ internal fun rememberRouteUndoActions(
         when (action) {
             OtherSearchItemAction.TOGGLE_PIN -> viewModel.toggleOtherSearchItemPin(itemId)
             OtherSearchItemAction.HIDE -> {
-                val wasPinned = OtherSearchItemRegistry.isPinned(itemId, uiState.pinnedNonAppItemOrder)
+                val wasPinned = OtherSearchItemRegistry.isPinned(itemId, latestUiState.pinnedNonAppItemOrder)
                 viewModel.excludeOtherSearchItem(itemId)
                 showUndoSnackbar(
                     context.getString(R.string.toast_excluded_from_results, context.getString(itemId.titleRes)),
