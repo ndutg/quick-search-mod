@@ -56,7 +56,7 @@ import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.shared.util.AppLanguageManager
 import com.tk.quicksearch.shared.util.hapticConfirm
-import com.tk.quicksearch.shared.util.isDefaultHomeApp
+import com.tk.quicksearch.shared.util.cachedDefaultHomeAppStatus
 import com.tk.quicksearch.shared.util.hapticToggle
 import kotlin.math.roundToInt
 
@@ -213,7 +213,8 @@ internal fun AppSettingResultRow(
     val isAppsPerRowSetting = setting.toggleKey == AppSettingsToggleKey.APPS_PER_ROW
     val isAppResultRowsSetting = setting.toggleKey == AppSettingsToggleKey.APP_RESULT_ROWS
     val context = LocalContext.current
-    val isDefaultLauncher = context.isDefaultHomeApp()
+    // Cached status: the live check queries RoleManager and writes a preference on every recomposition.
+    val isDefaultLauncher = context.cachedDefaultHomeAppStatus()
     val isOverlayBlockedByLauncher =
         setting.toggleKey == AppSettingsToggleKey.OVERLAY_MODE && isDefaultLauncher
     val isAutoCloseBlockedByLauncher =

@@ -200,6 +200,9 @@ internal fun SearchScreenStateManagement(
 
     val derivedState = rememberDerivedState(state)
 
+    // Read at click time so the contact long-press lambdas stay stable across state updates.
+    val latestState by rememberUpdatedState(state)
+
     fun getDefaultContactAction(
         contact: ContactInfo,
         isPrimary: Boolean,
@@ -214,7 +217,7 @@ internal fun SearchScreenStateManagement(
 
         return ContactButtonResolver.defaultCardAction(
             contactInfo = contact,
-            action = if (isPrimary) state.primaryContactButton else state.secondaryContactButton,
+            action = if (isPrimary) latestState.primaryContactButton else latestState.secondaryContactButton,
             isPrimary = isPrimary,
         )
     }
