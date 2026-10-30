@@ -94,6 +94,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.AppTheme
 import com.tk.quicksearch.search.core.BackgroundSource
@@ -168,7 +169,8 @@ fun WidgetsPanelScreen(
     val appWidgetHost = remember(appContext) { WidgetPanelHost(appContext, QUICK_SEARCH_WIDGET_HOST_ID) }
     val preferences = remember(appContext) { WidgetsPanelPreferences(appContext) }
     val notesPreferences = remember(appContext) { NotesPreferences(appContext) }
-    val wallpaperState = SearchScreenWallpaperLogic(state = uiState)
+    // The panel's opaque background covers Home, so it draws the wallpaper image itself.
+    val wallpaperState = SearchScreenWallpaperLogic(state = uiState, allowUnblurredSystemBackdrop = false)
     val imageBackgroundIsDark =
         remember(wallpaperState.imageBitmap, wallpaperState.usesWallpaperBackground) {
             if (wallpaperState.usesWallpaperBackground && wallpaperState.imageBitmap != null) {
@@ -265,13 +267,15 @@ fun WidgetsPanelScreen(
             ActivityResultContracts.StartActivityForResult(),
         ) { /* result intentionally ignored */ }
 
-    DisposableEffect(appWidgetHost) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(appWidgetHost, lifecycle) {
         appWidgetHost.isScrollInProgressProvider = { panelScrollState.isScrollInProgress }
         appWidgetHost.onWidgetContentChanged = { appWidgetId, hasContent ->
             widgetContentAvailable[appWidgetId] = hasContent
         }
-        appWidgetHost.startListeningShared()
+        val stopFollowingLifecycle = appWidgetHost.listenWhileStarted(lifecycle)
         onDispose {
+            stopFollowingLifecycle()
             appWidgetHost.release()
         }
     }

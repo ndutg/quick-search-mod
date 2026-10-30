@@ -19,6 +19,7 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
+import androidx.glance.LocalGlanceId
 import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -44,18 +45,10 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.color.ColorProvider as DayNightColorProvider
-import com.tk.quicksearch.search.data.preferences.AppGlanceItemSettings
-import com.tk.quicksearch.search.data.preferences.WidgetGlanceItemSettings
-import com.tk.quicksearch.search.data.preferences.newWidgetGlanceItems
 import com.tk.quicksearch.widgets.mediaControlsWidget.MediaControlsSnapshot
 import com.tk.quicksearch.widgets.noteWidget.NoteWidgetColors
-import com.tk.quicksearch.widgets.noteWidget.withNoteWidgetDefaults
 import com.tk.quicksearch.widgets.utils.WidgetBitmapUtils
 import com.tk.quicksearch.widgets.utils.WidgetLayoutUtils
-import com.tk.quicksearch.widgets.utils.WidgetVariant
-import com.tk.quicksearch.widgets.utils.enforceVariantConstraints
-import com.tk.quicksearch.widgets.utils.hasStoredWidgetConfig
-import com.tk.quicksearch.widgets.utils.toWidgetPreferences
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -121,24 +114,40 @@ class AtAGlanceWidget : GlanceAppWidget() {
     /**
      * Draws [appWidgetId] and hands it to the host right away. [update] alone waits for Glance's
      * session worker, which WorkManager can hold back for many seconds, so a saved setting or a
-     * changed row would otherwise show up late. The session still redraws the same state after.
+     * changed row would otherwise show up late. The session still redraws the same state after,
+     * unless [allSizes] is set: then every size the host reported is drawn, as the session would,
+     * and nothing is drawn (returning false) when it has reported none. Returns whether it drew.
      */
     @OptIn(ExperimentalGlanceApi::class)
     suspend fun drawNow(
         context: Context,
         appWidgetId: Int,
         glanceId: GlanceId,
-    ) {
+        allSizes: Boolean = false,
+    ): Boolean {
         val appWidgetManager = AppWidgetManager.getInstance(context)
         val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+        val sizes = if (allSizes) reportedSizes(options).ifEmpty { return false } else listOf(placedSize(options))
         // If this fails, the session's update still draws the widget, only later.
-        runCatching {
+        return runCatching {
             val state = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
-            val remoteViews =
-                runComposition(context, glanceId, options, listOf(placedSize(options)), state).first()
+            val remoteViews = runComposition(context, glanceId, options, sizes, state).first()
             appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
-        }
+        }.onFailure { AtAGlanceWidgetContent.forget(glanceId) }.isSuccess
     }
+
+    /** Every size the host reported for the placed widget (Android 12+), as the session draws them. */
+    private fun reportedSizes(options: Bundle): List<DpSize> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            @Suppress("DEPRECATION")
+            options.getParcelableArrayList<SizeF>(AppWidgetManager.OPTION_APPWIDGET_SIZES)
+                .orEmpty()
+                .filter { it.width > 0f && it.height > 0f }
+                .map { DpSize(it.width.dp, it.height.dp) }
+                .distinct()
+        } else {
+            emptyList()
+        }
 
     /** The placed size the host reported, or the default size before it reports one. */
     private fun placedSize(options: Bundle): DpSize {
@@ -167,19 +176,12 @@ class AtAGlanceWidget : GlanceAppWidget() {
         // bump, so the rows below are re-read on every refresh.
         val prefs = currentState<Preferences>()
         val context = LocalContext.current
-        val storedConfig = prefs.toWidgetPreferences(context).enforceVariantConstraints(WidgetVariant.AT_A_GLANCE)
-        val appItems = AppGlanceItemSettings(context)
-        // Until the configure screen saves, show the look and items it starts from.
-        val config =
-            if (prefs.hasStoredWidgetConfig()) {
-                storedConfig
-            } else {
-                storedConfig.withNoteWidgetDefaults().copy(glanceItems = newWidgetGlanceItems(appItems))
-            }
-        val items = WidgetGlanceItemSettings(config.glanceItems, appItems)
-        val snapshot = loadAtAGlanceWidgetSnapshot(context, items, config.glanceAppNotificationFilters)
+        val content = AtAGlanceWidgetContent.load(context, prefs)
+        AtAGlanceWidgetContent.composed(LocalGlanceId.current, content)
+        val config = content.config
+        val snapshot = content.snapshot
         AtAGlanceWidgetReceiver.scheduleRefresh(context, snapshot.nextChangeMillis)
-        val nowPlaying = loadAtAGlanceWidgetNowPlaying(context, items)
+        val nowPlaying = content.nowPlaying
         val isEmpty = snapshot.rows.isEmpty() && nowPlaying == null
 
         val size = LocalSize.current

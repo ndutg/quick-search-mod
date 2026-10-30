@@ -12,6 +12,7 @@ import com.tk.quicksearch.search.data.CalendarRepository
 import com.tk.quicksearch.search.data.preferences.CalendarPreferences
 import com.tk.quicksearch.search.data.ContactRepository
 import com.tk.quicksearch.search.data.FileSearchRepository
+import com.tk.quicksearch.search.data.withQueryCancellation
 import com.tk.quicksearch.search.data.NotesRepository
 import com.tk.quicksearch.search.data.userAppPreferences.UserAppPreferences
 import com.tk.quicksearch.search.deviceSettings.DeviceSettingsSearchHandler
@@ -290,6 +291,7 @@ class UnifiedSearchHandler(
                                                                 shouldSearch = canSearchFiles,
                                                                 search = {
                                                                         SectionSearchResultPayload.Files(
+                                                                                withQueryCancellation { cancellationSignal ->
                                                                                 fileSearchHandler.searchFiles(
                                                                                         fileQueryContext,
                                                                                         enabledFileTypes,
@@ -309,7 +311,9 @@ class UnifiedSearchHandler(
                                                                                         fuzzyCandidateLimit =
                                                                                                 fileFuzzyCandidateLimit,
                                                                                         extensionQuery = fileExtensionQuery,
+                                                                                        cancellationSignal = cancellationSignal,
                                                                                 )
+                                                                                }
                                                                         )
                                                                 },
                                                                 applyResult = { payload ->

@@ -264,6 +264,7 @@ internal fun OpenKeyboardAction(
     onVoiceClick: () -> Unit,
     showWallpaperBackground: Boolean,
     modifier: Modifier = Modifier,
+    showMic: Boolean = true,
 ) {
     val isDarkTheme = LocalAppIsDarkTheme.current
     val backgroundColor = AppColors.getSearchEngineSectionBackground(showWallpaperBackground)
@@ -300,19 +301,21 @@ internal fun OpenKeyboardAction(
                     fontWeight = FontWeight.Medium,
                 )
             }
-            Surface(
-                onClick = onVoiceClick,
-                modifier = Modifier.align(Alignment.CenterStart).padding(start = DesignTokens.SpacingXLarge).size(40.dp),
-                shape = CircleShape,
-                color = labelColor.copy(alpha = 0.1f),
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = MaterialSymbols.Mic,
-                        contentDescription = stringResource(R.string.desc_voice_search_icon),
-                        tint = labelColor,
-                        modifier = Modifier.size(DesignTokens.IconSize),
-                    )
+            if (showMic) {
+                Surface(
+                    onClick = onVoiceClick,
+                    modifier = Modifier.align(Alignment.CenterStart).padding(start = DesignTokens.SpacingXLarge).size(40.dp),
+                    shape = CircleShape,
+                    color = labelColor.copy(alpha = 0.1f),
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = MaterialSymbols.Mic,
+                            contentDescription = stringResource(R.string.desc_voice_search_icon),
+                            tint = labelColor,
+                            modifier = Modifier.size(DesignTokens.IconSize),
+                        )
+                    }
                 }
             }
         }

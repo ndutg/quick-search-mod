@@ -9,6 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.BuildConfig
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.core.SearchSection
@@ -91,15 +94,18 @@ internal fun rememberSearchHint(state: SearchUiState, isDefaultLauncher: Boolean
                     state.detectedAliasSearchSection == null
 
     var hintIndex by remember { mutableStateOf(0) }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(isDefaultHintMode, state.searchHintsEnabled) {
         if (!isDefaultHintMode || !state.searchHintsEnabled) {
             hintIndex = 0
             return@LaunchedEffect
         }
-        while (true) {
-            delay(SEARCH_HINT_ROTATION_INTERVAL_MS)
-            hintIndex = (hintIndex + 1) % defaultHints.size
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                delay(SEARCH_HINT_ROTATION_INTERVAL_MS)
+                hintIndex = (hintIndex + 1) % defaultHints.size
+            }
         }
     }
 

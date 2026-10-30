@@ -16,24 +16,24 @@ internal enum class AtAGlanceWidgetTint {
 /** The icon at the start of an At a Glance widget row. */
 internal sealed interface AtAGlanceWidgetIcon {
     /** A Material icon. */
-    class Vector(
+    data class Vector(
         val vector: ImageVector,
         val tint: AtAGlanceWidgetTint = AtAGlanceWidgetTint.TITLE,
     ) : AtAGlanceWidgetIcon
 
     /** A drawable of the app's own. */
-    class Drawable(
+    data class Drawable(
         @DrawableRes val resId: Int,
         val tint: AtAGlanceWidgetTint = AtAGlanceWidgetTint.TITLE,
     ) : AtAGlanceWidgetIcon
 
     /** An app's own icon, shown untinted, falling back to a generic app icon. */
-    class App(
+    data class App(
         val packageName: String,
     ) : AtAGlanceWidgetIcon
 
     /** Home's low battery icon: an outline, red when [isCritical], with a red fill tracking [percent]. */
-    class Battery(
+    data class Battery(
         val percent: Int,
         val isCritical: Boolean,
     ) : AtAGlanceWidgetIcon
@@ -53,7 +53,7 @@ internal enum class AtAGlanceWidgetPillStyle {
     ERROR,
 }
 
-internal class AtAGlanceWidgetPill(
+internal data class AtAGlanceWidgetPill(
     val text: String,
     val style: AtAGlanceWidgetPillStyle = AtAGlanceWidgetPillStyle.NEUTRAL,
 )
@@ -76,7 +76,7 @@ internal enum class AtAGlanceWidgetButtonStyle {
     OUTLINED_CHIP,
 }
 
-internal class AtAGlanceWidgetButton(
+internal data class AtAGlanceWidgetButton(
     val tap: AtAGlanceWidgetTap,
     val style: AtAGlanceWidgetButtonStyle,
     val label: String,
@@ -146,7 +146,7 @@ internal enum class AtAGlanceWidgetDismissType {
     LOW_STORAGE,
 }
 
-internal class AtAGlanceWidgetTap(
+internal data class AtAGlanceWidgetTap(
     val type: AtAGlanceWidgetTapType,
     val key: String? = null,
     val packageName: String? = null,
@@ -155,8 +155,8 @@ internal class AtAGlanceWidgetTap(
     val extra: String? = null,
 )
 
-/** One At a Glance item as the widget draws it. */
-internal class AtAGlanceWidgetRow(
+/** One At a Glance item as the widget draws it; compared by value to skip redraws that would change nothing. */
+internal data class AtAGlanceWidgetRow(
     /** Stable across refreshes, so the launcher keeps the scroll position. */
     val key: String,
     val icon: AtAGlanceWidgetIcon,

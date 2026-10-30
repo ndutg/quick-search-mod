@@ -124,7 +124,9 @@ fun WallpaperCard(
                     initialValue = null,
                     key1 = customImageUri,
             ) {
-                value = WallpaperUtils.getOverlayCustomImageBitmap(context, customImageUri)
+                value =
+                        WallpaperUtils.getCachedOverlayCustomImageBitmap(customImageUri)
+                                ?: WallpaperUtils.getOverlayCustomImageBitmap(context, customImageUri)
             }
 
     val canDisplaySystemWallpaper = hasWallpaperPermission || canShowSystemWallpaperBackdrop

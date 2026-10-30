@@ -226,6 +226,8 @@ internal fun SearchScreenBottomChrome(
                 OpenKeyboardAction(
                         text = openKeyboardText,
                         onVoiceClick = onVoiceClick,
+                        // The search bar's own mic already covers voice search.
+                        showMic = !state.searchBarStyle.showMicIcon,
                         showWallpaperBackground = state.showWallpaperBackground,
                         // Keep the Open Keyboard surface in the same vertical-swipe path as
                         // the fixed search field and engine strip. This routes configured

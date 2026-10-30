@@ -53,6 +53,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.apps.appLock.AppLockGate
 import com.tk.quicksearch.search.apps.notificationDots.NotificationDotsPermission
@@ -165,10 +168,14 @@ internal fun rememberNotificationGlances(enabled: Boolean): NotificationGlances 
 
     var nowMillis by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val ticking = timers.isNotEmpty() || ongoingCalls.any { it.startTime != null }
+    val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(ticking) {
-        while (ticking) {
-            nowMillis = System.currentTimeMillis()
-            delay(1_000L - nowMillis % 1_000L)
+        if (!ticking) return@LaunchedEffect
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                nowMillis = System.currentTimeMillis()
+                delay(1_000L - nowMillis % 1_000L)
+            }
         }
     }
     return NotificationGlances(

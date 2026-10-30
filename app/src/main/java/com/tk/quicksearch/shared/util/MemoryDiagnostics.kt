@@ -48,7 +48,11 @@ object MemoryDiagnostics {
         application.registerComponentCallbacks(MemoryCallbacks)
         recordAsync("diagnostics-installed")
         writer.scheduleAtFixedRate(
-            { recordSnapshot("periodic") },
+            {
+                // The launcher process lives on in the background, where memory only changes
+                // through events already recorded; sampling there would just spend battery.
+                if (resumedActivityCount.get() > 0) recordSnapshot("periodic")
+            },
             INITIAL_SAMPLE_DELAY_SECONDS,
             SAMPLE_INTERVAL_SECONDS,
             TimeUnit.SECONDS,

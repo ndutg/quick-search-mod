@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tk.quicksearch.R
 import com.tk.quicksearch.search.data.preferences.BatteryPreferences
@@ -150,7 +151,7 @@ private object ChargeRateEstimator {
     }
 }
 
-/** Listens to the battery broadcast while [enabled] and either battery row is turned on. */
+/** Listens to the battery broadcast while [enabled], visible, and either battery row is turned on. */
 @Composable
 internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
     val context = LocalContext.current
@@ -174,12 +175,13 @@ internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    DisposableEffect(appContext, enabled, refreshKey) {
+    // Battery broadcasts arrive every few seconds while charging, so listen only while home is visible.
+    LifecycleStartEffect(appContext, enabled, refreshKey) {
         showLowBattery = preferences.isShowLowBatteryEnabled()
         showCharging = preferences.isShowChargingEnabled()
         if (!enabled || (!showLowBattery && !showCharging)) {
             battery = null
-            return@DisposableEffect onDispose {}
+            return@LifecycleStartEffect onStopOrDispose {}
         }
         fun updateBattery(intent: Intent?) {
             val status = BatteryStatus.from(intent, batteryManager) ?: return
@@ -218,7 +220,7 @@ internal fun rememberBatteryGlances(enabled: Boolean): BatteryGlances {
             }.getOrNull()
         updateBattery(sticky)
         updatePowerSave()
-        onDispose { runCatching { appContext.unregisterReceiver(receiver) } }
+        onStopOrDispose { runCatching { appContext.unregisterReceiver(receiver) } }
     }
 
     val current = battery

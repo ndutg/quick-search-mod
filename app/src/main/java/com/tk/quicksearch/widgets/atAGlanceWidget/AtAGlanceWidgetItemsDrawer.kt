@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,14 +28,17 @@ import com.tk.quicksearch.settings.shared.SettingsCardItem
 import com.tk.quicksearch.settings.shared.ProvideSettingsColors
 import com.tk.quicksearch.settings.shared.SettingsNavigationRow
 import com.tk.quicksearch.settings.shared.SettingsScreenBackground
+import com.tk.quicksearch.settings.shared.SettingsToggleRow
 import com.tk.quicksearch.shared.ui.components.AppBottomSheet
 import com.tk.quicksearch.shared.ui.icons.MaterialSymbols
+import com.tk.quicksearch.shared.ui.theme.AppColors
 import com.tk.quicksearch.shared.ui.theme.DesignTokens
 import com.tk.quicksearch.widgets.utils.WidgetPreferences
 
 /**
- * The At a Glance widget's At a Glance Items row. It opens the At a Glance toggles in a drawer, so they read
- * as this widget's own rather than the app's settings page; changes save with the widget.
+ * The At a Glance widget's At a Glance Items row and its empty-date toggle, in one card. The row opens the
+ * At a Glance toggles in a drawer, so they read as this widget's own rather than the app's settings page;
+ * changes save with the widget.
  */
 @Composable
 fun AtAGlanceWidgetItemsSection(
@@ -57,6 +61,14 @@ fun AtAGlanceWidgetItemsSection(
                     horizontal = DesignTokens.SpacingXXLarge,
                     vertical = DesignTokens.SpacingLarge,
                 ),
+        )
+        HorizontalDivider(color = AppColors.SettingsDivider)
+        // Whether the widget shows today's date or stays blank when there are no items.
+        SettingsToggleRow(
+            title = stringResource(R.string.widget_toggle_show_empty_date),
+            checked = state.showEmptyDate,
+            onCheckedChange = { onStateChange(state.copy(showEmptyDate = it)) },
+            isLastItem = true,
         )
     }
     if (showDrawer) {
