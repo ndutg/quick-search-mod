@@ -352,7 +352,7 @@ internal fun NowPlayingRow(
                 .padding(
                     start = NowPlayingRowStartPadding,
                     top = DesignTokens.SpacingMedium,
-                    bottom = DesignTokens.SpacingSmall,
+                    bottom = DesignTokens.SpacingMedium,
                 ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.SpacingMedium),
