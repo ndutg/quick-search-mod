@@ -1,11 +1,6 @@
-- Two-finger swipe gestures
-- New AI provider: Opencode
-- Customize the Home search bar (in Appearance settings)
-- Open the All Apps drawer with gestures
-- Search a file extension (for example, .pdf) to see all files of that type
-- Long press any app to open it in Google Play
-- The Dictionary tool no longer needs an API key
-- Option to hide the status bar
-- Add a note to a notification directly by searching for "Create Notification Note"
-- Triggering a section with its alias now shows your files, contacts, and settings without typing a query
-- Bug fixes, performance improvements and UI enhancements
+- Official support for Android 17
+- Compact layout: a card-less design that fits more content on screen (enable in Appearance settings)
+- At a Glance widget for any launcher, working just like At a Glance on the Home screen
+- Mic button in the search bar for voice typing (enable in Appearance settings)
+- Support for Android Private Space
+- Bug fixes and performance improvements
