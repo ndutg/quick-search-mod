@@ -540,6 +540,7 @@
     <string name="settings_folders_toggle">Folders</string>
     <string name="settings_file_previews_toggle">File Previews</string>
     <string name="settings_file_previews_description">Preview images and PDFs before opening them.</string>
+    <string name="file_preview_page_counter" translatable="false">%1$d / %2$d</string>
     <string name="settings_refresh_files_disabled">Files search is disabled, cannot refresh files data</string>
     <string name="settings_refresh_files_title">Refresh Files</string>
     <string name="settings_system_files_toggle">System Files</string>
