@@ -824,6 +824,8 @@
     <string name="settings_overlay_source_custom_save_failed">Tidak dapat menggunakan gambar tersebut.</string>
     <string name="settings_overlay_source_edit_custom">Edit gambar kustom</string>
     <string name="settings_overlay_source_needs_permission">Memerlukan izin</string>
+    <string name="settings_overlay_source_remove_custom">Hapus gambar kustom</string>
+    <string name="settings_overlay_source_live_wallpaper_unsupported">Wallpaper live tidak didukung</string>
     <string name="settings_overlay_source_wallpaper">Wallpaper</string>
     <string name="settings_overlay_theme_tone_darker">Lebih Gelap</string>
     <string name="settings_overlay_theme_tone_lighter">Lebih Terang</string>
@@ -1351,6 +1353,7 @@
     <string name="tasker_not_installed">Tasker tidak terpasang</string>
     <string name="tasker_broadcast_failed">Tidak dapat mengirim broadcast Tasker</string>
     <string name="app_menu_usage_today">Digunakan selama %1$s hari ini · %2$s</string>
+    <string name="app_menu_version">v%1$s</string>
     <plurals name="app_menu_opened_count"><item quantity="one">%d kali dibuka</item><item quantity="other">%d kali dibuka</item></plurals>
     <plurals name="app_menu_usage_hours"><item quantity="one">%d jam</item><item quantity="other">%d jam</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d mnt</item><item quantity="other">%d mnt</item></plurals>

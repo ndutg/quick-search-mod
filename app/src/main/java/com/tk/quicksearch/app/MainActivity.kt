@@ -84,6 +84,10 @@ open class MainActivity : FragmentActivity() {
             "com.tk.quicksearch.action.OPEN_NOTIFICATION_HISTORY"
         /** Public intent action that opens the Manage Apps screen. */
         const val ACTION_OPEN_MANAGE_APPS = "com.tk.quicksearch.action.OPEN_MANAGE_APPS"
+        /** Public intent action that opens the overlay, even when Overlay Mode is off. */
+        const val ACTION_OPEN_OVERLAY = "com.tk.quicksearch.action.OPEN_OVERLAY"
+        /** Public intent action that opens full-screen search, even when Overlay Mode is on. */
+        const val ACTION_OPEN_FULL_SCREEN = "com.tk.quicksearch.action.OPEN_FULL_SCREEN"
         const val ACTION_SEARCH_TARGET_SHORTCUT = "com.tk.quicksearch.action.SEARCH_TARGET_SHORTCUT"
         const val EXTRA_SHORTCUT_QUERY = "com.tk.quicksearch.extra.SHORTCUT_QUERY"
         const val EXTRA_SHORTCUT_TARGET_ENGINE = "com.tk.quicksearch.extra.SHORTCUT_TARGET_ENGINE"
@@ -115,6 +119,8 @@ open class MainActivity : FragmentActivity() {
             voiceSearchHandler.processVoiceInputResult(result, searchViewModel::onQueryChange)
         }
     private val navigationRequest = mutableStateOf<NavigationRequest?>(null)
+    // True when the overlay handed off to this activity, so leaving goes back to the overlay.
+    private val returnToOverlay = mutableStateOf(false)
     private var pendingSearchTargetShortcut: Pair<String, SearchTarget>? = null
     private var pendingContactActionPickerRequest: PendingContactActionPickerRequest? = null
     private var hasMainUiActivated = false
@@ -183,6 +189,7 @@ open class MainActivity : FragmentActivity() {
             startupCoordinator.scheduleAfterFirstDraw(window)
 
             initializeVoiceSearchHandler()
+            updateReturnToOverlay(intent)
             handleIntent(intent)
         } finally {
             Trace.endSection()
@@ -195,6 +202,7 @@ open class MainActivity : FragmentActivity() {
         if (launchOverlayIfNeeded(intent)) {
             return
         }
+        updateReturnToOverlay(intent)
         handleIntent(intent)
         if (hasMainUiActivated) {
             maybeExecutePendingSearchTargetShortcut()
@@ -263,11 +271,18 @@ open class MainActivity : FragmentActivity() {
         userPreferences = UserAppPreferences(this)
     }
 
+    private fun updateReturnToOverlay(intent: Intent?) {
+        returnToOverlay.value =
+            intent?.getBooleanExtra(OverlayModeController.EXTRA_RETURN_TO_OVERLAY, false) ?: false
+    }
+
     private fun launchOverlayIfNeeded(intent: Intent?): Boolean {
         val forceNormalLaunch =
-            intent?.getBooleanExtra(OverlayModeController.EXTRA_FORCE_NORMAL_LAUNCH, false)
-                ?: false
-        if (!forceNormalLaunch && userPreferences.isOverlayModeEnabled()) {
+            intent?.action == ACTION_OPEN_FULL_SCREEN ||
+                intent?.getBooleanExtra(OverlayModeController.EXTRA_FORCE_NORMAL_LAUNCH, false)
+                    ?: false
+        val forceOverlayLaunch = intent?.action == ACTION_OPEN_OVERLAY
+        if (!forceNormalLaunch && (forceOverlayLaunch || userPreferences.isOverlayModeEnabled())) {
             val isVoiceShortcutLaunch = intent?.action == ACTION_VOICE_SEARCH_SHORTCUT
             val isWidgetsPanelLaunch = intent?.action == ACTION_OPEN_WIDGETS_PANEL
             if (isWidgetsPanelLaunch) return false
@@ -429,8 +444,9 @@ open class MainActivity : FragmentActivity() {
                         onSearchBackPressed = ::handleSearchBackPressed,
                         navigationRequest = navigationRequest.value,
                         onNavigationRequestHandled = { navigationRequest.value = null },
+                        returnToOverlay = returnToOverlay.value,
                         onFinishActivity = {
-                            if (userPreferences.isOverlayModeEnabled()) {
+                            if (returnToOverlay.value) {
                                 OverlayModeController.startOverlay(this@MainActivity)
                             }
                             finish()
