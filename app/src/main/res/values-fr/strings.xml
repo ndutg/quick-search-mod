@@ -820,6 +820,8 @@
 <string name="settings_overlay_source_custom_save_failed">Impossible d\'utiliser cette image.</string>
 <string name="settings_overlay_source_edit_custom">Modifier l\'image personnalisée</string>
 <string name="settings_overlay_source_needs_permission">Nécessite une autorisation</string>
+<string name="settings_overlay_source_remove_custom">Supprimer l’image personnalisée</string>
+<string name="settings_overlay_source_live_wallpaper_unsupported">Fond d’écran animé non pris en charge</string>
 <string name="settings_overlay_source_wallpaper">Fond d\'écran</string>
 <string name="settings_overlay_theme_tone_darker">Plus sombre</string>
 <string name="settings_overlay_theme_tone_lighter">Plus clair</string>
@@ -1355,6 +1357,7 @@
 <string name="icon_picker_no_icon_packs">Aucun pack d\'icônes n\'est installé pour modifier l\'icône de l\'application.</string>
     <string name="icon_picker_download_icon_packs">Télécharger</string>
     <string name="app_menu_usage_today">%1$s aujourd’hui · Ouverte %2$s</string>
+    <string name="app_menu_version">v%1$s</string>
     <plurals name="app_menu_opened_count"><item quantity="one">%d fois</item><item quantity="other">%d fois</item></plurals>
     <plurals name="app_menu_usage_hours"><item quantity="one">%d h</item><item quantity="other">%d h</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="other">%d min</item></plurals>

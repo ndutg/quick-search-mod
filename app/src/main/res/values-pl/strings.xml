@@ -848,6 +848,8 @@
     <string name="settings_overlay_source_custom_save_failed">Nie udało się użyć tego obrazu.</string>
     <string name="settings_overlay_source_edit_custom">Edytuj własny obraz</string>
     <string name="settings_overlay_source_needs_permission">Wymaga uprawnienia</string>
+    <string name="settings_overlay_source_remove_custom">Usuń własny obraz</string>
+    <string name="settings_overlay_source_live_wallpaper_unsupported">Animowana tapeta nie jest obsługiwana</string>
     <string name="settings_overlay_source_wallpaper">Tapeta</string>
     <string name="settings_overlay_theme_tone_darker">Ciemniejszy</string>
     <string name="settings_overlay_theme_tone_lighter">Jaśniejszy</string>
@@ -1386,6 +1388,7 @@ www.google.com/search?q={{query}}</string>
     <string name="tasker_not_installed">Tasker nie jest zainstalowany</string>
     <string name="tasker_broadcast_failed">Nie udało się wysłać komunikatu rozgłoszeniowego Taskera</string>
     <string name="app_menu_usage_today">Czas użycia dzisiaj: %1$s · %2$s</string>
+    <string name="app_menu_version">v%1$s</string>
     <plurals name="app_menu_opened_count"><item quantity="one">%d otwarcie</item><item quantity="few">%d otwarcia</item><item quantity="many">%d otwarć</item><item quantity="other">%d otwarcia</item></plurals>
     <plurals name="app_menu_usage_hours"><item quantity="one">%d godz.</item><item quantity="few">%d godz.</item><item quantity="many">%d godz.</item><item quantity="other">%d godz.</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d min</item><item quantity="few">%d min</item><item quantity="many">%d min</item><item quantity="other">%d min</item></plurals>

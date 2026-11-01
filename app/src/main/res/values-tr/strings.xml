@@ -819,6 +819,8 @@
 <string name="settings_overlay_source_custom_save_failed">Bu görsel kullanılamadı.</string>
 <string name="settings_overlay_source_edit_custom">Özel görseli düzenle</string>
 <string name="settings_overlay_source_needs_permission">İzin gerekli</string>
+<string name="settings_overlay_source_remove_custom">Özel resmi kaldır</string>
+<string name="settings_overlay_source_live_wallpaper_unsupported">Canlı duvar kağıdı desteklenmiyor</string>
 <string name="settings_overlay_source_wallpaper">Duvar kağıdı</string>
 <string name="settings_overlay_theme_tone_darker">Daha koyu</string>
 <string name="settings_overlay_theme_tone_lighter">Daha açık</string>
@@ -1354,6 +1356,7 @@
 <string name="icon_picker_no_icon_packs">Uygulama simgesini değiştirmek için yüklü simge paketi yok.</string>
 <string name="icon_picker_download_icon_packs">İndir</string>
     <string name="app_menu_usage_today">Bugün %1$s kullanıldı · %2$s kez açıldı</string>
+    <string name="app_menu_version">v%1$s</string>
     <plurals name="app_menu_opened_count"><item quantity="one">%d kez</item><item quantity="other">%d kez</item></plurals>
     <plurals name="app_menu_usage_hours"><item quantity="one">%d sa.</item><item quantity="other">%d sa.</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d dk.</item><item quantity="other">%d dk.</item></plurals>

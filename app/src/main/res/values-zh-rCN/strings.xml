@@ -810,6 +810,8 @@
     <string name="settings_overlay_source_custom_save_failed">无法使用该图片。</string>
     <string name="settings_overlay_source_edit_custom">编辑自定义图片</string>
     <string name="settings_overlay_source_needs_permission">需要获取权限</string>
+    <string name="settings_overlay_source_remove_custom">移除自定义图片</string>
+    <string name="settings_overlay_source_live_wallpaper_unsupported">不支持动态壁纸</string>
     <string name="settings_overlay_source_wallpaper">使用桌面壁纸</string>
     <string name="settings_overlay_theme_tone_darker">更深</string>
     <string name="settings_overlay_theme_tone_lighter">更浅</string>
@@ -1343,6 +1345,7 @@
     <string name="icon_picker_no_icon_packs">未安装可用于更改应用图标的图标包。</string>
     <string name="icon_picker_download_icon_packs">下载</string>
     <string name="app_menu_usage_today">今天已使用 %1$s · 已打开 %2$s</string>
+    <string name="app_menu_version">v%1$s</string>
     <plurals name="app_menu_opened_count"><item quantity="one">%d 次</item><item quantity="other">%d 次</item></plurals>
     <plurals name="app_menu_usage_hours"><item quantity="one">%d 小时</item><item quantity="other">%d 小时</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d 分钟</item><item quantity="other">%d 分钟</item></plurals>

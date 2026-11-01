@@ -840,6 +840,8 @@
 <string name="settings_overlay_source_custom_save_failed">Не удалось использовать это изображение.</string>
 <string name="settings_overlay_source_edit_custom">Изменить свое изображение</string>
 <string name="settings_overlay_source_needs_permission">Требуется разрешение</string>
+<string name="settings_overlay_source_remove_custom">Удалить своё изображение</string>
+<string name="settings_overlay_source_live_wallpaper_unsupported">Живые обои не поддерживаются</string>
 <string name="settings_overlay_source_wallpaper">Обои</string>
 <string name="settings_overlay_theme_tone_darker">Темнее</string>
 <string name="settings_overlay_theme_tone_lighter">Светлее</string>
@@ -1379,6 +1381,7 @@
 <string name="icon_picker_no_icon_packs">Для изменения значка приложения не установлены пакеты значков.</string>
 <string name="icon_picker_download_icon_packs">Скачать</string>
     <string name="app_menu_usage_today">%1$s сегодня · Открыто %2$s</string>
+    <string name="app_menu_version">v%1$s</string>
     <plurals name="app_menu_opened_count"><item quantity="one">%d раз</item><item quantity="other">%d раз</item></plurals>
     <plurals name="app_menu_usage_hours"><item quantity="one">%d ч</item><item quantity="other">%d ч</item></plurals>
     <plurals name="app_menu_usage_minutes"><item quantity="one">%d мин</item><item quantity="other">%d мин</item></plurals>
