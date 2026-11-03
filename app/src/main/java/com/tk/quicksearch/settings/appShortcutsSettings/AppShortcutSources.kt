@@ -133,8 +133,8 @@ fun queryAppActivitiesForPackage(
             val label =
                 activityInfo
                     .loadLabel(packageManager)
-                    ?.toString()
-                    ?.takeIf { it.isNotBlank() }
+                    .toString()
+                    .takeIf { it.isNotBlank() }
                     ?: resolvedClassName.substringAfterLast(".")
             AppActivitySource(
                 packageName = packageName,
@@ -261,8 +261,8 @@ private fun ResolveInfo.resolveLabel(packageManager: PackageManager): String {
     val packageName = activityInfo.packageName
     return (
         loadLabel(packageManager)
-            ?.toString()
-            ?.takeIf { it.isNotBlank() }
+            .toString()
+            .takeIf { it.isNotBlank() }
             ?: formatPackageNameAsLabel(packageName)
     )
 }
@@ -279,7 +279,7 @@ private fun resolveAppLabel(
     val appInfo = runCatching { packageManager.getApplicationInfo(packageName, 0) }.getOrNull()
     return appInfo
         ?.let { info ->
-            runCatching { packageManager.getApplicationLabel(info)?.toString() }.getOrNull()
+            runCatching { packageManager.getApplicationLabel(info).toString() }.getOrNull()
         }?.takeIf { it.isNotBlank() }
         ?: formatPackageNameAsLabel(packageName)
 }
