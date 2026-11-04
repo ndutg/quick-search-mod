@@ -361,11 +361,10 @@ internal fun AppGrid(
                     { app: AppInfo ->
                         AppState(
                                 hasNickname = !getAppNickname(app.launchCountKey()).isNullOrBlank(),
-                                hasTrigger = getAppTrigger(app.packageName)?.word?.isNotBlank() == true,
+                                hasTrigger = getAppTrigger(app.launchCountKey())?.word?.isNotBlank() == true,
                                 isPinned = pinnedPackageNames.contains(app.launchCountKey()),
                                 showUninstall =
                                         !app.isSystemApp &&
-                                                app.userHandleId == null &&
                                                 app.packageName != context.packageName,
                                 showAppLabel = showAppLabels,
                                 isOverlayPresentation = isOverlayPresentation,
