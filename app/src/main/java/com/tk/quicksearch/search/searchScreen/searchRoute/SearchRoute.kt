@@ -5,7 +5,6 @@ import com.tk.quicksearch.search.searchScreen.forPinnedGlanceOnly
 import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.widget.Toast
@@ -13,7 +12,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import com.tk.quicksearch.search.core.intentHelpers.FileIntents
+import com.tk.quicksearch.shared.ui.components.AppUndoSnackbarHost
 import com.tk.quicksearch.shared.ui.components.LocalPopupOverlayContent
+import com.tk.quicksearch.shared.ui.components.LocalShowUndoSnackbar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -48,7 +49,6 @@ import com.tk.quicksearch.search.core.SearchEngine
 import com.tk.quicksearch.search.core.SearchTarget
 import com.tk.quicksearch.search.data.preferences.SwipeGestureAction
 import com.tk.quicksearch.search.data.preferences.HomeSwipeGestureAction
-import com.tk.quicksearch.search.appSettings.AppSettingResultAction
 import com.tk.quicksearch.search.appSettings.AppSettingsDestination
 import com.tk.quicksearch.search.appSettings.LocalOpenAppSettingDestination
 import com.tk.quicksearch.search.appSettings.LocalAppSettingInlineControls
@@ -494,7 +494,7 @@ fun SearchRoute(
             onMovePinnedCalendarEvent = viewModel::movePinnedCalendarEvent,
             onExcludeCalendarEvent = onExcludeCalendarEventWithUndo,
             onIncludeCalendarEvent = viewModel::removeExcludedCalendarEvent,
-            onArchiveTodayCalendarEvent = { event -> viewModel.archiveTodayCalendarEvent(event.eventId) },
+            onArchiveTodayCalendarEvent = viewModel::markTodayCalendarEventDone,
             onNoteClick = { note ->
                 viewModel.trackRecentNoteTap(note)
                 NotesNavigationMemory.setPendingNoteId(note.noteId)
@@ -505,6 +505,7 @@ fun SearchRoute(
             onMovePinnedNote = viewModel::movePinnedNote,
             onDeleteNote = onDeleteNoteWithUndo,
             reminderActions = reminderActions,
+            onBookmarkClick = viewModel::openBookmark,
             onPinFile = viewModel::pinFile,
             onUnpinFile = viewModel::unpinFile,
             onMovePinnedFile = viewModel::movePinnedFile,
@@ -733,17 +734,14 @@ fun SearchRoute(
         }
 
         if (overlaySnackbarHostState == null) {
-            ExcludeUndoSnackbarHost(
+            AppUndoSnackbarHost(
                 hostState = snackbarHostState,
                 modifier =
-                    Modifier
-                        .align(Alignment.BottomCenter)
-                        .imePadding()
-                        .padding(
-                            start = DesignTokens.SpacingLarge,
-                            end = DesignTokens.SpacingLarge,
-                            bottom = DesignTokens.SpacingHuge,
-                        ),
+                    Modifier.align(Alignment.BottomCenter).imePadding().padding(
+                        start = DesignTokens.SpacingLarge,
+                        end = DesignTokens.SpacingLarge,
+                        bottom = DesignTokens.SpacingHuge,
+                    ),
             )
         }
 
@@ -778,8 +776,8 @@ fun SearchRoute(
             speedBumpApp = speedBumpApp,
             onSpeedBumpOpen = { app ->
                 speedBumpApp = null
-                SpeedBumpLaunchWatcher.allow(app.packageName)
                 runAfterAppUnlock(app.packageName, app.appName) {
+                    SpeedBumpLaunchWatcher.allowLaunchFromQuickSearch(app.packageName)
                     viewModel.launchApp(app, context)
                 }
             },
