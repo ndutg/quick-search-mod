@@ -22,6 +22,7 @@ internal val GESTURE_APP_SETTINGS: List<Triple<String, Int, AppSettingsDestinati
         Triple("app_settings_gesture_close_keyboard", R.string.settings_gesture_close_keyboard, AppSettingsDestination.GESTURE_CLOSE_KEYBOARD),
         Triple("app_settings_gesture_notch_single_tap", R.string.settings_notch_single_tap_search_title, AppSettingsDestination.GESTURE_NOTCH_SINGLE_TAP),
         Triple("app_settings_gesture_notch_double_tap", R.string.settings_notch_double_tap_search_title, AppSettingsDestination.GESTURE_NOTCH_DOUBLE_TAP),
+        Triple("app_settings_gesture_notch_long_press", R.string.settings_notch_long_press_search_title, AppSettingsDestination.GESTURE_NOTCH_LONG_PRESS),
     )
 
 internal fun Context.isTaskerInstalled(): Boolean =
@@ -30,12 +31,14 @@ internal fun Context.isTaskerInstalled(): Boolean =
 internal val AppSettingsDestination.isNotchGestureDestination: Boolean
     get() =
         this == AppSettingsDestination.GESTURE_NOTCH_SINGLE_TAP ||
-            this == AppSettingsDestination.GESTURE_NOTCH_DOUBLE_TAP
+            this == AppSettingsDestination.GESTURE_NOTCH_DOUBLE_TAP ||
+            this == AppSettingsDestination.GESTURE_NOTCH_LONG_PRESS
 
 internal val AppSettingsDestination.isGestureDestination: Boolean
     get() = GESTURE_APP_SETTINGS.any { it.third == this }
 
-internal fun searchSectionToggleId(section: SearchSection): String =
+/** Null for sections without a settings toggle (Noted). */
+internal fun searchSectionToggleId(section: SearchSection): String? =
     when (section) {
         SearchSection.APPS -> "app_toggle_search_apps"
         SearchSection.APP_SHORTCUTS -> "app_toggle_search_app_shortcuts"
@@ -47,9 +50,10 @@ internal fun searchSectionToggleId(section: SearchSection): String =
         SearchSection.NOTES -> "app_toggle_search_notes"
         SearchSection.BOOKMARKS -> "app_toggle_search_bookmarks"
         SearchSection.APP_SETTINGS -> "app_toggle_search_app_settings"
+        SearchSection.NOTED -> null
     }
 
-internal fun searchSectionToggleTitleRes(section: SearchSection): Int =
+internal fun searchSectionToggleTitleRes(section: SearchSection): Int? =
     when (section) {
         SearchSection.APPS -> R.string.search_section_apps_toggle_title
         SearchSection.APP_SHORTCUTS -> R.string.search_section_app_shortcuts_toggle_title
@@ -61,9 +65,10 @@ internal fun searchSectionToggleTitleRes(section: SearchSection): Int =
         SearchSection.NOTES -> R.string.search_section_notes_toggle_title
         SearchSection.BOOKMARKS -> R.string.search_section_bookmarks_toggle_title
         SearchSection.APP_SETTINGS -> R.string.search_section_app_settings_toggle_title
+        SearchSection.NOTED -> null
     }
 
-internal fun searchSectionToggleDescriptionRes(section: SearchSection): Int =
+internal fun searchSectionToggleDescriptionRes(section: SearchSection): Int? =
     when (section) {
         SearchSection.APPS -> R.string.search_section_apps_toggle_desc
         SearchSection.APP_SHORTCUTS -> R.string.search_section_app_shortcuts_toggle_desc
@@ -75,16 +80,18 @@ internal fun searchSectionToggleDescriptionRes(section: SearchSection): Int =
         SearchSection.NOTES -> R.string.search_section_notes_toggle_desc
         SearchSection.BOOKMARKS -> R.string.search_section_bookmarks_toggle_desc
         SearchSection.APP_SETTINGS -> R.string.search_section_app_settings_toggle_desc
+        SearchSection.NOTED -> null
     }
 
-/** One toggle row per search section, in registry order. */
+/** One toggle row per search section that has a settings toggle, in registry order. */
 internal fun Context.searchSectionToggleRows(): List<AppSettingResult> =
-    SearchSectionRegistry.orderedDefinitions.map { definition ->
+    SearchSectionRegistry.orderedDefinitions.mapNotNull { definition ->
+        val toggleKey = definition.appSettingsToggleKey ?: return@mapNotNull null
         AppSettingResult(
-            id = searchSectionToggleId(definition.section),
-            title = getString(searchSectionToggleTitleRes(definition.section)),
-            description = getString(searchSectionToggleDescriptionRes(definition.section)),
+            id = searchSectionToggleId(definition.section) ?: return@mapNotNull null,
+            title = getString(searchSectionToggleTitleRes(definition.section) ?: return@mapNotNull null),
+            description = getString(searchSectionToggleDescriptionRes(definition.section) ?: return@mapNotNull null),
             action = AppSettingResultAction.TOGGLE,
-            toggleKey = definition.appSettingsToggleKey,
+            toggleKey = toggleKey,
         )
     }
