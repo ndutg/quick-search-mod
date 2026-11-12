@@ -628,6 +628,8 @@
     <string name="error_open_calendar_event">Unable to open calendar event</string>
     <string name="settings_calendar_events_empty">No calendar events available.</string>
     <string name="settings_calendar_include_past_events_desc">Include past events in search results.</string>
+    <string name="settings_calendar_show_hidden_events">Show hidden items</string>
+    <string name="settings_calendar_hide_hidden_events">Hide hidden items</string>
     <string name="settings_calendar_include_past_events_title">Past Events</string>
     <string name="settings_calendar_permission_title">Calendar</string>
     <string name="settings_calendar_default_title">Open Events in...</string>
@@ -1214,6 +1216,13 @@
     <string name="widget_countdown_format_detailed">Detailed</string>
     <string name="widget_countdown_format_progress">Progress %</string>
     <string name="widget_countdown_progress_hint">Shows how much of the time from when you set the date has passed.</string>
+    <string name="widget_world_clock_widget_title">World Clock Widget</string>
+    <string name="widget_world_clock_locations">Locations</string>
+    <string name="widget_world_clock_locations_hint">Up to %1$d clocks, shown left to right. Tap a location to rename it.</string>
+    <string name="widget_world_clock_add_location">Add location</string>
+    <string name="widget_world_clock_search_hint">Search city, country or time zone</string>
+    <string name="widget_world_clock_no_results">No locations found</string>
+    <string name="widget_world_clock_label_hint">Name on widget</string>
     <string name="widget_icon_center">Center</string>
     <string name="widget_icon_left">Left</string>
     <string name="widget_icon_off">Off</string>
@@ -1256,7 +1265,7 @@
     <string name="permissions_notifications_desc">Needed for reminder notifications and to pin search results to notification panel</string>
     <string name="permissions_notification_access_desc">Needed to enable notification dots and notification history features</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibility</string>
-    <string name="permissions_accessibility_lock_screen_desc">Needed for double-tap to lock screen gesture, notch gestures, launch Quick Search with edge swipe gesture or floating button, and SpeedBump outside Quick Search</string>
+    <string name="permissions_accessibility_lock_screen_desc">Enables gestures, floating button, and SpeedBump.</string>
     <string name="permissions_contacts_desc">Needed to search your contacts.</string>
     <string name="permissions_files_desc">Needed to search through your documents and other files.</string>
     <string name="permissions_files_title">Files Access</string>

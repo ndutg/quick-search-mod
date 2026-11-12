@@ -619,6 +619,8 @@
     <string name="error_open_calendar_event">క్యాలెండర్ ఈవెంట్‌ను తెరవడం సాధ్యపడలేదు</string>
     <string name="settings_calendar_events_empty">క్యాలెండర్ ఈవెంట్‌లు ఏవీ అందుబాటులో లేవు.</string>
     <string name="settings_calendar_include_past_events_desc">శోధన ఫలితాలలో గత ఈవెంట్‌లను చేర్చండి.</string>
+    <string name="settings_calendar_show_hidden_events">దాచిన అంశాలను చూపించు</string>
+    <string name="settings_calendar_hide_hidden_events">దాచిన అంశాలను దాచు</string>
     <string name="settings_calendar_include_past_events_title">గత ఈవెంట్‌లు</string>
     <string name="settings_calendar_permission_title">క్యాలెండర్</string>
     <string name="settings_calendar_default_title">ఈవెంట్‌లను ఇందులో తెరవండి...</string>
@@ -1194,6 +1196,13 @@
     <string name="widget_countdown_format_detailed">వివరంగా</string>
     <string name="widget_countdown_format_progress">పురోగతి %</string>
     <string name="widget_countdown_progress_hint">మీరు తేదీని సెట్ చేసినప్పటి నుండి ఎంత సమయం గడిచిందో చూపిస్తుంది.</string>
+    <string name="widget_world_clock_widget_title">ప్రపంచ గడియారం విడ్జెట్</string>
+    <string name="widget_world_clock_locations">ప్రదేశాలు</string>
+    <string name="widget_world_clock_locations_hint">గరిష్టంగా %1$d గడియారాలు, ఎడమ నుండి కుడికి చూపబడతాయి. పేరు మార్చడానికి ప్రదేశంపై నొక్కండి.</string>
+    <string name="widget_world_clock_add_location">ప్రదేశాన్ని జోడించండి</string>
+    <string name="widget_world_clock_search_hint">నగరం, దేశం లేదా టైమ్ జోన్ వెతకండి</string>
+    <string name="widget_world_clock_no_results">ప్రదేశాలు ఏవీ కనుగొనబడలేదు</string>
+    <string name="widget_world_clock_label_hint">విడ్జెట్‌పై పేరు</string>
     <string name="widget_icon_center">మధ్యలో</string>
     <string name="widget_icon_left">ఎడమవైపు</string>
     <string name="widget_icon_off">ఆఫ్</string>
@@ -1236,7 +1245,7 @@
     <string name="permissions_notifications_desc">రిమైండర్ నోటిఫికేషన్‌ల కోసం మరియు శోధన ఫలితాలను నోటిఫికేషన్ ప్యానెల్‌లో పిన్ చేయడానికి అవసరం</string>
     <string name="permissions_notification_access_desc">నోటిఫికేషన్ డాట్‌లు మరియు నోటిఫికేషన్ చరిత్ర ఫీచర్‌లను ప్రారంభించడానికి అవసరం</string>
     <string name="permissions_accessibility_lock_screen_title">యాక్సెసిబిలిటీ</string>
-    <string name="permissions_accessibility_lock_screen_desc">స్క్రీన్‌ను లాక్ చేయడానికి రెండుసార్లు ట్యాప్ చేసే సంజ్ఞకు, నాచ్ హావభావాలకు, అంచు స్వైప్ సంజ్ఞ లేదా ఫ్లోటింగ్ బటన్‌తో Quick Searchని ప్రారంభించడానికి మరియు Quick Search బయట SpeedBump కోసం అవసరం.</string>
+    <string name="permissions_accessibility_lock_screen_desc">హావభావాలు, ఫ్లోటింగ్ బటన్ మరియు SpeedBumpను ప్రారంభిస్తుంది.</string>
     <string name="permissions_contacts_desc">మీ పరిచయాలను శోధించడానికి అవసరం.</string>
     <string name="permissions_files_desc">మీ పత్రాలు మరియు ఇతర ఫైళ్లను శోధించడానికి అవసరం.</string>
     <string name="permissions_files_title">ఫైళ్ల యాక్సెస్</string>

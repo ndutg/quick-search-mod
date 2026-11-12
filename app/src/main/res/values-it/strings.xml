@@ -618,6 +618,8 @@
     <string name="error_open_calendar_event">Impossibile aprire l\u2019evento del calendario</string>
     <string name="settings_calendar_events_empty">Nessun evento del calendario disponibile.</string>
     <string name="settings_calendar_include_past_events_desc">Includi gli eventi passati nei risultati di ricerca.</string>
+    <string name="settings_calendar_show_hidden_events">Mostra elementi nascosti</string>
+    <string name="settings_calendar_hide_hidden_events">Nascondi elementi nascosti</string>
     <string name="settings_calendar_include_past_events_title">Eventi passati</string>
     <string name="settings_calendar_permission_title">Calendario</string>
     <string name="settings_calendar_default_title">Apri eventi in...</string>
@@ -1193,6 +1195,13 @@
     <string name="widget_countdown_format_detailed">Dettagliato</string>
     <string name="widget_countdown_format_progress">Avanzamento %</string>
     <string name="widget_countdown_progress_hint">Mostra quanto tempo è trascorso da quando hai impostato la data.</string>
+    <string name="widget_world_clock_widget_title">Widget orologio mondiale</string>
+    <string name="widget_world_clock_locations">Località</string>
+    <string name="widget_world_clock_locations_hint">Fino a %1$d orologi, mostrati da sinistra a destra. Tocca una località per rinominarla.</string>
+    <string name="widget_world_clock_add_location">Aggiungi località</string>
+    <string name="widget_world_clock_search_hint">Cerca città, paese o fuso orario</string>
+    <string name="widget_world_clock_no_results">Nessuna località trovata</string>
+    <string name="widget_world_clock_label_hint">Nome sul widget</string>
     <string name="widget_icon_center">Al centro</string>
     <string name="widget_icon_left">A sinistra</string>
     <string name="widget_icon_off">Disattivato</string>
@@ -1235,7 +1244,7 @@
     <string name="permissions_notifications_desc">Necessario per le notifiche dei promemoria e per fissare i risultati di ricerca nel pannello delle notifiche</string>
     <string name="permissions_notification_access_desc">Necessario per attivare i punti di notifica e la cronologia delle notifiche</string>
     <string name="permissions_accessibility_lock_screen_title">Accessibilità</string>
-    <string name="permissions_accessibility_lock_screen_desc">Necessario per il gesto di doppio tocco per bloccare lo schermo, i gesti del notch, l’avvio di Quick Search con il gesto di scorrimento dal bordo o il pulsante mobile e SpeedBump fuori da Quick Search.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Abilita gesti, pulsante mobile e SpeedBump.</string>
     <string name="permissions_contacts_desc">Richiesta per cercare tra i tuoi contatti.</string>
     <string name="permissions_files_desc">Richiesta per cercare tra i tuoi documenti e altri file.</string>
     <string name="permissions_files_title">Accesso ai file</string>

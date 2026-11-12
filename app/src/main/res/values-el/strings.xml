@@ -619,6 +619,8 @@
     <string name="error_open_calendar_event">Αδυναμία ανοίγματος συμβάντος ημερολογίου</string>
     <string name="settings_calendar_events_empty">Δεν υπάρχουν διαθέσιμα συμβάντα ημερολογίου.</string>
     <string name="settings_calendar_include_past_events_desc">Συμπερίληψη παρελθόντων συμβάντων στα αποτελέσματα αναζήτησης.</string>
+    <string name="settings_calendar_show_hidden_events">Εμφάνιση κρυφών στοιχείων</string>
+    <string name="settings_calendar_hide_hidden_events">Απόκρυψη κρυφών στοιχείων</string>
     <string name="settings_calendar_include_past_events_title">Παρελθόντα συμβάντα</string>
     <string name="settings_calendar_permission_title">Ημερολόγιο</string>
     <string name="settings_calendar_default_title">Άνοιγμα συμβάντων σε...</string>
@@ -1194,6 +1196,13 @@
     <string name="widget_countdown_format_detailed">Λεπτομερές</string>
     <string name="widget_countdown_format_progress">Πρόοδος %</string>
     <string name="widget_countdown_progress_hint">Δείχνει πόσος χρόνος έχει περάσει από τότε που ορίσατε την ημερομηνία.</string>
+    <string name="widget_world_clock_widget_title">Γραφικό στοιχείο παγκόσμιου ρολογιού</string>
+    <string name="widget_world_clock_locations">Τοποθεσίες</string>
+    <string name="widget_world_clock_locations_hint">Έως %1$d ρολόγια, από αριστερά προς τα δεξιά. Πατήστε μια τοποθεσία για μετονομασία.</string>
+    <string name="widget_world_clock_add_location">Προσθήκη τοποθεσίας</string>
+    <string name="widget_world_clock_search_hint">Αναζήτηση πόλης, χώρας ή ζώνης ώρας</string>
+    <string name="widget_world_clock_no_results">Δεν βρέθηκαν τοποθεσίες</string>
+    <string name="widget_world_clock_label_hint">Όνομα στο γραφικό στοιχείο</string>
     <string name="widget_icon_center">Κέντρο</string>
     <string name="widget_icon_left">Αριστερά</string>
     <string name="widget_icon_off">Απενεργοποιημένο</string>
@@ -1236,7 +1245,7 @@
     <string name="permissions_notifications_desc">Απαιτείται για ειδοποιήσεις υπενθυμίσεων και για καρφίτσωμα αποτελεσμάτων αναζήτησης στον πίνακα ειδοποιήσεων</string>
     <string name="permissions_notification_access_desc">Απαιτείται για την ενεργοποίηση των κουκκίδων ειδοποιήσεων και του ιστορικού ειδοποιήσεων</string>
     <string name="permissions_accessibility_lock_screen_title">Προσβασιμότητα</string>
-    <string name="permissions_accessibility_lock_screen_desc">Απαραίτητο για τη χειρονομία διπλού πατήματος για κλείδωμα οθόνης, τις χειρονομίες εγκοπής, την εκκίνηση του Quick Search με χειρονομία σάρωσης από την άκρη ή αιωρούμενο κουμπί και το SpeedBump εκτός Quick Search.</string>
+    <string name="permissions_accessibility_lock_screen_desc">Ενεργοποιεί χειρονομίες, αιωρούμενο κουμπί και SpeedBump.</string>
     <string name="permissions_contacts_desc">Απαραίτητο για την αναζήτηση των επαφών σας.</string>
     <string name="permissions_files_desc">Απαραίτητο για την αναζήτηση στα έγγραφα και τα υπόλοιπα αρχεία σας.</string>
     <string name="permissions_files_title">Πρόσβαση σε αρχεία</string>
