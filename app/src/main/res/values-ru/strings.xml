@@ -639,6 +639,8 @@
 <string name="error_open_calendar_event">Не удалось открыть событие календаря</string>
 <string name="settings_calendar_events_empty">Нет доступных событий календаря.</string>
 <string name="settings_calendar_include_past_events_desc">Включать прошедшие события в результаты поиска.</string>
+<string name="settings_calendar_show_hidden_events">Показать скрытые</string>
+<string name="settings_calendar_hide_hidden_events">Скрыть скрытые</string>
 <string name="settings_calendar_include_past_events_title">Прошедшие события</string>
 <string name="settings_calendar_permission_title">Календарь</string>
     <string name="settings_calendar_default_title">Открывать события в...</string>
@@ -1218,6 +1220,13 @@
 <string name="widget_countdown_format_detailed">Подробно</string>
 <string name="widget_countdown_format_progress">Прогресс %</string>
 <string name="widget_countdown_progress_hint">Показывает, какая часть времени прошла с момента выбора даты.</string>
+<string name="widget_world_clock_widget_title">Виджет мировых часов</string>
+<string name="widget_world_clock_locations">Места</string>
+<string name="widget_world_clock_locations_hint">До %1$d часов, слева направо. Нажмите на место, чтобы переименовать его.</string>
+<string name="widget_world_clock_add_location">Добавить место</string>
+<string name="widget_world_clock_search_hint">Поиск города, страны или часового пояса</string>
+<string name="widget_world_clock_no_results">Места не найдены</string>
+<string name="widget_world_clock_label_hint">Название на виджете</string>
 <string name="widget_icon_center">По центру</string>
 <string name="widget_icon_left">Слева</string>
 <string name="widget_icon_off">Выкл.</string>
@@ -1260,7 +1269,7 @@
     <string name="permissions_notifications_desc">Требуется для уведомлений о напоминаниях и закрепления результатов поиска на панели уведомлений</string>
     <string name="permissions_notification_access_desc">Требуется для значков уведомлений и истории уведомлений</string>
 <string name="permissions_accessibility_lock_screen_title">Специальные возможности</string>
-<string name="permissions_accessibility_lock_screen_desc">Требуется для жеста двойного нажатия, чтобы заблокировать экран, жестов выреза, запуска Quick Search жестом смахивания от края либо плавающей кнопкой и SpeedBump вне Quick Search.</string>
+<string name="permissions_accessibility_lock_screen_desc">Включает жесты, плавающую кнопку и SpeedBump.</string>
 <string name="permissions_contacts_desc">Требуется для поиска по вашим контактам.</string>
 <string name="permissions_files_desc">Требуется для поиска по вашим документам и другим файлам.</string>
 <string name="permissions_files_title">Доступ к файлам</string>
